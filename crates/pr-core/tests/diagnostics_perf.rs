@@ -10,7 +10,6 @@ use pr_core::diagnostics::perf::{
     EVENT_TABLE, PerfEvent, PerfListener, PerfValue, PhotoReviewPerf, STOPWATCH_FREQUENCY, ShellPerfMarks, ms,
     ms_since_process_start, path_id, startup_mark, timestamp,
 };
-use pr_core::text::dotnet_path;
 use pr_test_support::golden;
 
 static LOCK: Mutex<()> = Mutex::new(());
@@ -93,7 +92,10 @@ fn path_id_stable_across_cultures_and_case() {
 // C#: PhotoReviewPerfTests.PathId_RelativeEqualsFull
 #[test]
 fn path_id_relative_equals_full() {
-    let full = dotnet_path::get_full_path("some.jpg").expect("relative path resolves");
+    let full = std::path::absolute("some.jpg")
+        .expect("relative path resolves")
+        .to_string_lossy()
+        .into_owned();
 
     assert_eq!(path_id(&full), path_id("some.jpg"));
 }

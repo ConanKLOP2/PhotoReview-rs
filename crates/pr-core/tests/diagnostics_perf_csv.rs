@@ -1022,6 +1022,40 @@ fn header_no_diagnostic_flags_empty_diag_field() {
     assert!(text.split('\n').next().expect("a header line").contains(" diag= "));
 }
 
+// C#: string.IsNullOrEmpty keeps a whitespace-only diag value (extra coverage, no C# test)
+#[test]
+fn header_keeps_whitespace_only_diag_value() {
+    let _guard = global_state();
+    let sink = Probe::memory();
+    let diag = |name: &str| (name == "PHOTOREVIEW_DIAG_PREREAD").then(|| "  ".to_owned());
+
+    PerfCsvListener::start_for_test(sink.sink(), 10, None, None, None, &diag).dispose();
+
+    let text = sink.text();
+    assert!(
+        text.split('\n')
+            .next()
+            .expect("a header line")
+            .contains(" diag=PHOTOREVIEW_DIAG_PREREAD=   ")
+    );
+}
+
+// C# FileShare.Read: a second start on the same file name (same pid, same second) is refused.
+#[cfg(windows)]
+#[test]
+fn second_start_same_second_same_pid_is_refused_like_fileshare_read() {
+    let _guard = global_state();
+    let temp = TempRoot::new("perf-env");
+    let value = temp.join("trace").to_string_lossy().into_owned();
+    let lookup = |name: &str| (name == TRACE_ENV_VAR).then(|| value.clone());
+
+    let first = PerfCsvListener::try_start(&lookup, None, &fixed_local_now);
+    let second = PerfCsvListener::try_start(&lookup, None, &fixed_local_now);
+
+    assert!(first.is_some());
+    assert!(second.is_none());
+}
+
 // C#: PerfCsvListenerStartupAndFaultCoverageTests.EnqueueAfterWriterFault_CountsEachRowAsDroppedAndDisposeStaysQuiet
 #[test]
 fn enqueue_after_writer_fault_counts_each_row_as_dropped_and_dispose_stays_quiet() {

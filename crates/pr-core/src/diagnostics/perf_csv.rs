@@ -429,12 +429,15 @@ impl PerfCsvListener {
         );
         std::fs::create_dir_all(&dir).ok()?;
         let path = Path::new(&dir).join(file_name);
-        let file = std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(&path)
-            .ok()?;
+        let mut options = std::fs::OpenOptions::new();
+        options.write(true).create(true).truncate(true);
+        #[cfg(windows)]
+        {
+            // C# FileShare.Read: a second writer on the same trace file is refused instead of truncating it.
+            use std::os::windows::fs::OpenOptionsExt;
+            options.share_mode(1); // FILE_SHARE_READ
+        }
+        let file = options.open(&path).ok()?;
         let sink: Box<dyn Write + Send> = Box::new(BufWriter::with_capacity(FILE_BUFFER, file));
         let diag = |name: &str| lookup(&name.replacen("PHOTOREVIEW_", "PHOTOREVIEW_RS_", 1));
         match Self::start(sink, CHANNEL_CAPACITY, FLUSH_INTERVAL, DISPOSE_WAIT, commit, &diag) {
