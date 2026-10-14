@@ -1,0 +1,28 @@
+{
+  "cases": [
+    { "name": "empty-line", "line": { "raw": "" } },
+    { "name": "committed-move", "line": { "e": ["m", "Move", "Committed", 0] } },
+    { "name": "prepared-move", "line": { "e": ["m", "Move", "Prepared", 0] } },
+    { "name": "failed-move", "line": { "e": ["m", "Move", "Failed", 0, "VerifySizeChanged"] } },
+    { "name": "dismissed-move", "line": { "e": ["m", "Move", "Dismissed", 0] } },
+    { "name": "committed-copy", "line": { "e": ["c", "Copy", "Committed", 0] } },
+    { "name": "committed-recycle", "line": { "e": ["r", "Recycle", "Committed", 0] } },
+    { "name": "committed-group-move", "line": { "e": ["g", "Move", "Committed", 0], "members": 2 } },
+    { "name": "committed-group-move-blank-member-quarantined", "line": { "e": ["g", "Move", "Committed", 0], "members": 2, "blank_member": true } },
+    { "name": "committed-undo-move", "line": { "raw": "{\"Id\":\"u\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\sel\\\\u.jpg\",\"Destination\":\"C:\\\\photos\\\\u.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"Undo\":true}" } },
+    { "name": "move-with-nested-copy-token", "line": { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\":\"Copy\"}" } },
+    { "name": "move-with-nested-recycle-token", "line": { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\":\"Recycle\"}" } },
+    { "name": "move-with-spaced-copy-token", "line": { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\": \"Copy\"}" } },
+    { "name": "move-with-lowercase-copy-token", "line": { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"type\":\"Copy\"}" } },
+    { "name": "spaced-type-copy-committed-is-parsed", "line": { "raw": "{\"Id\":\"c\",\"Type\": \"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}" } },
+    { "name": "spaced-type-move-committed", "line": { "raw": "{\"Id\":\"m\", \"Type\" : \"Move\", \"State\" : \"Committed\", \"Source\":\"C:\\\\photos\\\\m.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}" } },
+    { "name": "lowercase-move-committed", "line": { "raw": "{\"Id\":\"m\",\"Type\":\"move\",\"State\":\"committed\",\"Source\":\"C:\\\\photos\\\\m.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}" } },
+    { "name": "inner-cr-committed-move", "line": { "e": ["m", "Move", "Committed", 0], "inner_cr": true } },
+    { "name": "trailing-cr-committed-move", "line": { "e": ["m", "Move", "Committed", 0], "suffix": "\r" } },
+    { "name": "bom-committed-move", "line": { "e": ["m", "Move", "Committed", 0], "prefix": "\ufeff" } },
+    { "name": "invalid-utf8-committed-move", "line": { "e": ["m", "Move", "Committed", 0], "corrupt_utf8": true } },
+    { "name": "malformed", "line": { "raw": "{\"Id\":\"m\",\"Type\":\"Move\",\"State\":\"Committed\"" } },
+    { "name": "garbage", "line": { "raw": "garbage-1" } },
+    { "name": "whitespace-only", "line": { "raw": "   " } }
+  ]
+}

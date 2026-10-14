@@ -1,0 +1,187 @@
+{
+  "cases": [
+    {
+      "name": "startup-missing-journal",
+      "journal": null,
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-nothing-to-reconcile-logs-no-summary",
+      "journal": [
+        "{\"Id\":\"old\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-28T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-one-committed-logs-zero-failed",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:55Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-one-failed-is-returned",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-entry-stamped-at-start-left-pending",
+      "journal": [
+        "{\"Id\":\"live\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-cutoff-uses-startup-clock-outcome-uses-journal-clock",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:02:00Z\",\"Error\":null}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:04:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:10:00Z",
+      "startup_clock": "2026-09-29T00:03:00Z"
+    },
+    {
+      "name": "startup-mixed-returns-failed-in-result-order",
+      "journal": [
+        "{\"Id\":\"p1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\p.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\p.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z"
+    },
+    {
+      "name": "startup-read-fault-logs-error-returns-empty",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "read_fault": true
+    },
+    {
+      "name": "startup-without-log-still-returns-failed",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "with_log": false
+    },
+    {
+      "name": "startup-append-failure-not-counted",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "append_failures": 1
+    },
+    {
+      "name": "startup-live-entry-not-counted",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "live": [
+        "m1"
+      ]
+    }
+  ]
+}

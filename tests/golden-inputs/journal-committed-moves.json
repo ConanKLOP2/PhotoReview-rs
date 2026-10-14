@@ -1,0 +1,418 @@
+{
+  "cases": [
+    {
+      "name": "small-full-reader",
+      "segments": [
+        {
+          "entries": [
+            0,
+            100
+          ],
+          "move_every": 3
+        }
+      ]
+    },
+    {
+      "name": "small-full-reader-lf",
+      "segments": [
+        {
+          "entries": [
+            0,
+            100
+          ],
+          "move_every": 3,
+          "eol": "\n"
+        }
+      ]
+    },
+    {
+      "name": "exactly-one-mib-uses-tail-window",
+      "segments": [
+        {
+          "entries": [
+            0,
+            300
+          ]
+        }
+      ],
+      "pad_to": 1048576
+    },
+    {
+      "name": "one-byte-under-one-mib-reads-all",
+      "segments": [
+        {
+          "entries": [
+            0,
+            300
+          ]
+        }
+      ],
+      "pad_to": 1048575
+    },
+    {
+      "name": "bare-newlines-between-lines",
+      "segments": [
+        {
+          "entries": [
+            0,
+            50
+          ]
+        },
+        {
+          "text": "",
+          "eol": "\n"
+        },
+        {
+          "entries": [
+            50,
+            99
+          ]
+        },
+        {
+          "text": "",
+          "eol": "\n"
+        },
+        {
+          "entries": [
+            99,
+            100
+          ]
+        }
+      ],
+      "pad_to": 1053576
+    },
+    {
+      "name": "last-line-longer-than-window-without-newline",
+      "segments": [
+        {
+          "entries": [
+            1,
+            2
+          ]
+        },
+        {
+          "long_move": 300000,
+          "id": "big",
+          "eol": ""
+        }
+      ],
+      "pad_to": 1048576
+    },
+    {
+      "name": "last-line-longer-than-window-with-crlf",
+      "segments": [
+        {
+          "entries": [
+            1,
+            2
+          ]
+        },
+        {
+          "long_move": 600000,
+          "id": "big",
+          "eol": "\r\n"
+        }
+      ],
+      "pad_to": 2097152
+    },
+    {
+      "name": "torn-giant-last-line-is-skipped",
+      "segments": [
+        {
+          "entries": [
+            0,
+            5000
+          ],
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"torn\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"",
+          "eol": ""
+        },
+        {
+          "repeat_text": "t",
+          "count": 306144,
+          "eol": ""
+        }
+      ]
+    },
+    {
+      "name": "torn-short-last-line-is-ignored",
+      "segments": [
+        {
+          "entries": [
+            0,
+            5000
+          ]
+        },
+        {
+          "text": "{\"Id\":\"e005000\",\"Type\":\"Move\",\"State\":\"C",
+          "eol": ""
+        }
+      ]
+    },
+    {
+      "name": "dense-moves",
+      "segments": [
+        {
+          "entries": [
+            0,
+            20000
+          ],
+          "move_every": 37
+        }
+      ]
+    },
+    {
+      "name": "sparse-moves-read-back-to-start",
+      "segments": [
+        {
+          "entries": [
+            0,
+            20000
+          ],
+          "move_every": 400
+        }
+      ]
+    },
+    {
+      "name": "very-sparse-moves",
+      "segments": [
+        {
+          "entries": [
+            0,
+            20000
+          ],
+          "move_every": 5000
+        }
+      ]
+    },
+    {
+      "name": "big-invalid-utf8-move-rejected-by-tail-reader",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ]
+        },
+        {
+          "hex": "7B224964223A2265393030303031222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5CFF686F746F735C5C653930303030312E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C653930303030312E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ]
+        }
+      ],
+      "pad_to": 1048676
+    },
+    {
+      "name": "small-invalid-utf8-move-accepted-by-full-reader",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ]
+        },
+        {
+          "hex": "7B224964223A2265393030303031222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5CFF686F746F735C5C653930303030312E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C653930303030312E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "name": "big-inner-cr-move-accepted-by-tail-reader",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ]
+        },
+        {
+          "text": "{\r\"Id\":\"e900002\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\e900002.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e900002.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ]
+        }
+      ],
+      "pad_to": 1048676
+    },
+    {
+      "name": "small-inner-cr-move-rejected-by-full-reader",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ]
+        },
+        {
+          "text": "{\r\"Id\":\"e900002\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\e900002.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e900002.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "name": "big-move-with-escaped-type-token-in-path-is-kept",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ],
+          "type": "Recycle"
+        },
+        {
+          "text": "{\"Id\":\"e900003\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\\\\"Type\\\":\\\"Recycle\\\"\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e900003.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ],
+          "type": "Recycle"
+        }
+      ],
+      "pad_to": 1048676
+    },
+    {
+      "name": "big-cr-cr-lf-line",
+      "segments": [
+        {
+          "entries": [
+            0,
+            10
+          ]
+        },
+        {
+          "text": "{\"Id\":\"e900000\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\s.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e900000.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\r\n"
+        },
+        {
+          "entries": [
+            10,
+            20
+          ]
+        }
+      ],
+      "pad_to": 1048676
+    },
+    {
+      "name": "big-journal-starting-with-utf8-bom",
+      "segments": [
+        {
+          "hex": "EFBBBF7B224964223A2265383030303030222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C653830303030302E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C653830303030302E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "entries": [
+            0,
+            7000
+          ],
+          "move_every": 2
+        }
+      ]
+    },
+    {
+      "name": "small-journal-starting-with-utf8-bom",
+      "segments": [
+        {
+          "hex": "EFBBBF7B224964223A2265383030303030222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C653830303030302E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C653830303030302E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "entries": [
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "name": "big-mixed-types-and-states",
+      "segments": [
+        {
+          "entries": [
+            0,
+            3000
+          ],
+          "type": "Move",
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 40
+        },
+        {
+          "entries": [
+            3000,
+            4000
+          ],
+          "type": "Copy",
+          "states": [
+            "Prepared",
+            "Committed"
+          ]
+        },
+        {
+          "entries": [
+            4000,
+            4100
+          ],
+          "type": "Move",
+          "states": [
+            "Prepared",
+            "Failed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "big-group-move-line-keeps-members",
+      "segments": [
+        {
+          "entries": [
+            0,
+            6000
+          ],
+          "type": "Recycle"
+        },
+        {
+          "text": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\grp.cr3\",\"Destination\":\"C:\\\\sel\\\\grp.cr3\",\"Size\":5,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "eol": "\r\n"
+        }
+      ]
+    },
+    {
+      "name": "big-lf-only-journal",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "move_every": 50,
+          "eol": "\n"
+        }
+      ]
+    }
+  ]
+}

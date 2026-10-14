@@ -1,0 +1,572 @@
+{
+  "generator": "oracle-cs journal-compact",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "no-compaction-files-not-supported",
+      "case": {
+        "name": "no-compaction-files-not-supported",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "no_compaction_files": true
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "NotSupported",
+      "bytes_before": 0,
+      "bytes_after": 0,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 5607000,
+      "final_fnv64": "df1140206319fa15",
+      "final_newlines": 18000,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e008999"
+    },
+    {
+      "name": "journal-folder-missing-below-threshold",
+      "case": {
+        "name": "journal-folder-missing-below-threshold",
+        "segments": [],
+        "missing_dir": true
+      },
+      "initial_length": null,
+      "initial_fnv64": null,
+      "outcome": "BelowThreshold",
+      "bytes_before": 0,
+      "bytes_after": 0,
+      "error_set": false,
+      "final_exists": false,
+      "final_length": 0,
+      "final_fnv64": "cbf29ce484222325",
+      "final_newlines": 0,
+      "leftover_temp_files": 0,
+      "moves_after": 0,
+      "last_move_after": null
+    },
+    {
+      "name": "small-journal-below-threshold",
+      "case": {
+        "name": "small-journal-below-threshold",
+        "segments": [
+          {
+            "entries": [
+              0,
+              5
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ]
+      },
+      "initial_length": 3115,
+      "initial_fnv64": "0c1ca5c77817dd45",
+      "outcome": "BelowThreshold",
+      "bytes_before": 3115,
+      "bytes_after": 3115,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 3115,
+      "final_fnv64": "0c1ca5c77817dd45",
+      "final_newlines": 10,
+      "leftover_temp_files": 0,
+      "moves_after": 5,
+      "last_move_after": "e000004"
+    },
+    {
+      "name": "big-pairs-compacted",
+      "case": {
+        "name": "big-pairs-compacted",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ]
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "Compacted",
+      "bytes_before": 5607000,
+      "bytes_after": 2808000,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808000,
+      "final_fnv64": "d4a25aad0a85c241",
+      "final_newlines": 9000,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e008999"
+    },
+    {
+      "name": "big-prepared-only-not-worth-it",
+      "case": {
+        "name": "big-prepared-only-not-worth-it",
+        "segments": [
+          {
+            "entries": [
+              0,
+              6000
+            ],
+            "states": [
+              "Prepared"
+            ],
+            "pad": 80
+          }
+        ]
+      },
+      "initial_length": 1866000,
+      "initial_fnv64": "2cfc34db30cfcd05",
+      "outcome": "NotWorthIt",
+      "bytes_before": 1866000,
+      "bytes_after": 1866000,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 1866000,
+      "final_fnv64": "2cfc34db30cfcd05",
+      "final_newlines": 6000,
+      "leftover_temp_files": 0,
+      "moves_after": 0,
+      "last_move_after": null
+    },
+    {
+      "name": "exactly-threshold-compacted",
+      "case": {
+        "name": "exactly-threshold-compacted",
+        "segments": [
+          {
+            "entries": [
+              0,
+              1400
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "pad_to": 1048576
+      },
+      "initial_length": 1048576,
+      "initial_fnv64": "356cd03df7c3ef36",
+      "outcome": "Compacted",
+      "bytes_before": 1048576,
+      "bytes_after": 613176,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 613176,
+      "final_fnv64": "0d90ac91b2fb6b56",
+      "final_newlines": 1401,
+      "leftover_temp_files": 0,
+      "moves_after": 1400,
+      "last_move_after": "e001399"
+    },
+    {
+      "name": "one-byte-under-threshold",
+      "case": {
+        "name": "one-byte-under-threshold",
+        "segments": [
+          {
+            "entries": [
+              0,
+              1400
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "pad_to": 1048575
+      },
+      "initial_length": 1048575,
+      "initial_fnv64": "f3ebaba74f0c4174",
+      "outcome": "BelowThreshold",
+      "bytes_before": 1048575,
+      "bytes_after": 1048575,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 1048575,
+      "final_fnv64": "f3ebaba74f0c4174",
+      "final_newlines": 2801,
+      "leftover_temp_files": 0,
+      "moves_after": 1400,
+      "last_move_after": "e001399"
+    },
+    {
+      "name": "file-at-threshold-but-last-line-partial-is-below-threshold",
+      "case": {
+        "name": "file-at-threshold-but-last-line-partial-is-below-threshold",
+        "segments": [
+          {
+            "entries": [
+              0,
+              1400
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          },
+          {
+            "text": "{\"Id\":\"partial-tail",
+            "eol": ""
+          }
+        ],
+        "pad_to": 1048576
+      },
+      "initial_length": 1048576,
+      "initial_fnv64": "f62ab725e8adad1c",
+      "outcome": "BelowThreshold",
+      "bytes_before": 1048576,
+      "bytes_after": 1048576,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 1048576,
+      "final_fnv64": "f62ab725e8adad1c",
+      "final_newlines": 2801,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e001399"
+    },
+    {
+      "name": "torn-tail-in-file-goes-to-delta-with-newline",
+      "case": {
+        "name": "torn-tail-in-file-goes-to-delta-with-newline",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          },
+          {
+            "text": "{\"Id\":\"torn\",\"Ty",
+            "eol": ""
+          }
+        ]
+      },
+      "initial_length": 5607016,
+      "initial_fnv64": "5af925ce4b5cffbf",
+      "outcome": "Compacted",
+      "bytes_before": 5607016,
+      "bytes_after": 2808018,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808018,
+      "final_fnv64": "c274e1d6f3fc5308",
+      "final_newlines": 9001,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e008999"
+    },
+    {
+      "name": "lines-appended-meanwhile-are-kept",
+      "case": {
+        "name": "lines-appended-meanwhile-are-kept",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "before_lock_append": [
+          {
+            "text": "{\"Id\":\"late1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\late1.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\late1.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"late2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\late2.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\late2.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "eol": "\r\n"
+          }
+        ]
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "Compacted",
+      "bytes_before": 5607447,
+      "bytes_after": 2808447,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808447,
+      "final_fnv64": "afa9e71114367a53",
+      "final_newlines": 9002,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "late1"
+    },
+    {
+      "name": "torn-line-appended-meanwhile-gets-a-newline",
+      "case": {
+        "name": "torn-line-appended-meanwhile-gets-a-newline",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "before_lock_append": [
+          {
+            "text": "{\"Id\":\"half",
+            "eol": ""
+          }
+        ]
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "Compacted",
+      "bytes_before": 5607011,
+      "bytes_after": 2808013,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808013,
+      "final_fnv64": "2723ad35c81aff9f",
+      "final_newlines": 9001,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e008999"
+    },
+    {
+      "name": "rewritten-meanwhile-changed",
+      "case": {
+        "name": "rewritten-meanwhile-changed",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "before_lock_rewrite": {
+          "segments": [
+            {
+              "entries": [
+                0,
+                100
+              ],
+              "states": [
+                "Prepared",
+                "Committed"
+              ],
+              "pad": 80
+            }
+          ]
+        }
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "Changed",
+      "bytes_before": 62300,
+      "bytes_after": 62300,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 62300,
+      "final_fnv64": "aad21550348efafd",
+      "final_newlines": 200,
+      "leftover_temp_files": 0,
+      "moves_after": 100,
+      "last_move_after": "e000099"
+    },
+    {
+      "name": "rewritten-meanwhile-with-same-prefix-longer-is-compacted",
+      "case": {
+        "name": "rewritten-meanwhile-with-same-prefix-longer-is-compacted",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ],
+        "before_lock_rewrite": {
+          "segments": [
+            {
+              "entries": [
+                0,
+                9000
+              ],
+              "states": [
+                "Prepared",
+                "Committed"
+              ],
+              "pad": 80
+            },
+            {
+              "entries": [
+                9000,
+                9001
+              ],
+              "states": [
+                "Prepared",
+                "Committed"
+              ],
+              "pad": 80
+            }
+          ]
+        }
+      },
+      "initial_length": 5607000,
+      "initial_fnv64": "df1140206319fa15",
+      "outcome": "Compacted",
+      "bytes_before": 5607623,
+      "bytes_after": 2808623,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808623,
+      "final_fnv64": "4eb402c2fc071c7f",
+      "final_newlines": 9002,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e009000"
+    },
+    {
+      "name": "fa01-residue-and-unparseable-lines-kept",
+      "case": {
+        "name": "fa01-residue-and-unparseable-lines-kept",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          },
+          {
+            "text": "{\"Id\":\"e000005\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\e000005.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e000005.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:16:39Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "garbage line",
+            "eol": "\r\n"
+          },
+          {
+            "text": "",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"pend\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\pend.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\pend.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"fail\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\fail.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\fail.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\"}",
+            "eol": "\r\n"
+          }
+        ]
+      },
+      "initial_length": 5607715,
+      "initial_fnv64": "b10b8ac9e5c0505f",
+      "outcome": "Compacted",
+      "bytes_before": 5607715,
+      "bytes_after": 2808713,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2808713,
+      "final_fnv64": "4de411e4bf20bb7c",
+      "final_newlines": 9004,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "e008999"
+    },
+    {
+      "name": "group-line-and-lf-journal",
+      "case": {
+        "name": "group-line-and-lf-journal",
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80,
+            "eol": "\n"
+          },
+          {
+            "text": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+            "eol": "\n"
+          },
+          {
+            "text": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+            "eol": "\n"
+          }
+        ]
+      },
+      "initial_length": 5589761,
+      "initial_fnv64": "84f4ef1dc11e1575",
+      "outcome": "Compacted",
+      "bytes_before": 5589761,
+      "bytes_after": 2799381,
+      "error_set": false,
+      "final_exists": true,
+      "final_length": 2799381,
+      "final_fnv64": "f429ed34414fa887",
+      "final_newlines": 9001,
+      "leftover_temp_files": 0,
+      "moves_after": 200,
+      "last_move_after": "grp"
+    }
+  ]
+}

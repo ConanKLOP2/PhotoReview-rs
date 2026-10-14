@@ -1,0 +1,187 @@
+{
+  "generator": "oracle-cs partial-cleanup",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "shorter-and-same-stamp-is-deleted",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": false,
+      "deleted": true,
+      "threw": null
+    },
+    {
+      "name": "as-long-as-the-source-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "longer-than-the-source-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "one-byte-shorter-is-deleted",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": false,
+      "deleted": true,
+      "threw": null
+    },
+    {
+      "name": "empty-destination-empty-source-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "empty-destination-nonempty-source-is-deleted",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": false,
+      "deleted": true,
+      "threw": null
+    },
+    {
+      "name": "negative-source-size-keeps-an-empty-destination",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "source-size-over-int32-deletes-a-short-file",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": false,
+      "deleted": true,
+      "threw": null
+    },
+    {
+      "name": "replaced-by-a-file-of-another-length-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "replaced-same-length-other-second-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "replaced-same-length-one-tick-later-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "replaced-same-length-one-tick-earlier-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "shorter-than-source-but-longer-than-created-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "shorter-than-source-and-created-is-longer-is-kept",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "destination-missing-does-nothing",
+      "kind": "cleanup",
+      "existed_before": false,
+      "exists_after": false,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "delete-fails-is-swallowed-and-file-stays",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "complete-copy-with-failing-delete-is-untouched",
+      "kind": "cleanup",
+      "existed_before": true,
+      "exists_after": true,
+      "deleted": false,
+      "threw": null
+    },
+    {
+      "name": "same-file-equal",
+      "kind": "same-file",
+      "same_file": true
+    },
+    {
+      "name": "same-file-length-differs",
+      "kind": "same-file",
+      "same_file": false
+    },
+    {
+      "name": "same-file-time-differs-one-tick",
+      "kind": "same-file",
+      "same_file": false
+    },
+    {
+      "name": "same-file-time-differs-one-second",
+      "kind": "same-file",
+      "same_file": false
+    },
+    {
+      "name": "same-file-both-differ",
+      "kind": "same-file",
+      "same_file": false
+    },
+    {
+      "name": "same-file-zero-length-equal",
+      "kind": "same-file",
+      "same_file": true
+    },
+    {
+      "name": "same-file-int64-max-length-equal",
+      "kind": "same-file",
+      "same_file": true
+    },
+    {
+      "name": "same-file-int64-max-length-vs-one-less",
+      "kind": "same-file",
+      "same_file": false
+    },
+    {
+      "name": "same-file-max-ticks-equal",
+      "kind": "same-file",
+      "same_file": true
+    }
+  ]
+}

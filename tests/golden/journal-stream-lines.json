@@ -1,0 +1,346 @@
+{
+  "generator": "oracle-cs journal-stream-lines",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty",
+      "hex": "",
+      "lines_utf16": [],
+      "lines": []
+    },
+    {
+      "name": "crlf-lines",
+      "hex": "610D0A620D0A",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "lf-last-line-without-terminator",
+      "hex": "610A62",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "lone-cr-is-a-terminator",
+      "hex": "610D620D",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "cr-cr-lf-gives-an-empty-line",
+      "hex": "610D0D0A62",
+      "lines_utf16": [
+        "0061",
+        "",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "",
+        "b"
+      ]
+    },
+    {
+      "name": "only-newlines",
+      "hex": "0A0A",
+      "lines_utf16": [
+        "",
+        ""
+      ],
+      "lines": [
+        "",
+        ""
+      ]
+    },
+    {
+      "name": "only-cr",
+      "hex": "0D",
+      "lines_utf16": [
+        ""
+      ],
+      "lines": [
+        ""
+      ]
+    },
+    {
+      "name": "inner-cr-splits-a-json-line",
+      "hex": "7B0D224964223A2278227D0D0A",
+      "lines_utf16": [
+        "007B",
+        "0022004900640022003A002200780022007D"
+      ],
+      "lines": [
+        "{",
+        "\"Id\":\"x\"}"
+      ]
+    },
+    {
+      "name": "utf8-bom-stripped",
+      "hex": "EFBBBF780D0A",
+      "lines_utf16": [
+        "0078"
+      ],
+      "lines": [
+        "x"
+      ]
+    },
+    {
+      "name": "utf8-bom-only",
+      "hex": "EFBBBF",
+      "lines_utf16": [],
+      "lines": []
+    },
+    {
+      "name": "double-utf8-bom-second-kept",
+      "hex": "EFBBBFEFBBBF78",
+      "lines_utf16": [
+        "FEFF0078"
+      ],
+      "lines": [
+        "\uFEFFx"
+      ]
+    },
+    {
+      "name": "bom-in-the-middle-kept",
+      "hex": "780D0AEFBBBF79",
+      "lines_utf16": [
+        "0078",
+        "FEFF0079"
+      ],
+      "lines": [
+        "x",
+        "\uFEFFy"
+      ]
+    },
+    {
+      "name": "partial-utf8-bom",
+      "hex": "EFBB78",
+      "lines_utf16": [
+        "FFFD0078"
+      ],
+      "lines": [
+        "�x"
+      ]
+    },
+    {
+      "name": "invalid-overlong",
+      "hex": "61C0AF62",
+      "lines_utf16": [
+        "0061FFFDFFFD0062"
+      ],
+      "lines": [
+        "a��b"
+      ]
+    },
+    {
+      "name": "invalid-encoded-surrogate",
+      "hex": "61EDA08062",
+      "lines_utf16": [
+        "0061FFFDFFFDFFFD0062"
+      ],
+      "lines": [
+        "a���b"
+      ]
+    },
+    {
+      "name": "invalid-truncated-at-end",
+      "hex": "61F09F98",
+      "lines_utf16": [
+        "0061FFFD"
+      ],
+      "lines": [
+        "a�"
+      ]
+    },
+    {
+      "name": "invalid-ff",
+      "hex": "FF0A",
+      "lines_utf16": [
+        "FFFD"
+      ],
+      "lines": [
+        "�"
+      ]
+    },
+    {
+      "name": "invalid-lone-continuations",
+      "hex": "808078",
+      "lines_utf16": [
+        "FFFDFFFD0078"
+      ],
+      "lines": [
+        "��x"
+      ]
+    },
+    {
+      "name": "invalid-truncated-before-newline",
+      "hex": "61E2820A62",
+      "lines_utf16": [
+        "0061FFFD",
+        "0062"
+      ],
+      "lines": [
+        "a�",
+        "b"
+      ]
+    },
+    {
+      "name": "valid-astral",
+      "hex": "F09F98800A",
+      "lines_utf16": [
+        "D83DDE00"
+      ],
+      "lines": [
+        "\uD83D\uDE00"
+      ]
+    },
+    {
+      "name": "nul-bytes-kept",
+      "hex": "6100620A",
+      "lines_utf16": [
+        "006100000062"
+      ],
+      "lines": [
+        "a\u0000b"
+      ]
+    },
+    {
+      "name": "u2028-and-nel-are-not-line-breaks",
+      "hex": "61E280A862C28563",
+      "lines_utf16": [
+        "00612028006200850063"
+      ],
+      "lines": [
+        "a\u2028b\u0085c"
+      ]
+    },
+    {
+      "name": "utf16le-bom",
+      "hex": "FFFE61000D000A006200",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "utf16be-bom",
+      "hex": "FEFF0061000A0062",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "utf32le-bom",
+      "hex": "FFFE0000610000000A00000062000000",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "utf32be-bom",
+      "hex": "0000FEFF000000610000000A00000062",
+      "lines_utf16": [
+        "0061",
+        "0062"
+      ],
+      "lines": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "name": "utf16le-bom-only",
+      "hex": "FFFE",
+      "lines_utf16": [],
+      "lines": []
+    },
+    {
+      "name": "utf16le-bom-and-one-zero",
+      "hex": "FFFE00",
+      "lines_utf16": [
+        "FFFD"
+      ],
+      "lines": [
+        "�"
+      ]
+    },
+    {
+      "name": "utf32le-bom-only",
+      "hex": "FFFE0000",
+      "lines_utf16": [],
+      "lines": []
+    },
+    {
+      "name": "utf16le-lone-surrogate",
+      "hex": "FFFE00D86100",
+      "lines_utf16": [
+        "FFFD0061"
+      ],
+      "lines": [
+        "�a"
+      ]
+    },
+    {
+      "name": "utf16le-odd-length",
+      "hex": "FFFE610062",
+      "lines_utf16": [
+        "0061FFFD"
+      ],
+      "lines": [
+        "a�"
+      ]
+    },
+    {
+      "name": "utf32le-out-of-range",
+      "hex": "FFFE00000000110061000000",
+      "lines_utf16": [
+        "FFFD0061"
+      ],
+      "lines": [
+        "�a"
+      ]
+    },
+    {
+      "name": "utf16le-journal-line",
+      "hex": "FFFE7B0022004900640022003A00220075003100360022002C002200540079007000650022003A0022004D006F007600650022002C0022005300740061007400650022003A0022005000720065007000610072006500640022002C00220053006F00750072006300650022003A00220043003A005C005C00700068006F0074006F0073005C005C007500310036002E006A007000670022002C002200440065007300740069006E006100740069006F006E0022003A00220043003A005C005C00700068006F0074006F0073005C005C00730065006C005C005C007500310036002E006A007000670022002C002200530069007A00650022003A0031002C0022004C006100730074005700720069007400650055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C002200540069006D0065007300740061006D00700055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C0022004500720072006F00720022003A006E0075006C006C007D000D000A00",
+      "lines_utf16": [
+        "007B0022004900640022003A00220075003100360022002C002200540079007000650022003A0022004D006F007600650022002C0022005300740061007400650022003A0022005000720065007000610072006500640022002C00220053006F00750072006300650022003A00220043003A005C005C00700068006F0074006F0073005C005C007500310036002E006A007000670022002C002200440065007300740069006E006100740069006F006E0022003A00220043003A005C005C00700068006F0074006F0073005C005C00730065006C005C005C007500310036002E006A007000670022002C002200530069007A00650022003A0031002C0022004C006100730074005700720069007400650055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C002200540069006D0065007300740061006D00700055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C0022004500720072006F00720022003A006E0075006C006C007D"
+      ],
+      "lines": [
+        "{\"Id\":\"u16\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\u16.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\u16.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+      ]
+    }
+  ]
+}

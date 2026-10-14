@@ -1,0 +1,5766 @@
+{
+  "generator": "oracle-cs recovery-decide",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Move",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "CanRetry"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "AlreadyDone"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Lost"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "DestinationChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "SourceChanged"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Conflict"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Copy",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Prepared",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Committed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Failed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": null,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "PermanentlyDeleted"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": true,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Exists",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": null,
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Exists",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Missing",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Changed",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Missing",
+      "destination": "Unreadable",
+      "verdict": "RecycleUnverifiable"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": null,
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Exists",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Missing",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Changed",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Changed",
+      "destination": "Unreadable",
+      "verdict": "NotRecycled"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": null,
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Exists",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Missing",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Changed",
+      "verdict": "Unknown"
+    },
+    {
+      "type": "Recycle",
+      "state": "Dismissed",
+      "permanent": false,
+      "source": "Unreadable",
+      "destination": "Unreadable",
+      "verdict": "Unknown"
+    }
+  ]
+}

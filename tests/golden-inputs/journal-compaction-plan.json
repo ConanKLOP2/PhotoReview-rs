@@ -1,0 +1,248 @@
+{
+  "cases": [
+    { "name": "empty-snapshot", "lines": [] },
+
+    { "name": "p-c-only-committed-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "prepared-only-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] } ] },
+    { "name": "p-f-both-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Failed", 1, "VerifySizeChanged"] } ] },
+    { "name": "p-f-d-only-dismissed-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Failed", 1, "VerifySizeChanged"] },
+      { "e": ["a", "Copy", "Dismissed", 2] } ] },
+    { "name": "retry-p-f-p-c-only-committed-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Failed", 1, "VerifySizeChanged"] },
+      { "e": ["a", "Copy", "Prepared", 2] },
+      { "e": ["a", "Copy", "Committed", 3] } ] },
+    { "name": "recycle-p-c-only-committed-kept", "lines": [
+      { "e": ["r", "Recycle", "Prepared", 0] },
+      { "e": ["r", "Recycle", "Committed", 1] } ] },
+    { "name": "legacy-delete-type-is-recycle", "lines": [
+      { "raw": "{\"Id\":\"d\",\"Type\":\"Delete\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\d.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}" },
+      { "e": ["d", "Recycle", "Committed", 1] } ] },
+    { "name": "lowercase-state-text", "lines": [
+      { "raw": "{\"Id\":\"a\",\"Type\":\"Copy\",\"State\":\"prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}" },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+
+    { "name": "fa01-pending-unconfirmed-after-committed", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "PendingUnconfirmed"] } ] },
+    { "name": "fa01-source-still-exists-after-committed", "lines": [
+      { "e": ["r", "Recycle", "Prepared", 0] },
+      { "e": ["r", "Recycle", "Committed", 1] },
+      { "e": ["r", "Recycle", "Failed", 2, "SourceStillExistsAfterRecovery"] } ] },
+    { "name": "fa01-two-stale-verdicts-after-committed", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "PendingUnconfirmed"] },
+      { "e": ["a", "Copy", "Failed", 3, "SourceStillExistsAfterRecovery"] } ] },
+    { "name": "genuine-failed-after-committed-is-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "RetryVerifyFailed"] } ] },
+    { "name": "failed-without-code-after-committed-is-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "raw": "{\"Id\":\"a\",\"Type\":\"Copy\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":\"boom\"}" } ] },
+    { "name": "reconcile-code-case-differs-is-not-reconcile", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "pendingunconfirmed"] } ] },
+    { "name": "reconcile-failed-after-dismissed-is-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Dismissed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "PendingUnconfirmed"] } ] },
+    { "name": "reconcile-failed-after-prepared-is-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Failed", 1, "PendingUnconfirmed"] },
+      { "e": ["a", "Copy", "Prepared", 2] },
+      { "e": ["a", "Copy", "Committed", 3] } ] },
+    { "name": "dismissed-then-reprepared-nothing-dropped", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Failed", 1, "VerifySizeChanged"] },
+      { "e": ["a", "Copy", "Dismissed", 2] },
+      { "e": ["a", "Copy", "Prepared", 3] } ] },
+    { "name": "dismissed-reprepared-committed-only-committed-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Dismissed", 1] },
+      { "e": ["a", "Copy", "Prepared", 2] },
+      { "e": ["a", "Copy", "Committed", 4] } ] },
+    { "name": "duplicate-identical-prepared-lines-both-dropped", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "ids-are-ordinal-case-sensitive", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["A", "Copy", "Committed", 1] } ] },
+    { "name": "interleaved-ids-keep-order-and-crlf", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["b", "Move", "Prepared", 1] },
+      { "e": ["a", "Copy", "Committed", 2] },
+      { "e": ["c", "Recycle", "Prepared", 3] },
+      { "e": ["b", "Move", "Failed", 4, "VerifySizeChanged"] },
+      { "e": ["c", "Recycle", "Committed", 5] } ] },
+    { "name": "lines-after-latest-of-same-id-are-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Failed", 2, "PendingUnconfirmed"] },
+      { "e": ["a", "Copy", "Failed", 3, "PendingUnconfirmed"] } ] },
+
+    { "name": "unparseable-lines-kept-verbatim", "lines": [
+      { "raw": "{\"Id\":\"x\"" },
+      { "raw": "{\"Id\":\"y\",\"Type\":\"Rename\",\"State\":\"Prepared\",\"Source\":\"C:\\\\y.jpg\"}" },
+      { "raw": "{\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\z.jpg\"}" } ] },
+    { "name": "unknown-state-from-newer-build-kept-and-not-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "raw": "{\"Id\":\"a\",\"Type\":\"Copy\",\"State\":\"Archived\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":null}" } ] },
+    { "name": "garbage-text-kept", "lines": [
+      { "raw": "garbage-12345" },
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "blank-lines-dropped", "lines": [
+      { "raw": "" },
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "raw": "   " },
+      { "raw": "\t" },
+      { "raw": "", "eol": "\n" },
+      { "raw": " \t ", "eol": "\n" },
+      { "raw": "\r" } ] },
+    { "name": "only-blank-lines", "lines": [
+      { "raw": "" },
+      { "raw": "", "eol": "\n" } ] },
+    { "name": "other-whitespace-is-not-blank", "lines": [
+      { "raw": "\f" },
+      { "raw": "\u000b" },
+      { "raw": "\u00a0" },
+      { "raw": "\u0000" },
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "inner-cr-in-superseding-line-keeps-earlier-prepared", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1], "inner_cr": true } ] },
+    { "name": "inner-cr-in-earlier-line-is-kept", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "inner_cr": true },
+      { "e": ["a", "Copy", "Prepared", 1] },
+      { "e": ["a", "Copy", "Committed", 2] } ] },
+    { "name": "double-cr-before-lf-is-inner-cr", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1], "eol": "\r\r\n" } ] },
+    { "name": "lf-only-terminators", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "eol": "\n" },
+      { "e": ["a", "Copy", "Committed", 1], "eol": "\n" } ] },
+    { "name": "mixed-terminators-preserved", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "eol": "\n" },
+      { "e": ["b", "Copy", "Prepared", 1], "eol": "\r\n" },
+      { "e": ["a", "Copy", "Committed", 2], "eol": "\n" },
+      { "e": ["b", "Copy", "Prepared", 3], "eol": "\n" } ] },
+    { "name": "final-line-without-terminator-is-a-line", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1], "eol": "" } ] },
+    { "name": "final-unterminated-prepared-after-committed-is-latest", "lines": [
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "e": ["a", "Copy", "Prepared", 2], "eol": "" } ] },
+    { "name": "final-unterminated-blank-line-dropped", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1] },
+      { "raw": "  ", "eol": "" } ] },
+    { "name": "final-unterminated-cr-only-line", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1], "eol": "\r" } ] },
+    { "name": "trailing-spaces-after-json-still-an-entry", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "suffix": "   " },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "leading-tab-before-json-still-an-entry", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "prefix": "\t" },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "utf8-bom-line-not-recognized", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "prefix": "\ufeff" },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "invalid-utf8-in-source-not-recognized", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0], "corrupt_utf8": true },
+      { "e": ["a", "Copy", "Committed", 1] } ] },
+    { "name": "invalid-utf8-superseding-line-not-latest", "lines": [
+      { "e": ["a", "Copy", "Prepared", 0] },
+      { "e": ["a", "Copy", "Committed", 1], "corrupt_utf8": true } ] },
+    { "name": "non-ascii-ids-and-escapes", "lines": [
+      { "e": ["ảnh-ü", "Copy", "Prepared", 0] },
+      { "e": ["ảnh-ü", "Copy", "Committed", 1] },
+      { "e": ["ảnh-u", "Copy", "Prepared", 2] } ] },
+
+    { "name": "single-superseded-committed-move-is-in-window", "lines": [
+      { "e": ["m", "Move", "Committed", 0] },
+      { "e": ["m", "Move", "Dismissed", 1] } ] },
+    { "name": "superseded-committed-copy-is-not-in-window", "lines": [
+      { "e": ["c", "Copy", "Committed", 0] },
+      { "e": ["c", "Copy", "Dismissed", 1] } ] },
+    { "name": "prepared-move-is-not-in-window", "lines": [
+      { "e": ["m", "Move", "Prepared", 0] },
+      { "e": ["m", "Move", "Committed", 1] } ] },
+    { "name": "move-with-nested-copy-token-not-in-window", "lines": [
+      { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\":\"Copy\"}" },
+      { "e": ["m", "Move", "Dismissed", 1] } ] },
+    { "name": "move-with-nested-recycle-token-not-in-window", "lines": [
+      { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\":\"Recycle\"}" },
+      { "e": ["m", "Move", "Dismissed", 1] } ] },
+    { "name": "move-with-spaced-copy-token-is-in-window", "lines": [
+      { "e": ["m", "Move", "Committed", 0], "extra": ",\"X\":{\"Type\": \"Copy\"}" },
+      { "e": ["m", "Move", "Dismissed", 1] } ] },
+    { "name": "committed-move-superseded-by-committed-move-retry", "lines": [
+      { "e": ["m", "Move", "Prepared", 0] },
+      { "e": ["m", "Move", "Committed", 1] },
+      { "e": ["m", "Move", "Prepared", 2] },
+      { "e": ["m", "Move", "Committed", 3] } ] },
+
+    { "name": "window-exactly-200-superseded-all-kept", "generate": { "kind": "move-window", "superseded": 200 } },
+    { "name": "window-201-superseded-oldest-dropped", "generate": { "kind": "move-window", "superseded": 201 } },
+    { "name": "window-250-superseded-50-dropped", "generate": { "kind": "move-window", "superseded": 250 } },
+    { "name": "window-latest-committed-moves-take-slots", "generate": { "kind": "move-window", "superseded": 199, "trailing_latest": 5 } },
+    { "name": "window-inner-cr-line-takes-a-slot", "generate": { "kind": "move-window", "superseded": 200, "trailing_inner_cr": 1 } },
+    { "name": "window-copies-never-counted", "generate": { "kind": "move-window", "superseded": 210, "superseded_type": "Copy" } },
+
+    { "name": "evidence-member-line-kept-when-latest-has-no-members", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Committed", 1] } ] },
+    { "name": "evidence-released-after-repair-line-with-members", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Committed", 1] },
+      { "e": ["g", "Copy", "Committed", 2], "members": 2 } ] },
+    { "name": "evidence-none-when-latest-dismissed", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Dismissed", 1] } ] },
+    { "name": "evidence-only-the-last-member-line", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Failed", 1, "VerifySizeChanged"], "members": 2 },
+      { "e": ["g", "Copy", "Prepared", 2], "members": 2 },
+      { "e": ["g", "Copy", "Committed", 3] } ] },
+    { "name": "evidence-is-a-stale-reconcile-line-after-latest", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Committed", 1] },
+      { "e": ["g", "Copy", "Failed", 2, "PendingUnconfirmed"], "members": 2 } ] },
+    { "name": "evidence-latest-with-empty-members-counts-as-none", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Committed", 1], "members": 0 } ] },
+    { "name": "evidence-empty-member-list-is-not-evidence", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 0 },
+      { "e": ["g", "Copy", "Committed", 1] } ] },
+    { "name": "evidence-latest-failed-keeps-everything", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Copy", "Failed", 1, "PendingUnconfirmed"] } ] },
+    { "name": "evidence-group-move-line-in-window-and-evidence", "lines": [
+      { "e": ["g", "Move", "Prepared", 0], "members": 2 },
+      { "e": ["g", "Move", "Committed", 1], "members": 2 },
+      { "e": ["g", "Move", "Committed", 2] } ] },
+    { "name": "quarantined-group-line-kept-verbatim", "lines": [
+      { "e": ["g", "Copy", "Prepared", 0], "members": 2, "blank_member": true },
+      { "e": ["g", "Copy", "Committed", 1], "members": 2 } ] },
+
+    { "name": "history-seed-20260900-20-ids", "generate": { "kind": "history", "seed": 20260900, "id_count": 20 } },
+    { "name": "history-seed-20260901-150-ids", "generate": { "kind": "history", "seed": 20260901, "id_count": 150 } },
+    { "name": "history-seed-20260904-400-moves", "generate": { "kind": "history", "seed": 20260904, "id_count": 400, "all_move": true } }
+  ]
+}

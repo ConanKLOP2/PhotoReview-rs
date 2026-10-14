@@ -107,3 +107,41 @@ Merge in this order; a porter may start once its "Depends on" units are merged (
   time). Equality of times is still checked by `same_write_time`.
 - **D20 Accepted divergence (W2-04):** invalid UTF-8 in a language file becomes a "cannot read" warning in Rust
   (`read_all_text` returns InvalidData) where C# substitutes U+FFFD. Record `// DIVERGENCE:` and a `Different` row.
+
+## Wave 3 roster (data safety, dependency order)
+
+Order: W3-01 -> W3-02 / W3-03 -> W3-04 -> W3-05 / W3-06 -> W3-07 / W3-08. W3-02 owns the shared journal line rules
+(`journal_rules`), so in practice W3-02 merges before W3-01 bodies; W3-04 needs W3-08 and the W3-05 gate trait.
+
+| WU | Unit | Rust | Porter | Goldens |
+|---|---|---|---|---|
+| W3-01 | OperationJournal + JournalTransaction | `pr_core::file_actions::{journal, transaction}` | **Opus** | `journal-stream-lines`, `journal-ops`, `journal-committed-moves`, `journal-compact`, `journal-transaction` |
+| W3-02 | Compaction plan + physical files + line rules | `file_actions::{compaction, journal_rules}`, `io::journal_compaction_files` | **Opus** | `journal-compaction-plan`, `journal-tail-committed-move` |
+| W3-03 | Reconcile + startup recovery | `file_actions::{reconcile, startup_recovery}` | **Opus** | `journal-reconcile`, `journal-startup-recovery` |
+| W3-04 | FileActionService | `file_actions::service` | **Opus** | `file-action-scenarios` |
+| W3-05 | UndoService | `file_actions::undo` | **Opus** | `undo-scenarios` |
+| W3-06 | RecoveryRetryService | `file_actions::recovery_retry` | **Opus** | `recovery-retry` |
+| W3-07 | RecoveryFileCheck | `file_actions::recovery_check` | Sonnet | `recovery-check`, `recovery-decide` |
+| W3-08 | PartialDestinationCleanup | `file_actions::partial_cleanup` | Sonnet | `partial-cleanup` |
+
+## Lead decisions (Wave 3)
+
+- **D21 Test-first:** Haiku ports every C# test of a unit to a red Rust test first; only then does the porter write
+  bodies (docs/MULTI-AGENT-PLAN.md, Wave 3). Stubs are `todo!()`, so this PR adds no tests.
+- **D22 Gate:** a unit is done only with an Opus verifier (not Sonnet) and `cargo mutants -p pr-core -f
+  file_actions/**` with no surviving mutant on the journal write path.
+- **D23 Split of the journal:** W3-02 owns `journal_rules` and the compaction plan; W3-03 owns `reconcile.rs` and the
+  `ReconcileJournal` trait (`OperationJournal` only delegates); `JournalCompactionOutcome/Result` are defined once, in
+  `journal.rs`. The C# reentrant journal gate is kept.
+- **D24 Merge order for journal units:** W3-02 -> W3-01 -> W3-03; the 3 observational-equivalence tests of W3-02 go in a
+  follow-up PR after W3-01.
+- **D25 Gate trait:** `undo::FileActionGate` is the single INV-4 trait; W3-04 implements it, W3-06 uses it.
+- **D26 Open at porter kick-off (not decided in this PR):** (a) flush seam for PowerLossSafe (`AppendStream`, W3-01
+  OQ1); (b) stat seam `FileSystem::try_get_file_stat` (W3-04/06/07, recommended A: one place for every stat);
+  (c) `RecycleBin::try_restore` bool vs `io::Result<bool>` (W3-05 Q1, recommended A); (d) FaultInjectionFileSystem and
+  hook fakes in `pr-test-support`; (e) sync `operations-legacy.jsonl` and `journal-older-build/*.jsonl` fixtures;
+  (f) a W3-09 integration unit for the fault/crash matrices. Each is spelled out in the unit contract.
+- **D27 Golden determinism:** all 15 Wave 3 goldens were generated twice and compared byte for byte. Paths in them are
+  virtual (`C:\Users\test\...`); `recovery-check` has two physical cases that name a missing file / missing UNC host.
+- **D28 Stubs outrank draft prose:** where a contract still names a helper the wired stubs lack, the stub wins and the
+  contract is fixed in the porter's PR.

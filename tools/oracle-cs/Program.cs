@@ -109,6 +109,22 @@ JsonArray cases = command switch
     "sibling-folders" => Commands.SiblingFolders(inputs),
     "snapshot-validator" => Commands.SnapshotValidator(inputs),
     "update-checker" => Commands.UpdateCheckerCases(inputs),
+    // Wave 3 commands (W3-01..W3-08)
+    "file-action-scenarios" => Commands.FileActionScenarios(inputs),
+    "journal-committed-moves" => Commands.JournalCommittedMoves(inputs),
+    "journal-compact" => Commands.JournalCompact(inputs),
+    "journal-compaction-plan" => Commands.JournalCompactionPlanCases(inputs),
+    "journal-ops" => Commands.JournalOps(inputs),
+    "journal-reconcile" => Commands.JournalReconcile(inputs),
+    "journal-startup-recovery" => Commands.JournalStartupRecoveryCases(inputs),
+    "journal-stream-lines" => Commands.JournalStreamLines(inputs),
+    "journal-tail-committed-move" => Commands.JournalTailCommittedMoveCases(inputs),
+    "journal-transaction" => Commands.JournalTransactionCases(inputs),
+    "partial-cleanup" => Commands.PartialCleanup(inputs),
+    "recovery-check" => Commands.RecoveryCheck(inputs),
+    "recovery-decide" => Commands.RecoveryDecide(inputs),
+    "recovery-retry" => Commands.RecoveryRetry(inputs),
+    "undo-scenarios" => Commands.UndoScenarios(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

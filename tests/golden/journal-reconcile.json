@@ -1,0 +1,1802 @@
+{
+  "generator": "oracle-cs journal-reconcile",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "missing-journal-creates-nothing",
+      "journal": null,
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": null
+        }
+      ]
+    },
+    {
+      "name": "empty-journal-file",
+      "journal": [],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": ""
+        }
+      ]
+    },
+    {
+      "name": "only-terminal-lines-untouched",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-source-gone-destination-recorded-commits",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-source-still-there-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-missing-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-other-size-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 11,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-2s-later-commits",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:02Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-2s-earlier-commits",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-28T23:59:58Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-2s-plus-tick-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:02.0000001Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-destination-1h-later-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T01:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-null-destination-fails-without-stat",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-blank-destination-read-as-null-fails",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"   \",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"   \",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-zero-size",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":0,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 0,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":0,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":0,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":0,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-undo-flag-and-permanent-kept-on-outcome",
+      "journal": [
+        "{\"Id\":\"u1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Permanent\":false,\"Undo\":true}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"u1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Permanent\":false,\"Undo\":true}"
+          ],
+          "journal_after": "{\"Id\":\"u1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Permanent\":false,\"Undo\":true}\r\n{\"Id\":\"u1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Permanent\":false,\"Undo\":true}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "move-paths-compare-case-insensitively-on-disk",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\SELECTED\\\\A.JPG\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\SELECTED\\\\A.JPG\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\SELECTED\\\\A.JPG\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\SELECTED\\\\A.JPG\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "copy-source-present-destination-recorded-commits",
+      "journal": [
+        "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\copies\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "copy-destination-missing-fails",
+      "journal": [
+        "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "copy-destination-1s-later-commits",
+      "journal": [
+        "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\copies\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:01Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "recycle-source-gone-commits",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "recycle-source-still-there-fails-still-exists",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\"}"
+          ],
+          "journal_after": "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "recycle-permanent-flag-kept",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Permanent\":true}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Permanent\":true}"
+          ],
+          "journal_after": "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Permanent\":true}\r\n{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Permanent\":true}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "delete-type-spelling-reconciled-as-recycle",
+      "journal": [
+        "{\"Id\":\"r1\",\"Type\":\"Delete\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 1,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\"}"
+          ],
+          "journal_after": "{\"Id\":\"r1\",\"Type\":\"Delete\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "cutoff-equal-to-stamp-is-left-pending",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "cutoff": "2026-09-29T00:00:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "cutoff-one-tick-after-stamp-is-judged",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "cutoff": "2026-09-29T00:00:00.0000001Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "cutoff-null-judges-future-stamps",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2027-01-01T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2027-01-01T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "unspecified-kind-stamp-compares-raw-ticks",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"TimestampUtc\":\"2026-09-29T00:00:00\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "cutoff": "2026-09-29T00:00:00.0000001Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"TimestampUtc\":\"2026-09-29T00:00:00\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "live-marker-skips-entry",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "live": [
+        "m1"
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "live-marker-is-case-sensitive",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "live": [
+        "M1"
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "retry-prepared-after-failed-is-judged",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "fa01-stale-reconcile-failed-after-committed-is-ignored",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "fa01-non-reconcile-code-after-committed-wins",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"x\",\"ErrorCode\":\"VerifySizeChanged\"}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"x\",\"ErrorCode\":\"VerifySizeChanged\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "ids-are-ordinal-case-sensitive",
+      "journal": [
+        "{\"Id\":\"ABC\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"abc\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"ABC\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"ABC\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"abc\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"ABC\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "malformed-and-unknown-state-lines-are-skipped",
+      "journal": [
+        "not json",
+        "{\"Id\":\"x1\",\"Type\":\"Move\",\"State\":\"Exploded\",\"Source\":\"C:\\\\p\\\\x.jpg\",\"Destination\":\"C:\\\\s\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "not json\r\n{\"Id\":\"x1\",\"Type\":\"Move\",\"State\":\"Exploded\",\"Source\":\"C:\\\\p\\\\x.jpg\",\"Destination\":\"C:\\\\s\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "order-follows-first-appearance-of-each-id",
+      "journal": [
+        "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"e\"}",
+        "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}",
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"e\"}\r\n{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "lf-journal-gets-crlf-outcome",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "newline": "\n",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "torn-tail-gets-a-newline-before-the-outcome",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"tor"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "trailing": false,
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"tor\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "bom-at-start-is-skipped",
+      "journal": [
+        "\uFEFF{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "\uFEFF{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "non-ascii-path-round-trips",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\ảnh\\\\ạ.jpg\",\"Destination\":\"C:\\\\chọn\\\\ạ.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\chọn\\ạ.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\\\u1EA3nh\\\\\\u1EA1.jpg\",\"Destination\":\"C:\\\\ch\\u1ECDn\\\\\\u1EA1.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\ảnh\\\\ạ.jpg\",\"Destination\":\"C:\\\\chọn\\\\ạ.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\\\u1EA3nh\\\\\\u1EA1.jpg\",\"Destination\":\"C:\\\\ch\\u1ECDn\\\\\\u1EA1.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-move-every-member-moved-commits",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-move-second-member-not-moved-fails",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-move-member-destination-wrong-size-fails",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 99,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-copy-every-destination-recorded-commits",
+      "journal": [
+        "{\"Id\":\"gc\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\copies\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\copies\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\copies\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gc\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\copies\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gc\",\"Type\":\"Copy\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\copies\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gc\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\copies\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\copies\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-recycle-every-member-gone-commits",
+      "journal": [
+        "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-recycle-member-still-there-fails-still-exists",
+      "journal": [
+        "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-recycle-undo-every-member-back-commits",
+      "journal": [
+        "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-recycle-undo-member-one-tick-off-fails",
+      "journal": [
+        "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00.0000001Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-recycle-undo-member-missing-fails",
+      "journal": [
+        "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gu\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"The source still exists after session recovery.\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-move-undo-reads-manifest-as-written",
+      "journal": [
+        "{\"Id\":\"gmu\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\selected\\\\a.cr2\",\"Destination\":\"C:\\\\photos\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gmu\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\selected\\\\a.cr2\",\"Destination\":\"C:\\\\photos\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gmu\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\selected\\\\a.cr2\",\"Destination\":\"C:\\\\photos\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gmu\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"Undo\":true,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\selected\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\selected\\\\a.cr2\",\"Destination\":\"C:\\\\photos\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-member-blank-destination-is-incomplete",
+      "journal": [
+        "{\"Id\":\"gb\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"  \",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "  ",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gb\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"  \",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gb\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"  \",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gb\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"  \",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-member-unspecified-write-time-kept",
+      "journal": [
+        "{\"Id\":\"gk\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false}]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gk\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gk\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false}]}\r\n{\"Id\":\"gk\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "pending-with-empty-member-list-is-judged-as-single",
+      "journal": [
+        "{\"Id\":\"e1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupMembers\":[]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"e1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupMembers\":[]}"
+          ],
+          "journal_after": "{\"Id\":\"e1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupMembers\":[]}\r\n{\"Id\":\"e1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupMembers\":[]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-line-with-blank-member-source-is-quarantined",
+      "journal": [
+        "{\"Id\":\"q1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\" \",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"q1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"g\",\"GroupMembers\":[{\"Source\":\" \",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-committed-second-member-never-moved-fails",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        },
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "older-build-committed-every-member-moved-restored-not-returned",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        },
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "older-build-failed-keeps-error-code-and-time",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        },
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "older-build-failed-free-text-kept",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-dismissed-left-alone",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-stale-reconcile-after-committed-still-repaired",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:45Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:45Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-left-prepared-without-members-judged-with-members",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        },
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":\"boom\"}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "older-build-left-prepared-after-cutoff-restored-but-not-judged",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:05:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "cutoff": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:05:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-empty-member-list-after-group-line-repaired",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupMembers\":[]}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupMembers\":[]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-committed-live-id-not-repaired",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "live": [
+        "group-op"
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-recycle-group-committed-member-still-there-fails",
+      "journal": [
+        "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"gr\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":null,\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":null,\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "older-build-last-members-line-wins",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"first\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupId\":\"second\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:40Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"second\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"first\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null,\"GroupId\":\"second\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:40Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"second\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "single-file-committed-move-not-touched-by-guard",
+      "journal": [
+        "{\"Id\":\"single\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"single\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"single\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"single\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "repairs-come-before-pending-verdicts-in-the-result",
+      "journal": [
+        "{\"Id\":\"p1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\p.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\b.cr2\",\"Destination\":\"C:\\\\selected\\\\b.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\b.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+            "{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\b.cr2\",\"Destination\":\"C:\\\\selected\\\\b.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+            "{\"Id\":\"p1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\p.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "journal_after": "{\"Id\":\"p1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\p.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\b.cr2\",\"Destination\":\"C:\\\\selected\\\\b.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"g2\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"g1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\b.cr2\",\"Destination\":\"C:\\\\selected\\\\b.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"p1\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\p.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "append-failure-skips-only-that-entry",
+      "journal": [
+        "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "append_failures": 1,
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        },
+        {
+          "reconciled": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "repair-append-failure-leaves-journal-alone",
+      "journal": [
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "append_failures": 1,
+      "runs": [
+        {
+          "reconciled": [],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n"
+        },
+        {
+          "reconciled": [
+            "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"group-op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl"
+    },
+    {
+      "name": "file-check-throwing-skips-only-that-entry",
+      "journal": [
+        "{\"Id\":\"bad\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\bad.jpg\",\"Destination\":\"C:\\\\selected\\\\bad.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}",
+        "{\"Id\":\"good\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\b.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "stat_throws": [
+        "C:\\photos\\bad.jpg"
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"good\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}"
+          ],
+          "journal_after": "{\"Id\":\"bad\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\bad.jpg\",\"Destination\":\"C:\\\\selected\\\\bad.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"good\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null}\r\n{\"Id\":\"good\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\selected\\\\b.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":null}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-repair-throwing-skips-only-that-group",
+      "journal": [
+        "{\"Id\":\"poisoned\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"poisoned\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}",
+        "{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}",
+        "{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}"
+      ],
+      "files": [
+        {
+          "path": "C:\\selected\\a.jpg",
+          "size": 10,
+          "time": "2026-09-29T00:00:00Z"
+        },
+        {
+          "path": "C:\\photos\\a.cr2",
+          "size": 100,
+          "time": "2026-09-29T00:00:00Z"
+        }
+      ],
+      "clock": "2026-09-29T00:01:00Z",
+      "stat_throws": [
+        "C:\\selected\\poison.jpg"
+      ],
+      "journal_path": "C:\\Users\\test\\AppData\\Local\\PhotoReview\\Data\\operations.jsonl",
+      "runs": [
+        {
+          "reconciled": [
+            "{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "journal_after": "{\"Id\":\"poisoned\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"poisoned\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\p.jpg\",\"Destination\":\"C:\\\\selected\\\\poison.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:00Z\",\"Error\":null,\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:00:30Z\",\"Error\":null}\r\n{\"Id\":\"healthy\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"TimestampUtc\":\"2026-09-29T00:01:00Z\",\"Error\":\"This capture group was settled by an older PhotoReview build that only tracks its first file; not every file was found in its expected place.\",\"GroupId\":\"capture-a\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\selected\\\\a.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\a.cr2\",\"Destination\":\"C:\\\\selected\\\\a.cr2\",\"Size\":100,\"LastWriteUtc\":\"2026-09-29T00:00:00Z\",\"Permanent\":false}]}\r\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "cases": [
+    {
+      "name": "empty",
+      "hex": ""
+    },
+    {
+      "name": "crlf-lines",
+      "hex": "610D0A620D0A"
+    },
+    {
+      "name": "lf-last-line-without-terminator",
+      "hex": "610A62"
+    },
+    {
+      "name": "lone-cr-is-a-terminator",
+      "hex": "610D620D"
+    },
+    {
+      "name": "cr-cr-lf-gives-an-empty-line",
+      "hex": "610D0D0A62"
+    },
+    {
+      "name": "only-newlines",
+      "hex": "0A0A"
+    },
+    {
+      "name": "only-cr",
+      "hex": "0D"
+    },
+    {
+      "name": "inner-cr-splits-a-json-line",
+      "hex": "7B0D224964223A2278227D0D0A"
+    },
+    {
+      "name": "utf8-bom-stripped",
+      "hex": "EFBBBF780D0A"
+    },
+    {
+      "name": "utf8-bom-only",
+      "hex": "EFBBBF"
+    },
+    {
+      "name": "double-utf8-bom-second-kept",
+      "hex": "EFBBBFEFBBBF78"
+    },
+    {
+      "name": "bom-in-the-middle-kept",
+      "hex": "780D0AEFBBBF79"
+    },
+    {
+      "name": "partial-utf8-bom",
+      "hex": "EFBB78"
+    },
+    {
+      "name": "invalid-overlong",
+      "hex": "61C0AF62"
+    },
+    {
+      "name": "invalid-encoded-surrogate",
+      "hex": "61EDA08062"
+    },
+    {
+      "name": "invalid-truncated-at-end",
+      "hex": "61F09F98"
+    },
+    {
+      "name": "invalid-ff",
+      "hex": "FF0A"
+    },
+    {
+      "name": "invalid-lone-continuations",
+      "hex": "808078"
+    },
+    {
+      "name": "invalid-truncated-before-newline",
+      "hex": "61E2820A62"
+    },
+    {
+      "name": "valid-astral",
+      "hex": "F09F98800A"
+    },
+    {
+      "name": "nul-bytes-kept",
+      "hex": "6100620A"
+    },
+    {
+      "name": "u2028-and-nel-are-not-line-breaks",
+      "hex": "61E280A862C28563"
+    },
+    {
+      "name": "utf16le-bom",
+      "hex": "FFFE61000D000A006200"
+    },
+    {
+      "name": "utf16be-bom",
+      "hex": "FEFF0061000A0062"
+    },
+    {
+      "name": "utf32le-bom",
+      "hex": "FFFE0000610000000A00000062000000"
+    },
+    {
+      "name": "utf32be-bom",
+      "hex": "0000FEFF000000610000000A00000062"
+    },
+    {
+      "name": "utf16le-bom-only",
+      "hex": "FFFE"
+    },
+    {
+      "name": "utf16le-bom-and-one-zero",
+      "hex": "FFFE00"
+    },
+    {
+      "name": "utf32le-bom-only",
+      "hex": "FFFE0000"
+    },
+    {
+      "name": "utf16le-lone-surrogate",
+      "hex": "FFFE00D86100"
+    },
+    {
+      "name": "utf16le-odd-length",
+      "hex": "FFFE610062"
+    },
+    {
+      "name": "utf32le-out-of-range",
+      "hex": "FFFE00000000110061000000"
+    },
+    {
+      "name": "utf16le-journal-line",
+      "hex": "FFFE7B0022004900640022003A00220075003100360022002C002200540079007000650022003A0022004D006F007600650022002C0022005300740061007400650022003A0022005000720065007000610072006500640022002C00220053006F00750072006300650022003A00220043003A005C005C00700068006F0074006F0073005C005C007500310036002E006A007000670022002C002200440065007300740069006E006100740069006F006E0022003A00220043003A005C005C00700068006F0074006F0073005C005C00730065006C005C005C007500310036002E006A007000670022002C002200530069007A00650022003A0031002C0022004C006100730074005700720069007400650055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C002200540069006D0065007300740061006D00700055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C0022004500720072006F00720022003A006E0075006C006C007D000D000A00"
+    }
+  ]
+}
