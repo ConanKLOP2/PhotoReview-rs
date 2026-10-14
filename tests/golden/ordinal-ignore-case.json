@@ -1,0 +1,192 @@
+{
+  "generator": "oracle-cs ordinal-ignore-case",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "a": "abc",
+      "b": "ABC",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "IMG_001.JPG",
+      "b": "img_001.jpg",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "a",
+      "b": "b",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "a",
+      "b": "B",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "B",
+      "b": "a",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "_",
+      "b": "a",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "[",
+      "b": "a",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "`",
+      "b": "A",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "abc",
+      "b": "abcd",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "",
+      "b": "a",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "",
+      "b": "",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "é",
+      "b": "É",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ß",
+      "b": "SS",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "ß",
+      "b": "ẞ",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "ı",
+      "b": "I",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "i",
+      "b": "İ",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "ǅ",
+      "b": "ǆ",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ﬀ",
+      "b": "FF",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "Ａ",
+      "b": "ａ",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "Ω",
+      "b": "ω",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ꭰ",
+      "b": "Ꭰ",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "\uD801\uDC28",
+      "b": "\uD801\uDC00",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ſ",
+      "b": "S",
+      "equals": false,
+      "compare": 1
+    },
+    {
+      "a": "K",
+      "b": "k",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "µ",
+      "b": "Μ",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ÿ",
+      "b": "Ÿ",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "C:\\Photos\\A.jpg",
+      "b": "c:\\photos\\a.JPG",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "�",
+      "b": "\uD801\uDC00",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "\uE000",
+      "b": "\uD801\uDC00",
+      "equals": false,
+      "compare": -1
+    },
+    {
+      "a": "Đặng",
+      "b": "ĐẶNG",
+      "equals": true,
+      "compare": 0
+    },
+    {
+      "a": "ảnh",
+      "b": "ẢNH",
+      "equals": true,
+      "compare": 0
+    }
+  ]
+}

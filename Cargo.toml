@@ -28,6 +28,10 @@ pr-turbojpeg = { path = "crates/pr-turbojpeg" }
 pr-platform-win = { path = "crates/pr-platform-win" }
 pr-bench = { path = "crates/pr-bench" }
 pr-perf = { path = "crates/pr-perf" }
+pr-test-support = { path = "crates/pr-test-support" }
+
+# External crates: only the lead adds entries here (docs/MULTI-AGENT-PLAN.md §2.1). Planned ones: docs/adr/R0003.
+serde_json = "1"
 
 [profile.release]
 lto = "thin"
