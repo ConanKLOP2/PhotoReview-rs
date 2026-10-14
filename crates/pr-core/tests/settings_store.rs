@@ -2484,3 +2484,99 @@ fn replace_stamps_only_touches_fourteen_digit_runs() {
     assert_eq!(replace_stamps("x.newer-20261014090807-2"), "x.newer-<STAMP>-2");
     assert_eq!(b64_decode("TWFu"), b"Man");
 }
+
+// ---- repair round 1: salvage enum fallback, counter wrap, flag-guard mutations ----
+
+// C#: TrySalvage deserialises with the property type (type-level LenientEnumConverter): an unparsable value of one of
+// the eight SettingsEnumConverter properties becomes default(T) and is NOT reported as unusable.
+#[test]
+fn salvage_enum_uses_type_level_default_and_is_not_reported() {
+    let root = pr_core::settings::app_settings::json::parse(
+        r#"{"ConfigVersion":3,"ClickZoomPercent":"abc","LoadingMode":"x","ImageSortMode":"nope","ScalingQuality":"?","DecoderBackend":"?","KineticGlideSmoothing":"?","FitWidthAnchor2":"?","MiddleClickAction":"?","KeyboardZoomAnchor":"?"}"#,
+    )
+    .expect("parse");
+    let (settings, unusable) = SettingsStore::try_salvage(&root, &EnglishSettingsTexts).expect("object");
+    assert_eq!(unusable, vec!["ClickZoomPercent".to_owned()]);
+    assert_eq!(settings.loading_mode, Some(LoadingMode::Fast));
+    assert!(settings.image_sort_mode.is_some());
+    assert!(settings.scaling_quality.is_some());
+    assert!(settings.decoder_backend.is_some());
+    assert!(settings.kinetic_glide_smoothing.is_some());
+    assert!(settings.fit_width_anchor2.is_some());
+    assert!(settings.middle_click_action.is_some());
+    assert!(settings.keyboard_zoom_anchor.is_some());
+}
+
+// C#: NewerBackupPath `(max + 1).ToString()` is unchecked int arithmetic: 2147483647 wraps to -2147483648.
+#[test]
+fn newer_backup_counter_overflow_wraps_like_csharp() {
+    let r = Rig::new();
+    load_and_save(&r, NEWER);
+    let first = r.newer_backups().remove(0);
+    let stamp = name_of(&first)
+        .strip_prefix("config.json.newer-")
+        .expect("prefix")
+        .to_owned();
+    r.fs.delete(&first).expect("delete");
+    r.fs.add_file(format!("{}.newer-{stamp}-2147483647", r.cfg().display()), b"old");
+
+    load_and_save(&r, NEWER);
+
+    assert!(
+        r.newer_backups()
+            .iter()
+            .any(|f| name_of(f).ends_with(&format!("{stamp}--2147483648"))),
+        "{:?}",
+        r.newer_backups()
+    );
+}
+
+// Guard: a newer EXPLICIT file is not the default file, so a later save makes no newer-build backup.
+#[test]
+fn explicit_newer_file_then_save_makes_no_newer_backup() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3}"#);
+    let explicit = PathBuf::from(r"C:\other\explicit.json");
+    r.fs.add_file(&explicit, NEWER.as_bytes());
+    let store = r.store();
+    let loaded = store.load(Some(&explicit)).expect("load");
+    assert_eq!(loaded.config_version, 99);
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.newer_backups().is_empty());
+}
+
+// Guard: a failed salvage backup of an EXPLICIT file must not block the later default-file save.
+#[test]
+fn explicit_salvage_backup_failure_does_not_block_default_save() {
+    let r = Rig::new();
+    let explicit = PathBuf::from(r"C:\other\explicit.json");
+    r.fs.add_file(&explicit, br#"{"ConfigVersion":3,"ClickZoomPercent":"abc"}"#);
+    r.fs.fail(FsOp::Copy, &explicit, io::ErrorKind::Other);
+    let store = r.store();
+    let loaded = store.load(Some(&explicit)).expect("load");
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.fs.file_exists(&r.cfg()));
+    assert!(r.read().contains("\"ConfigVersion\": 3"));
+}
+
+// Guard: the import resets the keep-corrupt flag set by an earlier locked default load.
+#[test]
+fn import_after_locked_default_load_resets_keep_flag() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3}"#);
+    r.fs.fail_locked(FsOp::ReadText, r.cfg());
+    let store = r.store();
+    store.load(None).expect("locked load");
+    r.fs.clear_faults();
+    r.fs.delete(&r.cfg()).expect("delete");
+    r.fs.add_file(csharp_cfg(), br#"{"ConfigVersion":3,"ClickZoomPercent":250}"#);
+
+    let loaded = store.load_first_run_with_import(&csharp_cfg()).expect("import");
+
+    assert_eq!(loaded.click_zoom_percent, 250);
+    assert!(r.read().contains("\"ClickZoomPercent\": 250"));
+}

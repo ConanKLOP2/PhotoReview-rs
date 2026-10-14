@@ -505,7 +505,20 @@ impl SettingsStore {
         let mut bad = Vec::new();
         for (name, value) in entries {
             let name = name.as_deref()?;
-            if settings.apply_json_property(name, value, texts).is_err() {
+            // C# `TrySalvage` deserialises with the property TYPE (type-level `LenientEnumConverter`), so the eight
+            // property-level `SettingsEnumConverter` properties fall back to `default(T)` instead of being unusable.
+            let applied = match name {
+                "LoadingMode" => salvage_enum(value, &mut settings.loading_mode),
+                "ImageSortMode" => salvage_enum(value, &mut settings.image_sort_mode),
+                "ScalingQuality" => salvage_enum(value, &mut settings.scaling_quality),
+                "DecoderBackend" => salvage_enum(value, &mut settings.decoder_backend),
+                "KineticGlideSmoothing" => salvage_enum(value, &mut settings.kinetic_glide_smoothing),
+                "FitWidthAnchor2" => salvage_enum(value, &mut settings.fit_width_anchor2),
+                "MiddleClickAction" => salvage_enum(value, &mut settings.middle_click_action),
+                "KeyboardZoomAnchor" => salvage_enum(value, &mut settings.keyboard_zoom_anchor),
+                _ => settings.apply_json_property(name, value, texts).is_ok(),
+            };
+            if !applied {
                 bad.push(name.to_owned());
             }
         }
@@ -718,7 +731,7 @@ impl SettingsStore {
         if max == 0 {
             Ok(stem)
         } else {
-            Ok(append_to_path(&stem, &format!("-{}", i64::from(max) + 1)))
+            Ok(append_to_path(&stem, &format!("-{}", max.wrapping_add(1))))
         }
     }
 
@@ -813,5 +826,19 @@ impl SettingsStore {
             let stored = context_menu::to_stored(context_menu::legacy_hidden(settings));
             settings.hidden_context_menu_items = Some(stored.into_iter().map(Some).collect());
         }
+    }
+}
+
+/// Type-level lenient read used by the salvage path: an unparsable value becomes `default(T)` (never reported).
+fn salvage_enum<T: crate::model::serde_ext::LenientEnum>(value: &json::JsonValue, target: &mut Option<T>) -> bool {
+    let Ok(v) = json::to_serde_value(value) else {
+        return false;
+    };
+    match crate::model::serde_ext::deserialize_lenient::<T, _>(v) {
+        Ok(m) => {
+            *target = Some(m);
+            true
+        }
+        Err(_) => false,
     }
 }
