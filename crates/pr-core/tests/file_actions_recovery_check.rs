@@ -1337,3 +1337,175 @@ fn debug_recovery_file_check_names_the_type() {
     let check = RecoveryFileCheck::new(Arc::new(FakeFileSystem::new()));
     assert_eq!(format!("{check:?}"), "RecoveryFileCheck { .. }");
 }
+
+/// A Move group (`g1`) whose own size/last-write are `size`/`last_write`, with ONE member `C:\p\b.jpg` (7 bytes, stamped
+/// `MEMBER_STAMP`) moved to `D:\k\b.jpg`.
+const MEMBER_STAMP: i64 = 639_264_384_000_000_000;
+
+fn group_with_one_member(size: i64, last_write: i64) -> JournalEntry {
+    JournalEntry {
+        id: "g1".to_owned(),
+        op_type: FileOperationType::Move,
+        state: JournalState::Failed,
+        source: r"C:\p\a.jpg".to_owned(),
+        destination: Some(r"D:\k\a.jpg".to_owned()),
+        size,
+        last_write_utc: JournalDateTime::utc(at(last_write)),
+        timestamp_utc: JournalDateTime::utc(at(FILE_STAMP)),
+        error: None,
+        error_code: None,
+        permanent: None,
+        undo: None,
+        group_id: Some("g".to_owned()),
+        group_members: Some(vec![JournalGroupMember {
+            source: r"C:\p\b.jpg".to_owned(),
+            destination: Some(r"D:\k\b.jpg".to_owned()),
+            size: 7,
+            last_write_utc: JournalDateTime::utc(at(MEMBER_STAMP)),
+            permanent: false,
+        }]),
+    }
+}
+
+// C#: RecoveryFileCheck.CheckGroupMember builds `entry with { Size = member.Size, LastWriteUtc = member.LastWriteUtc, ... }`,
+// so a member is fingerprinted with ITS size and last-write, never the group's. Kills the mutants that drop `size` /
+// `last_write_utc` from the synthesized entry (the group's 10 bytes, or the group's stamp, would make the member Changed).
+#[test]
+fn group_member_uses_member_size_and_last_write_not_the_group_ones() {
+    let fs = FakeFileSystem::new();
+    fs.add_file_at(r"C:\p\b.jpg", &bytes(7), at(MEMBER_STAMP));
+    let fs = Arc::new(fs);
+    for (size, last_write) in [(10, MEMBER_STAMP), (7, FILE_STAMP)] {
+        let result = check(Arc::clone(&fs), &group_with_one_member(size, last_write));
+        let members = result.group_members.as_ref().expect("a group");
+        assert_eq!(
+            members[0].check.source.status,
+            RecoveryPathStatus::Exists,
+            "group size {size}, last-write {last_write}"
+        );
+        assert_eq!(
+            result.verdict,
+            RecoveryVerdict::CanRetry,
+            "group size {size}, last-write {last_write}"
+        );
+    }
+}
+
+// C#: RecoveryFileCheck.CheckGroupMember's synthesized entry has `GroupId = null, GroupMembers = null, Undo = null` and the
+// member's `Permanent`; it is visible as `RecoveryGroupMemberCheck.Check.Entry`. Kills the mutants that drop `group_id: None`
+// / `undo: None` (an undo group would leak `Some("g")` / `Some(true)` into every member's entry).
+#[test]
+fn group_member_check_entry_clears_group_id_and_undo() {
+    let mut group = group_with_one_member(7, MEMBER_STAMP);
+    group.undo = Some(true);
+    let result = check(Arc::new(FakeFileSystem::new()), &group);
+    let member_entry = &result.group_members.as_ref().expect("a group")[0].check.entry;
+    assert_eq!(member_entry.group_id, None);
+    assert_eq!(member_entry.undo, None);
+    assert_eq!(member_entry.group_members, None);
+    assert_eq!(member_entry.permanent, Some(false));
+    assert_eq!(member_entry.source, r"C:\p\b.jpg");
+    assert_eq!(member_entry.destination.as_deref(), Some(r"D:\k\b.jpg"));
+}
+
+/// Removes the deny ACEs this test added (before `TempRoot` deletes the folder).
+#[cfg(windows)]
+struct DenyAces {
+    sid: String,
+    paths: Vec<PathBuf>,
+}
+
+#[cfg(windows)]
+impl Drop for DenyAces {
+    fn drop(&mut self) {
+        for path in self.paths.iter().rev() {
+            let _ = std::process::Command::new("icacls")
+                .arg(path)
+                .arg("/remove:d")
+                .arg(format!("*{}", self.sid))
+                .output();
+        }
+    }
+}
+
+#[cfg(windows)]
+fn icacls_deny(path: &Path, sid: &str, rights: &str) {
+    let output = std::process::Command::new("icacls")
+        .arg(path)
+        .arg("/deny")
+        .arg(format!("*{sid}:({rights})"))
+        .output()
+        .expect("icacls runs");
+    assert!(
+        output.status.success(),
+        "icacls /deny {rights} on {}: {output:?}",
+        path.display()
+    );
+}
+
+/// The current user's SID (`whoami /user /fo csv /nh` => `"domain\user","S-1-5-..."`).
+#[cfg(windows)]
+fn current_user_sid() -> String {
+    let output = std::process::Command::new("whoami")
+        .args(["/user", "/fo", "csv", "/nh"])
+        .output()
+        .expect("whoami runs");
+    let text = String::from_utf8_lossy(&output.stdout);
+    let sid = text
+        .trim()
+        .rsplit(',')
+        .next()
+        .unwrap_or_default()
+        .trim_matches('"')
+        .to_owned();
+    assert!(sid.starts_with("S-1-"), "whoami /user: {text}");
+    sid
+}
+
+// C# oracle (verifier probe on the d92d6aae PhotoReview.Core.dll, same setup): a file whose folder listing (RD) and own
+// read-attributes (RA) rights are denied has PhysicalFileSystem.GetFileStat == null (`FileInfo.Exists` swallows the
+// error), so RecoveryFileCheck reports the source Missing (folder true) and the verdict Lost, not Unreadable/Unknown.
+// Touches only its own TempRoot; the deny ACEs are removed before the folder is deleted.
+#[cfg(windows)]
+#[test]
+#[ignore = "native: real disk (denies rights on its own temp folder)"]
+fn physical_access_denied_source_is_missing_and_lost_as_in_csharp() {
+    let root = TempRoot::new("recovery-check-denied");
+    let folder = root.join("locked");
+    std::fs::create_dir_all(&folder).expect("create the test folder");
+    let file = folder.join("a.jpg");
+    std::fs::write(&file, bytes(10)).expect("write the test file");
+    let sid = current_user_sid();
+    let _aces = DenyAces {
+        sid: sid.clone(),
+        paths: vec![file.clone(), folder.clone()],
+    };
+    icacls_deny(&file, &sid, "RA");
+    icacls_deny(&folder, &sid, "RD");
+    assert!(
+        std::fs::symlink_metadata(&file).is_err(),
+        "precondition: the file's metadata must be unreadable (running with backup privileges?)"
+    );
+
+    let source = file.display().to_string();
+    let destination = format!("{source}.nope-dest");
+    let fs: Arc<dyn FileSystem> = Arc::new(PhysicalFileSystem);
+    let entry = JournalEntry {
+        source: source.clone(),
+        ..plain_entry(
+            FileOperationType::Move,
+            JournalState::Prepared,
+            Some(&destination),
+            FILE_STAMP,
+        )
+    };
+    assert_eq!(
+        fs.try_get_file_stat(Path::new(&source)).ok(),
+        Some(None),
+        "C# GetFileStat returns null"
+    );
+    let result = RecoveryFileCheck::new(fs).check(&entry);
+    assert_eq!(result.source.status, RecoveryPathStatus::Missing);
+    assert!(result.source.folder_exists);
+    assert_eq!(result.verdict, RecoveryVerdict::Lost);
+}
