@@ -1,0 +1,1434 @@
+{
+  "generator": "oracle-cs forwarded-path",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "constants",
+      "op": "constants",
+      "header": "PHOTOREVIEW-OPEN 1",
+      "max_message_bytes": 65536,
+      "max_paths": 16,
+      "max_path_chars": 32767
+    },
+    {
+      "id": "encode-empty-list",
+      "op": "encode",
+      "paths": [],
+      "path_lengths": [],
+      "ok": true,
+      "length": 20,
+      "hex": "50484F544F5245564945572D4F50454E20310A0A"
+    },
+    {
+      "id": "encode-one-path",
+      "op": "encode",
+      "paths": [
+        "C:\\a.jpg"
+      ],
+      "path_lengths": [
+        8
+      ],
+      "ok": true,
+      "length": 29,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C612E6A70670A0A"
+    },
+    {
+      "id": "encode-two-paths-keep-order",
+      "op": "encode",
+      "paths": [
+        "C:\\b.jpg",
+        "C:\\a.jpg"
+      ],
+      "path_lengths": [
+        8,
+        8
+      ],
+      "ok": true,
+      "length": 38,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C622E6A70670A433A5C612E6A70670A0A"
+    },
+    {
+      "id": "encode-duplicate-paths-are-kept",
+      "op": "encode",
+      "paths": [
+        "C:\\a.jpg",
+        "C:\\a.jpg"
+      ],
+      "path_lengths": [
+        8,
+        8
+      ],
+      "ok": true,
+      "length": 38,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C612E6A70670A433A5C612E6A70670A0A"
+    },
+    {
+      "id": "encode-unc",
+      "op": "encode",
+      "paths": [
+        "\\\\server\\share\\a.jpg"
+      ],
+      "path_lengths": [
+        20
+      ],
+      "ok": true,
+      "length": 41,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C5C7365727665725C73686172655C612E6A70670A0A"
+    },
+    {
+      "id": "encode-unc-forward-slashes",
+      "op": "encode",
+      "paths": [
+        "//server/share/a.jpg"
+      ],
+      "path_lengths": [
+        20
+      ],
+      "ok": true,
+      "length": 41,
+      "hex": "50484F544F5245564945572D4F50454E20310A2F2F7365727665722F73686172652F612E6A70670A0A"
+    },
+    {
+      "id": "encode-drive-forward-slashes",
+      "op": "encode",
+      "paths": [
+        "C:/a/b.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": true,
+      "length": 31,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A2F612F622E6A70670A0A"
+    },
+    {
+      "id": "encode-lowercase-drive",
+      "op": "encode",
+      "paths": [
+        "c:\\a.jpg"
+      ],
+      "path_lengths": [
+        8
+      ],
+      "ok": true,
+      "length": 29,
+      "hex": "50484F544F5245564945572D4F50454E20310A633A5C612E6A70670A0A"
+    },
+    {
+      "id": "encode-question-mark-inside-name",
+      "op": "encode",
+      "paths": [
+        "D:\\x?.jpg.bak"
+      ],
+      "path_lengths": [
+        13
+      ],
+      "ok": true,
+      "length": 34,
+      "hex": "50484F544F5245564945572D4F50454E20310A443A5C783F2E6A70672E62616B0A0A"
+    },
+    {
+      "id": "encode-windows-illegal-chars-are-not-checked",
+      "op": "encode",
+      "paths": [
+        "C:\\a|b*c<d>e\"f.jpg"
+      ],
+      "path_lengths": [
+        18
+      ],
+      "ok": true,
+      "length": 39,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C617C622A633C643E6522662E6A70670A0A"
+    },
+    {
+      "id": "encode-spaces-at-ends-kept",
+      "op": "encode",
+      "paths": [
+        "C:\\ a.jpg "
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": true,
+      "length": 31,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C20612E6A7067200A0A"
+    },
+    {
+      "id": "encode-dots-segment-is-fine",
+      "op": "encode",
+      "paths": [
+        "C:\\a\\...\\b.jpg",
+        "C:\\a..b\\c.jpg",
+        "C:\\.hidden\\a.jpg"
+      ],
+      "path_lengths": [
+        14,
+        13,
+        16
+      ],
+      "ok": true,
+      "length": 66,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C615C2E2E2E5C622E6A70670A433A5C612E2E625C632E6A70670A433A5C2E68696464656E5C612E6A70670A0A"
+    },
+    {
+      "id": "encode-unicode",
+      "op": "encode",
+      "paths": [
+        "C:\\ünïcödé\\日本語.jpg"
+      ],
+      "path_lengths": [
+        18
+      ],
+      "ok": true,
+      "length": 49,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5CC3BC6EC3AF63C3B664C3A95CE697A5E69CACE8AA9E2E6A70670A0A"
+    },
+    {
+      "id": "encode-non-bmp-pair",
+      "op": "encode",
+      "paths": [
+        "C:\\fwd\\a\uD83D\uDE00b.jpg"
+      ],
+      "path_lengths": [
+        15
+      ],
+      "ok": true,
+      "length": 38,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C6677645C61F09F9880622E6A70670A0A"
+    },
+    {
+      "id": "encode-line-separator-u2028-is-not-a-control-char",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u2028b.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": true,
+      "length": 33,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C61E280A8622E6A70670A0A"
+    },
+    {
+      "id": "encode-single-backslash-question-prefix-is-accepted",
+      "op": "encode",
+      "paths": [
+        "\\?\\C:\\x.jpg"
+      ],
+      "path_lengths": [
+        11
+      ],
+      "ok": true,
+      "length": 32,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C3F5C433A5C782E6A70670A0A"
+    },
+    {
+      "id": "encode-two-separators-only",
+      "op": "encode",
+      "paths": [
+        "\\\\"
+      ],
+      "path_lengths": [
+        2
+      ],
+      "ok": true,
+      "length": 23,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C5C0A0A"
+    },
+    {
+      "id": "encode-two-forward-slashes-only",
+      "op": "encode",
+      "paths": [
+        "//"
+      ],
+      "path_lengths": [
+        2
+      ],
+      "ok": true,
+      "length": 23,
+      "hex": "50484F544F5245564945572D4F50454E20310A2F2F0A0A"
+    },
+    {
+      "id": "encode-incomplete-unc",
+      "op": "encode",
+      "paths": [
+        "\\\\a"
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": true,
+      "length": 24,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C5C610A0A"
+    },
+    {
+      "id": "encode-mixed-two-separators",
+      "op": "encode",
+      "paths": [
+        "\\/"
+      ],
+      "path_lengths": [
+        2
+      ],
+      "ok": true,
+      "length": 23,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C2F0A0A"
+    },
+    {
+      "id": "encode-nt-prefix-with-one-char-is-three-chars-rejected",
+      "op": "encode",
+      "paths": [
+        "\\??"
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "encode-nt-question-dot-rejected",
+      "op": "encode",
+      "paths": [
+        "\\?."
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "encode-backslash-question-letter-accepted",
+      "op": "encode",
+      "paths": [
+        "\\?x"
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": true,
+      "length": 24,
+      "hex": "50484F544F5245564945572D4F50454E20310A5C3F780A0A"
+    },
+    {
+      "id": "reject-empty-path",
+      "op": "encode",
+      "paths": [
+        ""
+      ],
+      "path_lengths": [
+        0
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-empty-path-after-valid",
+      "op": "encode",
+      "paths": [
+        "C:\\a.jpg",
+        ""
+      ],
+      "path_lengths": [
+        8,
+        0
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-relative",
+      "op": "encode",
+      "paths": [
+        "relative\\a.jpg"
+      ],
+      "path_lengths": [
+        14
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-bare-name",
+      "op": "encode",
+      "paths": [
+        "a.jpg"
+      ],
+      "path_lengths": [
+        5
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-drive-relative",
+      "op": "encode",
+      "paths": [
+        "C:a.jpg"
+      ],
+      "path_lengths": [
+        7
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-drive-only",
+      "op": "encode",
+      "paths": [
+        "C:"
+      ],
+      "path_lengths": [
+        2
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-rooted-without-drive",
+      "op": "encode",
+      "paths": [
+        "\\a.jpg"
+      ],
+      "path_lengths": [
+        6
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-rooted-forward-slash",
+      "op": "encode",
+      "paths": [
+        "/a.jpg"
+      ],
+      "path_lengths": [
+        6
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-digit-drive",
+      "op": "encode",
+      "paths": [
+        "1:\\a.jpg"
+      ],
+      "path_lengths": [
+        8
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-non-ascii-drive-letter",
+      "op": "encode",
+      "paths": [
+        "é:\\a.jpg"
+      ],
+      "path_lengths": [
+        8
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-single-char",
+      "op": "encode",
+      "paths": [
+        "a"
+      ],
+      "path_lengths": [
+        1
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-single-backslash",
+      "op": "encode",
+      "paths": [
+        "\\"
+      ],
+      "path_lengths": [
+        1
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-tab",
+      "op": "encode",
+      "paths": [
+        "C:\\a\tb.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-newline",
+      "op": "encode",
+      "paths": [
+        "C:\\a\nb.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-carriage-return",
+      "op": "encode",
+      "paths": [
+        "C:\\a\rb.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-nul",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u0000b.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-delete-char",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u007Fb.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-c1-control-nel",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u0085b.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-c1-control-9f",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u009Fb.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "accept-nbsp-a0-is-not-a-control-char",
+      "op": "encode",
+      "paths": [
+        "C:\\a\u00A0b.jpg"
+      ],
+      "path_lengths": [
+        10
+      ],
+      "ok": true,
+      "length": 32,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C61C2A0622E6A70670A0A"
+    },
+    {
+      "id": "reject-dotdot-segment-backslash",
+      "op": "encode",
+      "paths": [
+        "C:\\fwd\\..\\a.jpg"
+      ],
+      "path_lengths": [
+        15
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-dotdot-segment-forward",
+      "op": "encode",
+      "paths": [
+        "C:/fwd/../a.jpg"
+      ],
+      "path_lengths": [
+        15
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-dotdot-last-segment",
+      "op": "encode",
+      "paths": [
+        "C:\\fwd\\.."
+      ],
+      "path_lengths": [
+        9
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-dotdot-first-segment-after-drive",
+      "op": "encode",
+      "paths": [
+        "C:\\..\\a.jpg"
+      ],
+      "path_lengths": [
+        11
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-extended-length",
+      "op": "encode",
+      "paths": [
+        "\\\\?\\C:\\x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-device",
+      "op": "encode",
+      "paths": [
+        "\\\\.\\C:\\x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-nt-object",
+      "op": "encode",
+      "paths": [
+        "\\??\\C:\\x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-extended-forward",
+      "op": "encode",
+      "paths": [
+        "//?/C:/x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-device-forward",
+      "op": "encode",
+      "paths": [
+        "//./C:/x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-nt-object-forward",
+      "op": "encode",
+      "paths": [
+        "/??/C:/x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-extended-three-chars",
+      "op": "encode",
+      "paths": [
+        "\\\\?"
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-device-three-chars",
+      "op": "encode",
+      "paths": [
+        "\\\\."
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-extended-forward-three-chars",
+      "op": "encode",
+      "paths": [
+        "//?"
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-device-forward-three-chars",
+      "op": "encode",
+      "paths": [
+        "//."
+      ],
+      "path_lengths": [
+        3
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "reject-mixed-separator-extended",
+      "op": "encode",
+      "paths": [
+        "\\/?\\C:\\x.jpg"
+      ],
+      "path_lengths": [
+        12
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "limit-paths-16-ok",
+      "op": "encode",
+      "paths": [
+        "C:\\p0",
+        "C:\\p1",
+        "C:\\p2",
+        "C:\\p3",
+        "C:\\p4",
+        "C:\\p5",
+        "C:\\p6",
+        "C:\\p7",
+        "C:\\p8",
+        "C:\\p9",
+        "C:\\p10",
+        "C:\\p11",
+        "C:\\p12",
+        "C:\\p13",
+        "C:\\p14",
+        "C:\\p15"
+      ],
+      "path_lengths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "ok": true,
+      "length": 122,
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C70300A433A5C70310A433A5C70320A433A5C70330A433A5C70340A433A5C70350A433A5C70360A433A5C70370A433A5C70380A433A5C70390A433A5C7031300A433A5C7031310A433A5C7031320A433A5C7031330A433A5C7031340A433A5C7031350A0A"
+    },
+    {
+      "id": "limit-paths-17-rejected",
+      "op": "encode",
+      "paths": [
+        "C:\\p0",
+        "C:\\p1",
+        "C:\\p2",
+        "C:\\p3",
+        "C:\\p4",
+        "C:\\p5",
+        "C:\\p6",
+        "C:\\p7",
+        "C:\\p8",
+        "C:\\p9",
+        "C:\\p10",
+        "C:\\p11",
+        "C:\\p12",
+        "C:\\p13",
+        "C:\\p14",
+        "C:\\p15",
+        "C:\\p16"
+      ],
+      "path_lengths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "limit-path-32767-chars-ok",
+      "op": "encode",
+      "paths": [
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32767
+        }
+      ],
+      "path_lengths": [
+        32767
+      ],
+      "ok": true,
+      "length": 32788,
+      "hex": null
+    },
+    {
+      "id": "limit-path-32768-chars-rejected",
+      "op": "encode",
+      "paths": [
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32768
+        }
+      ],
+      "path_lengths": [
+        32768
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "limit-message-exactly-65536-bytes-ok",
+      "op": "encode",
+      "paths": [
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32767
+        },
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32747
+        }
+      ],
+      "path_lengths": [
+        32767,
+        32747
+      ],
+      "ok": true,
+      "length": 65536,
+      "hex": null
+    },
+    {
+      "id": "limit-message-65537-bytes-rejected",
+      "op": "encode",
+      "paths": [
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32767
+        },
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 32748
+        }
+      ],
+      "path_lengths": [
+        32767,
+        32748
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "limit-message-counts-bytes-not-chars",
+      "op": "encode",
+      "paths": [
+        {
+          "prefix": "C:\\",
+          "fill": "é",
+          "length": 32767
+        },
+        {
+          "prefix": "C:\\",
+          "fill": "a",
+          "length": 100
+        }
+      ],
+      "path_lengths": [
+        32767,
+        100
+      ],
+      "ok": false,
+      "exception": "ArgumentException",
+      "param": "paths"
+    },
+    {
+      "id": "decode-header-only-is-empty-valid-request",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n\n",
+      "exists": "none",
+      "ok": true,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-one-path",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\n\n",
+      "exists": "all",
+      "ok": true,
+      "paths": [
+        "C:\\a.jpg"
+      ],
+      "exists_calls": [
+        "C:\\a.jpg"
+      ]
+    },
+    {
+      "id": "decode-two-paths-exist-calls-in-order",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\nC:\\b.jpg\n\n",
+      "exists": "all",
+      "ok": true,
+      "paths": [
+        "C:\\a.jpg",
+        "C:\\b.jpg"
+      ],
+      "exists_calls": [
+        "C:\\a.jpg",
+        "C:\\b.jpg"
+      ]
+    },
+    {
+      "id": "decode-second-path-missing",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\nC:\\b.jpg\nC:\\c.jpg\n\n",
+      "exists": [
+        "C:\\a.jpg",
+        "C:\\c.jpg"
+      ],
+      "ok": false,
+      "paths": [],
+      "exists_calls": [
+        "C:\\a.jpg",
+        "C:\\b.jpg"
+      ]
+    },
+    {
+      "id": "decode-first-path-missing-stops-at-first",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\nC:\\b.jpg\n\n",
+      "exists": [
+        "C:\\b.jpg"
+      ],
+      "ok": false,
+      "paths": [],
+      "exists_calls": [
+        "C:\\a.jpg"
+      ]
+    },
+    {
+      "id": "decode-unacceptable-path-never-reaches-exists",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\nrelative.jpg\nC:\\c.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": [
+        "C:\\a.jpg"
+      ]
+    },
+    {
+      "id": "decode-exists-is-case-sensitive-callback-gets-the-line-as-is",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nc:\\A.JPG\n\n",
+      "exists": [
+        "C:\\a.jpg"
+      ],
+      "ok": false,
+      "paths": [],
+      "exists_calls": [
+        "c:\\A.JPG"
+      ]
+    },
+    {
+      "id": "decode-empty-message",
+      "op": "decode",
+      "text": "",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-just-terminator",
+      "op": "decode",
+      "text": "\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-single-newline",
+      "op": "decode",
+      "text": "\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-header-without-terminator",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-header-without-any-newline",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-path-without-terminator",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-path-with-one-newline-only",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-trailing-garbage-after-path",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\nx",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-extra-empty-line-means-empty-path",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-empty-line-between-paths",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\n\nC:\\b.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": [
+        "C:\\a.jpg"
+      ]
+    },
+    {
+      "id": "decode-header-version-2",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 2\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-header-lowercase",
+      "op": "decode",
+      "text": "photoreview-open 1\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-header-trailing-space",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1 \n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-header-garbage",
+      "op": "decode",
+      "text": "garbage\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-crlf-line-endings",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\r\nC:\\a.jpg\r\n\r\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-lf-then-crlf-path-line",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a.jpg\r\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-utf8-bom-before-header",
+      "op": "decode",
+      "hex": "EFBBBF50484F544F5245564945572D4F50454E20310A0A",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-invalid-utf8-ff-fe",
+      "op": "decode",
+      "hex": "FFFE0A0A",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-invalid-utf8-in-path",
+      "op": "decode",
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C61FF2E6A70670A0A",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-overlong-utf8-slash",
+      "op": "decode",
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5CC0AF0A0A",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-wtf8-lone-surrogate-ed-a0-80",
+      "op": "decode",
+      "hex": "50484F544F5245564945572D4F50454E20310A433A5C61EDA080622E6A70670A0A",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-utf8-4byte-sequence-valid",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\fwd\\a\uD83D\uDE00b.jpg\n\n",
+      "exists": "all",
+      "ok": true,
+      "paths": [
+        "C:\\fwd\\a\uD83D\uDE00b.jpg"
+      ],
+      "exists_calls": [
+        "C:\\fwd\\a\uD83D\uDE00b.jpg"
+      ]
+    },
+    {
+      "id": "decode-tab-in-path",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a\tb.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-cr-inside-path",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\a\rb.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-dotdot",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\fwd\\..\\a.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-extended-prefix-even-if-exists",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n\\\\?\\C:\\x.jpg\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-pipe-device",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n\\\\.\\pipe\\x\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-sixteen-paths-ok",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\p0\nC:\\p1\nC:\\p2\nC:\\p3\nC:\\p4\nC:\\p5\nC:\\p6\nC:\\p7\nC:\\p8\nC:\\p9\nC:\\p10\nC:\\p11\nC:\\p12\nC:\\p13\nC:\\p14\nC:\\p15\n\n",
+      "exists": "all",
+      "ok": true,
+      "paths": [
+        "C:\\p0",
+        "C:\\p1",
+        "C:\\p2",
+        "C:\\p3",
+        "C:\\p4",
+        "C:\\p5",
+        "C:\\p6",
+        "C:\\p7",
+        "C:\\p8",
+        "C:\\p9",
+        "C:\\p10",
+        "C:\\p11",
+        "C:\\p12",
+        "C:\\p13",
+        "C:\\p14",
+        "C:\\p15"
+      ],
+      "exists_calls": [
+        "C:\\p0",
+        "C:\\p1",
+        "C:\\p2",
+        "C:\\p3",
+        "C:\\p4",
+        "C:\\p5",
+        "C:\\p6",
+        "C:\\p7",
+        "C:\\p8",
+        "C:\\p9",
+        "C:\\p10",
+        "C:\\p11",
+        "C:\\p12",
+        "C:\\p13",
+        "C:\\p14",
+        "C:\\p15"
+      ]
+    },
+    {
+      "id": "decode-seventeen-paths-rejected-before-exists",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\nC:\\p0\nC:\\p1\nC:\\p2\nC:\\p3\nC:\\p4\nC:\\p5\nC:\\p6\nC:\\p7\nC:\\p8\nC:\\p9\nC:\\p10\nC:\\p11\nC:\\p12\nC:\\p13\nC:\\p14\nC:\\p15\nC:\\p16\n\n",
+      "exists": "all",
+      "ok": false,
+      "paths": [],
+      "exists_calls": []
+    },
+    {
+      "id": "decode-unc-two-separators-only",
+      "op": "decode",
+      "text": "PHOTOREVIEW-OPEN 1\n\\\\\n\n",
+      "exists": "all",
+      "ok": true,
+      "paths": [
+        "\\\\"
+      ],
+      "exists_calls": [
+        "\\\\"
+      ]
+    },
+    {
+      "id": "complete-empty",
+      "op": "complete",
+      "text": "",
+      "complete": false
+    },
+    {
+      "id": "complete-single-newline",
+      "op": "complete",
+      "text": "\n",
+      "complete": false
+    },
+    {
+      "id": "complete-one-char",
+      "op": "complete",
+      "text": "a",
+      "complete": false
+    },
+    {
+      "id": "complete-two-chars-no-newlines",
+      "op": "complete",
+      "text": "ab",
+      "complete": false
+    },
+    {
+      "id": "complete-x-newline",
+      "op": "complete",
+      "text": "x\n",
+      "complete": false
+    },
+    {
+      "id": "complete-newline-x",
+      "op": "complete",
+      "text": "\nx",
+      "complete": false
+    },
+    {
+      "id": "complete-two-newlines",
+      "op": "complete",
+      "text": "\n\n",
+      "complete": true
+    },
+    {
+      "id": "complete-x-two-newlines",
+      "op": "complete",
+      "text": "x\n\n",
+      "complete": true
+    },
+    {
+      "id": "complete-header-two-newlines",
+      "op": "complete",
+      "text": "PHOTOREVIEW-OPEN 1\n\n",
+      "complete": true
+    },
+    {
+      "id": "complete-crlf-crlf-is-not-complete",
+      "op": "complete",
+      "text": "x\r\n\r\n",
+      "complete": false
+    },
+    {
+      "id": "complete-three-chars-ending-lf-only",
+      "op": "complete",
+      "text": "abc\n",
+      "complete": false
+    }
+  ]
+}

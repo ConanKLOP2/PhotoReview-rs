@@ -6,6 +6,7 @@
 //! table is generated from .NET itself (`tools/oracle.ps1 -Command ordinal-casing-table`) and the behaviour is pinned
 //! by `tests/golden/ordinal-ignore-case.json`. Use these helpers; never hand-roll case-insensitive path logic.
 
+pub mod dotnet_path;
 mod ordinal_casing_table;
 
 use std::cmp::Ordering;

@@ -1,0 +1,663 @@
+{
+  "generator": "oracle-cs drag-drop",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "null-paths",
+      "dirs": [],
+      "files": [],
+      "paths": null,
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": "NoValidInput"
+    },
+    {
+      "name": "empty-paths",
+      "dirs": [],
+      "files": [],
+      "paths": [],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": "NoValidInput"
+    },
+    {
+      "name": "only-blank-paths",
+      "dirs": [],
+      "files": [],
+      "paths": [
+        "",
+        "   ",
+        "\t"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": "NoValidInput"
+    },
+    {
+      "name": "single-folder",
+      "dirs": [
+        "only"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\only"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "folder-trailing-separator-is-kept-in-the-result",
+      "dirs": [
+        "only"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\only\\"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only\\",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "folder-with-forward-slash-is-normalized",
+      "dirs": [
+        "only"
+      ],
+      "files": [],
+      "paths": [
+        "{root}/only"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "folder-with-dotdot-is-normalized",
+      "dirs": [
+        "only",
+        "other"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\other\\..\\only"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "same-folder-three-spellings-is-not-ignored",
+      "dirs": [
+        "same-folder"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\same-folder",
+        "{root}\\same-folder\\",
+        "{root}\\SAME-FOLDER"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\same-folder",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "same-folder-twice-in-another-case",
+      "dirs": [
+        "Photos"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\Photos",
+        "{root}\\PHOTOS"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\Photos",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "first-folder-wins-others-ignored",
+      "dirs": [
+        "first",
+        "second"
+      ],
+      "files": [
+        "first\\a.jpg"
+      ],
+      "paths": [
+        "{root}\\first",
+        "{root}\\second",
+        "{root}\\first\\a.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\first",
+      "initial_image_path": null,
+      "ignored_path_count": 2,
+      "warning": "OnlyFirstFolder"
+    },
+    {
+      "name": "missing-path-before-the-folder-counts-as-ignored",
+      "dirs": [
+        "only"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\missing",
+        "{root}\\only"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "OnlyFirstFolder"
+    },
+    {
+      "name": "file-before-folder-the-folder-wins",
+      "dirs": [
+        "only"
+      ],
+      "files": [
+        "x.jpg"
+      ],
+      "paths": [
+        "{root}\\x.jpg",
+        "{root}\\only"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "OnlyFirstFolder"
+    },
+    {
+      "name": "folder-named-like-an-image-is-a-folder",
+      "dirs": [
+        "weird.jpg"
+      ],
+      "files": [],
+      "paths": [
+        "{root}\\weird.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\weird.jpg",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "single-image",
+      "dirs": [],
+      "files": [
+        "drag-folder\\first.JPG"
+      ],
+      "paths": [
+        "{root}\\drag-folder\\first.JPG"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\drag-folder",
+      "initial_image_path": "{root}\\drag-folder\\first.JPG",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "image-in-the-root-itself",
+      "dirs": [],
+      "files": [
+        "top.jpg"
+      ],
+      "paths": [
+        "{root}\\top.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}",
+      "initial_image_path": "{root}\\top.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "several-images-of-one-folder-no-warning",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg",
+        "shots\\b.png"
+      ],
+      "paths": [
+        "{root}\\shots\\a.jpg",
+        "{root}\\shots\\b.png"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "same-image-twice-is-accepted-twice",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg"
+      ],
+      "paths": [
+        "{root}\\shots\\a.jpg",
+        "{root}\\shots\\a.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "image-and-unsupported-and-missing",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg",
+        "shots\\notes.txt"
+      ],
+      "paths": [
+        "{root}\\shots\\a.jpg",
+        "{root}\\shots\\notes.txt",
+        "{root}\\shots\\gone.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 2,
+      "warning": "UnsupportedIgnored"
+    },
+    {
+      "name": "first-image-missing-second-exists",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg"
+      ],
+      "paths": [
+        "{root}\\shots\\gone.jpg",
+        "{root}\\shots\\a.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 1,
+      "warning": "UnsupportedIgnored"
+    },
+    {
+      "name": "images-of-two-folders-keep-the-first",
+      "dirs": [],
+      "files": [
+        "one\\a.jpg",
+        "two\\b.jpg"
+      ],
+      "paths": [
+        "{root}\\one\\a.jpg",
+        "{root}\\two\\b.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\one",
+      "initial_image_path": "{root}\\one\\a.jpg",
+      "ignored_path_count": 1,
+      "warning": "MixedFolders"
+    },
+    {
+      "name": "mixed-folders-warning-wins-over-unsupported",
+      "dirs": [],
+      "files": [
+        "one\\a.jpg",
+        "two\\b.jpg",
+        "one\\notes.txt"
+      ],
+      "paths": [
+        "{root}\\one\\a.jpg",
+        "{root}\\two\\b.jpg",
+        "{root}\\one\\notes.txt"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\one",
+      "initial_image_path": "{root}\\one\\a.jpg",
+      "ignored_path_count": 2,
+      "warning": "MixedFolders"
+    },
+    {
+      "name": "unsupported-file-only",
+      "dirs": [],
+      "files": [
+        "notes.txt"
+      ],
+      "paths": [
+        "{root}\\notes.txt"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "missing-file-only",
+      "dirs": [],
+      "files": [],
+      "paths": [
+        "{root}\\gone.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "heic-with-the-switch-on",
+      "dirs": [],
+      "files": [
+        "iphone\\IMG_0001.HEIC"
+      ],
+      "paths": [
+        "{root}\\iphone\\IMG_0001.HEIC"
+      ],
+      "raw": false,
+      "webp_heic": true,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\iphone",
+      "initial_image_path": "{root}\\iphone\\IMG_0001.HEIC",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "heic-with-the-switch-off",
+      "dirs": [],
+      "files": [
+        "iphone\\IMG_0001.HEIC"
+      ],
+      "paths": [
+        "{root}\\iphone\\IMG_0001.HEIC"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "webp-with-the-switch-on",
+      "dirs": [],
+      "files": [
+        "w\\a.webp"
+      ],
+      "paths": [
+        "{root}\\w\\a.webp"
+      ],
+      "raw": false,
+      "webp_heic": true,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\w",
+      "initial_image_path": "{root}\\w\\a.webp",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "raw-with-raw-on",
+      "dirs": [],
+      "files": [
+        "raw\\x.CR2"
+      ],
+      "paths": [
+        "{root}\\raw\\x.CR2"
+      ],
+      "raw": true,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\raw",
+      "initial_image_path": "{root}\\raw\\x.CR2",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "raw-with-raw-off",
+      "dirs": [],
+      "files": [
+        "raw\\x.CR2"
+      ],
+      "paths": [
+        "{root}\\raw\\x.CR2"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "raw-switch-does-not-enable-webp",
+      "dirs": [],
+      "files": [
+        "raw\\x.heic"
+      ],
+      "paths": [
+        "{root}\\raw\\x.heic"
+      ],
+      "raw": true,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 1,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "invalid-paths-are-ignored-not-thrown-on",
+      "dirs": [],
+      "files": [],
+      "paths": [
+        "<>|?*",
+        "C:\\a\u0000b.jpg",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "   "
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Invalid",
+      "is_valid": false,
+      "folder_path": null,
+      "initial_image_path": null,
+      "ignored_path_count": 3,
+      "warning": "NoSupportedImages"
+    },
+    {
+      "name": "image-path-with-dotdot-and-forward-slashes-is-normalized",
+      "dirs": [
+        "sub"
+      ],
+      "files": [
+        "shots\\a.jpg"
+      ],
+      "paths": [
+        "{root}/sub/../shots/a.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "images-same-folder-different-spelling-are-accepted",
+      "dirs": [],
+      "files": [
+        "Shots\\a.jpg",
+        "Shots\\b.jpg"
+      ],
+      "paths": [
+        "{root}\\Shots\\a.jpg",
+        "{root}\\SHOTS\\b.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\Shots",
+      "initial_image_path": "{root}\\Shots\\a.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "unsupported-before-image",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg",
+        "shots\\notes.txt"
+      ],
+      "paths": [
+        "{root}\\shots\\notes.txt",
+        "{root}\\shots\\a.jpg"
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 1,
+      "warning": "UnsupportedIgnored"
+    },
+    {
+      "name": "blank-entries-are-not-counted",
+      "dirs": [],
+      "files": [
+        "shots\\a.jpg"
+      ],
+      "paths": [
+        "",
+        "{root}\\shots\\a.jpg",
+        "  "
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Image",
+      "is_valid": true,
+      "folder_path": "{root}\\shots",
+      "initial_image_path": "{root}\\shots\\a.jpg",
+      "ignored_path_count": 0,
+      "warning": null
+    },
+    {
+      "name": "blank-entries-do-not-count-as-ignored-folder-drop",
+      "dirs": [
+        "only"
+      ],
+      "files": [],
+      "paths": [
+        "",
+        "{root}\\only",
+        "  "
+      ],
+      "raw": false,
+      "webp_heic": false,
+      "kind": "Folder",
+      "is_valid": true,
+      "folder_path": "{root}\\only",
+      "initial_image_path": null,
+      "ignored_path_count": 0,
+      "warning": null
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "generator": "oracle-cs sibling-folders",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "natural-order",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 10"
+        }
+      ],
+      "current": "Album 1",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 10"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "hidden-and-system-siblings-are-not-returned",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 10"
+        },
+        {
+          "name": ".thumbnails",
+          "attr": "hidden"
+        },
+        {
+          "name": "Album 3 system",
+          "attr": "system"
+        }
+      ],
+      "current": "Album 1",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 10"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "hidden-current-folder-stays-in-the-list",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 10"
+        },
+        {
+          "name": "Album 5 hidden",
+          "attr": "hidden"
+        },
+        {
+          "name": "Album 6 hidden",
+          "attr": "hidden"
+        }
+      ],
+      "current": "Album 5 hidden",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 5 hidden",
+        "Album 10"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "system-current-folder-stays-in-the-list",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 5 system",
+          "attr": "system"
+        }
+      ],
+      "current": "Album 5 system",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 5 system"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "missing-parent-returns-empty-and-logs-an-io-error",
+      "folders": [],
+      "current": "missing-parent\\child",
+      "siblings": [],
+      "logged_errors": 1,
+      "first_error_exception": "DirectoryNotFoundException"
+    },
+    {
+      "name": "missing-parent-without-a-log-still-returns-empty",
+      "folders": [],
+      "current": "missing-parent\\child",
+      "siblings": [],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "only-child",
+      "folders": [
+        {
+          "name": "Only"
+        }
+      ],
+      "current": "Only",
+      "siblings": [
+        "Only"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "current-spelled-in-another-case-is-not-added-twice",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 10"
+        }
+      ],
+      "current": "album 1",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 10"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "current-folder-that-does-not-exist-is-appended-then-sorted",
+      "folders": [
+        {
+          "name": "A"
+        },
+        {
+          "name": "B"
+        }
+      ],
+      "current": "A2",
+      "siblings": [
+        "A",
+        "A2",
+        "B"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "trailing-separator-on-the-current-folder",
+      "folders": [
+        {
+          "name": "Album 1"
+        },
+        {
+          "name": "Album 2"
+        },
+        {
+          "name": "Album 10"
+        }
+      ],
+      "current": "Album 2\\",
+      "siblings": [
+        "Album 1",
+        "Album 2",
+        "Album 10"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "natural-order-mixed-case-and-numbers",
+      "folders": [
+        {
+          "name": "b"
+        },
+        {
+          "name": "A"
+        },
+        {
+          "name": "a10"
+        },
+        {
+          "name": "a2"
+        },
+        {
+          "name": "a02"
+        }
+      ],
+      "current": "b",
+      "siblings": [
+        "A",
+        "a02",
+        "a2",
+        "a10",
+        "b"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    },
+    {
+      "name": "hidden-sibling-with-a-natural-name-between-visible-ones",
+      "folders": [
+        {
+          "name": "x1"
+        },
+        {
+          "name": "x2",
+          "attr": "hidden"
+        },
+        {
+          "name": "x3"
+        }
+      ],
+      "current": "x1",
+      "siblings": [
+        "x1",
+        "x3"
+      ],
+      "logged_errors": 0,
+      "first_error_exception": null
+    }
+  ]
+}

@@ -1,0 +1,2395 @@
+{
+  "generator": "oracle-cs l10n-catalog",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "valid-full-meta",
+      "source": "vi.json",
+      "json": "{ \"_meta\": { \"code\": \"VI\", \"name\": \"Vietnamese\", \"nativeName\": \"Tiếng Việt\", \"plural\": \"none\", \"authors\": [\"A\", 5, \"B\"], \"formatVersion\": 1 }, \"app.title\": \"Xem ảnh\", \"greet\": \"Chào {name}\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "Vietnamese",
+        "nativeName": "Tiếng Việt",
+        "nativeNameDeclared": true,
+        "plural": "None",
+        "pluralDeclared": true,
+        "authors": [
+          "A",
+          "B"
+        ],
+        "entries": [
+          [
+            "app.title",
+            "Xem ảnh"
+          ],
+          [
+            "greet",
+            "Chào {name}"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-only",
+      "json": "{ \"_meta\": { \"code\": \"fr\" } }",
+      "ok": true,
+      "catalog": {
+        "code": "fr",
+        "name": "fr",
+        "nativeName": "fr",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "name-only-native-falls-back-to-name",
+      "json": "{ \"_meta\": { \"code\": \"fr\", \"name\": \"French\" } }",
+      "ok": true,
+      "catalog": {
+        "code": "fr",
+        "name": "French",
+        "nativeName": "French",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-only-name-falls-back-to-code",
+      "json": "{ \"_meta\": { \"code\": \"fr\", \"nativeName\": \"Français\" } }",
+      "ok": true,
+      "catalog": {
+        "code": "fr",
+        "name": "fr",
+        "nativeName": "Français",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-turkish-I-upper-ID",
+      "json": "{\"_meta\":{\"code\":\"ID\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "id",
+        "name": "id",
+        "nativeName": "id",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-turkish-I-upper-IT",
+      "json": "{\"_meta\":{\"code\":\"IT\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "it",
+        "name": "it",
+        "nativeName": "it",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-with-script-and-region",
+      "json": "{\"_meta\":{\"code\":\"zh-Hant-TW\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "zh-hant-tw",
+        "name": "zh-hant-tw",
+        "nativeName": "zh-hant-tw",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-letter-digit",
+      "json": "{\"_meta\":{\"code\":\"x1\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "x1",
+        "name": "x1",
+        "nativeName": "x1",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-trailing-dash-is-valid",
+      "json": "{\"_meta\":{\"code\":\"a-\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "a-",
+        "name": "a-",
+        "nativeName": "a-",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-16-chars-valid",
+      "json": "{\"_meta\":{\"code\":\"abcdefghijklmnop\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "abcdefghijklmnop",
+        "name": "abcdefghijklmnop",
+        "nativeName": "abcdefghijklmnop",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-17-chars-invalid",
+      "json": "{\"_meta\":{\"code\":\"abcdefghijklmnopq\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-2-chars-valid",
+      "json": "{\"_meta\":{\"code\":\"ab\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "ab",
+        "name": "ab",
+        "nativeName": "ab",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-1-char-invalid",
+      "json": "{\"_meta\":{\"code\":\"x\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-empty-invalid",
+      "json": "{\"_meta\":{\"code\":\"\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-whitespace-invalid",
+      "json": "{\"_meta\":{\"code\":\"   \"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-starts-with-digit-invalid",
+      "json": "{\"_meta\":{\"code\":\"1a\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-with-space-invalid",
+      "json": "{\"_meta\":{\"code\":\"v i\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-underscore-invalid",
+      "json": "{\"_meta\":{\"code\":\"vi_VN\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-leading-space-invalid",
+      "json": "{\"_meta\":{\"code\":\" vi\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-trailing-space-invalid",
+      "json": "{\"_meta\":{\"code\":\"vi \"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-leading-dash-invalid",
+      "json": "{\"_meta\":{\"code\":\"-vi\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-dot-invalid",
+      "json": "{\"_meta\":{\"code\":\"vi.json\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-non-ascii-letter-invalid",
+      "json": "{\"_meta\":{\"code\":\"ví\"}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-number-invalid",
+      "json": "{\"_meta\":{\"code\":12}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-null-invalid",
+      "json": "{\"_meta\":{\"code\":null}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-array-invalid",
+      "json": "{\"_meta\":{\"code\":[\"vi\"]}}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-missing",
+      "json": "{\"_meta\":{\"name\":\"No code\"},\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-missing",
+      "json": "{\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "code-number-then-string-takes-the-string",
+      "json": "{\"_meta\":{\"code\":12,\"code\":\"vi\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-string-then-number-keeps-the-string",
+      "json": "{\"_meta\":{\"code\":\"vi\",\"code\":12}}",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "code-twice-last-wins",
+      "json": "{\"_meta\":{\"code\":\"aa\",\"code\":\"bb\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "bb",
+        "name": "bb",
+        "nativeName": "bb",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "meta-twice-second-overrides-code-keeps-name",
+      "json": "{\"_meta\":{\"code\":\"aa\",\"name\":\"X\"},\"_meta\":{\"code\":\"bb\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "bb",
+        "name": "X",
+        "nativeName": "X",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "meta-twice-second-not-object-warns-first-stays",
+      "json": "{\"_meta\":{\"code\":\"aa\"},\"_meta\":5}",
+      "ok": true,
+      "catalog": {
+        "code": "aa",
+        "name": "aa",
+        "nativeName": "aa",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: _meta must be an object"
+      ]
+    },
+    {
+      "id": "meta-key-is-case-sensitive",
+      "json": "{\"_META\":{\"code\":\"vi\"},\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-is-string",
+      "json": "{\"_meta\":\"vi\"}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-is-array",
+      "json": "{\"_meta\":[]}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-is-null",
+      "json": "{\"_meta\":null}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-is-number",
+      "json": "{\"_meta\":3}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-is-true",
+      "json": "{\"_meta\":true}",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "meta-unknown-keys-ignored",
+      "json": "{\"_meta\":{\"code\":\"vi\",\"other\":{\"x\":[1,2]},\"formatVersion\":\"1\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "meta-name-as-object-ignored",
+      "json": "{\"_meta\":{\"code\":\"vi\",\"name\":{\"a\":1},\"nativeName\":7}}",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "name-blank-native-spaces-falls-back-to-code",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"name\":\"\",\"nativeName\":\" \"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "name-set-native-whitespace-controls-falls-back-to-name",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"name\":\"French\",\"nativeName\":\" \\t\\n \"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "French",
+        "nativeName": "French",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "name-blank-native-set",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"name\":\"\",\"nativeName\":\"Fran\\u00e7ais\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "Français",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "names-trimmed-and-controls-become-spaces",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"name\":\"  Eng\\u0007lish \",\"nativeName\":\"\\u0001a\\u0002\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "Eng lish",
+        "nativeName": "a",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-name-capped-at-64",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"name\":\"n\",\"nativeName\":\"{{REPEAT}}\"}}",
+      "repeat": {
+        "char": "n",
+        "count": 500
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "n",
+        "nativeName": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-name-cut-at-64-then-trimmed",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"nativeName\":\"{{REPEAT}} bbbbbbbbbb\"}}",
+      "repeat": {
+        "char": "a",
+        "count": 63
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-name-exactly-64-kept",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"nativeName\":\"{{REPEAT}}\"}}",
+      "repeat": {
+        "char": "a",
+        "count": 64
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-name-65-chars-cut",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"nativeName\":\"{{REPEAT}}\"}}",
+      "repeat": {
+        "char": "a",
+        "count": 65
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "native-name-surrogate-pair-cut-at-64-utf16-units",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"nativeName\":\"{{REPEAT}}\\ud83d\\ude00\\ud83d\\ude00\"}}",
+      "repeat": {
+        "char": "a",
+        "count": 63
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\uFFFD",
+        "nativeNameDeclared": true,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-none",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"none\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "None",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-NONE-case-insensitive",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"NONE\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "None",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-one-other",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"one-other\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-ONE-OTHER-case-insensitive",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"ONE-OTHER\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-unknown-warns",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"other\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: unknown _meta.plural 'other', using one-other (valid: one-other, none)"
+      ]
+    },
+    {
+      "id": "plural-empty-warns",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: unknown _meta.plural '', using one-other (valid: one-other, none)"
+      ]
+    },
+    {
+      "id": "plural-long-unknown-warns",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"zero-one-few-many\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: unknown _meta.plural 'zero-one-few-many', using one-other (valid: one-other, none)"
+      ]
+    },
+    {
+      "id": "plural-not-a-string-is-silently-not-declared",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":5}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-null-not-declared",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":null}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-twice-last-wins-none-then-one-other",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"none\",\"plural\":\"one-other\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-twice-one-other-then-none",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"one-other\",\"plural\":\"none\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "None",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "plural-unknown-then-valid-keeps-the-warning",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"bad\",\"plural\":\"none\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "None",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: unknown _meta.plural 'bad', using one-other (valid: one-other, none)"
+      ]
+    },
+    {
+      "id": "plural-with-line-break-warning-is-one-line",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"plural\":\"a\\nb\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": true,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: unknown _meta.plural 'a�b', using one-other (valid: one-other, none)"
+      ]
+    },
+    {
+      "id": "authors-strings-only-are-kept",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"authors\":[\"A\",5,null,\"B\",[\"C\"],{\"x\":1},true]}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [
+          "A",
+          "B"
+        ],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "authors-not-array-ignored",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"authors\":\"A\"}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "authors-twice-append",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"authors\":[\"A\"],\"authors\":[\"B\"]}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [
+          "A",
+          "B"
+        ],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "authors-empty",
+      "json": "{\"_meta\":{\"code\":\"xx\",\"authors\":[]}}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-basic",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"b\":\"2\",\"a\":\"1\",\"c.d\":\"3\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "b",
+            "2"
+          ],
+          [
+            "a",
+            "1"
+          ],
+          [
+            "c.d",
+            "3"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-duplicate-last-wins-keeps-first-position",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a\":\"1\",\"b\":\"2\",\"a\":\"3\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "3"
+          ],
+          [
+            "b",
+            "2"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: duplicate key 'a', the last value is used"
+      ]
+    },
+    {
+      "id": "entries-duplicate-three-times-warns-twice",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a\":\"1\",\"a\":\"2\",\"a\":\"3\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "3"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: duplicate key 'a', the last value is used",
+        "test.json: duplicate key 'a', the last value is used"
+      ]
+    },
+    {
+      "id": "entries-keys-are-case-sensitive",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a\":\"1\",\"A\":\"2\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "1"
+          ],
+          [
+            "A",
+            "2"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-non-string-values-ignored-with-warning",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"num\":1,\"obj\":{\"a\":\"b\"},\"arr\":[\"x\"],\"nil\":null,\"yes\":true,\"no\":false,\"ok\":\"fine\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "ok",
+            "fine"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: 'num' is not a string, ignored",
+        "test.json: 'obj' is not a string, ignored",
+        "test.json: 'arr' is not a string, ignored",
+        "test.json: 'nil' is not a string, ignored",
+        "test.json: 'yes' is not a string, ignored",
+        "test.json: 'no' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "entries-underscore-keys-skipped-silently",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"_comment\":\"note\",\"_comment2\":5,\"_section\":{\"x\":1},\"_\":\"x\",\"__x\":[1],\"k\":\"v\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-empty-key-is-an-entry",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"\":\"empty key\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "",
+            "empty key"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-empty-value",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"k\":\"\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            ""
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-key-with-spaces-and-unicode",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a b\":\"1\",\"đ\":\"2\",\"\uD83D\uDE00\":\"3\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a b",
+            "1"
+          ],
+          [
+            "đ",
+            "2"
+          ],
+          [
+            "\uD83D\uDE00",
+            "3"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-all-escapes-in-value",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"k\":\"\\\"\\\\\\/\\b\\f\\n\\r\\t\\u0041\\u00e9\\ud83d\\ude00\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "\"\\/\b\f\n\r\tAé\uD83D\uDE00"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "entries-key-with-control-chars-warning-is-sanitized",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"k\\n2026-10-04 [ERROR] forged\":5,\"d\\r\\ne\":\"1\",\"d\\r\\ne\":\"2\"}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "d\r\ne",
+            "2"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: 'k�2026-10-04 [ERROR] forged' is not a string, ignored",
+        "test.json: duplicate key 'd��e', the last value is used"
+      ]
+    },
+    {
+      "id": "entries-long-key-in-warning-is-cut-at-120",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"{{REPEAT}}\":5}",
+      "repeat": {
+        "char": "k",
+        "count": 200
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk...' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "entries-key-exactly-120-not-cut",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"{{REPEAT}}\":5}",
+      "repeat": {
+        "char": "k",
+        "count": 120
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "entries-key-121-cut",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"{{REPEAT}}\":5}",
+      "repeat": {
+        "char": "k",
+        "count": 121
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk...' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "entries-duplicate-long-key-warning",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"{{REPEAT}}\":\"1\",\"{{REPEAT}}\":\"2\"}",
+      "repeat": {
+        "char": "k",
+        "count": 150
+      },
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",
+            "2"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: duplicate key 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk...', the last value is used"
+      ]
+    },
+    {
+      "id": "source-with-control-chars-is-sanitized",
+      "source": "bad\nname\u0001.json",
+      "json": "{\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        "bad�name�.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "source-longer-than-120-is-cut",
+      "source_repeat": {
+        "char": "s",
+        "count": 130
+      },
+      "json": "{\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss...: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "source-empty",
+      "source": "",
+      "json": "{\"k\":\"v\"}",
+      "ok": false,
+      "warnings": [
+        ": _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "key-with-delete-and-c1-controls",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a\\u007fb\\u0085c\":5}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: 'a�b�c' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "key-with-line-separator-is-not-a-control-char",
+      "json": "{\"_meta\":{\"code\":\"xx\"},\"a\\u2028b\":5}",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": [
+        "test.json: 'a\u2028b' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-value-is-unreadable",
+      "source": "bad.json",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"key\": \"\\ud800\" }",
+      "ok": false,
+      "warnings": [
+        "bad.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-low-surrogate-in-value-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"key\": \"a\\udc00b\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "reversed-pair-in-value-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"key\": \"\\ude00\\ud83d\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "valid-pair-in-value-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"key\": \"\\ud83d\\ude00\" }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "key",
+            "\uD83D\uDE00"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "lone-surrogate-in-entry-key-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"\\ud800\": \"v\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-underscore-key-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"_\\ud800\": \"v\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-underscore-value-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"_c\": \"\\ud800\", \"k\": \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "lone-surrogate-in-nested-underscore-value-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"_c\": {\"\\ud800\": [\"\\udc00\"]}, \"k\": \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "lone-surrogate-in-meta-code-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"x\\ud800x\" } }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-meta-name-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"name\": \"\\ud800\" } }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-meta-plural-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"plural\": \"\\ud800\" } }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-meta-authors-string-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"authors\": [\"\\ud800\"] } }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-meta-authors-non-string-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"authors\": [{\"\\ud800\": 1}] } }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "lone-surrogate-in-meta-unknown-value-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"n\": \"\\ud800\" }, \"a\": \"x\" }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "x"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "lone-surrogate-in-meta-unknown-key-is-unreadable",
+      "json": "{ \"_meta\": { \"code\": \"xx\", \"\\ud83d\": 1 }, \"a\": \"x\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: unreadable text (*)"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-non-string-entry-value-ignored-value-is-fine",
+      "json": "{ \"_meta\": { \"code\": \"xx\" }, \"n\": [\"\\ud800\"], \"a\": \"x\" }",
+      "ok": true,
+      "catalog": {
+        "code": "xx",
+        "name": "xx",
+        "nativeName": "xx",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "x"
+          ]
+        ]
+      },
+      "warnings": [
+        "test.json: 'n' is not a string, ignored"
+      ]
+    },
+    {
+      "id": "lone-surrogate-in-meta-value-of-wrong-type-is-fine",
+      "json": "{ \"_meta\": [ \"\\udc00x\" ], \"a\": \"x\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: _meta must be an object",
+        "test.json: _meta.code is missing or invalid"
+      ]
+    },
+    {
+      "id": "comments-and-trailing-commas",
+      "json": "{\n  // line comment\n  \"_meta\": { \"code\": \"vi\", },\n  /* block comment */\n  \"k\": \"v\",\n}",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "comment-between-name-and-colon-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"a\" /*c*/ : \"v\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "comment-after-colon-is-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"a\": /*c*/ \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "line-comment-to-end-of-text-without-newline",
+      "json": "{ \"_meta\": {\"code\":\"vi\"} } // tail",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "line-comment-ended-by-cr",
+      "json": "{ // c\r \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "line-comment-ended-by-u2028",
+      "json": "{ // c\u2028 \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "line-comment-ended-by-u2029",
+      "json": "{ // c\u2029 \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "line-comment-with-u2028-inside-then-lf",
+      "json": "{ // c\u2028\n \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "line-comment-with-u2029-inside-then-lf",
+      "json": "{ // c\u2029\n \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "line-comment-with-nel-inside-then-lf",
+      "json": "{ // c\u0085\n \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "line-comment-crlf",
+      "json": "{ // c\r\n \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "block-comment-containing-newlines-and-slashes",
+      "json": "{ /* a\n// b\n*/ \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "block-comment-unterminated",
+      "json": "{ \"_meta\": {\"code\":\"vi\"} } /* open",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "block-comment-star-slash-edge",
+      "json": "{ /*/ \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "block-comment-with-stars",
+      "json": "{ /** doc **/ \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "comment-markers-inside-strings-are-text",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"a\": \"// not a comment\", \"b\": \"/* nor this */\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "a",
+            "// not a comment"
+          ],
+          [
+            "b",
+            "/* nor this */"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "comment-before-root",
+      "json": "// first\n{ \"_meta\": {\"code\":\"vi\"} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "single-slash-is-invalid",
+      "json": "{ / \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "trailing-comma-after-meta-object-and-array",
+      "json": "{ \"_meta\": {\"code\":\"vi\",\"authors\":[\"a\",],}, }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [
+          "a"
+        ],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "double-trailing-comma-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"},, }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "leading-comma-is-invalid",
+      "json": "{ , \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "only-comma-object-is-invalid",
+      "json": "{,}",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "missing-comma-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"} \"a\": \"b\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "empty-text",
+      "json": "",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "whitespace-only",
+      "json": "  \n\t ",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "open-brace-only",
+      "json": "{",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "close-brace-only",
+      "json": "}",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "missing-value",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "not-json",
+      "json": "not json at all",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "single-quotes",
+      "json": "{ 'k': 'single quotes' }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "unquoted-key",
+      "json": "{ k: \"v\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "trailing-garbage",
+      "json": "{ \"_meta\": {\"code\":\"vi\"} } x",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "two-roots",
+      "json": "{ \"_meta\": {\"code\":\"vi\"} } { }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "leading-bom-char",
+      "json": "\uFEFF{ \"_meta\": {\"code\":\"vi\"} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "root-array",
+      "json": "[]",
+      "ok": false,
+      "warnings": [
+        "test.json: root must be a JSON object"
+      ]
+    },
+    {
+      "id": "root-string",
+      "json": "\"text\"",
+      "ok": false,
+      "warnings": [
+        "test.json: root must be a JSON object"
+      ]
+    },
+    {
+      "id": "root-number",
+      "json": "42",
+      "ok": false,
+      "warnings": [
+        "test.json: root must be a JSON object"
+      ]
+    },
+    {
+      "id": "root-null",
+      "json": "null",
+      "ok": false,
+      "warnings": [
+        "test.json: root must be a JSON object"
+      ]
+    },
+    {
+      "id": "root-true",
+      "json": "true",
+      "ok": false,
+      "warnings": [
+        "test.json: root must be a JSON object"
+      ]
+    },
+    {
+      "id": "nan-in-underscore-value-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": NaN }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "leading-zero-in-underscore-value-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": 01 }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "minus-only-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": - }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "trailing-dot-number-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": 1. }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "leading-dot-number-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": .5 }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "exponent-without-digits-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": 1e }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "plus-sign-number-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": +1 }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "hex-number-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": 0x10 }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "huge-and-odd-numbers-are-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": [1e999, -1e999, 123456789012345678901234567890, -0, 0.0e+0, 1E5] }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "literal-prefix-tru-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": tru }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "literal-case-True-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": True }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "raw-control-char-in-string-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\u0001b\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "raw-tab-in-string-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\tb\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "raw-newline-in-string-is-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\nb\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "raw-delete-and-line-separator-in-string-are-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\u007Fb\u2028c\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "a\u007Fb\u2028c"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "unterminated-string",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"abc }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "invalid-escape-x",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"\\x\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "invalid-escape-single-quote",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"\\'\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "short-unicode-escape",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"\\u00\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "non-hex-unicode-escape",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"\\u00G0\" }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "escaped-solidus-is-valid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\\/b\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "a/b"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "uppercase-hex-escape",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"\\u00E9\\u00e9\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "éé"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "backslash-at-end-of-text",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"k\": \"a\\",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "depth-63-arrays-in-underscore-value-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": {{DEEP:62}} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "depth-64-total-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": {{DEEP:63}} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "depth-65-total-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": {{DEEP:64}} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "depth-objects-63-fine",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": {{DEEPOBJ:63}} }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "depth-objects-64-invalid",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"_x\": {{DEEPOBJ:64}} }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "depth-in-meta-value",
+      "json": "{ \"_meta\": {\"code\":\"vi\",\"deep\": {{DEEP:62}} } }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": []
+      },
+      "warnings": []
+    },
+    {
+      "id": "depth-in-meta-value-too-deep",
+      "json": "{ \"_meta\": {\"code\":\"vi\",\"deep\": {{DEEP:63}} } }",
+      "ok": false,
+      "warnings": [
+        "test.json: invalid JSON (*)"
+      ]
+    },
+    {
+      "id": "key-with-escaped-underscore-is-an-underscore-key",
+      "json": "{ \"_meta\": {\"code\":\"vi\"}, \"\\u005fx\": 5, \"k\": \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "meta-key-written-with-escape-still-meta",
+      "json": "{ \"\\u005fmeta\": {\"code\":\"vi\"}, \"k\": \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "meta-inner-key-written-with-escape",
+      "json": "{ \"_meta\": {\"c\\u006fde\":\"vi\"}, \"k\": \"v\" }",
+      "ok": true,
+      "catalog": {
+        "code": "vi",
+        "name": "vi",
+        "nativeName": "vi",
+        "nativeNameDeclared": false,
+        "plural": "OneOther",
+        "pluralDeclared": false,
+        "authors": [],
+        "entries": [
+          [
+            "k",
+            "v"
+          ]
+        ]
+      },
+      "warnings": []
+    }
+  ]
+}

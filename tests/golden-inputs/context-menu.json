@@ -1,0 +1,564 @@
+{
+    "parse_hidden":  [
+                         [
+
+                         ],
+                         [
+                             "Fit"
+                         ],
+                         [
+                             "CopyFullPath",
+                             "Bogus",
+                             "Settings",
+                             "Fit",
+                             "Fit",
+                             null,
+                             "undo"
+                         ],
+                         [
+                             "Settings"
+                         ],
+                         [
+                             null
+                         ],
+                         [
+                             null,
+                             null
+                         ],
+                         [
+                             "Refresh",
+                             "ZoomFitWidth2",
+                             "Undo"
+                         ],
+                         [
+                             "Undo",
+                             "MoveToRecycleBin",
+                             "Fit",
+                             "ZoomToLevel",
+                             "ZoomSubmenu",
+                             "OpenFolder",
+                             "NextFolder",
+                             "PreviousFolder",
+                             "ExternalEditor",
+                             "CopyFileName",
+                             "CopyFullPath",
+                             "Settings",
+                             "ZoomFitWidth",
+                             "ZoomFitWidth2",
+                             "ZoomFitHeight",
+                             "ZoomPresets",
+                             "ZoomLevelOptions",
+                             "Refresh"
+                         ],
+                         [
+                             "ZoomLevelOptions",
+                             "ZoomPresets",
+                             "ZoomFitHeight",
+                             "ZoomFitWidth2",
+                             "ZoomFitWidth"
+                         ],
+                         [
+                             "",
+                             " ",
+                             "\t"
+                         ]
+                     ],
+    "single_names":  [
+                         "Undo",
+                         "undo",
+                         " Undo ",
+                         "Undo ",
+                         "\tUndo",
+                         "Undo\n",
+                         " Undo",
+                         "　Undo",
+                         "MoveToRecycleBin",
+                         "Fit",
+                         "ZoomFitWidth2",
+                         "Refresh",
+                         "Settings",
+                         "settings",
+                         "0",
+                         "1",
+                         "2",
+                         "3",
+                         "11",
+                         "12",
+                         "17",
+                         "18",
+                         "99",
+                         "-1",
+                         "+1",
+                         "+3",
+                         " 3 ",
+                         "3 ",
+                         "03",
+                         "003",
+                         "0x3",
+                         "3.0",
+                         "1e0",
+                         "٣",
+                         "0 ",
+                         "-0",
+                         "Fit,Undo",
+                         "Fit, Undo",
+                         "Fit,,Undo",
+                         "Fit,",
+                         ",Fit",
+                         "Undo,Undo",
+                         "Settings,Fit",
+                         "Fit | Undo",
+                         "3,4",
+                         "3, Fit",
+                         "Fit,3",
+                         "Undo,MoveToRecycleBin",
+                         "Fit,ZoomToLevel",
+                         "ZoomFitWidth,ZoomFitWidth2",
+                         "ZoomPresets,ZoomLevelOptions",
+                         "2147483647",
+                         "-2147483648",
+                         "2147483648",
+                         "4294967296",
+                         "9999999999999999999",
+                         "",
+                         " ",
+                         "   ",
+                         "System.String",
+                         "ContextMenuItemId.Undo",
+                         "Undo=0",
+                         "Undo;Fit",
+                         "3\u0000",
+                         "Undo\u0000",
+                         "\u00003",
+                         "1_0",
+                         "１",
+                         "+",
+                         "-",
+                         "+-1",
+                         "--1",
+                         "3 4",
+                         "Fit Undo",
+                         "FIT",
+                         "ZoomToLevel ",
+                         " 3"
+                     ],
+    "settings_flags":  [
+                           {
+                               "zoom":  true,
+                               "folder":  true,
+                               "recycle":  true
+                           },
+                           {
+                               "zoom":  true,
+                               "folder":  true,
+                               "recycle":  false
+                           },
+                           {
+                               "zoom":  true,
+                               "folder":  false,
+                               "recycle":  true
+                           },
+                           {
+                               "zoom":  true,
+                               "folder":  false,
+                               "recycle":  false
+                           },
+                           {
+                               "zoom":  false,
+                               "folder":  true,
+                               "recycle":  true
+                           },
+                           {
+                               "zoom":  false,
+                               "folder":  true,
+                               "recycle":  false
+                           },
+                           {
+                               "zoom":  false,
+                               "folder":  false,
+                               "recycle":  true
+                           },
+                           {
+                               "zoom":  false,
+                               "folder":  false,
+                               "recycle":  false
+                           }
+                       ],
+    "effective":  [
+                      {
+                          "list":  null,
+                          "zoom":  true,
+                          "folder":  true,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  true,
+                          "folder":  true,
+                          "recycle":  false
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  true,
+                          "folder":  false,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  true,
+                          "folder":  false,
+                          "recycle":  false
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  false,
+                          "folder":  true,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  false,
+                          "folder":  true,
+                          "recycle":  false
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  false,
+                          "folder":  false,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  null,
+                          "zoom":  false,
+                          "folder":  false,
+                          "recycle":  false
+                      },
+                      {
+                          "list":  [
+
+                                   ],
+                          "zoom":  false,
+                          "folder":  false,
+                          "recycle":  false
+                      },
+                      {
+                          "list":  [
+                                       "Fit"
+                                   ],
+                          "zoom":  true,
+                          "folder":  true,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  [
+                                       "CopyFullPath",
+                                       "Bogus",
+                                       "Settings",
+                                       "Fit",
+                                       "Fit",
+                                       null,
+                                       "undo"
+                                   ],
+                          "zoom":  true,
+                          "folder":  true,
+                          "recycle":  true
+                      },
+                      {
+                          "list":  [
+                                       "Settings"
+                                   ],
+                          "zoom":  false,
+                          "folder":  false,
+                          "recycle":  false
+                      }
+                  ],
+    "to_stored":  [
+                      [
+
+                      ],
+                      [
+                          "CopyFullPath",
+                          "Fit",
+                          "Settings",
+                          "Fit"
+                      ],
+                      [
+                          "Settings"
+                      ],
+                      [
+                          "Refresh",
+                          "Undo",
+                          "ZoomFitWidth2",
+                          "ExternalEditor"
+                      ],
+                      [
+                          "ZoomLevelOptions",
+                          "ZoomPresets",
+                          "ZoomFitHeight",
+                          "ZoomFitWidth2",
+                          "ZoomFitWidth",
+                          "Refresh",
+                          "CopyFullPath"
+                      ]
+                  ],
+    "apply_hidden":  [
+                         [
+
+                         ],
+                         [
+                             "CopyFullPath",
+                             "Fit",
+                             "Settings",
+                             "Fit"
+                         ],
+                         [
+                             "Fit",
+                             "ZoomToLevel",
+                             "ZoomSubmenu"
+                         ],
+                         [
+                             "Fit",
+                             "ZoomToLevel"
+                         ],
+                         [
+                             "OpenFolder",
+                             "NextFolder",
+                             "PreviousFolder"
+                         ],
+                         [
+                             "OpenFolder",
+                             "NextFolder"
+                         ],
+                         [
+                             "MoveToRecycleBin",
+                             "Fit",
+                             "ZoomToLevel",
+                             "ZoomSubmenu"
+                         ],
+                         [
+                             "MoveToRecycleBin"
+                         ],
+                         [
+                             "Undo",
+                             "ZoomFitWidth2",
+                             "ExternalEditor"
+                         ],
+                         [
+                             "Settings"
+                         ],
+                         [
+                             "Refresh",
+                             "ZoomFitWidth"
+                         ]
+                     ],
+    "masks":  [
+                  0,
+                  1,
+                  2,
+                  4,
+                  8,
+                  16,
+                  32,
+                  37,
+                  64,
+                  74,
+                  88,
+                  111,
+                  128,
+                  148,
+                  171,
+                  185,
+                  216,
+                  222,
+                  256,
+                  259,
+                  296,
+                  333,
+                  370,
+                  407,
+                  444,
+                  481,
+                  512,
+                  518,
+                  555,
+                  592,
+                  629,
+                  666,
+                  703,
+                  740,
+                  748,
+                  767,
+                  777,
+                  814,
+                  851,
+                  862,
+                  888,
+                  907,
+                  925,
+                  962,
+                  999,
+                  1024,
+                  1036,
+                  1064,
+                  1073,
+                  1110,
+                  1147,
+                  1184,
+                  1221,
+                  1258,
+                  1295,
+                  1332,
+                  1335,
+                  1336,
+                  1355,
+                  1369,
+                  1406,
+                  1443,
+                  1448,
+                  1480,
+                  1517,
+                  1554,
+                  1591,
+                  1628,
+                  1665,
+                  1702,
+                  1708,
+                  1739,
+                  1776,
+                  1784,
+                  1813,
+                  1850,
+                  1887,
+                  1924,
+                  1961,
+                  1992,
+                  1998,
+                  2035,
+                  2047,
+                  2048,
+                  2072,
+                  2092,
+                  2109,
+                  2146,
+                  2183,
+                  2200,
+                  2220,
+                  2243,
+                  2257,
+                  2280,
+                  2294,
+                  2312,
+                  2331,
+                  2363,
+                  2368,
+                  2405,
+                  2439,
+                  2442,
+                  2479,
+                  2516,
+                  2553,
+                  2590,
+                  2627,
+                  2647,
+                  2664,
+                  2668,
+                  2701,
+                  2715,
+                  2738,
+                  2775,
+                  2808,
+                  2812,
+                  2847,
+                  2849,
+                  2886,
+                  2923,
+                  2960,
+                  2997,
+                  3016,
+                  3034,
+                  3047,
+                  3050,
+                  3071,
+                  3094,
+                  3108,
+                  3123,
+                  3145,
+                  3155,
+                  3182,
+                  3219,
+                  3239,
+                  3256,
+                  3293,
+                  3330,
+                  3367,
+                  3404,
+                  3441,
+                  3478,
+                  3515,
+                  3552,
+                  3583,
+                  3589,
+                  3626,
+                  3631,
+                  3663,
+                  3683,
+                  3700,
+                  3737,
+                  3774,
+                  3794,
+                  3811,
+                  3839,
+                  3848,
+                  3885,
+                  3893,
+                  3922,
+                  3959,
+                  3967,
+                  3996,
+                  4031,
+                  4033,
+                  4063,
+                  4070,
+                  4079,
+                  4087,
+                  4090,
+                  4091,
+                  4093,
+                  4094,
+                  4095
+              ],
+    "submenu_masks":  [
+                          0,
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8,
+                          9,
+                          10,
+                          11,
+                          12,
+                          13,
+                          14,
+                          15,
+                          16,
+                          17,
+                          18,
+                          19,
+                          20,
+                          21,
+                          22,
+                          23,
+                          24,
+                          25,
+                          26,
+                          27,
+                          28,
+                          29,
+                          30,
+                          31
+                      ]
+}

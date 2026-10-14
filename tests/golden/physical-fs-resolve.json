@@ -1,0 +1,145 @@
+{
+  "generator": "oracle-cs physical-fs-resolve",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\b.jpg",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\b.jpg"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\\\b",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\b"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\..\\b",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\b"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\.\\b",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\a\\b"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder/x/y",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\x\\y"
+    },
+    {
+      "path": "c:\\photoreviewgolden\\Nosuchfolder\\X",
+      "resolved": "c:\\photoreviewgolden\\Nosuchfolder\\X"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a.",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\a"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\a ",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\a"
+    },
+    {
+      "path": "C:\\",
+      "resolved": "C:\\"
+    },
+    {
+      "path": "C:/",
+      "resolved": "C:\\"
+    },
+    {
+      "path": "C:\\\\",
+      "resolved": "C:\\"
+    },
+    {
+      "path": "c:\\",
+      "resolved": "c:\\"
+    },
+    {
+      "path": "C:\\..",
+      "resolved": "C:\\"
+    },
+    {
+      "path": "C:\\a\\..\\..",
+      "resolved": "C:\\"
+    },
+    {
+      "path": "Z:\\x\\y",
+      "resolved": "Z:\\x\\y"
+    },
+    {
+      "path": "\\\\server\\share\\a\\b",
+      "resolved": "\\\\server\\share\\a\\b"
+    },
+    {
+      "path": "\\\\server\\share\\",
+      "resolved": "\\\\server\\share"
+    },
+    {
+      "path": "\\\\server\\share",
+      "resolved": "\\\\server\\share"
+    },
+    {
+      "path": "//server/share/a/",
+      "resolved": "\\\\server\\share\\a"
+    },
+    {
+      "path": "\\\\server",
+      "resolved": "\\\\server"
+    },
+    {
+      "path": "\\\\server\\share\\..\\..\\x",
+      "resolved": "\\\\server\\share\\x"
+    },
+    {
+      "path": "\\\\?\\C:\\PhotoReviewGolden\\NoSuch\\x",
+      "resolved": "\\\\?\\C:\\PhotoReviewGolden\\NoSuch\\x"
+    },
+    {
+      "path": "\\\\?\\C:\\",
+      "resolved": "\\\\?\\C:\\"
+    },
+    {
+      "path": "\\\\?\\C:",
+      "resolved": "\\\\?\\C:"
+    },
+    {
+      "path": "\\\\?\\UNC\\server\\share\\a",
+      "resolved": "\\\\?\\UNC\\server\\share\\a"
+    },
+    {
+      "path": "\\\\.\\C:\\x",
+      "resolved": "\\\\.\\C:\\x"
+    },
+    {
+      "path": "\\\\?\\C:\\PhotoReviewGolden\\..\\x",
+      "resolved": "\\\\?\\C:\\PhotoReviewGolden\\..\\x"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\ảnh đẹp\\Ảnh.jpg",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\ảnh đẹp\\Ảnh.jpg"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "resolved": "C:\\PhotoReviewGolden\\NoSuchFolder\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "path": "C:\\qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq\\f\\g",
+      "resolved": "C:\\qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq\\f\\g"
+    },
+    {
+      "path": "",
+      "resolved": null,
+      "exception": "ArgumentException"
+    },
+    {
+      "path": "   ",
+      "resolved": null,
+      "exception": "ArgumentException"
+    },
+    {
+      "path": "C:\\PhotoReviewGolden\\NoSuchFolder\\\u0000x",
+      "resolved": null,
+      "exception": "ArgumentException"
+    }
+  ]
+}

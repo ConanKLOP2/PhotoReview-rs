@@ -1,0 +1,188 @@
+{
+  "generator": "oracle-cs file-log-backup-name",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "app.log",
+      "files": [
+        {
+          "name": "app.1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "app.log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "test.log",
+      "files": [
+        {
+          "name": "test.1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "test.log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "noext",
+      "files": [
+        {
+          "name": "noext",
+          "length_is_2048": false
+        },
+        {
+          "name": "noext.1",
+          "length_is_2048": true
+        }
+      ]
+    },
+    {
+      "name": "a.b.log",
+      "files": [
+        {
+          "name": "a.b.1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "a.b.log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": ".log",
+      "files": [
+        {
+          "name": ".1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": ".log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "x.tar.gz",
+      "files": [
+        {
+          "name": "x.tar.1.gz",
+          "length_is_2048": true
+        },
+        {
+          "name": "x.tar.gz",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "UPPER.LOG",
+      "files": [
+        {
+          "name": "UPPER.1.LOG",
+          "length_is_2048": true
+        },
+        {
+          "name": "UPPER.LOG",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "app.1.log",
+      "files": [
+        {
+          "name": "app.1.1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "app.1.log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "log",
+      "files": [
+        {
+          "name": "log",
+          "length_is_2048": false
+        },
+        {
+          "name": "log.1",
+          "length_is_2048": true
+        }
+      ]
+    },
+    {
+      "name": "my log.txt",
+      "files": [
+        {
+          "name": "my log.1.txt",
+          "length_is_2048": true
+        },
+        {
+          "name": "my log.txt",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "ảnh.log",
+      "files": [
+        {
+          "name": "ảnh.1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "ảnh.log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "a.log.txt",
+      "files": [
+        {
+          "name": "a.log.1.txt",
+          "length_is_2048": true
+        },
+        {
+          "name": "a.log.txt",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "a..log",
+      "files": [
+        {
+          "name": "a..1.log",
+          "length_is_2048": true
+        },
+        {
+          "name": "a..log",
+          "length_is_2048": false
+        }
+      ]
+    },
+    {
+      "name": "trailing.dotx",
+      "files": [
+        {
+          "name": "trailing.1.dotx",
+          "length_is_2048": true
+        },
+        {
+          "name": "trailing.dotx",
+          "length_is_2048": false
+        }
+      ]
+    }
+  ]
+}

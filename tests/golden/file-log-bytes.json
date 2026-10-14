@@ -1,0 +1,128 @@
+{
+  "generator": "oracle-cs file-log-bytes",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "one info line",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": "hello"
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D2068656C6C6F0D0A",
+      "masked_text": "<ts> [INFO] [T] hello\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "three levels in order",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": "one"
+        },
+        {
+          "level": "WARN",
+          "message": "two"
+        },
+        {
+          "level": "ERROR",
+          "message": "three"
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D206F6E650D0A3C74733E205B5741524E5D205B545D2074776F0D0A3C74733E205B4552524F525D205B545D2074687265650D0A",
+      "masked_text": "<ts> [INFO] [T] one\r\n<ts> [WARN] [T] two\r\n<ts> [ERROR] [T] three\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "error with exception: LF between head and exception text, CRLF at the end",
+      "entries": [
+        {
+          "level": "ERROR",
+          "message": "boom",
+          "exceptionText": "System.InvalidOperationException: x"
+        }
+      ],
+      "masked_hex": "3C74733E205B4552524F525D205B545D20626F6F6D0A53797374656D2E496E76616C69644F7065726174696F6E457863657074696F6E3A20780D0A",
+      "masked_text": "<ts> [ERROR] [T] boom\nSystem.InvalidOperationException: x\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "error with multi-line exception text keeps its own CRLF",
+      "entries": [
+        {
+          "level": "ERROR",
+          "message": "boom",
+          "exceptionText": "A: m\r\n   at X()\r\n   at Y()"
+        }
+      ],
+      "masked_hex": "3C74733E205B4552524F525D205B545D20626F6F6D0A413A206D0D0A2020206174205828290D0A2020206174205928290D0A",
+      "masked_text": "<ts> [ERROR] [T] boom\nA: m\r\n   at X()\r\n   at Y()\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "error without exception",
+      "entries": [
+        {
+          "level": "ERROR",
+          "message": "plain error"
+        }
+      ],
+      "masked_hex": "3C74733E205B4552524F525D205B545D20706C61696E206572726F720D0A",
+      "masked_text": "<ts> [ERROR] [T] plain error\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "message with LF and unicode is verbatim, not re-encoded",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": "line1\nline2 {0} {name} {{x}} İı 日本語 مرحبا \uD83D\uDE00"
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D206C696E65310A6C696E6532207B307D207B6E616D657D207B7B787D7D20C4B0C4B120E697A5E69CACE8AA9E20D985D8B1D8ADD8A8D8A720F09F98800D0A",
+      "masked_text": "<ts> [INFO] [T] line1\nline2 {0} {name} {{x}} İı 日本語 مرحبا \uD83D\uDE00\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "message with CRLF",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": "a\r\nb"
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D20610D0A620D0A",
+      "masked_text": "<ts> [INFO] [T] a\r\nb\r\n",
+      "has_bom": false
+    },
+    {
+      "name": "empty message",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": ""
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D200D0A",
+      "masked_text": "<ts> [INFO] [T] \r\n",
+      "has_bom": false
+    },
+    {
+      "name": "no BOM, UTF-8, two entries",
+      "entries": [
+        {
+          "level": "INFO",
+          "message": "é"
+        },
+        {
+          "level": "INFO",
+          "message": "ß"
+        }
+      ],
+      "masked_hex": "3C74733E205B494E464F5D205B545D20C3A90D0A3C74733E205B494E464F5D205B545D20C39F0D0A",
+      "masked_text": "<ts> [INFO] [T] é\r\n<ts> [INFO] [T] ß\r\n",
+      "has_bom": false
+    }
+  ]
+}

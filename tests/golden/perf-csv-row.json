@@ -1,0 +1,1313 @@
+{
+  "generator": "oracle-cs perf-csv-row",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "mapping-named-and-positional",
+      "event": "Evt",
+      "names": [
+        "first",
+        "nav",
+        "pathId",
+        "second",
+        "third",
+        "name",
+        "fourth"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 1
+        },
+        {
+          "t": "long",
+          "v": 42
+        },
+        {
+          "t": "string",
+          "v": "abc123"
+        },
+        {
+          "t": "double",
+          "v": 2.5
+        },
+        {
+          "t": "bool",
+          "v": true
+        },
+        {
+          "t": "string",
+          "v": "hello"
+        },
+        {
+          "t": "int",
+          "v": 7
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "42",
+        "pathId": "abc123",
+        "a": "1",
+        "b": "2.5",
+        "c": "1",
+        "d": "7",
+        "text": "hello"
+      }
+    },
+    {
+      "id": "gen-fills-nav",
+      "event": "Evt",
+      "names": [
+        "gen",
+        "phase"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 9
+        },
+        {
+          "t": "string",
+          "v": "scanned"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "9",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": "scanned"
+      }
+    },
+    {
+      "id": "second-nav-gen-pathid-are-ordinary",
+      "event": "Evt",
+      "names": [
+        "nav",
+        "gen",
+        "pathId",
+        "pathId"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 10
+        },
+        {
+          "t": "long",
+          "v": 20
+        },
+        {
+          "t": "string",
+          "v": "p1"
+        },
+        {
+          "t": "string",
+          "v": "p2"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "10",
+        "pathId": "p1",
+        "a": "20",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": "p2"
+      }
+    },
+    {
+      "id": "other-names-never-fill-nav-pathid",
+      "event": "Evt",
+      "names": [
+        "slot",
+        "label",
+        "ms"
+      ],
+      "values": [
+        {
+          "t": "int",
+          "v": 3
+        },
+        {
+          "t": "string",
+          "v": "x"
+        },
+        {
+          "t": "double",
+          "v": 1.5
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "3",
+        "b": "1.5",
+        "c": "",
+        "d": "",
+        "text": "x"
+      }
+    },
+    {
+      "id": "more-than-four-numerics",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "values": [
+        {
+          "t": "int",
+          "v": 1
+        },
+        {
+          "t": "int",
+          "v": 2
+        },
+        {
+          "t": "int",
+          "v": 3
+        },
+        {
+          "t": "int",
+          "v": 4
+        },
+        {
+          "t": "int",
+          "v": 5
+        },
+        {
+          "t": "int",
+          "v": 6
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "d": "4",
+        "text": ""
+      }
+    },
+    {
+      "id": "text-skips-nulls-and-joins",
+      "event": "Evt",
+      "names": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": "alpha"
+        },
+        {
+          "t": "null"
+        },
+        {
+          "t": "string",
+          "v": "beta"
+        },
+        {
+          "t": "string",
+          "v": "gamma"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": "alpha;beta;gamma"
+      }
+    },
+    {
+      "id": "empty-strings-are-text-not-skipped",
+      "event": "Evt",
+      "names": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": "a"
+        },
+        {
+          "t": "string",
+          "v": ""
+        },
+        {
+          "t": "string",
+          "v": "b"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": "a;;b"
+      }
+    },
+    {
+      "id": "two-empty-strings",
+      "event": "Evt",
+      "names": [
+        "t1",
+        "t2"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": ""
+        },
+        {
+          "t": "string",
+          "v": ""
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ";"
+      }
+    },
+    {
+      "id": "more-names-than-values",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b",
+        "c"
+      ],
+      "values": [
+        {
+          "t": "int",
+          "v": 1
+        },
+        {
+          "t": "int",
+          "v": 2
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "2",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "more-values-than-names",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b"
+      ],
+      "values": [
+        {
+          "t": "int",
+          "v": 1
+        },
+        {
+          "t": "int",
+          "v": 2
+        },
+        {
+          "t": "int",
+          "v": 3
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "2",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "names-null",
+      "event": "Evt",
+      "names": null,
+      "values": [
+        {
+          "t": "int",
+          "v": 1
+        },
+        {
+          "t": "int",
+          "v": 2
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "values-null",
+      "event": "Evt",
+      "names": [
+        "a"
+      ],
+      "values": null,
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "both-empty",
+      "event": "Evt",
+      "names": [],
+      "values": [],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "nav-null-then-gen-takes-nav",
+      "event": "Evt",
+      "names": [
+        "nav",
+        "gen"
+      ],
+      "values": [
+        {
+          "t": "null"
+        },
+        {
+          "t": "long",
+          "v": 5
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "5",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "nav-string-value",
+      "event": "Evt",
+      "names": [
+        "nav"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": "x"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "x",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "nav-double-value",
+      "event": "Evt",
+      "names": [
+        "nav"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": 1.5
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "1.5",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "nav-bool-value",
+      "event": "Evt",
+      "names": [
+        "nav"
+      ],
+      "values": [
+        {
+          "t": "bool",
+          "v": true
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "1",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "pathid-null-then-pathid-string",
+      "event": "Evt",
+      "names": [
+        "pathId",
+        "pathId"
+      ],
+      "values": [
+        {
+          "t": "null"
+        },
+        {
+          "t": "string",
+          "v": "later"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "later",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "pathid-numeric",
+      "event": "Evt",
+      "names": [
+        "pathId"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 5
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "5",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "numeric-looking-strings-are-text",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": "123"
+        },
+        {
+          "t": "string",
+          "v": "4.5"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": "123;4.5"
+      }
+    },
+    {
+      "id": "interleaved-numeric-and-text",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "values": [
+        {
+          "t": "string",
+          "v": "s1"
+        },
+        {
+          "t": "long",
+          "v": 1
+        },
+        {
+          "t": "string",
+          "v": "s2"
+        },
+        {
+          "t": "bool",
+          "v": false
+        },
+        {
+          "t": "double",
+          "v": 0.5
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "0",
+        "c": "0.5",
+        "d": "",
+        "text": "s1;s2"
+      }
+    },
+    {
+      "id": "nav-name-is-case-sensitive",
+      "event": "Evt",
+      "names": [
+        "Nav",
+        "NAV",
+        "PathId"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 1
+        },
+        {
+          "t": "long",
+          "v": 2
+        },
+        {
+          "t": "string",
+          "v": "p"
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "2",
+        "c": "",
+        "d": "",
+        "text": "p"
+      }
+    },
+    {
+      "id": "bool-false-true",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b"
+      ],
+      "values": [
+        {
+          "t": "bool",
+          "v": false
+        },
+        {
+          "t": "bool",
+          "v": true
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "0",
+        "b": "1",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "long-extremes",
+      "event": "Evt",
+      "names": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "values": [
+        {
+          "t": "long",
+          "v": 9223372036854775807
+        },
+        {
+          "t": "long",
+          "v": -9223372036854775808
+        },
+        {
+          "t": "int",
+          "v": -2147483648
+        },
+        {
+          "t": "long",
+          "v": 0
+        }
+      ],
+      "out": {
+        "event": "Evt",
+        "nav": "",
+        "pathId": "",
+        "a": "9223372036854775807",
+        "b": "-9223372036854775808",
+        "c": "-2147483648",
+        "d": "0",
+        "text": ""
+      }
+    },
+    {
+      "id": "event-name-passthrough-unicode",
+      "event": "Sự kiện, \"x\"",
+      "names": [],
+      "values": [],
+      "out": {
+        "event": "Sự kiện, \"x\"",
+        "nav": "",
+        "pathId": "",
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-0.1",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3FB999999999999A"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0.10000000000000001",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-12.5",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": 12.5
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "12.5",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": 1
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-100",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": 100
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "100",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1e15",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "430C6BF526340000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1000000000000000",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1e16-last-positional",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "4341C37937E08000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "10000000000000000",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1e17-first-scientific",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "4376345785D8A000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1E+17",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1.2345678901234568e17",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "437B69B4BA630F35"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1.2345678901234568E+17",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1e21",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "444B1AE4D6E2EF50"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1E+21",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-0.0001-last-positional",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3F1A36E2EB1C432D"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0.0001",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-1e-5-first-scientific",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3EE4F8B588E368F1"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1.0000000000000001E-05",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-2.5e-7",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3E90C6F7A0B5ED8D"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "2.4999999999999999E-07",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-denormal-min",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "0000000000000001"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "4.9406564584124654E-324",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-max",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "7FEFFFFFFFFFFFFF"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "1.7976931348623157E+308",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-negative-zero",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "8000000000000000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "-0",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-zero",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "0000000000000000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-nan",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "FFF8000000000000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "NaN",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-pos-infinity",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "7FF0000000000000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "Infinity",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-neg-infinity",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "FFF0000000000000"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "-Infinity",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-123456.789",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "40FE240C9FBE76C9"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "123456.789",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-negative-small",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": -0.5
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "-0.5",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-one-third",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3FD5555555555555"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0.33333333333333331",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-nine-nines-rounding",
+      "event": "D",
+      "names": [
+        "a"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "bits": "3FEFFFFFFFFFFFFF"
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0.99999999999999989",
+        "b": "",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    },
+    {
+      "id": "g17-tenth-of-ms",
+      "event": "D",
+      "names": [
+        "a",
+        "b"
+      ],
+      "values": [
+        {
+          "t": "double",
+          "v": 0.125
+        },
+        {
+          "t": "double",
+          "v": 4.5
+        }
+      ],
+      "out": {
+        "event": "D",
+        "nav": "",
+        "pathId": "",
+        "a": "0.125",
+        "b": "4.5",
+        "c": "",
+        "d": "",
+        "text": ""
+      }
+    }
+  ]
+}

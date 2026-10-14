@@ -1,0 +1,268 @@
+{
+    "cases":  [
+                  {
+                      "name":  "empty object",
+                      "text":  "{}"
+                  },
+                  {
+                      "name":  "null",
+                      "text":  "null"
+                  },
+                  {
+                      "name":  "empty text",
+                      "text":  ""
+                  },
+                  {
+                      "name":  "whitespace",
+                      "text":  "   "
+                  },
+                  {
+                      "name":  "not json",
+                      "text":  "not json at all"
+                  },
+                  {
+                      "name":  "array",
+                      "text":  "[1,2,3]"
+                  },
+                  {
+                      "name":  "number",
+                      "text":  "42"
+                  },
+                  {
+                      "name":  "string",
+                      "text":  "\"text\""
+                  },
+                  {
+                      "name":  "truncated",
+                      "text":  "{\"ConfigVersion\":3"
+                  },
+                  {
+                      "name":  "BOM prefix is NOT stripped by ParseText",
+                      "text":  "﻿{}"
+                  },
+                  {
+                      "name":  "mistyped value keeps the rest",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"en\",\"ClickZoomPercent\":\"abc\",\"KeyboardZoomStepPercent\":40,\"Shortcuts\":{\"Next\":\"N\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"K\"}]}"
+                  },
+                  {
+                      "name":  "unparsable enum is reset and reported (no salvage)",
+                      "text":  "{\"ConfigVersion\":3,\"LoadingMode\":\"Bogus\",\"KeyboardZoomStepPercent\":40}"
+                  },
+                  {
+                      "name":  "out of range number is clamped and reported (no salvage)",
+                      "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":999999}"
+                  },
+                  {
+                      "name":  "no ConfigVersion key is legacy v1",
+                      "text":  "{\"KeyboardZoomStepPercent\":40}"
+                  },
+                  {
+                      "name":  "ConfigVersion 3 keeps its language",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"en\"}"
+                  },
+                  {
+                      "name":  "newer ConfigVersion is not downgraded",
+                      "text":  "{\"ConfigVersion\":8,\"UiLanguage\":\"en\",\"FutureThing\":1}"
+                  },
+                  {
+                      "name":  "newer ConfigVersion with a repair",
+                      "text":  "{\"ConfigVersion\":99,\"PreloadWorkerCount\":99999}"
+                  },
+                  {
+                      "name":  "conflicting optional shortcut is disabled and prefixed",
+                      "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"K\"}]}"
+                  },
+                  {
+                      "name":  "two conflicting optional shortcuts",
+                      "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"O\"},{\"Name\":\"Zoomed\",\"Shortcut\":\"D3\"}]}"
+                  },
+                  {
+                      "name":  "missing keys fall back to defaults",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"en\",\"KeyboardZoomStepPercent\":40}"
+                  },
+                  {
+                      "name":  "null Actions and Shortcuts are filled with defaults",
+                      "text":  "{\"ConfigVersion\":3,\"Actions\":null,\"Shortcuts\":null}"
+                  },
+                  {
+                      "name":  "pre-v3, UiLanguage declared: en",
+                      "text":  "{\"UiLanguage\":\"en\"}"
+                  },
+                  {
+                      "name":  "v2, UiLanguage declared: en",
+                      "text":  "{\"ConfigVersion\":2,\"UiLanguage\":\"en\"}"
+                  },
+                  {
+                      "name":  "v2, UiLanguage declared: auto",
+                      "text":  "{\"ConfigVersion\":2,\"UiLanguage\":\"auto\"}"
+                  },
+                  {
+                      "name":  "v2, UiLanguage absent: vi",
+                      "text":  "{\"ConfigVersion\":2}"
+                  },
+                  {
+                      "name":  "v1, UiLanguage absent: vi",
+                      "text":  "{\"ConfigVersion\":1,\"KeyboardZoomStepPercent\":40}"
+                  },
+                  {
+                      "name":  "v0 and negative versions migrate too",
+                      "text":  "{\"ConfigVersion\":-5}"
+                  },
+                  {
+                      "name":  "pre-v3, UiLanguage null (declared): auto",
+                      "text":  "{\"ConfigVersion\":2,\"UiLanguage\":null}"
+                  },
+                  {
+                      "name":  "pre-v3, UiLanguage empty (declared): auto",
+                      "text":  "{\"ConfigVersion\":2,\"UiLanguage\":\"\"}"
+                  },
+                  {
+                      "name":  "v3, UiLanguage empty becomes auto",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"   \"}"
+                  },
+                  {
+                      "name":  "v3, UiLanguage AUTO keeps its spelling",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"AUTO\"}"
+                  },
+                  {
+                      "name":  "lowercase configversion key does not count (legacy)",
+                      "text":  "{\"configversion\":3}"
+                  },
+                  {
+                      "name":  "ConfigVersion present but unreadable (salvaged to 3, not legacy)",
+                      "text":  "{\"ConfigVersion\":\"abc\"}"
+                  },
+                  {
+                      "name":  "ConfigVersion as string",
+                      "text":  "{\"ConfigVersion\":\"2\",\"UiLanguage\":\"en\"}"
+                  },
+                  {
+                      "name":  "UiLanguage key with different case does not count as declared",
+                      "text":  "{\"ConfigVersion\":2,\"uilanguage\":\"en\"}"
+                  },
+                  {
+                      "name":  "salvage: bad element inside Actions resets only Actions",
+                      "text":  "{\"ConfigVersion\":3,\"LoggingEnabled\":true,\"Actions\":[{\"Name\":\"Ok\",\"Shortcut\":\"K\"},{\"Name\":5,\"Shortcut\":{\"x\":1}}],\"Shortcuts\":{\"Next\":\"N\"}}"
+                  },
+                  {
+                      "name":  "salvage: bad value inside Shortcuts resets only Shortcuts",
+                      "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"Keep\",\"Shortcut\":\"K\"}],\"Shortcuts\":{\"Next\":[\"not\",\"a\",\"string\"]}}"
+                  },
+                  {
+                      "name":  "salvage: HiddenContextMenuItems of the wrong type",
+                      "text":  "{\"ConfigVersion\":3,\"PreloadWorkerCount\":7,\"HiddenContextMenuItems\":\"Fit\"}"
+                  },
+                  {
+                      "name":  "salvage: several bad properties are listed in file order",
+                      "text":  "{\"Z\":1,\"PreloadWorkerCount\":\"x\",\"ClickZoomPercent\":\"y\",\"LoggingEnabled\":\"z\",\"ConfigVersion\":3}"
+                  },
+                  {
+                      "name":  "salvage: bad first duplicate is still reported",
+                      "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\",\"ClickZoomPercent\":6}"
+                  },
+                  {
+                      "name":  "salvage: bad last duplicate",
+                      "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":6,\"ClickZoomPercent\":\"abc\"}"
+                  },
+                  {
+                      "name":  "salvage: null for a value type",
+                      "text":  "{\"ConfigVersion\":3,\"LoggingEnabled\":null,\"ClickZoomPercent\":null}"
+                  },
+                  {
+                      "name":  "salvage: null for a string and a list is fine (not salvage)",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":null,\"LastMoveToFolder\":null,\"HiddenContextMenuItems\":null}"
+                  },
+                  {
+                      "name":  "salvage plus a normalizer reset plus an enum reset",
+                      "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\",\"PreloadWorkerCount\":0,\"LoadingMode\":\"x\",\"Actions\":[null]}"
+                  },
+                  {
+                      "name":  "salvage: lone surrogate escape in a string value",
+                      "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"\\ud800\",\"LoggingEnabled\":true}"
+                  },
+                  {
+                      "name":  "property name with a lone surrogate is not parseable",
+                      "text":  "{\"\\ud800\":1,\"ConfigVersion\":3}"
+                  },
+                  {
+                      "name":  "comments and trailing commas",
+                      "text":  "{ // c\n \"ConfigVersion\": 3, \"ClickZoomPercent\": \"abc\", /* x */ \"Actions\": [ {\"Name\":\"Mine\",\"Shortcut\":\"F9\",\"Operation\":\"Copy\",\"Destination\":\"D\",}, ],\n}"
+                  },
+                  {
+                      "name":  "blank mandatory shortcut whose default an action holds",
+                      "text":  "{\"ConfigVersion\":3,\"Shortcuts\":{\"Previous\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"Left\"},{\"Name\":\"Other\",\"Shortcut\":\"Z\"}]}"
+                  },
+                  {
+                      "name":  "null mandatory shortcut",
+                      "text":  "{\"ConfigVersion\":3,\"Shortcuts\":{\"Next\":null}}"
+                  },
+                  {
+                      "name":  "legacy menu flags: folder off",
+                      "text":  "{\"ConfigVersion\":3,\"ShowFolderMenuItems\":false,\"ShowZoomMenuItems\":true,\"ShowRecycleMenuItem\":true}"
+                  },
+                  {
+                      "name":  "legacy menu flags: all on",
+                      "text":  "{\"ConfigVersion\":3,\"ShowFolderMenuItems\":true,\"ShowZoomMenuItems\":true,\"ShowRecycleMenuItem\":true}"
+                  },
+                  {
+                      "name":  "legacy menu flags: recycle only off",
+                      "text":  "{\"ConfigVersion\":3,\"ShowRecycleMenuItem\":false,\"ShowZoomMenuItems\":true}"
+                  },
+                  {
+                      "name":  "no menu settings at all keeps todays defaults",
+                      "text":  "{\"ConfigVersion\":3}"
+                  },
+                  {
+                      "name":  "explicit list wins over legacy flags, empty means show all",
+                      "text":  "{\"ConfigVersion\":3,\"ShowFolderMenuItems\":false,\"ShowZoomMenuItems\":false,\"HiddenContextMenuItems\":[]}"
+                  },
+                  {
+                      "name":  "null list is migrated from the legacy flags",
+                      "text":  "{\"ConfigVersion\":3,\"ShowFolderMenuItems\":false,\"HiddenContextMenuItems\":null}"
+                  },
+                  {
+                      "name":  "list with unknown, duplicate and locked names",
+                      "text":  "{\"ConfigVersion\":3,\"HiddenContextMenuItems\":[\"CopyFullPath\",\"Bogus\",\"Settings\",\"Fit\",\"Fit\",null,\"undo\"]}"
+                  },
+                  {
+                      "name":  "fixture config-v1.json",
+                      "text":  "{\n  \"Folder2Name\": \"Loai-2\",\n  \"InitialViewMode\": \"Fit\",\n  \"LoadingMode\": \"preview\",\n  \"ImageSortMode\": \"Size\",\n  \"CompareHashEnabled\": true,\n  \"CompareSizeEnabled\": true,\n  \"Actions\": [\n    {\n      \"Name\": \"Loại 2\",\n      \"Shortcut\": \"Enter\",\n      \"Operation\": \"Move\",\n      \"Destination\": \"Loai-2\",\n      \"Confirm\": false\n    }\n  ]\n}\n"
+                  },
+                  {
+                      "name":  "fixture config-v2.json",
+                      "text":  "{\n  \"ConfigVersion\": 2,\n  \"Folder2Name\": \"Loai-2\",\n  \"InitialViewMode\": \"200%\",\n  \"LoadingMode\": \"Original\",\n  \"ImageSortMode\": \"SizeAscending\",\n  \"CompareHashEnabled\": false,\n  \"CompareSizeEnabled\": true,\n  \"Actions\": [\n    {\n      \"Name\": \"Loại 2\",\n      \"Shortcut\": \"Enter\",\n      \"Operation\": \"Delete\",\n      \"Destination\": \"Loai-2\",\n      \"Confirm\": false\n    }\n  ]\n}\n"
+                  },
+                  {
+                      "name":  "legacy Delete operation and retired Folder2Name",
+                      "text":  "{\"ConfigVersion\":3,\"Folder2Name\":\"Old\",\"Actions\":[{\"Name\":\"Trash it\",\"Shortcut\":\"F7\",\"Operation\":\"Delete\",\"Destination\":\"\",\"Confirm\":true},{\"Name\":\"Keep\",\"Shortcut\":\"F8\",\"Operation\":\"Move\",\"Destination\":\"Keepers\"}]}"
+                  },
+                  {
+                      "name":  "unusable numeric values and null action (R2-F-04)",
+                      "text":  "{\"ImageCacheCapacityBytes\":0,\"SourceBytesCapacityBytes\":-5,\"PreloadWorkerCount\":-1,\"PreloadMemoryLoadLimit\":7.5,\"Actions\":[null,{\"Name\":\"Keep\",\"Shortcut\":\"F9\",\"Operation\":\"Move\",\"Destination\":\"K\"}]}"
+                  },
+                  {
+                      "name":  "non-finite font size from a string",
+                      "text":  "{\"ConfigVersion\":3,\"InfoOverlayFontSize\":\"NaN\"}"
+                  },
+                  {
+                      "name":  "non-finite font size from a bare overflowing number",
+                      "text":  "{\"ConfigVersion\":3,\"InfoOverlayFontSize\":1e999}"
+                  },
+                  {
+                      "name":  "DecoderBackend LibRaw is repaired",
+                      "text":  "{\"ConfigVersion\":3,\"DecoderBackend\":\"LibRaw\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode 400% is migrated",
+                      "text":  "{\"ConfigVersion\":3,\"InitialViewMode\":\"400%\"}"
+                  },
+                  {
+                      "name":  "FitWidth2 and Refresh taken by actions",
+                      "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"D4\"},{\"Name\":\"B\",\"Shortcut\":\"R\"}]}"
+                  },
+                  {
+                      "name":  "canonical aliases in an old config",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"Prior\",\"NextFolder\":\" next \"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\",\"Operation\":0,\"Destination\":\"x\"}]}"
+                  }
+              ]
+}

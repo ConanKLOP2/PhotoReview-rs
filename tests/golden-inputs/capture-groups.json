@@ -1,0 +1,223 @@
+{
+  "cases": [
+    {
+      "kind": "build", "name": "match-ignoring-case-and-base-sidecar",
+      "images": ["C:\\photos\\IMG_0001.JPG", "C:\\photos\\img_0001.cr3", "C:\\photos\\Img_0001.xmp"],
+      "sidecars": ["C:\\photos\\IMG_0001.xmp"]
+    },
+    {
+      "kind": "build", "name": "unpaired-and-ambiguous-stay-separate",
+      "images": [
+        "C:\\photos\\only-raw.nef", "C:\\photos\\only-jpeg.jpg", "C:\\photos\\ambiguous.jpg", "C:\\photos\\ambiguous.jpeg",
+        "C:\\photos\\ambiguous.arw", "C:\\photos\\valid.jpg", "C:\\photos\\valid.nef", "C:\\other\\valid.cr2"
+      ],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "two-raws-for-one-jpeg-is-ambiguous",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2", "C:\\photos\\a.dng"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "case-variant-jpegs-count-as-two",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\A.JPG", "C:\\photos\\a.cr2"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "unmatched-and-case-ambiguous-sidecars",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2", "C:\\photos\\b.jpg", "C:\\photos\\b.cr2"],
+      "sidecars": ["C:\\photos\\a.xmp", "C:\\photos\\a.XMP", "C:\\photos\\orphan.xmp"]
+    },
+    {
+      "kind": "build", "name": "non-jpeg-images-never-pair-with-raw",
+      "images": [
+        "C:\\photos\\t.tif", "C:\\photos\\t.dng", "C:\\photos\\u.tiff", "C:\\photos\\u.dng", "C:\\photos\\v.png", "C:\\photos\\v.dng",
+        "C:\\photos\\w.bmp", "C:\\photos\\w.dng", "C:\\photos\\x.gif", "C:\\photos\\x.dng", "C:\\photos\\y.webp", "C:\\photos\\y.dng"
+      ],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "non-jpeg-beside-jpeg-and-raw-does-not-join-or-block",
+      "images": ["C:\\photos\\A.jpg", "C:\\photos\\A.tif", "C:\\photos\\A.dng"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "base-named-sidecar-wins-over-file-extension-sidecars",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\a.cr2.xmp", "C:\\photos\\a.xmp"]
+    },
+    {
+      "kind": "build", "name": "single-file-extension-sidecar-of-the-raw",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\A.CR2.xmp"]
+    },
+    {
+      "kind": "build", "name": "single-file-extension-sidecar-of-the-jpeg",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\a.JPG.xmp"]
+    },
+    {
+      "kind": "build", "name": "two-competing-file-extension-sidecars-claim-nothing",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\a.cr2.xmp", "C:\\photos\\a.jpg.xmp"]
+    },
+    {
+      "kind": "build", "name": "two-base-named-case-variants-claim-nothing-even-with-one-extension-sidecar",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\a.xmp", "C:\\photos\\A.XMP", "C:\\photos\\a.cr2.xmp"]
+    },
+    {
+      "kind": "build", "name": "same-extension-sidecar-listed-twice-is-ambiguous",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:\\photos\\a.cr2.xmp", "C:\\photos\\A.CR2.XMP"]
+    },
+    {
+      "kind": "build", "name": "sidecars-that-are-not-xmp-or-blank-are-ignored",
+      "images": ["C:\\shots\\a.jpg", "C:\\shots\\a.cr2"],
+      "sidecars": ["C:\\shots\\a.txt", "C:\\shots\\a.cr2.txt", "  ", "", "C:\\shots\\a", "C:\\shots\\a.xmp.bak"]
+    },
+    {
+      "kind": "build", "name": "uppercase-xmp-extension-is-accepted",
+      "images": ["C:\\shots\\a.jpg", "C:\\shots\\a.cr2"],
+      "sidecars": ["C:\\shots\\a.XMP"]
+    },
+    {
+      "kind": "build", "name": "sidecar-in-another-folder-does-not-match",
+      "images": ["C:\\shots\\a.jpg", "C:\\shots\\a.cr2"],
+      "sidecars": ["C:\\other\\a.xmp", "C:\\other\\a.cr2.xmp"]
+    },
+    {
+      "kind": "build", "name": "sidecar-with-slashes-keeps-its-spelling",
+      "images": ["C:\\photos\\a.jpg", "C:\\photos\\a.cr2"],
+      "sidecars": ["C:/photos/a.xmp"]
+    },
+    {
+      "kind": "build", "name": "folder-case-differs-between-members",
+      "images": ["C:\\Photos\\a.jpg", "c:\\photos\\a.cr2"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "same-base-in-different-folders-do-not-pair",
+      "images": ["C:\\one\\a.jpg", "C:\\two\\a.cr2"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "groups-come-out-in-first-seen-bucket-order",
+      "images": ["C:\\photos\\b.jpg", "C:\\photos\\a.cr2", "C:\\photos\\b.nef", "C:\\photos\\a.jpg", "C:\\photos\\c.jpeg", "C:\\photos\\c.RAF"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "all-eight-raw-extensions-pair",
+      "images": [
+        "C:\\p\\1.jpg", "C:\\p\\1.cr2", "C:\\p\\2.jpg", "C:\\p\\2.cr3", "C:\\p\\3.jpg", "C:\\p\\3.nef", "C:\\p\\4.jpg", "C:\\p\\4.arw",
+        "C:\\p\\5.jpg", "C:\\p\\5.dng", "C:\\p\\6.jpg", "C:\\p\\6.raf", "C:\\p\\7.jpg", "C:\\p\\7.orf", "C:\\p\\8.jpg", "C:\\p\\8.rw2",
+        "C:\\p\\9.jpg", "C:\\p\\9.srw"
+      ],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "blank-and-extensionless-image-paths-are-skipped",
+      "images": ["", "  ", "C:\\photos\\a", "C:\\photos\\a.jpg", "C:\\photos\\a.cr2", "C:\\photos\\.jpg", "C:\\photos\\.cr2"],
+      "sidecars": null
+    },
+    {
+      "kind": "build", "name": "dotted-base-name",
+      "images": ["C:\\photos\\x.y.jpg", "C:\\photos\\x.y.cr2"],
+      "sidecars": ["C:\\photos\\x.xmp", "C:\\photos\\x.y.cr2.xmp"]
+    },
+    {
+      "kind": "build", "name": "dotted-base-name-base-sidecar",
+      "images": ["C:\\photos\\x.y.jpg", "C:\\photos\\x.y.cr2"],
+      "sidecars": ["C:\\photos\\x.y.xmp", "C:\\photos\\x.y.cr2.xmp"]
+    },
+    {
+      "kind": "build", "name": "unc-folder",
+      "images": ["\\\\srv\\share\\a.jpg", "\\\\srv\\share\\a.dng"],
+      "sidecars": ["\\\\srv\\share\\a.xmp"]
+    },
+    {
+      "kind": "build", "name": "drive-root-files",
+      "images": ["C:\\a.jpg", "C:\\a.cr2"],
+      "sidecars": ["C:\\a.xmp"]
+    },
+    {
+      "kind": "build", "name": "relative-names-without-folder",
+      "images": ["a.jpg", "a.cr2"],
+      "sidecars": ["a.xmp"]
+    },
+    {
+      "kind": "build", "name": "empty",
+      "images": [],
+      "sidecars": []
+    },
+    {
+      "kind": "group-entries", "name": "prefer-jpeg-pair-sits-at-first-member-seen",
+      "mode": "PreferJpeg",
+      "entries": [ { "path": "C:\\photos\\a.cr2", "length": 100 }, { "path": "C:\\photos\\b.jpg", "length": 5 }, { "path": "C:\\photos\\a.jpg", "length": 10 } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "prefer-raw-pair-sits-at-first-member-seen",
+      "mode": "PreferRaw",
+      "entries": [ { "path": "C:\\photos\\a.cr2", "length": 100 }, { "path": "C:\\photos\\b.jpg", "length": 5 }, { "path": "C:\\photos\\a.jpg", "length": 10 } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "prefer-jpeg-first-member-is-the-raw-but-entry-is-the-jpeg",
+      "mode": "PreferJpeg",
+      "entries": [ { "path": "C:\\photos\\x.jpg" }, { "path": "C:\\photos\\a.cr2", "length": 100 }, { "path": "C:\\photos\\y.jpg" }, { "path": "C:\\photos\\a.jpg", "length": 10 } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "separate-mode-changes-nothing",
+      "mode": "Separate",
+      "entries": [ { "path": "C:\\photos\\a.jpg", "length": 10 }, { "path": "C:\\photos\\a.cr2", "length": 100 } ],
+      "sidecars": ["C:\\photos\\a.xmp"]
+    },
+    {
+      "kind": "group-entries", "name": "no-pairs-changes-nothing",
+      "mode": "PreferJpeg",
+      "entries": [ { "path": "C:\\photos\\a.jpg" }, { "path": "C:\\photos\\b.cr2" }, { "path": "C:\\photos\\c.png" } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "sidecar-travels-in-the-group",
+      "mode": "PreferJpeg",
+      "entries": [ { "path": "C:\\photos\\a.jpg", "length": 10, "width": 3000 }, { "path": "C:\\photos\\a.cr2", "length": 100, "width": 6000 }, { "path": "C:\\photos\\b.jpg" } ],
+      "sidecars": ["C:\\photos\\a.xmp"]
+    },
+    {
+      "kind": "group-entries", "name": "prefer-raw-uses-the-raw-entry-metadata",
+      "mode": "PreferRaw",
+      "entries": [ { "path": "C:\\photos\\a.jpg", "length": 10, "width": 3000 }, { "path": "C:\\photos\\a.cr2", "length": 100, "width": 6000 }, { "path": "C:\\photos\\b.jpg" } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "duplicate-entry-path-makes-the-jpeg-side-ambiguous",
+      "mode": "PreferJpeg",
+      "entries": [ { "path": "C:\\photos\\a.jpg", "length": 1 }, { "path": "C:\\photos\\a.jpg", "length": 2 }, { "path": "C:\\photos\\a.cr2", "length": 3 } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "representative-found-through-another-spelling",
+      "mode": "PreferRaw",
+      "entries": [ { "path": "C:\\photos\\A.JPG", "length": 1 }, { "path": "c:\\photos\\a.cr2", "length": 2 } ],
+      "sidecars": null
+    },
+    {
+      "kind": "group-entries", "name": "two-pairs-and-singles-keep-relative-order",
+      "mode": "PreferRaw",
+      "entries": [
+        { "path": "C:\\p\\3.jpg" }, { "path": "C:\\p\\1.jpg", "length": 1 }, { "path": "C:\\p\\2.jpg", "length": 2 }, { "path": "C:\\p\\1.nef", "length": 11 },
+        { "path": "C:\\p\\4.png" }, { "path": "C:\\p\\2.arw", "length": 22 }
+      ],
+      "sidecars": ["C:\\p\\2.xmp", "C:\\p\\1.nef.xmp"]
+    },
+    {
+      "kind": "group-entries", "name": "empty-entries",
+      "mode": "PreferJpeg",
+      "entries": [],
+      "sidecars": null
+    }
+  ]
+}

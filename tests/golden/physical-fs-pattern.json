@@ -1,0 +1,2127 @@
+{
+  "generator": "oracle-cs physical-fs-pattern",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "pattern": "*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "ABC123.json",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "abc.json",
+        "b.JPG",
+        "config.json",
+        "config.json.newer-",
+        "config.json.newer-20260101",
+        "e.json",
+        "noext",
+        "operations.jsonl",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "two..dots.txt",
+        "x.jpg.tmp",
+        "x.tmp",
+        "x.tmpx",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "ABC123.json",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "abc.json",
+        "b.JPG",
+        "config.json",
+        "config.json.newer-",
+        "config.json.newer-20260101",
+        "e.json",
+        "noext",
+        "operations.jsonl",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "two..dots.txt",
+        "x.jpg.tmp",
+        "x.tmp",
+        "x.tmpx",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a",
+        "noext"
+      ]
+    },
+    {
+      "pattern": "*.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.JPG",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "a?.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jpg",
+        "ab.jpg"
+      ]
+    },
+    {
+      "pattern": "?.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.jp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jp"
+      ]
+    },
+    {
+      "pattern": "*.jp?",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "a.jp",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "a.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "*tmp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "x.jpg.tmp",
+        "x.tmp"
+      ]
+    },
+    {
+      "pattern": "*.tmp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "x.jpg.tmp",
+        "x.tmp"
+      ]
+    },
+    {
+      "pattern": "a.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "A.JPG",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "ABC123.json",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "abc.json",
+        "b.JPG",
+        "config.json",
+        "config.json.newer-",
+        "config.json.newer-20260101",
+        "e.json",
+        "noext",
+        "operations.jsonl",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "two..dots.txt",
+        "x.jpg.tmp",
+        "x.tmp",
+        "x.tmpx",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "??.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "a*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "ABC123.json",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "abc.json"
+      ]
+    },
+    {
+      "pattern": "*a",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "a.j*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.jp",
+        "a.jpeg",
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "ä.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "Ä.JPG",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "<.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.j\"g",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": []
+    },
+    {
+      "pattern": ">pg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": []
+    },
+    {
+      "pattern": "?",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "??",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "a.???",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a",
+        "a.jp",
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "a.????",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg"
+      ]
+    },
+    {
+      "pattern": "a.?",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "*.json",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "ABC123.json",
+        "abc.json",
+        "config.json",
+        "e.json"
+      ]
+    },
+    {
+      "pattern": "*.js*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "ABC123.json",
+        "abc.json",
+        "config.json",
+        "config.json.newer-",
+        "config.json.newer-20260101",
+        "e.json",
+        "operations.jsonl",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp"
+      ]
+    },
+    {
+      "pattern": "operations.jsonl.*.compact.tmp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "operations.jsonl.1234.compact.tmp"
+      ]
+    },
+    {
+      "pattern": "operations.jsonl.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "operations.jsonl",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp"
+      ]
+    },
+    {
+      "pattern": "config.json.newer-*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "config.json.newer-",
+        "config.json.newer-20260101"
+      ]
+    },
+    {
+      "pattern": "config.json.newer-2026*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "config.json.newer-20260101"
+      ]
+    },
+    {
+      "pattern": "*.*.tmp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "x.jpg.tmp"
+      ]
+    },
+    {
+      "pattern": "*.?mp",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "x.jpg.tmp",
+        "x.tmp"
+      ]
+    },
+    {
+      "pattern": "no*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "noext"
+      ]
+    },
+    {
+      "pattern": "noext*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "noext"
+      ]
+    },
+    {
+      "pattern": "noext.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "noext"
+      ]
+    },
+    {
+      "pattern": ".*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp"
+      ]
+    },
+    {
+      "pattern": "*..*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "two..dots.txt"
+      ]
+    },
+    {
+      "pattern": "two..*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "two..dots.txt"
+      ]
+    },
+    {
+      "pattern": "*.txt",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "two..dots.txt"
+      ]
+    },
+    {
+      "pattern": "x.tmp?",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "x.tmp",
+        "x.tmpx"
+      ]
+    },
+    {
+      "pattern": "X.TMP",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "x.tmp"
+      ]
+    },
+    {
+      "pattern": "*x",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "x.tmpx"
+      ]
+    },
+    {
+      "pattern": "a?",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "a??",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "a???",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a"
+      ]
+    },
+    {
+      "pattern": "?a",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": []
+    },
+    {
+      "pattern": "?.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "b.JPG",
+        "e.json",
+        "x.jpg.tmp",
+        "x.tmp",
+        "x.tmpx",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "??.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        ".tmp",
+        "a",
+        "a.b.jpg",
+        "a.jp",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "e.json",
+        "x.jpg.tmp",
+        "x.tmp",
+        "x.tmpx",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "*.*g",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "a.jpeg",
+        "a.jpg",
+        "ab.jpg",
+        "b.JPG",
+        "Ä.jpg"
+      ]
+    },
+    {
+      "pattern": "a.b.*",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg"
+      ]
+    },
+    {
+      "pattern": "*b.jpg",
+      "names": [
+        "a.jpg",
+        "a.jpeg",
+        "a.jp",
+        "b.JPG",
+        "ab.jpg",
+        "a",
+        "x.tmp",
+        "x.jpg.tmp",
+        "x.tmpx",
+        ".tmp",
+        "Ä.jpg",
+        "a.b.jpg",
+        "operations.jsonl.1234.compact.tmp",
+        "operations.jsonl.compact.tmp",
+        "operations.jsonl",
+        "config.json.newer-20260101",
+        "config.json.newer-",
+        "config.json",
+        "ABC123.json",
+        "abc.json",
+        "e.json",
+        "noext",
+        "two..dots.txt"
+      ],
+      "dirs": [
+        "sub.jpg",
+        "dir.tmp"
+      ],
+      "matched": [
+        "a.b.jpg",
+        "ab.jpg",
+        "b.JPG"
+      ]
+    }
+  ]
+}

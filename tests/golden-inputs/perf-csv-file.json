@@ -1,0 +1,79 @@
+{
+  "cases": [
+    {"id": "empty-file-no-flags", "env": {}, "events": []},
+    {"id": "header-prereaded", "env": {"PHOTOREVIEW_DIAG_PREREAD": "1"}, "events": []},
+    {"id": "header-two-flags-fixed-order", "env": {"PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1", "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "3"}, "events": []},
+    {"id": "header-all-three-flags", "env": {"PHOTOREVIEW_DIAG_PREREAD": "1", "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "0", "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1"}, "events": []},
+    {"id": "header-empty-value-omitted", "env": {"PHOTOREVIEW_DIAG_PREREAD": "", "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "5"}, "events": []},
+    {"id": "header-raw-values-not-validated", "env": {"PHOTOREVIEW_DIAG_PREREAD": "yes", "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "abc"}, "events": []},
+    {"id": "header-value-with-spaces-kept-raw", "env": {"PHOTOREVIEW_DIAG_PRELOAD_WORKERS": " 4 "}, "events": []},
+    {"id": "header-value-with-semicolon-kept-raw", "env": {"PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1;2"}, "events": []},
+
+    {"id": "input-and-lookup-events", "env": {}, "events": [
+      {"name": "KeyInput", "args": [7700001, "Right", 1.5]},
+      {"name": "ShowStart", "args": [7700001, 3, "mode"]},
+      {"name": "Stat", "args": [7700001, 2.5]},
+      {"name": "Lookup", "args": [7700001, "pid", "hit"]},
+      {"name": "ThumbStart", "args": [7700001, "pid"]},
+      {"name": "ThumbEnd", "args": [7700001, "pid", "disk", 4.5]}
+    ]},
+    {"id": "load-pipeline-events", "env": {}, "events": [
+      {"name": "JoinStart", "args": [7700001, "pid"]},
+      {"name": "JoinEnd", "args": [7700001, "pid", 5.5]},
+      {"name": "DiskCacheRead", "args": [7700001, "pid", 6.5, 1000]},
+      {"name": "SourceRead", "args": [7700001, "pid", 7.5, 2000]},
+      {"name": "Decode", "args": [7700001, "pid", 8.5, 1920, true, false]},
+      {"name": "Verify", "args": [7700001, "pid", 9.5]}
+    ]},
+    {"id": "presentation-events", "env": {}, "events": [
+      {"name": "Assign", "args": [7700001, 10.5, 800, 600]},
+      {"name": "Rendered", "args": [7700001, 11.5]},
+      {"name": "Presented", "args": [7700001, "kind"]},
+      {"name": "PostStart", "args": [7700001, "part"]},
+      {"name": "PostEnd", "args": [7700001, "part", 12.5]},
+      {"name": "RenderedFrame", "args": [7700001, 17.5]}
+    ]},
+    {"id": "preload-folder-startup-events", "env": {}, "events": [
+      {"name": "PreloadItem", "args": [4, "pid", 13.5, "kind", 14.5]},
+      {"name": "PreloadPaused", "args": [85, 512]},
+      {"name": "PreloadCancel", "args": ["why"]},
+      {"name": "DispatcherLongOp", "args": [15.5, "prio", "name"]},
+      {"name": "Folder", "args": [7700001, "phase", 16.5]},
+      {"name": "DiagMode", "args": ["flags"]},
+      {"name": "Startup", "args": ["phase", 18.5]},
+      {"name": "FolderInfo", "args": [7700001, "phase", 99, "detail"]}
+    ]},
+    {"id": "negative-nav-and-empty-strings", "env": {}, "events": [
+      {"name": "Lookup", "args": [-1, "", "miss"]},
+      {"name": "PreloadCancel", "args": [""]},
+      {"name": "DiagMode", "args": [""]},
+      {"name": "Stat", "args": [-1, 0.0]}
+    ]},
+    {"id": "fields-needing-escape", "env": {}, "events": [
+      {"name": "KeyInput", "args": [1, "a,b", 0.5]},
+      {"name": "KeyInput", "args": [2, "say \"hi\"", 0.5]},
+      {"name": "PreloadCancel", "args": ["line1\nline2"]},
+      {"name": "PreloadCancel", "args": ["crlf\r\nx"]},
+      {"name": "DiagMode", "args": ["PHOTOREVIEW_DIAG_PREREAD=1,PHOTOREVIEW_DIAG_PRELOAD_WORKERS=2"]},
+      {"name": "DispatcherLongOp", "args": [1.0, "Normal", "Click,\"Handler\"\n"]}
+    ]},
+    {"id": "double-formats", "env": {}, "events": [
+      {"name": "Stat", "args": [1, 0.1]},
+      {"name": "Stat", "args": [1, 100]},
+      {"name": "Stat", "args": [1, 1e-5]},
+      {"name": "Stat", "args": [1, 123456789.125]},
+      {"name": "Stat", "args": [1, 1e21]},
+      {"name": "Stat", "args": [1, "NaN"]},
+      {"name": "Stat", "args": [1, "Infinity"]},
+      {"name": "Stat", "args": [1, "-Infinity"]}
+    ]},
+    {"id": "long-extremes", "env": {}, "events": [
+      {"name": "DiskCacheRead", "args": [9223372036854775807, "p", 0.0, -9223372036854775808]},
+      {"name": "PreloadPaused", "args": [-2147483648, 9223372036854775807]}
+    ]},
+    {"id": "non-ascii-text", "env": {}, "events": [
+      {"name": "KeyInput", "args": [1, "Ảnh 日本語 😀", 2.5]},
+      {"name": "PreloadCancel", "args": ["lý do"]}
+    ]}
+  ]
+}

@@ -1,0 +1,660 @@
+{
+    "scenarios":  [
+                      {
+                          "name":  "first run: no file writes the defaults",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "corrupt text is backed up and replaced by defaults",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{ this is not valid json, corrupt content }"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "empty file is corrupt",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  ""
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "whitespace file is corrupt",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "  \r\n "
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "json null is valid defaults, file untouched",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "null"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "array root is corrupt",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "[1,2]"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "number root is corrupt",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "42"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "clean current config is untouched",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":250}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "legacy v1 config keeps vi and is not rewritten",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"LoadingMode\":\"Fast\"}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "v2 config migrates in memory only",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":2,\"LoadingMode\":\"Fast\"}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "salvage: one backup (.corrupt) and the repair is persisted",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\",\"LoggingEnabled\":true}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "salvage of an unversioned file keeps vi",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ClickZoomPercent\":\"abc\",\"LoadingMode\":\"Fast\"}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "salvage plus other repairs: still one backup",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\",\"PreloadWorkerCount\":0,\"Actions\":[{\"Name\":\"M\",\"Shortcut\":\"K\"}]}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "out of range value: .repaired backup and rewrite",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"PreloadWorkerCount\":99999}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "disabled optional shortcut: .repaired backup and rewrite, second load clean",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"K\"}]}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "blank mandatory shortcut: repaired and persisted",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"Shortcuts\":{\"Previous\":\"\"}}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "non-finite font size is repaired and persisted",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{ \"ConfigVersion\": 3, \"InfoOverlayFontSize\": \"NaN\" }"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "overflowing bare number font size is repaired and persisted",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{ \"ConfigVersion\": 3, \"InfoOverlayFontSize\": 1e999 }"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "newer version: untouched on load",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":99,\"FutureField\":123,\"UiLanguage\":\"en\",\"ClickZoomPercent\":250}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "newer version then Save: verbatim .newer backup, current version written",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":99,\"FutureField\":123,\"UiLanguage\":\"en\",\"ClickZoomPercent\":250}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        },
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"ConfigVersion\":99,\"UiLanguage\":\"en\",\"ClickZoomPercent\":300}"
+                                        },
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"ClickZoomPercent\":310}"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "newer version with a repair: neither rewritten nor backed up",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":99,\"PreloadWorkerCount\":99999}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "explicit path: corrupt file is backed up next to it, nothing else is written",
+                          "files":  [
+                                        {
+                                            "dir":  "other",
+                                            "name":  "x.json",
+                                            "text":  "{ nope"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load_explicit",
+                                            "file":  "x.json"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "explicit path: repairs stay in memory",
+                          "files":  [
+                                        {
+                                            "dir":  "other",
+                                            "name":  "x.json",
+                                            "text":  "{\"ConfigVersion\":3,\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"K\"}]}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load_explicit",
+                                            "file":  "x.json"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "explicit path: missing file gives defaults and writes nothing",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load_explicit",
+                                            "file":  "missing.json"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "explicit path: salvage backs up next to the explicit file",
+                          "files":  [
+                                        {
+                                            "dir":  "other",
+                                            "name":  "x.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\"}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load_explicit",
+                                            "file":  "x.json"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "UTF-8 BOM file keeps its values",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "b64":  "77u/eyJDb25maWdWZXJzaW9uIjozLCJMb2dnaW5nRW5hYmxlZCI6dHJ1ZSwiQ2xpY2tab29tUGVyY2VudCI6MjUwfQ=="
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "UTF-16 LE BOM file keeps its values",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "b64":  "//57ACIAQwBvAG4AZgBpAGcAVgBlAHIAcwBpAG8AbgAiADoAMwAsACIATABvAGcAZwBpAG4AZwBFAG4AYQBiAGwAZQBkACIAOgB0AHIAdQBlAH0A"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "UTF-16 BE BOM file keeps its values",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "b64":  "/v8AewAiAEMAbwBuAGYAaQBnAFYAZQByAHMAaQBvAG4AIgA6ADMALAAiAEwAbwBnAGcAaQBuAGcARQBuAGEAYgBsAGUAZAAiADoAdAByAHUAZQB9"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "binary garbage is backed up byte for byte",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "b64":  "gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+YCHjpWco6qxuL/GzdTb4unw9/6FjJOaoaivtr3Ey9LZ4Ofu9fyDipGYn6attLvCydDX3uXs8/qBiI+WnaSrsrnAx87V3OPq8fj/ho2Um6KpsLe+xczT2uHo7/b9hIuSmaCnrrW8w8rR2N/m7fT7gomQl56lrLO6wcjP1t3k6/L5gIeOlZyjqrG4v8bN1Nvi6fD3/oWMk5qhqK+2vcTL0tng5+71/IOKkZifpq20u8LJ0Nfe5ezz+oGIj5adpKuyucDHztXc4+rx+P+GjZSboqmwt77FzNPa4ejv9v2Ei5KZoKeutbzDytHY3+bt9PuCiZCXnqWss7rByM/W3eTr8vmAh46VnKOqsbi/xs3U2+Lp8Pf+hYyTmqGor7a9xMvS2eDn7vX8g4qRmJ+mrbS7wsnQ197l7PP6gYiPlp2kq7K5wMfO1dzj6vH4/4aNlJuiqbC3vsXM09rh6O/2/YSLkpmgp661vMPK0djf5u30+4KJkJeepayzusHIz9bd5Ovy+Q=="
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "comments and trailing commas are accepted without a backup",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{ /* c */ \"ConfigVersion\": 3, \"ClickZoomPercent\": 250, }"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "unknown and nested extra fields are ignored",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"Future\":{\"a\":[1,2,{\"b\":null}]},\"LoggingEnabled\":true,\"AnotherFuture\":\"x\",\"ClickZoomPercent\":200}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "duplicate property: last wins, nothing reported",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":150,\"ClickZoomPercent\":300}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "duplicate property whose first value is bad is salvaged and backed up",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":\"abc\",\"ClickZoomPercent\":300}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "property name with a lone surrogate is corrupt",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"\\ud800\":1,\"ConfigVersion\":3}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "legacy menu flags are migrated in memory, file untouched",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ShowFolderMenuItems\":false,\"ShowZoomMenuItems\":true,\"ShowRecycleMenuItem\":true}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "wrong-typed HiddenContextMenuItems is salvaged",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"PreloadWorkerCount\":7,\"HiddenContextMenuItems\":\"Fit\"}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "unusable values and null action (R2-F-04)",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ImageCacheCapacityBytes\":0,\"SourceBytesCapacityBytes\":-5,\"PreloadWorkerCount\":-1,\"PreloadMemoryLoadLimit\":7.5,\"Actions\":[null,{\"Name\":\"Keep\",\"Shortcut\":\"F9\",\"Operation\":\"Move\",\"Destination\":\"K\"}]}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save the defaults",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{}"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save modified settings with unicode",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"ClickZoomPercent\":300,\"LastMoveToFolder\":\"D:\\\\\\u00c9nd \u003cx\u003e \u0026 \u0027y\u0027\",\"Actions\":[{\"Name\":\"Loai \\u1ea1\",\"Shortcut\":\"F9\",\"Operation\":\"Copy\",\"Destination\":\"C:\\\\Keep\"}]}"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save canonicalises aliases and stamps the current version",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"ConfigVersion\":1,\"Shortcuts\":{\"PreviousFolder\":\"Prior\",\"NextFolder\":\" next \"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"RETURN\",\"Destination\":\"x\"}]}"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save of a non-finite font size throws and leaves the file",
+                          "files":  [
+                                        {
+                                            "dir":  "config",
+                                            "name":  "config.json",
+                                            "text":  "{\"ConfigVersion\":3,\"ClickZoomPercent\":150}"
+                                        }
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "load"
+                                        },
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"InfoOverlayFontSize\":\"NaN\"}"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save then load round-trips",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"ClickZoomPercent\":321,\"HiddenContextMenuItems\":[\"Undo\",\"ZoomFitWidth2\"],\"ExifInfoFields\":\"FileName, Lens\",\"TitleBarFields\":\"FolderName, FileName\",\"FitWidthAnchor2\":\"TopThird\",\"MiddleClickAction\":\"PreviousFolder\"}"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "save with undefined settings enums writes the sentinel text",
+                          "files":  [
+
+                                    ],
+                          "steps":  [
+                                        {
+                                            "op":  "save",
+                                            "settings":  "{\"LoadingMode\":\"x\"}"
+                                        },
+                                        {
+                                            "op":  "load"
+                                        }
+                                    ]
+                      }
+                  ]
+}

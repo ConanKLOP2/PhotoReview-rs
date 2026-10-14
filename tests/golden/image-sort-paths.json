@@ -1,0 +1,636 @@
+{
+  "generator": "oracle-cs image-sort-paths",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "size-descending-ties-by-natural-name",
+      "mode": "SizeDescending",
+      "comparer": null,
+      "listed": [
+        "img10.jpg",
+        "img2.jpg",
+        "img1.jpg",
+        "b2.jpg"
+      ],
+      "sorted": [
+        "img10.jpg",
+        "b2.jpg",
+        "img1.jpg",
+        "img2.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "size-ascending-ties-by-natural-name",
+      "mode": "SizeAscending",
+      "comparer": null,
+      "listed": [
+        "img10.jpg",
+        "img2.jpg",
+        "img1.jpg",
+        "b2.jpg"
+      ],
+      "sorted": [
+        "img2.jpg",
+        "b2.jpg",
+        "img1.jpg",
+        "img10.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "name-natural",
+      "mode": "Name",
+      "comparer": null,
+      "listed": [
+        "img10.jpg",
+        "img2.jpg",
+        "img1.jpg"
+      ],
+      "sorted": [
+        "img1.jpg",
+        "img2.jpg",
+        "img10.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "name-descending",
+      "mode": "NameDescending",
+      "comparer": null,
+      "listed": [
+        "img10.jpg",
+        "img2.jpg",
+        "img1.jpg"
+      ],
+      "sorted": [
+        "img10.jpg",
+        "img2.jpg",
+        "img1.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "default-keeps-input-order",
+      "mode": "Default",
+      "comparer": null,
+      "listed": [
+        "img10.jpg",
+        "b.jpg",
+        "img2.jpg",
+        "a.jpg"
+      ],
+      "sorted": [
+        "img10.jpg",
+        "b.jpg",
+        "img2.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "size-descending-missing-file-is-smallest-and-logged",
+      "mode": "SizeDescending",
+      "comparer": null,
+      "listed": [
+        "missing.jpg",
+        "big.jpg"
+      ],
+      "sorted": [
+        "big.jpg",
+        "missing.jpg"
+      ],
+      "failed_size_reads": [
+        "missing.jpg"
+      ],
+      "failed_exception_types": [
+        "FileNotFoundException"
+      ],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "size-ascending-missing-file-is-smallest-and-logged",
+      "mode": "SizeAscending",
+      "comparer": null,
+      "listed": [
+        "big.jpg",
+        "missing.jpg"
+      ],
+      "sorted": [
+        "missing.jpg",
+        "big.jpg"
+      ],
+      "failed_size_reads": [
+        "missing.jpg"
+      ],
+      "failed_exception_types": [
+        "FileNotFoundException"
+      ],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "size-ascending-two-missing-logged-in-input-order",
+      "mode": "SizeAscending",
+      "comparer": null,
+      "listed": [
+        "m2.jpg",
+        "big.jpg",
+        "m1.jpg",
+        "zero.jpg"
+      ],
+      "sorted": [
+        "m1.jpg",
+        "m2.jpg",
+        "zero.jpg",
+        "big.jpg"
+      ],
+      "failed_size_reads": [
+        "m2.jpg",
+        "m1.jpg"
+      ],
+      "failed_exception_types": [
+        "FileNotFoundException",
+        "FileNotFoundException"
+      ],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "name-mode-never-reads-sizes-so-missing-is-not-logged",
+      "mode": "Name",
+      "comparer": null,
+      "listed": [
+        "missing.jpg",
+        "a.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "missing.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "name-injected-reverse-ordinal",
+      "mode": "Name",
+      "comparer": "reverse-ordinal",
+      "listed": [
+        "a.jpg",
+        "c.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "c.jpg",
+        "b.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-null",
+      "mode": "<null>",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-empty",
+      "mode": "text:",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-Name",
+      "mode": "text:Name",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-Size",
+      "mode": "text:Size",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-SIZE",
+      "mode": "text:SIZE",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-size-lower",
+      "mode": "text:size",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-SizeDescending",
+      "mode": "text:SizeDescending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-sizedescending-lower",
+      "mode": "text:sizedescending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-SizeAscending",
+      "mode": "text:SizeAscending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "c.jpg",
+        "b.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-sizeascending-lower",
+      "mode": "text:sizeascending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "c.jpg",
+        "b.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-Default",
+      "mode": "text:Default",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-default-lower",
+      "mode": "text:default",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-NameAscending",
+      "mode": "text:NameAscending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-nameascending-lower",
+      "mode": "text:nameascending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-NameDescending",
+      "mode": "text:NameDescending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "c.jpg",
+        "b.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-namedescending-lower",
+      "mode": "text:namedescending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "c.jpg",
+        "b.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-bogus",
+      "mode": "text:bogus",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-PortraitFirst-is-not-a-text-alias",
+      "mode": "text:PortraitFirst",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-leading-space-is-not-trimmed",
+      "mode": "text: size",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-trailing-space-is-not-trimmed",
+      "mode": "text:size ",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-dotless-i-is-not-uppercased-by-invariant-culture",
+      "mode": "text:sıze",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "b.jpg",
+        "c.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-long-s-uppercases-to-s",
+      "mode": "text:ſize",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "b.jpg",
+        "c.jpg",
+        "a.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-long-s-sizeascending",
+      "mode": "text:ſizeAscending",
+      "comparer": null,
+      "listed": [
+        "c.jpg",
+        "a.jpg",
+        "b.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "c.jpg",
+        "b.jpg"
+      ],
+      "failed_size_reads": [],
+      "failed_exception_types": [],
+      "messages_have_prefix": true
+    },
+    {
+      "name": "text-size-missing-file-logged",
+      "mode": "text:Size",
+      "comparer": null,
+      "listed": [
+        "gone.jpg",
+        "a.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "gone.jpg"
+      ],
+      "failed_size_reads": [
+        "gone.jpg"
+      ],
+      "failed_exception_types": [
+        "FileNotFoundException"
+      ],
+      "messages_have_prefix": true
+    }
+  ]
+}

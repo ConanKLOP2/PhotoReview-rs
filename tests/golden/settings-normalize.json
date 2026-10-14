@@ -1,0 +1,3760 @@
+{
+  "generator": "oracle-cs settings-normalize",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "defaults report nothing",
+      "text": "{}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "config version only",
+      "text": "{\"ConfigVersion\":3}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageCacheCapacityBytes 0",
+      "text": "{\"ImageCacheCapacityBytes\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageCacheCapacityBytes -1",
+      "text": "{\"ImageCacheCapacityBytes\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageCacheCapacityBytes 1",
+      "text": "{\"ImageCacheCapacityBytes\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheCapacityBytes": "1"
+      }
+    },
+    {
+      "name": "ImageCacheCapacityBytes -9223372036854775808",
+      "text": "{\"ImageCacheCapacityBytes\":-9223372036854775808}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageCacheRamPercent -5",
+      "text": "{\"ImageCacheRamPercent\":-5}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheRamPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "1"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent 0",
+      "text": "{\"ImageCacheRamPercent\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheRamPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "1"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent 1",
+      "text": "{\"ImageCacheRamPercent\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "1"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent 50",
+      "text": "{\"ImageCacheRamPercent\":50}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageCacheRamPercent 90",
+      "text": "{\"ImageCacheRamPercent\":90}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "90"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent 91",
+      "text": "{\"ImageCacheRamPercent\":91}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheRamPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "90"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent 2147483647",
+      "text": "{\"ImageCacheRamPercent\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheRamPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "90"
+      }
+    },
+    {
+      "name": "ImageCacheRamPercent -2147483648",
+      "text": "{\"ImageCacheRamPercent\":-2147483648}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheRamPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "1"
+      }
+    },
+    {
+      "name": "SourceBytesCapacityBytes 0",
+      "text": "{\"SourceBytesCapacityBytes\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "SourceBytesCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "SourceBytesCapacityBytes -1",
+      "text": "{\"SourceBytesCapacityBytes\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "SourceBytesCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "SourceBytesCapacityBytes 1",
+      "text": "{\"SourceBytesCapacityBytes\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "SourceBytesCapacityBytes": "1"
+      }
+    },
+    {
+      "name": "MemoryReserveBytes -1",
+      "text": "{\"MemoryReserveBytes\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "MemoryReserveBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MemoryReserveBytes 0",
+      "text": "{\"MemoryReserveBytes\":0}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "MemoryReserveBytes": "0"
+      }
+    },
+    {
+      "name": "MemoryReserveBytes 1",
+      "text": "{\"MemoryReserveBytes\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "MemoryReserveBytes": "1"
+      }
+    },
+    {
+      "name": "PreviewDiskCacheCapacityBytes -1",
+      "text": "{\"PreviewDiskCacheCapacityBytes\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "PreviewDiskCacheCapacityBytes"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreviewDiskCacheCapacityBytes 0",
+      "text": "{\"PreviewDiskCacheCapacityBytes\":0}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreviewDiskCacheCapacityBytes": "0"
+      }
+    },
+    {
+      "name": "PreviewDiskCacheCapacityBytes 1",
+      "text": "{\"PreviewDiskCacheCapacityBytes\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreviewDiskCacheCapacityBytes": "1"
+      }
+    },
+    {
+      "name": "PreloadWorkerCount -3",
+      "text": "{\"PreloadWorkerCount\":-3}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadWorkerCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadWorkerCount 0",
+      "text": "{\"PreloadWorkerCount\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadWorkerCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadWorkerCount 1",
+      "text": "{\"PreloadWorkerCount\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadWorkerCount": "1"
+      }
+    },
+    {
+      "name": "PreloadWorkerCount 64",
+      "text": "{\"PreloadWorkerCount\":64}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadWorkerCount": "64"
+      }
+    },
+    {
+      "name": "PreloadWorkerCount 65",
+      "text": "{\"PreloadWorkerCount\":65}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadWorkerCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadWorkerCount": "64"
+      }
+    },
+    {
+      "name": "PreloadWorkerCount 2147483647",
+      "text": "{\"PreloadWorkerCount\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadWorkerCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadWorkerCount": "64"
+      }
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 0",
+      "text": "{\"PreloadMemoryLoadLimit\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit -0.5",
+      "text": "{\"PreloadMemoryLoadLimit\":-0.5}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 0.01",
+      "text": "{\"PreloadMemoryLoadLimit\":0.01}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadMemoryLoadLimit": "0.01"
+      }
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 0.9",
+      "text": "{\"PreloadMemoryLoadLimit\":0.9}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 1",
+      "text": "{\"PreloadMemoryLoadLimit\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadMemoryLoadLimit": "1"
+      }
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 1.0001",
+      "text": "{\"PreloadMemoryLoadLimit\":1.0001}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit \"NaN\"",
+      "text": "{\"PreloadMemoryLoadLimit\":\"NaN\"}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit \"Infinity\"",
+      "text": "{\"PreloadMemoryLoadLimit\":\"Infinity\"}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit \"-Infinity\"",
+      "text": "{\"PreloadMemoryLoadLimit\":\"-Infinity\"}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 5e-324",
+      "text": "{\"PreloadMemoryLoadLimit\":5e-324}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadMemoryLoadLimit": "5E-324"
+      }
+    },
+    {
+      "name": "PreloadMemoryLoadLimit 1e999",
+      "text": "{\"PreloadMemoryLoadLimit\":1e999}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadMemoryLoadLimit -0.0",
+      "text": "{\"PreloadMemoryLoadLimit\":-0.0}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadMemoryLoadLimit"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadForwardCount -1",
+      "text": "{\"PreloadForwardCount\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadForwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "1"
+      }
+    },
+    {
+      "name": "PreloadForwardCount 0",
+      "text": "{\"PreloadForwardCount\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadForwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "1"
+      }
+    },
+    {
+      "name": "PreloadForwardCount 1",
+      "text": "{\"PreloadForwardCount\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "1"
+      }
+    },
+    {
+      "name": "PreloadForwardCount 32",
+      "text": "{\"PreloadForwardCount\":32}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadForwardCount 500",
+      "text": "{\"PreloadForwardCount\":500}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "500"
+      }
+    },
+    {
+      "name": "PreloadForwardCount 501",
+      "text": "{\"PreloadForwardCount\":501}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadForwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "500"
+      }
+    },
+    {
+      "name": "PreloadForwardCount 2147483647",
+      "text": "{\"PreloadForwardCount\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadForwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadForwardCount": "500"
+      }
+    },
+    {
+      "name": "PreloadBackwardCount -1",
+      "text": "{\"PreloadBackwardCount\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadBackwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadBackwardCount": "0"
+      }
+    },
+    {
+      "name": "PreloadBackwardCount 0",
+      "text": "{\"PreloadBackwardCount\":0}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadBackwardCount": "0"
+      }
+    },
+    {
+      "name": "PreloadBackwardCount 8",
+      "text": "{\"PreloadBackwardCount\":8}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "PreloadBackwardCount 500",
+      "text": "{\"PreloadBackwardCount\":500}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadBackwardCount": "500"
+      }
+    },
+    {
+      "name": "PreloadBackwardCount 501",
+      "text": "{\"PreloadBackwardCount\":501}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadBackwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadBackwardCount": "500"
+      }
+    },
+    {
+      "name": "PreloadBackwardCount 2147483647",
+      "text": "{\"PreloadBackwardCount\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "PreloadBackwardCount"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "PreloadBackwardCount": "500"
+      }
+    },
+    {
+      "name": "InitialViewMode \"400%\"",
+      "text": "{\"InitialViewMode\":\"400%\"}",
+      "outcome": "ok",
+      "fixed": [
+        "InitialViewMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"200%\""
+      }
+    },
+    {
+      "name": "InitialViewMode 3",
+      "text": "{\"InitialViewMode\":3}",
+      "outcome": "ok",
+      "fixed": [
+        "InitialViewMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"200%\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"200%\"",
+      "text": "{\"InitialViewMode\":\"200%\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"200%\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"100%\"",
+      "text": "{\"InitialViewMode\":\"100%\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"100%\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"fit-width\"",
+      "text": "{\"InitialViewMode\":\"fit-width\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"FitWidth\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"fit-height\"",
+      "text": "{\"InitialViewMode\":\"fit-height\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"FitHeight\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"click-zoom\"",
+      "text": "{\"InitialViewMode\":\"click-zoom\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"ClickZoomLevel\""
+      }
+    },
+    {
+      "name": "InitialViewMode \"bogus\"",
+      "text": "{\"InitialViewMode\":\"bogus\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InitialViewMode 99",
+      "text": "{\"InitialViewMode\":99}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "LoadingMode \"garbage\"",
+      "text": "{\"LoadingMode\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "LoadingMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "LoadingMode null",
+      "text": "{\"LoadingMode\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "LoadingMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "LoadingMode 999",
+      "text": "{\"LoadingMode\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "LoadingMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageSortMode \"garbage\"",
+      "text": "{\"ImageSortMode\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageSortMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageSortMode null",
+      "text": "{\"ImageSortMode\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageSortMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageSortMode 999",
+      "text": "{\"ImageSortMode\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageSortMode"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ScalingQuality \"garbage\"",
+      "text": "{\"ScalingQuality\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "ScalingQuality"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ScalingQuality null",
+      "text": "{\"ScalingQuality\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "ScalingQuality"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ScalingQuality 999",
+      "text": "{\"ScalingQuality\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "ScalingQuality"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KeyboardZoomAnchor \"garbage\"",
+      "text": "{\"KeyboardZoomAnchor\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomAnchor"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KeyboardZoomAnchor null",
+      "text": "{\"KeyboardZoomAnchor\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomAnchor"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KeyboardZoomAnchor 999",
+      "text": "{\"KeyboardZoomAnchor\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomAnchor"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KineticGlideSmoothing \"garbage\"",
+      "text": "{\"KineticGlideSmoothing\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "KineticGlideSmoothing"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KineticGlideSmoothing null",
+      "text": "{\"KineticGlideSmoothing\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "KineticGlideSmoothing"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KineticGlideSmoothing 999",
+      "text": "{\"KineticGlideSmoothing\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "KineticGlideSmoothing"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "FitWidthAnchor2 \"garbage\"",
+      "text": "{\"FitWidthAnchor2\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "FitWidthAnchor2"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "FitWidthAnchor2 null",
+      "text": "{\"FitWidthAnchor2\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "FitWidthAnchor2"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "FitWidthAnchor2 999",
+      "text": "{\"FitWidthAnchor2\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "FitWidthAnchor2"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MiddleClickAction \"garbage\"",
+      "text": "{\"MiddleClickAction\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "MiddleClickAction"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MiddleClickAction null",
+      "text": "{\"MiddleClickAction\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "MiddleClickAction"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MiddleClickAction 999",
+      "text": "{\"MiddleClickAction\":999}",
+      "outcome": "ok",
+      "fixed": [
+        "MiddleClickAction"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend \"LibRaw\"",
+      "text": "{\"DecoderBackend\":\"LibRaw\"}",
+      "outcome": "ok",
+      "fixed": [
+        "DecoderBackend"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend 3",
+      "text": "{\"DecoderBackend\":3}",
+      "outcome": "ok",
+      "fixed": [
+        "DecoderBackend"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend \"Wpf\"",
+      "text": "{\"DecoderBackend\":\"Wpf\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "DecoderBackend": "\"Wpf\""
+      }
+    },
+    {
+      "name": "DecoderBackend \"TurboJpeg\"",
+      "text": "{\"DecoderBackend\":\"TurboJpeg\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "DecoderBackend": "\"TurboJpeg\""
+      }
+    },
+    {
+      "name": "DecoderBackend \"WicDirect\"",
+      "text": "{\"DecoderBackend\":\"WicDirect\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend \"garbage\"",
+      "text": "{\"DecoderBackend\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [
+        "DecoderBackend"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend null",
+      "text": "{\"DecoderBackend\":null}",
+      "outcome": "ok",
+      "fixed": [
+        "DecoderBackend"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "DecoderBackend 4",
+      "text": "{\"DecoderBackend\":4}",
+      "outcome": "ok",
+      "fixed": [
+        "DecoderBackend"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "JournalDurability garbage is silently zero",
+      "text": "{\"JournalDurability\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InstanceMode garbage is silently zero",
+      "text": "{\"InstanceMode\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "FitWidthAnchor garbage is silently zero",
+      "text": "{\"FitWidthAnchor\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MouseWheelAction garbage is silently zero",
+      "text": "{\"MouseWheelAction\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageTransition garbage is silently zero",
+      "text": "{\"ImageTransition\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "RawFullDecode garbage is silently zero",
+      "text": "{\"RawFullDecode\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "RawPairMode garbage is silently zero",
+      "text": "{\"RawPairMode\":\"garbage\"}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "every settings-enum garbage at once (order of the repair list)",
+      "text": "{\"InitialViewMode\":\"400%\",\"LoadingMode\":\"x\",\"ImageSortMode\":\"x\",\"ScalingQuality\":\"x\",\"DecoderBackend\":\"LibRaw\",\"JournalDurability\":\"x\",\"InstanceMode\":\"x\",\"FitWidthAnchor\":\"x\",\"KeyboardZoomAnchor\":\"x\",\"FitWidthAnchor2\":\"x\",\"MiddleClickAction\":\"x\",\"MouseWheelAction\":\"x\",\"KineticGlideSmoothing\":\"x\",\"ImageTransition\":\"x\",\"RawFullDecode\":\"x\",\"RawPairMode\":\"x\"}",
+      "outcome": "ok",
+      "fixed": [
+        "InitialViewMode",
+        "LoadingMode",
+        "ImageSortMode",
+        "ScalingQuality",
+        "DecoderBackend",
+        "KeyboardZoomAnchor",
+        "FitWidthAnchor2",
+        "MiddleClickAction",
+        "KineticGlideSmoothing"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"200%\""
+      }
+    },
+    {
+      "name": "every numeric setting out of range at once (order of the repair list)",
+      "text": "{\"ImageCacheCapacityBytes\":0,\"ImageCacheRamPercent\":0,\"SourceBytesCapacityBytes\":0,\"MemoryReserveBytes\":-1,\"PreviewDiskCacheCapacityBytes\":-1,\"PreloadWorkerCount\":0,\"PreloadMemoryLoadLimit\":0,\"PreloadForwardCount\":0,\"PreloadBackwardCount\":-1,\"ClickZoomPercent\":0,\"ArrowPanStepPercent\":0,\"KeyboardZoomStepPercent\":0,\"ToolbarAutoHideDelayMs\":-1,\"InfoOverlayAutoHideDelayMs\":-1,\"ToolbarOpacityPercent\":0,\"InfoOverlayFontSize\":\"NaN\",\"ImageTransitionMs\":0,\"TouchpadSwipeDistancePerImage\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageCacheCapacityBytes",
+        "ImageCacheRamPercent",
+        "SourceBytesCapacityBytes",
+        "MemoryReserveBytes",
+        "PreviewDiskCacheCapacityBytes",
+        "PreloadWorkerCount",
+        "PreloadMemoryLoadLimit",
+        "PreloadForwardCount",
+        "PreloadBackwardCount",
+        "ClickZoomPercent",
+        "ArrowPanStepPercent",
+        "KeyboardZoomStepPercent",
+        "ToolbarAutoHideDelayMs",
+        "InfoOverlayAutoHideDelayMs",
+        "ToolbarOpacityPercent",
+        "InfoOverlayFontSize",
+        "ImageTransitionMs",
+        "TouchpadSwipeDistancePerImage"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageCacheRamPercent": "1",
+        "ClickZoomPercent": "10",
+        "PreloadForwardCount": "1",
+        "PreloadBackwardCount": "0",
+        "ToolbarAutoHideDelayMs": "0",
+        "KeyboardZoomStepPercent": "5",
+        "InfoOverlayAutoHideDelayMs": "0",
+        "ToolbarOpacityPercent": "20",
+        "ArrowPanStepPercent": "1",
+        "ImageTransitionMs": "40",
+        "TouchpadSwipeDistancePerImage": "30"
+      }
+    },
+    {
+      "name": "ClickZoomPercent -1",
+      "text": "{\"ClickZoomPercent\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "ClickZoomPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "10"
+      }
+    },
+    {
+      "name": "ClickZoomPercent 9",
+      "text": "{\"ClickZoomPercent\":9}",
+      "outcome": "ok",
+      "fixed": [
+        "ClickZoomPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "10"
+      }
+    },
+    {
+      "name": "ClickZoomPercent 10",
+      "text": "{\"ClickZoomPercent\":10}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "10"
+      }
+    },
+    {
+      "name": "ClickZoomPercent 100",
+      "text": "{\"ClickZoomPercent\":100}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ClickZoomPercent 800",
+      "text": "{\"ClickZoomPercent\":800}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "800"
+      }
+    },
+    {
+      "name": "ClickZoomPercent 801",
+      "text": "{\"ClickZoomPercent\":801}",
+      "outcome": "ok",
+      "fixed": [
+        "ClickZoomPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "800"
+      }
+    },
+    {
+      "name": "ClickZoomPercent 2147483647",
+      "text": "{\"ClickZoomPercent\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "ClickZoomPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "800"
+      }
+    },
+    {
+      "name": "ClickZoomPercent -2147483648",
+      "text": "{\"ClickZoomPercent\":-2147483648}",
+      "outcome": "ok",
+      "fixed": [
+        "ClickZoomPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ClickZoomPercent": "10"
+      }
+    },
+    {
+      "name": "ArrowPanStepPercent -1",
+      "text": "{\"ArrowPanStepPercent\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "ArrowPanStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ArrowPanStepPercent": "1"
+      }
+    },
+    {
+      "name": "ArrowPanStepPercent 0",
+      "text": "{\"ArrowPanStepPercent\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "ArrowPanStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ArrowPanStepPercent": "1"
+      }
+    },
+    {
+      "name": "ArrowPanStepPercent 1",
+      "text": "{\"ArrowPanStepPercent\":1}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ArrowPanStepPercent": "1"
+      }
+    },
+    {
+      "name": "ArrowPanStepPercent 10",
+      "text": "{\"ArrowPanStepPercent\":10}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ArrowPanStepPercent 100",
+      "text": "{\"ArrowPanStepPercent\":100}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ArrowPanStepPercent": "100"
+      }
+    },
+    {
+      "name": "ArrowPanStepPercent 101",
+      "text": "{\"ArrowPanStepPercent\":101}",
+      "outcome": "ok",
+      "fixed": [
+        "ArrowPanStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ArrowPanStepPercent": "100"
+      }
+    },
+    {
+      "name": "KeyboardZoomStepPercent -2147483648",
+      "text": "{\"KeyboardZoomStepPercent\":-2147483648}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "KeyboardZoomStepPercent": "5"
+      }
+    },
+    {
+      "name": "KeyboardZoomStepPercent 4",
+      "text": "{\"KeyboardZoomStepPercent\":4}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "KeyboardZoomStepPercent": "5"
+      }
+    },
+    {
+      "name": "KeyboardZoomStepPercent 5",
+      "text": "{\"KeyboardZoomStepPercent\":5}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "KeyboardZoomStepPercent": "5"
+      }
+    },
+    {
+      "name": "KeyboardZoomStepPercent 10",
+      "text": "{\"KeyboardZoomStepPercent\":10}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "KeyboardZoomStepPercent 100",
+      "text": "{\"KeyboardZoomStepPercent\":100}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "KeyboardZoomStepPercent": "100"
+      }
+    },
+    {
+      "name": "KeyboardZoomStepPercent 101",
+      "text": "{\"KeyboardZoomStepPercent\":101}",
+      "outcome": "ok",
+      "fixed": [
+        "KeyboardZoomStepPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "KeyboardZoomStepPercent": "100"
+      }
+    },
+    {
+      "name": "ToolbarAutoHideDelayMs -1",
+      "text": "{\"ToolbarAutoHideDelayMs\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "ToolbarAutoHideDelayMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarAutoHideDelayMs": "0"
+      }
+    },
+    {
+      "name": "ToolbarAutoHideDelayMs 0",
+      "text": "{\"ToolbarAutoHideDelayMs\":0}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarAutoHideDelayMs": "0"
+      }
+    },
+    {
+      "name": "ToolbarAutoHideDelayMs 1500",
+      "text": "{\"ToolbarAutoHideDelayMs\":1500}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ToolbarAutoHideDelayMs 10000",
+      "text": "{\"ToolbarAutoHideDelayMs\":10000}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarAutoHideDelayMs": "10000"
+      }
+    },
+    {
+      "name": "ToolbarAutoHideDelayMs 10001",
+      "text": "{\"ToolbarAutoHideDelayMs\":10001}",
+      "outcome": "ok",
+      "fixed": [
+        "ToolbarAutoHideDelayMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarAutoHideDelayMs": "10000"
+      }
+    },
+    {
+      "name": "InfoOverlayAutoHideDelayMs -1",
+      "text": "{\"InfoOverlayAutoHideDelayMs\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayAutoHideDelayMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayAutoHideDelayMs": "0"
+      }
+    },
+    {
+      "name": "InfoOverlayAutoHideDelayMs 0",
+      "text": "{\"InfoOverlayAutoHideDelayMs\":0}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayAutoHideDelayMs": "0"
+      }
+    },
+    {
+      "name": "InfoOverlayAutoHideDelayMs 3000",
+      "text": "{\"InfoOverlayAutoHideDelayMs\":3000}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayAutoHideDelayMs 10000",
+      "text": "{\"InfoOverlayAutoHideDelayMs\":10000}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayAutoHideDelayMs": "10000"
+      }
+    },
+    {
+      "name": "InfoOverlayAutoHideDelayMs 10001",
+      "text": "{\"InfoOverlayAutoHideDelayMs\":10001}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayAutoHideDelayMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayAutoHideDelayMs": "10000"
+      }
+    },
+    {
+      "name": "ToolbarOpacityPercent 0",
+      "text": "{\"ToolbarOpacityPercent\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "ToolbarOpacityPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarOpacityPercent": "20"
+      }
+    },
+    {
+      "name": "ToolbarOpacityPercent 19",
+      "text": "{\"ToolbarOpacityPercent\":19}",
+      "outcome": "ok",
+      "fixed": [
+        "ToolbarOpacityPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarOpacityPercent": "20"
+      }
+    },
+    {
+      "name": "ToolbarOpacityPercent 20",
+      "text": "{\"ToolbarOpacityPercent\":20}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ToolbarOpacityPercent": "20"
+      }
+    },
+    {
+      "name": "ToolbarOpacityPercent 100",
+      "text": "{\"ToolbarOpacityPercent\":100}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ToolbarOpacityPercent 101",
+      "text": "{\"ToolbarOpacityPercent\":101}",
+      "outcome": "ok",
+      "fixed": [
+        "ToolbarOpacityPercent"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize 7.9",
+      "text": "{\"InfoOverlayFontSize\":7.9}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "8"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize 8",
+      "text": "{\"InfoOverlayFontSize\":8}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "8"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize 12",
+      "text": "{\"InfoOverlayFontSize\":12}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize 24",
+      "text": "{\"InfoOverlayFontSize\":24}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "24"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize 24.1",
+      "text": "{\"InfoOverlayFontSize\":24.1}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "24"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize \"NaN\"",
+      "text": "{\"InfoOverlayFontSize\":\"NaN\"}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize \"Infinity\"",
+      "text": "{\"InfoOverlayFontSize\":\"Infinity\"}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize \"-Infinity\"",
+      "text": "{\"InfoOverlayFontSize\":\"-Infinity\"}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize 1e999",
+      "text": "{\"InfoOverlayFontSize\":1e999}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize -1e999",
+      "text": "{\"InfoOverlayFontSize\":-1e999}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "InfoOverlayFontSize -0.0",
+      "text": "{\"InfoOverlayFontSize\":-0.0}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "8"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize 0",
+      "text": "{\"InfoOverlayFontSize\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "8"
+      }
+    },
+    {
+      "name": "InfoOverlayFontSize 1e-300",
+      "text": "{\"InfoOverlayFontSize\":1e-300}",
+      "outcome": "ok",
+      "fixed": [
+        "InfoOverlayFontSize"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InfoOverlayFontSize": "8"
+      }
+    },
+    {
+      "name": "ImageTransitionMs 39",
+      "text": "{\"ImageTransitionMs\":39}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageTransitionMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageTransitionMs": "40"
+      }
+    },
+    {
+      "name": "ImageTransitionMs 40",
+      "text": "{\"ImageTransitionMs\":40}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageTransitionMs": "40"
+      }
+    },
+    {
+      "name": "ImageTransitionMs 120",
+      "text": "{\"ImageTransitionMs\":120}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "ImageTransitionMs 400",
+      "text": "{\"ImageTransitionMs\":400}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageTransitionMs": "400"
+      }
+    },
+    {
+      "name": "ImageTransitionMs 401",
+      "text": "{\"ImageTransitionMs\":401}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageTransitionMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageTransitionMs": "400"
+      }
+    },
+    {
+      "name": "ImageTransitionMs -1",
+      "text": "{\"ImageTransitionMs\":-1}",
+      "outcome": "ok",
+      "fixed": [
+        "ImageTransitionMs"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ImageTransitionMs": "40"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 0",
+      "text": "{\"TouchpadSwipeDistancePerImage\":0}",
+      "outcome": "ok",
+      "fixed": [
+        "TouchpadSwipeDistancePerImage"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "30"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 29",
+      "text": "{\"TouchpadSwipeDistancePerImage\":29}",
+      "outcome": "ok",
+      "fixed": [
+        "TouchpadSwipeDistancePerImage"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "30"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 30",
+      "text": "{\"TouchpadSwipeDistancePerImage\":30}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "30"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 200",
+      "text": "{\"TouchpadSwipeDistancePerImage\":200}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 2400",
+      "text": "{\"TouchpadSwipeDistancePerImage\":2400}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "2400"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 2401",
+      "text": "{\"TouchpadSwipeDistancePerImage\":2401}",
+      "outcome": "ok",
+      "fixed": [
+        "TouchpadSwipeDistancePerImage"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "2400"
+      }
+    },
+    {
+      "name": "TouchpadSwipeDistancePerImage 2147483647",
+      "text": "{\"TouchpadSwipeDistancePerImage\":2147483647}",
+      "outcome": "ok",
+      "fixed": [
+        "TouchpadSwipeDistancePerImage"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "TouchpadSwipeDistancePerImage": "2400"
+      }
+    },
+    {
+      "name": "flags and bools are never repaired",
+      "text": "{\"ShowExifInfo\":true,\"ExifInfoFields\":\"bogus\",\"TitleBarFields\":\"bogus\",\"ToolbarAutoHide\":true,\"ConfirmBeforeDelete\":true}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ShowExifInfo": "true",
+        "ToolbarAutoHide": "true",
+        "ConfirmBeforeDelete": "true"
+      }
+    },
+    {
+      "name": "actions: empty list is kept",
+      "text": "{\"Actions\":[]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[]"
+      }
+    },
+    {
+      "name": "actions: one null entry",
+      "text": "{\"Actions\":[null]}",
+      "outcome": "ok",
+      "fixed": [
+        "Actions"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[]"
+      }
+    },
+    {
+      "name": "actions: null entries around a valid one",
+      "text": "{\"Actions\":[null,{\"Name\":\"K\",\"Shortcut\":\"F9\",\"Operation\":\"Copy\",\"Destination\":\"d\"},null]}",
+      "outcome": "ok",
+      "fixed": [
+        "Actions"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"K\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Copy\",\r\n      \"Destination\": \"d\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "actions: null strings become empty without a report",
+      "text": "{\"Actions\":[{\"Name\":null,\"Shortcut\":null,\"Destination\":null}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "actions: odd operations are silently Move",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\",\"Operation\":77},{\"Name\":\"B\",\"Shortcut\":\"F8\",\"Operation\":\"bogus\"},{\"Name\":\"C\",\"Shortcut\":\"F9\",\"Operation\":\"Delete\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F7\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"F8\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"C\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Recycle\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "actions: valid list untouched",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\",\"Operation\":\"Move\",\"Destination\":\"a\",\"Confirm\":true},{\"Name\":\"B\",\"Shortcut\":\"F8\",\"Operation\":\"Copy\",\"Destination\":\"b\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F7\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"a\",\r\n      \"Confirm\": true\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"F8\",\r\n      \"Operation\": \"Copy\",\r\n      \"Destination\": \"b\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "actions: shortcut alias is canonicalised",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\"},{\"Name\":\"B\",\"Shortcut\":\" prior \"},{\"Name\":\"C\",\"Shortcut\":\"f9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"Enter\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"PageUp\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"C\",\r\n      \"Shortcut\": \"f9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "mandatory Next blank resets to default",
+      "text": "{\"Shortcuts\":{\"Next\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Next null resets to default",
+      "text": "{\"Shortcuts\":{\"Next\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Previous blank resets to default",
+      "text": "{\"Shortcuts\":{\"Previous\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Previous null resets to default",
+      "text": "{\"Shortcuts\":{\"Previous\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory SendToRecycleBin blank resets to default",
+      "text": "{\"Shortcuts\":{\"SendToRecycleBin\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory SendToRecycleBin null resets to default",
+      "text": "{\"Shortcuts\":{\"SendToRecycleBin\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Compare blank resets to default",
+      "text": "{\"Shortcuts\":{\"Compare\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Compare null resets to default",
+      "text": "{\"Shortcuts\":{\"Compare\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory NextFolder blank resets to default",
+      "text": "{\"Shortcuts\":{\"NextFolder\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory NextFolder null resets to default",
+      "text": "{\"Shortcuts\":{\"NextFolder\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory PreviousFolder blank resets to default",
+      "text": "{\"Shortcuts\":{\"PreviousFolder\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory PreviousFolder null resets to default",
+      "text": "{\"Shortcuts\":{\"PreviousFolder\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory FirstImage blank resets to default",
+      "text": "{\"Shortcuts\":{\"FirstImage\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory FirstImage null resets to default",
+      "text": "{\"Shortcuts\":{\"FirstImage\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ZoomIn blank resets to default",
+      "text": "{\"Shortcuts\":{\"ZoomIn\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ZoomIn null resets to default",
+      "text": "{\"Shortcuts\":{\"ZoomIn\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ZoomOut blank resets to default",
+      "text": "{\"Shortcuts\":{\"ZoomOut\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ZoomOut null resets to default",
+      "text": "{\"Shortcuts\":{\"ZoomOut\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ToggleFit blank resets to default",
+      "text": "{\"Shortcuts\":{\"ToggleFit\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory ToggleFit null resets to default",
+      "text": "{\"Shortcuts\":{\"ToggleFit\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Skip blank resets to default",
+      "text": "{\"Shortcuts\":{\"Skip\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Skip null resets to default",
+      "text": "{\"Shortcuts\":{\"Skip\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Undo blank resets to default",
+      "text": "{\"Shortcuts\":{\"Undo\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Undo null resets to default",
+      "text": "{\"Shortcuts\":{\"Undo\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Fullscreen blank resets to default",
+      "text": "{\"Shortcuts\":{\"Fullscreen\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory Fullscreen null resets to default",
+      "text": "{\"Shortcuts\":{\"Fullscreen\":null}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory whitespace-only resets",
+      "text": "{\"Shortcuts\":{\"Next\":\"   \"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "mandatory padded is kept (trim is only for optional)",
+      "text": "{\"Shortcuts\":{\"Next\":\" Right \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "MoveToFolder2 blank is NOT reset",
+      "text": "{\"Shortcuts\":{\"MoveToFolder2\":\"\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "MoveToFolder2 null becomes empty silently",
+      "text": "{\"Shortcuts\":{\"MoveToFolder2\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "MoveToFolder2 alias is canonicalised",
+      "text": "{\"Shortcuts\":{\"MoveToFolder2\":\"Return\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "several mandatory blank at once",
+      "text": "{\"Shortcuts\":{\"Next\":\"\",\"Undo\":null,\"Fullscreen\":\" \"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "blank mandatory whose default an action holds: action key cleared and reported",
+      "text": "{\"Shortcuts\":{\"Previous\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"Left\"},{\"Name\":\"Other\",\"Shortcut\":\"Z\"}]}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts",
+        "Actions[0].Shortcut"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"Other\",\r\n      \"Shortcut\": \"Z\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "blank mandatory, action holds the default in other casing",
+      "text": "{\"Shortcuts\":{\"Previous\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"left\"}]}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts",
+        "Actions[0].Shortcut"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "blank mandatory, action holds an alias of the default",
+      "text": "{\"Shortcuts\":{\"PreviousFolder\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"Prior\"},{\"Name\":\"B\",\"Shortcut\":\"PageUp\"}]}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts",
+        "Actions[0].Shortcut",
+        "Actions[1].Shortcut"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "two blank mandatory, three actions, two collide",
+      "text": "{\"Shortcuts\":{\"Next\":\"\",\"Skip\":null},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Right\"},{\"Name\":\"B\",\"Shortcut\":\"X\"},{\"Name\":\"C\",\"Shortcut\":\"space\"}]}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts",
+        "Actions[0].Shortcut",
+        "Actions[2].Shortcut"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"X\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"C\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "blank mandatory, action with a blank shortcut is not touched",
+      "text": "{\"Shortcuts\":{\"Next\":\"\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"\"}]}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "optional LastImage null becomes empty",
+      "text": "{\"Shortcuts\":{\"LastImage\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional LastImage padded is trimmed",
+      "text": "{\"Shortcuts\":{\"LastImage\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"J\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ZoomActualSize null becomes empty",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ZoomActualSize padded is trimmed",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"J\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleInfoOverlay null becomes empty",
+      "text": "{\"Shortcuts\":{\"ToggleInfoOverlay\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleInfoOverlay padded is trimmed",
+      "text": "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"J\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional MoveToFolder null becomes empty",
+      "text": "{\"Shortcuts\":{\"MoveToFolder\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional MoveToFolder padded is trimmed",
+      "text": "{\"Shortcuts\":{\"MoveToFolder\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"J\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CopyToFolder null becomes empty",
+      "text": "{\"Shortcuts\":{\"CopyToFolder\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CopyToFolder padded is trimmed",
+      "text": "{\"Shortcuts\":{\"CopyToFolder\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"J\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ClickZoom null becomes empty",
+      "text": "{\"Shortcuts\":{\"ClickZoom\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ClickZoom padded is trimmed",
+      "text": "{\"Shortcuts\":{\"ClickZoom\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"J\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth null becomes empty",
+      "text": "{\"Shortcuts\":{\"FitWidth\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth padded is trimmed",
+      "text": "{\"Shortcuts\":{\"FitWidth\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"J\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitHeight null becomes empty",
+      "text": "{\"Shortcuts\":{\"FitHeight\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitHeight padded is trimmed",
+      "text": "{\"Shortcuts\":{\"FitHeight\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"J\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleKeepZoom null becomes empty",
+      "text": "{\"Shortcuts\":{\"ToggleKeepZoom\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleKeepZoom padded is trimmed",
+      "text": "{\"Shortcuts\":{\"ToggleKeepZoom\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"J\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional OpenFolder null becomes empty",
+      "text": "{\"Shortcuts\":{\"OpenFolder\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional OpenFolder padded is trimmed",
+      "text": "{\"Shortcuts\":{\"OpenFolder\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"J\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CustomZoom null becomes empty",
+      "text": "{\"Shortcuts\":{\"CustomZoom\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CustomZoom padded is trimmed",
+      "text": "{\"Shortcuts\":{\"CustomZoom\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"J\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleCaptureMember null becomes empty",
+      "text": "{\"Shortcuts\":{\"ToggleCaptureMember\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "optional ToggleCaptureMember padded is trimmed",
+      "text": "{\"Shortcuts\":{\"ToggleCaptureMember\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"J\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth2 null becomes empty",
+      "text": "{\"Shortcuts\":{\"FitWidth2\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth2 padded is trimmed",
+      "text": "{\"Shortcuts\":{\"FitWidth2\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"J\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional Refresh null becomes empty",
+      "text": "{\"Shortcuts\":{\"Refresh\":null}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional Refresh padded is trimmed",
+      "text": "{\"Shortcuts\":{\"Refresh\":\"  J  \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"J\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional alias is canonicalised",
+      "text": "{\"Shortcuts\":{\"LastImage\":\" Prior \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional blank stays blank (disabled)",
+      "text": "{\"Shortcuts\":{\"LastImage\":\"\",\"ZoomActualSize\":\"   \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "canonicalisation of mandatory and legacy shortcuts",
+      "text": "{\"Shortcuts\":{\"PreviousFolder\":\"Prior\",\"NextFolder\":\" next \",\"Fullscreen\":\"f11\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"f11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional vs action key",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"D1\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ZoomActualSize"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"D1\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional vs action key, other casing and padding",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\" d1 \"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ZoomActualSize"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"d1\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional vs action alias",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\"}],\"Shortcuts\":{\"LastImage\":\"Enter\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"Enter\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional vs mandatory key",
+      "text": "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"c\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleInfoOverlay"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional LastImage equals Next",
+      "text": "{\"Shortcuts\":{\"LastImage\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ZoomActualSize equals Next",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ZoomActualSize"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleInfoOverlay equals Next",
+      "text": "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleInfoOverlay"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional MoveToFolder equals Next",
+      "text": "{\"Shortcuts\":{\"MoveToFolder\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "MoveToFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CopyToFolder equals Next",
+      "text": "{\"Shortcuts\":{\"CopyToFolder\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "CopyToFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ClickZoom equals Next",
+      "text": "{\"Shortcuts\":{\"ClickZoom\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ClickZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth equals Next",
+      "text": "{\"Shortcuts\":{\"FitWidth\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitWidth"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitHeight equals Next",
+      "text": "{\"Shortcuts\":{\"FitHeight\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitHeight"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleKeepZoom equals Next",
+      "text": "{\"Shortcuts\":{\"ToggleKeepZoom\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleKeepZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional OpenFolder equals Next",
+      "text": "{\"Shortcuts\":{\"OpenFolder\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "OpenFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CustomZoom equals Next",
+      "text": "{\"Shortcuts\":{\"CustomZoom\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "CustomZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleCaptureMember equals Next",
+      "text": "{\"Shortcuts\":{\"ToggleCaptureMember\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleCaptureMember"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "optional FitWidth2 equals Next",
+      "text": "{\"Shortcuts\":{\"FitWidth2\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitWidth2"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional Refresh equals Next",
+      "text": "{\"Shortcuts\":{\"Refresh\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "Refresh"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional LastImage equals an action key",
+      "text": "{\"Shortcuts\":{\"LastImage\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ZoomActualSize equals an action key",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ZoomActualSize"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleInfoOverlay equals an action key",
+      "text": "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleInfoOverlay"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional MoveToFolder equals an action key",
+      "text": "{\"Shortcuts\":{\"MoveToFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "MoveToFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CopyToFolder equals an action key",
+      "text": "{\"Shortcuts\":{\"CopyToFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "CopyToFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ClickZoom equals an action key",
+      "text": "{\"Shortcuts\":{\"ClickZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ClickZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitWidth equals an action key",
+      "text": "{\"Shortcuts\":{\"FitWidth\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitWidth"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional FitHeight equals an action key",
+      "text": "{\"Shortcuts\":{\"FitHeight\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitHeight"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleKeepZoom equals an action key",
+      "text": "{\"Shortcuts\":{\"ToggleKeepZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleKeepZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional OpenFolder equals an action key",
+      "text": "{\"Shortcuts\":{\"OpenFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "OpenFolder"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional CustomZoom equals an action key",
+      "text": "{\"Shortcuts\":{\"CustomZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "CustomZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional ToggleCaptureMember equals an action key",
+      "text": "{\"Shortcuts\":{\"ToggleCaptureMember\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ToggleCaptureMember"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "optional FitWidth2 equals an action key",
+      "text": "{\"Shortcuts\":{\"FitWidth2\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitWidth2"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional Refresh equals an action key",
+      "text": "{\"Shortcuts\":{\"Refresh\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "Refresh"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional vs optional: the earlier one in OptionalNames wins",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":\"D2\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ClickZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D2\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "all optional shortcuts on the same free key: only the first survives, rest disabled in OptionalNames order",
+      "text": "{\"Shortcuts\":{\"LastImage\":\"J\",\"ZoomActualSize\":\"J\",\"ToggleInfoOverlay\":\"J\",\"MoveToFolder\":\"J\",\"CopyToFolder\":\"J\",\"ClickZoom\":\"J\",\"FitWidth\":\"J\",\"FitHeight\":\"J\",\"ToggleKeepZoom\":\"J\",\"OpenFolder\":\"J\",\"CustomZoom\":\"J\",\"ToggleCaptureMember\":\"J\",\"FitWidth2\":\"J\",\"Refresh\":\"J\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ZoomActualSize",
+        "ToggleInfoOverlay",
+        "MoveToFolder",
+        "CopyToFolder",
+        "ClickZoom",
+        "FitWidth",
+        "FitHeight",
+        "ToggleKeepZoom",
+        "OpenFolder",
+        "CustomZoom",
+        "ToggleCaptureMember",
+        "FitWidth2",
+        "Refresh"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"\",\r\n    \"CopyToFolder\": \"\",\r\n    \"LastImage\": \"J\",\r\n    \"ZoomActualSize\": \"\",\r\n    \"ToggleInfoOverlay\": \"\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"\",\r\n    \"FitHeight\": \"\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional same key as another optional, different casing",
+      "text": "{\"Shortcuts\":{\"ZoomActualSize\":\"j\",\"ClickZoom\":\"J\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "ClickZoom"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"j\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "FitWidth2 default D4 vs action D4",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"D4\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "FitWidth2"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"D4\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "Refresh default R vs action R",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"R\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "Refresh"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"R\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "Refresh equals FitWidth2",
+      "text": "{\"Shortcuts\":{\"Refresh\":\"D4\"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "Refresh"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"\"\r\n  }"
+      }
+    },
+    {
+      "name": "action with blank shortcut takes nothing",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"\"},{\"Name\":\"B\",\"Shortcut\":null}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "blank-resolved mandatory then conflicting optional",
+      "text": "{\"Shortcuts\":{\"Next\":\"\",\"LastImage\":\"Right\"}}",
+      "outcome": "ok",
+      "fixed": [
+        "Shortcuts"
+      ],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "optional with surrounding whitespace conflicts after trim",
+      "text": "{\"Shortcuts\":{\"LastImage\":\" Right \"}}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [
+        "LastImage"
+      ],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }"
+      }
+    },
+    {
+      "name": "no conflict at all",
+      "text": "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: absent stays absent",
+      "text": "{}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {}
+    },
+    {
+      "name": "hidden items: empty list kept",
+      "text": "{\"HiddenContextMenuItems\":[]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[]"
+      }
+    },
+    {
+      "name": "hidden items: canonical list kept",
+      "text": "{\"HiddenContextMenuItems\":[\"Undo\",\"Fit\",\"Refresh\",\"ZoomFitWidth2\"]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Undo\",\r\n    \"Fit\",\r\n    \"Refresh\",\r\n    \"ZoomFitWidth2\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: out of order is re-ordered and reported",
+      "text": "{\"HiddenContextMenuItems\":[\"Refresh\",\"Fit\",\"Undo\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Undo\",\r\n    \"Fit\",\r\n    \"Refresh\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: Settings is dropped",
+      "text": "{\"HiddenContextMenuItems\":[\"Settings\",\"Fit\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Fit\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: unknown and lowercase names dropped",
+      "text": "{\"HiddenContextMenuItems\":[\"Bogus\",\"undo\",\"Fit\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Fit\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: duplicates dropped",
+      "text": "{\"HiddenContextMenuItems\":[\"Fit\",\"Fit\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Fit\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: null element dropped",
+      "text": "{\"HiddenContextMenuItems\":[\"Fit\",null]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Fit\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: numeric and padded names (Enum.TryParse quirks)",
+      "text": "{\"HiddenContextMenuItems\":[\"3\",\" Fit \",\"Fit,Undo\",\"17\",\"18\",\"-1\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"Refresh\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: only unknown",
+      "text": "{\"HiddenContextMenuItems\":[\"x\",\"y\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[]"
+      }
+    },
+    {
+      "name": "hidden items: every hideable item in canonical order",
+      "text": "{\"HiddenContextMenuItems\":[\"Undo\",\"MoveToRecycleBin\",\"Fit\",\"ZoomToLevel\",\"ZoomSubmenu\",\"Refresh\",\"OpenFolder\",\"NextFolder\",\"PreviousFolder\",\"ExternalEditor\",\"CopyFileName\",\"CopyFullPath\",\"ZoomFitWidth\",\"ZoomFitWidth2\",\"ZoomFitHeight\",\"ZoomPresets\",\"ZoomLevelOptions\"]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Undo\",\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\",\r\n    \"Refresh\",\r\n    \"OpenFolder\",\r\n    \"NextFolder\",\r\n    \"PreviousFolder\",\r\n    \"ExternalEditor\",\r\n    \"CopyFileName\",\r\n    \"CopyFullPath\",\r\n    \"ZoomFitWidth\",\r\n    \"ZoomFitWidth2\",\r\n    \"ZoomFitHeight\",\r\n    \"ZoomPresets\",\r\n    \"ZoomLevelOptions\"\r\n  ]"
+      }
+    },
+    {
+      "name": "hidden items: enum declaration order is NOT the canonical order",
+      "text": "{\"HiddenContextMenuItems\":[\"Undo\",\"MoveToRecycleBin\",\"Fit\",\"ZoomToLevel\",\"ZoomSubmenu\",\"OpenFolder\",\"NextFolder\",\"PreviousFolder\",\"ExternalEditor\",\"CopyFileName\",\"CopyFullPath\",\"ZoomFitWidth\",\"ZoomFitWidth2\",\"ZoomFitHeight\",\"ZoomPresets\",\"ZoomLevelOptions\",\"Refresh\"]}",
+      "outcome": "ok",
+      "fixed": [
+        "HiddenContextMenuItems"
+      ],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "HiddenContextMenuItems": "[\r\n    \"Undo\",\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\",\r\n    \"Refresh\",\r\n    \"OpenFolder\",\r\n    \"NextFolder\",\r\n    \"PreviousFolder\",\r\n    \"ExternalEditor\",\r\n    \"CopyFileName\",\r\n    \"CopyFullPath\",\r\n    \"ZoomFitWidth\",\r\n    \"ZoomFitWidth2\",\r\n    \"ZoomFitHeight\",\r\n    \"ZoomPresets\",\r\n    \"ZoomLevelOptions\"\r\n  ]"
+      }
+    },
+    {
+      "name": "legacy menu flags are never touched by Normalize",
+      "text": "{\"ShowZoomMenuItems\":true,\"ShowFolderMenuItems\":false,\"ShowRecycleMenuItem\":true}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "ShowFolderMenuItems": "false",
+        "ShowZoomMenuItems": "true",
+        "ShowRecycleMenuItem": "true"
+      }
+    },
+    {
+      "name": "the v1 legacy document",
+      "text": "{\"LoadingMode\":\"Fast\",\"ImageSortMode\":\"Size\",\"InitialViewMode\":\"100%\",\"Folder2Name\":\"Old\",\"Actions\":[{\"Name\":\"Loai 2\",\"Shortcut\":\"Enter\",\"Operation\":\"Delete\",\"Destination\":\"Group-2\"}]}",
+      "outcome": "ok",
+      "fixed": [],
+      "disabled": [],
+      "fixed_again": [],
+      "disabled_again": [],
+      "changed": {
+        "InitialViewMode": "\"100%\"",
+        "LoadingMode": "\"Fast\"",
+        "ImageSortMode": "\"SizeDescending\"",
+        "Actions": "[\r\n    {\r\n      \"Name\": \"Loai 2\",\r\n      \"Shortcut\": \"Enter\",\r\n      \"Operation\": \"Recycle\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]"
+      }
+    }
+  ]
+}

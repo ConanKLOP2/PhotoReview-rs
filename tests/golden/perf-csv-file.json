@@ -1,0 +1,496 @@
+{
+  "generator": "oracle-cs perf-csv-file",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "empty-file-no-flags",
+      "env": {},
+      "events": [],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-prereaded",
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PREREAD=1 qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-two-flags-fixed-order",
+      "env": {
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "3"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PRELOAD_WORKERS=3;PHOTOREVIEW_DIAG_DISABLE_DISKCACHE=1 qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-all-three-flags",
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PREREAD=1;PHOTOREVIEW_DIAG_PRELOAD_WORKERS=0;PHOTOREVIEW_DIAG_DISABLE_DISKCACHE=1 qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-empty-value-omitted",
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "5"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PRELOAD_WORKERS=5 qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-raw-values-not-validated",
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "yes",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "abc"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PREREAD=yes;PHOTOREVIEW_DIAG_PRELOAD_WORKERS=abc qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-value-with-spaces-kept-raw",
+      "env": {
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": " 4 "
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PRELOAD_WORKERS= 4  qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "header-value-with-semicolon-kept-raw",
+      "env": {
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1;2"
+      },
+      "events": [],
+      "masked_text": "# commit=<commit> diag=PHOTOREVIEW_DIAG_PRELOAD_WORKERS=1;2 qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n# dropped=0\r\n"
+    },
+    {
+      "id": "input-and-lookup-events",
+      "env": {},
+      "events": [
+        {
+          "name": "KeyInput",
+          "args": [
+            7700001,
+            "Right",
+            1.5
+          ]
+        },
+        {
+          "name": "ShowStart",
+          "args": [
+            7700001,
+            3,
+            "mode"
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            7700001,
+            2.5
+          ]
+        },
+        {
+          "name": "Lookup",
+          "args": [
+            7700001,
+            "pid",
+            "hit"
+          ]
+        },
+        {
+          "name": "ThumbStart",
+          "args": [
+            7700001,
+            "pid"
+          ]
+        },
+        {
+          "name": "ThumbEnd",
+          "args": [
+            7700001,
+            "pid",
+            "disk",
+            4.5
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,KeyInput,7700001,,1.5,,,,Right\n<utc>,<qpc>,<thread>,ShowStart,7700001,,3,,,,mode\n<utc>,<qpc>,<thread>,Stat,7700001,,2.5,,,,\n<utc>,<qpc>,<thread>,Lookup,7700001,pid,,,,,hit\n<utc>,<qpc>,<thread>,ThumbStart,7700001,pid,,,,,\n<utc>,<qpc>,<thread>,ThumbEnd,7700001,pid,4.5,,,,disk\n# dropped=0\r\n"
+    },
+    {
+      "id": "load-pipeline-events",
+      "env": {},
+      "events": [
+        {
+          "name": "JoinStart",
+          "args": [
+            7700001,
+            "pid"
+          ]
+        },
+        {
+          "name": "JoinEnd",
+          "args": [
+            7700001,
+            "pid",
+            5.5
+          ]
+        },
+        {
+          "name": "DiskCacheRead",
+          "args": [
+            7700001,
+            "pid",
+            6.5,
+            1000
+          ]
+        },
+        {
+          "name": "SourceRead",
+          "args": [
+            7700001,
+            "pid",
+            7.5,
+            2000
+          ]
+        },
+        {
+          "name": "Decode",
+          "args": [
+            7700001,
+            "pid",
+            8.5,
+            1920,
+            true,
+            false
+          ]
+        },
+        {
+          "name": "Verify",
+          "args": [
+            7700001,
+            "pid",
+            9.5
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,JoinStart,7700001,pid,,,,,\n<utc>,<qpc>,<thread>,JoinEnd,7700001,pid,5.5,,,,\n<utc>,<qpc>,<thread>,DiskCacheRead,7700001,pid,6.5,1000,,,\n<utc>,<qpc>,<thread>,SourceRead,7700001,pid,7.5,2000,,,\n<utc>,<qpc>,<thread>,Decode,7700001,pid,8.5,1920,1,0,\n<utc>,<qpc>,<thread>,Verify,7700001,pid,9.5,,,,\n# dropped=0\r\n"
+    },
+    {
+      "id": "presentation-events",
+      "env": {},
+      "events": [
+        {
+          "name": "Assign",
+          "args": [
+            7700001,
+            10.5,
+            800,
+            600
+          ]
+        },
+        {
+          "name": "Rendered",
+          "args": [
+            7700001,
+            11.5
+          ]
+        },
+        {
+          "name": "Presented",
+          "args": [
+            7700001,
+            "kind"
+          ]
+        },
+        {
+          "name": "PostStart",
+          "args": [
+            7700001,
+            "part"
+          ]
+        },
+        {
+          "name": "PostEnd",
+          "args": [
+            7700001,
+            "part",
+            12.5
+          ]
+        },
+        {
+          "name": "RenderedFrame",
+          "args": [
+            7700001,
+            17.5
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,Assign,7700001,,10.5,800,600,,\n<utc>,<qpc>,<thread>,Rendered,7700001,,11.5,,,,\n<utc>,<qpc>,<thread>,Presented,7700001,,,,,,kind\n<utc>,<qpc>,<thread>,PostStart,7700001,,,,,,part\n<utc>,<qpc>,<thread>,PostEnd,7700001,,12.5,,,,part\n<utc>,<qpc>,<thread>,RenderedFrame,7700001,,17.5,,,,\n# dropped=0\r\n"
+    },
+    {
+      "id": "preload-folder-startup-events",
+      "env": {},
+      "events": [
+        {
+          "name": "PreloadItem",
+          "args": [
+            4,
+            "pid",
+            13.5,
+            "kind",
+            14.5
+          ]
+        },
+        {
+          "name": "PreloadPaused",
+          "args": [
+            85,
+            512
+          ]
+        },
+        {
+          "name": "PreloadCancel",
+          "args": [
+            "why"
+          ]
+        },
+        {
+          "name": "DispatcherLongOp",
+          "args": [
+            15.5,
+            "prio",
+            "name"
+          ]
+        },
+        {
+          "name": "Folder",
+          "args": [
+            7700001,
+            "phase",
+            16.5
+          ]
+        },
+        {
+          "name": "DiagMode",
+          "args": [
+            "flags"
+          ]
+        },
+        {
+          "name": "Startup",
+          "args": [
+            "phase",
+            18.5
+          ]
+        },
+        {
+          "name": "FolderInfo",
+          "args": [
+            7700001,
+            "phase",
+            99,
+            "detail"
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,PreloadItem,,pid,4,13.5,14.5,,kind\n<utc>,<qpc>,<thread>,PreloadPaused,,,85,512,,,\n<utc>,<qpc>,<thread>,PreloadCancel,,,,,,,why\n<utc>,<qpc>,<thread>,DispatcherLongOp,,,15.5,,,,prio;name\n<utc>,<qpc>,<thread>,Folder,7700001,,16.5,,,,phase\n<utc>,<qpc>,<thread>,DiagMode,,,,,,,flags\n<utc>,<qpc>,<thread>,Startup,,,18.5,,,,phase\n<utc>,<qpc>,<thread>,FolderInfo,7700001,,99,,,,phase;detail\n# dropped=0\r\n"
+    },
+    {
+      "id": "negative-nav-and-empty-strings",
+      "env": {},
+      "events": [
+        {
+          "name": "Lookup",
+          "args": [
+            -1,
+            "",
+            "miss"
+          ]
+        },
+        {
+          "name": "PreloadCancel",
+          "args": [
+            ""
+          ]
+        },
+        {
+          "name": "DiagMode",
+          "args": [
+            ""
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            -1,
+            0.0
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,Lookup,-1,,,,,,miss\n<utc>,<qpc>,<thread>,PreloadCancel,,,,,,,\n<utc>,<qpc>,<thread>,DiagMode,,,,,,,\n<utc>,<qpc>,<thread>,Stat,-1,,0,,,,\n# dropped=0\r\n"
+    },
+    {
+      "id": "fields-needing-escape",
+      "env": {},
+      "events": [
+        {
+          "name": "KeyInput",
+          "args": [
+            1,
+            "a,b",
+            0.5
+          ]
+        },
+        {
+          "name": "KeyInput",
+          "args": [
+            2,
+            "say \"hi\"",
+            0.5
+          ]
+        },
+        {
+          "name": "PreloadCancel",
+          "args": [
+            "line1\nline2"
+          ]
+        },
+        {
+          "name": "PreloadCancel",
+          "args": [
+            "crlf\r\nx"
+          ]
+        },
+        {
+          "name": "DiagMode",
+          "args": [
+            "PHOTOREVIEW_DIAG_PREREAD=1,PHOTOREVIEW_DIAG_PRELOAD_WORKERS=2"
+          ]
+        },
+        {
+          "name": "DispatcherLongOp",
+          "args": [
+            1.0,
+            "Normal",
+            "Click,\"Handler\"\n"
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,KeyInput,1,,0.5,,,,\"a,b\"\n<utc>,<qpc>,<thread>,KeyInput,2,,0.5,,,,\"say \"\"hi\"\"\"\n<utc>,<qpc>,<thread>,PreloadCancel,,,,,,,line1 line2\n<utc>,<qpc>,<thread>,PreloadCancel,,,,,,,crlf x\n<utc>,<qpc>,<thread>,DiagMode,,,,,,,\"PHOTOREVIEW_DIAG_PREREAD=1,PHOTOREVIEW_DIAG_PRELOAD_WORKERS=2\"\n<utc>,<qpc>,<thread>,DispatcherLongOp,,,1,,,,\"Normal;Click,\"\"Handler\"\" \"\n# dropped=0\r\n"
+    },
+    {
+      "id": "double-formats",
+      "env": {},
+      "events": [
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            0.1
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            100
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            1e-5
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            123456789.125
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            1e21
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            "NaN"
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            "Infinity"
+          ]
+        },
+        {
+          "name": "Stat",
+          "args": [
+            1,
+            "-Infinity"
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,Stat,1,,0.10000000000000001,,,,\n<utc>,<qpc>,<thread>,Stat,1,,100,,,,\n<utc>,<qpc>,<thread>,Stat,1,,1.0000000000000001E-05,,,,\n<utc>,<qpc>,<thread>,Stat,1,,123456789.125,,,,\n<utc>,<qpc>,<thread>,Stat,1,,1E+21,,,,\n<utc>,<qpc>,<thread>,Stat,1,,NaN,,,,\n<utc>,<qpc>,<thread>,Stat,1,,Infinity,,,,\n<utc>,<qpc>,<thread>,Stat,1,,-Infinity,,,,\n# dropped=0\r\n"
+    },
+    {
+      "id": "long-extremes",
+      "env": {},
+      "events": [
+        {
+          "name": "DiskCacheRead",
+          "args": [
+            9223372036854775807,
+            "p",
+            0.0,
+            -9223372036854775808
+          ]
+        },
+        {
+          "name": "PreloadPaused",
+          "args": [
+            -2147483648,
+            9223372036854775807
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,DiskCacheRead,9223372036854775807,p,0,-9223372036854775808,,,\n<utc>,<qpc>,<thread>,PreloadPaused,,,-2147483648,9223372036854775807,,,\n# dropped=0\r\n"
+    },
+    {
+      "id": "non-ascii-text",
+      "env": {},
+      "events": [
+        {
+          "name": "KeyInput",
+          "args": [
+            1,
+            "Ảnh 日本語 \uD83D\uDE00",
+            2.5
+          ]
+        },
+        {
+          "name": "PreloadCancel",
+          "args": [
+            "lý do"
+          ]
+        }
+      ],
+      "masked_text": "# commit=<commit> diag= qpcFrequency=<freq>\r\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n<utc>,<qpc>,<thread>,KeyInput,1,,2.5,,,,Ảnh 日本語 \uD83D\uDE00\n<utc>,<qpc>,<thread>,PreloadCancel,,,,,,,lý do\n# dropped=0\r\n"
+    }
+  ]
+}

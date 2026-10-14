@@ -1,0 +1,213 @@
+{
+ "cases": [
+  {
+   "name": "from test SessionFile_Bytes_MatchPreviousBuild",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\đại.jpg",
+   "skipped": [
+    "C:\\photos\\vacation\\skip1.jpg"
+   ],
+   "kind": "utc",
+   "ticks": "639253242000000000"
+  },
+  {
+   "name": "default state: null path, empty list, default(DateTime)",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "empty skipped, path set, utc whole second",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\a.jpg",
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "639029198450000000"
+  },
+  {
+   "name": "utc one tick",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "639029198450000001"
+  },
+  {
+   "name": "utc fraction .123 (trailing zeros trimmed)",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "639029198451230000"
+  },
+  {
+   "name": "utc fraction 7 digits",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "639029198451234567"
+  },
+  {
+   "name": "utc fraction .9999999",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "639029198459999999"
+  },
+  {
+   "name": "utc DateTime.MinValue",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "0"
+  },
+  {
+   "name": "utc DateTime.MaxValue",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "utc",
+   "ticks": "3155378975999999999"
+  },
+  {
+   "name": "unspecified nonzero ticks (no Z)",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "639253242000000005"
+  },
+  {
+   "name": "three skipped incl. empty string and case-variant duplicates",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [
+    "C:\\photos\\vacation\\a.jpg",
+    "",
+    "C:\\photos\\vacation\\A.JPG"
+   ],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "empty current path string",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "ascii escapes: quote backslash slash and html chars",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\a\"b/c<d>e&f'g+h`i.jpg",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "control characters",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\t\tn\nr\rb\bf\fx\u0001y\u001fzend",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "non-ascii BMP, line separators and NBSP",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\é   ΩÅ日本語.jpg",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "astral characters",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": "C:\\photos\\vacation\\😀𐐨.jpg",
+   "skipped": [
+    "😀"
+   ],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "folder with trailing separator and other case (file name shared)",
+   "folder": "c:\\PHOTOS\\Vacation\\",
+   "currentPath": "x",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "forward slashes in stored folder are kept verbatim",
+   "folder": "C:/photos/vacation",
+   "currentPath": "C:/photos/vacation/a.jpg",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "unc folder",
+   "folder": "\\\\server\\share\\photos",
+   "currentPath": "\\\\server\\share\\photos\\a.jpg",
+   "skipped": [],
+   "kind": "unspecified",
+   "ticks": "0"
+  },
+  {
+   "name": "long list",
+   "folder": "C:\\photos\\vacation",
+   "currentPath": null,
+   "skipped": [
+    "C:\\photos\\vacation\\img000.jpg",
+    "C:\\photos\\vacation\\img001.jpg",
+    "C:\\photos\\vacation\\img002.jpg",
+    "C:\\photos\\vacation\\img003.jpg",
+    "C:\\photos\\vacation\\img004.jpg",
+    "C:\\photos\\vacation\\img005.jpg",
+    "C:\\photos\\vacation\\img006.jpg",
+    "C:\\photos\\vacation\\img007.jpg",
+    "C:\\photos\\vacation\\img008.jpg",
+    "C:\\photos\\vacation\\img009.jpg",
+    "C:\\photos\\vacation\\img010.jpg",
+    "C:\\photos\\vacation\\img011.jpg",
+    "C:\\photos\\vacation\\img012.jpg",
+    "C:\\photos\\vacation\\img013.jpg",
+    "C:\\photos\\vacation\\img014.jpg",
+    "C:\\photos\\vacation\\img015.jpg",
+    "C:\\photos\\vacation\\img016.jpg",
+    "C:\\photos\\vacation\\img017.jpg",
+    "C:\\photos\\vacation\\img018.jpg",
+    "C:\\photos\\vacation\\img019.jpg",
+    "C:\\photos\\vacation\\img020.jpg",
+    "C:\\photos\\vacation\\img021.jpg",
+    "C:\\photos\\vacation\\img022.jpg",
+    "C:\\photos\\vacation\\img023.jpg",
+    "C:\\photos\\vacation\\img024.jpg",
+    "C:\\photos\\vacation\\img025.jpg",
+    "C:\\photos\\vacation\\img026.jpg",
+    "C:\\photos\\vacation\\img027.jpg",
+    "C:\\photos\\vacation\\img028.jpg",
+    "C:\\photos\\vacation\\img029.jpg",
+    "C:\\photos\\vacation\\img030.jpg",
+    "C:\\photos\\vacation\\img031.jpg",
+    "C:\\photos\\vacation\\img032.jpg",
+    "C:\\photos\\vacation\\img033.jpg",
+    "C:\\photos\\vacation\\img034.jpg",
+    "C:\\photos\\vacation\\img035.jpg",
+    "C:\\photos\\vacation\\img036.jpg",
+    "C:\\photos\\vacation\\img037.jpg",
+    "C:\\photos\\vacation\\img038.jpg",
+    "C:\\photos\\vacation\\img039.jpg"
+   ],
+   "kind": "unspecified",
+   "ticks": "0"
+  }
+ ]
+}

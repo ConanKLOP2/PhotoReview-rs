@@ -1,0 +1,344 @@
+{
+  "generator": "oracle-cs numbered-pattern",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "stem": "a (1)",
+      "stem_base": "a",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1)\n",
+      "stem_base": "a",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a\n (1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1)\nb",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (1)\n\n",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (1)\r\n",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "x\ny (1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a\nb (1)\n",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (１)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (٣)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (\uD835\uDFCF)",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a ( 1)",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (1) ",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a(1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": " (1)",
+      "stem_base": "",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "(1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a  (1)",
+      "stem_base": "a ",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1) (2)",
+      "stem_base": "a (1)",
+      "suffix": 2,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1)x",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (0)",
+      "stem_base": "a",
+      "suffix": 0,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (01)",
+      "stem_base": "a",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (0000000001)",
+      "stem_base": "a",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (99999999999)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (2147483647)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (2147483648)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (-1)",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (+1)",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a ()",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (a)",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (1))",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a ((1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "img",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "IMG_0001 (12)",
+      "stem_base": "IMG_0001",
+      "suffix": 12,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "日本 (3)",
+      "stem_base": "日本",
+      "suffix": 3,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a.b (1)",
+      "stem_base": "a.b",
+      "suffix": 1,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1).b",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a (١٢)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1٣)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (१)",
+      "stem_base": "a",
+      "suffix": 2147483647,
+      "duplicate_pattern": true
+    },
+    {
+      "stem": "a (1)\u00A0",
+      "stem_base": null,
+      "suffix": 2147483647,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a\u00A0(1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": false
+    },
+    {
+      "stem": "a\t(1)",
+      "stem_base": null,
+      "suffix": 1,
+      "duplicate_pattern": false
+    },
+    {
+      "candidate": "a (1).jpg",
+      "base_stem": "a",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "A (1).jpg",
+      "base_stem": "a",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "a (1).jpg",
+      "base_stem": "A",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "a.jpg",
+      "base_stem": "a",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "a (1) (2).jpg",
+      "base_stem": "a (1)",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "a (1) (2).jpg",
+      "base_stem": "a",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "ab (1).jpg",
+      "base_stem": "a",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "日本 (1).jpg",
+      "base_stem": "日本",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "x (１).jpg",
+      "base_stem": "x",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "İ (1).jpg",
+      "base_stem": "i",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "ı (1).jpg",
+      "base_stem": "I",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "(1).jpg",
+      "base_stem": "",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": " (1).jpg",
+      "base_stem": "",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "a (1).jpg",
+      "base_stem": "a (1)",
+      "is_numbered_variant": false
+    },
+    {
+      "candidate": "a  (1).jpg",
+      "base_stem": "a ",
+      "is_numbered_variant": true
+    },
+    {
+      "candidate": "C:\\dir (2)\\a (1).jpg",
+      "base_stem": "a",
+      "is_numbered_variant": true
+    }
+  ]
+}

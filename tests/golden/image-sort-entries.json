@@ -1,0 +1,924 @@
+{
+  "generator": "oracle-cs image-sort-entries",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "name-natural-case-ties",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ]
+    },
+    {
+      "name": "name-ascending-equals-name",
+      "mode": "NameAscending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ]
+    },
+    {
+      "name": "name-descending-reverses-ties-too",
+      "mode": "NameDescending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        }
+      ]
+    },
+    {
+      "name": "default-keeps-input-order-and-duplicates",
+      "mode": "Default",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg"
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ]
+    },
+    {
+      "name": "default-empty",
+      "mode": "Default",
+      "comparer": null,
+      "entries": [],
+      "sorted": []
+    },
+    {
+      "name": "name-descending-empty",
+      "mode": "NameDescending",
+      "comparer": null,
+      "entries": [],
+      "sorted": []
+    },
+    {
+      "name": "size-ascending-unknown-first-ties-by-natural-name",
+      "mode": "SizeAscending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\b10.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\b2.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\unknown.jpg"
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\unknown.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\b2.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\b10.jpg",
+          "length": 100
+        }
+      ]
+    },
+    {
+      "name": "size-descending-unknown-last-ties-by-natural-name",
+      "mode": "SizeDescending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\b10.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\b2.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\unknown.jpg"
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\b2.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\b10.jpg",
+          "length": 100
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\unknown.jpg",
+          "length": null
+        }
+      ]
+    },
+    {
+      "name": "size-descending-zero-length-beats-unknown",
+      "mode": "SizeDescending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\unknown.jpg"
+        },
+        {
+          "path": "C:\\f\\zero.jpg",
+          "length": 0
+        },
+        {
+          "path": "C:\\f\\big.jpg",
+          "length": 1
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\big.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\zero.jpg",
+          "length": 0
+        },
+        {
+          "path": "C:\\f\\unknown.jpg",
+          "length": null
+        }
+      ]
+    },
+    {
+      "name": "size-ascending-same-name-other-folders-keeps-input-order",
+      "mode": "SizeAscending",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f1\\x.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f0\\x.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f2\\x.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f0\\a.jpg",
+          "length": 7
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f0\\a.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f1\\x.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f0\\x.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f2\\x.jpg",
+          "length": 7
+        }
+      ]
+    },
+    {
+      "name": "name-same-name-other-folders-keeps-input-order",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f1\\x.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f0\\x.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f2\\x.jpg",
+          "length": 3
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f1\\x.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f0\\x.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f2\\x.jpg",
+          "length": 3
+        }
+      ]
+    },
+    {
+      "name": "name-leading-zeros-and-case",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\a01.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\a001.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\a0.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\a10.jpg",
+          "length": 6
+        },
+        {
+          "path": "C:\\f\\a2.jpg",
+          "length": 7
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\a0.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\a001.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\a01.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\a2.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f\\a10.jpg",
+          "length": 6
+        }
+      ]
+    },
+    {
+      "name": "name-punctuation-sorts-after-letters",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\_a.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\B.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\~x.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\[y.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\1.jpg",
+          "length": 6
+        },
+        {
+          "path": "C:\\f\\-z.jpg",
+          "length": 7
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\-z.jpg",
+          "length": 7
+        },
+        {
+          "path": "C:\\f\\1.jpg",
+          "length": 6
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\B.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\[y.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\_a.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\~x.jpg",
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "name-long-digit-run",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\img1000000000000.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 3
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\img1000000000000.jpg",
+          "length": 1
+        }
+      ]
+    },
+    {
+      "name": "name-forward-slash-and-trailing-separator-paths",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:/f/b.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\",
+          "length": 3
+        },
+        {
+          "path": "C:\\f/c.jpg",
+          "length": 4
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:/f/b.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f/c.jpg",
+          "length": 4
+        }
+      ]
+    },
+    {
+      "name": "name-non-ascii",
+      "mode": "Name",
+      "comparer": null,
+      "entries": [
+        {
+          "path": "C:\\f\\Éa.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\éa.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\ea.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\日本2.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\日本10.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\Ảnh.jpg",
+          "length": 6
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\ea.jpg",
+          "length": 3
+        },
+        {
+          "path": "C:\\f\\Éa.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\éa.jpg",
+          "length": 2
+        },
+        {
+          "path": "C:\\f\\Ảnh.jpg",
+          "length": 6
+        },
+        {
+          "path": "C:\\f\\日本2.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\日本10.jpg",
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "injected-comparer-name-order",
+      "mode": "Name",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        {
+          "path": "C:\\a.jpg"
+        },
+        {
+          "path": "C:\\c.jpg"
+        },
+        {
+          "path": "C:\\b.jpg"
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\c.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\b.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\a.jpg",
+          "length": null
+        }
+      ]
+    },
+    {
+      "name": "injected-comparer-decides-size-ties",
+      "mode": "SizeAscending",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\c.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\z.jpg",
+          "length": 1
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\z.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\c.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\a.jpg",
+          "length": 5
+        }
+      ]
+    },
+    {
+      "name": "injected-comparer-name-descending-is-reverse-of-injected-ascending",
+      "mode": "NameDescending",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        {
+          "path": "C:\\a.jpg"
+        },
+        {
+          "path": "C:\\c.jpg"
+        },
+        {
+          "path": "C:\\b.jpg"
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\a.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\b.jpg",
+          "length": null
+        },
+        {
+          "path": "C:\\c.jpg",
+          "length": null
+        }
+      ]
+    },
+    {
+      "name": "opaque-comparer-equals-managed-name",
+      "mode": "Name",
+      "comparer": "opaque",
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\a01.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": 999
+        },
+        {
+          "path": "C:\\f\\a01.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 1
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 10
+        },
+        {
+          "path": "C:\\f\\IMG2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 300
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 50
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 60
+        }
+      ]
+    },
+    {
+      "name": "opaque-comparer-equals-managed-size-descending",
+      "mode": "SizeDescending",
+      "comparer": "opaque",
+      "entries": [
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\g\\IMG2.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 0
+        },
+        {
+          "path": "C:\\f\\A.jpg"
+        },
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 4
+        }
+      ],
+      "sorted": [
+        {
+          "path": "C:\\f\\b.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\g\\IMG2.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\img10.jpg",
+          "length": 5
+        },
+        {
+          "path": "C:\\f\\A1.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\a1.jpg",
+          "length": 4
+        },
+        {
+          "path": "C:\\f\\img2.jpg",
+          "length": 0
+        },
+        {
+          "path": "C:\\f\\A.jpg",
+          "length": null
+        }
+      ]
+    }
+  ]
+}

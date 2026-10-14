@@ -1,0 +1,1407 @@
+{
+  "generator": "oracle-cs review-metrics",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "empty",
+      "ops": [],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "ewma-first-sample-then-smooths",
+      "ops": [
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 300
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 400
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 0
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 100
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 7
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 24000000,
+          "ms": 1500,
+          "ewma": false
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 1
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":24000501,\"SourceReads\":7,\"DecodeMilliseconds\":2308,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 24000501,
+        "SourceReads": 7,
+        "DecodeMilliseconds": 2308,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "4072C00000000000",
+        "4074000000000000",
+        "4074000000000000",
+        "4071400000000000",
+        "406BC66666666666",
+        "406BC66666666666",
+        "40663EB851EB851E"
+      ],
+      "ewma_bits": "40663EB851EB851E",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "ewma-never-sampled-when-excluded",
+      "ops": [
+        {
+          "op": "sourceRead",
+          "bytes": 24000000,
+          "ms": 1500,
+          "ewma": false
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":24000000,\"SourceReads\":1,\"DecodeMilliseconds\":1500,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 24000000,
+        "SourceReads": 1,
+        "DecodeMilliseconds": 1500,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "0000000000000000"
+      ],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "ewma-zero-ms-is-not-a-sample",
+      "ops": [
+        {
+          "op": "sourceRead",
+          "bytes": 5,
+          "ms": 0
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 5,
+          "ms": 0
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":10,\"SourceReads\":2,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 10,
+        "SourceReads": 2,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "0000000000000000",
+        "0000000000000000"
+      ],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "ewma-fractional-sequence",
+      "ops": [
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 3
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 5
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 11
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 2
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 1000
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1,
+          "ms": 1
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":6,\"SourceReads\":6,\"DecodeMilliseconds\":1022,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 6,
+        "SourceReads": 6,
+        "DecodeMilliseconds": 1022,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "4008000000000000",
+        "400B333333333333",
+        "4013AE147AE147AE",
+        "40115810624DD2F2",
+        "40696F0068DB8BAD",
+        "40645F3387160957"
+      ],
+      "ewma_bits": "40645F3387160957",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "records-accumulate",
+      "ops": [
+        {
+          "op": "cacheHit"
+        },
+        {
+          "op": "cacheHit"
+        },
+        {
+          "op": "cacheMiss"
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 1024,
+          "ms": 15
+        },
+        {
+          "op": "sourceRead",
+          "bytes": 2048,
+          "ms": 25
+        },
+        {
+          "op": "presented",
+          "ms": 50
+        },
+        {
+          "op": "preloadHit"
+        },
+        {
+          "op": "inflightJoin"
+        },
+        {
+          "op": "diskCacheHit"
+        },
+        {
+          "op": "uiAssign",
+          "ms": 10
+        },
+        {
+          "op": "stat"
+        },
+        {
+          "op": "stat"
+        },
+        {
+          "op": "sessionWrite"
+        },
+        {
+          "op": "crossThreadPresent"
+        },
+        {
+          "op": "crossThreadPresent"
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":2,\"CacheMisses\":1,\"SourceBytesRead\":3072,\"SourceReads\":2,\"DecodeMilliseconds\":40,\"PresentedImages\":1,\"PresentMilliseconds\":50,\"PreloadHits\":1,\"InflightJoins\":1,\"DiskCacheHits\":1,\"UiAssignMilliseconds\":10,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":2,\"SessionWriteCount\":1,\"CrossThreadPresentCount\":2,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":1},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 2,
+        "CacheMisses": 1,
+        "SourceBytesRead": 3072,
+        "SourceReads": 2,
+        "DecodeMilliseconds": 40,
+        "PresentedImages": 1,
+        "PresentMilliseconds": 50,
+        "PreloadHits": 1,
+        "InflightJoins": 1,
+        "DiskCacheHits": 1,
+        "UiAssignMilliseconds": 10,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 2,
+        "SessionWriteCount": 1,
+        "CrossThreadPresentCount": 2,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 1
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "402E000000000000",
+        "4031000000000000"
+      ],
+      "ewma_bits": "4031000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "negative-inputs-are-clamped",
+      "ops": [
+        {
+          "op": "sourceRead",
+          "bytes": 100,
+          "ms": 10
+        },
+        {
+          "op": "sourceRead",
+          "bytes": -50,
+          "ms": -20
+        },
+        {
+          "op": "presented",
+          "ms": 30
+        },
+        {
+          "op": "presented",
+          "ms": -5
+        },
+        {
+          "op": "uiAssign",
+          "ms": -7
+        },
+        {
+          "op": "uiAssign",
+          "ms": 4
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":100,\"SourceReads\":2,\"DecodeMilliseconds\":10,\"PresentedImages\":2,\"PresentMilliseconds\":30,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":4,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":1},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":1},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 100,
+        "SourceReads": 2,
+        "DecodeMilliseconds": 10,
+        "PresentedImages": 2,
+        "PresentMilliseconds": 30,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 4,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 1
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 1
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [
+        "4024000000000000",
+        "4024000000000000"
+      ],
+      "ewma_bits": "4024000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "present-histogram-every-boundary",
+      "ops": [
+        {
+          "op": "presented",
+          "ms": 0
+        },
+        {
+          "op": "presented",
+          "ms": 8
+        },
+        {
+          "op": "presented",
+          "ms": 9
+        },
+        {
+          "op": "presented",
+          "ms": 16
+        },
+        {
+          "op": "presented",
+          "ms": 17
+        },
+        {
+          "op": "presented",
+          "ms": 33
+        },
+        {
+          "op": "presented",
+          "ms": 34
+        },
+        {
+          "op": "presented",
+          "ms": 50
+        },
+        {
+          "op": "presented",
+          "ms": 51
+        },
+        {
+          "op": "presented",
+          "ms": 100
+        },
+        {
+          "op": "presented",
+          "ms": 101
+        },
+        {
+          "op": "presented",
+          "ms": 200
+        },
+        {
+          "op": "presented",
+          "ms": 201
+        },
+        {
+          "op": "presented",
+          "ms": 500
+        },
+        {
+          "op": "presented",
+          "ms": 501
+        },
+        {
+          "op": "presented",
+          "ms": 60000
+        },
+        {
+          "op": "presented",
+          "ms": -5
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":17,\"PresentMilliseconds\":61821,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":3},{\"Label\":\"\\u003C=16\",\"Count\":2},{\"Label\":\"\\u003C=33\",\"Count\":2},{\"Label\":\"\\u003C=50\",\"Count\":2},{\"Label\":\"\\u003C=100\",\"Count\":2},{\"Label\":\"\\u003C=200\",\"Count\":2},{\"Label\":\"\\u003C=500\",\"Count\":2},{\"Label\":\"\\u003E500\",\"Count\":2}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 17,
+        "PresentMilliseconds": 61821,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 3
+          },
+          {
+            "Label": "<=16",
+            "Count": 2
+          },
+          {
+            "Label": "<=33",
+            "Count": 2
+          },
+          {
+            "Label": "<=50",
+            "Count": 2
+          },
+          {
+            "Label": "<=100",
+            "Count": 2
+          },
+          {
+            "Label": "<=200",
+            "Count": 2
+          },
+          {
+            "Label": "<=500",
+            "Count": 2
+          },
+          {
+            "Label": ">500",
+            "Count": 2
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "decoder-fallbacks-by-backend",
+      "ops": [
+        {
+          "op": "fallback",
+          "backend": "WicDirect"
+        },
+        {
+          "op": "fallback",
+          "backend": "TurboJpeg"
+        },
+        {
+          "op": "fallback",
+          "backend": "WicDirect"
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{\"WicDirect\":2,\"TurboJpeg\":1},\"DecoderFallbackCount\":3,\"SourceOpenCount\":0,\"TopSourceOpens\":[],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {
+          "WicDirect": 2,
+          "TurboJpeg": 1
+        },
+        "DecoderFallbackCount": 3,
+        "SourceOpenCount": 0,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 0
+    },
+    {
+      "id": "source-opens-top-ten-case-insensitive",
+      "ops": [
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img00.jpg",
+          "times": 1
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img01.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img02.jpg",
+          "times": 3
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img03.jpg",
+          "times": 4
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img04.jpg",
+          "times": 5
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img05.jpg",
+          "times": 6
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img06.jpg",
+          "times": 7
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img07.jpg",
+          "times": 8
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img08.jpg",
+          "times": 9
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img09.jpg",
+          "times": 10
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img10.jpg",
+          "times": 11
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\img11.jpg",
+          "times": 12
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\PHOTOS\\IMG11.JPG",
+          "times": 1
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":79,\"TopSourceOpens\":[{\"Path\":\"C:\\\\photos\\\\img11.jpg\",\"Count\":13},{\"Path\":\"C:\\\\photos\\\\img10.jpg\",\"Count\":11},{\"Path\":\"C:\\\\photos\\\\img09.jpg\",\"Count\":10},{\"Path\":\"C:\\\\photos\\\\img08.jpg\",\"Count\":9},{\"Path\":\"C:\\\\photos\\\\img07.jpg\",\"Count\":8},{\"Path\":\"C:\\\\photos\\\\img06.jpg\",\"Count\":7},{\"Path\":\"C:\\\\photos\\\\img05.jpg\",\"Count\":6},{\"Path\":\"C:\\\\photos\\\\img04.jpg\",\"Count\":5},{\"Path\":\"C:\\\\photos\\\\img03.jpg\",\"Count\":4},{\"Path\":\"C:\\\\photos\\\\img02.jpg\",\"Count\":3}],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 79,
+        "TopSourceOpens": [
+          {
+            "Path": "C:\\photos\\img11.jpg",
+            "Count": 13
+          },
+          {
+            "Path": "C:\\photos\\img10.jpg",
+            "Count": 11
+          },
+          {
+            "Path": "C:\\photos\\img09.jpg",
+            "Count": 10
+          },
+          {
+            "Path": "C:\\photos\\img08.jpg",
+            "Count": 9
+          },
+          {
+            "Path": "C:\\photos\\img07.jpg",
+            "Count": 8
+          },
+          {
+            "Path": "C:\\photos\\img06.jpg",
+            "Count": 7
+          },
+          {
+            "Path": "C:\\photos\\img05.jpg",
+            "Count": 6
+          },
+          {
+            "Path": "C:\\photos\\img04.jpg",
+            "Count": 5
+          },
+          {
+            "Path": "C:\\photos\\img03.jpg",
+            "Count": 4
+          },
+          {
+            "Path": "C:\\photos\\img02.jpg",
+            "Count": 3
+          }
+        ],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 12
+    },
+    {
+      "id": "source-opens-ties-ordered-by-path-ignoring-case",
+      "ops": [
+        {
+          "op": "sourceOpen",
+          "path": "C:\\z.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\B.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\a.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\_x.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\Ä.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\ä2.jpg",
+          "times": 2
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\c.jpg",
+          "times": 3
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":15,\"TopSourceOpens\":[{\"Path\":\"C:\\\\c.jpg\",\"Count\":3},{\"Path\":\"C:\\\\a.jpg\",\"Count\":2},{\"Path\":\"C:\\\\B.jpg\",\"Count\":2},{\"Path\":\"C:\\\\z.jpg\",\"Count\":2},{\"Path\":\"C:\\\\_x.jpg\",\"Count\":2},{\"Path\":\"C:\\\\\\u00C4.jpg\",\"Count\":2},{\"Path\":\"C:\\\\\\u00E42.jpg\",\"Count\":2}],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 15,
+        "TopSourceOpens": [
+          {
+            "Path": "C:\\c.jpg",
+            "Count": 3
+          },
+          {
+            "Path": "C:\\a.jpg",
+            "Count": 2
+          },
+          {
+            "Path": "C:\\B.jpg",
+            "Count": 2
+          },
+          {
+            "Path": "C:\\z.jpg",
+            "Count": 2
+          },
+          {
+            "Path": "C:\\_x.jpg",
+            "Count": 2
+          },
+          {
+            "Path": "C:\\Ä.jpg",
+            "Count": 2
+          },
+          {
+            "Path": "C:\\ä2.jpg",
+            "Count": 2
+          }
+        ],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 7
+    },
+    {
+      "id": "source-opens-at-cap-untouched",
+      "ops": [
+        {
+          "op": "sourceOpenRange",
+          "prefix": "C:\\photos\\p",
+          "suffix": ".jpg",
+          "count": 4096
+        }
+      ],
+      "snapshot_json": "{\"CacheHits\":0,\"CacheMisses\":0,\"SourceBytesRead\":0,\"SourceReads\":0,\"DecodeMilliseconds\":0,\"PresentedImages\":0,\"PresentMilliseconds\":0,\"PreloadHits\":0,\"InflightJoins\":0,\"DiskCacheHits\":0,\"UiAssignMilliseconds\":0,\"DecoderFallbacks\":{},\"DecoderFallbackCount\":0,\"SourceOpenCount\":4096,\"TopSourceOpens\":[{\"Path\":\"C:\\\\photos\\\\p00000.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00001.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00002.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00003.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00004.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00005.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00006.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00007.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00008.jpg\",\"Count\":1},{\"Path\":\"C:\\\\photos\\\\p00009.jpg\",\"Count\":1}],\"StatCount\":0,\"SessionWriteCount\":0,\"CrossThreadPresentCount\":0,\"PresentHistogram\":[{\"Label\":\"\\u003C=8\",\"Count\":0},{\"Label\":\"\\u003C=16\",\"Count\":0},{\"Label\":\"\\u003C=33\",\"Count\":0},{\"Label\":\"\\u003C=50\",\"Count\":0},{\"Label\":\"\\u003C=100\",\"Count\":0},{\"Label\":\"\\u003C=200\",\"Count\":0},{\"Label\":\"\\u003C=500\",\"Count\":0},{\"Label\":\"\\u003E500\",\"Count\":0}]}",
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 4096,
+        "TopSourceOpens": [
+          {
+            "Path": "C:\\photos\\p00000.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00001.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00002.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00003.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00004.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00005.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00006.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00007.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00008.jpg",
+            "Count": 1
+          },
+          {
+            "Path": "C:\\photos\\p00009.jpg",
+            "Count": 1
+          }
+        ],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 4096
+    },
+    {
+      "id": "source-opens-one-over-cap-trims-to-three-quarters",
+      "ops": [
+        {
+          "op": "sourceOpenRange",
+          "prefix": "C:\\photos\\p",
+          "suffix": ".jpg",
+          "count": 4096
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\one-more.jpg"
+        }
+      ],
+      "stable_top_only": true,
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 4097,
+        "TopSourceOpens": [],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 3072
+    },
+    {
+      "id": "source-opens-hot-paths-survive-trim",
+      "stable_top_only": true,
+      "ops": [
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\hot.jpg",
+          "times": 5
+        },
+        {
+          "op": "sourceOpen",
+          "path": "C:\\photos\\warm.jpg",
+          "times": 3
+        },
+        {
+          "op": "sourceOpenRange",
+          "prefix": "C:\\photos\\once",
+          "suffix": ".jpg",
+          "count": 12288
+        }
+      ],
+      "snapshot": {
+        "CacheHits": 0,
+        "CacheMisses": 0,
+        "SourceBytesRead": 0,
+        "SourceReads": 0,
+        "DecodeMilliseconds": 0,
+        "PresentedImages": 0,
+        "PresentMilliseconds": 0,
+        "PreloadHits": 0,
+        "InflightJoins": 0,
+        "DiskCacheHits": 0,
+        "UiAssignMilliseconds": 0,
+        "DecoderFallbacks": {},
+        "DecoderFallbackCount": 0,
+        "SourceOpenCount": 12296,
+        "TopSourceOpens": [
+          {
+            "Path": "C:\\photos\\hot.jpg",
+            "Count": 5
+          },
+          {
+            "Path": "C:\\photos\\warm.jpg",
+            "Count": 3
+          }
+        ],
+        "StatCount": 0,
+        "SessionWriteCount": 0,
+        "CrossThreadPresentCount": 0,
+        "PresentHistogram": [
+          {
+            "Label": "<=8",
+            "Count": 0
+          },
+          {
+            "Label": "<=16",
+            "Count": 0
+          },
+          {
+            "Label": "<=33",
+            "Count": 0
+          },
+          {
+            "Label": "<=50",
+            "Count": 0
+          },
+          {
+            "Label": "<=100",
+            "Count": 0
+          },
+          {
+            "Label": "<=200",
+            "Count": 0
+          },
+          {
+            "Label": "<=500",
+            "Count": 0
+          },
+          {
+            "Label": ">500",
+            "Count": 0
+          }
+        ]
+      },
+      "ewma_bits_after_each_source_read": [],
+      "ewma_bits": "0000000000000000",
+      "tracked_source_open_paths": 4090
+    }
+  ]
+}

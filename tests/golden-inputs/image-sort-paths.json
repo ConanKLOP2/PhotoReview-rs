@@ -1,0 +1,120 @@
+{
+  "cases": [
+    {
+      "name": "size-descending-ties-by-natural-name",
+      "mode": "SizeDescending",
+      "files": [
+        { "name": "img10.jpg", "size": 30 },
+        { "name": "img2.jpg", "size": 10 },
+        { "name": "img1.jpg", "size": 20 },
+        { "name": "b2.jpg", "size": 20 }
+      ]
+    },
+    {
+      "name": "size-ascending-ties-by-natural-name",
+      "mode": "SizeAscending",
+      "files": [
+        { "name": "img10.jpg", "size": 30 },
+        { "name": "img2.jpg", "size": 10 },
+        { "name": "img1.jpg", "size": 20 },
+        { "name": "b2.jpg", "size": 20 }
+      ]
+    },
+    {
+      "name": "name-natural",
+      "mode": "Name",
+      "files": [
+        { "name": "img10.jpg", "size": 3 },
+        { "name": "img2.jpg", "size": 3 },
+        { "name": "img1.jpg", "size": 3 }
+      ]
+    },
+    {
+      "name": "name-descending",
+      "mode": "NameDescending",
+      "files": [
+        { "name": "img10.jpg", "size": 3 },
+        { "name": "img2.jpg", "size": 3 },
+        { "name": "img1.jpg", "size": 3 }
+      ]
+    },
+    {
+      "name": "default-keeps-input-order",
+      "mode": "Default",
+      "files": [
+        { "name": "img10.jpg", "size": 3 },
+        { "name": "b.jpg", "size": 1 },
+        { "name": "img2.jpg", "size": 2 },
+        { "name": "a.jpg", "size": 9 }
+      ]
+    },
+    {
+      "name": "size-descending-missing-file-is-smallest-and-logged",
+      "mode": "SizeDescending",
+      "files": [
+        { "name": "missing.jpg", "size": null },
+        { "name": "big.jpg", "size": 5 }
+      ]
+    },
+    {
+      "name": "size-ascending-missing-file-is-smallest-and-logged",
+      "mode": "SizeAscending",
+      "files": [
+        { "name": "big.jpg", "size": 5 },
+        { "name": "missing.jpg", "size": null }
+      ]
+    },
+    {
+      "name": "size-ascending-two-missing-logged-in-input-order",
+      "mode": "SizeAscending",
+      "files": [
+        { "name": "m2.jpg", "size": null },
+        { "name": "big.jpg", "size": 5 },
+        { "name": "m1.jpg", "size": null },
+        { "name": "zero.jpg", "size": 0 }
+      ]
+    },
+    {
+      "name": "name-mode-never-reads-sizes-so-missing-is-not-logged",
+      "mode": "Name",
+      "files": [
+        { "name": "missing.jpg", "size": null },
+        { "name": "a.jpg", "size": 5 }
+      ]
+    },
+    {
+      "name": "name-injected-reverse-ordinal",
+      "mode": "Name",
+      "comparer": "reverse-ordinal",
+      "files": [
+        { "name": "a.jpg", "size": 1 },
+        { "name": "c.jpg", "size": 1 },
+        { "name": "b.jpg", "size": 1 }
+      ]
+    },
+    { "name": "text-null", "mode_text": null, "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-empty", "mode_text": "", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-Name", "mode_text": "Name", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-Size", "mode_text": "Size", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-SIZE", "mode_text": "SIZE", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-size-lower", "mode_text": "size", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-SizeDescending", "mode_text": "SizeDescending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-sizedescending-lower", "mode_text": "sizedescending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-SizeAscending", "mode_text": "SizeAscending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-sizeascending-lower", "mode_text": "sizeascending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-Default", "mode_text": "Default", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-default-lower", "mode_text": "default", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-NameAscending", "mode_text": "NameAscending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-nameascending-lower", "mode_text": "nameascending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-NameDescending", "mode_text": "NameDescending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-namedescending-lower", "mode_text": "namedescending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-bogus", "mode_text": "bogus", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-PortraitFirst-is-not-a-text-alias", "mode_text": "PortraitFirst", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-leading-space-is-not-trimmed", "mode_text": " size", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-trailing-space-is-not-trimmed", "mode_text": "size ", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-dotless-i-is-not-uppercased-by-invariant-culture", "mode_text": "sıze", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-long-s-uppercases-to-s", "mode_text": "ſize", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-long-s-sizeascending", "mode_text": "ſizeAscending", "files": [ { "name": "c.jpg", "size": 20 }, { "name": "a.jpg", "size": 10 }, { "name": "b.jpg", "size": 30 } ] },
+    { "name": "text-size-missing-file-logged", "mode_text": "Size", "files": [ { "name": "gone.jpg", "size": null }, { "name": "a.jpg", "size": 10 } ] }
+  ]
+}

@@ -22,6 +22,14 @@
     <Reference Include="PhotoReview.PerfAnalysis">
       <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
     </Reference>
+    <Reference Include="PhotoReview.Localization.Generator">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Localization.Generator.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- W2-04: the real Roslyn TrGenerator is run over in-memory catalogs. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
   </ItemGroup>
 
 </Project>

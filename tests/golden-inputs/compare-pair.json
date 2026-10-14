@@ -1,0 +1,180 @@
+{
+  "cases": [
+    {
+      "name": "basic-original-and-numbered",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).JPG", "C:\\Photos\\DSC0002.JPG"],
+      "queries": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).JPG", "C:\\Photos\\DSC0002.JPG"]
+    },
+    {
+      "name": "no-pair",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0002.JPG"],
+      "queries": ["C:\\Photos\\DSC0001.JPG"]
+    },
+    {
+      "name": "single-file",
+      "files": ["C:\\Photos\\DSC0001.JPG"],
+      "queries": ["C:\\Photos\\DSC0001.JPG"]
+    },
+    {
+      "name": "stays-within-the-selected-folder",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).JPG", "C:\\Photos\\Other\\DSC0001.JPG"],
+      "queries": ["C:\\Photos\\Other\\DSC0001.JPG", "C:\\Photos\\DSC0001.JPG"]
+    },
+    {
+      "name": "smallest-number-wins-not-path-order",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a (10).jpg", "C:\\p\\a (2).jpg", "C:\\p\\a (3).jpg"],
+      "queries": ["C:\\p\\a.jpg", "C:\\p\\a (10).jpg", "C:\\p\\a (3).jpg"]
+    },
+    {
+      "name": "same-number-keeps-path-order",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a (1).jpg", "C:\\p\\a (01).jpg"],
+      "queries": ["C:\\p\\a.jpg", "C:\\p\\a (1).jpg", "C:\\p\\a (01).jpg"]
+    },
+    {
+      "name": "mixed-case-extension",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).jpg"],
+      "queries": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).jpg"]
+    },
+    {
+      "name": "mixed-case-folder",
+      "files": ["C:\\Photos\\DSC0001.JPG", "c:\\photos\\DSC0001 (1).JPG"],
+      "queries": ["C:\\Photos\\DSC0001.JPG", "c:\\photos\\DSC0001 (1).JPG"]
+    },
+    {
+      "name": "query-spelled-in-another-case-returns-the-listed-spellings",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).JPG"],
+      "queries": ["c:\\photos\\dsc0001.jpg", "c:\\photos\\dsc0001 (1).jpg"]
+    },
+    {
+      "name": "query-not-in-the-list",
+      "files": ["C:\\Photos\\DSC0001.JPG", "C:\\Photos\\DSC0001 (1).JPG"],
+      "queries": ["C:\\Photos\\ZZ.JPG", "C:\\Photos\\DSC0001 (7).JPG"]
+    },
+    {
+      "name": "nested-numbering",
+      "files": ["C:\\Photos\\a.JPG", "C:\\Photos\\a (1).JPG", "C:\\Photos\\a (1) (2).JPG", "C:\\Photos\\a (2).JPG"],
+      "queries": ["C:\\Photos\\a.JPG", "C:\\Photos\\a (1).JPG", "C:\\Photos\\a (1) (2).JPG", "C:\\Photos\\a (2).JPG"]
+    },
+    {
+      "name": "different-extension-does-not-pair",
+      "files": ["C:\\Photos\\a.jpg", "C:\\Photos\\a (1).png"],
+      "queries": ["C:\\Photos\\a.jpg", "C:\\Photos\\a (1).png"]
+    },
+    {
+      "name": "extensionless-files-pair",
+      "files": ["C:\\Photos\\a", "C:\\Photos\\a (1)"],
+      "queries": ["C:\\Photos\\a", "C:\\Photos\\a (1)"]
+    },
+    {
+      "name": "case-variant-paths-ordinal-order-picks-the-original-lower-listed-first",
+      "files": ["C:\\Photos\\shot.jpg", "C:\\Photos\\SHOT.jpg", "C:\\Photos\\shot (1).jpg"],
+      "queries": ["C:\\Photos\\shot (1).jpg", "C:\\Photos\\shot.jpg"]
+    },
+    {
+      "name": "case-variant-paths-ordinal-order-picks-the-original-upper-listed-first",
+      "files": ["C:\\Photos\\SHOT.jpg", "C:\\Photos\\shot.jpg", "C:\\Photos\\shot (1).jpg"],
+      "queries": ["C:\\Photos\\shot (1).jpg", "C:\\Photos\\SHOT.jpg"]
+    },
+    {
+      "name": "two-spellings-of-one-full-path-keep-input-order",
+      "files": ["C:\\Photos\\.\\s00.jpg", "C:\\Photos\\s00.jpg", "C:\\Photos\\s00 (1).jpg", "C:\\Photos\\s01.jpg", "C:\\Photos\\.\\s01.jpg", "C:\\Photos\\s01 (1).jpg"],
+      "queries": ["C:\\Photos\\s00 (1).jpg", "C:\\Photos\\s01 (1).jpg", "C:\\Photos\\s00.jpg", "C:\\Photos\\.\\s00.jpg"]
+    },
+    {
+      "name": "dotdot-segments-in-listed-paths",
+      "files": ["C:\\Photos\\x\\..\\a.jpg", "C:\\Photos\\a (1).jpg"],
+      "queries": ["C:\\Photos\\a.jpg", "C:\\Photos\\x\\..\\a.jpg"]
+    },
+    {
+      "name": "drive-root-entry-does-not-throw",
+      "files": ["C:\\", "C:\\a.jpg"],
+      "queries": ["C:\\a.jpg"]
+    },
+    {
+      "name": "files-directly-in-a-drive-root",
+      "files": ["C:\\a.jpg", "C:\\a (1).jpg", "D:\\a (1).jpg"],
+      "queries": ["C:\\a.jpg", "C:\\a (1).jpg", "D:\\a (1).jpg"]
+    },
+    {
+      "name": "unc-folder",
+      "files": ["\\\\srv\\share\\a.jpg", "\\\\srv\\share\\a (1).jpg", "\\\\srv\\share2\\a.jpg"],
+      "queries": ["\\\\srv\\share\\a.jpg", "\\\\srv\\share2\\a.jpg"]
+    },
+    {
+      "name": "fullwidth-digit-suffix-is-numbered-but-sorts-last",
+      "files": ["C:\\p\\x.jpg", "C:\\p\\x (\uff11).jpg", "C:\\p\\x (2).jpg"],
+      "queries": ["C:\\p\\x.jpg", "C:\\p\\x (\uff11).jpg", "C:\\p\\x (2).jpg"]
+    },
+    {
+      "name": "arabic-indic-digit-suffix-alone",
+      "files": ["C:\\p\\x.jpg", "C:\\p\\x (\u0663).jpg"],
+      "queries": ["C:\\p\\x.jpg", "C:\\p\\x (\u0663).jpg"]
+    },
+    {
+      "name": "overflowing-number-sorts-last",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a (99999999999).jpg", "C:\\p\\a (3).jpg"],
+      "queries": ["C:\\p\\a.jpg", "C:\\p\\a (99999999999).jpg"]
+    },
+    {
+      "name": "int-max-and-int-max-plus-one-suffixes",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a (2147483648).jpg", "C:\\p\\a (2147483647).jpg"],
+      "queries": ["C:\\p\\a.jpg"]
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a(1).jpg", "C:\\p\\a ( 1).jpg", "C:\\p\\a (1) .jpg"],
+      "queries": ["C:\\p\\a.jpg", "C:\\p\\a(1).jpg"]
+    },
+    {
+      "name": "double-space-before-number",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a  (1).jpg", "C:\\p\\a (1).jpg"],
+      "queries": ["C:\\p\\a.jpg", "C:\\p\\a  (1).jpg", "C:\\p\\a (1).jpg"]
+    },
+    {
+      "name": "numbered-without-original",
+      "files": ["C:\\p\\a (1).jpg", "C:\\p\\a (2).jpg"],
+      "queries": ["C:\\p\\a (1).jpg", "C:\\p\\a (2).jpg"]
+    },
+    {
+      "name": "stem-case-differs-original-matches-ignoring-case",
+      "files": ["C:\\p\\IMG.jpg", "C:\\p\\img (1).jpg", "C:\\p\\Img (2).jpg"],
+      "queries": ["C:\\p\\IMG.jpg", "C:\\p\\img (1).jpg", "C:\\p\\Img (2).jpg"]
+    },
+    {
+      "name": "unicode-stems",
+      "files": ["C:\\p\\\u65e5\u672c.jpg", "C:\\p\\\u65e5\u672c (1).jpg", "C:\\p\\\u0130.jpg", "C:\\p\\i (1).jpg", "C:\\p\\\u0131.jpg", "C:\\p\\I (1).jpg"],
+      "queries": ["C:\\p\\\u65e5\u672c.jpg", "C:\\p\\i (1).jpg", "C:\\p\\I (1).jpg"]
+    },
+    {
+      "name": "trailing-space-in-extension-find-and-index-disagree",
+      "files": ["C:\\p\\a.jpg ", "C:\\p\\a (1).jpg"],
+      "queries": ["C:\\p\\a.jpg ", "C:\\p\\a (1).jpg"]
+    },
+    {
+      "name": "leading-numbered-stem-with-empty-base",
+      "files": ["C:\\p\\ (1).jpg", "C:\\p\\.jpg"],
+      "queries": ["C:\\p\\ (1).jpg", "C:\\p\\.jpg"]
+    },
+    {
+      "name": "empty-list",
+      "files": [],
+      "queries": ["C:\\p\\a.jpg"]
+    },
+    {
+      "name": "invalid-nul-path-throws-argument-exception",
+      "files": ["C:\\p\\a.jpg", "C:\\p\\a\u0000.jpg"],
+      "queries": ["C:\\p\\a.jpg"]
+    },
+    {
+      "name": "many-variants-all-queries",
+      "files": [
+        "C:\\p\\s.jpg", "C:\\p\\s (1).jpg", "C:\\p\\s (2).jpg", "C:\\p\\s (3).jpg", "C:\\p\\t.jpg", "C:\\p\\u (1).jpg",
+        "C:\\p\\sub\\s.jpg", "C:\\p\\sub\\s (4).jpg", "C:\\p\\s.png", "C:\\p\\s (1).png"
+      ],
+      "queries": [
+        "C:\\p\\s.jpg", "C:\\p\\s (1).jpg", "C:\\p\\s (2).jpg", "C:\\p\\s (3).jpg", "C:\\p\\t.jpg", "C:\\p\\u (1).jpg",
+        "C:\\p\\sub\\s.jpg", "C:\\p\\sub\\s (4).jpg", "C:\\p\\s.png", "C:\\p\\s (1).png"
+      ]
+    }
+  ]
+}

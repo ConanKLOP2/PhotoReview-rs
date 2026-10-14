@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "name": "natural-order",
+      "folders": [ { "name": "Album 1" }, { "name": "Album 2" }, { "name": "Album 10" } ],
+      "current": "Album 1"
+    },
+    {
+      "name": "hidden-and-system-siblings-are-not-returned",
+      "folders": [
+        { "name": "Album 1" }, { "name": "Album 2" }, { "name": "Album 10" },
+        { "name": ".thumbnails", "attr": "hidden" },
+        { "name": "Album 3 system", "attr": "system" }
+      ],
+      "current": "Album 1"
+    },
+    {
+      "name": "hidden-current-folder-stays-in-the-list",
+      "folders": [
+        { "name": "Album 1" }, { "name": "Album 2" }, { "name": "Album 10" },
+        { "name": "Album 5 hidden", "attr": "hidden" },
+        { "name": "Album 6 hidden", "attr": "hidden" }
+      ],
+      "current": "Album 5 hidden"
+    },
+    {
+      "name": "system-current-folder-stays-in-the-list",
+      "folders": [
+        { "name": "Album 1" }, { "name": "Album 2" },
+        { "name": "Album 5 system", "attr": "system" }
+      ],
+      "current": "Album 5 system"
+    },
+    {
+      "name": "missing-parent-returns-empty-and-logs-an-io-error",
+      "folders": [],
+      "current": "missing-parent\\child"
+    },
+    {
+      "name": "missing-parent-without-a-log-still-returns-empty",
+      "folders": [],
+      "current": "missing-parent\\child",
+      "no_log": true
+    },
+    {
+      "name": "only-child",
+      "folders": [ { "name": "Only" } ],
+      "current": "Only"
+    },
+    {
+      "name": "current-spelled-in-another-case-is-not-added-twice",
+      "folders": [ { "name": "Album 1" }, { "name": "Album 2" }, { "name": "Album 10" } ],
+      "current": "album 1"
+    },
+    {
+      "name": "current-folder-that-does-not-exist-is-appended-then-sorted",
+      "folders": [ { "name": "A" }, { "name": "B" } ],
+      "current": "A2"
+    },
+    {
+      "name": "trailing-separator-on-the-current-folder",
+      "folders": [ { "name": "Album 1" }, { "name": "Album 2" }, { "name": "Album 10" } ],
+      "current": "Album 2\\"
+    },
+    {
+      "name": "natural-order-mixed-case-and-numbers",
+      "folders": [ { "name": "b" }, { "name": "A" }, { "name": "a10" }, { "name": "a2" }, { "name": "a02" } ],
+      "current": "b"
+    },
+    {
+      "name": "hidden-sibling-with-a-natural-name-between-visible-ones",
+      "folders": [ { "name": "x1" }, { "name": "x2", "attr": "hidden" }, { "name": "x3" } ],
+      "current": "x1"
+    }
+  ]
+}
