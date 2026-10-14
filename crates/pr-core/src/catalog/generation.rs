@@ -8,10 +8,7 @@
 //!
 //! Counter type: `i64` (C# `long`, signed, increments wrap on overflow like `Interlocked.Increment`), not the `u64`
 //! the ADR mentions, so that the constructor and `current_*` keep the C# signatures.
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
-use std::sync::atomic::AtomicI64;
+use std::sync::atomic::{AtomicI64, Ordering};
 
 /// Thread-safe generation clock (C# `GenerationClock`).
 #[derive(Debug, Default)]
@@ -25,58 +22,64 @@ impl GenerationClock {
     /// C# `new GenerationClock(initialNavigation, initialFolder, initialInteraction)` (all default 0; `new(0, 0, 0)`
     /// equals `GenerationClock::default()`). Any `i64`, including negative values, is accepted.
     pub fn new(initial_navigation: i64, initial_folder: i64, initial_interaction: i64) -> Self {
-        todo!()
+        Self {
+            navigation: AtomicI64::new(initial_navigation),
+            folder: AtomicI64::new(initial_folder),
+            interaction: AtomicI64::new(initial_interaction),
+        }
     }
 
     /// `CurrentNavigation`: the current navigation generation.
     pub fn current_navigation(&self) -> i64 {
-        todo!()
+        self.navigation.load(Ordering::SeqCst)
     }
 
     /// `NextNavigation`: atomically advances by one (wrapping) and returns the NEW value.
     pub fn next_navigation(&self) -> i64 {
-        todo!()
+        self.navigation.fetch_add(1, Ordering::SeqCst).wrapping_add(1)
     }
 
     /// `IsNavigationCurrent`: true when `generation` equals the current navigation generation.
     pub fn is_navigation_current(&self, generation: i64) -> bool {
-        todo!()
+        self.navigation.load(Ordering::SeqCst) == generation
     }
 
     /// `CurrentFolder`.
     pub fn current_folder(&self) -> i64 {
-        todo!()
+        self.folder.load(Ordering::SeqCst)
     }
 
     /// `NextFolder`: atomically advances by one (wrapping) and returns the NEW value.
     pub fn next_folder(&self) -> i64 {
-        todo!()
+        self.folder.fetch_add(1, Ordering::SeqCst).wrapping_add(1)
     }
 
     /// `IsFolderCurrent`.
     pub fn is_folder_current(&self, generation: i64) -> bool {
-        todo!()
+        self.folder.load(Ordering::SeqCst) == generation
     }
 
     /// `CurrentInteraction`.
     pub fn current_interaction(&self) -> i64 {
-        todo!()
+        self.interaction.load(Ordering::SeqCst)
     }
 
     /// `NextInteraction`: atomically advances by one (wrapping) and returns the NEW value.
     pub fn next_interaction(&self) -> i64 {
-        todo!()
+        self.interaction.fetch_add(1, Ordering::SeqCst).wrapping_add(1)
     }
 
     /// `IsInteractionCurrent`.
     pub fn is_interaction_current(&self, generation: i64) -> bool {
-        todo!()
+        self.interaction.load(Ordering::SeqCst) == generation
     }
 
     /// `StopForAction` (legacy "StopImageReadsForAction"): advances navigation, folder and interaction by one each,
     /// to invalidate every pending read, decode and scan when a file action begins. Three independent atomic
     /// increments in that order, NOT one atomic step (callers run on the UI thread; consumers only compare tokens).
     pub fn stop_for_action(&self) {
-        todo!()
+        self.next_navigation();
+        self.next_folder();
+        self.next_interaction();
     }
 }
