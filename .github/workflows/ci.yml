@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  repo-checks:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Synced assets (language catalogs, fixtures) are owned by the C# repo; edits must come from a re-sync.
+      - name: Check synced assets
+        shell: powershell
+        run: ./tools/sync-from-csharp.ps1 -Check
+
+  build-test:
+    runs-on: windows-latest
+    # Hang guard: a stuck test fails the job instead of burning the runner (C#: test.runsettings).
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # rustup is preinstalled on windows-latest; rust-toolchain.toml selects the version and components.
+      - name: Toolchain
+        run: rustup show
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Test
+        timeout-minutes: 15
+        run: cargo test --workspace
+      - name: Build release
+        run: cargo build --workspace --release

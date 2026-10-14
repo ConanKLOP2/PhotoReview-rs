@@ -1,0 +1,15 @@
+[package]
+name = "pr-turbojpeg"
+description = "TurboJPEG decoder backend, registered only when the probe succeeds (AR01)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+pr-core.workspace = true
+pr-imaging.workspace = true

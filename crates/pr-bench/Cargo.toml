@@ -1,0 +1,16 @@
+[package]
+name = "pr-bench"
+description = "Shared benchmark engine (output format matches PhotoReview.Benchmark.Cli)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+pr-core.workspace = true
+pr-imaging.workspace = true
+pr-perf.workspace = true

@@ -1,0 +1,5 @@
+[toolchain]
+# Pin to an exact version once the toolchain is installed (see docs/PLAN.md, Phase 0).
+channel = "stable"
+components = ["rustfmt", "clippy"]
+targets = ["x86_64-pc-windows-msvc"]

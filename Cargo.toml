@@ -1,0 +1,35 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+# Every unsafe block must say why it is sound (COM/WIC/LibRaw FFI lives in a few crates).
+undocumented_unsafe_blocks = "warn"
+
+[workspace.dependencies]
+pr-core = { path = "crates/pr-core" }
+pr-l10n = { path = "crates/pr-l10n" }
+pr-imaging = { path = "crates/pr-imaging" }
+pr-imaging-raw = { path = "crates/pr-imaging-raw" }
+pr-libraw = { path = "crates/pr-libraw" }
+pr-turbojpeg = { path = "crates/pr-turbojpeg" }
+pr-platform-win = { path = "crates/pr-platform-win" }
+pr-bench = { path = "crates/pr-bench" }
+pr-perf = { path = "crates/pr-perf" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+debug = "line-tables-only"
