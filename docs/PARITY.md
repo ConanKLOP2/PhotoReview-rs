@@ -41,6 +41,8 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | C-06 | Done (W2-07, decision part) | `pr_core::file_actions::duplicates::find` | `file_actions_duplicates::*` (golden `duplicates`) | Size groups, naming rule, survivor rule; hash is a caller closure (`HashFailure`); recycling is the App's (W8) |
 | P-01 / INV-7 | Done (W2-09, validation part) | `pr_core::catalog::snapshot_validator` | `catalog_snapshot_validator::*` (golden `snapshot-validator`) | Explorer snapshot validation; W2-10 ports the two ReviewCatalog tests |
 | X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
+| K-39 | Done (W2-11) | `pr_core::catalog::drag_drop::parse` | `catalog_drag_drop::*` (golden `drag-drop`, 35 cases) | Drop: the first existing folder wins; otherwise the first supported existing image opens its folder at that image. Warning texts are mapped by the App layer (`DragDropWarning::catalog_key`). |
+| Q-FMT-WEBP-HEIC (drag and drop) | Done (W2-11, drop part) | `pr_core::catalog::drag_drop::parse` | `catalog_drag_drop::parse_heic_file_with_webp_heic_switch_on_is_valid`, `..._switch_off_is_invalid` | A dropped .heic or .webp opens only while the WebP/HEIC switch is on. |
 
 ---
 
