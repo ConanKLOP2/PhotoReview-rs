@@ -1,4 +1,4 @@
-//! W1-20: tests for `pr_perf::report` (port of `PerfAnalyzeReport`). The golden `perf-report` pins the full
+﻿//! W1-20: tests for `pr_perf::report` (port of `PerfAnalyzeReport`). The golden `perf-report` pins the full
 //! `summary.md` / `summary.json` text produced by the C# code.
 
 use pr_perf::analyze::{AnalysisResult, GroupResult};
@@ -506,4 +506,31 @@ fn int_any(v: &Value) -> i64 {
         Value::String(s) => s.parse().expect("integer text"),
         other => other.as_i64().expect("integer"),
     }
+}
+
+// C#: (adapted from PerfAnalyzeReport.WriteMarkdown, Preload section: `Pop(queueWait, 95)` and `Pop(decode, 95)`)
+#[test]
+fn preload_p50_and_p95_use_nearest_rank_over_ten_unsorted_items() {
+    let mut s = summary("S1", "Fast", "warm", Some(2));
+    s.preload_workers = Some(2);
+    // Reverse order so the report must sort; queueWait 1..10, decode ms 10..100.
+    for i in (1..=10).rev() {
+        s.preload_items.push(PreloadItemRow {
+            slot: i,
+            path_id: format!("p{i}"),
+            queue_wait_ms: f64::from(i),
+            kind: "decoded".to_owned(),
+            ms: f64::from(i) * 10.0,
+        });
+    }
+    let md = render_markdown(&result_of(vec![group(s, vec![])], 1));
+    let row = md
+        .split("\r\n")
+        .find(|l| l.starts_with("| S1/Fast/warm/workers=2 | 2 | 10 |"))
+        .expect("preload row");
+    // P50 = rank 5, P95 = rank ceil(9.5) = 10 (a P90 would give 9.0 / 90.0).
+    assert_eq!(
+        row,
+        "| S1/Fast/warm/workers=2 | 2 | 10 | 0 | 0 | 5.0 | 10.0 | 50.0 | 100.0 |"
+    );
 }
