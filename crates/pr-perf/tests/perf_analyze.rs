@@ -452,3 +452,106 @@ fn golden_run_cases() {
     }
     assert_eq!(n, 19);
 }
+
+// ---- mutant killers: dispatcher threshold, InflightJoin decode navs, empty startup ----
+
+const HEADER_1MHZ: &str =
+    "# commit=test diag= qpcFrequency=1000000\nutcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\n";
+
+/// One complete nav 1 (ShowStart at 100 ms, final at 200 ms) with one DispatcherLongOp of `ms` in between.
+fn dispatcher_csv(ms: &str) -> String {
+    format!(
+        "{HEADER_1MHZ}1,100000,1,ShowStart,1,,0,,,,Preview\n1,100100,1,Lookup,1,,,,,,ramHit\n\
+         1,150000,1,DispatcherLongOp,,,{ms},,,,Normal;Layout\n1,200000,1,Presented,1,,1,,,,final\n"
+    )
+}
+
+/// One complete nav 1 whose lookup is `inflight` (kind `InflightJoin`) with a decode of `decode_ms`, final at +100 ms.
+fn inflight_csv(decode_ms: &str) -> String {
+    format!(
+        "{HEADER_1MHZ}1,100000,1,ShowStart,1,,0,,,,Preview\n1,100100,1,Lookup,1,,,,,,inflight\n\
+         1,100150,4,Decode,1,,{decode_ms},,,,\n1,200000,1,Presented,1,,1,,,,final\n"
+    )
+}
+
+fn rule<'a>(g: &'a pr_perf::analyze::GroupResult, name: &str) -> &'a pr_perf::rules::RuleResult {
+    g.rules.iter().find(|r| r.rule == name).expect("rule present")
+}
+
+// C#: PerfAnalyze.EvaluateAllRules (`DispatcherLongOps.Count(d => d.Ms > dispatcherThreshold)`, strict >)
+#[test]
+#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
+fn dispatcher_long_op_of_exactly_the_threshold_is_not_counted() {
+    let at = TempRoot::new("perf-analyze-dispatch-at");
+    write(at.path(), "perf-1.csv", dispatcher_csv("16.0").as_bytes());
+    let result = run(at.path(), None).expect("run");
+    assert_eq!(result.groups.len(), 1);
+    let g = &result.groups[0];
+    assert_eq!(g.summary.dispatcher_long_ops.len(), 1);
+    assert!(g.summary.startup_runs.is_empty(), "no Startup rows -> no startup run");
+    let r = rule(g, "R-THREAD");
+    assert!(
+        r.evidence.starts_with("DispatcherLongOp>16ms count=0;"),
+        "{}",
+        r.evidence
+    );
+    assert_eq!(r.triggered, None);
+
+    let above = TempRoot::new("perf-analyze-dispatch-above");
+    write(above.path(), "perf-1.csv", dispatcher_csv("16.5").as_bytes());
+    let result = run(above.path(), None).expect("run");
+    let r = rule(&result.groups[0], "R-THREAD");
+    assert!(
+        r.evidence.starts_with("DispatcherLongOp>16ms count=1;"),
+        "{}",
+        r.evidence
+    );
+    assert_eq!(r.triggered, Some(true));
+}
+
+// C#: PerfAnalyze.EvaluateAllRules (decodeNavs include InflightJoin)
+#[test]
+#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
+fn inflight_join_navs_count_as_decode_navs_for_r_dec() {
+    let root = TempRoot::new("perf-analyze-inflight-dec");
+    write(root.path(), "perf-1.csv", inflight_csv("40.0").as_bytes());
+    let result = run(root.path(), None).expect("run");
+    let g = &result.groups[0];
+    assert_eq!(g.summary.navs.len(), 1);
+    assert_eq!(g.summary.navs[0].kind, "InflightJoin");
+    let r = rule(g, "R-DEC");
+    assert_eq!(
+        r.evidence,
+        "avg(t_decode/finalVisual)=40.0% over 1 navs (threshold 40%)"
+    );
+    assert_eq!(r.triggered, Some(true));
+}
+
+// C#: PerfAnalyze.AverageDecodeMs (InflightJoin navs feed the R-CONT decode averages)
+#[test]
+#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
+fn inflight_join_navs_feed_the_r_cont_decode_averages() {
+    let root = TempRoot::new("perf-analyze-inflight-cont");
+    for (workers, decode) in [(1, "10.0"), (4, "20.0")] {
+        write(
+            root.path(),
+            &format!("w{workers}/perf-1.csv"),
+            inflight_csv(decode).as_bytes(),
+        );
+        write(
+            root.path(),
+            &format!("w{workers}/session.json"),
+            format!(r#"{{"scenario":"S2","mode":"Preview","condition":"warm","preloadWorkers":{workers}}}"#).as_bytes(),
+        );
+    }
+    let result = run(root.path(), None).expect("run");
+    assert_eq!(result.groups.len(), 2);
+    for g in &result.groups {
+        let r = rule(g, "R-CONT");
+        assert_eq!(
+            r.evidence,
+            "t_decode(workers=4)=20.0ms vs t_decode(workers=1)=10.0ms, ratio=2.00 (threshold 1.3)"
+        );
+        assert_eq!(r.triggered, Some(true));
+    }
+}

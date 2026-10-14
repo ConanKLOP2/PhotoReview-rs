@@ -16,7 +16,7 @@ use indexmap::IndexMap;
 use pr_core::text::eq_ignore_case;
 
 use crate::csv::{self, PerfError};
-use crate::nav::{self, DispatcherLongOpRow, FolderGenSummary, NavRecord, PreloadItemRow};
+use crate::nav::{self, DispatcherLongOpRow, FolderGenSummary, NavRecord, PerfFileAnalysis, PreloadItemRow};
 use crate::report;
 use crate::rules::{self, RuleResult, RulesConfig};
 use crate::stats::{GroupKey, GroupSummary, RunFileMeta, nearest_rank};
@@ -67,13 +67,16 @@ fn cmp_ordinal(a: &str, b: &str) -> Ordering {
 }
 
 /// `perf-*.csv`, case-insensitive (the `Directory.EnumerateFiles` pattern on Windows).
+/// The `*` matches zero or more chars (`perf-.csv` matches). The `perf-` head and the `.csv` tail cannot overlap
+/// (char 4 would have to be both `-` and `.`), so no separate minimum-length check is needed.
 fn is_perf_csv_name(name: &str) -> bool {
     let chars: Vec<char> = name.chars().collect();
-    if name.encode_utf16().count() < 9 || chars.len() < 9 {
+    let tail_chars = chars.len().checked_sub(4).and_then(|start| chars.get(start..));
+    let (Some(head_chars), Some(tail_chars)) = (chars.get(..5), tail_chars) else {
         return false;
-    }
-    let head: String = chars[..5].iter().collect();
-    let tail: String = chars[chars.len() - 4..].iter().collect();
+    };
+    let head: String = head_chars.iter().collect();
+    let tail: String = tail_chars.iter().collect();
     eq_ignore_case(&head, "perf-") && eq_ignore_case(&tail, ".csv")
 }
 
@@ -106,6 +109,12 @@ fn average_or_none(values: impl Iterator<Item = Option<f64>>) -> Option<f64> {
     if count > 0 { Some(sum / count as f64) } else { None }
 }
 
+/// `DispatcherLongOps.Count(d => d.Ms > threshold)`: an op of exactly `threshold` ms does not count.
+fn count_long_ops(ops: &[DispatcherLongOpRow], threshold: f64) -> i32 {
+    ops.iter().filter(|d| d.ms > threshold).count() as i32
+}
+
+/// The decode navs of R-DEC / R-CONT: kind contains `SourceMiss` or `InflightJoin` (ordinal, case-sensitive).
 fn is_decode_kind(kind: &str) -> bool {
     kind.contains("SourceMiss") || kind.contains("InflightJoin")
 }
@@ -156,8 +165,7 @@ fn evaluate_all_rules(cfg: &RulesConfig, s: &GroupSummary, all_groups: &[GroupSu
         Some(nearest_rank(&inputs, 95.0))
     };
 
-    let threshold = cfg.get("R-THREAD", "dispatcherLongOpMs", 16.0);
-    let dispatcher_count = s.dispatcher_long_ops.iter().filter(|d| d.ms > threshold).count() as i32;
+    let dispatcher_count = count_long_ops(&s.dispatcher_long_ops, cfg.get("R-THREAD", "dispatcherLongOpMs", 16.0));
 
     // Same scenario, mode and cond, known worker count (includes `s` itself). First wins on ties.
     let mut low: Option<&GroupSummary> = None;
@@ -210,6 +218,24 @@ struct GroupAcc {
     startup: Vec<IndexMap<String, f64>>,
     metas: Vec<RunFileMeta>,
     dropped: i64,
+}
+
+impl GroupAcc {
+    /// Appends one file's navigation aggregates; a file without startup phases adds no startup run.
+    fn add_analysis(&mut self, analysis: PerfFileAnalysis) {
+        self.navs.extend(analysis.navs);
+        self.preload.extend(analysis.preload_items);
+        self.paused = self.paused.wrapping_add(analysis.preload_paused_count);
+        self.cancel = self.cancel.wrapping_add(analysis.preload_cancel_count);
+        self.dispatcher.extend(analysis.dispatcher_long_ops);
+        self.before_start = self
+            .before_start
+            .wrapping_add(analysis.dispatcher_long_ops_before_start_count);
+        self.folder.extend(analysis.folder_gens);
+        if !analysis.startup.is_empty() {
+            self.startup.push(analysis.startup);
+        }
+    }
 }
 
 /// `PerfAnalyze.RunAsync(runDir, rulesPath)`.
@@ -280,18 +306,7 @@ pub fn run(run_dir: &Path, rules_path: Option<&Path>) -> Result<AnalysisResult, 
 
         let key = GroupKey::new(&meta.scenario, &mode, &meta.cond, meta.preload_workers);
         let acc = groups.entry(key).or_default();
-        acc.navs.extend(analysis.navs);
-        acc.preload.extend(analysis.preload_items);
-        acc.paused = acc.paused.wrapping_add(analysis.preload_paused_count);
-        acc.cancel = acc.cancel.wrapping_add(analysis.preload_cancel_count);
-        acc.dispatcher.extend(analysis.dispatcher_long_ops);
-        acc.before_start = acc
-            .before_start
-            .wrapping_add(analysis.dispatcher_long_ops_before_start_count);
-        acc.folder.extend(analysis.folder_gens);
-        if !analysis.startup.is_empty() {
-            acc.startup.push(analysis.startup);
-        }
+        acc.add_analysis(analysis);
         acc.metas.push(meta);
         acc.dropped = acc.dropped.wrapping_add(file.dropped_rows);
     }
@@ -357,5 +372,86 @@ pub fn nan_as_null_double_read(token: &serde_json::Value) -> Option<f64> {
         serde_json::Value::Null => Some(f64::NAN),
         serde_json::Value::Number(n) => n.as_f64(),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn op(ms: f64) -> DispatcherLongOpRow {
+        DispatcherLongOpRow {
+            ms,
+            priority: "Normal".to_owned(),
+            name: "op".to_owned(),
+        }
+    }
+
+    // C#: PerfAnalyze.EvaluateAllRules (`d.Ms > dispatcherThreshold`, strict)
+    #[test]
+    fn dispatcher_long_op_at_exactly_the_threshold_does_not_count() {
+        assert_eq!(count_long_ops(&[op(16.0)], 16.0), 0);
+        assert_eq!(count_long_ops(&[op(16.5)], 16.0), 1);
+        assert_eq!(count_long_ops(&[op(15.9), op(16.0), op(16.01), op(700.0)], 16.0), 2);
+        assert_eq!(count_long_ops(&[op(20.0)], 25.0), 0);
+        assert_eq!(count_long_ops(&[], 16.0), 0);
+    }
+
+    // C#: PerfAnalyze.EvaluateAllRules / AverageDecodeMs (decode navs = kind contains SourceMiss or InflightJoin)
+    #[test]
+    fn decode_kinds_are_source_miss_and_inflight_join() {
+        assert!(is_decode_kind("SourceMiss"));
+        assert!(is_decode_kind("InflightJoin"));
+        assert!(is_decode_kind("Thumbnail+InflightJoin"));
+        assert!(is_decode_kind("Thumbnail+SourceMiss"));
+        assert!(!is_decode_kind("RamHit"));
+        assert!(!is_decode_kind("DiskCacheHit"));
+        assert!(!is_decode_kind("Unknown"));
+        assert!(!is_decode_kind("inflightjoin"));
+        assert!(!is_decode_kind("sourcemiss"));
+    }
+
+    // C#: PerfAnalyze.RunAsync (`if (analysis.Startup.Count > 0) Add(groupStartup, key).Add(analysis.Startup)`)
+    #[test]
+    fn a_file_without_startup_phases_adds_no_startup_run() {
+        let mut acc = GroupAcc::default();
+        acc.add_analysis(PerfFileAnalysis::default());
+        assert!(acc.startup.is_empty());
+
+        let mut with_startup = PerfFileAnalysis::default();
+        with_startup.startup.insert("firstPresented".to_owned(), 12.5);
+        acc.add_analysis(with_startup);
+        acc.add_analysis(PerfFileAnalysis::default());
+        assert_eq!(acc.startup.len(), 1);
+        assert_eq!(acc.startup[0].get("firstPresented"), Some(&12.5));
+    }
+
+    // C#: Directory.EnumerateFiles(runDir, "perf-*.csv", ...) name match
+    #[test]
+    fn perf_csv_name_match() {
+        for yes in [
+            "perf-.csv",
+            "PERF-C.CSV",
+            "perf-1.csv",
+            "Perf-sample.Csv",
+            "perf-\u{e9}.csv",
+        ] {
+            assert!(is_perf_csv_name(yes), "{yes:?}");
+        }
+        for no in [
+            "perf.csv",
+            "perf-csv",
+            "perf-",
+            ".csv",
+            "",
+            "perf",
+            "xperf-1.csv",
+            "perf-1.csv.bak",
+            "perf-1.txt",
+            "perf_1.csv",
+            "perf-.cs",
+        ] {
+            assert!(!is_perf_csv_name(no), "{no:?}");
+        }
     }
 }
