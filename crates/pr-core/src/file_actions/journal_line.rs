@@ -70,12 +70,7 @@ impl JournalDateTime {
     /// System.Text.Json reading of a `DateTime` text via [`DateTimeUtc::parse_json`]: `Z` -> utc, no zone ->
     /// unspecified, `+hh:mm` offset -> converted to UTC, utc (deliberate difference). `None` = the C# reader throws.
     pub fn parse_json(text: &str) -> Option<Self> {
-        // System.Text.Json rejects a '.' not followed by a digit; DateTimeUtc::parse_json (outside this unit) is lenient.
-        let b = text.as_bytes();
-        if b.iter()
-            .enumerate()
-            .any(|(i, &c)| c == b'.' && !b.get(i + 1).is_some_and(u8::is_ascii_digit))
-        {
+        if !stj_shape_ok(text.as_bytes()) {
             return None;
         }
         let (value, kind) = DateTimeUtc::parse_json(text)?;
@@ -83,6 +78,26 @@ impl JournalDateTime {
             SourceKind::Unspecified => Self::unspecified(value),
             SourceKind::Utc | SourceKind::Offset => Self::utc(value),
         })
+    }
+}
+
+/// The parts of System.Text.Json's `DateTime` grammar (`JsonHelpers.TryParseAsISO`) that [`DateTimeUtc::parse_json`]
+/// is more lenient about:
+/// * a date-only text is exactly `yyyy-MM-dd`: anything longer needs `T` at index 10 (`2026-01-01Z` and
+///   `2026-01-01+07:00` are rejected);
+/// * the `.` fraction separator needs at least one more character after it (`…:42.` is rejected, while `…:42.Z` and
+///   `…:42.+07:00`, a dot with no digits before the zone, are accepted);
+/// * at most 16 fraction digits are read; a 17th digit is not a zone designator, so the text is rejected.
+fn stj_shape_ok(b: &[u8]) -> bool {
+    if b.len() > 10 && b.get(10) != Some(&b'T') {
+        return false;
+    }
+    match b.iter().position(|&c| c == b'.') {
+        None => true,
+        Some(dot) => {
+            let rest = b.get(dot + 1..).unwrap_or_default();
+            !rest.is_empty() && rest.iter().take_while(|c| c.is_ascii_digit()).count() <= 16
+        }
     }
 }
 
@@ -396,14 +411,29 @@ fn member_from_text<T: LenientEnum>(text: &str) -> Option<T> {
     if named.is_some() {
         return named;
     }
-    let digits = text
+    // .NET integer parsing (Enum.TryParse, int.TryParse with NumberStyles.Integer): optional sign, ASCII digits, then
+    // optional ASCII white space (TAB, LF, VT, FF, CR, space) and then any number of trailing NUL chars, which .NET
+    // ignores ("1\0" is 1, "1 \0" is 1, "1\0x" and "1\u{A0}\0" are not numbers).
+    let unsigned = text
         .strip_prefix('+')
         .or_else(|| text.strip_prefix('-'))
         .unwrap_or(text);
-    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+    let digit_len = unsigned.bytes().take_while(u8::is_ascii_digit).count();
+    let (digits, tail) = unsigned.split_at(digit_len);
+    if digits.is_empty()
+        || !tail
+            .trim_start_matches(['\t', '\n', '\u{B}', '\u{C}', '\r', ' '])
+            .chars()
+            .all(|c| c == '\0')
+    {
         return None;
     }
-    member_from_number::<T>(text.parse::<i64>().ok()?)
+    let number = digits.parse::<i64>().ok()?;
+    member_from_number::<T>(if text.starts_with('-') {
+        number.checked_neg()?
+    } else {
+        number
+    })
 }
 
 /// A defined member whose value is `n` (must fit i32).

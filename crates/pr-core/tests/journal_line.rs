@@ -653,15 +653,151 @@ fn writer_is_compact_and_keeps_null_destination_and_error() {
     );
 }
 
-// C#: JournalLineParser.TryParse - a fraction separator without digits is rejected (verifier differential).
+/// Parses a line whose `LastWriteUtc` (top level and of one group member) is the JSON string `ts` (already escaped),
+/// asserting both overloads agree; `Some((text written back, unspecified))` when accepted.
+fn parse_timestamp(ts: &str) -> Option<(String, bool)> {
+    let line = format!(
+        r#"{{"Id":"i","Type":"Move","State":"Prepared","Source":"x","LastWriteUtc":"{ts}","TimestampUtc":"2026-01-01T00:00:00Z","GroupMembers":[{{"Source":"s","LastWriteUtc":"{ts}"}}]}}"#
+    );
+    let parsed = try_parse(&line);
+    assert_eq!(parsed, try_parse_utf8(line.as_bytes()), "{ts}: overloads differ");
+    parsed.map(|entry| {
+        let member = entry.group_members.as_deref().unwrap_or_default()[0].last_write_utc;
+        assert_eq!(member.to_json(), entry.last_write_utc.to_json(), "{ts}: member");
+        (entry.last_write_utc.to_json(), entry.last_write_utc.unspecified)
+    })
+}
+
+// Differential against C# JournalLineParser (System.Text.Json `JsonHelpers.TryParseAsISO`): the `.` fraction
+// separator needs at least one more character, but no digit (`.Z` and `.+07:00` are accepted).
 #[test]
-fn timestamp_with_bare_fraction_dot_is_rejected_for_both_overloads() {
-    for ts in ["2026-01-01T00:00:00.", "2026-01-01T00:00:00.Z"] {
-        let line = format!(
-            r#"{{"Id":"i","Type":"Move","State":"Prepared","Source":"x","LastWriteUtc":"{ts}","TimestampUtc":"2026-01-01T00:00:00"}}"#
-        );
-        assert!(try_parse(&line).is_none(), "{ts}");
-        assert!(try_parse_utf8(line.as_bytes()).is_none(), "{ts}");
+fn timestamp_fraction_dot_without_digits_matches_system_text_json() {
+    for (ts, written, unspecified) in [
+        ("2026-10-14T03:07:47.Z", "2026-10-14T03:07:47Z", false),
+        ("2026-01-01T08:15:42.Z", "2026-01-01T08:15:42Z", false),
+        ("2026-01-01T08:15:42.+07:00", "2026-01-01T01:15:42Z", false),
+        ("2026-01-01T08:15:42.-07", "2026-01-01T15:15:42Z", false),
+        ("2026-01-01T08:15:42.\\u0031Z", "2026-01-01T08:15:42.1Z", false),
+        ("2026-01-01T08:15:42.5", "2026-01-01T08:15:42.5", true),
+    ] {
+        assert_eq!(parse_timestamp(ts), Some((written.to_owned(), unspecified)), "{ts}");
+        let direct = JournalDateTime::parse_json(&ts.replace("\\u0031", "1"));
+        assert_eq!(direct.map(JournalDateTime::to_json).as_deref(), Some(written), "{ts}");
+    }
+    for ts in [
+        "2026-01-01T08:15:42.",
+        "2026-10-14T03:07:47.",
+        "2026-01-01T08:15:42..1Z",
+        "2026-01-01T08:15:42.Z ",
+        "2026-01-01T08:15:42.z",
+        "2026-01-01T08:15:42.+0",
+    ] {
+        assert_eq!(parse_timestamp(ts), None, "{ts}");
+        assert!(JournalDateTime::parse_json(ts).is_none(), "{ts}");
+    }
+}
+
+// Differential against C#: a date-only text is exactly `yyyy-MM-dd`; a zone right after the date is rejected.
+#[test]
+fn timestamp_date_only_takes_no_zone() {
+    assert_eq!(
+        parse_timestamp("2026-01-01"),
+        Some(("2026-01-01T00:00:00".to_owned(), true))
+    );
+    for ts in [
+        "2026-01-01Z",
+        "2026-01-01+07:00",
+        "2026-01-01-07",
+        "2026-01-01X",
+        "2026-01-01 08:15:42",
+    ] {
+        assert_eq!(parse_timestamp(ts), None, "{ts}");
+        assert!(JournalDateTime::parse_json(ts).is_none(), "{ts}");
+    }
+}
+
+// Differential against C#: at most 16 fraction digits are read (the first 7 count); a 17th digit rejects the text.
+#[test]
+fn timestamp_fraction_reads_at_most_sixteen_digits() {
+    for (ts, written, unspecified) in [
+        (
+            "2026-01-01T08:15:42.1234567890123456Z",
+            "2026-01-01T08:15:42.1234567Z",
+            false,
+        ),
+        (
+            "2026-01-01T08:15:42.1234567890123456",
+            "2026-01-01T08:15:42.1234567",
+            true,
+        ),
+        ("2026-01-01T08:15:42.0000000000000000Z", "2026-01-01T08:15:42Z", false),
+        (
+            "2026-01-01T08:15:42.9999999999999999Z",
+            "2026-01-01T08:15:42.9999999Z",
+            false,
+        ),
+    ] {
+        assert_eq!(parse_timestamp(ts), Some((written.to_owned(), unspecified)), "{ts}");
+    }
+    for ts in [
+        "2026-01-01T08:15:42.12345678901234567Z",
+        "2026-01-01T08:15:42.12345678901234567",
+        "2026-01-01T08:15:42.00000000000000000Z",
+    ] {
+        assert_eq!(parse_timestamp(ts), None, "{ts}");
+        assert!(JournalDateTime::parse_json(ts).is_none(), "{ts}");
+    }
+}
+
+// Differential against C#: .NET integer parsing (Enum.TryParse / int.TryParse) ignores trailing NUL chars after the
+// digits and optional ASCII white space, so `"1\u0000"` is Copy/Committed. A NUL anywhere else, or non-ASCII white
+// space before it, is not a number.
+#[test]
+fn enum_number_text_with_trailing_nul_matches_dotnet() {
+    use FileOperationType::{Copy, Move, Recycle};
+    use JournalState::{Committed, Dismissed, Failed, Prepared};
+    let parse = |ty: &str, st: &str| {
+        let line = format!(r#"{{"Id":"i","Type":"{ty}","State":"{st}","Source":"x"}}"#);
+        let parsed = try_parse(&line);
+        assert_eq!(parsed, try_parse_utf8(line.as_bytes()), "{ty}/{st}: overloads differ");
+        parsed.map(|e| (e.op_type, e.state))
+    };
+    for (text, ty, st) in [
+        (r"1\u0000", Some(Copy), Some(Committed)),
+        (r"1\u0000\u0000", Some(Copy), Some(Committed)),
+        (r"2\u0000\u0000\u0000", Some(Recycle), Some(Failed)),
+        (r"1 \u0000", Some(Copy), Some(Committed)),
+        (r"1\t\u0000", Some(Copy), Some(Committed)),
+        (r"1\u000B\u0000", Some(Copy), Some(Committed)),
+        (r"1\n\u0000", Some(Copy), Some(Committed)),
+        (r"1  \u0000\u0000", Some(Copy), Some(Committed)),
+        (r"1\u0000 ", Some(Copy), Some(Committed)),
+        (r" 1\u0000 ", Some(Copy), Some(Committed)),
+        (r"+1\u0000", Some(Copy), Some(Committed)),
+        (r"01\u0000", Some(Copy), Some(Committed)),
+        (r"-0\u0000", Some(Move), Some(Prepared)),
+        (r"0\u0000", Some(Move), Some(Prepared)),
+        (r"3\u0000", None, Some(Dismissed)),
+        (r"-1\u0000", None, None),
+        (r"9\u0000", None, None),
+        (r"2147483648\u0000", None, None),
+        (r"1\u0000x", None, None),
+        (r"1\u0000 1", None, None),
+        (r"1\u0000\u0000 \u0000", None, None),
+        (r"1\u0000\u0001", None, None),
+        (r"1 \u0000", None, None),
+        (r"1\u0085\u0000", None, None),
+        (r"1　\u0000", None, None),
+        (r"1\u001C\u0000", None, None),
+        (r"\u00001", None, None),
+        (r"+\u00001", None, None),
+        (r"-\u00001", None, None),
+        (r"1e0\u0000", None, None),
+        (r"Move\u0000", None, None),
+        (r"Move \u0000", None, None),
+    ] {
+        assert_eq!(parse(text, "Prepared"), ty.map(|t| (t, Prepared)), "Type {text}");
+        assert_eq!(parse("Move", text), st.map(|s| (Move, s)), "State {text}");
     }
 }
 
