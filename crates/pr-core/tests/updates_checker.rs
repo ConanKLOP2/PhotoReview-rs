@@ -551,6 +551,9 @@ fn retry_after_grammar_matches_dotnet() {
     let cases: &[(&[&str], bool)] = &[
         (&["00000000000000000030"], false),
         (&["0000000030"], true),
+        (&["2147483647"], true),
+        (&["2147483648"], false),
+        (&["9999999999"], false),
         (&["00000000030"], false),
         (&[" 30"], true),
         (&["30 "], true),
