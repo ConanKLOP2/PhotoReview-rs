@@ -28,6 +28,41 @@ impl std::error::Error for PercentileOutOfRange {}
 /// * `values` is not modified; the result comes from an ascending, STABLE sort that orders like .NET
 ///   `double.CompareTo` (NaN before every number, NaN equal to NaN, `-0.0` equal to `0.0`).
 pub fn percentile(values: &[f64], percentile: f64) -> Result<f64, PercentileOutOfRange> {
-    let _ = (values, percentile);
-    todo!("port BenchmarkStatistics.Percentile")
+    if values.is_empty() {
+        return Ok(0.0);
+    }
+    // C# `!(percentile >= 0 && percentile <= 1)`: NaN and the infinities fail; -0.0 passes.
+    if !(0.0..=1.0).contains(&percentile) {
+        return Err(PercentileOutOfRange);
+    }
+
+    // Stable ascending sort (LINQ `OrderBy` is stable too), ordered like `double.CompareTo`.
+    let mut ordered = values.to_vec();
+    ordered.sort_by(|a, b| compare_like_dotnet(*a, *b));
+
+    let position = (ordered.len() - 1) as f64 * percentile;
+    // 0 <= position <= len - 1 because percentile is in 0..=1 and is not NaN, so both indices are in bounds.
+    let lower = position.floor() as usize;
+    let upper = position.ceil() as usize;
+    if lower == upper {
+        Ok(ordered[lower])
+    } else {
+        Ok(ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower as f64))
+    }
+}
+
+/// The ordering of .NET `double.CompareTo`: `-0.0` equals `0.0`, NaN equals NaN and sorts before every number.
+fn compare_like_dotnet(a: f64, b: f64) -> std::cmp::Ordering {
+    use std::cmp::Ordering;
+    if a < b {
+        Ordering::Less
+    } else if a > b {
+        Ordering::Greater
+    } else if a == b {
+        Ordering::Equal
+    } else if a.is_nan() {
+        if b.is_nan() { Ordering::Equal } else { Ordering::Less }
+    } else {
+        Ordering::Greater
+    }
 }
