@@ -76,6 +76,22 @@ fn restore_members_group_with_non_restorable_missing_member_does_not_reform() {
     assert!(no_groups(&c));
 }
 
+#[test]
+fn restore_members_explicit_group_not_added_still_pairs_the_rest_of_the_members() {
+    // Repair round 2: kills the mutant filtering `rest` by `!group.image_paths().is_empty()` instead of
+    // "explicit group was actually added" (C# RestoreMembers pairs `unique` when the explicit group was not added).
+    let mut c = ReviewCatalog::new();
+    reset_entries(&mut c, &[], RawPairMode::PreferJpeg);
+    let group = group2("C:\\photos\\a.jpg", "C:\\photos\\a.cr2");
+    let restored = c.restore_members(&s(&["C:\\photos\\a.jpg", "C:\\photos\\a.cr3"]), 0, Some(&group), true);
+    assert!(restored);
+    assert_eq!(c.count(), 1);
+    let e = &c.entries_snapshot()[0];
+    let g = e.capture_group.as_ref().unwrap();
+    assert_eq!(g.jpeg_path(), "C:\\photos\\a.jpg");
+    assert_eq!(g.raw_path(), "C:\\photos\\a.cr3");
+}
+
 fn no_groups(c: &ReviewCatalog) -> bool {
     c.entries_snapshot().iter().all(|e| e.capture_group.is_none())
 }
