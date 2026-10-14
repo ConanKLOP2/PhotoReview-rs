@@ -113,11 +113,11 @@ pub fn get_full_path(path: &str) -> Result<String, PathError> {
         Ok(p) => p.to_string_lossy().into_owned(),
         Err(_) => return Err(PathError::TooLong),
     };
-    // .NET (`PathHelper.Normalize`) expands 8.3 short names with `GetLongPathName` when the result contains `~`,
-    // except for device paths. A path that does not exist keeps its short form.
+    // .NET (`PathHelper.Normalize`) runs `TryExpandShortFileName` whenever the full path contains `~` (extended
+    // `\\?\` input never gets here: .NET returns it unchanged). A path that does not exist keeps its short
+    // form, except that .NET garbles it when the walk-back reaches the root (see `expand_short_names`).
     if full.contains('~')
-        && !full.starts_with("\x5c\x5c.\x5c")
-        && !full.starts_with("\x5c\x5c?\x5c")
+        && !path.starts_with("\x5c\x5c?\x5c")
         && let Some(long) = expand_short_names(&full)
     {
         return Ok(long);
@@ -127,32 +127,110 @@ pub fn get_full_path(path: &str) -> Result<String, PathError> {
 
 #[cfg(windows)]
 fn expand_short_names(full: &str) -> Option<String> {
-    use std::os::windows::ffi::{OsStrExt, OsStringExt};
+    use std::os::windows::ffi::OsStringExt;
 
     #[link(name = "kernel32")]
     unsafe extern "system" {
         fn GetLongPathNameW(short: *const u16, long: *mut u16, cch: u32) -> u32;
     }
 
-    let wide: Vec<u16> = std::ffi::OsStr::new(full)
-        .encode_wide()
-        .chain(std::iter::once(0))
-        .collect();
-    let mut buf: Vec<u16> = vec![0; 1024];
-    // At most two attempts: the second one uses the exact size the first call reported.
-    for _ in 0..2 {
-        let cap = u32::try_from(buf.len()).unwrap_or(u32::MAX);
-        // SAFETY: `wide` is NUL-terminated and outlives the call; `buf` is valid for `cap` u16 writes.
-        let n = unsafe { GetLongPathNameW(wide.as_ptr(), buf.as_mut_ptr(), cap) } as usize;
-        if n == 0 {
-            return None;
+    const BS: u16 = b'\\' as u16;
+    const ERROR_FILE_NOT_FOUND: i32 = 2;
+    const ERROR_PATH_NOT_FOUND: i32 = 3;
+
+    // Faithful port of `PathHelper.TryExpandShortFileName` (.NET 10), including its walk-back loop: every index it
+    // nulls out and restores is restored as `\` (not the original char), which is how .NET garbles a path whose
+    // expansion fails all the way back to the root.
+    let out: Vec<u16> = full.encode_utf16().collect();
+    let is_dev = out.len() >= 4
+        && ((out[0] == BS && out[1] == BS && (out[2] == b'.' as u16 || out[2] == b'?' as u16) && out[3] == BS)
+            || (out[0] == BS && out[1] == b'?' as u16 && out[2] == b'?' as u16 && out[3] == BS));
+    let root = root_length(full);
+    let mut root_len = full.get(..root).map_or(root, |s| s.encode_utf16().count());
+
+    let mut input: Vec<u16>;
+    let mut was_dot_device = false;
+    let mut is_dos_unc = false;
+    let root_diff: usize;
+    if is_dev {
+        input = out.clone();
+        if input[2] == b'.' as u16 {
+            was_dot_device = true;
+            input[2] = b'?' as u16;
         }
-        if n < buf.len() {
-            return Some(std::ffi::OsString::from_wide(&buf[..n]).to_string_lossy().into_owned());
+        root_diff = 0;
+    } else {
+        is_dos_unc = out.len() > 1 && out[0] == BS && out[1] == BS;
+        input = Vec::with_capacity(out.len() + 9);
+        if is_dos_unc {
+            input.extend(r"\\?\UNC\".encode_utf16());
+            input.extend_from_slice(&out[2..]);
+            root_diff = 6;
+        } else {
+            input.extend(r"\\?\".encode_utf16());
+            input.extend_from_slice(&out);
+            root_diff = 4;
         }
-        buf = vec![0; n + 1];
     }
-    None
+    root_len += root_diff;
+    let input_len = input.len();
+    // One extra element: the terminating NUL that `GetLongPathNameW` needs (not part of the logical length).
+    input.push(0);
+    let mut found = input_len as isize - 1;
+    let mut success = false;
+    let mut buf: Vec<u16> = vec![0; 260.max(out.len() + 1)];
+    let mut expanded: Vec<u16> = Vec::new();
+    while !success {
+        let cap = u32::try_from(buf.len()).unwrap_or(u32::MAX);
+        // SAFETY: `input` is NUL-terminated and outlives the call; `buf` is valid for `cap` u16 writes.
+        let n = unsafe { GetLongPathNameW(input.as_ptr(), buf.as_mut_ptr(), cap) } as usize;
+        let err = if n == 0 {
+            std::io::Error::last_os_error().raw_os_error().unwrap_or(0)
+        } else {
+            0
+        };
+        let fi = found as usize;
+        if input[fi] == 0 {
+            input[fi] = BS;
+        }
+        if n == 0 {
+            if err != ERROR_FILE_NOT_FOUND && err != ERROR_PATH_NOT_FOUND {
+                break;
+            }
+            // Not found at this index: start looking further back in the string.
+            found -= 1;
+            while found > root_len as isize && input[found as usize] != BS {
+                found -= 1;
+            }
+            if found == root_len as isize {
+                break;
+            }
+            input[found as usize] = 0;
+        } else if n > buf.len() {
+            buf.resize(n, 0);
+        } else {
+            success = true;
+            expanded = buf[..n].to_vec();
+            if (found as usize) < input_len - 1 {
+                // Partial find: put the end of the input back.
+                expanded.extend_from_slice(&input[found as usize..input_len]);
+            }
+        }
+    }
+    let mut result = if success {
+        expanded
+    } else {
+        input.truncate(input_len);
+        input
+    };
+    if was_dot_device && let Some(c) = result.get_mut(2) {
+        *c = b'.' as u16;
+    }
+    if is_dos_unc && let Some(c) = result.get_mut(6) {
+        *c = BS;
+    }
+    let tail = result.get(root_diff..)?;
+    Some(std::ffi::OsString::from_wide(tail).to_string_lossy().into_owned())
 }
 
 #[cfg(not(windows))]

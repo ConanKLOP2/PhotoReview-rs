@@ -176,3 +176,42 @@ fn directory_name_collapses_separator_runs() {
         Some("\x5c??\x5cx".to_owned())
     );
 }
+
+// Differential vs .NET 10 (PathHelper.TryExpandShortFileName): when the walk-back for a non-existent path reaches the
+// root, every index it visited is restored as `\` instead of the original char.
+#[cfg(windows)]
+#[test]
+fn get_full_path_garbles_like_dotnet_when_expansion_fails() {
+    let bs = '\x5c';
+    let s = |n: usize| bs.to_string().repeat(n);
+    // Drive that does not exist, last segment exactly `~` (trailing dots/spaces are trimmed first).
+    if !std::path::Path::new("Z:\x5c").exists() {
+        for p in ["Z:\x5c~", "Z:~", "Z:/~", "Z:\x5c~.", "Z:\x5c~ "] {
+            assert_eq!(get_full_path(p), Ok(format!("{}~", s(3))), "{p:?}");
+        }
+        // Segment longer than `~` is not garbled.
+        assert_eq!(get_full_path("Z:\x5c~a"), Ok("Z:\x5c~a".to_owned()));
+    }
+    // Device paths: the text before the last char (after the `\.\` prefix) is replaced.
+    assert_eq!(
+        get_full_path("\x5c\x5c.\x5cPROGRA~1"),
+        Ok(format!("\x5c\x5c.\x5c{}1", s(7)))
+    );
+    assert_eq!(get_full_path("\x5c\x5c.\x5ca~"), Ok(format!("\x5c\x5c.\x5c{}~", s(1))));
+    // `//?/` is not an extended prefix for .NET: it is normalized, then expanded like a device path.
+    assert_eq!(get_full_path("//?/x~1\x5cy"), Ok(format!("\x5c\x5c?\x5c{}y", s(4))));
+    // A real extended path is returned unchanged.
+    assert_eq!(
+        get_full_path("\x5c\x5c?\x5cx~1\x5cy"),
+        Ok("\x5c\x5c?\x5cx~1\x5cy".to_owned())
+    );
+}
+
+// Kills `all(' ')` -> `trim().is_empty()`: only U+0020 makes the path empty, a tab or NBSP is a relative name.
+#[test]
+fn get_full_path_tab_or_nbsp_only_is_not_empty() {
+    for p in ["\t", "\u{a0}", " \t "] {
+        assert!(get_full_path(p).is_ok(), "{p:?}");
+    }
+    assert_eq!(get_full_path("   "), Err(PathError::Argument));
+}
