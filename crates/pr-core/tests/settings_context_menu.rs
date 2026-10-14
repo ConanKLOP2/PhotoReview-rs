@@ -551,3 +551,33 @@ fn c0_controls_1c_to_1f_are_not_whitespace() {
         assert!(got.is_empty(), "{s:?} must not parse");
     }
 }
+
+// Verifier diff (repair 2): Enum.TryParse TrimStart()s only; Int32.TryParse allows trailing ASCII ws, then NULs.
+#[test]
+fn numeric_path_trailing_whitespace_rules() {
+    use pr_core::settings::context_menu::parse_hidden;
+    let parse = |s: &str| parse_hidden(&[Some(s.to_string())]);
+    for s in [
+        "3 ",
+        "3\u{a0}",
+        "3\u{3000}",
+        "3\u{85}",
+        "17 ",
+        "+1 ",
+        "007 ",
+        "-0 ",
+        "-0\0 ",
+        "+17\0\t",
+        "0\0 \0",
+    ] {
+        assert!(parse(s).is_empty(), "{s:?} must not parse");
+    }
+    for (s, id) in [
+        ("0 \0", Id::Undo),
+        ("3\t\r\n", Id::ZoomToLevel),
+        ("\u{3000}3\0\0", Id::ZoomToLevel),
+        ("Fit\u{3000}", Id::Fit),
+    ] {
+        assert_eq!(parse(s), hide(&[id]), "{s:?}");
+    }
+}

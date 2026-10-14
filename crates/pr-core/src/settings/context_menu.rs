@@ -319,14 +319,17 @@ fn trim_net(s: &str) -> &str {
 
 /// Emulates `Enum.TryParse<ContextMenuItemId>(text, ignoreCase: false)` followed by `Enum.IsDefined`.
 fn try_parse_enum(text: &str) -> Option<ContextMenuItemId> {
-    let text = trim_net(text);
+    // Enum.TryParse only TrimStart()s; the numeric path then allows trailing ASCII white space, then NULs only.
+    let text = text.trim_start_matches(is_net_whitespace);
     let first = text.chars().next()?;
     let value = if first.is_ascii_digit() || first == '+' || first == '-' {
-        // Int32.TryParse(AllowLeadingSign): .NET tolerates trailing NULs.
-        text.trim_end_matches('\0').parse::<i32>().ok()?
+        // Int32.TryParse(AllowLeadingSign): digits, optional trailing ASCII white space (0x09-0x0D, 0x20), then NULs.
+        let body = text.trim_end_matches('\0');
+        let body = body.trim_end_matches(|c: char| matches!(c, '\u{9}'..='\u{D}' | ' '));
+        body.parse::<i32>().ok()?
     } else {
         let mut value = 0i32;
-        for part in text.split(',') {
+        for part in trim_net(text).split(',') {
             let id = ContextMenuItemId::ALL.iter().find(|id| id.name() == trim_net(part))?;
             value |= *id as i32;
         }
