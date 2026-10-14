@@ -43,6 +43,8 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
 | K-39 | Done (W2-11) | `pr_core::catalog::drag_drop::parse` | `catalog_drag_drop::*` (golden `drag-drop`, 35 cases) | Drop: the first existing folder wins; otherwise the first supported existing image opens its folder at that image. Warning texts are mapped by the App layer (`DragDropWarning::catalog_key`). |
 | Q-FMT-WEBP-HEIC (drag and drop) | Done (W2-11, drop part) | `pr_core::catalog::drag_drop::parse` | `catalog_drag_drop::parse_heic_file_with_webp_heic_switch_on_is_valid`, `..._switch_off_is_invalid` | A dropped .heic or .webp opens only while the WebP/HEIC switch is on. |
+| F-23 | Done (W2-13) | `pr_core::session::writer::SessionWriter` | `session_writer::*` (29 C# twins, golden `session-writer-sequence`) | 500 ms debounce on one short-lived timer thread per window (injectable `DebounceTimer`), newest state per folder (per-folder versions; `C:\a\`/`C:\A` one key), bounded flush (2 s budget for lock + save on a `PhotoReview.SessionSave` thread), dispose waits at most 2 s in total, `Drop` = dispose. No twin: `Update_NullSkipped_DoesNotThrow`, negative-debounce rows (`Vec`/`Duration` cannot be null/negative) |
+| F-22 | Doing (W2-13: write part done) | `SessionWriter` -> `SessionStore::save` | `session_writer::*` | Debounced writes of the session state; the store itself (format, load, sweep) is W2-12 |
 
 ---
 
