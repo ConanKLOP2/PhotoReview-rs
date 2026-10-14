@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.ps1 text eol=crlf
+# Synced from the C# repo and hash-checked (tools/sync-from-csharp.ps1 -Check): keep bytes exact.
+assets/** -text
+tests/fixtures/** -text
+*.icc binary
