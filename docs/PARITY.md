@@ -39,6 +39,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | C-25 | Done (W2-07) | `pr_core::catalog::compare::{find, build_index}` | `catalog_compare::*` (golden `compare-pair`, `numbered-pattern`) | Hand-written .NET regex matchers (`\d` = Unicode Nd, `$` before final `
 `); Find/BuildIndex trailing-space-extension quirk kept |
 | C-06 | Done (W2-07, decision part) | `pr_core::file_actions::duplicates::find` | `file_actions_duplicates::*` (golden `duplicates`) | Size groups, naming rule, survivor rule; hash is a caller closure (`HashFailure`); recycling is the App's (W8) |
+| P-01 / INV-7 | Done (W2-09, validation part) | `pr_core::catalog::snapshot_validator` | `catalog_snapshot_validator::*` (golden `snapshot-validator`) | Explorer snapshot validation; W2-10 ports the two ReviewCatalog tests |
 | X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
 
 ---
