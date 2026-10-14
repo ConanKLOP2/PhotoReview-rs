@@ -105,16 +105,18 @@ pub fn canonicalize_folder(folder: &str) -> Result<String, PathError> {
 /// `get_full_path` leaves `\\?\` paths untouched, so `\\?\C:\a\..\b` becomes `C:\a\..\b` (dots NOT resolved).
 pub fn normalize_path(path: &str) -> Result<String, PathError> {
     let full = get_full_path(path)?;
-    let chars: Vec<char> = full.chars().collect();
-    if chars.len() >= 8 {
-        let prefix: String = chars[..8].iter().collect();
+    // C# indexes UTF-16 code units, so an astral char at index 4 occupies units 4..6 and unit 5 is a low surrogate.
+    let units: Vec<u16> = full.encode_utf16().collect();
+    if units.len() >= 8 {
+        let prefix = String::from_utf16_lossy(&units[..8]);
         if eq_ignore_case(&prefix, UNC_PREFIX) {
-            let rest: String = chars[8..].iter().collect();
+            let rest = String::from_utf16_lossy(&units[8..]);
             return Ok(format!("\\\\{rest}"));
         }
     }
-    if chars.len() >= 6 && chars[..4] == ['\\', '\\', '?', '\\'] && chars[5] == ':' {
-        return Ok(chars[4..].iter().collect());
+    let ext: [u16; 4] = [b'\\' as u16, b'\\' as u16, b'?' as u16, b'\\' as u16];
+    if units.len() >= 6 && units[..4] == ext && units[5] == u16::from(b':') {
+        return Ok(String::from_utf16_lossy(&units[4..]));
     }
     Ok(full)
 }
