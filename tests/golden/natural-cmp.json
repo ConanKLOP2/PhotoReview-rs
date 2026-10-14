@@ -159,6 +159,414 @@
       "compare": 1
     },
     {
+      "kind": "pair",
+      "a": "a007",
+      "b": "a7",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a7",
+      "b": "a007",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a0",
+      "b": "a00",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a00",
+      "b": "a0",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "A01",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a01",
+      "b": "A1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "A1",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a1",
+      "b": "A1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a0b",
+      "b": "ab",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "a0",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a0",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a000",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a1",
+      "b": "a000",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "img2.jpg",
+      "b": "img1000000000000.jpg",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "img1000000000000.jpg",
+      "b": "img2.jpg",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a1b",
+      "b": "a1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a1",
+      "b": "a1b",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a10",
+      "b": "a9z",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a1.5",
+      "b": "a1.05",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a1_2",
+      "b": "a1-2",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "_a",
+      "b": "a",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "_a",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "[a",
+      "b": "a",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "`a",
+      "b": "a",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "~",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "z",
+      "b": "_",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "Z",
+      "b": "_",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "z",
+      "b": "[",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "B",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "B",
+      "b": "a",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "A",
+      "b": "b",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "１２",
+      "b": "12",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a１",
+      "b": "a1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a１",
+      "b": "a2",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a١",
+      "b": "a1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a०",
+      "b": "a0",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a०1",
+      "b": "a01",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a\uD835\uDFCE",
+      "b": "a0",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a\uD835\uDFCF\uD835\uDFCE",
+      "b": "a\uD835\uDFD7",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "ǅ",
+      "b": "ǆ",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "İ",
+      "b": "i",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ı",
+      "b": "I",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ı",
+      "b": "i",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "i",
+      "b": "I",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ß",
+      "b": "ss",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ß",
+      "b": "SS",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "é",
+      "b": "é",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "é",
+      "b": "é",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "É",
+      "b": "é",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "Σ",
+      "b": "ς",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "σ",
+      "b": "ς",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "Σ",
+      "b": "σ",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "K",
+      "b": "K",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "K",
+      "b": "k",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "K",
+      "b": "K",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "ſ",
+      "b": "S",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ſ",
+      "b": "s",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ı",
+      "b": "i",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "\uE000",
+      "b": "\uD83D\uDE00",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "\uD83D\uDE00",
+      "b": "\uE000",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "\uFFFF",
+      "b": "\uD83D\uDE00",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a\uE000",
+      "b": "a\uD83D\uDE00",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "\uD801\uDC00",
+      "b": "\uD801\uDC28",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "\uD801\uDC28",
+      "b": "\uD801\uDC00",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "\uD801\uDC00",
+      "b": "\uE000",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a\u00001",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a1\u0000",
+      "b": "a1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "a\u0000",
+      "b": "a",
+      "compare": 1
+    },
+    {
       "kind": "sort",
       "input": [
         "IMG_10.jpg",
@@ -224,6 +632,89 @@
         "photo (10).jpg",
         "Photo 1.jpg",
         "photo.jpg"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "a1",
+        "a01",
+        "a001",
+        "a0",
+        "a00",
+        "a2",
+        "a10",
+        "a010",
+        "A1",
+        "A01"
+      ],
+      "sorted": [
+        "a0",
+        "a00",
+        "a001",
+        "A01",
+        "a01",
+        "A1",
+        "a1",
+        "a2",
+        "a010",
+        "a10"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "i2.jpg",
+        "I10.jpg",
+        "İ 1.jpg",
+        "ı 3.jpg",
+        "i1.jpg"
+      ],
+      "sorted": [
+        "i1.jpg",
+        "i2.jpg",
+        "I10.jpg",
+        "İ 1.jpg",
+        "ı 3.jpg"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "b",
+        "B",
+        "a",
+        "A",
+        "_",
+        "[",
+        "~",
+        "0",
+        "9",
+        "٣",
+        "３",
+        "é",
+        "é",
+        "日",
+        "\uD83D\uDE00",
+        "\uE000"
+      ],
+      "sorted": [
+        "0",
+        "9",
+        "٣",
+        "３",
+        "A",
+        "a",
+        "B",
+        "b",
+        "é",
+        "[",
+        "_",
+        "~",
+        "é",
+        "日",
+        "\uE000",
+        "\uD83D\uDE00"
       ]
     }
   ]

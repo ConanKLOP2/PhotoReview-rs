@@ -1,0 +1,959 @@
+{
+  "generator": "oracle-cs perf-report",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "name": "full-three-groups",
+      "csv_file_count": 3,
+      "groups": [
+        {
+          "key": {
+            "scenario": "S2",
+            "mode": "Preview",
+            "cond": "warm",
+            "workers": 2
+          },
+          "count": 30,
+          "incomplete": 4,
+          "first": {
+            "p50": 4.5,
+            "p95": 9.25,
+            "max": 12
+          },
+          "final": {
+            "p50": 10.04,
+            "p95": 20.05,
+            "max": 25.55
+          },
+          "rendered": {
+            "p50": 0.05,
+            "p95": 0.25,
+            "max": 100000
+          },
+          "hit_rate": 0.3333333333333333,
+          "kind_counts": [
+            [
+              "SourceMiss",
+              8
+            ],
+            [
+              "RamHit",
+              10
+            ],
+            [
+              "Thumbnail+RamHit",
+              4
+            ],
+            [
+              "DiskCacheHit",
+              8
+            ]
+          ],
+          "slowest_phase_share": [
+            [
+              "t_assign",
+              0.0125
+            ],
+            [
+              "t_decode",
+              0.62
+            ],
+            [
+              "t_render",
+              0.0125
+            ],
+            [
+              "t_input",
+              1.5
+            ]
+          ],
+          "preload_workers": 2,
+          "gc": 3.5,
+          "frame_p95": 18.25,
+          "preload_items": [
+            {
+              "slot": 0,
+              "path_id": "a1",
+              "queue_wait": 30.5,
+              "kind": "decoded",
+              "ms": 45.25
+            },
+            {
+              "slot": 1,
+              "path_id": "a2",
+              "queue_wait": 2,
+              "kind": "hit",
+              "ms": 0
+            },
+            {
+              "slot": 2,
+              "path_id": "a3",
+              "queue_wait": 15,
+              "kind": "decoded",
+              "ms": 12.5
+            },
+            {
+              "slot": 3,
+              "path_id": "a4",
+              "queue_wait": 7.75,
+              "kind": "decoded",
+              "ms": 80
+            },
+            {
+              "slot": 0,
+              "path_id": "a5",
+              "queue_wait": 100,
+              "kind": "skipped",
+              "ms": 999
+            }
+          ],
+          "paused": 2,
+          "cancel": 1,
+          "dispatcher": [
+            {
+              "ms": 20.5,
+              "priority": "Background",
+              "name": "SessionSave"
+            },
+            {
+              "ms": 19.5,
+              "priority": "Normal",
+              "name": "LayoutUpdate"
+            },
+            {
+              "ms": 0.15,
+              "priority": "Normal",
+              "name": "Tiny"
+            },
+            {
+              "ms": 0.1,
+              "priority": "Normal",
+              "name": "Tiny"
+            },
+            {
+              "ms": 10,
+              "priority": "Normal",
+              "name": "Tie|A"
+            },
+            {
+              "ms": 10,
+              "priority": "Normal",
+              "name": "TieB"
+            },
+            {
+              "ms": 5,
+              "priority": "Normal",
+              "name": "TieB"
+            },
+            {
+              "ms": 5,
+              "priority": "Normal",
+              "name": "TieC"
+            },
+            {
+              "ms": 5,
+              "priority": "Normal",
+              "name": "TieC"
+            },
+            {
+              "ms": 5,
+              "priority": "Normal",
+              "name": "TieC"
+            },
+            {
+              "ms": 30,
+              "priority": "Normal",
+              "name": "Big"
+            },
+            {
+              "ms": 1,
+              "priority": "Normal",
+              "name": ""
+            }
+          ],
+          "dispatcher_before": 1,
+          "dropped": 0,
+          "folder_gens": [
+            {
+              "gen": 3,
+              "t1": 120.25,
+              "t2": 1500,
+              "t3": 180.75,
+              "t3_phase": "explorerApplied"
+            },
+            {
+              "gen": 1,
+              "t1": null,
+              "t2": 250.5,
+              "t3": null,
+              "t3_phase": ""
+            },
+            {
+              "gen": 2,
+              "t2": 99.95,
+              "t3": 12,
+              "t3_phase": "explorer|Fallback"
+            },
+            {
+              "gen": 1,
+              "t2": 0.05
+            }
+          ],
+          "startup_runs": [
+            [
+              [
+                "appStartup",
+                250
+              ],
+              [
+                "servicesBuilt",
+                300
+              ],
+              [
+                "firstPresented",
+                717.5
+              ]
+            ],
+            [
+              [
+                "appStartup",
+                270
+              ],
+              [
+                "servicesBuilt",
+                280
+              ],
+              [
+                "firstPresented",
+                700
+              ]
+            ],
+            [
+              [
+                "appStartup",
+                260
+              ],
+              [
+                "servicesBuilt",
+                290
+              ],
+              [
+                "onlyHere",
+                5.25
+              ]
+            ]
+          ],
+          "rules": [
+            {
+              "rule": "R-IO",
+              "triggered": null,
+              "evidence": "0/3 SourceMiss navs have t_read",
+              "note": "No source-read timing"
+            },
+            {
+              "rule": "R-DEC",
+              "triggered": true,
+              "evidence": "avg(t_decode/finalVisual)=60.0% over 4 navs (threshold 40%)",
+              "note": null
+            },
+            {
+              "rule": "R-UI",
+              "triggered": false,
+              "evidence": "a|b\r\nc\nd\re",
+              "note": "n|o\r\nt\ne"
+            },
+            {
+              "rule": "R-PRE",
+              "triggered": false,
+              "evidence": "RamHit finalVisual P95=20.0ms (threshold ≤50ms); non-RamHit share=25.0% (threshold ≥10% for S2)",
+              "note": ""
+            },
+            {
+              "rule": "R-CONT",
+              "triggered": true,
+              "evidence": "<b>bold</b> & 'quote' \"dq\" + plus \\ back / slash `tick`",
+              "note": "café 日本 \uD83D\uDE00"
+            }
+          ]
+        },
+        {
+          "key": {
+            "scenario": "S3@F1|x",
+            "mode": "Fast",
+            "cond": "cold-app",
+            "workers": null
+          },
+          "count": 5,
+          "incomplete": 5,
+          "kind_counts": [],
+          "slowest_phase_share": [],
+          "dispatcher_before": 0,
+          "dropped": 12,
+          "rules": [
+            {
+              "rule": "R-GC",
+              "triggered": null,
+              "evidence": "No process.json/% time in GC for this group.",
+              "note": "Needs dotnet-counters (D09) or process.json (D06)."
+            }
+          ]
+        },
+        {
+          "key": {
+            "scenario": "S4",
+            "mode": "Preview",
+            "cond": "cold-os",
+            "workers": 0
+          },
+          "count": 40,
+          "incomplete": 0,
+          "first": {
+            "p50": 1,
+            "p95": 2,
+            "max": 3
+          },
+          "final": {
+            "p50": 4,
+            "p95": 5,
+            "max": 6
+          },
+          "rendered": {
+            "p50": 7,
+            "p95": 8,
+            "max": 9
+          },
+          "hit_rate": 1,
+          "kind_counts": [
+            [
+              "RamHit",
+              40
+            ]
+          ],
+          "slowest_phase_share": [
+            [
+              "t_assign",
+              0.1
+            ]
+          ],
+          "preload_workers": 0,
+          "gc": 0,
+          "frame_p95": 0,
+          "rules": []
+        }
+      ],
+      "kind": "report",
+      "markdown": "# Perf analyze summary\r\n\r\n- perf-*.csv files: 3\r\n- Groups (scenario/mode/cond/workers): 3\r\n- WARNING: S3@F1\\|x/Fast/cold-app/workers=?: dropped 12 events (listener queue overflow); percentiles and counts for this group are incomplete\r\n\r\n## Navigation groups (scenario/mode/cond/workers)\r\n\r\n| Group | count | incomplete | first P50 | first P95 | first max | final P50 | final P95 | final max | renderedFrame P50 | renderedFrame P95 | renderedFrame max | hit rate | notes |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|\r\n| S2/Preview/warm/workers=2 | 30 | 4 | 4.5 | 9.2 | 12.0 | 10.0 | 20.1 | 25.6 | 0.1 | 0.2 | 100000.0 | 33.3% |  |\r\n| S3@F1\\|x/Fast/cold-app/workers=? | 5 | 5 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N<20 |\r\n| S4/Preview/cold-os/workers=0 | 40 | 0 | 1.0 | 2.0 | 3.0 | 4.0 | 5.0 | 6.0 | 7.0 | 8.0 | 9.0 | 100.0% |  |\r\n\r\n## Breakdown by kind\r\n\r\n| Group | kind | count |\r\n|---|---|---:|\r\n| S2/Preview/warm/workers=2 | RamHit | 10 |\r\n| S2/Preview/warm/workers=2 | SourceMiss | 8 |\r\n| S2/Preview/warm/workers=2 | DiskCacheHit | 8 |\r\n| S2/Preview/warm/workers=2 | Thumbnail+RamHit | 4 |\r\n| S4/Preview/cold-os/workers=0 | RamHit | 40 |\r\n\r\n## Phase share in the slowest 10% of navigations (mean t_x/finalVisual)\r\n\r\n| Group | phase | share |\r\n|---|---|---:|\r\n| S2/Preview/warm/workers=2 | t_input | 150.0% |\r\n| S2/Preview/warm/workers=2 | t_decode | 62.0% |\r\n| S2/Preview/warm/workers=2 | t_assign | 1.2% |\r\n| S2/Preview/warm/workers=2 | t_render | 1.2% |\r\n| S4/Preview/cold-os/workers=0 | t_assign | 10.0% |\r\n\r\n## Preload\r\n\r\n| Group | worker | items | paused | cancel | queueWait P50 | queueWait P95 | decode P50 | decode P95 |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\r\n| S2/Preview/warm/workers=2 | 2 | 5 | 2 | 1 | 15.0 | 100.0 | 45.2 | 80.0 |\r\n| S3@F1\\|x/Fast/cold-app/workers=? | ? | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n| S4/Preview/cold-os/workers=0 | 0 | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n\r\n## Dispatcher (>16ms)\r\n\r\nDispatcherLongOp before the first ShowStart/Folder(start) of each file is excluded (e.g. --perf-session builds the WPF window ~700 ms before the scenario starts — D06).\r\n\r\n| Group | count | (excluded before start) | total ms | top 5 names |\r\n|---|---:|---:|---:|---|\r\n| S2/Preview/warm/workers=2 | 12 | 1 | 111.2 | Big×1 (30.0ms); SessionSave×1 (20.5ms); LayoutUpdate×1 (19.5ms); TieB×2 (15.0ms); TieC×3 (15.0ms) |\r\n| S3@F1\\|x/Fast/cold-app/workers=? | 0 | 0 | 0.0 |  |\r\n| S4/Preview/cold-os/workers=0 | 0 | 0 | 0.0 |  |\r\n\r\n## Folder (T0..T3)\r\n\r\n| Group | gen | T1 catalogReady | T2 (T0->first present) | T3 phase | T3 |\r\n|---|---:|---:|---:|---|---:|\r\n| S2/Preview/warm/workers=2 | 1 | N/A | 250.5 |  | N/A |\r\n| S2/Preview/warm/workers=2 | 1 | N/A | 0.1 |  | N/A |\r\n| S2/Preview/warm/workers=2 | 2 | N/A | 100.0 | explorer\\|Fallback | 12.0 |\r\n| S2/Preview/warm/workers=2 | 3 | 120.2 | 1500.0 | explorerApplied | 180.8 |\r\n\r\n## Startup (ms since process start, median across runs)\r\n\r\n| Group | phase | median | min | max | N |\r\n|---|---|---:|---:|---:|---:|\r\n| S2/Preview/warm/workers=2 | onlyHere | 5.2 | 5.2 | 5.2 | 1 |\r\n| S2/Preview/warm/workers=2 | appStartup | 260.0 | 250.0 | 270.0 | 3 |\r\n| S2/Preview/warm/workers=2 | servicesBuilt | 290.0 | 280.0 | 300.0 | 3 |\r\n| S2/Preview/warm/workers=2 | firstPresented | 708.8 | 700.0 | 717.5 | 2 |\r\n\r\n## Decision rules (rules.json)\r\n\r\n| Group | Rule | Triggered | Evidence | Notes |\r\n|---|---|---|---|---|\r\n| S2/Preview/warm/workers=2 | R-IO | N/A | 0/3 SourceMiss navs have t_read | No source-read timing |\r\n| S2/Preview/warm/workers=2 | R-DEC | yes | avg(t_decode/finalVisual)=60.0% over 4 navs (threshold 40%) |  |\r\n| S2/Preview/warm/workers=2 | R-UI | no | a\\|b  c d e | n\\|o  t e |\r\n| S2/Preview/warm/workers=2 | R-PRE | no | RamHit finalVisual P95=20.0ms (threshold ≤50ms); non-RamHit share=25.0% (threshold ≥10% for S2) |  |\r\n| S2/Preview/warm/workers=2 | R-CONT | yes | <b>bold</b> & 'quote' \"dq\" + plus \\ back / slash `tick` | café 日本 \uD83D\uDE00 |\r\n| S3@F1\\|x/Fast/cold-app/workers=? | R-GC | N/A | No process.json/% time in GC for this group. | Needs dotnet-counters (D09) or process.json (D06). |\r\n",
+      "json": "{\r\n  \"csvFileCount\": 3,\r\n  \"groups\": [\r\n    {\r\n      \"scenario\": \"S2\",\r\n      \"mode\": \"Preview\",\r\n      \"cond\": \"warm\",\r\n      \"preloadWorkers\": 2,\r\n      \"count\": 30,\r\n      \"incomplete\": 4,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": 4.5,\r\n        \"p95\": 9.25,\r\n        \"max\": 12\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": 10.04,\r\n        \"p95\": 20.05,\r\n        \"max\": 25.55\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": 0.05,\r\n        \"p95\": 0.25,\r\n        \"max\": 100000\r\n      },\r\n      \"hitRate\": 0.3333333333333333,\r\n      \"kindCounts\": {\r\n        \"SourceMiss\": 8,\r\n        \"RamHit\": 10,\r\n        \"Thumbnail\\u002BRamHit\": 4,\r\n        \"DiskCacheHit\": 8\r\n      },\r\n      \"slowestDecilePhaseShare\": {\r\n        \"t_assign\": 0.0125,\r\n        \"t_decode\": 0.62,\r\n        \"t_render\": 0.0125,\r\n        \"t_input\": 1.5\r\n      },\r\n      \"preload\": {\r\n        \"workers\": 2,\r\n        \"items\": 5,\r\n        \"pausedCount\": 2,\r\n        \"cancelCount\": 1\r\n      },\r\n      \"dispatcherLongOpCount\": 12,\r\n      \"dispatcherLongOpsBeforeStartCount\": 1,\r\n      \"gcTimePercent\": 3.5,\r\n      \"frameTimeP95Ms\": 18.25,\r\n      \"folder\": [\r\n        {\r\n          \"gen\": 3,\r\n          \"t1CatalogReadyMs\": 120.25,\r\n          \"t2Ms\": 1500,\r\n          \"t3Phase\": \"explorerApplied\",\r\n          \"t3Ms\": 180.75\r\n        },\r\n        {\r\n          \"gen\": 1,\r\n          \"t1CatalogReadyMs\": null,\r\n          \"t2Ms\": 250.5,\r\n          \"t3Phase\": \"\",\r\n          \"t3Ms\": null\r\n        },\r\n        {\r\n          \"gen\": 2,\r\n          \"t1CatalogReadyMs\": null,\r\n          \"t2Ms\": 99.95,\r\n          \"t3Phase\": \"explorer|Fallback\",\r\n          \"t3Ms\": 12\r\n        },\r\n        {\r\n          \"gen\": 1,\r\n          \"t1CatalogReadyMs\": null,\r\n          \"t2Ms\": 0.05,\r\n          \"t3Phase\": \"\",\r\n          \"t3Ms\": null\r\n        }\r\n      ],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"onlyHere\",\r\n          \"median\": 5.25,\r\n          \"min\": 5.25,\r\n          \"max\": 5.25,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"appStartup\",\r\n          \"median\": 260,\r\n          \"min\": 250,\r\n          \"max\": 270,\r\n          \"count\": 3\r\n        },\r\n        {\r\n          \"phase\": \"servicesBuilt\",\r\n          \"median\": 290,\r\n          \"min\": 280,\r\n          \"max\": 300,\r\n          \"count\": 3\r\n        },\r\n        {\r\n          \"phase\": \"firstPresented\",\r\n          \"median\": 708.75,\r\n          \"min\": 700,\r\n          \"max\": 717.5,\r\n          \"count\": 2\r\n        }\r\n      ],\r\n      \"rules\": [\r\n        {\r\n          \"rule\": \"R-IO\",\r\n          \"triggered\": null,\r\n          \"evidence\": \"0/3 SourceMiss navs have t_read\",\r\n          \"note\": \"No source-read timing\"\r\n        },\r\n        {\r\n          \"rule\": \"R-DEC\",\r\n          \"triggered\": true,\r\n          \"evidence\": \"avg(t_decode/finalVisual)=60.0% over 4 navs (threshold 40%)\",\r\n          \"note\": null\r\n        },\r\n        {\r\n          \"rule\": \"R-UI\",\r\n          \"triggered\": false,\r\n          \"evidence\": \"a|b\\r\\nc\\nd\\re\",\r\n          \"note\": \"n|o\\r\\nt\\ne\"\r\n        },\r\n        {\r\n          \"rule\": \"R-PRE\",\r\n          \"triggered\": false,\r\n          \"evidence\": \"RamHit finalVisual P95=20.0ms (threshold \\u226450ms); non-RamHit share=25.0% (threshold \\u226510% for S2)\",\r\n          \"note\": \"\"\r\n        },\r\n        {\r\n          \"rule\": \"R-CONT\",\r\n          \"triggered\": true,\r\n          \"evidence\": \"\\u003Cb\\u003Ebold\\u003C/b\\u003E \\u0026 \\u0027quote\\u0027 \\u0022dq\\u0022 \\u002B plus \\\\ back / slash \\u0060tick\\u0060\",\r\n          \"note\": \"caf\\u00E9 \\u65E5\\u672C \\uD83D\\uDE00\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"scenario\": \"S3@F1|x\",\r\n      \"mode\": \"Fast\",\r\n      \"cond\": \"cold-app\",\r\n      \"preloadWorkers\": null,\r\n      \"count\": 5,\r\n      \"incomplete\": 5,\r\n      \"lowSampleWarning\": true,\r\n      \"droppedRows\": 12,\r\n      \"firstVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"hitRate\": null,\r\n      \"kindCounts\": {},\r\n      \"slowestDecilePhaseShare\": {},\r\n      \"preload\": {\r\n        \"workers\": null,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 0,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [],\r\n      \"startup\": [],\r\n      \"rules\": [\r\n        {\r\n          \"rule\": \"R-GC\",\r\n          \"triggered\": null,\r\n          \"evidence\": \"No process.json/% time in GC for this group.\",\r\n          \"note\": \"Needs dotnet-counters (D09) or process.json (D06).\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"scenario\": \"S4\",\r\n      \"mode\": \"Preview\",\r\n      \"cond\": \"cold-os\",\r\n      \"preloadWorkers\": 0,\r\n      \"count\": 40,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": 1,\r\n        \"p95\": 2,\r\n        \"max\": 3\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": 4,\r\n        \"p95\": 5,\r\n        \"max\": 6\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": 7,\r\n        \"p95\": 8,\r\n        \"max\": 9\r\n      },\r\n      \"hitRate\": 1,\r\n      \"kindCounts\": {\r\n        \"RamHit\": 40\r\n      },\r\n      \"slowestDecilePhaseShare\": {\r\n        \"t_assign\": 0.1\r\n      },\r\n      \"preload\": {\r\n        \"workers\": 0,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 0,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": 0,\r\n      \"frameTimeP95Ms\": 0,\r\n      \"folder\": [],\r\n      \"startup\": [],\r\n      \"rules\": []\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "name": "no-groups",
+      "csv_file_count": 0,
+      "groups": [],
+      "kind": "report",
+      "markdown": "# Perf analyze summary\r\n\r\n- perf-*.csv files: 0\r\n- Groups (scenario/mode/cond/workers): 0\r\n\r\n## Navigation groups (scenario/mode/cond/workers)\r\n\r\n| Group | count | incomplete | first P50 | first P95 | first max | final P50 | final P95 | final max | renderedFrame P50 | renderedFrame P95 | renderedFrame max | hit rate | notes |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|\r\n\r\n## Breakdown by kind\r\n\r\n| Group | kind | count |\r\n|---|---|---:|\r\n\r\n## Phase share in the slowest 10% of navigations (mean t_x/finalVisual)\r\n\r\n| Group | phase | share |\r\n|---|---|---:|\r\n\r\n## Preload\r\n\r\n| Group | worker | items | paused | cancel | queueWait P50 | queueWait P95 | decode P50 | decode P95 |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\r\n\r\n## Dispatcher (>16ms)\r\n\r\nDispatcherLongOp before the first ShowStart/Folder(start) of each file is excluded (e.g. --perf-session builds the WPF window ~700 ms before the scenario starts — D06).\r\n\r\n| Group | count | (excluded before start) | total ms | top 5 names |\r\n|---|---:|---:|---:|---|\r\n\r\n## Folder (T0..T3)\r\n\r\n| Group | gen | T1 catalogReady | T2 (T0->first present) | T3 phase | T3 |\r\n|---|---:|---:|---:|---|---:|\r\n\r\n## Startup (ms since process start, median across runs)\r\n\r\n| Group | phase | median | min | max | N |\r\n|---|---|---:|---:|---:|---:|\r\n\r\n## Decision rules (rules.json)\r\n\r\n| Group | Rule | Triggered | Evidence | Notes |\r\n|---|---|---|---|---|\r\n",
+      "json": "{\r\n  \"csvFileCount\": 0,\r\n  \"groups\": []\r\n}"
+    },
+    {
+      "name": "non-finite-and-extreme-numbers",
+      "csv_file_count": 1,
+      "groups": [
+        {
+          "key": {
+            "scenario": "S2",
+            "mode": "Preview",
+            "cond": "warm",
+            "workers": 1
+          },
+          "count": 25,
+          "incomplete": 0,
+          "first": {
+            "p50": "Infinity",
+            "p95": "-Infinity",
+            "max": "NaN"
+          },
+          "final": {
+            "p50": 1e21,
+            "p95": 1e-7,
+            "max": -0.0
+          },
+          "rendered": {
+            "p50": 123456789.12345679,
+            "p95": 0.30000000000000004,
+            "max": 1e15
+          },
+          "hit_rate": "Infinity",
+          "kind_counts": [
+            [
+              "A",
+              2147483647
+            ]
+          ],
+          "slowest_phase_share": [
+            [
+              "t_a",
+              "NaN"
+            ],
+            [
+              "t_b",
+              "Infinity"
+            ],
+            [
+              "t_c",
+              1e-5
+            ],
+            [
+              "t_d",
+              100000000000000000000
+            ],
+            [
+              "t_e",
+              0.1
+            ],
+            [
+              "t_f",
+              4.35
+            ]
+          ],
+          "preload_workers": -3,
+          "gc": "NaN",
+          "frame_p95": "Infinity",
+          "preload_items": [
+            {
+              "slot": 0,
+              "path_id": "x",
+              "queue_wait": "Infinity",
+              "kind": "decoded",
+              "ms": "NaN"
+            },
+            {
+              "slot": 0,
+              "path_id": "x",
+              "queue_wait": 1.25,
+              "kind": "decoded",
+              "ms": 0.125
+            }
+          ],
+          "dispatcher": [
+            {
+              "ms": 1e300,
+              "priority": "p",
+              "name": "huge"
+            },
+            {
+              "ms": 1e300,
+              "priority": "p",
+              "name": "huge"
+            }
+          ],
+          "folder_gens": [
+            {
+              "gen": 9223372036854775807,
+              "t1": 0.04,
+              "t2": 1e21,
+              "t3": -0.04,
+              "t3_phase": "p"
+            }
+          ],
+          "startup_runs": [
+            [
+              [
+                "p1",
+                0.05
+              ],
+              [
+                "p2",
+                1e21
+              ],
+              [
+                "p3",
+                4.35
+              ],
+              [
+                "p4",
+                -0.0
+              ]
+            ]
+          ],
+          "dropped": 9223372036854775807,
+          "rules": [
+            {
+              "rule": "R-X",
+              "triggered": true,
+              "evidence": "e",
+              "note": "n"
+            }
+          ]
+        }
+      ],
+      "kind": "report",
+      "markdown": "# Perf analyze summary\r\n\r\n- perf-*.csv files: 1\r\n- Groups (scenario/mode/cond/workers): 1\r\n- WARNING: S2/Preview/warm/workers=1: dropped 9223372036854775807 events (listener queue overflow); percentiles and counts for this group are incomplete\r\n\r\n## Navigation groups (scenario/mode/cond/workers)\r\n\r\n| Group | count | incomplete | first P50 | first P95 | first max | final P50 | final P95 | final max | renderedFrame P50 | renderedFrame P95 | renderedFrame max | hit rate | notes |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|\r\n| S2/Preview/warm/workers=1 | 25 | 0 | Infinity | -Infinity | N/A | 1000000000000000000000.0 | 0.0 | -0.0 | 123456789.1 | 0.3 | 1000000000000000.0 | Infinity% |  |\r\n\r\n## Breakdown by kind\r\n\r\n| Group | kind | count |\r\n|---|---|---:|\r\n| S2/Preview/warm/workers=1 | A | 2147483647 |\r\n\r\n## Phase share in the slowest 10% of navigations (mean t_x/finalVisual)\r\n\r\n| Group | phase | share |\r\n|---|---|---:|\r\n| S2/Preview/warm/workers=1 | t_b | Infinity% |\r\n| S2/Preview/warm/workers=1 | t_d | 10000000000000000000000.0% |\r\n| S2/Preview/warm/workers=1 | t_f | 435.0% |\r\n| S2/Preview/warm/workers=1 | t_e | 10.0% |\r\n| S2/Preview/warm/workers=1 | t_c | 0.0% |\r\n| S2/Preview/warm/workers=1 | t_a | N/A |\r\n\r\n## Preload\r\n\r\n| Group | worker | items | paused | cancel | queueWait P50 | queueWait P95 | decode P50 | decode P95 |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\r\n| S2/Preview/warm/workers=1 | -3 | 2 | 0 | 0 | 1.2 | Infinity | N/A | 0.1 |\r\n\r\n## Dispatcher (>16ms)\r\n\r\nDispatcherLongOp before the first ShowStart/Folder(start) of each file is excluded (e.g. --perf-session builds the WPF window ~700 ms before the scenario starts — D06).\r\n\r\n| Group | count | (excluded before start) | total ms | top 5 names |\r\n|---|---:|---:|---:|---|\r\n| S2/Preview/warm/workers=1 | 2 | 0 | 2000000000000000105009520510408840497408937162216318309831708231023604915977816391572742750160895728087408887665767756353885046470720861151289584369573413965696774401853151607475660467589576180118737906469941599890162238077935281760149305485560284989158517577640113685676231338944392773730918801080320.0 | huge×2 (2000000000000000105009520510408840497408937162216318309831708231023604915977816391572742750160895728087408887665767756353885046470720861151289584369573413965696774401853151607475660467589576180118737906469941599890162238077935281760149305485560284989158517577640113685676231338944392773730918801080320.0ms) |\r\n\r\n## Folder (T0..T3)\r\n\r\n| Group | gen | T1 catalogReady | T2 (T0->first present) | T3 phase | T3 |\r\n|---|---:|---:|---:|---|---:|\r\n| S2/Preview/warm/workers=1 | 9223372036854775807 | 0.0 | 1000000000000000000000.0 | p | -0.0 |\r\n\r\n## Startup (ms since process start, median across runs)\r\n\r\n| Group | phase | median | min | max | N |\r\n|---|---|---:|---:|---:|---:|\r\n| S2/Preview/warm/workers=1 | p4 | -0.0 | -0.0 | -0.0 | 1 |\r\n| S2/Preview/warm/workers=1 | p1 | 0.1 | 0.1 | 0.1 | 1 |\r\n| S2/Preview/warm/workers=1 | p3 | 4.3 | 4.3 | 4.3 | 1 |\r\n| S2/Preview/warm/workers=1 | p2 | 1000000000000000000000.0 | 1000000000000000000000.0 | 1000000000000000000000.0 | 1 |\r\n\r\n## Decision rules (rules.json)\r\n\r\n| Group | Rule | Triggered | Evidence | Notes |\r\n|---|---|---|---|---|\r\n| S2/Preview/warm/workers=1 | R-X | yes | e | n |\r\n",
+      "json": "{\r\n  \"csvFileCount\": 1,\r\n  \"groups\": [\r\n    {\r\n      \"scenario\": \"S2\",\r\n      \"mode\": \"Preview\",\r\n      \"cond\": \"warm\",\r\n      \"preloadWorkers\": 1,\r\n      \"count\": 25,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 9223372036854775807,\r\n      \"firstVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": 1E+21,\r\n        \"p95\": 1E-07,\r\n        \"max\": -0\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": 123456789.12345679,\r\n        \"p95\": 0.30000000000000004,\r\n        \"max\": 1000000000000000\r\n      },\r\n      \"hitRate\": null,\r\n      \"kindCounts\": {\r\n        \"A\": 2147483647\r\n      },\r\n      \"slowestDecilePhaseShare\": {\r\n        \"t_a\": null,\r\n        \"t_b\": null,\r\n        \"t_c\": 1E-05,\r\n        \"t_d\": 1E+20,\r\n        \"t_e\": 0.1,\r\n        \"t_f\": 4.35\r\n      },\r\n      \"preload\": {\r\n        \"workers\": -3,\r\n        \"items\": 2,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 2,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [\r\n        {\r\n          \"gen\": 9223372036854775807,\r\n          \"t1CatalogReadyMs\": 0.04,\r\n          \"t2Ms\": 1E+21,\r\n          \"t3Phase\": \"p\",\r\n          \"t3Ms\": -0.04\r\n        }\r\n      ],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"p4\",\r\n          \"median\": -0,\r\n          \"min\": -0,\r\n          \"max\": -0,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"p1\",\r\n          \"median\": 0.05,\r\n          \"min\": 0.05,\r\n          \"max\": 0.05,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"p3\",\r\n          \"median\": 4.35,\r\n          \"min\": 4.35,\r\n          \"max\": 4.35,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"p2\",\r\n          \"median\": 1E+21,\r\n          \"min\": 1E+21,\r\n          \"max\": 1E+21,\r\n          \"count\": 1\r\n        }\r\n      ],\r\n      \"rules\": [\r\n        {\r\n          \"rule\": \"R-X\",\r\n          \"triggered\": true,\r\n          \"evidence\": \"e\",\r\n          \"note\": \"n\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "name": "startup-medians-and-ordering",
+      "csv_file_count": 2,
+      "groups": [
+        {
+          "key": {
+            "scenario": "S1",
+            "mode": "Fast",
+            "cond": "warm",
+            "workers": 4
+          },
+          "count": 25,
+          "incomplete": 0,
+          "first": {
+            "p50": 1,
+            "p95": 1,
+            "max": 1
+          },
+          "final": {
+            "p50": 1,
+            "p95": 1,
+            "max": 1
+          },
+          "hit_rate": 0.5,
+          "kind_counts": [
+            [
+              "B",
+              3
+            ],
+            [
+              "A",
+              3
+            ],
+            [
+              "C",
+              5
+            ],
+            [
+              "D",
+              1
+            ]
+          ],
+          "slowest_phase_share": [
+            [
+              "t_b",
+              0.5
+            ],
+            [
+              "t_a",
+              0.5
+            ],
+            [
+              "t_c",
+              0.75
+            ]
+          ],
+          "startup_runs": [
+            [
+              [
+                "A",
+                10
+              ],
+              [
+                "B",
+                20
+              ],
+              [
+                "C",
+                5
+              ]
+            ],
+            [
+              [
+                "A",
+                30
+              ],
+              [
+                "B",
+                20
+              ]
+            ],
+            [
+              [
+                "A",
+                20
+              ],
+              [
+                "D",
+                7
+              ]
+            ],
+            [
+              [
+                "E",
+                20
+              ],
+              [
+                "E2",
+                20.5
+              ],
+              [
+                "F",
+                20
+              ]
+            ]
+          ]
+        },
+        {
+          "key": {
+            "scenario": "S1",
+            "mode": "Fast",
+            "cond": "warm",
+            "workers": 10
+          },
+          "count": 25,
+          "incomplete": 0,
+          "startup_runs": [
+            [
+              [
+                "A",
+                10
+              ],
+              [
+                "B",
+                30
+              ]
+            ],
+            [
+              [
+                "A",
+                30
+              ],
+              [
+                "B",
+                10
+              ]
+            ]
+          ]
+        },
+        {
+          "key": {
+            "scenario": "S1",
+            "mode": "Fast",
+            "cond": "warm",
+            "workers": 3
+          },
+          "count": 1,
+          "incomplete": 0,
+          "startup_runs": [
+            [
+              [
+                "only",
+                1.5
+              ]
+            ]
+          ]
+        }
+      ],
+      "kind": "report",
+      "markdown": "# Perf analyze summary\r\n\r\n- perf-*.csv files: 2\r\n- Groups (scenario/mode/cond/workers): 3\r\n\r\n## Navigation groups (scenario/mode/cond/workers)\r\n\r\n| Group | count | incomplete | first P50 | first P95 | first max | final P50 | final P95 | final max | renderedFrame P50 | renderedFrame P95 | renderedFrame max | hit rate | notes |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|\r\n| S1/Fast/warm/workers=4 | 25 | 0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | N/A | N/A | N/A | 50.0% |  |\r\n| S1/Fast/warm/workers=10 | 25 | 0 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |  |\r\n| S1/Fast/warm/workers=3 | 1 | 0 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N<20 |\r\n\r\n## Breakdown by kind\r\n\r\n| Group | kind | count |\r\n|---|---|---:|\r\n| S1/Fast/warm/workers=4 | C | 5 |\r\n| S1/Fast/warm/workers=4 | B | 3 |\r\n| S1/Fast/warm/workers=4 | A | 3 |\r\n| S1/Fast/warm/workers=4 | D | 1 |\r\n\r\n## Phase share in the slowest 10% of navigations (mean t_x/finalVisual)\r\n\r\n| Group | phase | share |\r\n|---|---|---:|\r\n| S1/Fast/warm/workers=4 | t_c | 75.0% |\r\n| S1/Fast/warm/workers=4 | t_b | 50.0% |\r\n| S1/Fast/warm/workers=4 | t_a | 50.0% |\r\n\r\n## Preload\r\n\r\n| Group | worker | items | paused | cancel | queueWait P50 | queueWait P95 | decode P50 | decode P95 |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\r\n| S1/Fast/warm/workers=4 | ? | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n| S1/Fast/warm/workers=10 | ? | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n| S1/Fast/warm/workers=3 | ? | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n\r\n## Dispatcher (>16ms)\r\n\r\nDispatcherLongOp before the first ShowStart/Folder(start) of each file is excluded (e.g. --perf-session builds the WPF window ~700 ms before the scenario starts — D06).\r\n\r\n| Group | count | (excluded before start) | total ms | top 5 names |\r\n|---|---:|---:|---:|---|\r\n| S1/Fast/warm/workers=4 | 0 | 0 | 0.0 |  |\r\n| S1/Fast/warm/workers=10 | 0 | 0 | 0.0 |  |\r\n| S1/Fast/warm/workers=3 | 0 | 0 | 0.0 |  |\r\n\r\n## Folder (T0..T3)\r\n\r\n| Group | gen | T1 catalogReady | T2 (T0->first present) | T3 phase | T3 |\r\n|---|---:|---:|---:|---|---:|\r\n\r\n## Startup (ms since process start, median across runs)\r\n\r\n| Group | phase | median | min | max | N |\r\n|---|---|---:|---:|---:|---:|\r\n| S1/Fast/warm/workers=4 | C | 5.0 | 5.0 | 5.0 | 1 |\r\n| S1/Fast/warm/workers=4 | D | 7.0 | 7.0 | 7.0 | 1 |\r\n| S1/Fast/warm/workers=4 | A | 20.0 | 10.0 | 30.0 | 3 |\r\n| S1/Fast/warm/workers=4 | B | 20.0 | 20.0 | 20.0 | 2 |\r\n| S1/Fast/warm/workers=4 | E | 20.0 | 20.0 | 20.0 | 1 |\r\n| S1/Fast/warm/workers=4 | F | 20.0 | 20.0 | 20.0 | 1 |\r\n| S1/Fast/warm/workers=4 | E2 | 20.5 | 20.5 | 20.5 | 1 |\r\n| S1/Fast/warm/workers=10 | A | 20.0 | 10.0 | 30.0 | 2 |\r\n| S1/Fast/warm/workers=10 | B | 20.0 | 10.0 | 30.0 | 2 |\r\n| S1/Fast/warm/workers=3 | only | 1.5 | 1.5 | 1.5 | 1 |\r\n\r\n## Decision rules (rules.json)\r\n\r\n| Group | Rule | Triggered | Evidence | Notes |\r\n|---|---|---|---|---|\r\n",
+      "json": "{\r\n  \"csvFileCount\": 2,\r\n  \"groups\": [\r\n    {\r\n      \"scenario\": \"S1\",\r\n      \"mode\": \"Fast\",\r\n      \"cond\": \"warm\",\r\n      \"preloadWorkers\": 4,\r\n      \"count\": 25,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": 1,\r\n        \"p95\": 1,\r\n        \"max\": 1\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": 1,\r\n        \"p95\": 1,\r\n        \"max\": 1\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"hitRate\": 0.5,\r\n      \"kindCounts\": {\r\n        \"B\": 3,\r\n        \"A\": 3,\r\n        \"C\": 5,\r\n        \"D\": 1\r\n      },\r\n      \"slowestDecilePhaseShare\": {\r\n        \"t_b\": 0.5,\r\n        \"t_a\": 0.5,\r\n        \"t_c\": 0.75\r\n      },\r\n      \"preload\": {\r\n        \"workers\": null,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 0,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"C\",\r\n          \"median\": 5,\r\n          \"min\": 5,\r\n          \"max\": 5,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"D\",\r\n          \"median\": 7,\r\n          \"min\": 7,\r\n          \"max\": 7,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"A\",\r\n          \"median\": 20,\r\n          \"min\": 10,\r\n          \"max\": 30,\r\n          \"count\": 3\r\n        },\r\n        {\r\n          \"phase\": \"B\",\r\n          \"median\": 20,\r\n          \"min\": 20,\r\n          \"max\": 20,\r\n          \"count\": 2\r\n        },\r\n        {\r\n          \"phase\": \"E\",\r\n          \"median\": 20,\r\n          \"min\": 20,\r\n          \"max\": 20,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"F\",\r\n          \"median\": 20,\r\n          \"min\": 20,\r\n          \"max\": 20,\r\n          \"count\": 1\r\n        },\r\n        {\r\n          \"phase\": \"E2\",\r\n          \"median\": 20.5,\r\n          \"min\": 20.5,\r\n          \"max\": 20.5,\r\n          \"count\": 1\r\n        }\r\n      ],\r\n      \"rules\": []\r\n    },\r\n    {\r\n      \"scenario\": \"S1\",\r\n      \"mode\": \"Fast\",\r\n      \"cond\": \"warm\",\r\n      \"preloadWorkers\": 10,\r\n      \"count\": 25,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"hitRate\": null,\r\n      \"kindCounts\": {},\r\n      \"slowestDecilePhaseShare\": {},\r\n      \"preload\": {\r\n        \"workers\": null,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 0,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"A\",\r\n          \"median\": 20,\r\n          \"min\": 10,\r\n          \"max\": 30,\r\n          \"count\": 2\r\n        },\r\n        {\r\n          \"phase\": \"B\",\r\n          \"median\": 20,\r\n          \"min\": 10,\r\n          \"max\": 30,\r\n          \"count\": 2\r\n        }\r\n      ],\r\n      \"rules\": []\r\n    },\r\n    {\r\n      \"scenario\": \"S1\",\r\n      \"mode\": \"Fast\",\r\n      \"cond\": \"warm\",\r\n      \"preloadWorkers\": 3,\r\n      \"count\": 1,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": true,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"hitRate\": null,\r\n      \"kindCounts\": {},\r\n      \"slowestDecilePhaseShare\": {},\r\n      \"preload\": {\r\n        \"workers\": null,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 0,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"only\",\r\n          \"median\": 1.5,\r\n          \"min\": 1.5,\r\n          \"max\": 1.5,\r\n          \"count\": 1\r\n        }\r\n      ],\r\n      \"rules\": []\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "name": "unicode-and-escapes",
+      "csv_file_count": 1,
+      "groups": [
+        {
+          "key": {
+            "scenario": "Sé日\uD83D\uDE00",
+            "mode": "M\"q'<>&+",
+            "cond": "c\\d/e",
+            "workers": 1
+          },
+          "count": 25,
+          "incomplete": 0,
+          "kind_counts": [
+            [
+              "kéy|1",
+              1
+            ],
+            [
+              "k\r\ny",
+              2
+            ]
+          ],
+          "slowest_phase_share": [
+            [
+              "té",
+              0.5
+            ]
+          ],
+          "dispatcher": [
+            {
+              "ms": 17,
+              "priority": "p",
+              "name": "né|\r\nx×"
+            }
+          ],
+          "folder_gens": [
+            {
+              "gen": 1,
+              "t3_phase": "phé×"
+            }
+          ],
+          "startup_runs": [
+            [
+              [
+                "phé|ase",
+                3
+              ]
+            ]
+          ],
+          "rules": [
+            {
+              "rule": "Ré|1",
+              "triggered": false,
+              "evidence": "≤≥× “q” \u0000\u001F\u007F\u0080\u2028\u2029\uFEFF",
+              "note": "line1\nline2\ttab\u000B\f"
+            }
+          ]
+        }
+      ],
+      "kind": "report",
+      "markdown": "# Perf analyze summary\r\n\r\n- perf-*.csv files: 1\r\n- Groups (scenario/mode/cond/workers): 1\r\n\r\n## Navigation groups (scenario/mode/cond/workers)\r\n\r\n| Group | count | incomplete | first P50 | first P95 | first max | final P50 | final P95 | final max | renderedFrame P50 | renderedFrame P95 | renderedFrame max | hit rate | notes |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | 25 | 0 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |  |\r\n\r\n## Breakdown by kind\r\n\r\n| Group | kind | count |\r\n|---|---|---:|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | k  y | 2 |\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | kéy\\|1 | 1 |\r\n\r\n## Phase share in the slowest 10% of navigations (mean t_x/finalVisual)\r\n\r\n| Group | phase | share |\r\n|---|---|---:|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | té | 50.0% |\r\n\r\n## Preload\r\n\r\n| Group | worker | items | paused | cancel | queueWait P50 | queueWait P95 | decode P50 | decode P95 |\r\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | ? | 0 | 0 | 0 | N/A | N/A | N/A | N/A |\r\n\r\n## Dispatcher (>16ms)\r\n\r\nDispatcherLongOp before the first ShowStart/Folder(start) of each file is excluded (e.g. --perf-session builds the WPF window ~700 ms before the scenario starts — D06).\r\n\r\n| Group | count | (excluded before start) | total ms | top 5 names |\r\n|---|---:|---:|---:|---|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | 1 | 0 | 17.0 | né\\|  x××1 (17.0ms) |\r\n\r\n## Folder (T0..T3)\r\n\r\n| Group | gen | T1 catalogReady | T2 (T0->first present) | T3 phase | T3 |\r\n|---|---:|---:|---:|---|---:|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | 1 | N/A | N/A | phé× | N/A |\r\n\r\n## Startup (ms since process start, median across runs)\r\n\r\n| Group | phase | median | min | max | N |\r\n|---|---|---:|---:|---:|---:|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | phé\\|ase | 3.0 | 3.0 | 3.0 | 1 |\r\n\r\n## Decision rules (rules.json)\r\n\r\n| Group | Rule | Triggered | Evidence | Notes |\r\n|---|---|---|---|---|\r\n| Sé日\uD83D\uDE00/M\"q'<>&+/c\\d/e/workers=1 | Ré\\|1 | no | ≤≥× “q” \u0000\u001F\u007F\u0080\u2028\u2029\uFEFF | line1 line2\ttab\u000B\f |\r\n",
+      "json": "{\r\n  \"csvFileCount\": 1,\r\n  \"groups\": [\r\n    {\r\n      \"scenario\": \"S\\u00E9\\u65E5\\uD83D\\uDE00\",\r\n      \"mode\": \"M\\u0022q\\u0027\\u003C\\u003E\\u0026\\u002B\",\r\n      \"cond\": \"c\\\\d/e\",\r\n      \"preloadWorkers\": 1,\r\n      \"count\": 25,\r\n      \"incomplete\": 0,\r\n      \"lowSampleWarning\": false,\r\n      \"droppedRows\": 0,\r\n      \"firstVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"finalVisualMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"renderedFrameMs\": {\r\n        \"p50\": null,\r\n        \"p95\": null,\r\n        \"max\": null\r\n      },\r\n      \"hitRate\": null,\r\n      \"kindCounts\": {\r\n        \"k\\u00E9y|1\": 1,\r\n        \"k\\r\\ny\": 2\r\n      },\r\n      \"slowestDecilePhaseShare\": {\r\n        \"t\\u00E9\": 0.5\r\n      },\r\n      \"preload\": {\r\n        \"workers\": null,\r\n        \"items\": 0,\r\n        \"pausedCount\": 0,\r\n        \"cancelCount\": 0\r\n      },\r\n      \"dispatcherLongOpCount\": 1,\r\n      \"dispatcherLongOpsBeforeStartCount\": 0,\r\n      \"gcTimePercent\": null,\r\n      \"frameTimeP95Ms\": null,\r\n      \"folder\": [\r\n        {\r\n          \"gen\": 1,\r\n          \"t1CatalogReadyMs\": null,\r\n          \"t2Ms\": null,\r\n          \"t3Phase\": \"ph\\u00E9\\u00D7\",\r\n          \"t3Ms\": null\r\n        }\r\n      ],\r\n      \"startup\": [\r\n        {\r\n          \"phase\": \"ph\\u00E9|ase\",\r\n          \"median\": 3,\r\n          \"min\": 3,\r\n          \"max\": 3,\r\n          \"count\": 1\r\n        }\r\n      ],\r\n      \"rules\": [\r\n        {\r\n          \"rule\": \"R\\u00E9|1\",\r\n          \"triggered\": false,\r\n          \"evidence\": \"\\u2264\\u2265\\u00D7 \\u201Cq\\u201D \\u0000\\u001F\\u007F\\u0080\\u2028\\u2029\\uFEFF\",\r\n          \"note\": \"line1\\nline2\\ttab\\u000B\\f\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "kind": "json_string",
+      "text": "",
+      "json": "\"\""
+    },
+    {
+      "kind": "json_string",
+      "text": "plain",
+      "json": "\"plain\""
+    },
+    {
+      "kind": "json_string",
+      "text": "a b",
+      "json": "\"a b\""
+    },
+    {
+      "kind": "json_string",
+      "text": "café",
+      "json": "\"caf\\u00E9\""
+    },
+    {
+      "kind": "json_string",
+      "text": "日本",
+      "json": "\"\\u65E5\\u672C\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\uD83D\uDE00",
+      "json": "\"\\uD83D\\uDE00\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u0000",
+      "json": "\"\\u0000\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u0001\u001F",
+      "json": "\"\\u0001\\u001F\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u007F",
+      "json": "\"\\u007F\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u0080",
+      "json": "\"\\u0080\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u00A0",
+      "json": "\"\\u00A0\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u2028\u2029",
+      "json": "\"\\u2028\\u2029\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\uFEFF",
+      "json": "\"\\uFEFF\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\"",
+      "json": "\"\\u0022\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\\",
+      "json": "\"\\\\\""
+    },
+    {
+      "kind": "json_string",
+      "text": "/",
+      "json": "\"/\""
+    },
+    {
+      "kind": "json_string",
+      "text": "'",
+      "json": "\"\\u0027\""
+    },
+    {
+      "kind": "json_string",
+      "text": "&",
+      "json": "\"\\u0026\""
+    },
+    {
+      "kind": "json_string",
+      "text": "<",
+      "json": "\"\\u003C\""
+    },
+    {
+      "kind": "json_string",
+      "text": ">",
+      "json": "\"\\u003E\""
+    },
+    {
+      "kind": "json_string",
+      "text": "+",
+      "json": "\"\\u002B\""
+    },
+    {
+      "kind": "json_string",
+      "text": "`",
+      "json": "\"\\u0060\""
+    },
+    {
+      "kind": "json_string",
+      "text": "=",
+      "json": "\"=\""
+    },
+    {
+      "kind": "json_string",
+      "text": "%",
+      "json": "\"%\""
+    },
+    {
+      "kind": "json_string",
+      "text": "~",
+      "json": "\"~\""
+    },
+    {
+      "kind": "json_string",
+      "text": "!",
+      "json": "\"!\""
+    },
+    {
+      "kind": "json_string",
+      "text": "#",
+      "json": "\"#\""
+    },
+    {
+      "kind": "json_string",
+      "text": "$",
+      "json": "\"$\""
+    },
+    {
+      "kind": "json_string",
+      "text": "(",
+      "json": "\"(\""
+    },
+    {
+      "kind": "json_string",
+      "text": ")",
+      "json": "\")\""
+    },
+    {
+      "kind": "json_string",
+      "text": "*",
+      "json": "\"*\""
+    },
+    {
+      "kind": "json_string",
+      "text": ",",
+      "json": "\",\""
+    },
+    {
+      "kind": "json_string",
+      "text": "-",
+      "json": "\"-\""
+    },
+    {
+      "kind": "json_string",
+      "text": ".",
+      "json": "\".\""
+    },
+    {
+      "kind": "json_string",
+      "text": ":",
+      "json": "\":\""
+    },
+    {
+      "kind": "json_string",
+      "text": ";",
+      "json": "\";\""
+    },
+    {
+      "kind": "json_string",
+      "text": "?",
+      "json": "\"?\""
+    },
+    {
+      "kind": "json_string",
+      "text": "@",
+      "json": "\"@\""
+    },
+    {
+      "kind": "json_string",
+      "text": "[",
+      "json": "\"[\""
+    },
+    {
+      "kind": "json_string",
+      "text": "]",
+      "json": "\"]\""
+    },
+    {
+      "kind": "json_string",
+      "text": "^",
+      "json": "\"^\""
+    },
+    {
+      "kind": "json_string",
+      "text": "_",
+      "json": "\"_\""
+    },
+    {
+      "kind": "json_string",
+      "text": "{",
+      "json": "\"{\""
+    },
+    {
+      "kind": "json_string",
+      "text": "|",
+      "json": "\"|\""
+    },
+    {
+      "kind": "json_string",
+      "text": "}",
+      "json": "\"}\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\b\f\n\r\t",
+      "json": "\"\\b\\f\\n\\r\\t\""
+    },
+    {
+      "kind": "json_string",
+      "text": "\u000B",
+      "json": "\"\\u000B\""
+    },
+    {
+      "kind": "json_string",
+      "text": "ASCII printable !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "json": "\"ASCII printable !\\u0022#$%\\u0026\\u0027()*\\u002B,-./0123456789:;\\u003C=\\u003E?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_\\u0060abcdefghijklmnopqrstuvwxyz{|}~\""
+    }
+  ]
+}

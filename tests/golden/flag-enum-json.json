@@ -1,0 +1,1458 @@
+{
+  "generator": "oracle-cs flag-enum-json",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"None\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"none\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"All\"",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"ALL\"",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Default\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"default\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName, Camera\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName,Camera\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"  filename ,  LENS  \"",
+      "bits": 17
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"iso , Bogus,FileName\"",
+      "bits": 33
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName, Foo\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Foo, Bar\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FolderName, FileName\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"foldername,FILESIZE\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Camera,Camera\"",
+      "bits": 8
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Camera, None\"",
+      "bits": 8
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"All, None\"",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Default, ModifiedDate\"",
+      "bits": 1018
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"   \"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\",\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\" , ,\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName,,Camera\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName | Camera\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName Camera\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"FileName;Camera\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Exposure\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Shutter\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"-0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"+0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"+3\"",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"-1\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"-512\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"00012\"",
+      "bits": 12
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1, 2\"",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1, -1\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"2, Foo\"",
+      "bits": 2
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1024\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"4096\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"16384\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"2147483647\"",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"2147483648\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"-2147483648\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"99999999999\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1.5\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1e2\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"0x10\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\\u0662\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\\u00a0Camera\\u00a0\"",
+      "bits": 8
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\\u3000Camera,\\u3000Lens\"",
+      "bits": 24
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Camera\\u0000\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1\\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1 \\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1\\u0000\\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"1\\u0000x\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"8, 1\\u0000\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\\u0131so\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"\\u0130so\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Or\\u0131ginal\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "\"Fa\\u017ft\"",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "0",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "2",
+      "bits": 2
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "3",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "4",
+      "bits": 4
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "9",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "12",
+      "bits": 12
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "506",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1023",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1024",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "4095",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "4096",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "16383",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "16384",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "65535",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "2147483647",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "2147483648",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "4294967295",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "9223372036854775807",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "9223372036854775808",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "-1",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "-512",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "-9223372036854775808",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1.5",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1.0",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "1e2",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "0e0",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "null",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "true",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "false",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "[]",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "[1,2]",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "{}",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "ExifInfoFields",
+      "token": "{\"a\":1}",
+      "bits": 506
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 0,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1,
+      "json": "FileName"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 2,
+      "json": "DateTaken"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 3,
+      "json": "FileName, DateTaken"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 4,
+      "json": "Dimensions"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 8,
+      "json": "Camera"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 9,
+      "json": "FileName, Camera"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 10,
+      "json": "DateTaken, Camera"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 16,
+      "json": "Lens"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 256,
+      "json": "ShutterSpeed"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 506,
+      "json": "DateTaken, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 512,
+      "json": "ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 513,
+      "json": "FileName, ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1023,
+      "json": "FileName, DateTaken, Dimensions, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed, ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1024,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1536,
+      "json": "ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 8192,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 16383,
+      "json": "FileName, DateTaken, Dimensions, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed, ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 16384,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 32768,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 65536,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1048576,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 1048577,
+      "json": "FileName"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": 2147483647,
+      "json": "FileName, DateTaken, Dimensions, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed, ModifiedDate"
+    },
+    {
+      "kind": "write",
+      "type": "ExifInfoFields",
+      "bits": -1,
+      "json": "FileName, DateTaken, Dimensions, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed, ModifiedDate"
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"None\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"none\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"All\"",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"ALL\"",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Default\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"default\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName, Camera\"",
+      "bits": 264
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName,Camera\"",
+      "bits": 264
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"  filename ,  LENS  \"",
+      "bits": 520
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"iso , Bogus,FileName\"",
+      "bits": 1032
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName, Foo\"",
+      "bits": 8
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Foo, Bar\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FolderName, FileName\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"foldername,FILESIZE\"",
+      "bits": 17
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Camera,Camera\"",
+      "bits": 256
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Camera, None\"",
+      "bits": 256
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"All, None\"",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Default, ModifiedDate\"",
+      "bits": 65
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"   \"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\",\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\" , ,\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName,,Camera\"",
+      "bits": 264
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName | Camera\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName Camera\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"FileName;Camera\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Exposure\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Shutter\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"-0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"+0\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"+3\"",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"-1\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"-512\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"00012\"",
+      "bits": 12
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1, 2\"",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1, -1\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"2, Foo\"",
+      "bits": 2
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1024\"",
+      "bits": 1024
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"4096\"",
+      "bits": 4096
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"16384\"",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"2147483647\"",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"2147483648\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"-2147483648\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"99999999999\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1.5\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1e2\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"0x10\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\\u0662\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\\u00a0Camera\\u00a0\"",
+      "bits": 256
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\\u3000Camera,\\u3000Lens\"",
+      "bits": 768
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Camera\\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1\\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1 \\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1\\u0000\\u0000\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"1\\u0000x\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"8, 1\\u0000\"",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\\u0131so\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"\\u0130so\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Or\\u0131ginal\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "\"Fa\\u017ft\"",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "0",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "2",
+      "bits": 2
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "3",
+      "bits": 3
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "4",
+      "bits": 4
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "9",
+      "bits": 9
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "12",
+      "bits": 12
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "506",
+      "bits": 506
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1023",
+      "bits": 1023
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1024",
+      "bits": 1024
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "4095",
+      "bits": 4095
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "4096",
+      "bits": 4096
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "16383",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "16384",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "65535",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "2147483647",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "2147483648",
+      "bits": 0
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "4294967295",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "9223372036854775807",
+      "bits": 16383
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "9223372036854775808",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "-1",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "-512",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "-9223372036854775808",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1.5",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1.0",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "1e2",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "0e0",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "null",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "true",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "false",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "[]",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "[1,2]",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "{}",
+      "bits": 1
+    },
+    {
+      "kind": "read",
+      "type": "TitleBarFields",
+      "token": "{\"a\":1}",
+      "bits": 1
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 0,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1,
+      "json": "FolderName"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 2,
+      "json": "FolderPath"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 3,
+      "json": "FolderName, FolderPath"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 4,
+      "json": "IndexCount"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 8,
+      "json": "FileName"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 9,
+      "json": "FolderName, FileName"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 10,
+      "json": "FolderPath, FileName"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 16,
+      "json": "FileSize"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 256,
+      "json": "Camera"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 506,
+      "json": "FolderPath, FileName, FileSize, Dimensions, ModifiedDate, DateTaken, Camera"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 512,
+      "json": "Lens"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 513,
+      "json": "FolderName, Lens"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1023,
+      "json": "FolderName, FolderPath, IndexCount, FileName, FileSize, Dimensions, ModifiedDate, DateTaken, Camera, Lens"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1024,
+      "json": "Iso"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1536,
+      "json": "Lens, Iso"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 8192,
+      "json": "ShutterSpeed"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 16383,
+      "json": "FolderName, FolderPath, IndexCount, FileName, FileSize, Dimensions, ModifiedDate, DateTaken, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 16384,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 32768,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 65536,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1048576,
+      "json": "None"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 1048577,
+      "json": "FolderName"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": 2147483647,
+      "json": "FolderName, FolderPath, IndexCount, FileName, FileSize, Dimensions, ModifiedDate, DateTaken, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed"
+    },
+    {
+      "kind": "write",
+      "type": "TitleBarFields",
+      "bits": -1,
+      "json": "FolderName, FolderPath, IndexCount, FileName, FileSize, Dimensions, ModifiedDate, DateTaken, Camera, Lens, Iso, FocalLength, Aperture, ShutterSpeed"
+    }
+  ]
+}

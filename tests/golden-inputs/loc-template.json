@@ -1,0 +1,12 @@
+{
+  "texts": [
+    "", "Just text.", "Hello {name}!", "{a}-{b}{c}", "{x} and {x} again", "{{literal}} {v} }}{{", "{a1}", "{ABC}", "{{}}", "{{0}}",
+    "{{{a}}}", "{{x}}", "a{b}c{d}", "{a}{b}", "{a}", "{Name}{name}", "{{", "}}", "{{{{", "}}}}", "{{{}}", "{n} files",
+    "日本語 {name} です", "😀 {name} 😀", "مرحبا {name}", "100%", "%s {x}", "line1\n{x}\nline2", "{X}{x}", "{count}/{count}",
+    "{a}{{b}}{c}", "{a}}}", "{{{a}", "x{y}", "{z}y",
+    "Unbalanced {name", "Stray } brace", "Trailing }", "Leading {", "{1x}", "{}", "{with space}", "{dot.name}", "{a{b}", "{ñ}",
+    "{x}}", "{{x}", "{ x}", "{x }", "{a_b}", "{a-b}", "}{", "{", "}", "{{{", "}}}", "{a}}", "{{a}", "{\n}", "{é}", "{٣}",
+    "{a٣}", "{Ａ}", "{a}{", "{a}}{b}", "}{a}", "{{}", "{}}", "{0}", "{_a}", "{a b}", "{a}{b", "ok {a} then }", "{{ok}} { bad }"
+  ],
+  "literal_texts": ["", "plain", "{not a placeholder", "{a} and {{b}}", "}", "{", "日本語 {x}", "😀"]
+}

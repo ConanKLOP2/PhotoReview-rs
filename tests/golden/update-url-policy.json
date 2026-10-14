@@ -1,0 +1,514 @@
+{
+  "generator": "oracle-cs update-url-policy",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/releases",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://GITHUB.com/conanklop2/photoreview/releases/latest",
+      "result": "https://github.com/conanklop2/photoreview/releases/latest"
+    },
+    {
+      "url": "HTTPS://github.com/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "  https://github.com/ConanKLOP2/PhotoReview/releases  \r\n",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases"
+    },
+    {
+      "url": "\u00A0https://github.com/ConanKLOP2/PhotoReview\u3000",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com:443/ConanKLOP2/PhotoReview/releases",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases"
+    },
+    {
+      "url": "https://github.com:0443/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com:00000000000443/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com:/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://@github.com/ConanKLOP2/PhotoReview",
+      "result": "https://@github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https:\\\\github.com/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https:/\\github.com/ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?x=1#frag",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?x=1#frag"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview#",
+      "result": "https://github.com/ConanKLOP2/PhotoReview#"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?q=a b&c=é#f g é",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?q=a%20b&c=%C3%A9#f%20g%20%C3%A9"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?q=%41%2f%zz#%41",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?q=A%2f%25zz#A"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?a=^`{|}[]!$&'()*+,;=:@~\\ \"<>%7C%5E",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?a=%5E%60%7B%7C%7D[]!$&'()*+,;=:@~%5C%20%22%3C%3E%7C%5E"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?x=%c3%a9%20%7e",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?x=%C3%A9%20~"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview?x=%e9",
+      "result": "https://github.com/ConanKLOP2/PhotoReview?x=%e9"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview#a#b",
+      "result": "https://github.com/ConanKLOP2/PhotoReview#a#b"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/./releases",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/releases/../x",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/x"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/x/..",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/x/.",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/x/"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/./PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/x/../PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com/./ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com/../ConanKLOP2/PhotoReview",
+      "result": "https://github.com/ConanKLOP2/PhotoReview"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%2e%2e/Evil",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%2e%2E/x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/.%2e/x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%2E%2E%2FEvil",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/..%2FEvil"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/..%2F..%2FEvil",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/..%2F..%2FEvil"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/..;/x",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/..;/x"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/releases/.../x",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/releases/.../x"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/a\\..\\..\\Evil",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%41",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/A"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%7Efoo",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/~foo"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%2D%2E%5F%7E%30%61%5A",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/-._~0aZ"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%2f%2F",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%2f%2F"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%5c..%5cx",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%5c..%5cx"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%7f",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%7f"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%22%3c%3e%5e%60%7b%7d",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%22%3c%3e%5e%60%7b%7d"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%c3%a9",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%C3%A9"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%e9",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%e9"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%c3%28",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%c3%28"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%C0%AE",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%C0%AE"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%f0%9f%98%80",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%F0%9F%98%80"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%25"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%zz",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%25zz"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/%E0%A4%A",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%E0%A4%25A"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/a b",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/a%20b"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/a\tb",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/a%09b"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/a\u0001b\u007Fc",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/a%01b%7Fc"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/é",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%C3%A9"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/\uD83D\uDE00",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%F0%9F%98%80"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/​",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%E2%80%8B"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/\"x\"<y>",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/%22x%22%3Cy%3E"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/!$&'()*+,;=:@[]^`{|}~",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/!$&'()*+,;=:@[]%5E%60%7B%7C%7D~"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview//releases",
+      "result": "https://github.com/ConanKLOP2/PhotoReview//releases"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview///",
+      "result": "https://github.com/ConanKLOP2/PhotoReview///"
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview\n/releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview;x/y",
+      "result": null
+    },
+    {
+      "url": "https://github.com/conanklop2/PHOTOREVIEW/RELEASES",
+      "result": "https://github.com/conanklop2/PHOTOREVIEW/RELEASES"
+    },
+    {
+      "url": "https://github.com/%43onanKLOP2/PhotoReview/x",
+      "result": "https://github.com/ConanKLOP2/PhotoReview/x"
+    },
+    {
+      "url": "https://github.com/conanklop2/%50hotoreview",
+      "result": "https://github.com/conanklop2/Photoreview"
+    },
+    {
+      "url": null,
+      "result": null
+    },
+    {
+      "url": "",
+      "result": null
+    },
+    {
+      "url": "   ",
+      "result": null
+    },
+    {
+      "url": "not a url",
+      "result": null
+    },
+    {
+      "url": "github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "//github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "http://github.com/ConanKLOP2/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "ftp://github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "file:///C:/Windows/System32/calc.exe",
+      "result": null
+    },
+    {
+      "url": "ms-settings:",
+      "result": null
+    },
+    {
+      "url": "javascript:alert(1)",
+      "result": null
+    },
+    {
+      "url": "https:/github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https:github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https:///github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com/Evil/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReviewEvil/releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/Other",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/",
+      "result": null
+    },
+    {
+      "url": "https://github.com",
+      "result": null
+    },
+    {
+      "url": "https://github.com/",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview.",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview./x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview /x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview%20/x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview%2e/x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview%2Freleases",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2%2FPhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReviewK",
+      "result": null
+    },
+    {
+      "url": "https://github.com//ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/../Evil/x",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/..",
+      "result": null
+    },
+    {
+      "url": "https://github.com/ConanKLOP2/PhotoReview/releases/../../../../x",
+      "result": null
+    },
+    {
+      "url": "https://github.com?/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com\\ConanKLOP2\\PhotoReview\\releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com\\",
+      "result": null
+    },
+    {
+      "url": "https://github.com.evil.example/ConanKLOP2/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com./ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://xn--github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://evil.example/https://github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com@evil.example/ConanKLOP2/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "https://user:pw@github.com/ConanKLOP2/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "https://:@github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://us er@github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://a@b@github.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com:8443/ConanKLOP2/PhotoReview/releases",
+      "result": null
+    },
+    {
+      "url": "https://github.com:65536/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com:443:443/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com:abc/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com:+443/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://[::1]/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://ｇithub.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github。com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github.com​/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://GİTHUB.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://git\nhub.com/ConanKLOP2/PhotoReview",
+      "result": null
+    },
+    {
+      "url": "https://github%2Ecom/ConanKLOP2/PhotoReview",
+      "result": null
+    }
+  ]
+}

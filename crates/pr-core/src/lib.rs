@@ -6,8 +6,15 @@
 
 pub mod abstractions;
 pub mod app_paths;
+pub mod caching;
 pub mod catalog;
+pub mod diagnostics;
+pub mod display;
+pub mod file_actions;
 pub mod identity;
+pub mod model;
+pub mod settings;
 pub mod sync;
 pub mod text;
 pub mod time;
+pub mod updates;

@@ -1,0 +1,356 @@
+{
+  "generator": "oracle-cs image-file-types",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "path": "photo.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "photo.JPEG",
+      "extension": ".JPEG",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "IMAGE.PNG",
+      "extension": ".PNG",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "bitmap.bmp",
+      "extension": ".bmp",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "anim.gif",
+      "extension": ".gif",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "x.tif",
+      "extension": ".tif",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "x.TIFF",
+      "extension": ".TIFF",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "document.pdf",
+      "extension": ".pdf",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "executable.exe",
+      "extension": ".exe",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo.cr2",
+      "extension": ".cr2",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.CR3",
+      "extension": ".CR3",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.nef",
+      "extension": ".nef",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.arw",
+      "extension": ".arw",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.dng",
+      "extension": ".dng",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.raf",
+      "extension": ".raf",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.orf",
+      "extension": ".orf",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.rw2",
+      "extension": ".rw2",
+      "supported": false,
+      "supported_raw_enabled": true,
+      "is_raw": true
+    },
+    {
+      "path": "photo.nrw",
+      "extension": ".nrw",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo.pef",
+      "extension": ".pef",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": " ",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "\t\n",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": null,
+      "extension": null,
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo.",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo..jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": ".jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": ".JPG",
+      "extension": ".JPG",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "..jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "a.b.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "a.jpg.txt",
+      "extension": ".txt",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "a.jpg ",
+      "extension": ".jpg ",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "C:\\dir.jpg\\file",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "C:\\dir.jpg\\file.png",
+      "extension": ".png",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "C:/dir.jpg/file",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "C:\\dir\\file.",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "C:file.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "C:.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "dir.jpg/",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "\\\\server\\share.jpg\\f",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo\u00A0.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "\u3000photo.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": " photo.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "photo.Kpg",
+      "extension": ".Kpg",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo.JPG",
+      "extension": ".JPG",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "a.ımg",
+      "extension": ".ımg",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "photo.jpg\u0000",
+      "extension": ".jpg\u0000",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    },
+    {
+      "path": "pho\u0000to.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "C:\\a\\b.cr2.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false
+    },
+    {
+      "path": "x.İpg",
+      "extension": ".İpg",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false
+    }
+  ]
+}

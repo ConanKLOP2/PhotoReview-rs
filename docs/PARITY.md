@@ -10,6 +10,8 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-datetime-json | Done | `pr_core::time::DateTimeUtc` | `golden_text_time::datetime_json_*` (golden `datetime-json`) | Every on-disk UTC timestamp (journal, session, fingerprint); .NET ticks |
 | X-ordinal-ignore-case | Done | `pr_core::text` | `golden_text_time::ordinal_ignore_case_matches_dotnet` | Table generated from .NET 10 (1422 mappings) |
 | X-abstractions | Done (traits) | `pr_core::abstractions` | per-trait unit tests; fakes in `pr-test-support` | Port of `Core/Abstractions` per R0003; `VBlankEstimator` → W1-22, `ExplorerOrderTypes` moved here from W1-07 |
+| X-benchmark-percentile | Todo (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
+| X-perf-analyzer | Todo (W1-16..21) | `pr_perf` | goldens `perf-*` | PerfAnalysis tool: CSV reader, nav, stats, rules, report, analyze; output byte-identical (CRLF) |
 
 ---
 

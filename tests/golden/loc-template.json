@@ -1,0 +1,709 @@
+{
+  "generator": "oracle-cs loc-template",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "kind": "parse",
+      "text": "",
+      "ok": true,
+      "names": [],
+      "identity_text": "",
+      "appended_text": "}}{{ {{x}} ",
+      "appended_render": "}{ {x} ",
+      "render_no_args": "",
+      "render_args": ""
+    },
+    {
+      "kind": "parse",
+      "text": "Just text.",
+      "ok": true,
+      "names": [],
+      "identity_text": "Just text.",
+      "appended_text": "Just text.}}{{ {{x}} ",
+      "appended_render": "Just text.}{ {x} ",
+      "render_no_args": "Just text.",
+      "render_args": "Just text."
+    },
+    {
+      "kind": "parse",
+      "text": "Hello {name}!",
+      "ok": true,
+      "names": [
+        "name"
+      ],
+      "identity_text": "Hello {name}!",
+      "appended_text": "Hello {name}!}}{{ {{x}} ",
+      "appended_render": "Hello <N>!}{ {x} ",
+      "render_no_args": "Hello {name}!",
+      "render_args": "Hello <N>!"
+    },
+    {
+      "kind": "parse",
+      "text": "{a}-{b}{c}",
+      "ok": true,
+      "names": [
+        "a",
+        "b",
+        "c"
+      ],
+      "identity_text": "{a}-{b}{c}",
+      "appended_text": "{a}-{b}{c}}}{{ {{x}} ",
+      "appended_render": "{a}-{b}{c}}{ {x} ",
+      "render_no_args": "{a}-{b}{c}",
+      "render_args": "{a}-{b}{c}"
+    },
+    {
+      "kind": "parse",
+      "text": "{x} and {x} again",
+      "ok": true,
+      "names": [
+        "x",
+        "x"
+      ],
+      "identity_text": "{x} and {x} again",
+      "appended_text": "{x} and {x} again}}{{ {{x}} ",
+      "appended_render": "<X> and <X> again}{ {x} ",
+      "render_no_args": "{x} and {x} again",
+      "render_args": "<X> and <X> again"
+    },
+    {
+      "kind": "parse",
+      "text": "{{literal}} {v} }}{{",
+      "ok": true,
+      "names": [
+        "v"
+      ],
+      "identity_text": "{{literal}} {v} }}{{",
+      "appended_text": "{{literal}} {v} }}{{}}{{ {{x}} ",
+      "appended_render": "{literal} {v} }{}{ {x} ",
+      "render_no_args": "{literal} {v} }{",
+      "render_args": "{literal} {v} }{"
+    },
+    {
+      "kind": "parse",
+      "text": "{a1}",
+      "ok": true,
+      "names": [
+        "a1"
+      ],
+      "identity_text": "{a1}",
+      "appended_text": "{a1}}}{{ {{x}} ",
+      "appended_render": "{a1}}{ {x} ",
+      "render_no_args": "{a1}",
+      "render_args": "{a1}"
+    },
+    {
+      "kind": "parse",
+      "text": "{ABC}",
+      "ok": true,
+      "names": [
+        "ABC"
+      ],
+      "identity_text": "{ABC}",
+      "appended_text": "{ABC}}}{{ {{x}} ",
+      "appended_render": "{ABC}}{ {x} ",
+      "render_no_args": "{ABC}",
+      "render_args": "{ABC}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{}}",
+      "ok": true,
+      "names": [],
+      "identity_text": "{{}}",
+      "appended_text": "{{}}}}{{ {{x}} ",
+      "appended_render": "{}}{ {x} ",
+      "render_no_args": "{}",
+      "render_args": "{}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{0}}",
+      "ok": true,
+      "names": [],
+      "identity_text": "{{0}}",
+      "appended_text": "{{0}}}}{{ {{x}} ",
+      "appended_render": "{0}}{ {x} ",
+      "render_no_args": "{0}",
+      "render_args": "{0}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{{a}}}",
+      "ok": true,
+      "names": [
+        "a"
+      ],
+      "identity_text": "{{{a}}}",
+      "appended_text": "{{{a}}}}}{{ {{x}} ",
+      "appended_render": "{{a}}}{ {x} ",
+      "render_no_args": "{{a}}",
+      "render_args": "{{a}}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{x}}",
+      "ok": true,
+      "names": [],
+      "identity_text": "{{x}}",
+      "appended_text": "{{x}}}}{{ {{x}} ",
+      "appended_render": "{x}}{ {x} ",
+      "render_no_args": "{x}",
+      "render_args": "{x}"
+    },
+    {
+      "kind": "parse",
+      "text": "a{b}c{d}",
+      "ok": true,
+      "names": [
+        "b",
+        "d"
+      ],
+      "identity_text": "a{b}c{d}",
+      "appended_text": "a{b}c{d}}}{{ {{x}} ",
+      "appended_render": "a{b}c{d}}{ {x} ",
+      "render_no_args": "a{b}c{d}",
+      "render_args": "a{b}c{d}"
+    },
+    {
+      "kind": "parse",
+      "text": "{a}{b}",
+      "ok": true,
+      "names": [
+        "a",
+        "b"
+      ],
+      "identity_text": "{a}{b}",
+      "appended_text": "{a}{b}}}{{ {{x}} ",
+      "appended_render": "{a}{b}}{ {x} ",
+      "render_no_args": "{a}{b}",
+      "render_args": "{a}{b}"
+    },
+    {
+      "kind": "parse",
+      "text": "{a}",
+      "ok": true,
+      "names": [
+        "a"
+      ],
+      "identity_text": "{a}",
+      "appended_text": "{a}}}{{ {{x}} ",
+      "appended_render": "{a}}{ {x} ",
+      "render_no_args": "{a}",
+      "render_args": "{a}"
+    },
+    {
+      "kind": "parse",
+      "text": "{Name}{name}",
+      "ok": true,
+      "names": [
+        "Name",
+        "name"
+      ],
+      "identity_text": "{Name}{name}",
+      "appended_text": "{Name}{name}}}{{ {{x}} ",
+      "appended_render": "{Name}<N>}{ {x} ",
+      "render_no_args": "{Name}{name}",
+      "render_args": "{Name}<N>"
+    },
+    {
+      "kind": "parse",
+      "text": "{{",
+      "ok": true,
+      "names": [],
+      "identity_text": "{{",
+      "appended_text": "{{}}{{ {{x}} ",
+      "appended_render": "{}{ {x} ",
+      "render_no_args": "{",
+      "render_args": "{"
+    },
+    {
+      "kind": "parse",
+      "text": "}}",
+      "ok": true,
+      "names": [],
+      "identity_text": "}}",
+      "appended_text": "}}}}{{ {{x}} ",
+      "appended_render": "}}{ {x} ",
+      "render_no_args": "}",
+      "render_args": "}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{{{",
+      "ok": true,
+      "names": [],
+      "identity_text": "{{{{",
+      "appended_text": "{{{{}}{{ {{x}} ",
+      "appended_render": "{{}{ {x} ",
+      "render_no_args": "{{",
+      "render_args": "{{"
+    },
+    {
+      "kind": "parse",
+      "text": "}}}}",
+      "ok": true,
+      "names": [],
+      "identity_text": "}}}}",
+      "appended_text": "}}}}}}{{ {{x}} ",
+      "appended_render": "}}}{ {x} ",
+      "render_no_args": "}}",
+      "render_args": "}}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{{}}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{n} files",
+      "ok": true,
+      "names": [
+        "n"
+      ],
+      "identity_text": "{n} files",
+      "appended_text": "{n} files}}{{ {{x}} ",
+      "appended_render": "{n} files}{ {x} ",
+      "render_no_args": "{n} files",
+      "render_args": "{n} files"
+    },
+    {
+      "kind": "parse",
+      "text": "日本語 {name} です",
+      "ok": true,
+      "names": [
+        "name"
+      ],
+      "identity_text": "日本語 {name} です",
+      "appended_text": "日本語 {name} です}}{{ {{x}} ",
+      "appended_render": "日本語 <N> です}{ {x} ",
+      "render_no_args": "日本語 {name} です",
+      "render_args": "日本語 <N> です"
+    },
+    {
+      "kind": "parse",
+      "text": "\uD83D\uDE00 {name} \uD83D\uDE00",
+      "ok": true,
+      "names": [
+        "name"
+      ],
+      "identity_text": "\uD83D\uDE00 {name} \uD83D\uDE00",
+      "appended_text": "\uD83D\uDE00 {name} \uD83D\uDE00}}{{ {{x}} ",
+      "appended_render": "\uD83D\uDE00 <N> \uD83D\uDE00}{ {x} ",
+      "render_no_args": "\uD83D\uDE00 {name} \uD83D\uDE00",
+      "render_args": "\uD83D\uDE00 <N> \uD83D\uDE00"
+    },
+    {
+      "kind": "parse",
+      "text": "مرحبا {name}",
+      "ok": true,
+      "names": [
+        "name"
+      ],
+      "identity_text": "مرحبا {name}",
+      "appended_text": "مرحبا {name}}}{{ {{x}} ",
+      "appended_render": "مرحبا <N>}{ {x} ",
+      "render_no_args": "مرحبا {name}",
+      "render_args": "مرحبا <N>"
+    },
+    {
+      "kind": "parse",
+      "text": "100%",
+      "ok": true,
+      "names": [],
+      "identity_text": "100%",
+      "appended_text": "100%}}{{ {{x}} ",
+      "appended_render": "100%}{ {x} ",
+      "render_no_args": "100%",
+      "render_args": "100%"
+    },
+    {
+      "kind": "parse",
+      "text": "%s {x}",
+      "ok": true,
+      "names": [
+        "x"
+      ],
+      "identity_text": "%s {x}",
+      "appended_text": "%s {x}}}{{ {{x}} ",
+      "appended_render": "%s <X>}{ {x} ",
+      "render_no_args": "%s {x}",
+      "render_args": "%s <X>"
+    },
+    {
+      "kind": "parse",
+      "text": "line1\n{x}\nline2",
+      "ok": true,
+      "names": [
+        "x"
+      ],
+      "identity_text": "line1\n{x}\nline2",
+      "appended_text": "line1\n{x}\nline2}}{{ {{x}} ",
+      "appended_render": "line1\n<X>\nline2}{ {x} ",
+      "render_no_args": "line1\n{x}\nline2",
+      "render_args": "line1\n<X>\nline2"
+    },
+    {
+      "kind": "parse",
+      "text": "{X}{x}",
+      "ok": true,
+      "names": [
+        "X",
+        "x"
+      ],
+      "identity_text": "{X}{x}",
+      "appended_text": "{X}{x}}}{{ {{x}} ",
+      "appended_render": "<BIG><X>}{ {x} ",
+      "render_no_args": "{X}{x}",
+      "render_args": "<BIG><X>"
+    },
+    {
+      "kind": "parse",
+      "text": "{count}/{count}",
+      "ok": true,
+      "names": [
+        "count",
+        "count"
+      ],
+      "identity_text": "{count}/{count}",
+      "appended_text": "{count}/{count}}}{{ {{x}} ",
+      "appended_render": "<C>/<C>}{ {x} ",
+      "render_no_args": "{count}/{count}",
+      "render_args": "<C>/<C>"
+    },
+    {
+      "kind": "parse",
+      "text": "{a}{{b}}{c}",
+      "ok": true,
+      "names": [
+        "a",
+        "c"
+      ],
+      "identity_text": "{a}{{b}}{c}",
+      "appended_text": "{a}{{b}}{c}}}{{ {{x}} ",
+      "appended_render": "{a}{b}{c}}{ {x} ",
+      "render_no_args": "{a}{b}{c}",
+      "render_args": "{a}{b}{c}"
+    },
+    {
+      "kind": "parse",
+      "text": "{a}}}",
+      "ok": true,
+      "names": [
+        "a"
+      ],
+      "identity_text": "{a}}}",
+      "appended_text": "{a}}}}}{{ {{x}} ",
+      "appended_render": "{a}}}{ {x} ",
+      "render_no_args": "{a}}",
+      "render_args": "{a}}"
+    },
+    {
+      "kind": "parse",
+      "text": "{{{a}",
+      "ok": true,
+      "names": [
+        "a"
+      ],
+      "identity_text": "{{{a}",
+      "appended_text": "{{{a}}}{{ {{x}} ",
+      "appended_render": "{{a}}{ {x} ",
+      "render_no_args": "{{a}",
+      "render_args": "{{a}"
+    },
+    {
+      "kind": "parse",
+      "text": "x{y}",
+      "ok": true,
+      "names": [
+        "y"
+      ],
+      "identity_text": "x{y}",
+      "appended_text": "x{y}}}{{ {{x}} ",
+      "appended_render": "x{y}}{ {x} ",
+      "render_no_args": "x{y}",
+      "render_args": "x{y}"
+    },
+    {
+      "kind": "parse",
+      "text": "{z}y",
+      "ok": true,
+      "names": [
+        "z"
+      ],
+      "identity_text": "{z}y",
+      "appended_text": "{z}y}}{{ {{x}} ",
+      "appended_render": "{z}y}{ {x} ",
+      "render_no_args": "{z}y",
+      "render_args": "{z}y"
+    },
+    {
+      "kind": "parse",
+      "text": "Unbalanced {name",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "Stray } brace",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "Trailing }",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "Leading {",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{1x}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{with space}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{dot.name}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a{b}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{ñ}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{x}}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{{x}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{ x}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{x }",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a_b}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a-b}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "}{",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{{{",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "}}}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a}}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{{a}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{\n}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{é}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{٣}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a٣}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{Ａ}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a}{",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a}}{b}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "}{a}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{{}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{}}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{0}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{_a}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a b}",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{a}{b",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "ok {a} then }",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "text": "{{ok}} { bad }",
+      "ok": false
+    },
+    {
+      "kind": "literal",
+      "text": "",
+      "template_text": "",
+      "names": [],
+      "render_args": "",
+      "identity_text": "",
+      "appended_text": "}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "plain",
+      "template_text": "plain",
+      "names": [],
+      "render_args": "plain",
+      "identity_text": "plain",
+      "appended_text": "plain}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "{not a placeholder",
+      "template_text": "{not a placeholder",
+      "names": [],
+      "render_args": "{not a placeholder",
+      "identity_text": "{{not a placeholder",
+      "appended_text": "{not a placeholder}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "{a} and {{b}}",
+      "template_text": "{a} and {{b}}",
+      "names": [],
+      "render_args": "{a} and {{b}}",
+      "identity_text": "{{a}} and {{{{b}}}}",
+      "appended_text": "{a} and {{b}}}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "}",
+      "template_text": "}",
+      "names": [],
+      "render_args": "}",
+      "identity_text": "}}",
+      "appended_text": "}}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "{",
+      "template_text": "{",
+      "names": [],
+      "render_args": "{",
+      "identity_text": "{{",
+      "appended_text": "{}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "日本語 {x}",
+      "template_text": "日本語 {x}",
+      "names": [],
+      "render_args": "日本語 {x}",
+      "identity_text": "日本語 {{x}}",
+      "appended_text": "日本語 {x}}}{{ {{x}} "
+    },
+    {
+      "kind": "literal",
+      "text": "\uD83D\uDE00",
+      "template_text": "\uD83D\uDE00",
+      "names": [],
+      "render_args": "\uD83D\uDE00",
+      "identity_text": "\uD83D\uDE00",
+      "appended_text": "\uD83D\uDE00}}{{ {{x}} "
+    }
+  ]
+}

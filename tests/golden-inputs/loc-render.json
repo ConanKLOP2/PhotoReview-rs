@@ -1,0 +1,53 @@
+{
+  "cultures": ["", "en-US", "de-DE", "fr-FR", "sv-SE", "ar-SA", "fa-IR", "tr-TR", "vi-VN", "ja-JP", "ar-EG", "he-IL", "nb-NO", "ps-AF"],
+  "numbers": [
+    {"type": "i64", "value": "0"}, {"type": "i64", "value": "1"}, {"type": "i64", "value": "-1"}, {"type": "i64", "value": "42"},
+    {"type": "i64", "value": "1234567"}, {"type": "i64", "value": "-1234567"},
+    {"type": "i64", "value": "9223372036854775807"}, {"type": "i64", "value": "-9223372036854775808"},
+    {"type": "u64", "value": "0"}, {"type": "u64", "value": "1234567890123"}, {"type": "u64", "value": "18446744073709551615"},
+
+    {"type": "f64", "value": "0"}, {"type": "f64", "value": "-0"}, {"type": "f64", "value": "1"}, {"type": "f64", "value": "-1"},
+    {"type": "f64", "value": "1234.5"}, {"type": "f64", "value": "-1234.5"}, {"type": "f64", "value": "0.5"}, {"type": "f64", "value": "0.1"},
+    {"type": "f64", "value": "0.30000000000000004"}, {"type": "f64", "value": "0.3333333333333333"}, {"type": "f64", "value": "3.14159"},
+    {"type": "f64", "value": "4.35"}, {"type": "f64", "value": "100"}, {"type": "f64", "value": "123456789.12345679"},
+    {"type": "f64", "value": "1e14"}, {"type": "f64", "value": "1e15"}, {"type": "f64", "value": "1e16"}, {"type": "f64", "value": "1e17"},
+    {"type": "f64", "value": "1.5e16"}, {"type": "f64", "value": "1.5e17"}, {"type": "f64", "value": "123456789012345678"},
+    {"type": "f64", "value": "1234567890123456.8"}, {"type": "f64", "value": "12345678901234568"},
+    {"type": "f64", "value": "1.2345678901234567e17"}, {"type": "f64", "value": "1e20"}, {"type": "f64", "value": "1e21"},
+    {"type": "f64", "value": "999999999999999900000"}, {"type": "f64", "value": "1e300"},
+    {"type": "f64", "value": "1.7976931348623157E+308"}, {"type": "f64", "value": "-1.7976931348623157E+308"}, {"type": "f64", "value": "5E-324"},
+    {"type": "f64", "value": "1e-4"}, {"type": "f64", "value": "1.5e-4"}, {"type": "f64", "value": "1.2345678901234567e-4"},
+    {"type": "f64", "value": "1e-5"}, {"type": "f64", "value": "1.5e-5"}, {"type": "f64", "value": "1.2345678901234568e-5"},
+    {"type": "f64", "value": "1e-7"}, {"type": "f64", "value": "-1e-7"}, {"type": "f64", "value": "-1e17"},
+    {"type": "f64", "value": "NaN"}, {"type": "f64", "value": "Infinity"}, {"type": "f64", "value": "-Infinity"},
+
+    {"type": "f32", "value": "0"}, {"type": "f32", "value": "-0"}, {"type": "f32", "value": "1234.5"}, {"type": "f32", "value": "-1234.5"},
+    {"type": "f32", "value": "0.1"}, {"type": "f32", "value": "0.3"}, {"type": "f32", "value": "3.14159"}, {"type": "f32", "value": "16777216"},
+    {"type": "f32", "value": "1e7"}, {"type": "f32", "value": "1e8"}, {"type": "f32", "value": "12345678"}, {"type": "f32", "value": "123456790"},
+    {"type": "f32", "value": "1e9"}, {"type": "f32", "value": "1.5e9"}, {"type": "f32", "value": "1.2345678e9"}, {"type": "f32", "value": "1e15"},
+    {"type": "f32", "value": "3.4028235e38"}, {"type": "f32", "value": "1e-45"}, {"type": "f32", "value": "1e-4"}, {"type": "f32", "value": "1.5e-4"},
+    {"type": "f32", "value": "1e-5"}, {"type": "f32", "value": "1.5e-5"},
+    {"type": "f32", "value": "NaN"}, {"type": "f32", "value": "Infinity"}, {"type": "f32", "value": "-Infinity"}
+  ],
+  "scenarios": [
+    {"template": "{a}", "args": [{"name": "a", "type": "str", "value": "first"}, {"name": "a", "type": "str", "value": "second"}]},
+    {"template": "{a}", "args": [{"name": "a", "type": "throw"}, {"name": "a", "type": "str", "value": "second"}]},
+    {"template": "{a}{a}", "args": [{"name": "a", "type": "throw"}]},
+    {"template": "[{a}] [{b}] [{c}]", "args": [{"name": "a", "type": "throw"}, {"name": "b", "type": "nulltostring"}, {"name": "c", "type": "i64", "value": "7"}]},
+    {"template": "{a}-{b}", "args": [{"name": "b", "type": "str", "value": "2"}]},
+    {"template": "{a}", "args": [{"name": "A", "type": "str", "value": "x"}]},
+    {"template": "[{a}]", "args": [{"name": "a", "type": "null"}]},
+    {"template": "[{a}]", "args": [{"name": "a", "type": "str", "value": ""}]},
+    {"template": "[{a}] [{b}]", "args": [{"name": "a", "type": "bool", "value": "True"}, {"name": "b", "type": "bool", "value": "False"}]},
+    {"template": "[{a}]", "args": [{"name": "a", "type": "char", "value": "x"}]},
+    {"template": "[{a}]", "args": [{"name": "a", "type": "char", "value": "é"}]},
+    {"template": "{a}", "args": [{"name": "a", "type": "str", "value": "{b}"}]},
+    {"template": "{a}{b}", "args": [{"name": "a", "type": "str", "value": "{b}"}, {"name": "b", "type": "str", "value": "X"}]},
+    {"template": "{a}", "args": [{"name": "a", "type": "str", "value": "{{x}} }"}]},
+    {"template": "just text", "args": [{"name": "a", "type": "str", "value": "unused"}]},
+    {"template": "{{a}} {a}", "args": [{"name": "a", "type": "str", "value": "v"}]},
+    {"template": "{a} {b} {c}", "args": [{"name": "c", "type": "str", "value": "3"}, {"name": "a", "type": "str", "value": "1"}, {"name": "b", "type": "str", "value": "2"}]},
+    {"template": "{count} files in {folder}", "args": [{"name": "count", "type": "i64", "value": "1234567"}, {"name": "folder", "type": "str", "value": "日本語 مرحبا 😀"}]},
+    {"template": "{a}", "args": []}
+  ]
+}

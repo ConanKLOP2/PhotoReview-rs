@@ -1,0 +1,21 @@
+{
+  "scenarios": [
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","b"],["get","a"],["set","c","cc"],["get","b"],["get","a"],["get","c"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","b"],["set","a","too-big-for-capacity"],["get","a"],["get","b"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","bb"],["set","c","cccc"],["get","a"],["get","b"],["get","c"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","bb"],["get","a"],["set","c","cc"],["get","a"],["get","b"],["get","c"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","bb"],["set","a","a"],["set","c","ccc"],["get","a"],["get","b"],["get","c"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","bb"],["set","a","aaa"],["set","c","c"],["get","a"],["get","b"],["get","c"]] },
+    { "capacity": 3, "ops": [["set","a",""],["set","b",""],["set","c",""],["set","d",""],["get","a"],["get","d"]] },
+    { "capacity": 4, "ops": [["set","a","aaaa"],["get","a"],["set","b","b"],["get","a"],["get","b"]] },
+    { "capacity": 4, "ops": [["set","a","aaaaa"],["get","a"]] },
+    { "capacity": 4, "ops": [["set","a","aa"],["set","b","b"],["remove","a"],["remove","a"],["remove","zz"]] },
+    { "capacity": 10, "ops": [["set","img1","1111"],["set","img2","22"],["set","dsc1","3"],["remove_prefix","img"],["remove_prefix","img"],["remove_prefix","zzz"],["get","dsc1"]] },
+    { "capacity": 10, "ops": [["set","a","1"],["set","b","22"],["clear"],["get","a"],["set","c","3"]] },
+    { "capacity": 4, "ops": [["set","A","a"],["set","a","bb"],["get","A"],["get","a"]] },
+    { "capacity": 1, "ops": [["set","a","x"],["set","b","y"],["get","a"],["get","b"]] },
+    { "capacity": 0, "ops": [] },
+    { "capacity": -5, "ops": [] },
+    { "capacity": 9223372036854775807, "ops": [["set","a","aa"],["set","b","bb"],["get","a"]] }
+  ]
+}

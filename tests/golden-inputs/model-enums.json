@@ -1,0 +1,7 @@
+{
+  "enums": [
+    "ImageSortMode", "InitialViewMode", "LoadingMode", "DecoderBackend", "RawPairMode", "RawFullDecode",
+    "MouseWheelAction", "ScalingQuality", "ImageTransition", "InstanceMode", "JournalState", "FileOperationType",
+    "JournalDurability", "FitWidthAnchor", "KeyboardZoomAnchor", "KineticGlideSmoothing"
+  ]
+}

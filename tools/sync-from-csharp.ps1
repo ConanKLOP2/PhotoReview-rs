@@ -30,6 +30,7 @@ $manifest = Join-Path $root 'assets\SYNC-MANIFEST.txt'
 $map = [ordered]@{
     'src/PhotoReview.Core/Localization/Languages/' = 'assets/languages/'
     'tests/Fixtures/'                              = 'tests/fixtures/'
+    'tools/diag/samples/'                          = 'tests/fixtures/diag/'
 }
 
 function Get-Sha256([string]$path) { (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLowerInvariant() }
