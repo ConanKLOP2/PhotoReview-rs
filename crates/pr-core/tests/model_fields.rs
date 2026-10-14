@@ -138,6 +138,36 @@ fn operators_behave_like_csharp_flags() {
     assert!(combined.contains(TitleBarFields::NONE));
     assert!(!folder_path.contains(file_name));
 
+    // Overlapping bits: union is OR, not XOR.
+    assert_eq!(TitleBarFields::ALL | TitleBarFields::FOLDER_NAME, TitleBarFields::ALL);
+    assert_eq!((TitleBarFields::ALL | TitleBarFields::FOLDER_NAME).bits(), 16383);
+    assert_eq!(TitleBarFields::ALL.union(TitleBarFields::ALL), TitleBarFields::ALL);
+    assert_eq!(folder_path | folder_path, folder_path);
+    assert_eq!(folder_path.union(folder_path), folder_path);
+    let mut same = folder_path;
+    same |= folder_path;
+    assert_eq!(same, folder_path);
+    let mut sub = TitleBarFields::ALL;
+    sub |= TitleBarFields::FOLDER_NAME;
+    assert_eq!(sub, TitleBarFields::ALL);
+    assert_eq!(combined | folder_path, combined);
+    assert_eq!((combined | folder_path).bits(), 10);
+
+    assert_eq!(ExifInfoFields::ALL | ExifInfoFields::CAMERA, ExifInfoFields::ALL);
+    assert_eq!((ExifInfoFields::ALL | ExifInfoFields::CAMERA).bits(), 1023);
+    assert_eq!(ExifInfoFields::ALL.union(ExifInfoFields::ALL), ExifInfoFields::ALL);
+    let exif_x = ExifInfoFields::ISO;
+    assert_eq!(exif_x | exif_x, exif_x);
+    let mut exif_same = exif_x;
+    exif_same |= exif_x;
+    assert_eq!(exif_same, exif_x);
+    let exif_pair = ExifInfoFields::ISO | ExifInfoFields::LENS;
+    assert_eq!(exif_pair | ExifInfoFields::ISO, exif_pair);
+    assert_eq!(exif_pair.union(exif_pair).bits(), 48);
+    let mut exif_sub = exif_pair;
+    exif_sub |= ExifInfoFields::LENS;
+    assert_eq!(exif_sub, exif_pair);
+
     // C# `All & ~ShutterSpeed`
     assert_eq!(
         TitleBarFields::ALL.difference(TitleBarFields::SHUTTER_SPEED).bits(),
