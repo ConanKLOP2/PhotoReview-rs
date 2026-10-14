@@ -814,6 +814,58 @@ impl LenientEnum for Odd {
     }
 }
 
+/// Test-local enum where an EARLIER member's alias equals a LATER member's name (the opposite direction of `Odd`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Early {
+    Zero,
+    Later,
+    Tail,
+}
+
+impl LenientEnum for Early {
+    const TYPE_NAME: &'static str = "Early";
+    const MEMBERS: &'static [Self] = &[Self::Zero, Self::Later, Self::Tail];
+
+    fn name(self) -> &'static str {
+        match self {
+            Self::Zero => "Zero",
+            Self::Later => "Later",
+            Self::Tail => "Tail",
+        }
+    }
+
+    fn value(self) -> i32 {
+        match self {
+            Self::Zero => 0,
+            Self::Later => 1,
+            Self::Tail => 2,
+        }
+    }
+
+    fn aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::Zero => &["later"],
+            _ => &[],
+        }
+    }
+
+    fn zero() -> Self {
+        Self::Zero
+    }
+}
+
+#[test]
+fn later_member_name_overrides_earlier_member_alias() {
+    // C#: LenientEnumConverter table build: dict[field.Name] = value overwrites an earlier alias entry (last wins).
+    assert_eq!(parse_lenient_text::<Early>(Some("Later")), Some(Early::Later));
+    assert_eq!(parse_lenient_text::<Early>(Some("LATER")), Some(Early::Later));
+    assert_eq!(parse_lenient_text::<Early>(Some("Zero")), Some(Early::Zero));
+}
+
+// DIVERGENCE: a JSON number token such as `1e400` (beyond f64 range) makes serde_json return an error for the
+// whole document, whereas C# `Utf8JsonReader` reads it as a Number token that `TryGetInt32` rejects, giving the
+// default. Accepted (README D5 spirit); not emulated.
+
 #[test]
 fn lookup_table_corners_follow_the_csharp_dictionary() {
     // Later entry wins on a name/alias collision.
