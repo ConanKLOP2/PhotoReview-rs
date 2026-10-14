@@ -427,3 +427,19 @@ fn golden_destination_policy() {
         }
     }
 }
+
+// Mutation repair (round 2): a resolved real path keeping a trailing separator is trimmed
+// before comparison, on the source side and on the destination side.
+#[test]
+fn validate_no_escape_resolved_path_with_trailing_separator_is_trimmed() {
+    let fs = ReparseFs::new().link(r"C:\photos", "D:\real\photos\\");
+    assert_eq!(
+        validate_no_escape_via_reparse_point(r"C:\photos", r"D:\real\photos", &fs),
+        Ok(A::Ok)
+    );
+    let fs = ReparseFs::new().link(r"C:\dest", "C:\photos\\");
+    assert_eq!(
+        validate_no_escape_via_reparse_point(r"C:\photos", r"C:\dest", &fs),
+        Ok(A::Ok)
+    );
+}
