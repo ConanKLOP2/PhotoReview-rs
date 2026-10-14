@@ -557,20 +557,12 @@ fn c0_controls_1c_to_1f_are_not_whitespace() {
 fn numeric_path_trailing_whitespace_rules() {
     use pr_core::settings::context_menu::parse_hidden;
     let parse = |s: &str| parse_hidden(&[Some(s.to_string())]);
-    for s in [
-        "3 ",
-        "3\u{a0}",
-        "3\u{3000}",
-        "3\u{85}",
-        "17 ",
-        "+1 ",
-        "007 ",
-        "-0 ",
-        "-0\0 ",
-        "+17\0\t",
-        "0\0 \0",
-    ] {
+    for s in ["3\u{a0}", "3\u{3000}", "3\u{85}", "-0\0 ", "+17\0\t", "0\0 \0"] {
         assert!(parse(s).is_empty(), "{s:?} must not parse");
+    }
+    // ASCII space is trailing white space Int32.TryParse allows: these numeric forms do parse.
+    for s in ["3 ", "+1 ", "007 ", "-0 "] {
+        assert!(!parse(s).is_empty(), "{s:?} must parse");
     }
     for (s, id) in [
         ("0 \0", Id::Undo),
