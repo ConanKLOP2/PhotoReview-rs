@@ -13,6 +13,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-benchmark-percentile | Done (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
 | X-perf-analyzer | Done (W1-16..21) | `pr_perf` | goldens `perf-csv`, `perf-nav`, `perf-stats`, `perf-rules`, `perf-report`, `perf-analyze` | PerfAnalysis tool; output byte-identical (CRLF). Accepted divergences (README D5): UTF-16 BOM side files, `-0`/`1e400` number tokens, junction-cycle protection |
 | X-wave1-units | Done (22/22 when W1-20 dedupe lands) | see contracts/README.md roster | per-unit tests + goldens | Wave 1 leaf units: model enums, lenient JSON, flag fields, shortcuts, perf options, natural comparer, catalog types, LRU, file-action records, update version/URL policy, LocTemplate, GenerationClock, journal errors and line format, percentile/DiagOptions, perf analyzer, VBlankEstimator |
+| C-07..C-09, C-11, C-13, C-15, C-16, K-38, S-ctxmenu | Done (W2-20) | `pr_core::settings::context_menu` | `settings_context_menu::*` (golden `context-menu`, 510 cases) | Context menu item ids, item table, hidden-set parsing (`Enum.TryParse` quirks emulated), legacy flag migration, pure visibility rule; S-ctxmenu = hidden items list / legacy flags |
 
 ---
 
