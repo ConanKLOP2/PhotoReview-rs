@@ -1,0 +1,156 @@
+{
+  "generator": "oracle-cs perf-path-id",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "path": "C:\\Photos\\Ilhan\\img.jpg",
+      "full": "C:\\Photos\\Ilhan\\img.jpg",
+      "id": "b32825e3df2e58aa"
+    },
+    {
+      "path": "c:\\PHOTOS\\ILHAN\\IMG.JPG",
+      "full": "c:\\PHOTOS\\ILHAN\\IMG.JPG",
+      "id": "b32825e3df2e58aa"
+    },
+    {
+      "path": "C:\\Photos\\Ilhan\\img2.jpg",
+      "full": "C:\\Photos\\Ilhan\\img2.jpg",
+      "id": "e58cd7cf623ba6a7"
+    },
+    {
+      "path": "C:/Photos/Ilhan/img.jpg",
+      "full": "C:\\Photos\\Ilhan\\img.jpg",
+      "id": "b32825e3df2e58aa"
+    },
+    {
+      "path": "C:\\a\\..\\b\\c.jpg",
+      "full": "C:\\b\\c.jpg",
+      "id": "85300a7b43e14bcf"
+    },
+    {
+      "path": "C:\\a\\.\\b.jpg",
+      "full": "C:\\a\\b.jpg",
+      "id": "bed50ccae0feaf65"
+    },
+    {
+      "path": "C:\\a\\b.jpg  ",
+      "full": "C:\\a\\b.jpg",
+      "id": "bed50ccae0feaf65"
+    },
+    {
+      "path": "C:\\a\\b.jpg.",
+      "full": "C:\\a\\b.jpg",
+      "id": "bed50ccae0feaf65"
+    },
+    {
+      "path": "C:\\\\a\\\\b.jpg",
+      "full": "C:\\a\\b.jpg",
+      "id": "bed50ccae0feaf65"
+    },
+    {
+      "path": "C:\\a\\..\\..\\b.jpg",
+      "full": "C:\\b.jpg",
+      "id": "ce0870f1b5a52923"
+    },
+    {
+      "path": "C:\\",
+      "full": "C:\\",
+      "id": "28f709d79730058e"
+    },
+    {
+      "path": "C:\\a\\",
+      "full": "C:\\a\\",
+      "id": "ae8d65a8f4f3cef3"
+    },
+    {
+      "path": "\\\\server\\share\\x\\..\\y.jpg",
+      "full": "\\\\server\\share\\y.jpg",
+      "id": "5b1eb222789890a5"
+    },
+    {
+      "path": "//server/share/x.jpg",
+      "full": "\\\\server\\share\\x.jpg",
+      "id": "f3effda491672c52"
+    },
+    {
+      "path": "\\\\?\\C:\\a\\b.jpg",
+      "full": "\\\\?\\C:\\a\\b.jpg",
+      "id": "c377cce3c45038f3"
+    },
+    {
+      "path": "C:\\ß.jpg",
+      "full": "C:\\ß.jpg",
+      "id": "e41a3722a547dbd5"
+    },
+    {
+      "path": "C:\\ǆ.jpg",
+      "full": "C:\\ǆ.jpg",
+      "id": "f3575efdfee9b852"
+    },
+    {
+      "path": "C:\\ǅ.jpg",
+      "full": "C:\\ǅ.jpg",
+      "id": "f3575efdfee9b852"
+    },
+    {
+      "path": "C:\\Ảnh\\đẹp.jpg",
+      "full": "C:\\Ảnh\\đẹp.jpg",
+      "id": "dab10b6b0195f953"
+    },
+    {
+      "path": "C:\\Ảnh\\ĐẸP.JPG",
+      "full": "C:\\Ảnh\\ĐẸP.JPG",
+      "id": "dab10b6b0195f953"
+    },
+    {
+      "path": "C:\\ı.jpg",
+      "full": "C:\\ı.jpg",
+      "id": "53c3b6bf60bd86d4"
+    },
+    {
+      "path": "C:\\İ.jpg",
+      "full": "C:\\İ.jpg",
+      "id": "9cc788060a32a39e"
+    },
+    {
+      "path": "C:\\ſ.jpg",
+      "full": "C:\\ſ.jpg",
+      "id": "c76263f9345422b0"
+    },
+    {
+      "path": "C:\\µ.jpg",
+      "full": "C:\\µ.jpg",
+      "id": "bcd667de75ca8612"
+    },
+    {
+      "path": "C:\\ÿ.jpg",
+      "full": "C:\\ÿ.jpg",
+      "id": "8678c6adcb7973f2"
+    },
+    {
+      "path": "C:\\ﬁ.jpg",
+      "full": "C:\\ﬁ.jpg",
+      "id": "a6a121ff1a46f4db"
+    },
+    {
+      "path": "C:\\\uD83D\uDE00\\\uD801\uDC28.jpg",
+      "full": "C:\\\uD83D\uDE00\\\uD801\uDC28.jpg",
+      "id": "b64f0894e48e3f29"
+    },
+    {
+      "path": "C:\\\uD801\uDC00.jpg",
+      "full": "C:\\\uD801\uDC00.jpg",
+      "id": "eec30dbe537cbd03"
+    },
+    {
+      "path": "C:\\Ελληνικά\\ς.jpg",
+      "full": "C:\\Ελληνικά\\ς.jpg",
+      "id": "586018f754830a0e"
+    },
+    {
+      "path": "C:\\日本語\\写真.jpg",
+      "full": "C:\\日本語\\写真.jpg",
+      "id": "7ca475ace05ab322"
+    }
+  ]
+}

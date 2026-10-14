@@ -1,0 +1,3039 @@
+{
+  "generator": "oracle-cs physical-fs-ops",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "delete: existing file",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "delete: missing file in an existing folder succeeds",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "nothere.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "delete: missing folder -> path not found",
+      "setup": [],
+      "op": "delete",
+      "args": [
+        "nodir\\x.txt"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "delete: a directory -> access denied",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "dir"
+      ],
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "delete: read-only file -> access denied and file kept",
+      "setup": [
+        {
+          "file": "ro.txt",
+          "text": "ro",
+          "readonly": true
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "ro.txt"
+      ],
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "exists": true
+      }
+    },
+    {
+      "name": "delete: file held without share -> sharing violation",
+      "setup": [
+        {
+          "file": "b.txt",
+          "text": "x"
+        },
+        {
+          "hold": "b.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {
+        "exists": true
+      }
+    },
+    {
+      "name": "delete: file held with read share only -> sharing violation",
+      "setup": [
+        {
+          "file": "b.txt",
+          "text": "x"
+        },
+        {
+          "hold": "b.txt",
+          "access": "read",
+          "share": "read"
+        }
+      ],
+      "op": "delete",
+      "args": [
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {
+        "exists": true
+      }
+    },
+    {
+      "name": "fileexists: file",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "fileexists: other case of the name",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "A.TXT"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "fileexists: missing",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "zz.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {}
+    },
+    {
+      "name": "fileexists: a directory is not a file",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {}
+    },
+    {
+      "name": "fileexists: file name with a trailing separator",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "a.txt\\"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {}
+    },
+    {
+      "name": "fileexists: held without share still exists",
+      "setup": [
+        {
+          "file": "b.txt",
+          "text": "x"
+        },
+        {
+          "hold": "b.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "b.txt"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "fileexists: name with wildcard characters is not a pattern",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "a*"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {}
+    },
+    {
+      "name": "direxists: directory",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "direxists: other case",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "DIR"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "direxists: trailing separator",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "dir\\"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "direxists: a file is not a directory",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {}
+    },
+    {
+      "name": "direxists: junction to a directory",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "jlink"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "direxists: dangling junction",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        },
+        {
+          "deleteDir": "real"
+        }
+      ],
+      "op": "direxists",
+      "args": [
+        "jlink"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "fileexists: file under a junction",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "file": "real\\a.txt",
+          "text": "x"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "fileexists",
+      "args": [
+        "jlink\\a.txt"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {}
+    },
+    {
+      "name": "stat: file length and last write time",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "Hello UTF-8 Tiếng Việt",
+          "lastWriteUtc": "2020-01-02T03:04:05.1234567Z"
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "length": 26,
+        "write_ticks": 637135310451234567,
+        "utc": true
+      },
+      "after": {}
+    },
+    {
+      "name": "stat: last write time whole second",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "abc",
+          "lastWriteUtc": "2021-12-31T23:59:59Z"
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "length": 3,
+        "write_ticks": 637765919990000000,
+        "utc": true
+      },
+      "after": {}
+    },
+    {
+      "name": "stat: empty file",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": ""
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "length": 0,
+        "write_ticks": 639275699418504562,
+        "utc": true
+      },
+      "after": {}
+    },
+    {
+      "name": "stat: directory is null",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {}
+    },
+    {
+      "name": "stat: missing is null",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "zz.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {}
+    },
+    {
+      "name": "stat: file held without share still has a stat",
+      "setup": [
+        {
+          "file": "b.txt",
+          "text": "bbb"
+        },
+        {
+          "hold": "b.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "b.txt"
+      ],
+      "ok": true,
+      "value": {
+        "length": 3,
+        "write_ticks": 639275699418561971,
+        "utc": true
+      },
+      "after": {}
+    },
+    {
+      "name": "stat: file name with a trailing separator still has a stat (FileInfo trims it, unlike File.Exists)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "stat",
+      "args": [
+        "a.txt\\"
+      ],
+      "ok": true,
+      "value": {
+        "length": 1,
+        "write_ticks": 639275699418592008,
+        "utc": true
+      },
+      "after": {}
+    },
+    {
+      "name": "stat: missing parent folder is null",
+      "setup": [],
+      "op": "stat",
+      "args": [
+        "nodir\\x.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {}
+    },
+    {
+      "name": "move: file to a new name",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": false,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: onto an existing file -> already exists (183), both kept",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.txt",
+          "text": "bbb"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "src_exists": true,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: onto a name differing only by case -> already exists (183)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "photo.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "PHOTO.JPG"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "src_exists": true,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: onto an existing directory -> already exists (183)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "dir"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "src_exists": true,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: missing source -> file not found (2)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "move",
+      "args": [
+        "zz.txt",
+        "y.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "src_exists": false,
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "move: missing destination folder -> path not found (3)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "nodir\\a.txt"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {
+        "src_exists": true,
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "move: a directory as source is \"file not found\" (File.Move checks File.Exists)",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "dir",
+        "dir2"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "src_exists": true,
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "move: same path is a no-op success",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "a.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": true,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: same path with other case renames",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "A.TXT"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": true,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: read-only source keeps working",
+      "setup": [
+        {
+          "file": "ro.txt",
+          "text": "ro",
+          "readonly": true
+        }
+      ],
+      "op": "move",
+      "args": [
+        "ro.txt",
+        "moved.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": false,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: source held without share -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {
+        "src_exists": true,
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "move: source held with share read/write/delete succeeds",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "read",
+          "share": "readwritedelete"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": false,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "move: into a sub folder created in setup",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "dir": "sub"
+        }
+      ],
+      "op": "move",
+      "args": [
+        "a.txt",
+        "sub\\a.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "src_exists": false,
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "copy: to a new name keeps the source",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "c.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "copy: onto an existing file -> file exists (80)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.txt",
+          "text": "bbb"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 80,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "copy: onto an existing directory -> file exists (80)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "dir"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 80,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "copy: missing source -> file not found (2)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "zz.txt",
+        "c.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "copy: missing destination folder -> path not found (3)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "nodir\\c.txt"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "copy: a directory as source -> access denied (5)",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "dir",
+        "c.txt"
+      ],
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "copy: keeps last write time, read-only flag",
+      "setup": [
+        {
+          "file": "ro.txt",
+          "text": "ro",
+          "readonly": true,
+          "lastWriteUtc": "2020-01-02T03:04:05.7654321Z"
+        }
+      ],
+      "op": "copy-attrs",
+      "args": [
+        "ro.txt",
+        "ro-copy.txt"
+      ],
+      "ok": true,
+      "value": {
+        "same_write_time": true,
+        "readonly": true,
+        "write_ticks": 637135310457654321
+      },
+      "after": {}
+    },
+    {
+      "name": "copy: existing destination that is also held open -> file exists (80), existence is checked first",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "b.txt",
+          "text": "x"
+        },
+        {
+          "hold": "b.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 80,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "copy: source held with read share only still copies",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "read",
+          "share": "read"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "c.txt"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "copy: source held without share -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "copy",
+      "args": [
+        "a.txt",
+        "c.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "trycopynew: free destination -> true",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "c.txt"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew: existing file -> false, destination untouched",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.txt",
+          "text": "bbb"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew: destination name differs only by case -> false",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "b.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "B.TXT"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew: destination is a directory -> throws file exists (80), not false",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "dir"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 80,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew: missing source with free destination -> file not found (2)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "zz.txt",
+        "free.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "trycopynew: missing source and existing destination -> file not found (2), not false",
+      "setup": [
+        {
+          "file": "b.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "zz.txt",
+        "b.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew: missing destination folder -> path not found (3)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "nodir\\c.txt"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "trycopynew: a directory as source -> access denied (5)",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "dir",
+        "c.txt"
+      ],
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "dst_exists": false
+      }
+    },
+    {
+      "name": "trycopynew: destination held without share -> false (it exists)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "b.txt",
+          "text": "x"
+        },
+        {
+          "hold": "b.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "trycopynew",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dst_exists": true
+      }
+    },
+    {
+      "name": "trycopynew with proof: success raises the proof",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "trycopynew-proof",
+      "args": [
+        "a.txt",
+        "c.txt"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {
+        "proof_created": true
+      }
+    },
+    {
+      "name": "trycopynew with proof: existing destination does not",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "b.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trycopynew-proof",
+      "args": [
+        "a.txt",
+        "b.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "proof_created": false
+      }
+    },
+    {
+      "name": "trycopynew with proof: failed copy (missing source) does not",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "trycopynew-proof",
+      "args": [
+        "zz.txt",
+        "c.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {
+        "proof_created": false
+      }
+    },
+    {
+      "name": "mkdir: nested",
+      "setup": [],
+      "op": "mkdir",
+      "args": [
+        "n1\\n2\\n3"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "dir_exists": true
+      }
+    },
+    {
+      "name": "mkdir: existing is a no-op",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "mkdir",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": null,
+      "after": {
+        "dir_exists": true
+      }
+    },
+    {
+      "name": "mkdir: a file in the way -> already exists (183)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "mkdir",
+      "args": [
+        "a.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "mkdir: under a file -> error",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "mkdir",
+      "args": [
+        "a.txt\\sub"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "trydeleteempty: empty directory",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "trydeleteempty: directory with a file",
+      "setup": [
+        {
+          "dir": "dir"
+        },
+        {
+          "file": "dir\\keep.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dir_exists": true
+      }
+    },
+    {
+      "name": "trydeleteempty: directory with a sub folder",
+      "setup": [
+        {
+          "dir": "dir\\nested"
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dir_exists": true
+      }
+    },
+    {
+      "name": "trydeleteempty: missing",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "nodir"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "trydeleteempty: a file path",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": false,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "trydeleteempty: junction removes the link only",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "trydeleteempty",
+      "args": [
+        "jlink"
+      ],
+      "ok": true,
+      "value": true,
+      "after": {
+        "dir_exists": false
+      }
+    },
+    {
+      "name": "enumdirs: immediate sub folders only",
+      "setup": [
+        {
+          "dir": "parent\\Child1"
+        },
+        {
+          "dir": "parent\\Child2"
+        },
+        {
+          "dir": "parent\\Child1\\deep"
+        },
+        {
+          "file": "parent\\f.txt",
+          "text": "x"
+        }
+      ],
+      "op": "enumdirs",
+      "args": [
+        "parent"
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\parent\\Child1",
+        "<root>\\parent\\Child2"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumdirs: junction to a directory is listed",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "enumdirs",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\.\\jlink",
+        "<root>\\.\\real"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumdirs: missing folder -> path not found (3)",
+      "setup": [],
+      "op": "enumdirs",
+      "args": [
+        "nodir"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {}
+    },
+    {
+      "name": "enumdirs: empty folder",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "enumdirs",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": [],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: files only, names as Path.Combine(dir, name)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.JPG",
+          "text": "bb"
+        },
+        {
+          "file": "c.tmp",
+          "text": "c"
+        },
+        {
+          "dir": "sub.jpg"
+        },
+        {
+          "file": "sub.jpg\\inner.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\.\\a.txt",
+        "<root>\\.\\b.JPG",
+        "<root>\\.\\c.tmp"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: directory spelled with a trailing separator",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.JPG",
+          "text": "bb"
+        },
+        {
+          "file": "c.tmp",
+          "text": "c"
+        },
+        {
+          "dir": "sub.jpg"
+        },
+        {
+          "file": "sub.jpg\\inner.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "{root}\\"
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\a.txt",
+        "<root>\\b.JPG",
+        "<root>\\c.tmp"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: directory spelled with forward slashes keeps them",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.JPG",
+          "text": "bb"
+        },
+        {
+          "file": "c.tmp",
+          "text": "c"
+        },
+        {
+          "dir": "sub.jpg"
+        },
+        {
+          "file": "sub.jpg\\inner.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "{rootfwd}"
+      ],
+      "ok": true,
+      "value": [
+        "<rootfwd>\\a.txt",
+        "<rootfwd>\\b.JPG",
+        "<rootfwd>\\c.tmp"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: pattern *.jpg is case-insensitive",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.JPG",
+          "text": "bb"
+        },
+        {
+          "file": "c.tmp",
+          "text": "c"
+        },
+        {
+          "dir": "sub.jpg"
+        },
+        {
+          "file": "sub.jpg\\inner.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "."
+      ],
+      "pattern": "*.jpg",
+      "ok": true,
+      "value": [
+        "<root>\\.\\b.JPG"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: exact name",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        },
+        {
+          "file": "b.JPG",
+          "text": "bb"
+        },
+        {
+          "file": "c.tmp",
+          "text": "c"
+        },
+        {
+          "dir": "sub.jpg"
+        },
+        {
+          "file": "sub.jpg\\inner.jpg",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "."
+      ],
+      "pattern": "A.TXT",
+      "ok": true,
+      "value": [
+        "<root>\\.\\a.txt"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: missing folder -> path not found (3)",
+      "setup": [],
+      "op": "enumfiles",
+      "args": [
+        "nodir"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {}
+    },
+    {
+      "name": "enumfiles: junction to a directory is not a file",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        },
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\.\\a.txt"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumfiles: file under a junction folder",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "file": "real\\in.txt",
+          "text": "x"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "enumfiles",
+      "args": [
+        "jlink"
+      ],
+      "ok": true,
+      "value": [
+        "<root>\\jlink\\in.txt"
+      ],
+      "after": {}
+    },
+    {
+      "name": "enumstat: full names and stat of every file, directories skipped",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa",
+          "lastWriteUtc": "2020-05-06T07:08:09.5Z"
+        },
+        {
+          "file": "b.jpg",
+          "text": "bb"
+        },
+        {
+          "dir": "sub.jpg"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\a.txt",
+            "length": 3,
+            "write_ticks": 637243456895000000
+          },
+          {
+            "path": "<root>\\b.jpg",
+            "length": 2,
+            "write_ticks": 639275699421982439
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumstat: include filter sees the full name",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "file": "b.jpg",
+          "text": "x"
+        },
+        {
+          "file": "C.JPG",
+          "text": "x"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "."
+      ],
+      "includeSuffix": ".jpg",
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\C.JPG",
+            "length": 1,
+            "write_ticks": 639275699422053771
+          },
+          {
+            "path": "<root>\\b.jpg",
+            "length": 1,
+            "write_ticks": 639275699422053771
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumstat: directory with trailing separator gives normalised full names",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "{root}\\"
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\a.txt",
+            "length": 3,
+            "write_ticks": 639275699422103363
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumstat: forward-slash directory gives backslash full names",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "aaa"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "{rootfwd}"
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\a.txt",
+            "length": 3,
+            "write_ticks": 639275699422124614
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumstat: file held without share is listed with its stat (no per-file open)",
+      "setup": [
+        {
+          "file": "locked.jpg",
+          "text": "123"
+        },
+        {
+          "hold": "locked.jpg",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\locked.jpg",
+            "length": 3,
+            "write_ticks": 639275699422144445
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumstat: missing folder -> path not found (3) before any entry",
+      "setup": [],
+      "op": "enumstat",
+      "args": [
+        "nodir"
+      ],
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {}
+    },
+    {
+      "name": "enumstat: empty folder",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "enumstat",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": {
+        "files": [],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumreadable: locked file skipped as FileUnreadable, others listed",
+      "setup": [
+        {
+          "file": "good.jpg",
+          "text": "12"
+        },
+        {
+          "file": "locked.jpg",
+          "text": "123"
+        },
+        {
+          "hold": "locked.jpg",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "enumreadable",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\good.jpg",
+            "length": 2,
+            "write_ticks": 639275699422200616
+          }
+        ],
+        "skipped": [
+          {
+            "path": "<root>\\locked.jpg",
+            "kind": "FileUnreadable",
+            "reason_present": true
+          }
+        ]
+      },
+      "after": {}
+    },
+    {
+      "name": "enumreadable: file also open for writing with share is readable",
+      "setup": [
+        {
+          "file": "busy.jpg",
+          "text": "1"
+        },
+        {
+          "hold": "busy.jpg",
+          "access": "write",
+          "share": "readwritedelete"
+        }
+      ],
+      "op": "enumreadable",
+      "args": [
+        "."
+      ],
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\busy.jpg",
+            "length": 1,
+            "write_ticks": 639275699422285841
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "enumreadable: filter applies before the probe",
+      "setup": [
+        {
+          "file": "good.jpg",
+          "text": "x"
+        },
+        {
+          "file": "locked.txt",
+          "text": "x"
+        },
+        {
+          "hold": "locked.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "enumreadable",
+      "args": [
+        "."
+      ],
+      "includeSuffix": ".jpg",
+      "ok": true,
+      "value": {
+        "files": [
+          {
+            "path": "<root>\\good.jpg",
+            "length": 1,
+            "write_ticks": 639275699422306861
+          }
+        ],
+        "skipped": []
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: readable file",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": true,
+        "reason_present": false,
+        "failure_is_null": true
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: missing file reports a reason",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "zz.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": false,
+        "reason_present": true,
+        "failure_is_null": false
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: missing folder reports a reason",
+      "setup": [],
+      "op": "probe",
+      "args": [
+        "nodir\\x.jpg"
+      ],
+      "ok": true,
+      "value": {
+        "readable": false,
+        "reason_present": true,
+        "failure_is_null": false
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: a directory reports a reason",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "dir"
+      ],
+      "ok": true,
+      "value": {
+        "readable": false,
+        "reason_present": true,
+        "failure_is_null": false
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: held without share",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": false,
+        "reason_present": true,
+        "failure_is_null": false
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: held for writing with full sharing is readable",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "write",
+          "share": "readwritedelete"
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": true,
+        "reason_present": false,
+        "failure_is_null": true
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: held for reading without write share is readable",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "read",
+          "share": "read"
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": true,
+        "reason_present": false,
+        "failure_is_null": true
+      },
+      "after": {}
+    },
+    {
+      "name": "probe: read-only file is readable",
+      "setup": [
+        {
+          "file": "ro.txt",
+          "text": "x",
+          "readonly": true
+        }
+      ],
+      "op": "probe",
+      "args": [
+        "ro.txt"
+      ],
+      "ok": true,
+      "value": {
+        "readable": true,
+        "reason_present": false,
+        "failure_is_null": true
+      },
+      "after": {}
+    },
+    {
+      "name": "readtext: ascii",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "hello"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": "hello",
+      "after": {}
+    },
+    {
+      "name": "readtext: UTF-8 BOM stripped",
+      "setup": [
+        {
+          "fileHex": "a.txt",
+          "hex": "EFBBBF6869"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": "hi",
+      "after": {}
+    },
+    {
+      "name": "readtext: UTF-16 LE BOM decoded",
+      "setup": [
+        {
+          "fileHex": "a.txt",
+          "hex": "FFFE68006900"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": "hi",
+      "after": {}
+    },
+    {
+      "name": "readtext: missing -> file not found (2)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "zz.txt"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {}
+    },
+    {
+      "name": "readtext: held without share -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "readtext: another handle open for WRITING (even with full share) -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        },
+        {
+          "hold": "a.txt",
+          "access": "write",
+          "share": "readwritedelete"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "readtext: another handle open for READING with read share is fine",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "shared"
+        },
+        {
+          "hold": "a.txt",
+          "access": "read",
+          "share": "read"
+        }
+      ],
+      "op": "readtext",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": "shared",
+      "after": {}
+    },
+    {
+      "name": "openread: whole content",
+      "setup": [
+        {
+          "file": "a.bin",
+          "text": "payload"
+        }
+      ],
+      "op": "openread",
+      "args": [
+        "a.bin"
+      ],
+      "ok": true,
+      "value": "payload",
+      "after": {}
+    },
+    {
+      "name": "openread: missing -> file not found (2)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "openread",
+      "args": [
+        "zz.bin"
+      ],
+      "ok": false,
+      "exception": "FileNotFoundException",
+      "win32": 2,
+      "after": {}
+    },
+    {
+      "name": "openread: held without share -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "a.bin",
+          "text": "x"
+        },
+        {
+          "hold": "a.bin",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "openread",
+      "args": [
+        "a.bin"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "openread: open for writing elsewhere with full share is readable",
+      "setup": [
+        {
+          "file": "a.bin",
+          "text": "data"
+        },
+        {
+          "hold": "a.bin",
+          "access": "write",
+          "share": "readwritedelete"
+        }
+      ],
+      "op": "openread",
+      "args": [
+        "a.bin"
+      ],
+      "ok": true,
+      "value": "data",
+      "after": {}
+    },
+    {
+      "name": "openread: INV-8 others can rename and delete the file while it is open",
+      "setup": [
+        {
+          "file": "a.bin",
+          "text": "still readable"
+        }
+      ],
+      "op": "openread-then-rename",
+      "args": [
+        "a.bin",
+        "b.bin"
+      ],
+      "ok": true,
+      "value": "still readable",
+      "after": {}
+    },
+    {
+      "name": "openappend: creates and appends sequentially across handles",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "openappend",
+      "args": [
+        "journal.jsonl"
+      ],
+      "texts": [
+        "Line 1\n",
+        "Line 2\n"
+      ],
+      "durable": true,
+      "ok": true,
+      "value": "Line 1\nLine 2\n",
+      "after": {}
+    },
+    {
+      "name": "openappend: appends to existing content",
+      "setup": [
+        {
+          "file": "journal.jsonl",
+          "text": "old\n"
+        }
+      ],
+      "op": "openappend",
+      "args": [
+        "journal.jsonl"
+      ],
+      "texts": [
+        "new\n"
+      ],
+      "durable": false,
+      "ok": true,
+      "value": "old\nnew\n",
+      "after": {}
+    },
+    {
+      "name": "openappend: missing folder -> path not found (3)",
+      "setup": [],
+      "op": "openappend",
+      "args": [
+        "nodir\\x.log"
+      ],
+      "texts": [
+        "x"
+      ],
+      "durable": false,
+      "ok": false,
+      "exception": "DirectoryNotFoundException",
+      "win32": 3,
+      "after": {}
+    },
+    {
+      "name": "openappend: second writer -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "app.log",
+          "text": ""
+        }
+      ],
+      "op": "openappend-twice",
+      "args": [
+        "app.log"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "openappend: file is held open elsewhere without share -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "app.log",
+          "text": ""
+        },
+        {
+          "hold": "app.log",
+          "access": "readwrite",
+          "share": "none"
+        }
+      ],
+      "op": "openappend",
+      "args": [
+        "app.log"
+      ],
+      "texts": [
+        "x"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "openappend: a delete while the appender is open -> sharing violation (32)",
+      "setup": [
+        {
+          "file": "app.log",
+          "text": ""
+        }
+      ],
+      "op": "openappend-then-delete",
+      "args": [
+        "app.log"
+      ],
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "openappend: a reader with share read/write/delete can open meanwhile",
+      "setup": [
+        {
+          "file": "app.log",
+          "text": ""
+        }
+      ],
+      "op": "openappend-then-open-reader",
+      "args": [
+        "app.log"
+      ],
+      "readerShare": "readwritedelete",
+      "ok": true,
+      "value": null,
+      "after": {}
+    },
+    {
+      "name": "openappend: a reader that does not share writes cannot open meanwhile (32)",
+      "setup": [
+        {
+          "file": "app.log",
+          "text": ""
+        }
+      ],
+      "op": "openappend-then-open-reader",
+      "args": [
+        "app.log"
+      ],
+      "readerShare": "read",
+      "ok": false,
+      "exception": "IOException",
+      "win32": 32,
+      "after": {}
+    },
+    {
+      "name": "writeatomic: creates missing parent folders, UTF-8 without BOM",
+      "setup": [],
+      "op": "writeatomic",
+      "args": [
+        "w1\\w2\\f.json"
+      ],
+      "text": "{}",
+      "durable": false,
+      "ok": true,
+      "value": "7B7D",
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: text bytes are exact (accents, CRLF, LF, NUL, euro, astral)",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "u.txt"
+      ],
+      "text": "é\r\n\n\u0000€\uD83D\uDE00",
+      "durable": true,
+      "ok": true,
+      "value": "C3A90D0A0A00E282ACF09F9880",
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: replaces the whole previous content",
+      "setup": [
+        {
+          "file": "s.json",
+          "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "s.json"
+      ],
+      "text": "short",
+      "durable": false,
+      "ok": true,
+      "value": "73686F7274",
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: empty text",
+      "setup": [
+        {
+          "dir": "."
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "e.json"
+      ],
+      "text": "",
+      "durable": true,
+      "ok": true,
+      "value": "",
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: no temp file is left behind after success",
+      "setup": [
+        {
+          "file": "s.json",
+          "text": "old"
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "s.json"
+      ],
+      "text": "new",
+      "durable": false,
+      "ok": true,
+      "value": "6E6577",
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: read-only target -> access denied (5) after retries, no temp file left",
+      "setup": [
+        {
+          "file": "ro.json",
+          "text": "ro",
+          "readonly": true
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "ro.json"
+      ],
+      "text": "new",
+      "durable": false,
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: target is a non-empty directory -> access denied (5), no temp file left",
+      "setup": [
+        {
+          "dir": "target"
+        },
+        {
+          "file": "target\\x",
+          "text": "x"
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "target"
+      ],
+      "text": "x",
+      "durable": false,
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: target held by a reader without delete share -> access denied (5)",
+      "setup": [
+        {
+          "file": "t.json",
+          "text": "old"
+        },
+        {
+          "hold": "t.json",
+          "access": "read",
+          "share": "read"
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "t.json"
+      ],
+      "text": "new",
+      "durable": false,
+      "ok": false,
+      "exception": "UnauthorizedAccessException",
+      "win32": 5,
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "writeatomic: path under a file -> error",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "writeatomic",
+      "args": [
+        "a.txt\\x.json"
+      ],
+      "text": "x",
+      "durable": false,
+      "ok": false,
+      "exception": "IOException",
+      "win32": 183,
+      "after": {
+        "tmp_files": 0
+      }
+    },
+    {
+      "name": "resolve: plain existing path is unchanged",
+      "setup": [
+        {
+          "dir": "dir"
+        },
+        {
+          "file": "dir\\a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "dir\\a.txt"
+      ],
+      "ok": true,
+      "value": "<root>\\dir\\a.txt",
+      "after": {}
+    },
+    {
+      "name": "resolve: not yet existing segments are appended as they are",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "dir\\future\\x.jpg"
+      ],
+      "ok": true,
+      "value": "<root>\\dir\\future\\x.jpg",
+      "after": {}
+    },
+    {
+      "name": "resolve: dot-dot segments are normalised first",
+      "setup": [
+        {
+          "dir": "dir"
+        },
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "dir\\..\\a.txt"
+      ],
+      "ok": true,
+      "value": "<root>\\a.txt",
+      "after": {}
+    },
+    {
+      "name": "resolve: trailing separator is dropped",
+      "setup": [
+        {
+          "dir": "dir"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "dir\\"
+      ],
+      "ok": true,
+      "value": "<root>\\dir",
+      "after": {}
+    },
+    {
+      "name": "resolve: other case is kept as typed",
+      "setup": [
+        {
+          "dir": "dir"
+        },
+        {
+          "file": "dir\\a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "DIR/A.TXT"
+      ],
+      "ok": true,
+      "value": "<root>\\DIR\\A.TXT",
+      "after": {}
+    },
+    {
+      "name": "resolve: junction as the final segment",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "jlink"
+      ],
+      "ok": true,
+      "value": "<root>\\real",
+      "after": {}
+    },
+    {
+      "name": "resolve: junction in the middle of the path",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "jlink\\child\\p.jpg"
+      ],
+      "ok": true,
+      "value": "<root>\\real\\child\\p.jpg",
+      "after": {}
+    },
+    {
+      "name": "resolve: junction spelled with other case",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "JLINK\\child"
+      ],
+      "ok": true,
+      "value": "<root>\\real\\child",
+      "after": {}
+    },
+    {
+      "name": "resolve: chain of junctions resolves to the final target",
+      "setup": [
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jinner",
+          "target": "real"
+        },
+        {
+          "junction": "jouter",
+          "target": "jinner"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "jouter"
+      ],
+      "ok": true,
+      "value": "<root>\\real",
+      "after": {}
+    },
+    {
+      "name": "resolve: dangling junction still resolves to its missing target",
+      "setup": [
+        {
+          "dir": "gone"
+        },
+        {
+          "junction": "jlink",
+          "target": "gone"
+        },
+        {
+          "deleteDir": "gone"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "jlink\\photo.jpg"
+      ],
+      "ok": true,
+      "value": "<root>\\gone\\photo.jpg",
+      "after": {}
+    },
+    {
+      "name": "resolve: ordinary folder and file beside a junction are not rewritten",
+      "setup": [
+        {
+          "dir": "plain"
+        },
+        {
+          "file": "plain\\a.jpg",
+          "text": "x"
+        },
+        {
+          "dir": "real"
+        },
+        {
+          "junction": "jlink",
+          "target": "real"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "plain\\a.jpg"
+      ],
+      "ok": true,
+      "value": "<root>\\plain\\a.jpg",
+      "after": {}
+    },
+    {
+      "name": "resolve: a file is not a reparse point",
+      "setup": [
+        {
+          "file": "a.txt",
+          "text": "x"
+        }
+      ],
+      "op": "resolve",
+      "args": [
+        "a.txt"
+      ],
+      "ok": true,
+      "value": "<root>\\a.txt",
+      "after": {}
+    }
+  ]
+}

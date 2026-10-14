@@ -1,0 +1,1297 @@
+{
+    "read":  [
+                 {
+                     "name":  "empty object",
+                     "text":  "{}"
+                 },
+                 {
+                     "name":  "empty text",
+                     "text":  ""
+                 },
+                 {
+                     "name":  "whitespace only",
+                     "text":  "   \r\n\t "
+                 },
+                 {
+                     "name":  "null",
+                     "text":  "null"
+                 },
+                 {
+                     "name":  "array",
+                     "text":  "[]"
+                 },
+                 {
+                     "name":  "number",
+                     "text":  "42"
+                 },
+                 {
+                     "name":  "string",
+                     "text":  "\"text\""
+                 },
+                 {
+                     "name":  "true",
+                     "text":  "true"
+                 },
+                 {
+                     "name":  "unterminated object",
+                     "text":  "{"
+                 },
+                 {
+                     "name":  "unterminated string",
+                     "text":  "{\"ConfigVersion\":3,\"UiLanguage\":\"en"
+                 },
+                 {
+                     "name":  "missing value",
+                     "text":  "{\"ConfigVersion\":}"
+                 },
+                 {
+                     "name":  "missing colon",
+                     "text":  "{\"ConfigVersion\" 3}"
+                 },
+                 {
+                     "name":  "trailing garbage",
+                     "text":  "{} x"
+                 },
+                 {
+                     "name":  "two objects",
+                     "text":  "{}{}"
+                 },
+                 {
+                     "name":  "line comment",
+                     "text":  "{ // c\n \"ClickZoomPercent\": 7 }"
+                 },
+                 {
+                     "name":  "block comment",
+                     "text":  "{ /* c */ \"ClickZoomPercent\": 7 /* d */ }"
+                 },
+                 {
+                     "name":  "comment before root",
+                     "text":  "/*x*/{\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "comment after root",
+                     "text":  "{\"ClickZoomPercent\":7}//x"
+                 },
+                 {
+                     "name":  "block comment after root",
+                     "text":  "{\"ClickZoomPercent\":7}/*x*/"
+                 },
+                 {
+                     "name":  "block comment unterminated",
+                     "text":  "{/* x"
+                 },
+                 {
+                     "name":  "slash alone",
+                     "text":  "{/ }"
+                 },
+                 {
+                     "name":  "comment ended by CR only",
+                     "text":  "{// x\r\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "comment with U+2028",
+                     "text":  "{// x\u2028\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "block comment does not nest",
+                     "text":  "{/* a /* b */ \"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "comment between name and colon",
+                     "text":  "{\"ClickZoomPercent\"/*x*/:7}"
+                 },
+                 {
+                     "name":  "comment after number",
+                     "text":  "{\"ClickZoomPercent\":7/*x*/}"
+                 },
+                 {
+                     "name":  "trailing comma object",
+                     "text":  "{\"ClickZoomPercent\":7,}"
+                 },
+                 {
+                     "name":  "trailing comma array",
+                     "text":  "{\"HiddenContextMenuItems\":[\"Fit\",]}"
+                 },
+                 {
+                     "name":  "trailing comma then comment",
+                     "text":  "{\"ClickZoomPercent\":7, // x\n}"
+                 },
+                 {
+                     "name":  "double comma object",
+                     "text":  "{\"ClickZoomPercent\":7,,}"
+                 },
+                 {
+                     "name":  "leading comma object",
+                     "text":  "{,\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "lone comma array",
+                     "text":  "{\"HiddenContextMenuItems\":[,]}"
+                 },
+                 {
+                     "name":  "double comma array",
+                     "text":  "{\"HiddenContextMenuItems\":[\"Fit\",,\"Undo\"]}"
+                 },
+                 {
+                     "name":  "single quotes",
+                     "text":  "{\u0027a\u0027:1}"
+                 },
+                 {
+                     "name":  "unquoted name",
+                     "text":  "{a:1}"
+                 },
+                 {
+                     "name":  "BOM prefix",
+                     "text":  "﻿{}"
+                 },
+                 {
+                     "name":  "NBSP whitespace",
+                     "text":  "{ }"
+                 },
+                 {
+                     "name":  "form feed whitespace",
+                     "text":  "{\f}"
+                 },
+                 {
+                     "name":  "vertical tab whitespace",
+                     "text":  "{\u000b}"
+                 },
+                 {
+                     "name":  "tab cr lf whitespace",
+                     "text":  " \t\r\n{ \"ClickZoomPercent\" :\t7 }\r\n"
+                 },
+                 {
+                     "name":  "control char in string",
+                     "text":  "{\"LastMoveToFolder\":\"a\tb\"}"
+                 },
+                 {
+                     "name":  "DEL char in string",
+                     "text":  "{\"LastMoveToFolder\":\"ab\"}"
+                 },
+                 {
+                     "name":  "raw non-ASCII in string",
+                     "text":  "{\"LastMoveToFolder\":\"Loại 😀\"}"
+                 },
+                 {
+                     "name":  "leading zero number",
+                     "text":  "{\"ClickZoomPercent\":01}"
+                 },
+                 {
+                     "name":  "plus number",
+                     "text":  "{\"ClickZoomPercent\":+1}"
+                 },
+                 {
+                     "name":  "dot number",
+                     "text":  "{\"InfoOverlayFontSize\":.5}"
+                 },
+                 {
+                     "name":  "trailing dot number",
+                     "text":  "{\"InfoOverlayFontSize\":1.}"
+                 },
+                 {
+                     "name":  "bare minus",
+                     "text":  "{\"InfoOverlayFontSize\":-}"
+                 },
+                 {
+                     "name":  "NaN literal",
+                     "text":  "{\"InfoOverlayFontSize\":NaN}"
+                 },
+                 {
+                     "name":  "Infinity literal",
+                     "text":  "{\"InfoOverlayFontSize\":Infinity}"
+                 },
+                 {
+                     "name":  "True capitalised",
+                     "text":  "{\"LoggingEnabled\":True}"
+                 },
+                 {
+                     "name":  "hex number",
+                     "text":  "{\"ClickZoomPercent\":0x10}"
+                 },
+                 {
+                     "name":  "empty property name",
+                     "text":  "{\"\":1,\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "unknown properties of every kind",
+                     "text":  "{\"F1\":null,\"F2\":true,\"F3\":1.5e3,\"F4\":\"s\",\"F5\":[1,[2,{\"b\":null}]],\"F6\":{\"a\":{\"b\":{}}},\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "unknown property bad escape",
+                     "text":  "{\"Future\":\"\\x41\",\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "unknown property bad unicode escape",
+                     "text":  "{\"Future\":\"\\u12G4\",\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "unknown property lone surrogate value",
+                     "text":  "{\"Future\":\"\\ud800\",\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "property name lone surrogate",
+                     "text":  "{\"\\ud800\":1,\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "nested unknown property name lone surrogate",
+                     "text":  "{\"Future\":{\"\\ud800\":1},\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "Shortcuts object with a lone-surrogate property name",
+                     "text":  "{\"Shortcuts\":{\"\\ud800\":1,\"Next\":\"N\"}}"
+                 },
+                 {
+                     "name":  "Action object with a lone-surrogate property name",
+                     "text":  "{\"Actions\":[{\"\\ud800\":1,\"Name\":\"A\"}]}"
+                 },
+                 {
+                     "name":  "Action object with an unknown property of any kind",
+                     "text":  "{\"Actions\":[{\"Name\":\"A\",\"X\":[1,{\"y\":null}],\"Shortcut\":\"F9\"}]}"
+                 },
+                 {
+                     "name":  "property name bad escape",
+                     "text":  "{\"\\q\":1}"
+                 },
+                 {
+                     "name":  "escaped property name (Z)",
+                     "text":  "{\"Click\\u005AoomPercent\":7}"
+                 },
+                 {
+                     "name":  "escaped property name (first letter)",
+                     "text":  "{\"\\u0043lickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "property name case differs",
+                     "text":  "{\"clickzoompercent\":7}"
+                 },
+                 {
+                     "name":  "duplicate property last wins",
+                     "text":  "{\"ClickZoomPercent\":5,\"ClickZoomPercent\":6}"
+                 },
+                 {
+                     "name":  "duplicate property first one bad",
+                     "text":  "{\"ClickZoomPercent\":\"abc\",\"ClickZoomPercent\":6}"
+                 },
+                 {
+                     "name":  "duplicate property last one bad",
+                     "text":  "{\"ClickZoomPercent\":6,\"ClickZoomPercent\":\"abc\"}"
+                 },
+                 {
+                     "name":  "depth: root object + 63 nested arrays in an unknown property",
+                     "text":  "{\"Future\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+                 },
+                 {
+                     "name":  "depth: root object + 64 nested arrays in an unknown property",
+                     "text":  "{\"Future\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+                 },
+                 {
+                     "name":  "comment between value and comma",
+                     "text":  "{\"ClickZoomPercent\":7 /*x*/ , \"LoggingEnabled\":true}"
+                 },
+                 {
+                     "name":  "comment after comma",
+                     "text":  "{\"ClickZoomPercent\":7, /*x*/ \"LoggingEnabled\":true}"
+                 },
+                 {
+                     "name":  "comment after colon",
+                     "text":  "{\"ClickZoomPercent\": /*x*/ 7}"
+                 },
+                 {
+                     "name":  "comment after open brace",
+                     "text":  "{/*x*/ \"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "comment in empty object",
+                     "text":  "{/*x*/}"
+                 },
+                 {
+                     "name":  "comment in empty array",
+                     "text":  "{\"HiddenContextMenuItems\":[/*x*/]}"
+                 },
+                 {
+                     "name":  "comments inside an array",
+                     "text":  "{\"HiddenContextMenuItems\":[\"Fit\" /*a*/ , /*b*/ \"Undo\" // c\n]}"
+                 },
+                 {
+                     "name":  "empty block comment",
+                     "text":  "{/**/\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "block comment with stars",
+                     "text":  "{/***/\"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "block comment closed by slash-star-slash is unterminated",
+                     "text":  "{/*/ \"ClickZoomPercent\":7}"
+                 },
+                 {
+                     "name":  "comment markers inside a string are text",
+                     "text":  "{\"LastMoveToFolder\":\"a // b /* c */\"}"
+                 },
+                 {
+                     "name":  "line comment after the last property",
+                     "text":  "{\"ClickZoomPercent\":7 // x\n}"
+                 },
+                 {
+                     "name":  "exponent number on a double",
+                     "text":  "{\"InfoOverlayFontSize\":1.5E+1}"
+                 },
+                 {
+                     "name":  "exponent without digits",
+                     "text":  "{\"InfoOverlayFontSize\":1.5e}"
+                 },
+                 {
+                     "name":  "negative zero exponent",
+                     "text":  "{\"InfoOverlayFontSize\":-0e0}"
+                 },
+                 {
+                     "name":  "number directly followed by a letter",
+                     "text":  "{\"ClickZoomPercent\":7x}"
+                 },
+                 {
+                     "name":  "number followed by a comment then a comma",
+                     "text":  "{\"ClickZoomPercent\":7//x\n,\"LoggingEnabled\":true}"
+                 },
+                 {
+                     "name":  "literal followed by a letter",
+                     "text":  "{\"LoggingEnabled\":truex}"
+                 },
+                 {
+                     "name":  "string with a raw control char below 0x20 in an unknown value",
+                     "text":  "{\"Future\":\"a\u001fb\"}"
+                 },
+                 {
+                     "name":  "string with an escaped control char in an unknown value",
+                     "text":  "{\"Future\":\"a\\u001fb\"}"
+                 },
+                 {
+                     "name":  "lowercase hex digits and uppercase hex digits in a unicode escape",
+                     "text":  "{\"LastMoveToFolder\":\"Ã©Ã©\"}"
+                 },
+                 {
+                     "name":  "high surrogate escape followed by a non-surrogate escape (unknown property)",
+                     "text":  "{\"Future\":\"\\ud83dA\"}"
+                 },
+                 {
+                     "name":  "high surrogate escape followed by a non-surrogate escape (known string)",
+                     "text":  "{\"LastMoveToFolder\":\"\\ud83dA\"}"
+                 },
+                 {
+                     "name":  "low surrogate escape before high surrogate escape (known string)",
+                     "text":  "{\"LastMoveToFolder\":\"\\ude00\\ud83d\"}"
+                 },
+                 {
+                     "name":  "depth: 64 nested arrays at the root",
+                     "text":  "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
+                 },
+                 {
+                     "name":  "depth: 65 nested arrays at the root",
+                     "text":  "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
+                 },
+                 {
+                     "name":  "depth: root + 63 nested objects (total depth 64)",
+                     "text":  "{\"Future\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+                 },
+                 {
+                     "name":  "depth: root + 64 nested objects (total depth 65)",
+                     "text":  "{\"Future\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+                 },
+                 {
+                     "name":  "long string value",
+                     "text":  "{\"LastMoveToFolder\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}"
+                 },
+                 {
+                     "name":  "v1 legacy file",
+                     "text":  "{\"LoadingMode\":\"Fast\",\"ImageSortMode\":\"Size\",\"InitialViewMode\":\"100%\",\"Folder2Name\":\"Old\",\"Actions\":[{\"Name\":\"Loai 2\",\"Shortcut\":\"Enter\",\"Operation\":\"Delete\",\"Destination\":\"Group-2\"}]}"
+                 },
+                 {
+                     "name":  "full custom document",
+                     "text":  "{\"ConfigVersion\":3,\"InitialViewMode\":\"fit-width\",\"LoadingMode\":\"original\",\"LoggingEnabled\":true,\"ImageSortMode\":\"NameDescending\",\"CompareHashEnabled\":false,\"CompareSizeEnabled\":false,\"ScalingQuality\":\"Linear\",\"DecoderBackend\":\"TurboJpeg\",\"ImageCacheCapacityBytes\":1073741824,\"ImageCacheRamPercent\":75,\"MemoryReserveBytes\":0,\"PreloadWorkerCount\":4,\"PreloadMemoryLoadLimit\":0.5,\"PreviewDiskCacheCapacityBytes\":0,\"UseSourceBytesCache\":true,\"SourceBytesCapacityBytes\":2147483648,\"Actions\":[{\"Name\":\"Keep\",\"Shortcut\":\"K\",\"Operation\":\"Copy\",\"Destination\":\"C:\\\\Keep\",\"Confirm\":true}],\"Shortcuts\":{\"Next\":\"D\",\"Previous\":\"A\",\"FitWidth2\":\"Q\",\"Refresh\":\"\"},\"UiLanguage\":\"vi\",\"JournalDurability\":\"PowerLossSafe\",\"AllowPermanentDeleteWithoutRecycleBin\":true,\"LastMoveToFolder\":\"D:\\\\Out\",\"LastCopyToFolder\":null,\"MoveCopyReuseLastFolder\":true,\"InstanceMode\":\"PerFolder\",\"ShowInfoOverlay\":false,\"ShowFileInfo\":false,\"ShowFolderInfo\":true,\"ShowExifInfo\":true,\"ExifInfoFields\":\"FileName, Lens\",\"MouseWheelAction\":\"Navigate\",\"ClickToZoomEnabled\":true,\"ClickZoomPercent\":250,\"KineticPanEnabled\":true,\"PreloadForwardCount\":10,\"PreloadBackwardCount\":2,\"ToolbarAutoHide\":true,\"ToolbarAutoHideDelayMs\":2000,\"InfoOverlayFontSize\":14.5,\"TitleBarFields\":\"FolderName, FileName\",\"KeyboardZoomStepPercent\":20,\"ConfirmBeforeDelete\":true,\"ShowZoomIndicator\":true,\"ExternalEditorPath\":\"C:\\\\Apps\\\\ed.exe\",\"KineticGlideSmoothing\":\"Off\",\"InfoOverlayAutoHide\":true,\"InfoOverlayAutoHideDelayMs\":4000,\"ToolbarOpacityPercent\":60,\"ArrowKeyNavigatesAtZoomEdge\":true,\"ClickZoomKeyTogglesFit\":true,\"ArrowPanStepPercent\":25,\"KeepZoomAcrossImages\":true,\"FitWidthAnchor\":\"TopThird\",\"FitWidthAnchor2\":\"Centre\",\"MiddleClickAction\":\"PreviousFolder\",\"KeyboardZoomAnchor\":\"Pointer\",\"ImageTransition\":\"Fade\",\"ImageTransitionMs\":200,\"SetZoomAlsoSetsClickLevel\":false,\"ShowFolderMenuItems\":false,\"ShowZoomMenuItems\":true,\"ShowRecycleMenuItem\":true,\"HiddenContextMenuItems\":[\"Undo\",\"ZoomFitWidth2\"],\"RawSupportEnabled\":false,\"RawFullDecode\":\"OnZoom\",\"RawPairMode\":\"PreferRaw\",\"WebpHeicSupportEnabled\":false,\"TouchpadSwipeEnabled\":false,\"TouchpadSwipeDistancePerImage\":480}"
+                 },
+                 {
+                     "name":  "strings given as numbers everywhere",
+                     "text":  "{\"ConfigVersion\":\"3\",\"ClickZoomPercent\":\"250\",\"ImageCacheCapacityBytes\":\"1000\",\"InfoOverlayFontSize\":\"14.5\",\"PreloadMemoryLoadLimit\":\"0.5\"}"
+                 },
+                 {
+                     "name":  "unknown enum texts everywhere",
+                     "text":  "{\"InitialViewMode\":\"x\",\"LoadingMode\":\"x\",\"ImageSortMode\":\"x\",\"ScalingQuality\":\"x\",\"DecoderBackend\":\"x\",\"JournalDurability\":\"x\",\"InstanceMode\":\"x\",\"MouseWheelAction\":\"x\",\"KineticGlideSmoothing\":\"x\",\"FitWidthAnchor\":\"x\",\"FitWidthAnchor2\":\"x\",\"MiddleClickAction\":\"x\",\"KeyboardZoomAnchor\":\"x\",\"ImageTransition\":\"x\",\"RawFullDecode\":\"x\",\"RawPairMode\":\"x\",\"ExifInfoFields\":\"x\",\"TitleBarFields\":\"x\"}"
+                 }
+             ],
+    "scalars":  [
+                    {
+                        "property":  "ClickZoomPercent",
+                        "tokens":  [
+                                       "250",
+                                       "\"250\"",
+                                       "\" 250\"",
+                                       "\"250 \"",
+                                       "\"+250\"",
+                                       "\"-0\"",
+                                       "-0",
+                                       "0",
+                                       "\"007\"",
+                                       "\"00000000000000000000000000000000012\"",
+                                       "250.0",
+                                       "2.5e2",
+                                       "1e2",
+                                       "1E0",
+                                       "-0.0",
+                                       "0.0",
+                                       "\"250.0\"",
+                                       "\"1e1\"",
+                                       "\"0x10\"",
+                                       "\"1_0\"",
+                                       "\"1,0\"",
+                                       "\"\\u0662\\u0665\\u0660\"",
+                                       "\"\"",
+                                       "\"+\"",
+                                       "\"-\"",
+                                       "\"--1\"",
+                                       "\"+-1\"",
+                                       "\"2147483647\"",
+                                       "2147483647",
+                                       "2147483648",
+                                       "\"2147483648\"",
+                                       "-2147483648",
+                                       "\"-2147483648\"",
+                                       "-2147483649",
+                                       "\"-2147483649\"",
+                                       "\"\\u0032\\u0035\\u0030\"",
+                                       "\"1\\u0000\"",
+                                       "\"1\\u00a0\"",
+                                       "null",
+                                       "true",
+                                       "false",
+                                       "[]",
+                                       "{}",
+                                       "[250]",
+                                       "{\"a\":1}",
+                                       "\"NaN\""
+                                   ]
+                    },
+                    {
+                        "property":  "ImageCacheCapacityBytes",
+                        "tokens":  [
+                                       "9223372036854775807",
+                                       "\"9223372036854775807\"",
+                                       "9223372036854775808",
+                                       "\"9223372036854775808\"",
+                                       "-9223372036854775808",
+                                       "\"-9223372036854775808\"",
+                                       "-9223372036854775809",
+                                       "1.0",
+                                       "\"1.0\"",
+                                       "1e3",
+                                       "\"1e3\"",
+                                       "null",
+                                       "99999999999999999999",
+                                       "\"+5\"",
+                                       "\" 5\"",
+                                       "0",
+                                       "-0",
+                                       "\"0\""
+                                   ]
+                    },
+                    {
+                        "property":  "InfoOverlayFontSize",
+                        "tokens":  [
+                                       "12",
+                                       "24",
+                                       "8.5",
+                                       "0",
+                                       "-0",
+                                       "-0.0",
+                                       "0.0",
+                                       ".5",
+                                       "\"0\"",
+                                       "\"1\"",
+                                       "\"-1\"",
+                                       "\"+1\"",
+                                       "\"-.5\"",
+                                       "\"+.5\"",
+                                       "\".5\"",
+                                       "\"5.\"",
+                                       "\"5.e3\"",
+                                       "\"5.E3\"",
+                                       "\"1E3\"",
+                                       "\"1e+3\"",
+                                       "\"1e-3\"",
+                                       "\"1e\"",
+                                       "\"e1\"",
+                                       "\"1e+\"",
+                                       "\"0x1\"",
+                                       "\"1f\"",
+                                       "\"1d\"",
+                                       "\"1.5.5\"",
+                                       "\"--1\"",
+                                       "\"- 1\"",
+                                       "\"1 \"",
+                                       "\" 1\"",
+                                       "\"1\\t\"",
+                                       "\"1\\n\"",
+                                       "\"\\u00a01\"",
+                                       "\"NaN\"",
+                                       "\"nan\"",
+                                       "\"NAN\"",
+                                       "\"Infinity\"",
+                                       "\"-Infinity\"",
+                                       "\"+Infinity\"",
+                                       "\"infinity\"",
+                                       "\"INFINITY\"",
+                                       "\"\\u221e\"",
+                                       "\"1_000\"",
+                                       "\"1,000\"",
+                                       "\"\\u0663\"",
+                                       "\"1.7976931348623157e308\"",
+                                       "\"1.7976931348623159e308\"",
+                                       "\"4.9e-324\"",
+                                       "\"1e-400\"",
+                                       "\"00.5\"",
+                                       "\"0.\"",
+                                       "\"-0\"",
+                                       "\"-0.0\"",
+                                       "\"1e0000003\"",
+                                       "\"123456789012345678901234567890\"",
+                                       "\"\"",
+                                       "1e999",
+                                       "-1e999",
+                                       "1E400",
+                                       "\"1e999\"",
+                                       "\"-1e999\"",
+                                       "\"1e308\"",
+                                       "1.7976931348623159e308",
+                                       "1e-400",
+                                       "123456789012345678901234567890",
+                                       "\"\\u0033\"",
+                                       "null",
+                                       "true",
+                                       "[]",
+                                       "{}",
+                                       "00",
+                                       "\"12\""
+                                   ]
+                    },
+                    {
+                        "property":  "PreloadMemoryLoadLimit",
+                        "tokens":  [
+                                       "0.5",
+                                       "\"0.5\"",
+                                       "5e-324",
+                                       "\"4.9e-324\"",
+                                       "1",
+                                       "0",
+                                       "-0.5",
+                                       "1.5",
+                                       "1.7976931348623157e308",
+                                       "\"NaN\"",
+                                       "\"Infinity\"",
+                                       "\"abc\""
+                                   ]
+                    },
+                    {
+                        "property":  "LoggingEnabled",
+                        "tokens":  [
+                                       "true",
+                                       "false",
+                                       "\"true\"",
+                                       "\"false\"",
+                                       "\"True\"",
+                                       "1",
+                                       "0",
+                                       "null",
+                                       "[true]",
+                                       "{}",
+                                       "\"1\""
+                                   ]
+                    },
+                    {
+                        "property":  "UiLanguage",
+                        "tokens":  [
+                                       "\"en\"",
+                                       "\"vi\"",
+                                       "\"\"",
+                                       "\"auto\"",
+                                       "\"AUTO\"",
+                                       "\" en \"",
+                                       "null",
+                                       "5",
+                                       "true",
+                                       "[]",
+                                       "{}",
+                                       "\"\\ud800\"",
+                                       "\"a\\u0000b\"",
+                                       "\"\\ud83d\\ude00\"",
+                                       "\"\\/\"",
+                                       "\"\\q\"",
+                                       "\"\\u12\"",
+                                       "\"\\u00e9\""
+                                   ]
+                    },
+                    {
+                        "property":  "ExternalEditorPath",
+                        "tokens":  [
+                                       "\"C:\\\\Apps\\\\ed.exe\"",
+                                       "\"\"",
+                                       "null",
+                                       "5"
+                                   ]
+                    },
+                    {
+                        "property":  "LastMoveToFolder",
+                        "tokens":  [
+                                       "\"D:\\\\Out\"",
+                                       "\"\"",
+                                       "null",
+                                       "5",
+                                       "\"a\u003cb\u003e\u0026c\\u0027+`\""
+                                   ]
+                    },
+                    {
+                        "property":  "ConfigVersion",
+                        "tokens":  [
+                                       "3",
+                                       "\"3\"",
+                                       "4",
+                                       "0",
+                                       "-1",
+                                       "null",
+                                       "3.0",
+                                       "99",
+                                       "2147483647"
+                                   ]
+                    },
+                    {
+                        "property":  "InitialViewMode",
+                        "tokens":  [
+                                       "\"Fit\"",
+                                       "\"fit\"",
+                                       "\" FIT \"",
+                                       "\"100%\"",
+                                       "\"200%\"",
+                                       "\"400%\"",
+                                       "\"fit-width\"",
+                                       "\"FIT-WIDTH\"",
+                                       "\"fit-height\"",
+                                       "\"click-zoom\"",
+                                       "\"Percent100\"",
+                                       "\"percent100\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "3",
+                                       "4",
+                                       "5",
+                                       "6",
+                                       "7",
+                                       "-1",
+                                       "\"3\"",
+                                       "\" 3 \"",
+                                       "\"+3\"",
+                                       "\"-0\"",
+                                       "\"bogus\"",
+                                       "\"\"",
+                                       "\"   \"",
+                                       "null",
+                                       "1.5",
+                                       "1.0",
+                                       "true",
+                                       "false",
+                                       "[1]",
+                                       "{\"a\":1}",
+                                       "\"\\ud800\"",
+                                       "\"\\u0031\""
+                                   ]
+                    },
+                    {
+                        "property":  "MouseWheelAction",
+                        "tokens":  [
+                                       "\"Zoom\"",
+                                       "\"navigate\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "\"bogus\"",
+                                       "null",
+                                       "{}"
+                                   ]
+                    },
+                    {
+                        "property":  "JournalDurability",
+                        "tokens":  [
+                                       "\"Fast\"",
+                                       "\"powerlosssafe\"",
+                                       "\"1\"",
+                                       "1",
+                                       "2",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "InstanceMode",
+                        "tokens":  [
+                                       "\"PerFolder\"",
+                                       "\"perfolder\"",
+                                       "1",
+                                       "2",
+                                       "\"bogus\""
+                                   ]
+                    },
+                    {
+                        "property":  "ImageTransition",
+                        "tokens":  [
+                                       "\"Fade\"",
+                                       "\"fade\"",
+                                       "1",
+                                       "2",
+                                       "\"bogus\""
+                                   ]
+                    },
+                    {
+                        "property":  "RawFullDecode",
+                        "tokens":  [
+                                       "\"OnZoom\"",
+                                       "\"onzoom\"",
+                                       "1",
+                                       "2",
+                                       "\"bogus\""
+                                   ]
+                    },
+                    {
+                        "property":  "RawPairMode",
+                        "tokens":  [
+                                       "\"PreferRaw\"",
+                                       "\"preferjpeg\"",
+                                       "2",
+                                       "3",
+                                       "\"bogus\""
+                                   ]
+                    },
+                    {
+                        "property":  "FitWidthAnchor",
+                        "tokens":  [
+                                       "\"Centre\"",
+                                       "\"TopThird\"",
+                                       "\"BottomThird\"",
+                                       "\"bottomthird\"",
+                                       "2",
+                                       "3",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "LoadingMode",
+                        "tokens":  [
+                                       "\"Fast\"",
+                                       "\"fast\"",
+                                       "\"Preview\"",
+                                       "\"Original\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "3",
+                                       "-1",
+                                       "\"2\"",
+                                       "\" 2 \"",
+                                       "\"bogus\"",
+                                       "\"\"",
+                                       "\"   \"",
+                                       "null",
+                                       "1.5",
+                                       "1.0",
+                                       "true",
+                                       "false",
+                                       "[1]",
+                                       "{}",
+                                       "{\"a\":[1]}",
+                                       "\"\\ud800\"",
+                                       "-2147483648",
+                                       "\"-2147483648\""
+                                   ]
+                    },
+                    {
+                        "property":  "ImageSortMode",
+                        "tokens":  [
+                                       "\"Name\"",
+                                       "\"PortraitFirst\"",
+                                       "\"portraitfirst\"",
+                                       "\"Size\"",
+                                       "\"SizeDescending\"",
+                                       "\"SizeAscending\"",
+                                       "\"Default\"",
+                                       "\"NameAscending\"",
+                                       "\"NameDescending\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "3",
+                                       "4",
+                                       "5",
+                                       "6",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "ScalingQuality",
+                        "tokens":  [
+                                       "\"Linear\"",
+                                       "\"highquality\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "DecoderBackend",
+                        "tokens":  [
+                                       "\"Wpf\"",
+                                       "\"WicDirect\"",
+                                       "\"TurboJpeg\"",
+                                       "\"LibRaw\"",
+                                       "\"libraw\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "3",
+                                       "4",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "KineticGlideSmoothing",
+                        "tokens":  [
+                                       "\"Off\"",
+                                       "\"predict\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "KeyboardZoomAnchor",
+                        "tokens":  [
+                                       "\"Pointer\"",
+                                       "\"viewportcentre\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "FitWidthAnchor2",
+                        "tokens":  [
+                                       "\"Centre\"",
+                                       "\"TopThird\"",
+                                       "\"BottomThird\"",
+                                       "\"bottomthird\"",
+                                       "0",
+                                       "1",
+                                       "2",
+                                       "3",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "MiddleClickAction",
+                        "tokens":  [
+                                       "\"None\"",
+                                       "\"ClickZoom\"",
+                                       "\"ActualSize\"",
+                                       "\"Fit\"",
+                                       "\"FitWidth\"",
+                                       "\"FitWidth2\"",
+                                       "\"PreviousImage\"",
+                                       "\"NextImage\"",
+                                       "\"PreviousFolder\"",
+                                       "\"NextFolder\"",
+                                       "\"OpenFolder\"",
+                                       "\"openfolder\"",
+                                       "0",
+                                       "10",
+                                       "11",
+                                       "-1",
+                                       "\"bogus\"",
+                                       "null"
+                                   ]
+                    },
+                    {
+                        "property":  "ExifInfoFields",
+                        "tokens":  [
+                                       "\"None\"",
+                                       "\"All\"",
+                                       "\"Default\"",
+                                       "\"FileName, Lens\"",
+                                       "\"filename,lens\"",
+                                       "\"FileName | Lens\"",
+                                       "0",
+                                       "1",
+                                       "1023",
+                                       "1024",
+                                       "2147483647",
+                                       "-1",
+                                       "\"\"",
+                                       "null",
+                                       "\"bogus\"",
+                                       "\"1,2\"",
+                                       "\"FileName,bogus\"",
+                                       "true",
+                                       "1.5",
+                                       "[]",
+                                       "{}",
+                                       "\"all, none\""
+                                   ]
+                    },
+                    {
+                        "property":  "TitleBarFields",
+                        "tokens":  [
+                                       "\"None\"",
+                                       "\"All\"",
+                                       "\"Default\"",
+                                       "\"FolderName, FileName\"",
+                                       "\"foldername\"",
+                                       "0",
+                                       "1",
+                                       "16383",
+                                       "16384",
+                                       "-1",
+                                       "\"\"",
+                                       "null",
+                                       "\"bogus\"",
+                                       "{}"
+                                   ]
+                    },
+                    {
+                        "property":  "HiddenContextMenuItems",
+                        "tokens":  [
+                                       "null",
+                                       "[]",
+                                       "[\"Fit\"]",
+                                       "[\"Fit\",null]",
+                                       "[null]",
+                                       "[5]",
+                                       "\"Fit\"",
+                                       "{}",
+                                       "[\"Settings\"]",
+                                       "[\"Fit\",\"Fit\"]",
+                                       "[\"CopyFullPath\",\"Bogus\",\"Settings\",\"Fit\",\"Fit\",null,\"undo\"]",
+                                       "[\"Refresh\",\"ZoomFitWidth2\"]",
+                                       "[[\"Fit\"]]",
+                                       "[\"\\ud800\"]"
+                                   ]
+                    },
+                    {
+                        "property":  "Actions",
+                        "tokens":  [
+                                       "null",
+                                       "[]",
+                                       "[null]",
+                                       "[{}]",
+                                       "[{\"Name\":\"A\"}]",
+                                       "[1]",
+                                       "{}",
+                                       "\"x\"",
+                                       "[{\"Name\":5}]",
+                                       "[{\"Confirm\":null}]",
+                                       "[{\"Confirm\":\"true\"}]",
+                                       "[{\"Confirm\":true}]",
+                                       "[{\"Operation\":\"Delete\"}]",
+                                       "[{\"Operation\":\"recycle\"}]",
+                                       "[{\"Operation\":\" copy \"}]",
+                                       "[{\"Operation\":77}]",
+                                       "[{\"Operation\":-1}]",
+                                       "[{\"Operation\":2.0}]",
+                                       "[{\"Operation\":null}]",
+                                       "[{\"Operation\":{}}]",
+                                       "[{\"Name\":null,\"Shortcut\":null,\"Destination\":null}]",
+                                       "[{\"Name\":\"A\",\"Name\":\"B\"}]",
+                                       "[{\"operation\":\"Copy\"}]",
+                                       "[null,{\"Name\":\"K\",\"Shortcut\":\"K\"},null]",
+                                       "[{\"Name\":\"A\",\"Shortcut\":\"F7\",\"Operation\":\"Move\",\"Destination\":\"x\",\"Confirm\":true,\"Extra\":1}]",
+                                       "[{\"Name\":\"\\ud800\"}]",
+                                       "[{\"Name\":\"A\"},{\"Name\":5}]"
+                                   ]
+                    },
+                    {
+                        "property":  "Shortcuts",
+                        "tokens":  [
+                                       "null",
+                                       "{}",
+                                       "{\"Next\":\"N\"}",
+                                       "{\"next\":\"N\"}",
+                                       "{\"Next\":null}",
+                                       "{\"Next\":5}",
+                                       "{\"Next\":[\"x\"]}",
+                                       "[]",
+                                       "5",
+                                       "\"x\"",
+                                       "{\"Next\":\"X\",\"Next\":\"Y\"}",
+                                       "{\"MoveToFolder2\":\"Q\"}",
+                                       "{\"Unknown\":\"x\"}",
+                                       "{\"FitWidth2\":\"Q\",\"Refresh\":\"F12\"}",
+                                       "{\"Next\":\" Return \"}",
+                                       "{\"Next\":\"\\ud800\"}",
+                                       "{\"ToggleCaptureMember\":null,\"LastImage\":null}"
+                                   ]
+                    }
+                ],
+    "roundtrip":  [
+                      {
+                          "name":  "defaults",
+                          "text":  "{}"
+                      },
+                      {
+                          "name":  "full custom document",
+                          "text":  "{\"ConfigVersion\":3,\"InitialViewMode\":\"fit-width\",\"LoadingMode\":\"original\",\"LoggingEnabled\":true,\"ImageSortMode\":\"NameDescending\",\"CompareHashEnabled\":false,\"CompareSizeEnabled\":false,\"ScalingQuality\":\"Linear\",\"DecoderBackend\":\"TurboJpeg\",\"ImageCacheCapacityBytes\":1073741824,\"ImageCacheRamPercent\":75,\"MemoryReserveBytes\":0,\"PreloadWorkerCount\":4,\"PreloadMemoryLoadLimit\":0.5,\"PreviewDiskCacheCapacityBytes\":0,\"UseSourceBytesCache\":true,\"SourceBytesCapacityBytes\":2147483648,\"Actions\":[{\"Name\":\"Keep\",\"Shortcut\":\"K\",\"Operation\":\"Copy\",\"Destination\":\"C:\\\\Keep\",\"Confirm\":true}],\"Shortcuts\":{\"Next\":\"D\",\"Previous\":\"A\",\"FitWidth2\":\"Q\",\"Refresh\":\"\"},\"UiLanguage\":\"vi\",\"JournalDurability\":\"PowerLossSafe\",\"AllowPermanentDeleteWithoutRecycleBin\":true,\"LastMoveToFolder\":\"D:\\\\Out\",\"LastCopyToFolder\":null,\"MoveCopyReuseLastFolder\":true,\"InstanceMode\":\"PerFolder\",\"ShowInfoOverlay\":false,\"ShowFileInfo\":false,\"ShowFolderInfo\":true,\"ShowExifInfo\":true,\"ExifInfoFields\":\"FileName, Lens\",\"MouseWheelAction\":\"Navigate\",\"ClickToZoomEnabled\":true,\"ClickZoomPercent\":250,\"KineticPanEnabled\":true,\"PreloadForwardCount\":10,\"PreloadBackwardCount\":2,\"ToolbarAutoHide\":true,\"ToolbarAutoHideDelayMs\":2000,\"InfoOverlayFontSize\":14.5,\"TitleBarFields\":\"FolderName, FileName\",\"KeyboardZoomStepPercent\":20,\"ConfirmBeforeDelete\":true,\"ShowZoomIndicator\":true,\"ExternalEditorPath\":\"C:\\\\Apps\\\\ed.exe\",\"KineticGlideSmoothing\":\"Off\",\"InfoOverlayAutoHide\":true,\"InfoOverlayAutoHideDelayMs\":4000,\"ToolbarOpacityPercent\":60,\"ArrowKeyNavigatesAtZoomEdge\":true,\"ClickZoomKeyTogglesFit\":true,\"ArrowPanStepPercent\":25,\"KeepZoomAcrossImages\":true,\"FitWidthAnchor\":\"TopThird\",\"FitWidthAnchor2\":\"Centre\",\"MiddleClickAction\":\"PreviousFolder\",\"KeyboardZoomAnchor\":\"Pointer\",\"ImageTransition\":\"Fade\",\"ImageTransitionMs\":200,\"SetZoomAlsoSetsClickLevel\":false,\"ShowFolderMenuItems\":false,\"ShowZoomMenuItems\":true,\"ShowRecycleMenuItem\":true,\"HiddenContextMenuItems\":[\"Undo\",\"ZoomFitWidth2\"],\"RawSupportEnabled\":false,\"RawFullDecode\":\"OnZoom\",\"RawPairMode\":\"PreferRaw\",\"WebpHeicSupportEnabled\":false,\"TouchpadSwipeEnabled\":false,\"TouchpadSwipeDistancePerImage\":480}"
+                      },
+                      {
+                          "name":  "special characters in strings",
+                          "text":  "{\"LastMoveToFolder\":\"D:\\\\Out \u003ca\u003e \u0026 \u0027q\u0027 + `tick` \\\"dq\\\" / slash\",\"LastCopyToFolder\":\"Lo\\u1ea1i \\ud83d\\ude00 \\u2028 \\u00a0 \\u007f \\u0001\",\"ExternalEditorPath\":\"\\t\\r\\n\\b\\f\",\"Actions\":[{\"Name\":\"\u003cb\u003e\u0026\u0027\",\"Shortcut\":\"F9\",\"Operation\":\"Copy\",\"Destination\":\"\\u00e9\\u00e8\"}]}"
+                      },
+                      {
+                          "name":  "empty collections",
+                          "text":  "{\"Actions\":[],\"HiddenContextMenuItems\":[]}"
+                      },
+                      {
+                          "name":  "null collections and strings",
+                          "text":  "{\"HiddenContextMenuItems\":null,\"LastMoveToFolder\":null,\"LastCopyToFolder\":null,\"UiLanguage\":null,\"Actions\":[{\"Name\":null,\"Shortcut\":null,\"Destination\":null}],\"Shortcuts\":{\"Next\":null}}"
+                      },
+                      {
+                          "name":  "undefined settings enums",
+                          "text":  "{\"LoadingMode\":\"x\",\"ImageSortMode\":5000,\"ScalingQuality\":null,\"DecoderBackend\":\"LibRaw2\",\"KineticGlideSmoothing\":[],\"FitWidthAnchor2\":{},\"MiddleClickAction\":true,\"KeyboardZoomAnchor\":1.5}"
+                      },
+                      {
+                          "name":  "flags and legacy enum names",
+                          "text":  "{\"ExifInfoFields\":\"Camera,Lens, Iso\",\"TitleBarFields\":16383,\"InitialViewMode\":\"400%\",\"ImageSortMode\":\"Size\",\"Actions\":[{\"Operation\":\"Delete\"}]}"
+                      },
+                      {
+                          "name":  "doubles",
+                          "text":  "{\"InfoOverlayFontSize\":14.5,\"PreloadMemoryLoadLimit\":0.123456789012345678}"
+                      },
+                      {
+                          "name":  "doubles exponent",
+                          "text":  "{\"InfoOverlayFontSize\":1e21,\"PreloadMemoryLoadLimit\":1e-7}"
+                      },
+                      {
+                          "name":  "comments and trailing commas",
+                          "text":  "{ // x\n \"ClickZoomPercent\": \"250\", \"Actions\": [ {\"Name\":\"A\",\"Shortcut\":\"F7\",}, ], }"
+                      },
+                      {
+                          "name":  "config version string",
+                          "text":  "{\"ConfigVersion\":\"2\"}"
+                      },
+                      {
+                          "name":  "extreme ints",
+                          "text":  "{\"ClickZoomPercent\":-2147483648,\"ImageCacheCapacityBytes\":-9223372036854775808,\"MemoryReserveBytes\":9223372036854775807}"
+                      },
+                      {
+                          "name":  "all shortcuts",
+                          "text":  "{\"Shortcuts\":{\"Next\":\"a\",\"Previous\":\"b\",\"MoveToFolder2\":\"c\",\"SendToRecycleBin\":\"d\",\"Compare\":\"e\",\"NextFolder\":\"f\",\"PreviousFolder\":\"g\",\"FirstImage\":\"h\",\"ZoomIn\":\"i\",\"ZoomOut\":\"j\",\"ToggleFit\":\"k\",\"Skip\":\"l\",\"Undo\":\"m\",\"Fullscreen\":\"n\",\"MoveToFolder\":\"o\",\"CopyToFolder\":\"p\",\"LastImage\":\"q\",\"ZoomActualSize\":\"r\",\"ToggleInfoOverlay\":\"s\",\"ClickZoom\":\"t\",\"FitWidth\":\"u\",\"FitHeight\":\"v\",\"ToggleKeepZoom\":\"w\",\"OpenFolder\":\"x\",\"CustomZoom\":\"y\",\"ToggleCaptureMember\":\"z\",\"FitWidth2\":\"A\",\"Refresh\":\"B\"}}"
+                      }
+                  ],
+    "doubles":  [
+                    "0x4028000000000000",
+                    "0x4038000000000000",
+                    "0x4020000000000000",
+                    "0x3FECCCCCCCCCCCCD",
+                    "0x3FE0000000000000",
+                    "0x3FF0000000000000",
+                    "0x3FB999999999999A",
+                    "0x3FD3333333333334",
+                    "0x42D6BCC41E900000",
+                    "0x430C6BF526340000",
+                    "0x4341C37937E08000",
+                    "0x4376345785D8A000",
+                    "0x437B69B4BA630F35",
+                    "0x444B1AE4D6E2EF50",
+                    "0x4480F0CF064DD592",
+                    "0x3F1A36E2EB1C432D",
+                    "0x3EE4F8B588E368F1",
+                    "0x3EB0C6F7A0B5ED8D",
+                    "0x3E7AD7F29ABCAF48",
+                    "0x0000000000000001",
+                    "0x7FEFFFFFFFFFFFFF",
+                    "0x8000000000000000",
+                    "0x0000000000000000",
+                    "0xBFF8000000000000",
+                    "0x40C81CD6C8B43958",
+                    "0x3F201F31F46ED246",
+                    "0x43118B54F22AEB03",
+                    "0x4059000000000000",
+                    "0x7E41EB2D66005835",
+                    "0x3DF12E0BE826D695",
+                    "0x4330000000000000",
+                    "0x4340000000000000",
+                    "0x419D6F34547E6B75",
+                    "0x0010000000000000",
+                    "0x44B52D02C7E14AF6",
+                    "0x3FF0000000000001",
+                    "0x402D000000000000",
+                    "0x4415AF1D78B58C40",
+                    "0x4415AF1D78B58C3F",
+                    "0xFFF8000000000000",
+                    "0x7FF0000000000000",
+                    "0xFFF0000000000000"
+                ],
+    "escape_codepoints":  [
+                              0,
+                              1,
+                              2,
+                              3,
+                              4,
+                              5,
+                              6,
+                              7,
+                              8,
+                              9,
+                              10,
+                              11,
+                              12,
+                              13,
+                              14,
+                              15,
+                              16,
+                              17,
+                              18,
+                              19,
+                              20,
+                              21,
+                              22,
+                              23,
+                              24,
+                              25,
+                              26,
+                              27,
+                              28,
+                              29,
+                              30,
+                              31,
+                              32,
+                              33,
+                              34,
+                              35,
+                              36,
+                              37,
+                              38,
+                              39,
+                              40,
+                              41,
+                              42,
+                              43,
+                              44,
+                              45,
+                              46,
+                              47,
+                              48,
+                              49,
+                              50,
+                              51,
+                              52,
+                              53,
+                              54,
+                              55,
+                              56,
+                              57,
+                              58,
+                              59,
+                              60,
+                              61,
+                              62,
+                              63,
+                              64,
+                              65,
+                              66,
+                              67,
+                              68,
+                              69,
+                              70,
+                              71,
+                              72,
+                              73,
+                              74,
+                              75,
+                              76,
+                              77,
+                              78,
+                              79,
+                              80,
+                              81,
+                              82,
+                              83,
+                              84,
+                              85,
+                              86,
+                              87,
+                              88,
+                              89,
+                              90,
+                              91,
+                              92,
+                              93,
+                              94,
+                              95,
+                              96,
+                              97,
+                              98,
+                              99,
+                              100,
+                              101,
+                              102,
+                              103,
+                              104,
+                              105,
+                              106,
+                              107,
+                              108,
+                              109,
+                              110,
+                              111,
+                              112,
+                              113,
+                              114,
+                              115,
+                              116,
+                              117,
+                              118,
+                              119,
+                              120,
+                              121,
+                              122,
+                              123,
+                              124,
+                              125,
+                              126,
+                              127,
+                              128,
+                              133,
+                              159,
+                              160,
+                              173,
+                              233,
+                              255,
+                              256,
+                              7841,
+                              8232,
+                              8233,
+                              8203,
+                              8206,
+                              12354,
+                              57344,
+                              65279,
+                              65533,
+                              65534,
+                              65535,
+                              65536,
+                              128512,
+                              1114111
+                          ]
+}

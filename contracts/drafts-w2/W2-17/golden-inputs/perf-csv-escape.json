@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {"value": ""},
+    {"value": "plain"},
+    {"value": " leading and trailing "},
+    {"value": "a,b"},
+    {"value": "a\"b"},
+    {"value": "\""},
+    {"value": "\"\""},
+    {"value": "a\nb"},
+    {"value": "a\r\nb"},
+    {"value": "a\rb"},
+    {"value": "\n"},
+    {"value": "\r\n"},
+    {"value": "\r"},
+    {"value": "a\r\r\nb"},
+    {"value": "a\n\r\nb"},
+    {"value": "a\r\n\r\nb"},
+    {"value": "x,\"y\"\nz"},
+    {"value": "line1\r"},
+    {"value": "\r\nx"},
+    {"value": "a\u0000b"},
+    {"value": "tab\there"},
+    {"value": "#not a comment inside a field"},
+    {"value": "semi;colon;list"},
+    {"value": "日本語, ok"},
+    {"value": "emoji 😀"},
+    {"value": "é, x"},
+    {"value": "a\u0085b"}
+  ]
+}

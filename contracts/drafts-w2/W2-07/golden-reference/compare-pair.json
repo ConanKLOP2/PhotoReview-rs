@@ -1,0 +1,1720 @@
+{
+  "generator": "oracle-cs compare-pair",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "basic-original-and-numbered",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0001 (1).JPG",
+        "C:\\Photos\\DSC0002.JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\DSC0001 (1).JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\DSC0002.JPG",
+          "pair": null
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001 (1).JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        },
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0001 (1).JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0002.JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "no-pair",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0002.JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0002.JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "single-file",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "stays-within-the-selected-folder",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0001 (1).JPG",
+        "C:\\Photos\\Other\\DSC0001.JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\Other\\DSC0001.JPG",
+          "pair": null
+        },
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001 (1).JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        },
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0001 (1).JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\Other\\DSC0001.JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "smallest-number-wins-not-path-order",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a (10).jpg",
+        "C:\\p\\a (2).jpg",
+        "C:\\p\\a (3).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (2).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a (10).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (10).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a (3).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (3).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (10).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (10).jpg"
+        },
+        {
+          "key": "C:\\p\\a (2).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (2).jpg"
+        },
+        {
+          "key": "C:\\p\\a (3).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (3).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (2).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (10).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (2).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (3).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "same-number-keeps-path-order",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a (1).jpg",
+        "C:\\p\\a (01).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (01).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a (1).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a (01).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (01).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (01).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (01).jpg"
+        },
+        {
+          "key": "C:\\p\\a (1).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (1).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (01).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (01).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "mixed-case-extension",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0001 (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\DSC0001 (1).jpg",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001 (1).jpg",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0001 (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "mixed-case-folder",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "c:\\photos\\DSC0001 (1).JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\DSC0001.JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "c:\\photos\\DSC0001 (1).JPG"
+          ]
+        },
+        {
+          "query": "c:\\photos\\DSC0001 (1).JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "c:\\photos\\DSC0001 (1).JPG"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "c:\\photos\\DSC0001 (1).JPG"
+        },
+        {
+          "key": "c:\\photos\\DSC0001 (1).JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "c:\\photos\\DSC0001 (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "c:\\photos\\DSC0001 (1).JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "query-spelled-in-another-case-returns-the-listed-spellings",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0001 (1).JPG"
+      ],
+      "finds": [
+        {
+          "query": "c:\\photos\\dsc0001.jpg",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        },
+        {
+          "query": "c:\\photos\\dsc0001 (1).jpg",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001 (1).JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        },
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0001 (1).JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "query-not-in-the-list",
+      "files": [
+        "C:\\Photos\\DSC0001.JPG",
+        "C:\\Photos\\DSC0001 (1).JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\ZZ.JPG",
+          "pair": null
+        },
+        {
+          "query": "C:\\Photos\\DSC0001 (7).JPG",
+          "pair": [
+            "C:\\Photos\\DSC0001.JPG",
+            "C:\\Photos\\DSC0001 (1).JPG"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\DSC0001 (1).JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        },
+        {
+          "key": "C:\\Photos\\DSC0001.JPG",
+          "left": "C:\\Photos\\DSC0001.JPG",
+          "right": "C:\\Photos\\DSC0001 (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\DSC0001.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\DSC0001 (1).JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "nested-numbering",
+      "files": [
+        "C:\\Photos\\a.JPG",
+        "C:\\Photos\\a (1).JPG",
+        "C:\\Photos\\a (1) (2).JPG",
+        "C:\\Photos\\a (2).JPG"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\a.JPG",
+          "pair": [
+            "C:\\Photos\\a.JPG",
+            "C:\\Photos\\a (1).JPG"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\a (1).JPG",
+          "pair": [
+            "C:\\Photos\\a.JPG",
+            "C:\\Photos\\a (1).JPG"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\a (1) (2).JPG",
+          "pair": [
+            "C:\\Photos\\a (1).JPG",
+            "C:\\Photos\\a (1) (2).JPG"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\a (2).JPG",
+          "pair": [
+            "C:\\Photos\\a.JPG",
+            "C:\\Photos\\a (2).JPG"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\a (1) (2).JPG",
+          "left": "C:\\Photos\\a (1).JPG",
+          "right": "C:\\Photos\\a (1) (2).JPG"
+        },
+        {
+          "key": "C:\\Photos\\a (1).JPG",
+          "left": "C:\\Photos\\a.JPG",
+          "right": "C:\\Photos\\a (1).JPG"
+        },
+        {
+          "key": "C:\\Photos\\a (2).JPG",
+          "left": "C:\\Photos\\a.JPG",
+          "right": "C:\\Photos\\a (2).JPG"
+        },
+        {
+          "key": "C:\\Photos\\a.JPG",
+          "left": "C:\\Photos\\a.JPG",
+          "right": "C:\\Photos\\a (1).JPG"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\a.JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (1).JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (1) (2).JPG",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (2).JPG",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "different-extension-does-not-pair",
+      "files": [
+        "C:\\Photos\\a.jpg",
+        "C:\\Photos\\a (1).png"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\a.jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\Photos\\a (1).png",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (1).png",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "extensionless-files-pair",
+      "files": [
+        "C:\\Photos\\a",
+        "C:\\Photos\\a (1)"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\a",
+          "pair": [
+            "C:\\Photos\\a",
+            "C:\\Photos\\a (1)"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\a (1)",
+          "pair": [
+            "C:\\Photos\\a",
+            "C:\\Photos\\a (1)"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\a",
+          "left": "C:\\Photos\\a",
+          "right": "C:\\Photos\\a (1)"
+        },
+        {
+          "key": "C:\\Photos\\a (1)",
+          "left": "C:\\Photos\\a",
+          "right": "C:\\Photos\\a (1)"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\a",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (1)",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "case-variant-paths-ordinal-order-picks-the-original-lower-listed-first",
+      "files": [
+        "C:\\Photos\\shot.jpg",
+        "C:\\Photos\\SHOT.jpg",
+        "C:\\Photos\\shot (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\shot (1).jpg",
+          "pair": [
+            "C:\\Photos\\SHOT.jpg",
+            "C:\\Photos\\shot (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\shot.jpg",
+          "pair": [
+            "C:\\Photos\\SHOT.jpg",
+            "C:\\Photos\\shot (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\SHOT.jpg",
+          "left": "C:\\Photos\\SHOT.jpg",
+          "right": "C:\\Photos\\shot (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\shot (1).jpg",
+          "left": "C:\\Photos\\SHOT.jpg",
+          "right": "C:\\Photos\\shot (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\shot.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\SHOT.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\shot (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "case-variant-paths-ordinal-order-picks-the-original-upper-listed-first",
+      "files": [
+        "C:\\Photos\\SHOT.jpg",
+        "C:\\Photos\\shot.jpg",
+        "C:\\Photos\\shot (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\shot (1).jpg",
+          "pair": [
+            "C:\\Photos\\SHOT.jpg",
+            "C:\\Photos\\shot (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\SHOT.jpg",
+          "pair": [
+            "C:\\Photos\\SHOT.jpg",
+            "C:\\Photos\\shot (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\SHOT.jpg",
+          "left": "C:\\Photos\\SHOT.jpg",
+          "right": "C:\\Photos\\shot (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\shot (1).jpg",
+          "left": "C:\\Photos\\SHOT.jpg",
+          "right": "C:\\Photos\\shot (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\SHOT.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\shot.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\shot (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "two-spellings-of-one-full-path-keep-input-order",
+      "files": [
+        "C:\\Photos\\.\\s00.jpg",
+        "C:\\Photos\\s00.jpg",
+        "C:\\Photos\\s00 (1).jpg",
+        "C:\\Photos\\s01.jpg",
+        "C:\\Photos\\.\\s01.jpg",
+        "C:\\Photos\\s01 (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\s00 (1).jpg",
+          "pair": [
+            "C:\\Photos\\.\\s00.jpg",
+            "C:\\Photos\\s00 (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\s01 (1).jpg",
+          "pair": [
+            "C:\\Photos\\s01.jpg",
+            "C:\\Photos\\s01 (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\s00.jpg",
+          "pair": [
+            "C:\\Photos\\.\\s00.jpg",
+            "C:\\Photos\\s00 (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\.\\s00.jpg",
+          "pair": [
+            "C:\\Photos\\.\\s00.jpg",
+            "C:\\Photos\\s00 (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\.\\s00.jpg",
+          "left": "C:\\Photos\\.\\s00.jpg",
+          "right": "C:\\Photos\\s00 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\.\\s01.jpg",
+          "left": "C:\\Photos\\s01.jpg",
+          "right": "C:\\Photos\\s01 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\s00 (1).jpg",
+          "left": "C:\\Photos\\.\\s00.jpg",
+          "right": "C:\\Photos\\s00 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\s00.jpg",
+          "left": "C:\\Photos\\.\\s00.jpg",
+          "right": "C:\\Photos\\s00 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\s01 (1).jpg",
+          "left": "C:\\Photos\\s01.jpg",
+          "right": "C:\\Photos\\s01 (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\s01.jpg",
+          "left": "C:\\Photos\\s01.jpg",
+          "right": "C:\\Photos\\s01 (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\.\\s00.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\s00.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\s00 (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\s01.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\.\\s01.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\s01 (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "dotdot-segments-in-listed-paths",
+      "files": [
+        "C:\\Photos\\x\\..\\a.jpg",
+        "C:\\Photos\\a (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\Photos\\a.jpg",
+          "pair": [
+            "C:\\Photos\\x\\..\\a.jpg",
+            "C:\\Photos\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\Photos\\x\\..\\a.jpg",
+          "pair": [
+            "C:\\Photos\\x\\..\\a.jpg",
+            "C:\\Photos\\a (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\Photos\\a (1).jpg",
+          "left": "C:\\Photos\\x\\..\\a.jpg",
+          "right": "C:\\Photos\\a (1).jpg"
+        },
+        {
+          "key": "C:\\Photos\\x\\..\\a.jpg",
+          "left": "C:\\Photos\\x\\..\\a.jpg",
+          "right": "C:\\Photos\\a (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\Photos\\x\\..\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\Photos\\a (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "drive-root-entry-does-not-throw",
+      "files": [
+        "C:\\",
+        "C:\\a.jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\a.jpg",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\",
+          "agrees": true
+        },
+        {
+          "file": "C:\\a.jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "files-directly-in-a-drive-root",
+      "files": [
+        "C:\\a.jpg",
+        "C:\\a (1).jpg",
+        "D:\\a (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\a.jpg",
+          "pair": [
+            "C:\\a.jpg",
+            "C:\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\a (1).jpg",
+          "pair": [
+            "C:\\a.jpg",
+            "C:\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "D:\\a (1).jpg",
+          "pair": null
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\a (1).jpg",
+          "left": "C:\\a.jpg",
+          "right": "C:\\a (1).jpg"
+        },
+        {
+          "key": "C:\\a.jpg",
+          "left": "C:\\a.jpg",
+          "right": "C:\\a (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\a (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "D:\\a (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "unc-folder",
+      "files": [
+        "\\\\srv\\share\\a.jpg",
+        "\\\\srv\\share\\a (1).jpg",
+        "\\\\srv\\share2\\a.jpg"
+      ],
+      "finds": [
+        {
+          "query": "\\\\srv\\share\\a.jpg",
+          "pair": [
+            "\\\\srv\\share\\a.jpg",
+            "\\\\srv\\share\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "\\\\srv\\share2\\a.jpg",
+          "pair": null
+        }
+      ],
+      "index": [
+        {
+          "key": "\\\\srv\\share\\a (1).jpg",
+          "left": "\\\\srv\\share\\a.jpg",
+          "right": "\\\\srv\\share\\a (1).jpg"
+        },
+        {
+          "key": "\\\\srv\\share\\a.jpg",
+          "left": "\\\\srv\\share\\a.jpg",
+          "right": "\\\\srv\\share\\a (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "\\\\srv\\share\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "\\\\srv\\share\\a (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "\\\\srv\\share2\\a.jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "fullwidth-digit-suffix-is-numbered-but-sorts-last",
+      "files": [
+        "C:\\p\\x.jpg",
+        "C:\\p\\x (１).jpg",
+        "C:\\p\\x (2).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\x.jpg",
+          "pair": [
+            "C:\\p\\x.jpg",
+            "C:\\p\\x (2).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\x (１).jpg",
+          "pair": [
+            "C:\\p\\x.jpg",
+            "C:\\p\\x (１).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\x (2).jpg",
+          "pair": [
+            "C:\\p\\x.jpg",
+            "C:\\p\\x (2).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\x (2).jpg",
+          "left": "C:\\p\\x.jpg",
+          "right": "C:\\p\\x (2).jpg"
+        },
+        {
+          "key": "C:\\p\\x (１).jpg",
+          "left": "C:\\p\\x.jpg",
+          "right": "C:\\p\\x (１).jpg"
+        },
+        {
+          "key": "C:\\p\\x.jpg",
+          "left": "C:\\p\\x.jpg",
+          "right": "C:\\p\\x (2).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\x.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\x (１).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\x (2).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "arabic-indic-digit-suffix-alone",
+      "files": [
+        "C:\\p\\x.jpg",
+        "C:\\p\\x (٣).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\x.jpg",
+          "pair": [
+            "C:\\p\\x.jpg",
+            "C:\\p\\x (٣).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\x (٣).jpg",
+          "pair": [
+            "C:\\p\\x.jpg",
+            "C:\\p\\x (٣).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\x (٣).jpg",
+          "left": "C:\\p\\x.jpg",
+          "right": "C:\\p\\x (٣).jpg"
+        },
+        {
+          "key": "C:\\p\\x.jpg",
+          "left": "C:\\p\\x.jpg",
+          "right": "C:\\p\\x (٣).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\x.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\x (٣).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "overflowing-number-sorts-last",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a (99999999999).jpg",
+        "C:\\p\\a (3).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (3).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a (99999999999).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (99999999999).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (3).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (3).jpg"
+        },
+        {
+          "key": "C:\\p\\a (99999999999).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (99999999999).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (3).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (99999999999).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (3).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "int-max-and-int-max-plus-one-suffixes",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a (2147483648).jpg",
+        "C:\\p\\a (2147483647).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (2147483647).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (2147483647).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (2147483647).jpg"
+        },
+        {
+          "key": "C:\\p\\a (2147483648).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (2147483648).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (2147483647).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (2147483648).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (2147483647).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a(1).jpg",
+        "C:\\p\\a ( 1).jpg",
+        "C:\\p\\a (1) .jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\a(1).jpg",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a(1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a ( 1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (1) .jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "double-space-before-number",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a  (1).jpg",
+        "C:\\p\\a (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\a  (1).jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\a (1).jpg",
+          "pair": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\a (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (1).jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (1).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg",
+          "left": "C:\\p\\a.jpg",
+          "right": "C:\\p\\a (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a  (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "numbered-without-original",
+      "files": [
+        "C:\\p\\a (1).jpg",
+        "C:\\p\\a (2).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a (1).jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\a (2).jpg",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\a (2).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "stem-case-differs-original-matches-ignoring-case",
+      "files": [
+        "C:\\p\\IMG.jpg",
+        "C:\\p\\img (1).jpg",
+        "C:\\p\\Img (2).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\IMG.jpg",
+          "pair": [
+            "C:\\p\\IMG.jpg",
+            "C:\\p\\img (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\img (1).jpg",
+          "pair": [
+            "C:\\p\\IMG.jpg",
+            "C:\\p\\img (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\Img (2).jpg",
+          "pair": [
+            "C:\\p\\IMG.jpg",
+            "C:\\p\\Img (2).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\IMG.jpg",
+          "left": "C:\\p\\IMG.jpg",
+          "right": "C:\\p\\img (1).jpg"
+        },
+        {
+          "key": "C:\\p\\Img (2).jpg",
+          "left": "C:\\p\\IMG.jpg",
+          "right": "C:\\p\\Img (2).jpg"
+        },
+        {
+          "key": "C:\\p\\img (1).jpg",
+          "left": "C:\\p\\IMG.jpg",
+          "right": "C:\\p\\img (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\IMG.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\img (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\Img (2).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "unicode-stems",
+      "files": [
+        "C:\\p\\日本.jpg",
+        "C:\\p\\日本 (1).jpg",
+        "C:\\p\\İ.jpg",
+        "C:\\p\\i (1).jpg",
+        "C:\\p\\ı.jpg",
+        "C:\\p\\I (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\日本.jpg",
+          "pair": [
+            "C:\\p\\日本.jpg",
+            "C:\\p\\日本 (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\i (1).jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\I (1).jpg",
+          "pair": null
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\日本 (1).jpg",
+          "left": "C:\\p\\日本.jpg",
+          "right": "C:\\p\\日本 (1).jpg"
+        },
+        {
+          "key": "C:\\p\\日本.jpg",
+          "left": "C:\\p\\日本.jpg",
+          "right": "C:\\p\\日本 (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\日本.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\日本 (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\İ.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\i (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\ı.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\I (1).jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "trailing-space-in-extension-find-and-index-disagree",
+      "files": [
+        "C:\\p\\a.jpg ",
+        "C:\\p\\a (1).jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg ",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\a (1).jpg",
+          "pair": null
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\a (1).jpg",
+          "left": "C:\\p\\a.jpg ",
+          "right": "C:\\p\\a (1).jpg"
+        },
+        {
+          "key": "C:\\p\\a.jpg ",
+          "left": "C:\\p\\a.jpg ",
+          "right": "C:\\p\\a (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\a.jpg ",
+          "agrees": false
+        },
+        {
+          "file": "C:\\p\\a (1).jpg",
+          "agrees": false
+        }
+      ]
+    },
+    {
+      "name": "leading-numbered-stem-with-empty-base",
+      "files": [
+        "C:\\p\\ (1).jpg",
+        "C:\\p\\.jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\ (1).jpg",
+          "pair": [
+            "C:\\p\\.jpg",
+            "C:\\p\\ (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\.jpg",
+          "pair": [
+            "C:\\p\\.jpg",
+            "C:\\p\\ (1).jpg"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\ (1).jpg",
+          "left": "C:\\p\\.jpg",
+          "right": "C:\\p\\ (1).jpg"
+        },
+        {
+          "key": "C:\\p\\.jpg",
+          "left": "C:\\p\\.jpg",
+          "right": "C:\\p\\ (1).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\ (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\.jpg",
+          "agrees": true
+        }
+      ]
+    },
+    {
+      "name": "empty-list",
+      "files": [],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": null
+        }
+      ],
+      "index": [],
+      "index_find_agrees": []
+    },
+    {
+      "name": "invalid-nul-path-throws-argument-exception",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\a\u0000.jpg"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\a.jpg",
+          "pair": {
+            "throws": "ArgumentException"
+          }
+        }
+      ],
+      "index": {
+        "throws": "ArgumentException"
+      },
+      "index_find_agrees": null
+    },
+    {
+      "name": "many-variants-all-queries",
+      "files": [
+        "C:\\p\\s.jpg",
+        "C:\\p\\s (1).jpg",
+        "C:\\p\\s (2).jpg",
+        "C:\\p\\s (3).jpg",
+        "C:\\p\\t.jpg",
+        "C:\\p\\u (1).jpg",
+        "C:\\p\\sub\\s.jpg",
+        "C:\\p\\sub\\s (4).jpg",
+        "C:\\p\\s.png",
+        "C:\\p\\s (1).png"
+      ],
+      "finds": [
+        {
+          "query": "C:\\p\\s.jpg",
+          "pair": [
+            "C:\\p\\s.jpg",
+            "C:\\p\\s (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\s (1).jpg",
+          "pair": [
+            "C:\\p\\s.jpg",
+            "C:\\p\\s (1).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\s (2).jpg",
+          "pair": [
+            "C:\\p\\s.jpg",
+            "C:\\p\\s (2).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\s (3).jpg",
+          "pair": [
+            "C:\\p\\s.jpg",
+            "C:\\p\\s (3).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\t.jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\u (1).jpg",
+          "pair": null
+        },
+        {
+          "query": "C:\\p\\sub\\s.jpg",
+          "pair": [
+            "C:\\p\\sub\\s.jpg",
+            "C:\\p\\sub\\s (4).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\sub\\s (4).jpg",
+          "pair": [
+            "C:\\p\\sub\\s.jpg",
+            "C:\\p\\sub\\s (4).jpg"
+          ]
+        },
+        {
+          "query": "C:\\p\\s.png",
+          "pair": [
+            "C:\\p\\s.png",
+            "C:\\p\\s (1).png"
+          ]
+        },
+        {
+          "query": "C:\\p\\s (1).png",
+          "pair": [
+            "C:\\p\\s.png",
+            "C:\\p\\s (1).png"
+          ]
+        }
+      ],
+      "index": [
+        {
+          "key": "C:\\p\\s (1).jpg",
+          "left": "C:\\p\\s.jpg",
+          "right": "C:\\p\\s (1).jpg"
+        },
+        {
+          "key": "C:\\p\\s (1).png",
+          "left": "C:\\p\\s.png",
+          "right": "C:\\p\\s (1).png"
+        },
+        {
+          "key": "C:\\p\\s (2).jpg",
+          "left": "C:\\p\\s.jpg",
+          "right": "C:\\p\\s (2).jpg"
+        },
+        {
+          "key": "C:\\p\\s (3).jpg",
+          "left": "C:\\p\\s.jpg",
+          "right": "C:\\p\\s (3).jpg"
+        },
+        {
+          "key": "C:\\p\\s.jpg",
+          "left": "C:\\p\\s.jpg",
+          "right": "C:\\p\\s (1).jpg"
+        },
+        {
+          "key": "C:\\p\\s.png",
+          "left": "C:\\p\\s.png",
+          "right": "C:\\p\\s (1).png"
+        },
+        {
+          "key": "C:\\p\\sub\\s (4).jpg",
+          "left": "C:\\p\\sub\\s.jpg",
+          "right": "C:\\p\\sub\\s (4).jpg"
+        },
+        {
+          "key": "C:\\p\\sub\\s.jpg",
+          "left": "C:\\p\\sub\\s.jpg",
+          "right": "C:\\p\\sub\\s (4).jpg"
+        }
+      ],
+      "index_find_agrees": [
+        {
+          "file": "C:\\p\\s.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\s (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\s (2).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\s (3).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\t.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\u (1).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\sub\\s.jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\sub\\s (4).jpg",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\s.png",
+          "agrees": true
+        },
+        {
+          "file": "C:\\p\\s (1).png",
+          "agrees": true
+        }
+      ]
+    }
+  ]
+}

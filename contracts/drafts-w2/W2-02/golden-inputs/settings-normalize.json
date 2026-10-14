@@ -1,0 +1,1180 @@
+{
+    "cases":  [
+                  {
+                      "name":  "defaults report nothing",
+                      "text":  "{}"
+                  },
+                  {
+                      "name":  "config version only",
+                      "text":  "{\"ConfigVersion\":3}"
+                  },
+                  {
+                      "name":  "ImageCacheCapacityBytes 0",
+                      "text":  "{\"ImageCacheCapacityBytes\":0}"
+                  },
+                  {
+                      "name":  "ImageCacheCapacityBytes -1",
+                      "text":  "{\"ImageCacheCapacityBytes\":-1}"
+                  },
+                  {
+                      "name":  "ImageCacheCapacityBytes 1",
+                      "text":  "{\"ImageCacheCapacityBytes\":1}"
+                  },
+                  {
+                      "name":  "ImageCacheCapacityBytes -9223372036854775808",
+                      "text":  "{\"ImageCacheCapacityBytes\":-9223372036854775808}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent -5",
+                      "text":  "{\"ImageCacheRamPercent\":-5}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 0",
+                      "text":  "{\"ImageCacheRamPercent\":0}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 1",
+                      "text":  "{\"ImageCacheRamPercent\":1}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 50",
+                      "text":  "{\"ImageCacheRamPercent\":50}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 90",
+                      "text":  "{\"ImageCacheRamPercent\":90}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 91",
+                      "text":  "{\"ImageCacheRamPercent\":91}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent 2147483647",
+                      "text":  "{\"ImageCacheRamPercent\":2147483647}"
+                  },
+                  {
+                      "name":  "ImageCacheRamPercent -2147483648",
+                      "text":  "{\"ImageCacheRamPercent\":-2147483648}"
+                  },
+                  {
+                      "name":  "SourceBytesCapacityBytes 0",
+                      "text":  "{\"SourceBytesCapacityBytes\":0}"
+                  },
+                  {
+                      "name":  "SourceBytesCapacityBytes -1",
+                      "text":  "{\"SourceBytesCapacityBytes\":-1}"
+                  },
+                  {
+                      "name":  "SourceBytesCapacityBytes 1",
+                      "text":  "{\"SourceBytesCapacityBytes\":1}"
+                  },
+                  {
+                      "name":  "MemoryReserveBytes -1",
+                      "text":  "{\"MemoryReserveBytes\":-1}"
+                  },
+                  {
+                      "name":  "MemoryReserveBytes 0",
+                      "text":  "{\"MemoryReserveBytes\":0}"
+                  },
+                  {
+                      "name":  "MemoryReserveBytes 1",
+                      "text":  "{\"MemoryReserveBytes\":1}"
+                  },
+                  {
+                      "name":  "PreviewDiskCacheCapacityBytes -1",
+                      "text":  "{\"PreviewDiskCacheCapacityBytes\":-1}"
+                  },
+                  {
+                      "name":  "PreviewDiskCacheCapacityBytes 0",
+                      "text":  "{\"PreviewDiskCacheCapacityBytes\":0}"
+                  },
+                  {
+                      "name":  "PreviewDiskCacheCapacityBytes 1",
+                      "text":  "{\"PreviewDiskCacheCapacityBytes\":1}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount -3",
+                      "text":  "{\"PreloadWorkerCount\":-3}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount 0",
+                      "text":  "{\"PreloadWorkerCount\":0}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount 1",
+                      "text":  "{\"PreloadWorkerCount\":1}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount 64",
+                      "text":  "{\"PreloadWorkerCount\":64}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount 65",
+                      "text":  "{\"PreloadWorkerCount\":65}"
+                  },
+                  {
+                      "name":  "PreloadWorkerCount 2147483647",
+                      "text":  "{\"PreloadWorkerCount\":2147483647}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 0",
+                      "text":  "{\"PreloadMemoryLoadLimit\":0}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit -0.5",
+                      "text":  "{\"PreloadMemoryLoadLimit\":-0.5}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 0.01",
+                      "text":  "{\"PreloadMemoryLoadLimit\":0.01}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 0.9",
+                      "text":  "{\"PreloadMemoryLoadLimit\":0.9}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 1",
+                      "text":  "{\"PreloadMemoryLoadLimit\":1}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 1.0001",
+                      "text":  "{\"PreloadMemoryLoadLimit\":1.0001}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit \"NaN\"",
+                      "text":  "{\"PreloadMemoryLoadLimit\":\"NaN\"}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit \"Infinity\"",
+                      "text":  "{\"PreloadMemoryLoadLimit\":\"Infinity\"}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit \"-Infinity\"",
+                      "text":  "{\"PreloadMemoryLoadLimit\":\"-Infinity\"}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 5e-324",
+                      "text":  "{\"PreloadMemoryLoadLimit\":5e-324}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit 1e999",
+                      "text":  "{\"PreloadMemoryLoadLimit\":1e999}"
+                  },
+                  {
+                      "name":  "PreloadMemoryLoadLimit -0.0",
+                      "text":  "{\"PreloadMemoryLoadLimit\":-0.0}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount -1",
+                      "text":  "{\"PreloadForwardCount\":-1}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 0",
+                      "text":  "{\"PreloadForwardCount\":0}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 1",
+                      "text":  "{\"PreloadForwardCount\":1}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 32",
+                      "text":  "{\"PreloadForwardCount\":32}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 500",
+                      "text":  "{\"PreloadForwardCount\":500}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 501",
+                      "text":  "{\"PreloadForwardCount\":501}"
+                  },
+                  {
+                      "name":  "PreloadForwardCount 2147483647",
+                      "text":  "{\"PreloadForwardCount\":2147483647}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount -1",
+                      "text":  "{\"PreloadBackwardCount\":-1}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount 0",
+                      "text":  "{\"PreloadBackwardCount\":0}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount 8",
+                      "text":  "{\"PreloadBackwardCount\":8}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount 500",
+                      "text":  "{\"PreloadBackwardCount\":500}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount 501",
+                      "text":  "{\"PreloadBackwardCount\":501}"
+                  },
+                  {
+                      "name":  "PreloadBackwardCount 2147483647",
+                      "text":  "{\"PreloadBackwardCount\":2147483647}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"400%\"",
+                      "text":  "{\"InitialViewMode\":\"400%\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode 3",
+                      "text":  "{\"InitialViewMode\":3}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"200%\"",
+                      "text":  "{\"InitialViewMode\":\"200%\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"100%\"",
+                      "text":  "{\"InitialViewMode\":\"100%\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"fit-width\"",
+                      "text":  "{\"InitialViewMode\":\"fit-width\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"fit-height\"",
+                      "text":  "{\"InitialViewMode\":\"fit-height\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"click-zoom\"",
+                      "text":  "{\"InitialViewMode\":\"click-zoom\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode \"bogus\"",
+                      "text":  "{\"InitialViewMode\":\"bogus\"}"
+                  },
+                  {
+                      "name":  "InitialViewMode 99",
+                      "text":  "{\"InitialViewMode\":99}"
+                  },
+                  {
+                      "name":  "LoadingMode \"garbage\"",
+                      "text":  "{\"LoadingMode\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "LoadingMode null",
+                      "text":  "{\"LoadingMode\":null}"
+                  },
+                  {
+                      "name":  "LoadingMode 999",
+                      "text":  "{\"LoadingMode\":999}"
+                  },
+                  {
+                      "name":  "ImageSortMode \"garbage\"",
+                      "text":  "{\"ImageSortMode\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "ImageSortMode null",
+                      "text":  "{\"ImageSortMode\":null}"
+                  },
+                  {
+                      "name":  "ImageSortMode 999",
+                      "text":  "{\"ImageSortMode\":999}"
+                  },
+                  {
+                      "name":  "ScalingQuality \"garbage\"",
+                      "text":  "{\"ScalingQuality\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "ScalingQuality null",
+                      "text":  "{\"ScalingQuality\":null}"
+                  },
+                  {
+                      "name":  "ScalingQuality 999",
+                      "text":  "{\"ScalingQuality\":999}"
+                  },
+                  {
+                      "name":  "KeyboardZoomAnchor \"garbage\"",
+                      "text":  "{\"KeyboardZoomAnchor\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "KeyboardZoomAnchor null",
+                      "text":  "{\"KeyboardZoomAnchor\":null}"
+                  },
+                  {
+                      "name":  "KeyboardZoomAnchor 999",
+                      "text":  "{\"KeyboardZoomAnchor\":999}"
+                  },
+                  {
+                      "name":  "KineticGlideSmoothing \"garbage\"",
+                      "text":  "{\"KineticGlideSmoothing\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "KineticGlideSmoothing null",
+                      "text":  "{\"KineticGlideSmoothing\":null}"
+                  },
+                  {
+                      "name":  "KineticGlideSmoothing 999",
+                      "text":  "{\"KineticGlideSmoothing\":999}"
+                  },
+                  {
+                      "name":  "FitWidthAnchor2 \"garbage\"",
+                      "text":  "{\"FitWidthAnchor2\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "FitWidthAnchor2 null",
+                      "text":  "{\"FitWidthAnchor2\":null}"
+                  },
+                  {
+                      "name":  "FitWidthAnchor2 999",
+                      "text":  "{\"FitWidthAnchor2\":999}"
+                  },
+                  {
+                      "name":  "MiddleClickAction \"garbage\"",
+                      "text":  "{\"MiddleClickAction\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "MiddleClickAction null",
+                      "text":  "{\"MiddleClickAction\":null}"
+                  },
+                  {
+                      "name":  "MiddleClickAction 999",
+                      "text":  "{\"MiddleClickAction\":999}"
+                  },
+                  {
+                      "name":  "DecoderBackend \"LibRaw\"",
+                      "text":  "{\"DecoderBackend\":\"LibRaw\"}"
+                  },
+                  {
+                      "name":  "DecoderBackend 3",
+                      "text":  "{\"DecoderBackend\":3}"
+                  },
+                  {
+                      "name":  "DecoderBackend \"Wpf\"",
+                      "text":  "{\"DecoderBackend\":\"Wpf\"}"
+                  },
+                  {
+                      "name":  "DecoderBackend \"TurboJpeg\"",
+                      "text":  "{\"DecoderBackend\":\"TurboJpeg\"}"
+                  },
+                  {
+                      "name":  "DecoderBackend \"WicDirect\"",
+                      "text":  "{\"DecoderBackend\":\"WicDirect\"}"
+                  },
+                  {
+                      "name":  "DecoderBackend \"garbage\"",
+                      "text":  "{\"DecoderBackend\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "DecoderBackend null",
+                      "text":  "{\"DecoderBackend\":null}"
+                  },
+                  {
+                      "name":  "DecoderBackend 4",
+                      "text":  "{\"DecoderBackend\":4}"
+                  },
+                  {
+                      "name":  "JournalDurability garbage is silently zero",
+                      "text":  "{\"JournalDurability\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "InstanceMode garbage is silently zero",
+                      "text":  "{\"InstanceMode\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "FitWidthAnchor garbage is silently zero",
+                      "text":  "{\"FitWidthAnchor\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "MouseWheelAction garbage is silently zero",
+                      "text":  "{\"MouseWheelAction\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "ImageTransition garbage is silently zero",
+                      "text":  "{\"ImageTransition\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "RawFullDecode garbage is silently zero",
+                      "text":  "{\"RawFullDecode\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "RawPairMode garbage is silently zero",
+                      "text":  "{\"RawPairMode\":\"garbage\"}"
+                  },
+                  {
+                      "name":  "every settings-enum garbage at once (order of the repair list)",
+                      "text":  "{\"InitialViewMode\":\"400%\",\"LoadingMode\":\"x\",\"ImageSortMode\":\"x\",\"ScalingQuality\":\"x\",\"DecoderBackend\":\"LibRaw\",\"JournalDurability\":\"x\",\"InstanceMode\":\"x\",\"FitWidthAnchor\":\"x\",\"KeyboardZoomAnchor\":\"x\",\"FitWidthAnchor2\":\"x\",\"MiddleClickAction\":\"x\",\"MouseWheelAction\":\"x\",\"KineticGlideSmoothing\":\"x\",\"ImageTransition\":\"x\",\"RawFullDecode\":\"x\",\"RawPairMode\":\"x\"}"
+                  },
+                  {
+                      "name":  "every numeric setting out of range at once (order of the repair list)",
+                      "text":  "{\"ImageCacheCapacityBytes\":0,\"ImageCacheRamPercent\":0,\"SourceBytesCapacityBytes\":0,\"MemoryReserveBytes\":-1,\"PreviewDiskCacheCapacityBytes\":-1,\"PreloadWorkerCount\":0,\"PreloadMemoryLoadLimit\":0,\"PreloadForwardCount\":0,\"PreloadBackwardCount\":-1,\"ClickZoomPercent\":0,\"ArrowPanStepPercent\":0,\"KeyboardZoomStepPercent\":0,\"ToolbarAutoHideDelayMs\":-1,\"InfoOverlayAutoHideDelayMs\":-1,\"ToolbarOpacityPercent\":0,\"InfoOverlayFontSize\":\"NaN\",\"ImageTransitionMs\":0,\"TouchpadSwipeDistancePerImage\":0}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent -1",
+                      "text":  "{\"ClickZoomPercent\":-1}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 9",
+                      "text":  "{\"ClickZoomPercent\":9}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 10",
+                      "text":  "{\"ClickZoomPercent\":10}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 100",
+                      "text":  "{\"ClickZoomPercent\":100}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 800",
+                      "text":  "{\"ClickZoomPercent\":800}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 801",
+                      "text":  "{\"ClickZoomPercent\":801}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent 2147483647",
+                      "text":  "{\"ClickZoomPercent\":2147483647}"
+                  },
+                  {
+                      "name":  "ClickZoomPercent -2147483648",
+                      "text":  "{\"ClickZoomPercent\":-2147483648}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent -1",
+                      "text":  "{\"ArrowPanStepPercent\":-1}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent 0",
+                      "text":  "{\"ArrowPanStepPercent\":0}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent 1",
+                      "text":  "{\"ArrowPanStepPercent\":1}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent 10",
+                      "text":  "{\"ArrowPanStepPercent\":10}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent 100",
+                      "text":  "{\"ArrowPanStepPercent\":100}"
+                  },
+                  {
+                      "name":  "ArrowPanStepPercent 101",
+                      "text":  "{\"ArrowPanStepPercent\":101}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent -2147483648",
+                      "text":  "{\"KeyboardZoomStepPercent\":-2147483648}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent 4",
+                      "text":  "{\"KeyboardZoomStepPercent\":4}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent 5",
+                      "text":  "{\"KeyboardZoomStepPercent\":5}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent 10",
+                      "text":  "{\"KeyboardZoomStepPercent\":10}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent 100",
+                      "text":  "{\"KeyboardZoomStepPercent\":100}"
+                  },
+                  {
+                      "name":  "KeyboardZoomStepPercent 101",
+                      "text":  "{\"KeyboardZoomStepPercent\":101}"
+                  },
+                  {
+                      "name":  "ToolbarAutoHideDelayMs -1",
+                      "text":  "{\"ToolbarAutoHideDelayMs\":-1}"
+                  },
+                  {
+                      "name":  "ToolbarAutoHideDelayMs 0",
+                      "text":  "{\"ToolbarAutoHideDelayMs\":0}"
+                  },
+                  {
+                      "name":  "ToolbarAutoHideDelayMs 1500",
+                      "text":  "{\"ToolbarAutoHideDelayMs\":1500}"
+                  },
+                  {
+                      "name":  "ToolbarAutoHideDelayMs 10000",
+                      "text":  "{\"ToolbarAutoHideDelayMs\":10000}"
+                  },
+                  {
+                      "name":  "ToolbarAutoHideDelayMs 10001",
+                      "text":  "{\"ToolbarAutoHideDelayMs\":10001}"
+                  },
+                  {
+                      "name":  "InfoOverlayAutoHideDelayMs -1",
+                      "text":  "{\"InfoOverlayAutoHideDelayMs\":-1}"
+                  },
+                  {
+                      "name":  "InfoOverlayAutoHideDelayMs 0",
+                      "text":  "{\"InfoOverlayAutoHideDelayMs\":0}"
+                  },
+                  {
+                      "name":  "InfoOverlayAutoHideDelayMs 3000",
+                      "text":  "{\"InfoOverlayAutoHideDelayMs\":3000}"
+                  },
+                  {
+                      "name":  "InfoOverlayAutoHideDelayMs 10000",
+                      "text":  "{\"InfoOverlayAutoHideDelayMs\":10000}"
+                  },
+                  {
+                      "name":  "InfoOverlayAutoHideDelayMs 10001",
+                      "text":  "{\"InfoOverlayAutoHideDelayMs\":10001}"
+                  },
+                  {
+                      "name":  "ToolbarOpacityPercent 0",
+                      "text":  "{\"ToolbarOpacityPercent\":0}"
+                  },
+                  {
+                      "name":  "ToolbarOpacityPercent 19",
+                      "text":  "{\"ToolbarOpacityPercent\":19}"
+                  },
+                  {
+                      "name":  "ToolbarOpacityPercent 20",
+                      "text":  "{\"ToolbarOpacityPercent\":20}"
+                  },
+                  {
+                      "name":  "ToolbarOpacityPercent 100",
+                      "text":  "{\"ToolbarOpacityPercent\":100}"
+                  },
+                  {
+                      "name":  "ToolbarOpacityPercent 101",
+                      "text":  "{\"ToolbarOpacityPercent\":101}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 7.9",
+                      "text":  "{\"InfoOverlayFontSize\":7.9}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 8",
+                      "text":  "{\"InfoOverlayFontSize\":8}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 12",
+                      "text":  "{\"InfoOverlayFontSize\":12}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 24",
+                      "text":  "{\"InfoOverlayFontSize\":24}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 24.1",
+                      "text":  "{\"InfoOverlayFontSize\":24.1}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize \"NaN\"",
+                      "text":  "{\"InfoOverlayFontSize\":\"NaN\"}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize \"Infinity\"",
+                      "text":  "{\"InfoOverlayFontSize\":\"Infinity\"}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize \"-Infinity\"",
+                      "text":  "{\"InfoOverlayFontSize\":\"-Infinity\"}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 1e999",
+                      "text":  "{\"InfoOverlayFontSize\":1e999}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize -1e999",
+                      "text":  "{\"InfoOverlayFontSize\":-1e999}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize -0.0",
+                      "text":  "{\"InfoOverlayFontSize\":-0.0}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 0",
+                      "text":  "{\"InfoOverlayFontSize\":0}"
+                  },
+                  {
+                      "name":  "InfoOverlayFontSize 1e-300",
+                      "text":  "{\"InfoOverlayFontSize\":1e-300}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs 39",
+                      "text":  "{\"ImageTransitionMs\":39}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs 40",
+                      "text":  "{\"ImageTransitionMs\":40}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs 120",
+                      "text":  "{\"ImageTransitionMs\":120}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs 400",
+                      "text":  "{\"ImageTransitionMs\":400}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs 401",
+                      "text":  "{\"ImageTransitionMs\":401}"
+                  },
+                  {
+                      "name":  "ImageTransitionMs -1",
+                      "text":  "{\"ImageTransitionMs\":-1}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 0",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":0}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 29",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":29}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 30",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":30}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 200",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":200}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 2400",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":2400}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 2401",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":2401}"
+                  },
+                  {
+                      "name":  "TouchpadSwipeDistancePerImage 2147483647",
+                      "text":  "{\"TouchpadSwipeDistancePerImage\":2147483647}"
+                  },
+                  {
+                      "name":  "flags and bools are never repaired",
+                      "text":  "{\"ShowExifInfo\":true,\"ExifInfoFields\":\"bogus\",\"TitleBarFields\":\"bogus\",\"ToolbarAutoHide\":true,\"ConfirmBeforeDelete\":true}"
+                  },
+                  {
+                      "name":  "actions: empty list is kept",
+                      "text":  "{\"Actions\":[]}"
+                  },
+                  {
+                      "name":  "actions: one null entry",
+                      "text":  "{\"Actions\":[null]}"
+                  },
+                  {
+                      "name":  "actions: null entries around a valid one",
+                      "text":  "{\"Actions\":[null,{\"Name\":\"K\",\"Shortcut\":\"F9\",\"Operation\":\"Copy\",\"Destination\":\"d\"},null]}"
+                  },
+                  {
+                      "name":  "actions: null strings become empty without a report",
+                      "text":  "{\"Actions\":[{\"Name\":null,\"Shortcut\":null,\"Destination\":null}]}"
+                  },
+                  {
+                      "name":  "actions: odd operations are silently Move",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\",\"Operation\":77},{\"Name\":\"B\",\"Shortcut\":\"F8\",\"Operation\":\"bogus\"},{\"Name\":\"C\",\"Shortcut\":\"F9\",\"Operation\":\"Delete\"}]}"
+                  },
+                  {
+                      "name":  "actions: valid list untouched",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\",\"Operation\":\"Move\",\"Destination\":\"a\",\"Confirm\":true},{\"Name\":\"B\",\"Shortcut\":\"F8\",\"Operation\":\"Copy\",\"Destination\":\"b\"}]}"
+                  },
+                  {
+                      "name":  "actions: shortcut alias is canonicalised",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\"},{\"Name\":\"B\",\"Shortcut\":\" prior \"},{\"Name\":\"C\",\"Shortcut\":\"f9\"}]}"
+                  },
+                  {
+                      "name":  "mandatory Next blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Next null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Next\":null}}"
+                  },
+                  {
+                      "name":  "mandatory Previous blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Previous null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Previous\":null}}"
+                  },
+                  {
+                      "name":  "mandatory SendToRecycleBin blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"SendToRecycleBin\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory SendToRecycleBin null resets to default",
+                      "text":  "{\"Shortcuts\":{\"SendToRecycleBin\":null}}"
+                  },
+                  {
+                      "name":  "mandatory Compare blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Compare\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Compare null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Compare\":null}}"
+                  },
+                  {
+                      "name":  "mandatory NextFolder blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"NextFolder\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory NextFolder null resets to default",
+                      "text":  "{\"Shortcuts\":{\"NextFolder\":null}}"
+                  },
+                  {
+                      "name":  "mandatory PreviousFolder blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory PreviousFolder null resets to default",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":null}}"
+                  },
+                  {
+                      "name":  "mandatory FirstImage blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"FirstImage\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory FirstImage null resets to default",
+                      "text":  "{\"Shortcuts\":{\"FirstImage\":null}}"
+                  },
+                  {
+                      "name":  "mandatory ZoomIn blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"ZoomIn\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory ZoomIn null resets to default",
+                      "text":  "{\"Shortcuts\":{\"ZoomIn\":null}}"
+                  },
+                  {
+                      "name":  "mandatory ZoomOut blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"ZoomOut\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory ZoomOut null resets to default",
+                      "text":  "{\"Shortcuts\":{\"ZoomOut\":null}}"
+                  },
+                  {
+                      "name":  "mandatory ToggleFit blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"ToggleFit\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory ToggleFit null resets to default",
+                      "text":  "{\"Shortcuts\":{\"ToggleFit\":null}}"
+                  },
+                  {
+                      "name":  "mandatory Skip blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Skip\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Skip null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Skip\":null}}"
+                  },
+                  {
+                      "name":  "mandatory Undo blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Undo\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Undo null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Undo\":null}}"
+                  },
+                  {
+                      "name":  "mandatory Fullscreen blank resets to default",
+                      "text":  "{\"Shortcuts\":{\"Fullscreen\":\"\"}}"
+                  },
+                  {
+                      "name":  "mandatory Fullscreen null resets to default",
+                      "text":  "{\"Shortcuts\":{\"Fullscreen\":null}}"
+                  },
+                  {
+                      "name":  "mandatory whitespace-only resets",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"   \"}}"
+                  },
+                  {
+                      "name":  "mandatory padded is kept (trim is only for optional)",
+                      "text":  "{\"Shortcuts\":{\"Next\":\" Right \"}}"
+                  },
+                  {
+                      "name":  "MoveToFolder2 blank is NOT reset",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":\"\"}}"
+                  },
+                  {
+                      "name":  "MoveToFolder2 null becomes empty silently",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":null}}"
+                  },
+                  {
+                      "name":  "MoveToFolder2 alias is canonicalised",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":\"Return\"}}"
+                  },
+                  {
+                      "name":  "several mandatory blank at once",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"\",\"Undo\":null,\"Fullscreen\":\" \"}}"
+                  },
+                  {
+                      "name":  "blank mandatory whose default an action holds: action key cleared and reported",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"Left\"},{\"Name\":\"Other\",\"Shortcut\":\"Z\"}]}"
+                  },
+                  {
+                      "name":  "blank mandatory, action holds the default in other casing",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"left\"}]}"
+                  },
+                  {
+                      "name":  "blank mandatory, action holds an alias of the default",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"\"},\"Actions\":[{\"Name\":\"Mine\",\"Shortcut\":\"Prior\"},{\"Name\":\"B\",\"Shortcut\":\"PageUp\"}]}"
+                  },
+                  {
+                      "name":  "two blank mandatory, three actions, two collide",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"\",\"Skip\":null},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Right\"},{\"Name\":\"B\",\"Shortcut\":\"X\"},{\"Name\":\"C\",\"Shortcut\":\"space\"}]}"
+                  },
+                  {
+                      "name":  "blank mandatory, action with a blank shortcut is not touched",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"\"}]}"
+                  },
+                  {
+                      "name":  "optional LastImage null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":null}}"
+                  },
+                  {
+                      "name":  "optional LastImage padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional ZoomActualSize null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":null}}"
+                  },
+                  {
+                      "name":  "optional ZoomActualSize padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional ToggleInfoOverlay null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":null}}"
+                  },
+                  {
+                      "name":  "optional ToggleInfoOverlay padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional MoveToFolder null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder\":null}}"
+                  },
+                  {
+                      "name":  "optional MoveToFolder padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional CopyToFolder null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":null}}"
+                  },
+                  {
+                      "name":  "optional CopyToFolder padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional ClickZoom null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"ClickZoom\":null}}"
+                  },
+                  {
+                      "name":  "optional ClickZoom padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"ClickZoom\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional FitWidth null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"FitWidth\":null}}"
+                  },
+                  {
+                      "name":  "optional FitWidth padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"FitWidth\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional FitHeight null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"FitHeight\":null}}"
+                  },
+                  {
+                      "name":  "optional FitHeight padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"FitHeight\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional ToggleKeepZoom null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"ToggleKeepZoom\":null}}"
+                  },
+                  {
+                      "name":  "optional ToggleKeepZoom padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"ToggleKeepZoom\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional OpenFolder null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"OpenFolder\":null}}"
+                  },
+                  {
+                      "name":  "optional OpenFolder padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"OpenFolder\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional CustomZoom null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"CustomZoom\":null}}"
+                  },
+                  {
+                      "name":  "optional CustomZoom padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"CustomZoom\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional ToggleCaptureMember null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":null}}"
+                  },
+                  {
+                      "name":  "optional ToggleCaptureMember padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional FitWidth2 null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":null}}"
+                  },
+                  {
+                      "name":  "optional FitWidth2 padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional Refresh null becomes empty",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":null}}"
+                  },
+                  {
+                      "name":  "optional Refresh padded is trimmed",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"  J  \"}}"
+                  },
+                  {
+                      "name":  "optional alias is canonicalised",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\" Prior \"}}"
+                  },
+                  {
+                      "name":  "optional blank stays blank (disabled)",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"\",\"ZoomActualSize\":\"   \"}}"
+                  },
+                  {
+                      "name":  "canonicalisation of mandatory and legacy shortcuts",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"Prior\",\"NextFolder\":\" next \",\"Fullscreen\":\"f11\"}}"
+                  },
+                  {
+                      "name":  "optional vs action key",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"D1\"}]}"
+                  },
+                  {
+                      "name":  "optional vs action key, other casing and padding",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\" d1 \"}]}"
+                  },
+                  {
+                      "name":  "optional vs action alias",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\"}],\"Shortcuts\":{\"LastImage\":\"Enter\"}}"
+                  },
+                  {
+                      "name":  "optional vs mandatory key",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"c\"}}"
+                  },
+                  {
+                      "name":  "optional LastImage equals Next",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional ZoomActualSize equals Next",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional ToggleInfoOverlay equals Next",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional MoveToFolder equals Next",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional CopyToFolder equals Next",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional ClickZoom equals Next",
+                      "text":  "{\"Shortcuts\":{\"ClickZoom\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional FitWidth equals Next",
+                      "text":  "{\"Shortcuts\":{\"FitWidth\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional FitHeight equals Next",
+                      "text":  "{\"Shortcuts\":{\"FitHeight\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional ToggleKeepZoom equals Next",
+                      "text":  "{\"Shortcuts\":{\"ToggleKeepZoom\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional OpenFolder equals Next",
+                      "text":  "{\"Shortcuts\":{\"OpenFolder\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional CustomZoom equals Next",
+                      "text":  "{\"Shortcuts\":{\"CustomZoom\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional ToggleCaptureMember equals Next",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional FitWidth2 equals Next",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional Refresh equals Next",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional LastImage equals an action key",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional ZoomActualSize equals an action key",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional ToggleInfoOverlay equals an action key",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional MoveToFolder equals an action key",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional CopyToFolder equals an action key",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional ClickZoom equals an action key",
+                      "text":  "{\"Shortcuts\":{\"ClickZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional FitWidth equals an action key",
+                      "text":  "{\"Shortcuts\":{\"FitWidth\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional FitHeight equals an action key",
+                      "text":  "{\"Shortcuts\":{\"FitHeight\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional ToggleKeepZoom equals an action key",
+                      "text":  "{\"Shortcuts\":{\"ToggleKeepZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional OpenFolder equals an action key",
+                      "text":  "{\"Shortcuts\":{\"OpenFolder\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional CustomZoom equals an action key",
+                      "text":  "{\"Shortcuts\":{\"CustomZoom\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional ToggleCaptureMember equals an action key",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional FitWidth2 equals an action key",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional Refresh equals an action key",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"F9\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "optional vs optional: the earlier one in OptionalNames wins",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"D2\"}}"
+                  },
+                  {
+                      "name":  "all optional shortcuts on the same free key: only the first survives, rest disabled in OptionalNames order",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"J\",\"ZoomActualSize\":\"J\",\"ToggleInfoOverlay\":\"J\",\"MoveToFolder\":\"J\",\"CopyToFolder\":\"J\",\"ClickZoom\":\"J\",\"FitWidth\":\"J\",\"FitHeight\":\"J\",\"ToggleKeepZoom\":\"J\",\"OpenFolder\":\"J\",\"CustomZoom\":\"J\",\"ToggleCaptureMember\":\"J\",\"FitWidth2\":\"J\",\"Refresh\":\"J\"}}"
+                  },
+                  {
+                      "name":  "optional same key as another optional, different casing",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"j\",\"ClickZoom\":\"J\"}}"
+                  },
+                  {
+                      "name":  "FitWidth2 default D4 vs action D4",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"D4\"}]}"
+                  },
+                  {
+                      "name":  "Refresh default R vs action R",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"R\"}]}"
+                  },
+                  {
+                      "name":  "Refresh equals FitWidth2",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"D4\"}}"
+                  },
+                  {
+                      "name":  "action with blank shortcut takes nothing",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"\"},{\"Name\":\"B\",\"Shortcut\":null}]}"
+                  },
+                  {
+                      "name":  "blank-resolved mandatory then conflicting optional",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"\",\"LastImage\":\"Right\"}}"
+                  },
+                  {
+                      "name":  "optional with surrounding whitespace conflicts after trim",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\" Right \"}}"
+                  },
+                  {
+                      "name":  "no conflict at all",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}"
+                  },
+                  {
+                      "name":  "hidden items: absent stays absent",
+                      "text":  "{}"
+                  },
+                  {
+                      "name":  "hidden items: empty list kept",
+                      "text":  "{\"HiddenContextMenuItems\":[]}"
+                  },
+                  {
+                      "name":  "hidden items: canonical list kept",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Undo\",\"Fit\",\"Refresh\",\"ZoomFitWidth2\"]}"
+                  },
+                  {
+                      "name":  "hidden items: out of order is re-ordered and reported",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Refresh\",\"Fit\",\"Undo\"]}"
+                  },
+                  {
+                      "name":  "hidden items: Settings is dropped",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Settings\",\"Fit\"]}"
+                  },
+                  {
+                      "name":  "hidden items: unknown and lowercase names dropped",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Bogus\",\"undo\",\"Fit\"]}"
+                  },
+                  {
+                      "name":  "hidden items: duplicates dropped",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Fit\",\"Fit\"]}"
+                  },
+                  {
+                      "name":  "hidden items: null element dropped",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Fit\",null]}"
+                  },
+                  {
+                      "name":  "hidden items: numeric and padded names (Enum.TryParse quirks)",
+                      "text":  "{\"HiddenContextMenuItems\":[\"3\",\" Fit \",\"Fit,Undo\",\"17\",\"18\",\"-1\"]}"
+                  },
+                  {
+                      "name":  "hidden items: only unknown",
+                      "text":  "{\"HiddenContextMenuItems\":[\"x\",\"y\"]}"
+                  },
+                  {
+                      "name":  "hidden items: every hideable item in canonical order",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Undo\",\"MoveToRecycleBin\",\"Fit\",\"ZoomToLevel\",\"ZoomSubmenu\",\"Refresh\",\"OpenFolder\",\"NextFolder\",\"PreviousFolder\",\"ExternalEditor\",\"CopyFileName\",\"CopyFullPath\",\"ZoomFitWidth\",\"ZoomFitWidth2\",\"ZoomFitHeight\",\"ZoomPresets\",\"ZoomLevelOptions\"]}"
+                  },
+                  {
+                      "name":  "hidden items: enum declaration order is NOT the canonical order",
+                      "text":  "{\"HiddenContextMenuItems\":[\"Undo\",\"MoveToRecycleBin\",\"Fit\",\"ZoomToLevel\",\"ZoomSubmenu\",\"OpenFolder\",\"NextFolder\",\"PreviousFolder\",\"ExternalEditor\",\"CopyFileName\",\"CopyFullPath\",\"ZoomFitWidth\",\"ZoomFitWidth2\",\"ZoomFitHeight\",\"ZoomPresets\",\"ZoomLevelOptions\",\"Refresh\"]}"
+                  },
+                  {
+                      "name":  "legacy menu flags are never touched by Normalize",
+                      "text":  "{\"ShowZoomMenuItems\":true,\"ShowFolderMenuItems\":false,\"ShowRecycleMenuItem\":true}"
+                  },
+                  {
+                      "name":  "the v1 legacy document",
+                      "text":  "{\"LoadingMode\":\"Fast\",\"ImageSortMode\":\"Size\",\"InitialViewMode\":\"100%\",\"Folder2Name\":\"Old\",\"Actions\":[{\"Name\":\"Loai 2\",\"Shortcut\":\"Enter\",\"Operation\":\"Delete\",\"Destination\":\"Group-2\"}]}"
+                  }
+              ]
+}

@@ -1,0 +1,1009 @@
+{
+  "generator": "oracle-cs destination-policy",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "validate",
+      "destination": null,
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": " ",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "  ",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "\t",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "\u00A0",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "\u3000",
+      "result": "Empty"
+    },
+    {
+      "kind": "validate",
+      "destination": "Loai-2",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "sub\\deeper",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "sub/deeper",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": " sub",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "sub ",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": ".",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "./x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "...",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a...b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\...\\b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\.\\b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "..x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "x..",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\..x\\b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "..",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "..\\x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "../x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\..",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\..\\..\\x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a/../../x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\..\\b",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": ".. \\x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\ .. \\x",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": " ..",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": ".. ",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "\u3000..",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\\u00A0..\\b",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\\..\t\\b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a/..\\b",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "validate",
+      "destination": "D:\\Backup",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "D:\\Backup\\..\\x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "d:/Backup",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "C:\\",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "C:/",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "E:\\a:b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\server\\share\\x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "//server/share/x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\D:\\Backup",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\UNC\\server\\share\\x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\.\\D:\\Backup",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\photos",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "/photos",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "/",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "C:",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "C:x",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a:b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "1:\\a",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "E:Backup",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a:",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "::",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a|b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "|sel",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "*sel",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "?sel",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "sel*",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a?b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "D:\\Backup\\*",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "D:\\Back?up",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\u0001b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\tb",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\nb",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\u001Fb",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\u007Fb",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a\"b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a<b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "a>b",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "éè",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "日本\\x",
+      "result": "Ok"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\D:\\Back*",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\D:\\Back?up",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\*sel",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\|sel",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\a?b",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\??\\x",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\??\\C:\\a",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\\\?\\x",
+      "result": "InvalidChars"
+    },
+    {
+      "kind": "validate",
+      "destination": "\\\\?\\a\\..\\b",
+      "result": "Ok"
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\Backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "D:\\Photos",
+        "D:\\Photos\\Trip",
+        "D:\\Photos\\Trip\\Best",
+        "E:\\Backup",
+        "\\\\server\\share\\x",
+        "E:\\"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\Backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\Backup\\",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\Backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\\\",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "D:\\Photos"
+      ],
+      "result": "Ok",
+      "asked": [
+        "D:\\Photos"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos\\Trip\\Best",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "D:\\Photos\\Trip\\Best"
+      ],
+      "result": "Ok",
+      "asked": [
+        "D:\\Photos\\Trip\\Best"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "\\\\server\\share\\x",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "\\\\server\\share\\x"
+      ],
+      "result": "Ok",
+      "asked": [
+        "\\\\server\\share\\x"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "\\\\server\\share\\x\\",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "\\\\server\\share\\x"
+      ],
+      "result": "Ok",
+      "asked": [
+        "\\\\server\\share\\x"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos\\Trip",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "D:\\Photos\\Trip"
+      ],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "d:\\photos\\TRIP\\",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "D:\\Photos\\Trip"
+      ],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos\\Trip\\Best\\..",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos\\Trip\\.",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "D:\\Photos\\Trip",
+      "photo_folder": "D:\\Photos\\Trip\\",
+      "existing": [],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "D:/Photos/Trip",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "SameAsPhotoFolder",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\Gone",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Missing",
+      "asked": [
+        "E:\\Gone"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "e:\\backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Ok",
+      "asked": [
+        "e:\\backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "E:/Backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\Backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\x\\..\\Backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Ok",
+      "asked": [
+        "E:\\Backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "\\\\?\\E:\\Backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [
+        "E:\\Backup"
+      ],
+      "result": "Missing",
+      "asked": [
+        "\\\\?\\E:\\Backup"
+      ]
+    },
+    {
+      "kind": "picked",
+      "destination": "Best",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "..\\Other",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "\\Photos",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "E:Backup",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\a|b",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "E:\\a*",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "NotAbsolute",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "Empty",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": "  ",
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "Empty",
+      "asked": []
+    },
+    {
+      "kind": "picked",
+      "destination": null,
+      "photo_folder": "D:\\Photos\\Trip",
+      "existing": [],
+      "result": "Empty",
+      "asked": []
+    },
+    {
+      "kind": "no_escape",
+      "name": "junction-resolving-outside-is-rejected",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\link\\processed",
+      "reparse": {
+        "C:\\photos\\link": "C:\\outside"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "junction-resolving-inside-is-allowed",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\link\\processed",
+      "reparse": {
+        "C:\\photos\\link": "C:\\photos\\real"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "ordinary-destination",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\sub\\deeper",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "destination-file-symlink-outside-is-rejected",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\a.jpg",
+      "reparse": {
+        "C:\\photos\\a.jpg": "C:\\outside\\a.jpg"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "link-loop-io-error-fails-closed",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\loop\\processed\\a.jpg",
+      "reparse": {},
+      "throw_prefix": "C:\\photos\\loop",
+      "throw_kind": "io",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unreadable-link-fails-closed",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\loop\\processed\\a.jpg",
+      "reparse": {},
+      "throw_prefix": "C:\\photos\\loop",
+      "throw_kind": "unauthorized",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unresolvable-source-fails-closed",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\sub",
+      "reparse": {},
+      "throw_prefix": "C:\\photos",
+      "throw_kind": "io",
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "drive-root-source-destination-inside-file",
+      "source": "C:\\",
+      "destination": "C:\\sel\\a.jpg",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "drive-root-source-destination-inside-folder",
+      "source": "C:\\",
+      "destination": "C:\\sel",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unc-share-source-destination-inside-file",
+      "source": "\\\\server\\share",
+      "destination": "\\\\server\\share\\sel\\a.jpg",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unc-share-with-trailing-separator-source",
+      "source": "\\\\server\\share\\",
+      "destination": "\\\\server\\share\\sel",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "drive-root-source-other-drive-escapes",
+      "source": "C:\\",
+      "destination": "D:\\sel\\a.jpg",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unc-share-prefix-sibling-share-escapes",
+      "source": "\\\\server\\share",
+      "destination": "\\\\server\\share2\\sel",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "unc-other-server-escapes",
+      "source": "\\\\server\\share",
+      "destination": "\\\\other\\share\\sel",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "destination-equals-source",
+      "source": "C:\\photos",
+      "destination": "C:\\photos",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "destination-equals-source-other-case-and-trailing-separator",
+      "source": "C:\\photos",
+      "destination": "c:\\PHOTOS\\",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "prefix-sibling-folder-escapes",
+      "source": "C:\\photos",
+      "destination": "C:\\photos2\\x",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "dot-suffixed-sibling-folder-escapes",
+      "source": "C:\\photos",
+      "destination": "C:\\photos.bak",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "dotdot-in-destination-is-resolved-and-escapes",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\..\\other",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "dotdot-in-destination-staying-inside",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\a\\..\\b",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "source-itself-a-link-both-sides-resolved",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\sub",
+      "reparse": {
+        "C:\\photos": "D:\\real\\photos"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "Ok"
+    },
+    {
+      "kind": "no_escape",
+      "name": "source-link-destination-outside-the-real-folder",
+      "source": "C:\\photos",
+      "destination": "C:\\other",
+      "reparse": {
+        "C:\\photos": "D:\\real\\photos"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "link-to-a-drive-root-inside-escapes",
+      "source": "C:\\photos",
+      "destination": "C:\\photos\\root",
+      "reparse": {
+        "C:\\photos\\root": "D:\\"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "case-insensitive-link-lookup",
+      "source": "C:\\photos",
+      "destination": "C:\\PHOTOS\\LINK\\x",
+      "reparse": {
+        "C:\\photos\\link": "C:\\outside"
+      },
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": "EscapesSourceFolder"
+    },
+    {
+      "kind": "no_escape",
+      "name": "blank-source-throws-argument-exception",
+      "source": " ",
+      "destination": "C:\\photos\\sub",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "no_escape",
+      "name": "blank-destination-throws-argument-exception",
+      "source": "C:\\photos",
+      "destination": "",
+      "reparse": {},
+      "throw_prefix": null,
+      "throw_kind": null,
+      "result": {
+        "throws": "ArgumentException"
+      }
+    }
+  ]
+}

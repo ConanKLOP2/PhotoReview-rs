@@ -1,0 +1,303 @@
+{
+  "generator": "oracle-cs physical-fs-read-text",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "plain",
+      "hex": "616263",
+      "utf16_units": [
+        97,
+        98,
+        99
+      ]
+    },
+    {
+      "name": "utf8 bom",
+      "hex": "EFBBBF61",
+      "utf16_units": [
+        97
+      ]
+    },
+    {
+      "name": "utf8 bom only",
+      "hex": "EFBBBF",
+      "utf16_units": []
+    },
+    {
+      "name": "double bom",
+      "hex": "EFBBBFEFBBBF61",
+      "utf16_units": [
+        65279,
+        97
+      ]
+    },
+    {
+      "name": "utf16 le bom",
+      "hex": "FFFE61006200",
+      "utf16_units": [
+        97,
+        98
+      ]
+    },
+    {
+      "name": "utf16 be bom",
+      "hex": "FEFF0061",
+      "utf16_units": [
+        97
+      ]
+    },
+    {
+      "name": "utf16 le bom only",
+      "hex": "FFFE",
+      "utf16_units": []
+    },
+    {
+      "name": "utf16 le bom with surrogate pair",
+      "hex": "FFFE3DD800DE",
+      "utf16_units": [
+        55357,
+        56832
+      ]
+    },
+    {
+      "name": "utf16 le bom odd trailing byte",
+      "hex": "FFFE610062",
+      "utf16_units": [
+        97,
+        65533
+      ]
+    },
+    {
+      "name": "utf16 le lone surrogate",
+      "hex": "FFFE00D8",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "utf16 be lone surrogate",
+      "hex": "FEFFD800",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "utf32 le bom",
+      "hex": "FFFE000061000000",
+      "utf16_units": [
+        97
+      ]
+    },
+    {
+      "name": "utf32 be bom",
+      "hex": "0000FEFF00000061",
+      "utf16_units": [
+        97
+      ]
+    },
+    {
+      "name": "utf32 le astral",
+      "hex": "FFFE00000F6B0100",
+      "utf16_units": [
+        55322,
+        57103
+      ]
+    },
+    {
+      "name": "utf32 le out of range",
+      "hex": "FFFE000000001100",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "utf32 le truncated",
+      "hex": "FFFE00006100",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "empty",
+      "hex": "",
+      "utf16_units": []
+    },
+    {
+      "name": "invalid ff",
+      "hex": "61FF62",
+      "utf16_units": [
+        97,
+        65533,
+        98
+      ]
+    },
+    {
+      "name": "truncated 3-byte",
+      "hex": "E282",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "truncated 4-byte then a",
+      "hex": "F09F9861",
+      "utf16_units": [
+        65533,
+        97
+      ]
+    },
+    {
+      "name": "overlong",
+      "hex": "C0AF",
+      "utf16_units": [
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "surrogate encoded",
+      "hex": "EDA080",
+      "utf16_units": [
+        65533,
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "nul bytes",
+      "hex": "610062",
+      "utf16_units": [
+        97,
+        0,
+        98
+      ]
+    },
+    {
+      "name": "utf16 without bom",
+      "hex": "61006200",
+      "utf16_units": [
+        97,
+        0,
+        98,
+        0
+      ]
+    },
+    {
+      "name": "cr lf",
+      "hex": "610D0A62",
+      "utf16_units": [
+        97,
+        13,
+        10,
+        98
+      ]
+    },
+    {
+      "name": "fe only",
+      "hex": "FE",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "ff only",
+      "hex": "FF",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "utf8 bom then invalid",
+      "hex": "EFBBBFFF",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "lone continuation",
+      "hex": "8080",
+      "utf16_units": [
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "f4 90 80 80",
+      "hex": "F4908080",
+      "utf16_units": [
+        65533,
+        65533,
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "e0 80 80",
+      "hex": "E08080",
+      "utf16_units": [
+        65533,
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "f8 88 80 80 80",
+      "hex": "F888808080",
+      "utf16_units": [
+        65533,
+        65533,
+        65533,
+        65533,
+        65533
+      ]
+    },
+    {
+      "name": "valid 4-byte",
+      "hex": "F09F9880",
+      "utf16_units": [
+        55357,
+        56832
+      ]
+    },
+    {
+      "name": "valid mix",
+      "hex": "61C3A9E282ACF09F9880",
+      "utf16_units": [
+        97,
+        233,
+        8364,
+        55357,
+        56832
+      ]
+    },
+    {
+      "name": "c2 only",
+      "hex": "C2",
+      "utf16_units": [
+        65533
+      ]
+    },
+    {
+      "name": "ed 9f bf (last before surrogates)",
+      "hex": "ED9FBF",
+      "utf16_units": [
+        55295
+      ]
+    },
+    {
+      "name": "ee 80 80 (first after surrogates)",
+      "hex": "EE8080",
+      "utf16_units": [
+        57344
+      ]
+    },
+    {
+      "name": "f4 8f bf bf (max)",
+      "hex": "F48FBFBF",
+      "utf16_units": [
+        56319,
+        57343
+      ]
+    }
+  ]
+}

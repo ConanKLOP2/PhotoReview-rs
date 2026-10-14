@@ -1,0 +1,1185 @@
+{
+  "generator": "oracle-cs dotnet-path",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "path",
+      "path": "",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": " ",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": " ",
+      "stem": " ",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": " ",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "   ",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "   ",
+      "stem": "   ",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "   ",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a.jpg",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a.jpg",
+      "stem": "a",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "a.jpg",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a (1).JPG",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a (1).JPG",
+      "stem": "a (1)",
+      "extension": ".JPG",
+      "ends_in_separator": false,
+      "trim_ending": "a (1).JPG",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": ".jpg",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": ".jpg",
+      "stem": "",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": ".jpg",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a.",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a.",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a.",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a..jpg",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a..jpg",
+      "stem": "a.",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "a..jpg",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a.b.c",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "a.b.c",
+      "stem": "a.b",
+      "extension": ".c",
+      "ends_in_separator": false,
+      "trim_ending": "a.b.c",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "x.jpg ",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "x.jpg ",
+      "stem": "x",
+      "extension": ".jpg ",
+      "ends_in_separator": false,
+      "trim_ending": "x.jpg ",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "..\\x",
+      "directory_name": "..",
+      "directory_name_raw": "..",
+      "file_name": "x",
+      "stem": "x",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "..\\x",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": " (1)",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": " (1)",
+      "stem": " (1)",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": " (1)",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "(1).jpg",
+      "directory_name": "",
+      "directory_name_raw": "",
+      "file_name": "(1).jpg",
+      "stem": "(1)",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "(1).jpg",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "C:\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:/",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:/",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a",
+      "directory_name": "C:\\",
+      "directory_name_raw": "C:\\",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\\\",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:\\a\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a/",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\b.jpg",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a\\b.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:/a/b.jpg",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:/a",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:/a/b.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a//b.jpg",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a//b.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\\\b.jpg",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a\\\\b.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\b\\",
+      "directory_name": "C:\\a\\b",
+      "directory_name_raw": "C:\\a\\b",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:\\a\\b",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a.d\\b",
+      "directory_name": "C:\\a.d",
+      "directory_name_raw": "C:\\a.d",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a.d\\b",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\b:c.jpg",
+      "directory_name": "C:\\a",
+      "directory_name_raw": "C:\\a",
+      "file_name": "b:c.jpg",
+      "stem": "b:c",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a\\b:c.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\a\\..\\b.jpg",
+      "directory_name": "C:\\a\\..",
+      "directory_name_raw": "C:\\a\\..",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\a\\..\\b.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:\\Ảnh\\ẢNH.jpg",
+      "directory_name": "C:\\Ảnh",
+      "directory_name_raw": "C:\\Ảnh",
+      "file_name": "ẢNH.jpg",
+      "stem": "ẢNH",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:\\Ảnh\\ẢNH.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "C:",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "C:",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "C:a",
+      "directory_name": "C:",
+      "directory_name_raw": "C:",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "C:a",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "C:a\\",
+      "directory_name": "C:a",
+      "directory_name_raw": "C:a",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "C:a",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "C:a\\b",
+      "directory_name": "C:a",
+      "directory_name_raw": "C:a",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "C:a\\b",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "C:b.jpg",
+      "directory_name": "C:",
+      "directory_name_raw": "C:",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "C:b.jpg",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a:b",
+      "directory_name": "a:",
+      "directory_name_raw": "a:",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a:b",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a:b.jpg",
+      "directory_name": "a:",
+      "directory_name_raw": "a:",
+      "file_name": "b.jpg",
+      "stem": "b",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "a:b.jpg",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a:",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a:",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "1:\\a",
+      "directory_name": "1:",
+      "directory_name_raw": "1:",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "1:\\a",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "E:Backup",
+      "directory_name": "E:",
+      "directory_name_raw": "E:",
+      "file_name": "Backup",
+      "stem": "Backup",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "E:Backup",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "E:\\a|b",
+      "directory_name": "E:\\",
+      "directory_name_raw": "E:\\",
+      "file_name": "a|b",
+      "stem": "a|b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "E:\\a|b",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "D:\\Backup\\*",
+      "directory_name": "D:\\Backup",
+      "directory_name_raw": "D:\\Backup",
+      "file_name": "*",
+      "stem": "*",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "D:\\Backup\\*",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "/",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "/",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "\\a",
+      "directory_name": "\\",
+      "directory_name_raw": "\\",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\a",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "/a",
+      "directory_name": "\\",
+      "directory_name_raw": "/",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "/a",
+      "rooted": true,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a\\b",
+      "directory_name": "a",
+      "directory_name_raw": "a",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a\\b",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "a/b",
+      "directory_name": "a",
+      "directory_name_raw": "a",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "a/b",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "  \\a",
+      "directory_name": "  ",
+      "directory_name_raw": "  ",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "  \\a",
+      "rooted": false,
+      "fully_qualified": false
+    },
+    {
+      "kind": "path",
+      "path": "\\\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\\\a",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "//x/y",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "//x/y",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "/\\x",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "/\\x",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\srv",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\srv\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv\\share",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\srv\\share",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv\\share\\",
+      "directory_name": "\\\\srv\\share",
+      "directory_name_raw": "\\\\srv\\share",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\srv\\share",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv\\share\\a.jpg",
+      "directory_name": "\\\\srv\\share",
+      "directory_name_raw": "\\\\srv\\share",
+      "file_name": "a.jpg",
+      "stem": "a",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\srv\\share\\a.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv\\share\\x\\",
+      "directory_name": "\\\\srv\\share\\x",
+      "directory_name_raw": "\\\\srv\\share\\x",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\srv\\share\\x",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\srv-é\\sh\\x.jpg",
+      "directory_name": "\\\\srv-é\\sh",
+      "directory_name_raw": "\\\\srv-é\\sh",
+      "file_name": "x.jpg",
+      "stem": "x",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\srv-é\\sh\\x.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\?\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\C:",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\C:",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\C:\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\?\\C:\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\C:\\a\\",
+      "directory_name": "\\\\?\\C:\\a",
+      "directory_name_raw": "\\\\?\\C:\\a",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\?\\C:\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\C:\\a\\b",
+      "directory_name": "\\\\?\\C:\\a",
+      "directory_name_raw": "\\\\?\\C:\\a",
+      "file_name": "b",
+      "stem": "b",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\C:\\a\\b",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\x",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\x",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\Volume{1}\\a.jpg",
+      "directory_name": "\\\\?\\Volume{1}\\",
+      "directory_name_raw": "\\\\?\\Volume{1}\\",
+      "file_name": "a.jpg",
+      "stem": "a",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\Volume{1}\\a.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\UNC\\srv\\share\\",
+      "directory_name": "\\\\?\\UNC\\srv\\share",
+      "directory_name_raw": "\\\\?\\UNC\\srv\\share",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\?\\UNC\\srv\\share",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\UNC\\srv\\share\\a.jpg",
+      "directory_name": "\\\\?\\UNC\\srv\\share",
+      "directory_name_raw": "\\\\?\\UNC\\srv\\share",
+      "file_name": "a.jpg",
+      "stem": "a",
+      "extension": ".jpg",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\UNC\\srv\\share\\a.jpg",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\?\\UNC\\srv",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\?\\UNC\\srv",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\.\\C:\\",
+      "directory_name": null,
+      "directory_name_raw": "",
+      "file_name": "",
+      "stem": "",
+      "extension": "",
+      "ends_in_separator": true,
+      "trim_ending": "\\\\.\\C:\\",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\\\.\\D:\\Backup",
+      "directory_name": "\\\\.\\D:\\",
+      "directory_name_raw": "\\\\.\\D:\\",
+      "file_name": "Backup",
+      "stem": "Backup",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\\\.\\D:\\Backup",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "path",
+      "path": "\\??\\C:\\a",
+      "directory_name": "\\??\\C:\\",
+      "directory_name_raw": "\\??\\C:\\",
+      "file_name": "a",
+      "stem": "a",
+      "extension": "",
+      "ends_in_separator": false,
+      "trim_ending": "\\??\\C:\\a",
+      "rooted": true,
+      "fully_qualified": true
+    },
+    {
+      "kind": "full",
+      "path": "",
+      "full": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "full",
+      "path": " ",
+      "full": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "full",
+      "path": "   ",
+      "full": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\u0000b",
+      "full": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\C:\\a\u0000",
+      "full": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "full",
+      "path": "C:\\",
+      "full": "C:\\"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\b\\",
+      "full": "C:\\a\\b\\"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\.\\b",
+      "full": "C:\\a\\b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\..\\..\\..",
+      "full": "C:\\"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\..",
+      "full": "C:\\"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\..\\x",
+      "full": "C:\\x"
+    },
+    {
+      "kind": "full",
+      "path": "C:/a//b",
+      "full": "C:\\a\\b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\\\b",
+      "full": "C:\\a\\b"
+    },
+    {
+      "kind": "full",
+      "path": "//srv/share/x",
+      "full": "\\\\srv\\share\\x"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\srv",
+      "full": "\\\\srv"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\srv\\share",
+      "full": "\\\\srv\\share"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\srv\\share\\",
+      "full": "\\\\srv\\share\\"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\srv\\share\\a\\..\\..\\..\\x",
+      "full": "\\\\srv\\share\\x"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\C:\\a\\..\\b",
+      "full": "\\\\?\\C:\\a\\..\\b"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\C:\\a\\",
+      "full": "\\\\?\\C:\\a\\"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\C:",
+      "full": "\\\\?\\C:"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\x",
+      "full": "\\\\?\\x"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\UNC\\srv\\share\\x\\..\\y",
+      "full": "\\\\?\\UNC\\srv\\share\\x\\..\\y"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\?\\Volume{1}\\a.jpg",
+      "full": "\\\\?\\Volume{1}\\a.jpg"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\.\\D:\\Backup",
+      "full": "\\\\.\\D:\\Backup"
+    },
+    {
+      "kind": "full",
+      "path": "\\\\.\\D:\\a\\..\\b",
+      "full": "\\\\.\\D:\\b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a.",
+      "full": "C:\\a"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a ",
+      "full": "C:\\a"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a. ",
+      "full": "C:\\a"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\b.",
+      "full": "C:\\a\\b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a:b",
+      "full": "C:\\a:b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a:b:c",
+      "full": "C:\\a:b:c"
+    },
+    {
+      "kind": "full",
+      "path": "1:\\a",
+      "full": "1:\\a"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\<>|.jpg",
+      "full": "C:\\<>|.jpg"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a*b?",
+      "full": "C:\\a*b?"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\a\\ ..\\b",
+      "full": "C:\\a\\ ..\\b"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\ \\x",
+      "full": "C:\\ \\x"
+    },
+    {
+      "kind": "full",
+      "path": "c:\\PHOTOS\\",
+      "full": "c:\\PHOTOS\\"
+    },
+    {
+      "kind": "full",
+      "path": "C:\\photos\\Ảnh đẹp 01.jpg",
+      "full": "C:\\photos\\Ảnh đẹp 01.jpg"
+    },
+    {
+      "kind": "invalid_path_chars",
+      "code_points": [
+        124,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    }
+  ]
+}

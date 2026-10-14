@@ -1,0 +1,226 @@
+{
+  "cases": [
+    {
+      "name": "name-natural-case-ties",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 50 },
+        { "path": "C:\\f\\IMG2.jpg", "length": 300 },
+        { "path": "C:\\f\\b.jpg", "length": 10 },
+        { "path": "C:\\f\\img2.jpg", "length": 300 },
+        { "path": "C:\\f\\A.jpg", "length": 999 },
+        { "path": "C:\\f\\img10.jpg", "length": 60 }
+      ]
+    },
+    {
+      "name": "name-ascending-equals-name",
+      "mode": "NameAscending",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 50 },
+        { "path": "C:\\f\\IMG2.jpg", "length": 300 },
+        { "path": "C:\\f\\b.jpg", "length": 10 },
+        { "path": "C:\\f\\img2.jpg", "length": 300 },
+        { "path": "C:\\f\\A.jpg", "length": 999 },
+        { "path": "C:\\f\\img10.jpg", "length": 60 }
+      ]
+    },
+    {
+      "name": "name-descending-reverses-ties-too",
+      "mode": "NameDescending",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 50 },
+        { "path": "C:\\f\\IMG2.jpg", "length": 300 },
+        { "path": "C:\\f\\b.jpg", "length": 10 },
+        { "path": "C:\\f\\img2.jpg", "length": 300 },
+        { "path": "C:\\f\\A.jpg", "length": 999 },
+        { "path": "C:\\f\\img10.jpg", "length": 60 }
+      ]
+    },
+    {
+      "name": "default-keeps-input-order-and-duplicates",
+      "mode": "Default",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 50 },
+        { "path": "C:\\f\\b.jpg", "length": 10 },
+        { "path": "C:\\f\\img2.jpg" },
+        { "path": "C:\\f\\img10.jpg", "length": 60 }
+      ]
+    },
+    {
+      "name": "default-empty",
+      "mode": "Default",
+      "entries": []
+    },
+    {
+      "name": "name-descending-empty",
+      "mode": "NameDescending",
+      "entries": []
+    },
+    {
+      "name": "size-ascending-unknown-first-ties-by-natural-name",
+      "mode": "SizeAscending",
+      "entries": [
+        { "path": "C:\\f\\b10.jpg", "length": 100 },
+        { "path": "C:\\f\\b2.jpg", "length": 100 },
+        { "path": "C:\\f\\a.jpg", "length": 5 },
+        { "path": "C:\\f\\unknown.jpg" }
+      ]
+    },
+    {
+      "name": "size-descending-unknown-last-ties-by-natural-name",
+      "mode": "SizeDescending",
+      "entries": [
+        { "path": "C:\\f\\b10.jpg", "length": 100 },
+        { "path": "C:\\f\\b2.jpg", "length": 100 },
+        { "path": "C:\\f\\a.jpg", "length": 5 },
+        { "path": "C:\\f\\unknown.jpg" }
+      ]
+    },
+    {
+      "name": "size-descending-zero-length-beats-unknown",
+      "mode": "SizeDescending",
+      "entries": [
+        { "path": "C:\\f\\unknown.jpg" },
+        { "path": "C:\\f\\zero.jpg", "length": 0 },
+        { "path": "C:\\f\\big.jpg", "length": 1 }
+      ]
+    },
+    {
+      "name": "size-ascending-same-name-other-folders-keeps-input-order",
+      "mode": "SizeAscending",
+      "entries": [
+        { "path": "C:\\f1\\x.jpg", "length": 7 },
+        { "path": "C:\\f0\\x.jpg", "length": 7 },
+        { "path": "C:\\f2\\x.jpg", "length": 7 },
+        { "path": "C:\\f0\\a.jpg", "length": 7 }
+      ]
+    },
+    {
+      "name": "name-same-name-other-folders-keeps-input-order",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f1\\x.jpg", "length": 1 },
+        { "path": "C:\\f0\\x.jpg", "length": 2 },
+        { "path": "C:\\f2\\x.jpg", "length": 3 }
+      ]
+    },
+    {
+      "name": "name-leading-zeros-and-case",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f\\a1.jpg", "length": 1 },
+        { "path": "C:\\f\\A1.jpg", "length": 2 },
+        { "path": "C:\\f\\a01.jpg", "length": 3 },
+        { "path": "C:\\f\\a001.jpg", "length": 4 },
+        { "path": "C:\\f\\a0.jpg", "length": 5 },
+        { "path": "C:\\f\\a10.jpg", "length": 6 },
+        { "path": "C:\\f\\a2.jpg", "length": 7 }
+      ]
+    },
+    {
+      "name": "name-punctuation-sorts-after-letters",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f\\_a.jpg", "length": 1 },
+        { "path": "C:\\f\\a.jpg", "length": 2 },
+        { "path": "C:\\f\\B.jpg", "length": 3 },
+        { "path": "C:\\f\\~x.jpg", "length": 4 },
+        { "path": "C:\\f\\[y.jpg", "length": 5 },
+        { "path": "C:\\f\\1.jpg", "length": 6 },
+        { "path": "C:\\f\\-z.jpg", "length": 7 }
+      ]
+    },
+    {
+      "name": "name-long-digit-run",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f\\img1000000000000.jpg", "length": 1 },
+        { "path": "C:\\f\\img2.jpg", "length": 2 },
+        { "path": "C:\\f\\img10.jpg", "length": 3 }
+      ]
+    },
+    {
+      "name": "name-forward-slash-and-trailing-separator-paths",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:/f/b.jpg", "length": 1 },
+        { "path": "C:\\f\\a.jpg", "length": 2 },
+        { "path": "C:\\f\\", "length": 3 },
+        { "path": "C:\\f/c.jpg", "length": 4 }
+      ]
+    },
+    {
+      "name": "name-non-ascii",
+      "mode": "Name",
+      "entries": [
+        { "path": "C:\\f\\\u00c9a.jpg", "length": 1 },
+        { "path": "C:\\f\\\u00e9a.jpg", "length": 2 },
+        { "path": "C:\\f\\ea.jpg", "length": 3 },
+        { "path": "C:\\f\\\u65e5\u672c2.jpg", "length": 4 },
+        { "path": "C:\\f\\\u65e5\u672c10.jpg", "length": 5 },
+        { "path": "C:\\f\\\u1ea2nh.jpg", "length": 6 }
+      ]
+    },
+    {
+      "name": "injected-comparer-name-order",
+      "mode": "Name",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        { "path": "C:\\a.jpg" },
+        { "path": "C:\\c.jpg" },
+        { "path": "C:\\b.jpg" }
+      ]
+    },
+    {
+      "name": "injected-comparer-decides-size-ties",
+      "mode": "SizeAscending",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        { "path": "C:\\f\\a.jpg", "length": 5 },
+        { "path": "C:\\f\\c.jpg", "length": 5 },
+        { "path": "C:\\f\\b.jpg", "length": 5 },
+        { "path": "C:\\f\\z.jpg", "length": 1 }
+      ]
+    },
+    {
+      "name": "injected-comparer-name-descending-is-reverse-of-injected-ascending",
+      "mode": "NameDescending",
+      "comparer": "reverse-ordinal",
+      "entries": [
+        { "path": "C:\\a.jpg" },
+        { "path": "C:\\c.jpg" },
+        { "path": "C:\\b.jpg" }
+      ]
+    },
+    {
+      "name": "opaque-comparer-equals-managed-name",
+      "mode": "Name",
+      "comparer": "opaque",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 50 },
+        { "path": "C:\\f\\IMG2.jpg", "length": 300 },
+        { "path": "C:\\f\\b.jpg", "length": 10 },
+        { "path": "C:\\f\\img2.jpg", "length": 300 },
+        { "path": "C:\\f\\A.jpg", "length": 999 },
+        { "path": "C:\\f\\a1.jpg", "length": 1 },
+        { "path": "C:\\f\\A1.jpg", "length": 1 },
+        { "path": "C:\\f\\a01.jpg", "length": 1 },
+        { "path": "C:\\f\\img10.jpg", "length": 60 }
+      ]
+    },
+    {
+      "name": "opaque-comparer-equals-managed-size-descending",
+      "mode": "SizeDescending",
+      "comparer": "opaque",
+      "entries": [
+        { "path": "C:\\f\\img10.jpg", "length": 5 },
+        { "path": "C:\\g\\IMG2.jpg", "length": 5 },
+        { "path": "C:\\f\\b.jpg", "length": 5 },
+        { "path": "C:\\f\\img2.jpg", "length": 0 },
+        { "path": "C:\\f\\A.jpg" },
+        { "path": "C:\\f\\a1.jpg", "length": 4 },
+        { "path": "C:\\f\\A1.jpg", "length": 4 }
+      ]
+    }
+  ]
+}

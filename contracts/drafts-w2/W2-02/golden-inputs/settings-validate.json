@@ -1,0 +1,1996 @@
+{
+    "cases":  [
+                  {
+                      "name":  "default settings are valid (known keys)",
+                      "text":  "{}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "default settings are valid (non-blank)",
+                      "text":  "{}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "default settings are valid (letters and digits)",
+                      "text":  "{}",
+                      "validator":  {
+                                        "kind":  "letters_digits"
+                                    }
+                  },
+                  {
+                      "name":  "reject-all validator: first property in order is named",
+                      "text":  "{}",
+                      "validator":  {
+                                        "kind":  "reject_all"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Next",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Previous",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory SendToRecycleBin",
+                      "text":  "{\"Shortcuts\":{\"SendToRecycleBin\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Compare",
+                      "text":  "{\"Shortcuts\":{\"Compare\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory NextFolder",
+                      "text":  "{\"Shortcuts\":{\"NextFolder\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory PreviousFolder",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory FirstImage",
+                      "text":  "{\"Shortcuts\":{\"FirstImage\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory ZoomIn",
+                      "text":  "{\"Shortcuts\":{\"ZoomIn\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory ZoomOut",
+                      "text":  "{\"Shortcuts\":{\"ZoomOut\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory ToggleFit",
+                      "text":  "{\"Shortcuts\":{\"ToggleFit\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Skip",
+                      "text":  "{\"Shortcuts\":{\"Skip\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Undo",
+                      "text":  "{\"Shortcuts\":{\"Undo\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "blank mandatory Fullscreen",
+                      "text":  "{\"Shortcuts\":{\"Fullscreen\":\"  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "null mandatory reads as blank",
+                      "text":  "{\"Shortcuts\":{\"Skip\":null}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Next",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Previous",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for SendToRecycleBin",
+                      "text":  "{\"Shortcuts\":{\"SendToRecycleBin\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Compare",
+                      "text":  "{\"Shortcuts\":{\"Compare\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for NextFolder",
+                      "text":  "{\"Shortcuts\":{\"NextFolder\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for PreviousFolder",
+                      "text":  "{\"Shortcuts\":{\"PreviousFolder\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for FirstImage",
+                      "text":  "{\"Shortcuts\":{\"FirstImage\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for ZoomIn",
+                      "text":  "{\"Shortcuts\":{\"ZoomIn\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for ZoomOut",
+                      "text":  "{\"Shortcuts\":{\"ZoomOut\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for ToggleFit",
+                      "text":  "{\"Shortcuts\":{\"ToggleFit\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Skip",
+                      "text":  "{\"Shortcuts\":{\"Skip\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Undo",
+                      "text":  "{\"Shortcuts\":{\"Undo\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for Fullscreen",
+                      "text":  "{\"Shortcuts\":{\"Fullscreen\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "every optional blank is fine",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"\",\"ZoomActualSize\":\" \",\"ToggleInfoOverlay\":\"\",\"MoveToFolder\":\"\",\"CopyToFolder\":\"\",\"ClickZoom\":\"\",\"FitWidth\":\"\",\"FitHeight\":\"\",\"ToggleKeepZoom\":\"\",\"OpenFolder\":\"\",\"CustomZoom\":\"\",\"ToggleCaptureMember\":\"\",\"FitWidth2\":\"\",\"Refresh\":\"\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional LastImage",
+                      "text":  "{\"Shortcuts\":{\"LastImage\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional ZoomActualSize",
+                      "text":  "{\"Shortcuts\":{\"ZoomActualSize\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional ToggleInfoOverlay",
+                      "text":  "{\"Shortcuts\":{\"ToggleInfoOverlay\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional MoveToFolder",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional CopyToFolder",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional ClickZoom",
+                      "text":  "{\"Shortcuts\":{\"ClickZoom\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional FitWidth",
+                      "text":  "{\"Shortcuts\":{\"FitWidth\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional FitHeight",
+                      "text":  "{\"Shortcuts\":{\"FitHeight\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional ToggleKeepZoom",
+                      "text":  "{\"Shortcuts\":{\"ToggleKeepZoom\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional OpenFolder",
+                      "text":  "{\"Shortcuts\":{\"OpenFolder\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional CustomZoom",
+                      "text":  "{\"Shortcuts\":{\"CustomZoom\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional ToggleCaptureMember",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional FitWidth2",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "unknown key for optional Refresh",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "two invalid: Next is reported before Previous",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"Nope\",\"Next\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "two invalid: FitWidth2 is reported before Refresh (declaration order)",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"Nope\",\"FitWidth2\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "two invalid: CustomZoom is reported before ToggleCaptureMember",
+                      "text":  "{\"Shortcuts\":{\"ToggleCaptureMember\":\"Nope\",\"CustomZoom\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "legacy MoveToFolder2 invalid is ignored",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":\"Nope\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "legacy MoveToFolder2 blank is ignored",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":\"\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "legacy MoveToFolder2 equal to Next is not a duplicate",
+                      "text":  "{\"Shortcuts\":{\"MoveToFolder2\":\"Right\"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "padded valid key is valid",
+                      "text":  "{\"Shortcuts\":{\"Next\":\" Right \"}}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "duplicate of two mandatory",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"Right\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "duplicate ignores case",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"right\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "duplicate ignores padding",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"  Right  \"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "duplicate through alias: Prior is PageUp",
+                      "text":  "{\"Shortcuts\":{\"NextFolder\":\"Prior\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "duplicate through alias: Return is Enter (action vs action)",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Return\"},{\"Name\":\"B\",\"Shortcut\":\"Enter\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "three-way duplicate lists names in declaration order",
+                      "text":  "{\"Shortcuts\":{\"Previous\":\"Right\",\"Skip\":\"Right\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "two duplicate groups: the one whose key appears first is reported",
+                      "text":  "{\"Shortcuts\":{\"Skip\":\"C\",\"Previous\":\"Right\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "two duplicate groups: Compare/Skip reported when it comes first",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"Q\",\"Previous\":\"W2\",\"Compare\":\"Right\",\"Skip\":\"Right\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "optional duplicates optional",
+                      "text":  "{\"Shortcuts\":{\"CopyToFolder\":\"M\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "FitWidth2 duplicates FitWidth",
+                      "text":  "{\"Shortcuts\":{\"FitWidth2\":\"W\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "Refresh duplicates FitWidth2 (names in declaration order)",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"D4\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "Refresh on F5 collides with the Backup action (shortcuts are listed before actions)",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"F5\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "Refresh on F5 without an action there is allowed",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"F5\"},\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F9\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "empty Refresh is allowed",
+                      "text":  "{\"Shortcuts\":{\"Refresh\":\"\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action vs shortcut",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Z\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action name is used verbatim, braces and all",
+                      "text":  "{\"Actions\":[{\"Name\":\"{n} x\",\"Shortcut\":\"Z\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action vs action",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\"},{\"Name\":\"B\",\"Shortcut\":\" f7 \"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "three actions on one key",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\"},{\"Name\":\"B\",\"Shortcut\":\"F7\"},{\"Name\":\"C\",\"Shortcut\":\"f7\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "empty action list is valid",
+                      "text":  "{\"Actions\":[]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action with blank name",
+                      "text":  "{\"Actions\":[{\"Name\":\"\",\"Shortcut\":\"F7\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action with whitespace name",
+                      "text":  "{\"Actions\":[{\"Name\":\"   \",\"Shortcut\":\"F7\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action with blank shortcut",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action with whitespace shortcut",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"  \"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "action with unknown key",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"Nope\"}]}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "action with valid padded key",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\" F7 \"}]}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "first bad action is reported before any duplicate",
+                      "text":  "{\"Actions\":[{\"Name\":\"A\",\"Shortcut\":\"F7\"},{\"Name\":\"A\",\"Shortcut\":\"F7\"},{\"Name\":\"\",\"Shortcut\":\"F8\"}]}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "invalid shortcut is reported before an invalid action",
+                      "text":  "{\"Shortcuts\":{\"Undo\":\"Nope\"},\"Actions\":[{\"Name\":\"\",\"Shortcut\":\"F7\"}]}",
+                      "validator":  {
+                                        "kind":  "known",
+                                        "names":  [
+                                                      "Right",
+                                                      "Left",
+                                                      "Enter",
+                                                      "Delete",
+                                                      "C",
+                                                      "PageDown",
+                                                      "PageUp",
+                                                      "Home",
+                                                      "Add",
+                                                      "Subtract",
+                                                      "F",
+                                                      "Space",
+                                                      "Z",
+                                                      "F11",
+                                                      "F3",
+                                                      "F4",
+                                                      "F5",
+                                                      "F6",
+                                                      "T",
+                                                      "D1",
+                                                      "D2",
+                                                      "D3",
+                                                      "D4",
+                                                      "M",
+                                                      "Y",
+                                                      "End",
+                                                      "I",
+                                                      "W",
+                                                      "H",
+                                                      "K",
+                                                      "O",
+                                                      "R",
+                                                      "F7",
+                                                      "F9"
+                                                  ]
+                                    }
+                  },
+                  {
+                      "name":  "case-insensitive non-ASCII duplicate (e acute)",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"é\",\"Previous\":\"É\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "Kelvin sign equals K under OrdinalIgnoreCase",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"K\",\"Previous\":\"K\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "sharp s is not SS",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"ß\",\"Previous\":\"SS\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  },
+                  {
+                      "name":  "dotless i is not I",
+                      "text":  "{\"Shortcuts\":{\"Next\":\"ı\",\"Previous\":\"I\"}}",
+                      "validator":  {
+                                        "kind":  "non_blank"
+                                    }
+                  }
+              ]
+}

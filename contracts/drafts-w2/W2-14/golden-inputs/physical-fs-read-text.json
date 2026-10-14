@@ -1,0 +1,156 @@
+{
+ "cases": [
+  {
+   "name": "plain",
+   "hex": "616263"
+  },
+  {
+   "name": "utf8 bom",
+   "hex": "EFBBBF61"
+  },
+  {
+   "name": "utf8 bom only",
+   "hex": "EFBBBF"
+  },
+  {
+   "name": "double bom",
+   "hex": "EFBBBFEFBBBF61"
+  },
+  {
+   "name": "utf16 le bom",
+   "hex": "FFFE61006200"
+  },
+  {
+   "name": "utf16 be bom",
+   "hex": "FEFF0061"
+  },
+  {
+   "name": "utf16 le bom only",
+   "hex": "FFFE"
+  },
+  {
+   "name": "utf16 le bom with surrogate pair",
+   "hex": "FFFE3DD800DE"
+  },
+  {
+   "name": "utf16 le bom odd trailing byte",
+   "hex": "FFFE610062"
+  },
+  {
+   "name": "utf16 le lone surrogate",
+   "hex": "FFFE00D8"
+  },
+  {
+   "name": "utf16 be lone surrogate",
+   "hex": "FEFFD800"
+  },
+  {
+   "name": "utf32 le bom",
+   "hex": "FFFE000061000000"
+  },
+  {
+   "name": "utf32 be bom",
+   "hex": "0000FEFF00000061"
+  },
+  {
+   "name": "utf32 le astral",
+   "hex": "FFFE00000F6B0100"
+  },
+  {
+   "name": "utf32 le out of range",
+   "hex": "FFFE000000001100"
+  },
+  {
+   "name": "utf32 le truncated",
+   "hex": "FFFE00006100"
+  },
+  {
+   "name": "empty",
+   "hex": ""
+  },
+  {
+   "name": "invalid ff",
+   "hex": "61FF62"
+  },
+  {
+   "name": "truncated 3-byte",
+   "hex": "E282"
+  },
+  {
+   "name": "truncated 4-byte then a",
+   "hex": "F09F9861"
+  },
+  {
+   "name": "overlong",
+   "hex": "C0AF"
+  },
+  {
+   "name": "surrogate encoded",
+   "hex": "EDA080"
+  },
+  {
+   "name": "nul bytes",
+   "hex": "610062"
+  },
+  {
+   "name": "utf16 without bom",
+   "hex": "61006200"
+  },
+  {
+   "name": "cr lf",
+   "hex": "610D0A62"
+  },
+  {
+   "name": "fe only",
+   "hex": "FE"
+  },
+  {
+   "name": "ff only",
+   "hex": "FF"
+  },
+  {
+   "name": "utf8 bom then invalid",
+   "hex": "EFBBBFFF"
+  },
+  {
+   "name": "lone continuation",
+   "hex": "8080"
+  },
+  {
+   "name": "f4 90 80 80",
+   "hex": "F4908080"
+  },
+  {
+   "name": "e0 80 80",
+   "hex": "E08080"
+  },
+  {
+   "name": "f8 88 80 80 80",
+   "hex": "F888808080"
+  },
+  {
+   "name": "valid 4-byte",
+   "hex": "F09F9880"
+  },
+  {
+   "name": "valid mix",
+   "hex": "61C3A9E282ACF09F9880"
+  },
+  {
+   "name": "c2 only",
+   "hex": "C2"
+  },
+  {
+   "name": "ed 9f bf (last before surrogates)",
+   "hex": "ED9FBF"
+  },
+  {
+   "name": "ee 80 80 (first after surrogates)",
+   "hex": "EE8080"
+  },
+  {
+   "name": "f4 8f bf bf (max)",
+   "hex": "F48FBFBF"
+  }
+ ]
+}

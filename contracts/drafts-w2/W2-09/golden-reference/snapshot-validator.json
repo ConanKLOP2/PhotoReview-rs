@@ -1,0 +1,1454 @@
+{
+  "generator": "oracle-cs snapshot-validator",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "validate",
+      "name": "valid-reordered",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "valid-identity-order",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "status-timed-out-with-reason",
+      "folder": "C:\\photos",
+      "status": "TimedOut",
+      "snapshot_reason": "Timeout occurred",
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "Timeout occurred",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-no-matching-window-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "NoMatchingWindow",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "NoMatchingWindow",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-native-view-unavailable-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "NativeViewUnavailable",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "NativeViewUnavailable",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-invalid-snapshot-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "InvalidSnapshot",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "InvalidSnapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-timed-out-without-reason-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "TimedOut",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "TimedOut",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-canceled-without-reason-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "Canceled",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "Canceled",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-failed-without-reason-uses-status-name",
+      "folder": "C:\\photos",
+      "status": "Failed",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "Failed",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-failed-with-formatted-reason",
+      "folder": "C:\\photos",
+      "status": "Failed",
+      "snapshot_reason": "query-failed|IOException",
+      "ordered_paths": [],
+      "scanned": [],
+      "valid": false,
+      "reason": "query-failed|IOException",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-canceled-with-empty-reason-keeps-the-empty-reason",
+      "folder": "C:\\photos",
+      "status": "Canceled",
+      "snapshot_reason": "",
+      "ordered_paths": [],
+      "scanned": [],
+      "valid": false,
+      "reason": "",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "status-checked-before-the-folder-is-parsed",
+      "folder": "",
+      "status": "Failed",
+      "snapshot_reason": "boom",
+      "ordered_paths": [
+        "\u0000"
+      ],
+      "scanned": [
+        "\u0000"
+      ],
+      "valid": false,
+      "reason": "boom",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "missing-expected-file-is-incomplete",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "duplicate-item",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": false,
+      "reason": "duplicate-item",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "duplicates-differing-only-by-case",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\A.JPG",
+        "C:\\photos\\b.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": false,
+      "reason": "duplicate-item",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "duplicate-of-an-unscanned-file-is-still-rejected",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\x.txt",
+        "C:\\photos\\x.txt",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "duplicate-item",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "duplicate-reported-after-an-outside-path-reports-outside-first",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\other\\a.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "empty-candidate-before-an-outside-one",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "",
+        "C:\\other\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "empty-path",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "whitespace-candidate",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "   ",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "empty-path",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "tab-only-candidate",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\t",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "empty-path",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "empty-candidate",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "empty-path",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-upper-case",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\PHOTOS\\A.JPG"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-dot-segment",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\.\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-dotdot-segment",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\x\\..\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-forward-slashes",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:/photos/a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-extended-length-prefix",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\?\\C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-vietnamese-case",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\Ảnh đẹp 01.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\ẢNH ĐẸP 01.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\ẢNH ĐẸP 01.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-trailing-space-is-trimmed-by-get-full-path",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg "
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "spelling-trailing-dot-is-trimmed-by-get-full-path",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg."
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "reject-subfolder-file",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\sub\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-sibling-with-common-prefix",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos2\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-shorter-sibling-name",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photo\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-dotdot-leaving-the-folder",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\..\\other\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-other-drive",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "D:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-unc-path",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "\\\\server\\share\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-nul-in-candidate-is-outside-folder",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\a\u0000.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-only-nul-candidate",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\u0000"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-drive-root-candidate-is-incomplete-not-outside",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-unc-root-candidate-is-incomplete-not-outside",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\srv\\share"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "reject-extended-drive-root-candidate",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\?\\C:\\"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-file-with-nul-is-outside-folder",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\bad\u0000.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-file-that-is-blank-is-outside-folder",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "  "
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "unscanned-entries-are-ignored-order-of-the-rest-kept",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\readme.txt",
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\notes.doc",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-file-missing-from-the-snapshot",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\readme.txt"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "empty-snapshot-empty-scan",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [],
+      "scanned": [],
+      "valid": true,
+      "reason": null,
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "empty-snapshot-nonempty-scan",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "nonempty-snapshot-empty-scan",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [],
+      "valid": true,
+      "reason": null,
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-two-spellings-of-one-file-first-spelling-wins",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\PHOTOS\\A.JPG",
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\PHOTOS\\A.JPG"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-two-spellings-listed-once-count-as-one",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\.\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "scanned-with-extended-prefix-returned-verbatim",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\p2.jpg",
+        "C:\\photos\\p1.jpg",
+        "C:\\photos\\p0.jpg"
+      ],
+      "scanned": [
+        "\\\\?\\C:\\photos\\p0.jpg",
+        "\\\\?\\C:\\photos\\p1.jpg",
+        "\\\\?\\C:\\photos\\p2.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "\\\\?\\C:\\photos\\p2.jpg",
+        "\\\\?\\C:\\photos\\p1.jpg",
+        "\\\\?\\C:\\photos\\p0.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-trailing-separator",
+      "folder": "C:\\photos\\",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-case",
+      "folder": "c:\\PHOTOS",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-dot-segment",
+      "folder": "C:\\photos\\.",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-extended",
+      "folder": "\\\\?\\C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-forward-slash",
+      "folder": "C:/photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-spelling-dotdot",
+      "folder": "C:\\photos\\x\\..",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\b.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-extended-with-dotdot-is-not-resolved",
+      "folder": "\\\\?\\C:\\photos\\x\\..",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-empty",
+      "folder": "",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "folder-whitespace",
+      "folder": "   ",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "folder-with-nul",
+      "folder": "C:\\pho\u0000tos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "folder-is-a-drive-root",
+      "folder": "C:\\",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-is-a-drive-root-subfolder-file-rejected",
+      "folder": "C:\\",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\a.jpg",
+        "C:\\sub\\b.jpg"
+      ],
+      "scanned": [
+        "C:\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "folder-unc-both-spellings",
+      "folder": "\\\\srv\\share\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\?\\UNC\\srv\\share\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "\\\\srv\\share\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "\\\\srv\\share\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-unc-share-root",
+      "folder": "\\\\srv\\share",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\srv\\share\\a.jpg"
+      ],
+      "scanned": [
+        "\\\\srv\\share\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "\\\\srv\\share\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "folder-unc-case",
+      "folder": "\\\\SRV\\Share\\Photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\srv\\share\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "\\\\srv\\share\\photos\\a.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "\\\\srv\\share\\photos\\a.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "long-paths-beyond-max-path",
+      "folder": "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "\\\\?\\C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "long-paths-beyond-max-path-both-plain-and-two-files-reversed",
+      "folder": "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg.jpg",
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg",
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg.jpg"
+      ],
+      "valid": true,
+      "reason": null,
+      "ordered": [
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg.jpg",
+        "C:\\photos\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.jpg"
+      ]
+    },
+    {
+      "kind": "validate",
+      "name": "snapshot-folder-differs-from-scanned-files-folder",
+      "folder": "C:\\other",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "outside-folder",
+      "ordered": []
+    },
+    {
+      "kind": "validate",
+      "name": "alternate-data-stream-spelling-is-another-name",
+      "folder": "C:\\photos",
+      "status": "Available",
+      "snapshot_reason": null,
+      "ordered_paths": [
+        "C:\\photos\\a.jpg:stream"
+      ],
+      "scanned": [
+        "C:\\photos\\a.jpg"
+      ],
+      "valid": false,
+      "reason": "incomplete-snapshot",
+      "ordered": []
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\C:",
+      "normalized": "C:",
+      "canonical_folder": "C:"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\C:\\",
+      "normalized": "C:\\",
+      "canonical_folder": "C:\\"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\C:\\photos\\a.jpg",
+      "normalized": "C:\\photos\\a.jpg",
+      "canonical_folder": "C:\\photos\\a.jpg"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\c:\\x",
+      "normalized": "c:\\x",
+      "canonical_folder": "c:\\x"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\1:\\x",
+      "normalized": "1:\\x",
+      "canonical_folder": "1:\\x"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\UNC\\srv\\share\\a.jpg",
+      "normalized": "\\\\srv\\share\\a.jpg",
+      "canonical_folder": "\\\\srv\\share\\a.jpg"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\unc\\srv\\share\\a.jpg",
+      "normalized": "\\\\srv\\share\\a.jpg",
+      "canonical_folder": "\\\\srv\\share\\a.jpg"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\UNC\\",
+      "normalized": "\\\\",
+      "canonical_folder": "\\\\"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\UNC\\srv",
+      "normalized": "\\\\srv",
+      "canonical_folder": "\\\\srv"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\x",
+      "normalized": "\\\\?\\x",
+      "canonical_folder": "\\\\?\\x"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\Volume{1}\\a.jpg",
+      "normalized": "\\\\?\\Volume{1}\\a.jpg",
+      "canonical_folder": "\\\\?\\Volume{1}\\a.jpg"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\C:\\a\\..\\b",
+      "normalized": "C:\\a\\..\\b",
+      "canonical_folder": "C:\\a\\..\\b"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\?\\",
+      "normalized": "\\\\?\\",
+      "canonical_folder": "\\\\?\\"
+    },
+    {
+      "kind": "normalize",
+      "path": "C:\\ab:c",
+      "normalized": "C:\\ab:c",
+      "canonical_folder": "C:\\ab:c"
+    },
+    {
+      "kind": "normalize",
+      "path": "C:\\photos\\a.jpg",
+      "normalized": "C:\\photos\\a.jpg",
+      "canonical_folder": "C:\\photos\\a.jpg"
+    },
+    {
+      "kind": "normalize",
+      "path": "C:/a/../b",
+      "normalized": "C:\\b",
+      "canonical_folder": "C:\\b"
+    },
+    {
+      "kind": "normalize",
+      "path": "C:\\a\\",
+      "normalized": "C:\\a\\",
+      "canonical_folder": "C:\\a"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\srv\\share\\a",
+      "normalized": "\\\\srv\\share\\a",
+      "canonical_folder": "\\\\srv\\share\\a"
+    },
+    {
+      "kind": "normalize",
+      "path": "\\\\.\\D:\\a\\..\\b",
+      "normalized": "\\\\.\\D:\\b",
+      "canonical_folder": "\\\\.\\D:\\b"
+    },
+    {
+      "kind": "normalize",
+      "path": "",
+      "normalized": {
+        "throws": "ArgumentException"
+      },
+      "canonical_folder": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "normalize",
+      "path": " ",
+      "normalized": {
+        "throws": "ArgumentException"
+      },
+      "canonical_folder": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "normalize",
+      "path": "   ",
+      "normalized": {
+        "throws": "ArgumentException"
+      },
+      "canonical_folder": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "normalize",
+      "path": "C:\\a\u0000b",
+      "normalized": {
+        "throws": "ArgumentException"
+      },
+      "canonical_folder": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a",
+      "b": "C:\\a\\",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a",
+      "b": "c:\\A",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a\\.\\b",
+      "b": "C:\\a\\b\\",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a",
+      "b": "C:\\b",
+      "same": false
+    },
+    {
+      "kind": "same_path",
+      "a": "",
+      "b": "C:\\a",
+      "same": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a",
+      "b": "",
+      "same": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "kind": "same_path",
+      "a": "\\\\?\\D:\\deep\\x\\",
+      "b": "D:\\deep\\x",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a",
+      "b": "\\\\?\\C:\\a",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\",
+      "b": "C:\\",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a\\b",
+      "b": "C:\\a",
+      "same": false
+    },
+    {
+      "kind": "same_path",
+      "a": "\\\\srv\\share\\",
+      "b": "\\\\SRV\\share",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:/a/b",
+      "b": "C:\\a\\b",
+      "same": true
+    },
+    {
+      "kind": "same_path",
+      "a": "C:\\a\\x\\..",
+      "b": "C:\\a",
+      "same": true
+    }
+  ]
+}

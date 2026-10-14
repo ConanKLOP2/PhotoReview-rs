@@ -1,0 +1,18 @@
+{
+ "names": [
+  "app.log",
+  "test.log",
+  "noext",
+  "a.b.log",
+  ".log",
+  "x.tar.gz",
+  "UPPER.LOG",
+  "app.1.log",
+  "log",
+  "my log.txt",
+  "ảnh.log",
+  "a.log.txt",
+  "a..log",
+  "trailing.dotx"
+ ]
+}

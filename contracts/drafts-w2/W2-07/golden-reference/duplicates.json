@@ -1,0 +1,303 @@
+{
+  "generator": "oracle-cs duplicates",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty-list",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": []
+    },
+    {
+      "name": "remove-numbered-selects-only-numbered-copies",
+      "remove_numbered": true,
+      "removed": [
+        "img (1).jpg",
+        "img (2).jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (1).jpg",
+        "img (2).jpg"
+      ]
+    },
+    {
+      "name": "remove-originals-selects-only-the-unnumbered",
+      "remove_numbered": false,
+      "removed": [
+        "img.jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (1).jpg"
+      ]
+    },
+    {
+      "name": "only-numbered-copies-keep-the-first-as-survivor",
+      "remove_numbered": true,
+      "removed": [
+        "img (2).jpg",
+        "img (3).jpg"
+      ],
+      "hashed": [
+        "img (1).jpg",
+        "img (2).jpg",
+        "img (3).jpg"
+      ]
+    },
+    {
+      "name": "only-originals-keep-the-first-as-survivor",
+      "remove_numbered": false,
+      "removed": [
+        "img-b.jpg",
+        "img-c.jpg"
+      ],
+      "hashed": [
+        "img-a.jpg",
+        "img-b.jpg",
+        "img-c.jpg"
+      ]
+    },
+    {
+      "name": "survivor-is-first-in-input-order-not-first-by-name",
+      "remove_numbered": true,
+      "removed": [
+        "a (1).jpg",
+        "m (1).jpg"
+      ],
+      "hashed": [
+        "z (1).jpg",
+        "a (1).jpg",
+        "m (1).jpg"
+      ]
+    },
+    {
+      "name": "different-sizes-are-never-hashed",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": []
+    },
+    {
+      "name": "same-size-different-content",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg"
+      ]
+    },
+    {
+      "name": "io-error-in-hash-skips-that-file",
+      "remove_numbered": true,
+      "removed": [
+        "a (2).jpg"
+      ],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg",
+        "a (2).jpg"
+      ]
+    },
+    {
+      "name": "io-error-on-the-original-leaves-the-copies-all-matching",
+      "remove_numbered": true,
+      "removed": [
+        "a (2).jpg"
+      ],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg",
+        "a (2).jpg"
+      ]
+    },
+    {
+      "name": "same-path-listed-twice-or-recased-is-not-its-own-duplicate",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": []
+    },
+    {
+      "name": "recased-listing-of-a-real-pair-keeps-first-spelling",
+      "remove_numbered": true,
+      "removed": [
+        "img (1).jpg"
+      ],
+      "hashed": [
+        "IMG.JPG",
+        "img (1).jpg"
+      ]
+    },
+    {
+      "name": "size-group-without-a-matching-member-is-not-hashed-numbered-rule",
+      "remove_numbered": true,
+      "removed": [
+        "d (1).jpg"
+      ],
+      "hashed": [
+        "c (1).jpg",
+        "d (1).jpg"
+      ]
+    },
+    {
+      "name": "size-group-without-a-matching-member-is-not-hashed-original-rule",
+      "remove_numbered": false,
+      "removed": [
+        "d.jpg"
+      ],
+      "hashed": [
+        "c.jpg",
+        "d.jpg"
+      ]
+    },
+    {
+      "name": "files-with-no-same-size-partner-are-never-hashed",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": []
+    },
+    {
+      "name": "hash-key-includes-the-size",
+      "remove_numbered": true,
+      "removed": [
+        "z (1).jpg",
+        "w (1).jpg"
+      ],
+      "hashed": [
+        "x (1).jpg",
+        "z (1).jpg",
+        "y (1).jpg",
+        "w (1).jpg"
+      ]
+    },
+    {
+      "name": "hash-text-is-compared-ignoring-case",
+      "remove_numbered": true,
+      "removed": [
+        "a (1).jpg"
+      ],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg"
+      ]
+    },
+    {
+      "name": "two-empty-files-are-duplicates",
+      "remove_numbered": true,
+      "removed": [
+        "img (1).jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (1).jpg"
+      ]
+    },
+    {
+      "name": "hash-call-order-follows-size-groups-in-first-appearance-order",
+      "remove_numbered": true,
+      "removed": [
+        "p2 (1).jpg",
+        "q2 (1).jpg"
+      ],
+      "hashed": [
+        "p1.jpg",
+        "p2 (1).jpg",
+        "q1.jpg",
+        "q2 (1).jpg"
+      ]
+    },
+    {
+      "name": "two-content-groups-removals-in-group-creation-order",
+      "remove_numbered": true,
+      "removed": [
+        "a2 (1).jpg",
+        "b2 (1).jpg",
+        "b3 (1).jpg"
+      ],
+      "hashed": [
+        "a1.jpg",
+        "b1.jpg",
+        "a2 (1).jpg",
+        "b2 (1).jpg",
+        "b3 (1).jpg"
+      ]
+    },
+    {
+      "name": "missing-and-folder-entries-are-skipped",
+      "remove_numbered": true,
+      "removed": [
+        "img (1).jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (1).jpg"
+      ]
+    },
+    {
+      "name": "fullwidth-digits-count-as-numbered",
+      "remove_numbered": true,
+      "removed": [
+        "img (１).jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (１).jpg"
+      ]
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered-remove-numbered",
+      "remove_numbered": true,
+      "removed": [],
+      "hashed": []
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered-remove-originals",
+      "remove_numbered": false,
+      "removed": [
+        "img(1).jpg"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img(1).jpg"
+      ]
+    },
+    {
+      "name": "extension-is-ignored-by-the-naming-rule",
+      "remove_numbered": true,
+      "removed": [
+        "img (1).png",
+        "other (2).dng"
+      ],
+      "hashed": [
+        "img.jpg",
+        "img (1).png",
+        "other (2).dng"
+      ]
+    },
+    {
+      "name": "mixed-group-with-two-copies-and-an-original-remove-originals",
+      "remove_numbered": false,
+      "removed": [
+        "a.jpg",
+        "b.jpg"
+      ],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg",
+        "b.jpg"
+      ]
+    },
+    {
+      "name": "hash-by-name-splits-same-size-files",
+      "remove_numbered": true,
+      "removed": [
+        "a (1).jpg"
+      ],
+      "hashed": [
+        "a.jpg",
+        "a (1).jpg",
+        "b.jpg",
+        "b (1).jpg"
+      ]
+    }
+  ]
+}

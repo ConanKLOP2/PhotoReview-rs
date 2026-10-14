@@ -1,0 +1,99 @@
+{
+ "cases": [
+  {
+   "name": "one info line",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": "hello"
+    }
+   ]
+  },
+  {
+   "name": "three levels in order",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": "one"
+    },
+    {
+     "level": "WARN",
+     "message": "two"
+    },
+    {
+     "level": "ERROR",
+     "message": "three"
+    }
+   ]
+  },
+  {
+   "name": "error with exception: LF between head and exception text, CRLF at the end",
+   "entries": [
+    {
+     "level": "ERROR",
+     "message": "boom",
+     "exceptionText": "System.InvalidOperationException: x"
+    }
+   ]
+  },
+  {
+   "name": "error with multi-line exception text keeps its own CRLF",
+   "entries": [
+    {
+     "level": "ERROR",
+     "message": "boom",
+     "exceptionText": "A: m\r\n   at X()\r\n   at Y()"
+    }
+   ]
+  },
+  {
+   "name": "error without exception",
+   "entries": [
+    {
+     "level": "ERROR",
+     "message": "plain error"
+    }
+   ]
+  },
+  {
+   "name": "message with LF and unicode is verbatim, not re-encoded",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": "line1\nline2 {0} {name} {{x}} İı 日本語 مرحبا 😀"
+    }
+   ]
+  },
+  {
+   "name": "message with CRLF",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": "a\r\nb"
+    }
+   ]
+  },
+  {
+   "name": "empty message",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": ""
+    }
+   ]
+  },
+  {
+   "name": "no BOM, UTF-8, two entries",
+   "entries": [
+    {
+     "level": "INFO",
+     "message": "é"
+    },
+    {
+     "level": "INFO",
+     "message": "ß"
+    }
+   ]
+  }
+ ]
+}

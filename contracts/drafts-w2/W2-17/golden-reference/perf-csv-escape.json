@@ -1,0 +1,114 @@
+{
+  "generator": "oracle-cs perf-csv-escape",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "value": "",
+      "escaped": ""
+    },
+    {
+      "value": "plain",
+      "escaped": "plain"
+    },
+    {
+      "value": " leading and trailing ",
+      "escaped": " leading and trailing "
+    },
+    {
+      "value": "a,b",
+      "escaped": "\"a,b\""
+    },
+    {
+      "value": "a\"b",
+      "escaped": "\"a\"\"b\""
+    },
+    {
+      "value": "\"",
+      "escaped": "\"\"\"\""
+    },
+    {
+      "value": "\"\"",
+      "escaped": "\"\"\"\"\"\""
+    },
+    {
+      "value": "a\nb",
+      "escaped": "a b"
+    },
+    {
+      "value": "a\r\nb",
+      "escaped": "a b"
+    },
+    {
+      "value": "a\rb",
+      "escaped": "a b"
+    },
+    {
+      "value": "\n",
+      "escaped": " "
+    },
+    {
+      "value": "\r\n",
+      "escaped": " "
+    },
+    {
+      "value": "\r",
+      "escaped": " "
+    },
+    {
+      "value": "a\r\r\nb",
+      "escaped": "a  b"
+    },
+    {
+      "value": "a\n\r\nb",
+      "escaped": "a  b"
+    },
+    {
+      "value": "a\r\n\r\nb",
+      "escaped": "a  b"
+    },
+    {
+      "value": "x,\"y\"\nz",
+      "escaped": "\"x,\"\"y\"\" z\""
+    },
+    {
+      "value": "line1\r",
+      "escaped": "line1 "
+    },
+    {
+      "value": "\r\nx",
+      "escaped": " x"
+    },
+    {
+      "value": "a\u0000b",
+      "escaped": "a\u0000b"
+    },
+    {
+      "value": "tab\there",
+      "escaped": "tab\there"
+    },
+    {
+      "value": "#not a comment inside a field",
+      "escaped": "#not a comment inside a field"
+    },
+    {
+      "value": "semi;colon;list",
+      "escaped": "semi;colon;list"
+    },
+    {
+      "value": "日本語, ok",
+      "escaped": "\"日本語, ok\""
+    },
+    {
+      "value": "emoji \uD83D\uDE00",
+      "escaped": "emoji \uD83D\uDE00"
+    },
+    {
+      "value": "é,\u2028x",
+      "escaped": "\"é,\u2028x\""
+    },
+    {
+      "value": "a\u0085b",
+      "escaped": "a\u0085b"
+    }
+  ]
+}

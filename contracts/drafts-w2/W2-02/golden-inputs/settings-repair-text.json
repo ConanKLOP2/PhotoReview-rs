@@ -1,0 +1,170 @@
+{
+    "cases":  [
+                  {
+                      "name":  "none",
+                      "repairs":  [
+
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "one reset",
+                      "repairs":  [
+                                      "PreloadWorkerCount"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "two resets",
+                      "repairs":  [
+                                      "PreloadWorkerCount",
+                                      "Actions"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "one disabled shortcut",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "two disabled shortcuts",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom",
+                                      "Shortcuts.CustomZoom"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "mixed (resets first, then one line per shortcut)",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom",
+                                      "Actions",
+                                      "Shortcuts.CustomZoom",
+                                      "Shortcuts"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "Shortcuts without a dot is a reset",
+                      "repairs":  [
+                                      "Shortcuts"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "prefix is case sensitive",
+                      "repairs":  [
+                                      "shortcuts.LastImage"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "empty shortcut name",
+                      "repairs":  [
+                                      "Shortcuts."
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "indexed action shortcut is a reset",
+                      "repairs":  [
+                                      "Actions[0].Shortcut",
+                                      "Shortcuts.Refresh"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "name with braces and unicode",
+                      "repairs":  [
+                                      "Shortcuts.{x} é"
+                                  ],
+                      "for_import":  false
+                  },
+                  {
+                      "name":  "none (import)",
+                      "repairs":  [
+
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "one reset (import)",
+                      "repairs":  [
+                                      "PreloadWorkerCount"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "two resets (import)",
+                      "repairs":  [
+                                      "PreloadWorkerCount",
+                                      "Actions"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "one disabled shortcut (import)",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "two disabled shortcuts (import)",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom",
+                                      "Shortcuts.CustomZoom"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "mixed (resets first, then one line per shortcut) (import)",
+                      "repairs":  [
+                                      "Shortcuts.ToggleKeepZoom",
+                                      "Actions",
+                                      "Shortcuts.CustomZoom",
+                                      "Shortcuts"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "Shortcuts without a dot is a reset (import)",
+                      "repairs":  [
+                                      "Shortcuts"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "prefix is case sensitive (import)",
+                      "repairs":  [
+                                      "shortcuts.LastImage"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "empty shortcut name (import)",
+                      "repairs":  [
+                                      "Shortcuts."
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "indexed action shortcut is a reset (import)",
+                      "repairs":  [
+                                      "Actions[0].Shortcut",
+                                      "Shortcuts.Refresh"
+                                  ],
+                      "for_import":  true
+                  },
+                  {
+                      "name":  "name with braces and unicode (import)",
+                      "repairs":  [
+                                      "Shortcuts.{x} é"
+                                  ],
+                      "for_import":  true
+                  }
+              ]
+}

@@ -1,0 +1,1485 @@
+{
+  "generator": "oracle-cs l10n-loader",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "missing-folders-english-only",
+      "shipped_missing": true,
+      "user_missing": true,
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        },
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        },
+        {
+          "op": "load",
+          "code": null,
+          "culture": "vi-VN",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "null-user-dir-lists-shipped-only",
+      "user_null": true,
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"name\": \"vi\", \"nativeName\": \"Tiếng Việt\", \"plural\": \"none\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "vi",
+              "name": "vi",
+              "nativeName": "Tiếng Việt",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shipped-and-user-english-first-each-code-once-sorted-by-native-name",
+      "shipped": {
+        "en.json": "{ \"_meta\": { \"code\": \"en\", \"name\": \"en\", \"nativeName\": \"English (shipped)\" } }",
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"name\": \"vi\", \"nativeName\": \"Tiếng Việt\" } }"
+      },
+      "user": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"name\": \"vi\", \"nativeName\": \"Tiếng Việt (user)\" } }",
+        "de.json": "{ \"_meta\": { \"code\": \"de\", \"name\": \"de\", \"nativeName\": \"Deutsch\" } }",
+        "en.json": "{ \"_meta\": { \"code\": \"en\", \"name\": \"en\", \"nativeName\": \"English (user)\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "de",
+              "name": "de",
+              "nativeName": "Deutsch",
+              "isUserProvided": true
+            },
+            {
+              "code": "vi",
+              "name": "vi",
+              "nativeName": "Tiếng Việt",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "code-comes-from-meta-not-file-name",
+      "user": {
+        "my-translation.json": "{ \"_meta\": { \"code\": \"fr\", \"name\": \"fr\", \"nativeName\": \"Français\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "fr",
+              "name": "fr",
+              "nativeName": "Français",
+              "isUserProvided": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meta-code-case-is-lowered",
+      "shipped": {
+        "pt-BR.json": "{ \"_meta\": { \"code\": \"PT-BR\", \"nativeName\": \"Português (Brasil)\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "pt-br",
+              "name": "pt-br",
+              "nativeName": "Português (Brasil)",
+              "isUserProvided": false
+            }
+          ]
+        },
+        {
+          "op": "resolve",
+          "code": "pt-br",
+          "out": "pt-br"
+        },
+        {
+          "op": "resolve",
+          "code": "PT-BR",
+          "out": "pt-br"
+        }
+      ]
+    },
+    {
+      "id": "dotted-file-names-are-skipped",
+      "shipped": {
+        "en.notes.json": "{ \"_meta\": { \"code\": \"zz\", \"nativeName\": \"Notes\" } }"
+      },
+      "user": {
+        "vi.backup.json": "{ \"_meta\": { \"code\": \"yy\", \"nativeName\": \"Backup\" } }",
+        "a.b.c.json": "{ \"_meta\": { \"code\": \"ww\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "non-json-files-are-ignored",
+      "shipped": {
+        "vi.txt": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" } }",
+        "vi.json.bak": "{ \"_meta\": { \"code\": \"vj\" } }",
+        "vi": "{ \"_meta\": { \"code\": \"vk\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uppercase-extension-is-listed-on-windows",
+      "shipped": {
+        "Fr.JSON": "{ \"_meta\": { \"code\": \"fr\", \"nativeName\": \"Français\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "fr",
+              "name": "fr",
+              "nativeName": "Français",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "file-named-only-extension-is-a-catalog-candidate",
+      "shipped": {
+        ".json": "{ \"_meta\": { \"code\": \"dd\", \"nativeName\": \"Dot only\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "dd",
+              "name": "dd",
+              "nativeName": "Dot only",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "broken-files-skipped-without-throwing",
+      "shipped": {
+        "aa.json": "{ not json",
+        "bb.json": "[]",
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "vi",
+              "name": "vi",
+              "nativeName": "Tiếng Việt",
+              "isUserProvided": false
+            }
+          ]
+        },
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\App\\Languages\\aa.json: invalid JSON (*)",
+              "<ROOT>\\App\\Languages\\bb.json: root must be a JSON object"
+            ],
+            "probes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty-file-is-invalid-json",
+      "shipped": {
+        "vi.json": ""
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\App\\Languages\\vi.json: invalid JSON (*)"
+            ],
+            "probes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-with-utf8-bom-is-read",
+      "shipped": {
+        "vi.json": {
+          "json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Tiêu đề\" }",
+          "bom": true
+        }
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-larger-than-max-is-skipped-with-warning",
+      "user": {
+        "vi.json": {
+          "json": "{ \"_meta\": { \"code\": \"vi\" } }",
+          "pad_to_bytes": 1048577
+        }
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        },
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\User\\Languages\\vi.json: larger than 1048576 bytes, skipped"
+            ],
+            "probes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-exactly-max-is-read",
+      "user": {
+        "vi.json": {
+          "json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Tiêu đề\" }",
+          "pad_to_bytes": 1048576
+        }
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "vi",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "broken-files-reported-in-load-warnings",
+      "shipped": {
+        "vi.json": "{ \"_meta\": "
+      },
+      "user": {
+        "fr.json": "{ \"_meta\": { \"code\": \"?\" } }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\App\\Languages\\vi.json: invalid JSON (*)",
+              "<ROOT>\\User\\Languages\\fr.json: _meta.code is missing or invalid"
+            ],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "locked-file-is-reported-as-cannot-read",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Tiêu đề\" }"
+      },
+      "locked": [
+        "App/Languages/vi.json"
+      ],
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\App\\Languages\\vi.json: cannot read (*)"
+            ],
+            "probes": []
+          }
+        },
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shipped-only-translation",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"name\": \"vi\", \"nativeName\": \"Tiếng Việt\", \"plural\": \"none\" }, \"app.title\": \"Tiêu đề\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "None",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "user-wins-per-key-over-shipped",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Shipped title\" }"
+      },
+      "user": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"User title\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "User title"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "user-file-without-the-key-keeps-shipped-value",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Shipped title\" }"
+      },
+      "user": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" } }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Shipped title"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "user-only-language-loads-with-code-in-any-case",
+      "user": {
+        "de.json": "{ \"_meta\": { \"code\": \"de\", \"nativeName\": \"Deutsch\" }, \"app.title\": \"Fotoprüfung\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "DE",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "de",
+            "nativeName": "Deutsch",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Fotoprüfung"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "unknown-code-falls-back-to-english",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Tiêu đề\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "xx",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "auto-and-blank-codes-follow-the-ui-culture",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Tiêu đề\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "auto",
+          "culture": "vi-VN",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        },
+        {
+          "op": "load",
+          "code": "AUTO",
+          "culture": "vi-VN",
+          "probes": [],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": null,
+          "culture": "vi-VN",
+          "probes": [],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": "",
+          "culture": "vi-VN",
+          "probes": [],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": "   ",
+          "culture": "vi-VN",
+          "probes": [],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": " auto ",
+          "culture": "vi-VN",
+          "probes": [],
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": "auto",
+          "culture": "de-DE",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "culture_name": "de-DE",
+          "culture_two_letter": "de",
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        },
+        {
+          "op": "load",
+          "code": "auto",
+          "culture": "",
+          "probes": [],
+          "culture_name": "",
+          "culture_two_letter": "iv",
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "load",
+          "code": "auto",
+          "culture": "vi",
+          "probes": [],
+          "culture_name": "vi",
+          "culture_two_letter": "vi",
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": []
+          }
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "vi"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "VI-vn",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "vi"
+        }
+      ]
+    },
+    {
+      "id": "regional-catalog-preferred-over-language-only",
+      "shipped": {
+        "pt.json": "{ \"_meta\": { \"code\": \"pt\", \"nativeName\": \"Português\" } }",
+        "pt-BR.json": "{ \"_meta\": { \"code\": \"pt-BR\", \"nativeName\": \"Português (Brasil)\" } }"
+      },
+      "ops": [
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt-BR",
+          "culture_name": "pt-BR",
+          "culture_two_letter": "pt",
+          "out": "pt-br"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt-PT",
+          "culture_name": "pt-PT",
+          "culture_two_letter": "pt",
+          "out": "pt"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt",
+          "culture_name": "pt",
+          "culture_two_letter": "pt",
+          "out": "pt"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt-br",
+          "culture_name": "pt-BR",
+          "culture_two_letter": "pt",
+          "out": "pt-br"
+        },
+        {
+          "op": "resolve",
+          "code": "pt-br",
+          "out": "pt-br"
+        },
+        {
+          "op": "resolve",
+          "code": "PT",
+          "out": "pt"
+        }
+      ]
+    },
+    {
+      "id": "only-regional-catalog-not-matched-by-other-region",
+      "shipped": {
+        "pt-BR.json": "{ \"_meta\": { \"code\": \"pt-BR\" } }"
+      },
+      "ops": [
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt-PT",
+          "culture_name": "pt-PT",
+          "culture_two_letter": "pt",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "pt-BR",
+          "culture_name": "pt-BR",
+          "culture_two_letter": "pt",
+          "out": "pt-br"
+        },
+        {
+          "op": "resolve",
+          "code": "pt",
+          "out": "en"
+        }
+      ]
+    },
+    {
+      "id": "script-tagged-cultures",
+      "shipped": {
+        "zh.json": "{ \"_meta\": { \"code\": \"zh\" } }",
+        "zh-Hant.json": "{ \"_meta\": { \"code\": \"zh-Hant\" } }"
+      },
+      "ops": [
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "zh-CN",
+          "culture_name": "zh-CN",
+          "culture_two_letter": "zh",
+          "out": "zh"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "zh-TW",
+          "culture_name": "zh-TW",
+          "culture_two_letter": "zh",
+          "out": "zh"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "zh-Hant",
+          "culture_name": "zh-Hant",
+          "culture_two_letter": "zh",
+          "out": "zh-hant"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "zh-Hans",
+          "culture_name": "zh-Hans",
+          "culture_two_letter": "zh",
+          "out": "zh"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "zh-Hant-TW",
+          "culture_name": "zh-Hant-TW",
+          "culture_two_letter": "zh",
+          "out": "zh"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "fil-PH",
+          "culture_name": "fil-PH",
+          "culture_two_letter": "fil",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "auto",
+          "culture": "haw-US",
+          "culture_name": "haw-US",
+          "culture_two_letter": "haw",
+          "out": "en"
+        }
+      ]
+    },
+    {
+      "id": "explicit-code-ignores-culture",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" } }"
+      },
+      "ops": [
+        {
+          "op": "resolve",
+          "code": "en",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "vi",
+          "culture": "en-US",
+          "culture_name": "en-US",
+          "culture_two_letter": "en",
+          "out": "vi"
+        },
+        {
+          "op": "resolve",
+          "code": "vi-VN",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": " vi",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "vi ",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "EN",
+          "out": "en"
+        },
+        {
+          "op": "resolve",
+          "code": "xx",
+          "culture": "vi-VN",
+          "culture_name": "vi-VN",
+          "culture_two_letter": "vi",
+          "out": "en"
+        }
+      ]
+    },
+    {
+      "id": "user-english-override-only-when-english-selected",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" } }"
+      },
+      "user": {
+        "en.json": "{ \"_meta\": { \"code\": \"en\", \"nativeName\": \"English\" }, \"app.title\": \"My Review\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "en",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "My Review"
+              }
+            ]
+          }
+        },
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        },
+        {
+          "op": "load",
+          "code": "auto",
+          "culture": "en-US",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "culture_name": "en-US",
+          "culture_two_letter": "en",
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "My Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "shipped-english-file-is-not-an-overlay",
+      "shipped": {
+        "en.json": "{ \"_meta\": { \"code\": \"en\", \"nativeName\": \"English\" }, \"app.title\": \"Shipped English\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "en",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "en",
+            "nativeName": "English",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Photo Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "unknown-key-in-translation-warns-and-still-loads",
+      "user": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Tiêu đề\", \"no.such.key\": \"x\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "vi",
+            "plural": "OneOther",
+            "warnings": [
+              "vi: unknown key 'no.such.key' ignored"
+            ],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "same-code-in-one-folder-files-applied-in-case-insensitive-name-order",
+      "shipped": {
+        "c-vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"C\" } }",
+        "B-vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"B\" }, \"app.title\": \"title B\" }",
+        "a-vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"A\" }, \"app.title\": \"title A\" }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "vi",
+              "name": "vi",
+              "nativeName": "A",
+              "isUserProvided": false
+            }
+          ]
+        },
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "C",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "title B"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-order-underscore-versus-letters-uses-ordinal-upper-case",
+      "shipped": {
+        "_x.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"U\" }, \"app.title\": \"title underscore\" }",
+        "a.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"A\" }, \"app.title\": \"title a\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "U",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "title underscore"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "equal-native-names-keep-discovery-order",
+      "shipped": {
+        "x1.json": "{ \"_meta\": { \"code\": \"aa\", \"nativeName\": \"Same\" } }",
+        "x2.json": "{ \"_meta\": { \"code\": \"bb\", \"nativeName\": \"Same\" } }"
+      },
+      "user": {
+        "x3.json": "{ \"_meta\": { \"code\": \"cc\", \"nativeName\": \"same\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "aa",
+              "name": "aa",
+              "nativeName": "Same",
+              "isUserProvided": false
+            },
+            {
+              "code": "bb",
+              "name": "bb",
+              "nativeName": "Same",
+              "isUserProvided": false
+            },
+            {
+              "code": "cc",
+              "name": "cc",
+              "nativeName": "same",
+              "isUserProvided": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-name-falls-back-to-code-in-listing",
+      "shipped": {
+        "a.json": "{ \"_meta\": { \"code\": \"zz\" } }",
+        "b.json": "{ \"_meta\": { \"code\": \"ab\", \"nativeName\": \"Beta\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            },
+            {
+              "code": "ab",
+              "name": "ab",
+              "nativeName": "Beta",
+              "isUserProvided": false
+            },
+            {
+              "code": "zz",
+              "name": "zz",
+              "nativeName": "zz",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "english-in-listing-uses-built-in-names",
+      "shipped": {
+        "en.json": "{ \"_meta\": { \"code\": \"EN\", \"name\": \"Renamed\", \"nativeName\": \"Renamed\" } }"
+      },
+      "ops": [
+        {
+          "op": "discover",
+          "out": [
+            {
+              "code": "en",
+              "name": "English",
+              "nativeName": "English",
+              "isUserProvided": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-dir-missing-but-shipped-exists",
+      "user_missing": true,
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\" }, \"app.title\": \"Tiêu đề\" }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [
+            {
+              "op": "get",
+              "key": "app.title"
+            }
+          ],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "OneOther",
+            "warnings": [],
+            "probes": [
+              {
+                "op": "get",
+                "key": "app.title",
+                "out": "Tiêu đề"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "partial-user-file-keeps-shipped-native-name-and-plural",
+      "shipped": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\", \"nativeName\": \"Tiếng Việt\", \"plural\": \"none\" } }"
+      },
+      "user": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" } }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "vi",
+          "probes": [],
+          "out": {
+            "code": "vi",
+            "nativeName": "Tiếng Việt",
+            "plural": "None",
+            "warnings": [],
+            "probes": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "load-reports-warnings-of-every-broken-file-in-folder-order",
+      "shipped": {
+        "b.json": "{",
+        "a.json": "[]",
+        "c.json": "{ \"_meta\": { \"code\": \"1\" } }"
+      },
+      "user": {
+        "d.json": "{ \"_meta\": { \"code\": \"dd\" }, \"k\": 1 }"
+      },
+      "ops": [
+        {
+          "op": "load",
+          "code": "dd",
+          "probes": [],
+          "out": {
+            "code": "dd",
+            "nativeName": "dd",
+            "plural": "OneOther",
+            "warnings": [
+              "<ROOT>\\App\\Languages\\a.json: root must be a JSON object",
+              "<ROOT>\\App\\Languages\\b.json: invalid JSON (*)",
+              "<ROOT>\\App\\Languages\\c.json: _meta.code is missing or invalid",
+              "<ROOT>\\User\\Languages\\d.json: 'k' is not a string, ignored"
+            ],
+            "probes": []
+          }
+        }
+      ]
+    }
+  ]
+}

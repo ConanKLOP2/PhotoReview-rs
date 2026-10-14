@@ -1,0 +1,268 @@
+{
+  "cases": [
+    {
+      "name": "empty-list",
+      "files": [],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "remove-numbered-selects-only-numbered-copies",
+      "files": [
+        { "name": "img.jpg", "content": "identical-content" },
+        { "name": "img (1).jpg", "content": "identical-content" },
+        { "name": "img (2).jpg", "content": "identical-content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "remove-originals-selects-only-the-unnumbered",
+      "files": [
+        { "name": "img.jpg", "content": "identical-content" },
+        { "name": "img (1).jpg", "content": "identical-content" }
+      ],
+      "remove_numbered": false,
+      "hash": "content"
+    },
+    {
+      "name": "only-numbered-copies-keep-the-first-as-survivor",
+      "files": [
+        { "name": "img (1).jpg", "content": "identical-content" },
+        { "name": "img (2).jpg", "content": "identical-content" },
+        { "name": "img (3).jpg", "content": "identical-content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "only-originals-keep-the-first-as-survivor",
+      "files": [
+        { "name": "img-a.jpg", "content": "identical-content" },
+        { "name": "img-b.jpg", "content": "identical-content" },
+        { "name": "img-c.jpg", "content": "identical-content" }
+      ],
+      "remove_numbered": false,
+      "hash": "content"
+    },
+    {
+      "name": "survivor-is-first-in-input-order-not-first-by-name",
+      "files": [
+        { "name": "z (1).jpg", "content": "same" },
+        { "name": "a (1).jpg", "content": "same" },
+        { "name": "m (1).jpg", "content": "same" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "different-sizes-are-never-hashed",
+      "files": [
+        { "name": "small.jpg", "content": "small" },
+        { "name": "large.jpg", "content": "large large large" }
+      ],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "same-size-different-content",
+      "files": [
+        { "name": "a.jpg", "content": "12345" },
+        { "name": "a (1).jpg", "content": "abcde" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "io-error-in-hash-skips-that-file",
+      "files": [
+        { "name": "a.jpg", "content": "content" },
+        { "name": "a (1).jpg", "content": "content" },
+        { "name": "a (2).jpg", "content": "content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content",
+      "io_error": ["a (1).jpg"]
+    },
+    {
+      "name": "io-error-on-the-original-leaves-the-copies-all-matching",
+      "files": [
+        { "name": "a.jpg", "content": "content" },
+        { "name": "a (1).jpg", "content": "content" },
+        { "name": "a (2).jpg", "content": "content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content",
+      "io_error": ["a.jpg"]
+    },
+    {
+      "name": "same-path-listed-twice-or-recased-is-not-its-own-duplicate",
+      "files": [ { "name": "img (1).jpg", "content": "content" } ],
+      "listed": ["img (1).jpg", "img (1).jpg", "IMG (1).JPG"],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "recased-listing-of-a-real-pair-keeps-first-spelling",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img (1).jpg", "content": "content" }
+      ],
+      "listed": ["IMG.JPG", "img.jpg", "img (1).jpg", "IMG (1).JPG"],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "size-group-without-a-matching-member-is-not-hashed-numbered-rule",
+      "files": [
+        { "name": "a.raw", "content": "1234567890" },
+        { "name": "b.raw", "content": "abcdefghij" },
+        { "name": "c (1).jpg", "content": "xy" },
+        { "name": "d (1).jpg", "content": "xy" }
+      ],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "size-group-without-a-matching-member-is-not-hashed-original-rule",
+      "files": [
+        { "name": "a (1).raw", "content": "1234567890" },
+        { "name": "b (1).raw", "content": "abcdefghij" },
+        { "name": "c.jpg", "content": "xy" },
+        { "name": "d.jpg", "content": "xy" }
+      ],
+      "remove_numbered": false,
+      "hash": "constant"
+    },
+    {
+      "name": "files-with-no-same-size-partner-are-never-hashed",
+      "files": [
+        { "name": "a (1).jpg", "content": "123" },
+        { "name": "b (1).jpg", "content": "12345" }
+      ],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "hash-key-includes-the-size",
+      "files": [
+        { "name": "x (1).jpg", "content": "12" },
+        { "name": "y (1).jpg", "content": "123" },
+        { "name": "z (1).jpg", "content": "12" },
+        { "name": "w (1).jpg", "content": "123" }
+      ],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "hash-text-is-compared-ignoring-case",
+      "files": [
+        { "name": "a.jpg", "content": "same" },
+        { "name": "a (1).jpg", "content": "same" }
+      ],
+      "remove_numbered": true,
+      "hash": { "by_name": { "a.jpg": "ABC", "a (1).jpg": "abc" } }
+    },
+    {
+      "name": "two-empty-files-are-duplicates",
+      "files": [
+        { "name": "img.jpg", "content": "" },
+        { "name": "img (1).jpg", "content": "" }
+      ],
+      "remove_numbered": true,
+      "hash": "constant"
+    },
+    {
+      "name": "hash-call-order-follows-size-groups-in-first-appearance-order",
+      "files": [
+        { "name": "p1.jpg", "content": "333" },
+        { "name": "q1.jpg", "content": "55555" },
+        { "name": "p2 (1).jpg", "content": "333" },
+        { "name": "q2 (1).jpg", "content": "55555" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "two-content-groups-removals-in-group-creation-order",
+      "files": [
+        { "name": "a1.jpg", "content": "AAAA" },
+        { "name": "b1.jpg", "content": "BBBB" },
+        { "name": "a2 (1).jpg", "content": "AAAA" },
+        { "name": "b2 (1).jpg", "content": "BBBB" },
+        { "name": "b3 (1).jpg", "content": "BBBB" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "missing-and-folder-entries-are-skipped",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img (1).jpg", "content": "content" }
+      ],
+      "directories": ["folder (1)"],
+      "listed": ["img.jpg", "gone (1).jpg", "folder (1)", "img (1).jpg"],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "fullwidth-digits-count-as-numbered",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img (１).jpg", "content": "content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered-remove-numbered",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img(1).jpg", "content": "content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "no-space-before-parenthesis-is-not-numbered-remove-originals",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img(1).jpg", "content": "content" }
+      ],
+      "remove_numbered": false,
+      "hash": "content"
+    },
+    {
+      "name": "extension-is-ignored-by-the-naming-rule",
+      "files": [
+        { "name": "img.jpg", "content": "content" },
+        { "name": "img (1).png", "content": "content" },
+        { "name": "other (2).dng", "content": "content" }
+      ],
+      "remove_numbered": true,
+      "hash": "content"
+    },
+    {
+      "name": "mixed-group-with-two-copies-and-an-original-remove-originals",
+      "files": [
+        { "name": "a.jpg", "content": "content" },
+        { "name": "a (1).jpg", "content": "content" },
+        { "name": "b.jpg", "content": "content" }
+      ],
+      "remove_numbered": false,
+      "hash": "content"
+    },
+    {
+      "name": "hash-by-name-splits-same-size-files",
+      "files": [
+        { "name": "a.jpg", "content": "x" },
+        { "name": "a (1).jpg", "content": "x" },
+        { "name": "b.jpg", "content": "x" },
+        { "name": "b (1).jpg", "content": "x" }
+      ],
+      "remove_numbered": true,
+      "hash": { "by_name": { "a.jpg": "h1", "a (1).jpg": "h1", "b.jpg": "h2", "b (1).jpg": "h3" } }
+    }
+  ]
+}

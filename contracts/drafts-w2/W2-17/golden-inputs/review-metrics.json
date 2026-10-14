@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {"id": "empty", "ops": []},
+    {"id": "ewma-first-sample-then-smooths",
+     "ops": [
+       {"op": "sourceRead", "bytes": 100, "ms": 300},
+       {"op": "sourceRead", "bytes": 100, "ms": 400},
+       {"op": "sourceRead", "bytes": 100, "ms": 0},
+       {"op": "sourceRead", "bytes": 100, "ms": 100},
+       {"op": "sourceRead", "bytes": 100, "ms": 7},
+       {"op": "sourceRead", "bytes": 24000000, "ms": 1500, "ewma": false},
+       {"op": "sourceRead", "bytes": 1, "ms": 1}
+     ]},
+    {"id": "ewma-never-sampled-when-excluded", "ops": [{"op": "sourceRead", "bytes": 24000000, "ms": 1500, "ewma": false}]},
+    {"id": "ewma-zero-ms-is-not-a-sample", "ops": [{"op": "sourceRead", "bytes": 5, "ms": 0}, {"op": "sourceRead", "bytes": 5, "ms": 0}]},
+    {"id": "ewma-fractional-sequence",
+     "ops": [
+       {"op": "sourceRead", "bytes": 1, "ms": 3}, {"op": "sourceRead", "bytes": 1, "ms": 5}, {"op": "sourceRead", "bytes": 1, "ms": 11},
+       {"op": "sourceRead", "bytes": 1, "ms": 2}, {"op": "sourceRead", "bytes": 1, "ms": 1000}, {"op": "sourceRead", "bytes": 1, "ms": 1}
+     ]},
+    {"id": "records-accumulate",
+     "ops": [
+       {"op": "cacheHit"}, {"op": "cacheHit"}, {"op": "cacheMiss"},
+       {"op": "sourceRead", "bytes": 1024, "ms": 15}, {"op": "sourceRead", "bytes": 2048, "ms": 25},
+       {"op": "presented", "ms": 50}, {"op": "preloadHit"}, {"op": "inflightJoin"}, {"op": "diskCacheHit"}, {"op": "uiAssign", "ms": 10},
+       {"op": "stat"}, {"op": "stat"}, {"op": "sessionWrite"}, {"op": "crossThreadPresent"}, {"op": "crossThreadPresent"}
+     ]},
+    {"id": "negative-inputs-are-clamped",
+     "ops": [
+       {"op": "sourceRead", "bytes": 100, "ms": 10},
+       {"op": "sourceRead", "bytes": -50, "ms": -20},
+       {"op": "presented", "ms": 30}, {"op": "presented", "ms": -5}, {"op": "uiAssign", "ms": -7}, {"op": "uiAssign", "ms": 4}
+     ]},
+    {"id": "present-histogram-every-boundary",
+     "ops": [
+       {"op": "presented", "ms": 0}, {"op": "presented", "ms": 8}, {"op": "presented", "ms": 9}, {"op": "presented", "ms": 16}, {"op": "presented", "ms": 17},
+       {"op": "presented", "ms": 33}, {"op": "presented", "ms": 34}, {"op": "presented", "ms": 50}, {"op": "presented", "ms": 51}, {"op": "presented", "ms": 100},
+       {"op": "presented", "ms": 101}, {"op": "presented", "ms": 200}, {"op": "presented", "ms": 201}, {"op": "presented", "ms": 500}, {"op": "presented", "ms": 501},
+       {"op": "presented", "ms": 60000}, {"op": "presented", "ms": -5}
+     ]},
+    {"id": "decoder-fallbacks-by-backend",
+     "ops": [{"op": "fallback", "backend": "WicDirect"}, {"op": "fallback", "backend": "TurboJpeg"}, {"op": "fallback", "backend": "WicDirect"}]},
+    {"id": "source-opens-top-ten-case-insensitive",
+     "ops": [
+       {"op": "sourceOpen", "path": "C:\\photos\\img00.jpg", "times": 1}, {"op": "sourceOpen", "path": "C:\\photos\\img01.jpg", "times": 2},
+       {"op": "sourceOpen", "path": "C:\\photos\\img02.jpg", "times": 3}, {"op": "sourceOpen", "path": "C:\\photos\\img03.jpg", "times": 4},
+       {"op": "sourceOpen", "path": "C:\\photos\\img04.jpg", "times": 5}, {"op": "sourceOpen", "path": "C:\\photos\\img05.jpg", "times": 6},
+       {"op": "sourceOpen", "path": "C:\\photos\\img06.jpg", "times": 7}, {"op": "sourceOpen", "path": "C:\\photos\\img07.jpg", "times": 8},
+       {"op": "sourceOpen", "path": "C:\\photos\\img08.jpg", "times": 9}, {"op": "sourceOpen", "path": "C:\\photos\\img09.jpg", "times": 10},
+       {"op": "sourceOpen", "path": "C:\\photos\\img10.jpg", "times": 11}, {"op": "sourceOpen", "path": "C:\\photos\\img11.jpg", "times": 12},
+       {"op": "sourceOpen", "path": "C:\\PHOTOS\\IMG11.JPG", "times": 1}
+     ]},
+    {"id": "source-opens-ties-ordered-by-path-ignoring-case",
+     "ops": [
+       {"op": "sourceOpen", "path": "C:\\z.jpg", "times": 2}, {"op": "sourceOpen", "path": "C:\\B.jpg", "times": 2}, {"op": "sourceOpen", "path": "C:\\a.jpg", "times": 2},
+       {"op": "sourceOpen", "path": "C:\\_x.jpg", "times": 2}, {"op": "sourceOpen", "path": "C:\\Ä.jpg", "times": 2}, {"op": "sourceOpen", "path": "C:\\ä2.jpg", "times": 2},
+       {"op": "sourceOpen", "path": "C:\\c.jpg", "times": 3}
+     ]},
+    {"id": "source-opens-at-cap-untouched",
+     "ops": [{"op": "sourceOpenRange", "prefix": "C:\\photos\\p", "suffix": ".jpg", "count": 4096}]},
+    {"id": "source-opens-one-over-cap-trims-to-three-quarters",
+     "ops": [{"op": "sourceOpenRange", "prefix": "C:\\photos\\p", "suffix": ".jpg", "count": 4096}, {"op": "sourceOpen", "path": "C:\\photos\\one-more.jpg"}],
+     "stable_top_only": true},
+    {"id": "source-opens-hot-paths-survive-trim", "stable_top_only": true,
+     "ops": [
+       {"op": "sourceOpen", "path": "C:\\photos\\hot.jpg", "times": 5}, {"op": "sourceOpen", "path": "C:\\photos\\warm.jpg", "times": 3},
+       {"op": "sourceOpenRange", "prefix": "C:\\photos\\once", "suffix": ".jpg", "count": 12288}
+     ]}
+  ]
+}
