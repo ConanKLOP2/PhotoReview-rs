@@ -717,6 +717,45 @@ fn update_folder_that_cannot_be_canonicalised_does_not_throw_and_other_folders_a
     assert_eq!(f.current(r"C:\good").as_deref(), Some("y"));
 }
 
+// Rust-only (contract section 1, `key_of` fallback): a folder that cannot be canonicalised is keyed by its RAW text
+// (OrdinalIgnoreCase), so two DIFFERENT such folders stay two pending entries (each reaches the store, which logs its
+// path error), while two case spellings of the SAME one coalesce into one entry and the newest wins.
+#[test]
+fn update_two_different_uncanonicalisable_folders_stay_two_entries() {
+    let f = Fixture::new();
+    let store_log = Arc::new(RecordingLog::new());
+    let store = Arc::new(
+        SessionStore::new(&paths(), Arc::clone(&f.fs) as Arc<dyn FileSystem>, None)
+            .with_log(Arc::clone(&store_log) as Arc<dyn pr_core::abstractions::Log>),
+    );
+    let writer = SessionWriter::new(
+        store,
+        Some(Arc::clone(&f.log) as Arc<dyn pr_core::abstractions::Log>),
+        None,
+        Some(Arc::clone(&f.timer) as Arc<dyn DebounceTimer>),
+    )
+    .unwrap_or_else(|e| panic!("writer: {e}"));
+
+    update(&writer, "C:\\BAD\0one", "old");
+    update(&writer, "C:\\bad\0two", "x");
+    update(&writer, "C:\\bad\0one", "new"); // same raw folder as the first, other case: replaces it
+    writer.flush();
+
+    let failures: Vec<String> = store_log
+        .entries()
+        .into_iter()
+        .map(|(_, message)| message)
+        .filter(|m| m.contains("Session write failed for"))
+        .collect();
+    assert_eq!(failures.len(), 2, "one store attempt per distinct folder: {failures:?}");
+    assert!(failures.iter().any(|m| m.contains("bad\0one")), "{failures:?}");
+    assert!(failures.iter().any(|m| m.contains("bad\0two")), "{failures:?}");
+    assert!(
+        !failures.iter().any(|m| m.contains("BAD\0one")),
+        "the newest spelling wins: {failures:?}"
+    );
+}
+
 // C#: SessionWriterShutdownAndVersionTests.Flush_StaleBatchDrainedBeforeNewerUpdate_DoesNotOverwriteTheNewerState
 #[test]
 fn flush_stale_batch_drained_before_newer_update_does_not_overwrite_the_newer_state() {
