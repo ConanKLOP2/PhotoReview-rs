@@ -375,10 +375,16 @@ fn now_nanos() -> u128 {
 // ---------------------------------------------------------------------------------------------------------------
 
 const ERROR_FILE_NOT_FOUND: i32 = 2;
+const ERROR_PATH_NOT_FOUND: i32 = 3;
 const ERROR_ACCESS_DENIED: i32 = 5;
 const ERROR_SHARING_VIOLATION: i32 = 32;
 const ERROR_LOCK_VIOLATION: i32 = 33;
+const ERROR_INVALID_PARAMETER: i32 = 87;
+const ERROR_ALREADY_EXISTS: i32 = 183;
 const ERROR_FILENAME_EXCED_RANGE: i32 = 206;
+
+const FILE_LIST_DIRECTORY: u32 = 0x1;
+const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
 
 const FILE_SHARE_NONE: u32 = 0;
 const FILE_SHARE_READ: u32 = 0x1;
@@ -422,6 +428,38 @@ fn path_error(err: PathError) -> io::Error {
 /// `Path.GetFullPath` as an `io::Result`.
 fn full_path(path: &Path) -> io::Result<String> {
     dotnet_path::get_full_path(path_str(path)?).map_err(path_error)
+}
+
+/// `PathInternal.IsDevice`: `\\?\`, `\??\` or `\\.\` (either separator).
+fn is_device(path: &str) -> bool {
+    let b = path.as_bytes();
+    let sep = |c: u8| c == b'\\' || c == b'/';
+    if b.len() < 4 {
+        return false;
+    }
+    (sep(b[0]) && sep(b[1]) && (b[2] == b'?' || b[2] == b'.') && sep(b[3]))
+        || (b[0] == b'\\' && b[1] == b'?' && b[2] == b'?' && b[3] == b'\\')
+}
+
+/// `PathInternal.EnsureExtendedPrefix`: `\\?\` (or `\\?\UNC\`) in front of a fully qualified, non-device path.
+fn ensure_extended_prefix(path: &str) -> String {
+    if !dotnet_path::is_path_fully_qualified(path) || is_device(path) {
+        return path.to_owned();
+    }
+    match path.strip_prefix(r"\\") {
+        Some(unc) => format!(r"\\?\UNC\{unc}"),
+        None => format!(r"\\?\{path}"),
+    }
+}
+
+/// `PathInternal.EnsureExtendedPrefixIfNeeded`: the extended form when the path is 260 UTF-16 units or longer, or ends
+/// with a period or a space (which Win32 would otherwise silently trim).
+fn ensure_extended_prefix_if_needed(path: &str) -> String {
+    if path.encode_utf16().count() >= 260 || path.ends_with(['.', ' ']) {
+        ensure_extended_prefix(path)
+    } else {
+        path.to_owned()
+    }
 }
 
 fn is_sep(c: char) -> bool {
@@ -512,6 +550,114 @@ fn directory_exists_full(full: &str) -> bool {
         .is_some_and(|attributes| attributes & FILE_ATTRIBUTE_DIRECTORY != 0)
 }
 
+/// `new FileStream(path, ...)` (also `File.ReadAllText`): .NET opens `Path.GetFullPath(path)`, so `<dir>\sub/` becomes
+/// `<dir>\sub\` and a folder spelled that way is "path not found" (raw 3), not "access denied". `SafeFileHandle.Open`
+/// reports "path not found" on a bare root as access denied (raw 5).
+fn open_like_file_stream(options: &OpenOptions, path: &Path) -> io::Result<File> {
+    let full = full_path(path)?;
+    match options.open(ensure_extended_prefix_if_needed(&full)) {
+        Err(err)
+            if err.raw_os_error() == Some(ERROR_PATH_NOT_FOUND) && full.len() == dotnet_path::root_length(&full) =>
+        {
+            Err(io::Error::from_raw_os_error(ERROR_ACCESS_DENIED))
+        }
+        other => other,
+    }
+}
+
+/// .NET `FileSystem.FillAttributeInfo` + attribute test: the attributes of the entry itself (trailing separator trimmed,
+/// long or dot/space-ending names in the extended form), or the OS error.
+fn win32_attributes(path: &str) -> io::Result<u32> {
+    let trimmed = dotnet_path::trim_ending_directory_separator(path);
+    fs::symlink_metadata(ensure_extended_prefix_if_needed(trimmed)).map(|m| attributes_of(&m))
+}
+
+/// .NET `FileSystem.DirectoryExists(fullPath, out lastError)`.
+fn win32_directory_exists(path: &str) -> (bool, Option<i32>) {
+    match win32_attributes(path) {
+        Ok(attributes) => (attributes & FILE_ATTRIBUTE_DIRECTORY != 0, None),
+        Err(err) => (false, err.raw_os_error()),
+    }
+}
+
+/// .NET `FileSystem.FileExists(fullPath)`.
+fn win32_file_exists(path: &str) -> bool {
+    win32_attributes(path).is_ok_and(|attributes| attributes & FILE_ATTRIBUTE_DIRECTORY == 0)
+}
+
+/// `Directory.CreateDirectory(path)` (.NET `FileSystem.CreateDirectory` on Windows), not `create_dir_all`: an existing
+/// entry with the DIRECTORY attribute is enough (a dangling junction or a junction loop is `Ok`); the missing folders
+/// are collected walking back from the end and created root-first with `CreateDirectoryW` on the extended path; a
+/// failure is reported only when the LAST (wanted) folder failed, and "already exists" only when a file sits there
+/// (raw 183) or the existence check was denied (raw 5). Nothing to create and no existing ancestor: the root must exist,
+/// else raw 3 (this is also how a device name such as `<dir>\nul`, which `GetFullPath` turns into `\\.\nul`, fails).
+fn create_directory_impl(path: &Path) -> io::Result<()> {
+    let full = full_path(path)?;
+    if win32_directory_exists(&full).0 {
+        return Ok(());
+    }
+
+    let bytes = full.as_bytes();
+    let mut length = full.len();
+    // Trim the trailing separator or the walk would create the same folder twice.
+    if length >= 2 && full.ends_with(is_sep) {
+        length -= 1;
+    }
+    let root_length = dotnet_path::root_length(&full);
+    let mut missing: Vec<&str> = Vec::new();
+    let mut some_path_exists = false;
+    if length > root_length {
+        // Separators are ASCII, so every slice below ends on a char boundary.
+        let mut i = length as isize - 1;
+        while i >= root_length as isize && !some_path_exists {
+            let dir = &full[..i as usize + 1];
+            if win32_directory_exists(dir).0 {
+                some_path_exists = true;
+            } else {
+                missing.push(dir);
+            }
+            while i > root_length as isize && !is_sep(char::from(bytes[i as usize])) {
+                i -= 1;
+            }
+            i -= 1;
+        }
+    }
+
+    let count = missing.len();
+    let mut last_ok = true;
+    let mut first_error: Option<io::Error> = None;
+    while let Some(name) = missing.pop() {
+        let created = fs::create_dir(ensure_extended_prefix(name));
+        last_ok = created.is_ok();
+        if let Err(err) = created
+            && first_error.is_none()
+        {
+            if err.raw_os_error() != Some(ERROR_ALREADY_EXISTS) {
+                first_error = Some(err);
+            } else if win32_file_exists(name) {
+                // A file in this folder's place.
+                first_error = Some(err);
+            } else if let (false, Some(ERROR_ACCESS_DENIED)) = win32_directory_exists(name) {
+                first_error = Some(io::Error::from_raw_os_error(ERROR_ACCESS_DENIED));
+            }
+        }
+    }
+
+    // Masks OS differences for CreateDirectory("X:\") when X: does not exist (and for network roots).
+    if count == 0 && !some_path_exists {
+        let root = &full[..root_length];
+        if !win32_directory_exists(root).0 {
+            return Err(io::Error::from_raw_os_error(ERROR_PATH_NOT_FOUND));
+        }
+        return Ok(());
+    }
+    // Only creating the exact folder that was asked for counts.
+    match first_error {
+        Some(err) if !last_ok => Err(err),
+        _ => Ok(()),
+    }
+}
+
 /// `File.Move(source, destination, overwrite)`: full paths, the source must be a FILE (else raw 2, also for a
 /// directory), then `MoveFileExW(MOVEFILE_COPY_ALLOWED [| MOVEFILE_REPLACE_EXISTING])`.
 fn move_impl(source: &Path, destination: &Path, overwrite: bool) -> io::Result<()> {
@@ -532,8 +678,6 @@ mod win32 {
     use std::ffi::{OsStr, c_void};
     use std::io;
     use std::os::windows::ffi::OsStrExt;
-
-    use crate::text::dotnet_path;
 
     const MOVEFILE_REPLACE_EXISTING: u32 = 0x1;
     const MOVEFILE_COPY_ALLOWED: u32 = 0x2;
@@ -561,27 +705,13 @@ mod win32 {
     pub(super) fn wide(full: &str) -> Vec<u16> {
         let units = full.encode_utf16().count();
         let extended;
-        let text = if units >= MAX_SHORT_PATH && dotnet_path::is_path_fully_qualified(full) && !is_device(full) {
-            extended = match full.strip_prefix(r"\\") {
-                Some(unc) => format!(r"\\?\UNC\{unc}"),
-                None => format!(r"\\?\{full}"),
-            };
+        let text = if units >= MAX_SHORT_PATH {
+            extended = super::ensure_extended_prefix(full);
             extended.as_str()
         } else {
             full
         };
         OsStr::new(text).encode_wide().chain(std::iter::once(0)).collect()
-    }
-
-    /// `PathInternal.IsDevice`: `\\?\`, `\??\` or `\\.\` (either separator).
-    fn is_device(path: &str) -> bool {
-        let b = path.as_bytes();
-        let sep = |c: u8| c == b'\\' || c == b'/';
-        if b.len() < 4 {
-            return false;
-        }
-        (sep(b[0]) && sep(b[1]) && (b[2] == b'?' || b[2] == b'.') && sep(b[3]))
-            || (b[0] == b'\\' && b[1] == b'?' && b[2] == b'?' && b[3] == b'\\')
     }
 
     fn check(result: i32) -> io::Result<()> {
@@ -655,12 +785,52 @@ mod win32 {
 // Directory listings
 // ---------------------------------------------------------------------------------------------------------------
 
+/// The folder a .NET `FileSystemEnumerator` actually lists: `TrimEndingDirectorySeparator(GetFullPath(directory))`
+/// (so `<dir>\sub ` and `<dir>\sub\ ` list `<dir>\sub`), checked the way its `CreateDirectoryHandle` opens it.
+fn listing_root(directory: &Path) -> io::Result<String> {
+    let full = full_path(directory)?;
+    let root = dotnet_path::trim_ending_directory_separator(&full).to_owned();
+    open_directory_handle(&root)?;
+    Ok(root)
+}
+
+/// `FileSystemEnumerator.CreateDirectoryHandle`: `CreateFile(FILE_LIST_DIRECTORY, share ReadWrite|Delete,
+/// FILE_FLAG_BACKUP_SEMANTICS)`, following links. "File not found" is reported as "path not found" (raw 3, .NET
+/// historically throws `DirectoryNotFoundException`); a FILE opens fine and then fails the directory query with
+/// ERROR_INVALID_PARAMETER (raw 87), not std's ERROR_DIRECTORY (267).
+#[cfg(windows)]
+fn open_directory_handle(root: &str) -> io::Result<()> {
+    use std::os::windows::fs::OpenOptionsExt;
+    let opened = OpenOptions::new()
+        .access_mode(FILE_LIST_DIRECTORY)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+        .open(ensure_extended_prefix_if_needed(root));
+    let handle = match opened {
+        Ok(handle) => handle,
+        Err(err) if err.raw_os_error() == Some(ERROR_FILE_NOT_FOUND) => {
+            return Err(io::Error::from_raw_os_error(ERROR_PATH_NOT_FOUND));
+        }
+        Err(err) => return Err(err),
+    };
+    if attributes_of(&handle.metadata()?) & FILE_ATTRIBUTE_DIRECTORY == 0 {
+        return Err(io::Error::from_raw_os_error(ERROR_INVALID_PARAMETER));
+    }
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn open_directory_handle(_root: &str) -> io::Result<()> {
+    Ok(())
+}
+
 /// `Directory.EnumerateFiles/EnumerateDirectories(directory)` over the OS listing: entries whose DIRECTORY attribute
 /// equals `directories` (Hidden/System included, `EnumerationOptions.Compatible`), in directory order, joined to the
 /// directory as spelled.
 fn list_entries(directory: &Path, directories: bool, keep: impl Fn(&str) -> bool) -> io::Result<Vec<PathBuf>> {
+    let root = listing_root(directory)?;
     let mut found = Vec::new();
-    for entry in fs::read_dir(directory)? {
+    for entry in fs::read_dir(&root)? {
         let entry = entry?;
         let attributes = attributes_of(&entry.metadata()?);
         if (attributes & FILE_ATTRIBUTE_DIRECTORY != 0) != directories {
@@ -677,7 +847,7 @@ fn list_entries(directory: &Path, directories: bool, keep: impl Fn(&str) -> bool
 /// The production listing of `enumerate_files_with_stat` (C# `new DirectoryInfo(dir).EnumerateFiles("*")`): files of
 /// `get_full_path(directory)` with the stat of their directory entry (no per-file open).
 fn open_physical_listing(directory: &Path) -> io::Result<Box<dyn Iterator<Item = io::Result<ListedFile>>>> {
-    let full = PathBuf::from(full_path(directory)?);
+    let full = PathBuf::from(listing_root(directory)?);
     let entries = fs::read_dir(&full)?;
     Ok(Box::new(entries.filter_map(move |entry| {
         let entry = match entry {
@@ -926,12 +1096,12 @@ impl FileSystem for PhysicalFileSystem {
         if is_blank(path) {
             return Err(blank_path_error());
         }
-        let file = options(
+        let mut shared = options(
             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
             FILE_FLAG_SEQUENTIAL_SCAN,
-        )
-        .read(true)
-        .open(path)?;
+        );
+        shared.read(true);
+        let file = open_like_file_stream(&shared, path)?;
         if buffer_size > 1 {
             Ok(Box::new(BufReader::with_capacity(buffer_size, file)))
         } else {
@@ -946,10 +1116,9 @@ impl FileSystem for PhysicalFileSystem {
         // FileMode.Append, FileAccess.Write, FileShare.Read.
         // DIVERGENCE: the C# FileStream buffers 4096 bytes (data and some errors surface at Flush/Dispose); the raw File
         // writes through to the OS at every call. Callers write whole lines, so the file content is the same.
-        let file: File = options(FILE_SHARE_READ, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 })
-            .append(true)
-            .create(true)
-            .open(path)?;
+        let mut append = options(FILE_SHARE_READ, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 });
+        append.append(true).create(true);
+        let file = open_like_file_stream(&append, path)?;
         Ok(Box::new(file))
     }
 
@@ -960,16 +1129,18 @@ impl FileSystem for PhysicalFileSystem {
         let target = path_str(path)?;
         let dir = dotnet_path::get_directory_name_raw(target);
         if !dir.is_empty() {
-            fs::create_dir_all(dir)?;
+            // Directory.CreateDirectory(dir), not create_dir_all: a dangling junction counts as an existing folder.
+            create_directory_impl(Path::new(dir))?;
         }
 
         let temp = format!("{target}.{}.tmp", new_guid_n());
         let temp_path = Path::new(&temp);
         let result = (|| {
+            // new FileStream(tempPath, ...) opens Path.GetFullPath(tempPath).
             let mut file = options(FILE_SHARE_NONE, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 })
                 .write(true)
                 .create_new(true)
-                .open(temp_path)?;
+                .open(full_path(temp_path)?)?;
             file.write_all(text.as_bytes())?;
             if durable {
                 file.sync_all()?;
@@ -994,7 +1165,9 @@ impl FileSystem for PhysicalFileSystem {
             return Err(blank_path_error());
         }
         // File.ReadAllText shares READ only: it fails while any other handle has the file open for writing.
-        let mut file = options(FILE_SHARE_READ, 0).read(true).open(path)?;
+        let mut read = options(FILE_SHARE_READ, 0);
+        read.read(true);
+        let mut file = open_like_file_stream(&read, path)?;
         let mut bytes = Vec::new();
         file.read_to_end(&mut bytes)?;
         Ok(decode_text_like_dotnet(&bytes))
@@ -1033,10 +1206,9 @@ impl FileSystem for PhysicalFileSystem {
             return Err(blank_path_error().to_string());
         }
         // AR16: one read-open sharing ReadWrite|Delete, no bytes read.
-        match options(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0)
-            .read(true)
-            .open(path)
-        {
+        let mut probe = options(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0);
+        probe.read(true);
+        match open_like_file_stream(&probe, path) {
             Ok(_) => Ok(()),
             Err(err) => Err(err.to_string()),
         }
@@ -1053,7 +1225,7 @@ impl FileSystem for PhysicalFileSystem {
         if is_blank(path) {
             return Err(blank_path_error());
         }
-        fs::create_dir_all(path)
+        create_directory_impl(path)
     }
 
     fn try_delete_empty_directory(&self, path: &Path) -> bool {

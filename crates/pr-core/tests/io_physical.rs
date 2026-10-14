@@ -378,6 +378,16 @@ fn new_guid_n_is_unique_lowercase_hex() {
     assert_eq!(all.len(), 10_000);
 }
 
+// Rust-only: the low 64 bits come from the per-process counter (injective), so they never repeat within a process even
+// if two high halves collided; uniqueness does not rest on the hash alone.
+#[test]
+fn new_guid_n_low_half_never_repeats_within_the_process() {
+    let mut lows: Vec<String> = (0..10_000).map(|_| new_guid_n()[16..].to_owned()).collect();
+    lows.sort();
+    lows.dedup();
+    assert_eq!(lows.len(), 10_000);
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 // Listing interrupted (C# PhysicalFileSystemListingInterruptedTests): injected listing, no OS trick
 // ---------------------------------------------------------------------------------------------------------------
@@ -1850,4 +1860,146 @@ fn golden_physical_fs_ops() {
         failures.len(),
         failures.join("\n")
     );
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// .NET path normalisation and Directory.CreateDirectory (verifier differences, checked against .NET 10)
+// ---------------------------------------------------------------------------------------------------------------
+
+/// `<root>\sub\c.txt` and `<root>\a.txt`.
+fn spelled_root(label: &str) -> TempRoot {
+    let root = TempRoot::new(label);
+    file_in(root.path(), r"sub\c.txt", b"ccc");
+    file_in(root.path(), "a.txt", b"x");
+    root
+}
+
+fn spelled(root: &TempRoot, suffix: &str) -> PathBuf {
+    PathBuf::from(format!("{}{suffix}", root.path().display()))
+}
+
+// C#: Directory.EnumerateFiles(@"<root>\sub ") lists the folder Path.GetFullPath trims it to.
+#[test]
+#[ignore = "native"]
+fn enumerate_files_trailing_space_directory_is_normalised() {
+    let root = spelled_root("dotnet-norm");
+    let got = phys().enumerate_files(&spelled(&root, r"\sub "), "*").unwrap();
+    assert_eq!(names_of(&got), vec!["c.txt"]);
+    // The entries are joined to the directory as spelled (FileSystemEntry.ToSpecifiedFullPath).
+    assert_eq!(got[0], spelled(&root, r"\sub \c.txt"));
+}
+
+// C#: same for a trailing dot.
+#[test]
+#[ignore = "native"]
+fn enumerate_files_trailing_dot_directory_is_normalised() {
+    let root = spelled_root("dotnet-norm");
+    let got = phys().enumerate_files(&spelled(&root, r"\sub."), "*").unwrap();
+    assert_eq!(names_of(&got), vec!["c.txt"]);
+}
+
+// C#: Directory.EnumerateDirectories(@"<root>\sub\ ") (blank last segment) lists <root>\sub itself.
+#[test]
+#[ignore = "native"]
+fn enumerate_directories_trailing_space_directory_is_normalised() {
+    let root = spelled_root("dotnet-norm");
+    dir_in(root.path(), r"sub\inner");
+    let got = phys().enumerate_directories(&spelled(&root, r"\sub\ ")).unwrap();
+    assert_eq!(names_of(&got), vec!["inner"]);
+    let blank = phys().enumerate_directories(&spelled(&root, r"\ ")).unwrap();
+    assert_eq!(names_of(&blank), vec!["sub"]);
+}
+
+// C#: Directory.EnumerateFiles(<a FILE>) is an IOException with ERROR_INVALID_PARAMETER (87), not ERROR_DIRECTORY
+// (267); a stream name under a file is DirectoryNotFound (3).
+#[test]
+#[ignore = "native"]
+fn enumerate_files_on_a_file_path_raw_code() {
+    let root = spelled_root("dotnet-norm");
+    let file = root.path().join("a.txt");
+    assert_eq!(phys().enumerate_files(&file, "*").unwrap_err().raw_os_error(), Some(87));
+    assert_eq!(
+        phys().enumerate_directories(&file).unwrap_err().raw_os_error(),
+        Some(87)
+    );
+    let with_stat = phys().enumerate_files_with_stat(&file, &|_| true, &mut |_| {});
+    assert_eq!(with_stat.unwrap_err().raw_os_error(), Some(87));
+    let stream = spelled(&root, r"\a.txt:s");
+    assert_eq!(
+        phys().enumerate_files(&stream, "*").unwrap_err().raw_os_error(),
+        Some(3)
+    );
+    let missing = root.path().join("missing");
+    assert_eq!(
+        phys().enumerate_files(&missing, "*").unwrap_err().raw_os_error(),
+        Some(3)
+    );
+}
+
+// C#: Directory.CreateDirectory(@"<root>\nul") -> DirectoryNotFoundException raw 3.
+#[test]
+#[ignore = "native"]
+fn create_directory_device_name_fails() {
+    let root = spelled_root("dotnet-norm");
+    let got = phys().create_directory(&root.path().join("nul"));
+    assert_eq!(got.unwrap_err().raw_os_error(), Some(3));
+}
+
+// C#: new FileStream(@"<root>\sub/") -> DirectoryNotFoundException raw 3 (GetFullPath makes it <root>\sub\); also
+// File.ReadAllText and the append stream, and a blank last segment.
+#[test]
+#[ignore = "native"]
+fn open_read_shared_directory_with_forward_slash_is_not_found() {
+    let root = spelled_root("dotnet-norm");
+    for suffix in [r"\sub/", r"\sub\ "] {
+        let path = spelled(&root, suffix);
+        let read = phys().open_read_shared(&path, 4096);
+        assert_eq!(read.err().and_then(|e| e.raw_os_error()), Some(3), "{suffix}");
+        let append = phys().open_append(&path, false);
+        assert_eq!(append.err().and_then(|e| e.raw_os_error()), Some(3), "{suffix}");
+        assert_eq!(
+            phys().read_all_text(&path).unwrap_err().raw_os_error(),
+            Some(3),
+            "{suffix}"
+        );
+    }
+    // The folder spelled without a separator stays access denied (as in .NET).
+    let plain = phys().open_read_shared(&root.path().join("sub"), 4096);
+    assert_eq!(plain.err().and_then(|e| e.raw_os_error()), Some(5));
+}
+
+// C#: Directory.CreateDirectory(<dangling junction>) returns (the entry has the DIRECTORY attribute); a folder under it
+// is DirectoryNotFound raw 3, and an atomic write through it fails the same way.
+#[test]
+#[ignore = "native"]
+fn create_directory_on_a_dangling_junction_is_ok() {
+    let root = TempRoot::new("dotnet-norm");
+    let mut links = Links::default();
+    let gone = dir_in(root.path(), "gone");
+    let jd = links.junction(&root.path().join("jd"), &gone);
+    fs::remove_dir(&gone).unwrap();
+
+    phys().create_directory(&jd).unwrap();
+    let under = phys().create_directory(&jd.join("x"));
+    assert_eq!(under.unwrap_err().raw_os_error(), Some(3));
+    let write = phys().write_all_text_atomic(&jd.join("x").join("f.json"), "{}", false);
+    assert_eq!(write.unwrap_err().raw_os_error(), Some(3));
+}
+
+// C#: Directory.CreateDirectory creates every missing level, is Ok on an existing folder, and reports a FILE in the
+// wanted place as raw 183; a file in a middle level is also raw 183 (the FIRST failure, at the file's level, is
+// reported because creating the wanted folder failed too).
+#[test]
+#[ignore = "native"]
+fn create_directory_creates_missing_levels_and_rejects_a_file() {
+    let root = spelled_root("dotnet-norm");
+    let deep = root.path().join("n1").join("n2").join("n3");
+    phys().create_directory(&deep).unwrap();
+    assert!(deep.is_dir());
+    phys().create_directory(&deep).unwrap();
+    phys().create_directory(&spelled(&root, r"\n1\n2\")).unwrap();
+    let on_file = phys().create_directory(&root.path().join("a.txt"));
+    assert_eq!(on_file.unwrap_err().raw_os_error(), Some(183));
+    let under_file = phys().create_directory(&root.path().join("a.txt").join("x"));
+    assert_eq!(under_file.unwrap_err().raw_os_error(), Some(183));
 }
