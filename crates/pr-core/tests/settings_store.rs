@@ -2643,3 +2643,279 @@ fn newer_backup_prune_treats_signed_counter_as_unparseable() {
     assert!(left.iter().any(|n| n.ends_with("-+9")), "{left:?}");
     assert!(!left.iter().any(|n| n.ends_with("-21")), "{left:?}");
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair W2-03: guards for surviving mutants (INV-11 and the newer-backup / import / in-memory-defaults branches)
+// ---------------------------------------------------------------------------------------------------------------
+
+// INV-11: a failed salvage backup sets keep_corrupt_file on its own. The repaired-backup copy that follows
+// succeeds here (the fault fires once), so only the flag set by the salvage branch keeps the file untouched.
+#[test]
+fn salvage_backup_fails_once_config_is_still_never_overwritten() {
+    let r = Rig::new();
+    let original = r#"{"ConfigVersion":3,"ClickZoomPercent":"abc","LoggingEnabled":true}"#;
+    r.put(original);
+    r.fs.fail_times(FsOp::Copy, r.cfg(), io::ErrorKind::Other, 1);
+    let store = r.store();
+
+    let loaded = store.load(None).expect("load");
+    store.save((*loaded).clone()).expect("save");
+
+    assert_eq!(r.read(), original);
+    assert_eq!(r.fs.count(FsOp::WriteAtomic), 0);
+    assert!(r.has(Lv::Warn, "Settings kept in memory only"));
+}
+
+// INV-11 (explicit path): a locked explicit file is not the default file, so a later save still writes the default.
+#[test]
+fn explicit_unreadable_file_does_not_block_default_save() {
+    let r = Rig::new();
+    let explicit = PathBuf::from(r"C:\other\explicit.json");
+    r.fs.add_file(&explicit, br#"{"ConfigVersion":3}"#);
+    r.fs.fail_locked(FsOp::ReadText, &explicit);
+    let store = r.store();
+    let loaded = store.load(Some(&explicit)).expect("load");
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.fs.file_exists(&r.cfg()));
+    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(!r.has(Lv::Warn, "Settings kept in memory only"));
+}
+
+// INV-11: while the corrupt file is kept, `save` leaves it alone but the saved values become current.
+#[test]
+fn kept_corrupt_file_save_makes_the_saved_settings_current_in_memory() {
+    let r = Rig::new();
+    let corrupt = "{ this is not valid json }";
+    r.put(corrupt);
+    r.fs.fail(FsOp::Copy, r.cfg(), io::ErrorKind::PermissionDenied);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+    let mut edited = (*loaded).clone();
+    edited.click_zoom_percent = 300;
+
+    let saved = store.save(edited).expect("save");
+
+    assert_eq!(saved.click_zoom_percent, 300);
+    assert_eq!(store.current().click_zoom_percent, 300);
+    assert_eq!(r.read(), corrupt);
+}
+
+// A locked file raises Changed once and makes the defaults current, replacing what was loaded before.
+#[test]
+fn locked_reload_replaces_current_with_defaults_and_raises_changed() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3,"ClickZoomPercent":250}"#);
+    let store = r.store();
+    store.load(None).expect("first load");
+    assert_eq!(store.current().click_zoom_percent, 250);
+    let (count, make) = counter();
+    store.subscribe_changed(make());
+    r.fs.fail_locked(FsOp::ReadText, r.cfg());
+
+    let loaded = store.load(None).expect("locked load");
+
+    assert_eq!(loaded.click_zoom_percent, defaults().click_zoom_percent);
+    assert_eq!(store.current().click_zoom_percent, defaults().click_zoom_percent);
+    assert_eq!(count.load(Ordering::SeqCst), 1);
+}
+
+// The defaults whose write failed become current, replacing the values held before the load.
+#[test]
+fn default_write_failure_replaces_previous_current_with_defaults() {
+    let r = Rig::new();
+    let store = r.store();
+    let mut custom = defaults();
+    custom.click_zoom_percent = 300;
+    store.save(custom).expect("save");
+    r.fs.delete(&r.cfg()).expect("delete");
+    r.fs.fail(FsOp::WriteAtomic, r.cfg(), io::ErrorKind::Other);
+
+    let loaded = store.load(None).expect("load");
+
+    assert_eq!(loaded.click_zoom_percent, defaults().click_zoom_percent);
+    assert_eq!(store.current().click_zoom_percent, defaults().click_zoom_percent);
+}
+
+// The newer-build flag is per load: a later clean load must not make the next save back anything up.
+#[test]
+fn newer_flag_is_reset_by_the_next_load() {
+    let r = Rig::new();
+    r.put(NEWER);
+    let store = r.store();
+    store.load(None).expect("load newer");
+    r.put(r#"{"ConfigVersion":3,"ClickZoomPercent":250}"#);
+    let loaded = store.load(None).expect("load clean");
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.newer_backups().is_empty());
+
+    // Same for a load that ends on the defaults path (corrupt file): the flag of the previous load is gone.
+    r.put(NEWER);
+    store.load(None).expect("load newer again");
+    r.put("{ this is not valid json }");
+    store.load(None).expect("load corrupt");
+    assert!(r.newer_backups().is_empty());
+}
+
+// The newer backup is only attempted when the file still exists.
+#[test]
+fn newer_backup_is_skipped_when_the_file_vanished_before_the_save() {
+    let r = Rig::new();
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+    r.fs.delete(&r.cfg()).expect("delete");
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(!r.has(Lv::Warn, "Could not back up the newer-build"));
+    assert!(r.newer_backups().is_empty());
+    assert!(r.read().contains("\"ConfigVersion\": 3"));
+}
+
+// A failed newer backup prunes nothing (contract note 8), even with more than three old backups around.
+#[test]
+fn newer_backup_copy_failure_prunes_nothing() {
+    let r = Rig::new();
+    let stamps = [
+        "20200101000001",
+        "20200101000002",
+        "20200101000003",
+        "20200101000004",
+        "20200101000005",
+    ];
+    for stamp in stamps {
+        r.fs.add_file(format!("{}.newer-{stamp}", r.cfg().display()), b"old");
+    }
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+    r.fs.fail(FsOp::Copy, r.cfg(), io::ErrorKind::Other);
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert_eq!(r.newer_backups().len(), 5);
+    assert!(r.has(Lv::Warn, "Could not back up the newer-build config.json"));
+}
+
+// The prune only counts names with the exact (ordinal) prefix; a different-case name from the listing is ignored.
+#[test]
+fn newer_backup_prune_ignores_names_with_a_different_case_prefix() {
+    let r = Rig::new();
+    for stamp in ["20200101000001", "20200101000002", "20200101000003"] {
+        r.fs.add_file(format!("{}.newer-{stamp}", r.cfg().display()), b"old");
+    }
+    let odd = PathBuf::from(format!("{}.NEWER-19990101000000", r.cfg().display()));
+    r.fs.add_file(&odd, b"odd");
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.fs.file_exists(&odd));
+    let valid = r
+        .newer_backups()
+        .iter()
+        .filter(|f| name_of(f).starts_with("config.json.newer-"))
+        .count();
+    assert_eq!(valid, 3, "{:?}", r.newer_backups());
+    assert!(
+        !r.fs
+            .file_exists(Path::new(&format!("{}.newer-20200101000001", r.cfg().display())))
+    );
+}
+
+// A same-prefix name of ANOTHER stamp must not raise the counter of the current stamp.
+#[test]
+fn newer_backup_counter_ignores_other_stamps_sharing_the_prefix() {
+    let r = Rig::new();
+    load_and_save(&r, NEWER);
+    let first = r.newer_backups().remove(0);
+    let stamp = name_of(&first)
+        .strip_prefix("config.json.newer-")
+        .expect("prefix")
+        .to_owned();
+    r.fs.delete(&first).expect("delete");
+    r.fs.add_file(format!("{}.newer-{stamp}9-7", r.cfg().display()), b"old");
+
+    load_and_save(&r, NEWER);
+
+    assert!(
+        r.newer_backups()
+            .iter()
+            .any(|f| name_of(f) == format!("config.json.newer-{stamp}")),
+        "{:?}",
+        r.newer_backups()
+    );
+}
+
+// `save` must fail (and write nothing) when the config folder cannot be created.
+#[test]
+fn save_fails_when_the_config_directory_cannot_be_created() {
+    let r = Rig::new();
+    let store = r.store();
+    r.fs.add_dir(r.dir());
+    r.fs.fail(FsOp::CreateDirectory, r.dir(), io::ErrorKind::PermissionDenied);
+    let (count, make) = counter();
+    store.subscribe_changed(make());
+
+    let result = store.save(defaults());
+
+    assert!(matches!(result, Err(SettingsSaveError::Io(_))));
+    assert!(!r.fs.file_exists(&r.cfg()));
+    assert_eq!(count.load(Ordering::SeqCst), 0);
+}
+
+// Import: neither file exists -> exactly `load(None)`: no read attempt, no retry sleeps, no import warning.
+#[test]
+fn import_without_any_csharp_config_does_not_try_to_read_it() {
+    let r = Rig::new();
+    let store = r.store();
+
+    store.load_first_run_with_import(&csharp_cfg()).expect("import");
+
+    assert!(r.sleeps_ms().is_empty());
+    assert!(!r.has(Lv::Info, "config.json read failed"));
+    assert!(!r.has(Lv::Warn, "C# config.json"));
+    assert!(r.fs.file_exists(&r.cfg()));
+}
+
+// Import: the info line reports how many values were repaired.
+#[test]
+fn import_info_line_reports_the_repair_count() {
+    let r = Rig::new();
+    r.fs.add_file(csharp_cfg(), MISTYPED_VALUE_CONFIG.as_bytes());
+    let store = r.store();
+
+    store.load_first_run_with_import(&csharp_cfg()).expect("import");
+
+    let n = store.last_load_repairs().len();
+    assert!(n >= 1);
+    assert!(
+        r.has(Lv::Info, &format!("({n} repaired)")),
+        "{:?}",
+        r.log_lines(Lv::Info)
+    );
+}
+
+// The salvage startup error lists every unreadable property, joined with ", ".
+#[test]
+fn salvage_startup_error_joins_the_unreadable_names_with_comma_space() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3,"ClickZoomPercent":"abc","LoggingEnabled":"yes"}"#);
+    let store = r.store();
+
+    store.load(None).expect("load");
+
+    assert!(
+        r.startup_messages()
+            .iter()
+            .any(|m| m == "config.json has unreadable values (ClickZoomPercent, LoggingEnabled); the rest was kept"),
+        "{:?}",
+        r.startup_messages()
+    );
+}
