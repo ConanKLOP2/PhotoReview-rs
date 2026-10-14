@@ -315,6 +315,46 @@ fn matches_win32_expression_spot_checks() {
     assert!(matches_win32_expression(".", "anything"));
 }
 
+// .NET `FileSystemName` walks UTF-16 code units: `?` / `>` consume ONE surrogate of an astral character. Expected values
+// observed with .NET 10 `FileSystemName.MatchesWin32Expression`.
+#[test]
+fn matches_win32_expression_counts_utf16_units_like_dotnet() {
+    let e = "\u{1F600}";
+    assert!(!matches_win32_expression("a?", &format!("a{e}")));
+    assert!(matches_win32_expression("a??", &format!("a{e}")));
+    assert!(!matches_win32_expression("a?.b", &format!("a{e}.b")));
+    assert!(matches_win32_expression("a??.b", &format!("a{e}.b")));
+    assert!(!matches_win32_expression("a>", &format!("a{e}")));
+    assert!(!matches_win32_expression("*a?", &format!("xa{e}")));
+    assert!(matches_win32_expression("*a??", &format!("xa{e}")));
+    assert!(matches_win32_expression(&format!("*{e}"), &format!("b{e}")));
+    // Deseret: the "ends with" fast path is OrdinalIgnoreCase over whole scalars; the NFA compares unit by unit.
+    assert!(matches_win32_expression("*\u{10428}", "x\u{10400}"));
+    assert!(!matches_win32_expression("a\u{10428}", "a\u{10400}"));
+}
+
+// `Directory.EnumerateFiles("C:")` keeps the drive-relative spelling (.NET 10: `C:a.txt`, but `C:sub` => `C:sub\b.txt`).
+// The test process's current directory (the crate folder) is the current directory of its drive.
+#[test]
+#[ignore = "native"]
+fn enumerate_on_bare_drive_relative_directory_keeps_the_spelling() {
+    let cwd = std::env::current_dir().unwrap();
+    let text = cwd.to_string_lossy().into_owned();
+    let drive = &text[..2];
+    assert!(
+        drive.ends_with(':'),
+        "test needs a drive-letter current directory: {text}"
+    );
+    let fs = phys();
+    let files = fs.enumerate_files(Path::new(drive), "Cargo.toml").unwrap();
+    assert_eq!(files, vec![PathBuf::from(format!("{drive}Cargo.toml"))]);
+    let dirs = fs.enumerate_directories(Path::new(drive)).unwrap();
+    assert!(dirs.contains(&PathBuf::from(format!("{drive}src"))), "{dirs:?}");
+    assert!(dirs.iter().all(|d| !d.to_string_lossy().contains('\\')), "{dirs:?}");
+    let sub = fs.enumerate_files(Path::new(&format!("{drive}src")), "lib.rs").unwrap();
+    assert_eq!(sub, vec![PathBuf::from(format!("{drive}src\\lib.rs"))]);
+}
+
 // Golden physical-fs-read-text (38 byte sequences) through the decoder alone.
 #[test]
 fn golden_physical_fs_read_text_decoder() {

@@ -138,64 +138,118 @@ pub fn is_swallowed_as_destination_exists(err: &io::Error) -> bool {
 /// DOS wildcards, case-insensitive with [`text::ordinal_upper`](crate::text::ordinal_upper). See the contract for the
 /// translation and the matcher; pinned by golden `physical-fs-pattern`.
 pub fn matches_win32_expression(expression: &str, name: &str) -> bool {
+    let expression: Vec<u16> = expression.encode_utf16().collect();
+    let name: Vec<u16> = name.encode_utf16().collect();
+    matches_win32_expression_units(&expression, &name)
+}
+
+// .NET strings are UTF-16: `FileSystemName` walks UTF-16 code units, so `?` (DOS_QM) consumes ONE surrogate of an astral
+// character, not the whole character. The matcher therefore works on `u16` units, never on Rust `char`s.
+const U_STAR: u16 = b'*' as u16;
+const U_QM: u16 = b'?' as u16;
+const U_DOT: u16 = b'.' as u16;
+const U_DOS_STAR: u16 = b'<' as u16;
+const U_DOS_QM: u16 = b'>' as u16;
+const U_DOS_DOT: u16 = b'"' as u16;
+const U_ESCAPE: u16 = b'\\' as u16;
+
+/// [`matches_win32_expression`] over UTF-16 code units (a listed name may hold a lone surrogate).
+fn matches_win32_expression_units(expression: &[u16], name: &[u16]) -> bool {
     // `FileSystemEnumerableFactory.NormalizeInputs`: "", "." and "*.*" historically mean "*".
-    let translated: Vec<char> =
-        if expression.is_empty() || expression == "." || expression == "*" || expression == "*.*" {
-            vec!['*']
+    let is_star_star = expression == [U_STAR, U_DOT, U_STAR];
+    let translated: Vec<u16> =
+        if expression.is_empty() || expression == [U_DOT] || expression == [U_STAR] || is_star_star {
+            vec![U_STAR]
         } else {
             translate_win32_expression(expression)
         };
-    let name: Vec<char> = name.chars().collect();
-    match_pattern(&translated, &name)
+    match_pattern(&translated, name)
+}
+
+/// `char.ToUpperInvariant` of one UTF-16 unit: a surrogate is returned unchanged.
+fn upper_unit(unit: u16) -> u16 {
+    match char::from_u32(u32::from(unit)) {
+        Some(c) => {
+            let upper = ordinal_upper(c);
+            // `ordinal_upper` of a BMP char stays in the BMP (simple case mapping).
+            u16::try_from(u32::from(upper)).unwrap_or(unit)
+        }
+        None => unit,
+    }
+}
+
+/// `MemoryExtensions.EndsWith(name, end, StringComparison.OrdinalIgnoreCase)` over UTF-16 units: a well-formed
+/// surrogate pair is compared by the upper case of its scalar value, anything else unit by unit.
+fn units_eq_ignore_case(a: &[u16], b: &[u16]) -> bool {
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut left = char::decode_utf16(a.iter().copied());
+    let mut right = char::decode_utf16(b.iter().copied());
+    loop {
+        match (left.next(), right.next()) {
+            (None, None) => return true,
+            (Some(Ok(x)), Some(Ok(y))) => {
+                if ordinal_upper(x) != ordinal_upper(y) {
+                    return false;
+                }
+            }
+            (Some(Err(x)), Some(Err(y))) => {
+                if x.unpaired_surrogate() != y.unpaired_surrogate() {
+                    return false;
+                }
+            }
+            _ => return false,
+        }
+    }
 }
 
 /// `FileSystemName.TranslateWin32Expression`: `?` => `>` (DOS_QM); a `.` followed by `?` or `*` => `"` (DOS_DOT); a
 /// trailing `.` right after a `*` turns that `*` into `<` (DOS_STAR) and is dropped; everything else unchanged.
-fn translate_win32_expression(expression: &str) -> Vec<char> {
-    let chars: Vec<char> = expression.chars().collect();
+fn translate_win32_expression(chars: &[u16]) -> Vec<u16> {
     let length = chars.len();
-    let mut out: Vec<char> = Vec::with_capacity(length);
+    let mut out: Vec<u16> = Vec::with_capacity(length);
     for (i, &c) in chars.iter().enumerate() {
         match c {
-            '.' => {
-                if i >= 1 && i == length - 1 && chars[i - 1] == '*' {
+            U_DOT => {
+                if i >= 1 && i == length - 1 && chars[i - 1] == U_STAR {
                     if let Some(last) = out.last_mut() {
-                        *last = '<';
+                        *last = U_DOS_STAR;
                     }
-                } else if i < length - 1 && (chars[i + 1] == '?' || chars[i + 1] == '*') {
-                    out.push('"');
+                } else if i < length - 1 && (chars[i + 1] == U_QM || chars[i + 1] == U_STAR) {
+                    out.push(U_DOS_DOT);
                 } else {
-                    out.push('.');
+                    out.push(U_DOT);
                 }
             }
-            '?' => out.push('>'),
+            U_QM => out.push(U_DOS_QM),
             _ => out.push(c),
         }
     }
     out
 }
 
-/// `FileSystemName.MatchPattern(expression, name, ignoreCase: true, useExtendedWildcards: true)`: the FsRtl NFA. State
-/// `2 * offset` sits before expression char `offset`; `*` and `<` also have the state `2 * offset + 1`; `2 * len` is
-/// "expression exhausted".
-fn match_pattern(expression: &[char], name: &[char]) -> bool {
+/// `FileSystemName.MatchPattern(expression, name, ignoreCase: true, useExtendedWildcards: true)`: the FsRtl NFA over
+/// UTF-16 units. State `2 * offset` sits before expression unit `offset`; `*` and `<` also have the state
+/// `2 * offset + 1`; `2 * len` is "expression exhausted".
+fn match_pattern(expression: &[u16], name: &[u16]) -> bool {
     if expression.is_empty() || name.is_empty() {
         return false;
     }
-    if expression[0] == '*' {
+    if expression[0] == U_STAR {
         if expression.len() == 1 {
             return true;
         }
         let end = &expression[1..];
-        if !end.iter().any(|c| matches!(c, '"' | '*' | '<' | '>' | '?')) {
+        if !end
+            .iter()
+            .any(|&c| matches!(c, U_DOS_DOT | U_STAR | U_DOS_STAR | U_DOS_QM | U_QM))
+        {
             // A single leading `*` then literals: "ends with" (OrdinalIgnoreCase).
             if name.len() < end.len() {
                 return false;
             }
-            return name[name.len() - end.len()..]
-                .iter()
-                .zip(end)
-                .all(|(&a, &b)| ordinal_upper(a) == ordinal_upper(b));
+            return units_eq_ignore_case(&name[name.len() - end.len()..], end);
         }
     }
 
@@ -204,7 +258,7 @@ fn match_pattern(expression: &[char], name: &[char]) -> bool {
     let mut prior: Vec<usize> = vec![0];
     let mut current: Vec<usize> = Vec::new();
     let mut name_offset = 0usize;
-    let mut name_char = '\0';
+    let mut name_char: u16 = 0;
     let mut name_finished = false;
 
     while !name_finished {
@@ -226,20 +280,20 @@ fn match_pattern(expression: &[char], name: &[char]) -> bool {
                 let mut c = expression[offset];
                 // What follows the match attempt of this expression char.
                 let zero_or_more;
-                if c == '*' {
+                if c == U_STAR {
                     zero_or_more = true;
-                } else if c == '<' {
+                } else if c == U_DOS_STAR {
                     // DOS_STAR: any character zero or more times, but a '.' only when it is not the last one.
                     let mut not_last_period = false;
-                    if !name_finished && name_char == '.' {
-                        not_last_period = name[name_offset..].contains(&'.');
+                    if !name_finished && name_char == U_DOT {
+                        not_last_period = name[name_offset..].contains(&U_DOT);
                     }
-                    zero_or_more = name_finished || name_char != '.' || not_last_period;
+                    zero_or_more = name_finished || name_char != U_DOT || not_last_period;
                 } else {
                     state += 2;
-                    if c == '>' {
+                    if c == U_DOS_QM {
                         // DOS_QM: zero characters at the end of the name or before a '.', else one character.
-                        if name_finished || name_char == '.' {
+                        if name_finished || name_char == U_DOT {
                             offset += 1;
                             if offset == len {
                                 current.push(max_state);
@@ -248,7 +302,7 @@ fn match_pattern(expression: &[char], name: &[char]) -> bool {
                         }
                         current.push(state);
                         break;
-                    } else if c == '"' {
+                    } else if c == U_DOS_DOT {
                         // DOS_DOT: a '.', or zero characters beyond the end of the name.
                         if name_finished {
                             offset += 1;
@@ -257,12 +311,12 @@ fn match_pattern(expression: &[char], name: &[char]) -> bool {
                             }
                             continue;
                         }
-                        if name_char == '.' {
+                        if name_char == U_DOT {
                             current.push(state);
                         }
                         break;
                     } else {
-                        if c == '\\' {
+                        if c == U_ESCAPE {
                             // Escape: match the next expression char literally.
                             offset += 1;
                             if offset == len {
@@ -275,7 +329,7 @@ fn match_pattern(expression: &[char], name: &[char]) -> bool {
                         if name_finished {
                             break;
                         }
-                        if c == '?' || ordinal_upper(c) == ordinal_upper(name_char) {
+                        if c == U_QM || upper_unit(c) == upper_unit(name_char) {
                             current.push(state);
                         }
                         break;
@@ -466,11 +520,30 @@ fn is_sep(c: char) -> bool {
     c == '\\' || c == '/'
 }
 
-/// `Path.Join(directory, name)`: one `\` between them unless `directory` already ends with a separator.
+/// The UTF-16 units of a listed name (a Windows name may hold a lone surrogate, which `to_string_lossy` would lose).
+#[cfg(windows)]
+fn os_units(name: &std::ffi::OsStr) -> Vec<u16> {
+    use std::os::windows::ffi::OsStrExt;
+    name.encode_wide().collect()
+}
+
+#[cfg(not(windows))]
+fn os_units(name: &std::ffi::OsStr) -> Vec<u16> {
+    name.to_string_lossy().encode_utf16().collect()
+}
+
+/// `FileSystemEntry.ToSpecifiedFullPath` (`Path.Join(originalRoot, name)`): one `\` between them unless `directory`
+/// already ends with a separator or is a bare drive-relative spec `X:` (observed with .NET 10: `Directory.EnumerateFiles("C:")`
+/// yields `C:a.txt`, the current directory of drive C:, while `C:sub` yields `C:sub\b.txt`).
 fn join_as_spelled(directory: &Path, name: &std::ffi::OsStr) -> PathBuf {
     let mut joined: OsString = directory.as_os_str().to_owned();
-    let ends_with_sep = directory.as_os_str().to_string_lossy().ends_with(is_sep);
-    if !directory.as_os_str().is_empty() && !ends_with_sep {
+    let spelled = directory.as_os_str().to_string_lossy();
+    let ends_with_sep = spelled.ends_with(is_sep);
+    let bare_drive = {
+        let b = spelled.as_bytes();
+        b.len() == 2 && b[0].is_ascii_alphabetic() && b[1] == b':'
+    };
+    if !directory.as_os_str().is_empty() && !ends_with_sep && !bare_drive {
         joined.push("\\");
     }
     joined.push(name);
@@ -827,7 +900,7 @@ fn open_directory_handle(_root: &str) -> io::Result<()> {
 /// `Directory.EnumerateFiles/EnumerateDirectories(directory)` over the OS listing: entries whose DIRECTORY attribute
 /// equals `directories` (Hidden/System included, `EnumerationOptions.Compatible`), in directory order, joined to the
 /// directory as spelled.
-fn list_entries(directory: &Path, directories: bool, keep: impl Fn(&str) -> bool) -> io::Result<Vec<PathBuf>> {
+fn list_entries(directory: &Path, directories: bool, keep: impl Fn(&[u16]) -> bool) -> io::Result<Vec<PathBuf>> {
     let root = listing_root(directory)?;
     let mut found = Vec::new();
     for entry in fs::read_dir(&root)? {
@@ -837,7 +910,7 @@ fn list_entries(directory: &Path, directories: bool, keep: impl Fn(&str) -> bool
             continue;
         }
         let name = entry.file_name();
-        if keep(&name.to_string_lossy()) {
+        if keep(&os_units(&name)) {
             found.push(join_as_spelled(directory, &name));
         }
     }
@@ -1189,7 +1262,10 @@ impl FileSystem for PhysicalFileSystem {
                 format!("The search pattern '{pattern}' is not supported."),
             ));
         }
-        list_entries(directory, false, |name| matches_win32_expression(pattern, name))
+        let expression: Vec<u16> = pattern.encode_utf16().collect();
+        list_entries(directory, false, |name| {
+            matches_win32_expression_units(&expression, name)
+        })
     }
 
     fn enumerate_files_with_stat(
