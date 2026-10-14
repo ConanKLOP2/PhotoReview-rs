@@ -541,3 +541,13 @@ fn golden_layout_queries() {
         .collect();
     assert_eq!(expected, separators);
 }
+
+// Verifier diff: .NET 10 char.IsWhiteSpace is false for U+001C..U+001F, so Enum.TryParse rejects them.
+#[test]
+fn c0_controls_1c_to_1f_are_not_whitespace() {
+    use pr_core::settings::context_menu::parse_hidden;
+    for s in ["\u{1c}Undo", "Undo\u{1f}", "\u{1d}1", "Fit,\u{1e}Undo"] {
+        let got = parse_hidden(&[Some(s.to_string())]);
+        assert!(got.is_empty(), "{s:?} must not parse");
+    }
+}

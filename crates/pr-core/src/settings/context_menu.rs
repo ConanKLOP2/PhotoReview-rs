@@ -308,9 +308,9 @@ fn item_shows(item: &ContextMenuItemInfo, hidden: &HashSet<ContextMenuItemId>, c
     true
 }
 
-/// `char.IsWhiteSpace`: Unicode White_Space plus U+001C..U+001F (which .NET also treats as white space).
+/// `char.IsWhiteSpace` on .NET 10: Unicode White_Space only (U+001C..U+001F are NOT white space).
 fn is_net_whitespace(c: char) -> bool {
-    c.is_whitespace() || ('\u{1c}'..='\u{1f}').contains(&c)
+    c.is_whitespace()
 }
 
 fn trim_net(s: &str) -> &str {
