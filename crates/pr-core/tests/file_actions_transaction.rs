@@ -505,7 +505,7 @@ fn replay_transaction_case(case: &Value) {
                 usize::try_from(n).expect("count"),
             );
         }
-        let opens_before = fs.count(FsOp::OpenAppend);
+        let mut opens_before = fs.count(FsOp::OpenAppend);
         let mut throws = false;
         let mut got = serde_json::Map::new();
         let mut flags_at_dispose = None;
@@ -545,9 +545,13 @@ fn replay_transaction_case(case: &Value) {
                 got.insert("entry".into(), json!(entry.map(|e| e.to_line())));
                 got.insert("journal_error_set".into(), json!(journal_error.is_some()));
             }
-            "other_append" => other
-                .append(&parse_entry(str_of(step, "entry")))
-                .expect("other writer appends"),
+            "other_append" => {
+                other
+                    .append(&parse_entry(str_of(step, "entry")))
+                    .expect("other writer appends");
+                // The oracle's other writer runs on an uncounted PhysicalFileSystem: its open is not this journal's.
+                opens_before = fs.count(FsOp::OpenAppend);
+            }
             "dispose" => {
                 // Read the flags, drop the transaction, then read the marker (the golden's order).
                 let finished = tx.take().expect("transaction");

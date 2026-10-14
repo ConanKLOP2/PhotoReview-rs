@@ -1069,6 +1069,7 @@ fn large_journal_read_committed_moves_is_bounded_and_fast() {
             "{{\"Id\":\"old-{i}\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\source-{i}.jpg\",\"Destination\":\"C:\\\\photos\\\\dest-{i}.jpg\",\"Size\":{i},\"LastWriteUtc\":\"{ts}\",\"TimestampUtc\":\"{ts}\",\"Error\":null}}\n"
         ));
     }
+    std::fs::create_dir_all(paths.journal_file.parent().expect("journal folder")).expect("create data root");
     std::fs::write(&paths.journal_file, text).expect("write large journal");
     let counting = CountingFs::new(Arc::new(PhysicalFileSystem));
     let journal = OperationJournal::new(&paths, Arc::new(counting.clone()), Arc::new(SystemClock));
@@ -1136,7 +1137,7 @@ fn assert_windows_case(move_period: usize) {
     let (clock, fs) = new_fake();
     let ts = "2026-09-25T00:00:00.0000000Z";
     let (text, moves) = move_sparse_text(20_000, move_period, ts); // ~4.5 MB: over the 1 MB full-scan threshold
-    fs.add_file(&fake_journal_path(), text.as_bytes());
+    fs.add_file(fake_journal_path(), text.as_bytes());
     let journal = journal_on(&fs, &clock);
     let expected: Vec<String> = moves.iter().rev().take(200).rev().cloned().collect();
     let got: Vec<String> = committed(&journal).into_iter().map(|e| e.id).collect();
@@ -1211,7 +1212,7 @@ fn large_move_sparse_journal_read_committed_moves_parses_each_byte_once() {
 fn small_move_sparse_journal_read_committed_moves_reads_each_byte_once() {
     let (clock, fs) = new_fake();
     let (text, _) = move_sparse_text(9_500, 1000, "2026-09-25T00:00:00.0000000Z");
-    fs.add_file(&fake_journal_path(), text.as_bytes());
+    fs.add_file(fake_journal_path(), text.as_bytes());
     let file_length = fs.get_file_stat(&fake_journal_path()).expect("stat").length;
     assert!(
         file_length > 1024 * 1024,
@@ -1819,7 +1820,7 @@ fn move_id(i: usize) -> String {
 }
 
 fn gap_journal(fs: &Arc<FakeFileSystem>, clock: &Arc<FakeClock>, content: &str) -> OperationJournal {
-    fs.add_file(&fake_journal_path(), content.as_bytes());
+    fs.add_file(fake_journal_path(), content.as_bytes());
     assert!(
         fs.get_file_stat(&fake_journal_path()).expect("stat").length >= 1024 * 1024,
         "fixture must exceed the full-scan threshold"
@@ -2211,7 +2212,7 @@ const ONE_MIB: usize = 1024 * 1024;
 fn read_committed_moves_journal_of_exactly_one_mib_uses_the_tail_window_of_200_moves() {
     let (clock, fs) = new_fake();
     let rest: Vec<u8> = (0..300).flat_map(move_line_bytes).collect();
-    fs.add_file(&fake_journal_path(), &padded_journal(ONE_MIB, &rest));
+    fs.add_file(fake_journal_path(), &padded_journal(ONE_MIB, &rest));
 
     let moves = committed(&journal_on(&fs, &clock));
 
@@ -2226,7 +2227,7 @@ fn read_committed_moves_journal_of_exactly_one_mib_uses_the_tail_window_of_200_m
 fn read_committed_moves_journal_one_byte_under_one_mib_reads_every_move() {
     let (clock, fs) = new_fake();
     let rest: Vec<u8> = (0..300).flat_map(move_line_bytes).collect();
-    fs.add_file(&fake_journal_path(), &padded_journal(ONE_MIB - 1, &rest));
+    fs.add_file(fake_journal_path(), &padded_journal(ONE_MIB - 1, &rest));
 
     let moves = committed(&journal_on(&fs, &clock));
 
@@ -2243,7 +2244,7 @@ fn read_committed_moves_bare_newlines_between_lines_in_a_big_journal_neither_los
     rest.extend((50..99).flat_map(move_line_bytes));
     rest.push(b'\n');
     rest.extend(move_line_bytes(99));
-    fs.add_file(&fake_journal_path(), &padded_journal(ONE_MIB + 5000, &rest));
+    fs.add_file(fake_journal_path(), &padded_journal(ONE_MIB + 5000, &rest));
 
     let ids: Vec<String> = committed(&journal_on(&fs, &clock)).into_iter().map(|e| e.id).collect();
 
@@ -2269,7 +2270,7 @@ fn read_committed_moves_last_line_longer_than_the_first_window_and_without_a_tra
     .to_line();
     let mut rest = move_line_bytes(1);
     rest.extend_from_slice(long_move.as_bytes());
-    fs.add_file(&fake_journal_path(), &padded_journal(ONE_MIB, &rest));
+    fs.add_file(fake_journal_path(), &padded_journal(ONE_MIB, &rest));
 
     let ids: Vec<String> = committed(&journal_on(&fs, &clock)).into_iter().map(|e| e.id).collect();
 
@@ -2515,7 +2516,7 @@ fn read_pending_operations_bad_line_beside_good_line_only_good_line_returned() {
     for &(name, bad) in SKIP_CASES {
         let (clock, fs) = new_fake();
         let journal = journal_on(&fs, &clock);
-        fs.add_file(&fake_journal_path(), format!("{bad}\n{good}\n").as_bytes());
+        fs.add_file(fake_journal_path(), format!("{bad}\n{good}\n").as_bytes());
 
         let pending = read_pending(&journal);
 
@@ -3042,7 +3043,7 @@ fn journal_line_bytes_match_previous_build() {
         r#""TimestampUtc":"2026-09-25T00:00:00Z","Error":null,"Permanent":true}"#,
         "\r\n"
     );
-    let bytes = fs.file_content(&fake_journal_path()).expect("journal bytes");
+    let bytes = fs.file_content(fake_journal_path()).expect("journal bytes");
     assert_eq!(String::from_utf8(bytes).expect("utf-8"), expected);
 }
 
@@ -3082,7 +3083,7 @@ fn journal_line_append_then_parse_round_trips() {
     };
 
     journal.append(&written).expect("append");
-    let text = String::from_utf8(fs.file_content(&fake_journal_path()).expect("bytes")).expect("utf-8");
+    let text = String::from_utf8(fs.file_content(fake_journal_path()).expect("bytes")).expect("utf-8");
     let line = text.trim_end_matches(['\r', '\n']);
 
     assert_eq!(journal_line::try_parse(line), Some(written));
@@ -3309,10 +3310,12 @@ fn check_committed_moves(case: &Value, journal: &OperationJournal, bytes: &[u8])
         .map(|v| v.as_str().expect("id").to_owned())
         .collect();
     assert_eq!(ids, want_ids, "case {name}: ids");
-    let last = bytes
-        .split(|b| *b == b'\n')
-        .rfind(|l| !l.is_empty())
-        .unwrap_or_default();
-    let last_line = String::from_utf8_lossy(last).trim_end_matches('\r').to_owned();
-    assert_eq!(last_line, str_of(case, "last_line"), "case {name}: last_line");
+    // The oracle's `last_line` is `JsonSerializer.Serialize(moves[^1])` (null without moves): the LAST MOVE READ, not
+    // the file's last line (they differ when the file ends in a torn or non-Move line).
+    let last_line = moves.last().map(JournalEntry::to_line);
+    assert_eq!(
+        last_line.as_deref(),
+        case["last_line"].as_str(),
+        "case {name}: last_line"
+    );
 }
