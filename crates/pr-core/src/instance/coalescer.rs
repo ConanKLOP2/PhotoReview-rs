@@ -7,15 +7,40 @@
 //! `submit` never runs or waits for the open callback on the caller's thread (RV-P01): the pipe loop calls it and must
 //! not be held up by the UI thread. The window runs on a worker thread (`std::thread`, R0003; no async runtime).
 //!
-//! Unit W2-19. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-19.md`.
+//! Unit W2-19. Contract: `contracts/W2-19.md`.
 
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
-use std::sync::{Arc, Condvar, Mutex};
+use std::fmt;
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
 
-use crate::abstractions::Log;
+use crate::abstractions::{Log, NullLog};
+
+fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+    m.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// Carries a message (a delay failure or a panic payload) to `Log::error`, which takes an `Error`.
+#[derive(Debug)]
+struct MessageError(String);
+
+impl fmt::Display for MessageError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for MessageError {}
+
+fn panic_message(payload: &(dyn std::any::Any + Send)) -> String {
+    if let Some(s) = payload.downcast_ref::<&str>() {
+        (*s).to_owned()
+    } else if let Some(s) = payload.downcast_ref::<String>() {
+        s.clone()
+    } else {
+        "panic".to_owned()
+    }
+}
 
 /// Opens `Some(first path)`, or `None` for a path-less activation. C# `Action<string?>`.
 pub type OpenCallback = Arc<dyn Fn(Option<String>) + Send + Sync>;
@@ -38,21 +63,32 @@ impl WindowCancel {
 
     /// Cancels and wakes every waiter. Idempotent.
     pub fn cancel(&self) {
-        todo!()
+        let (flag, cv) = &*self.state;
+        *lock(flag) = true;
+        cv.notify_all();
     }
 
     pub fn is_canceled(&self) -> bool {
-        todo!()
+        *lock(&self.state.0)
     }
 
     /// Blocks until canceled.
     pub fn wait_canceled(&self) {
-        todo!()
+        let (flag, cv) = &*self.state;
+        let mut guard = lock(flag);
+        while !*guard {
+            guard = cv.wait(guard).unwrap_or_else(PoisonError::into_inner);
+        }
     }
 
     /// Blocks up to `timeout`; true when canceled (before or during the wait).
     pub fn wait_timeout(&self, timeout: Duration) -> bool {
-        todo!()
+        let (flag, cv) = &*self.state;
+        let guard = lock(flag);
+        let (guard, _) = cv
+            .wait_timeout_while(guard, timeout, |canceled| !*canceled)
+            .unwrap_or_else(PoisonError::into_inner);
+        *guard
     }
 }
 
@@ -83,7 +119,7 @@ pub struct ForwardedOpenCoalescer {
     window: Duration,
     log: Arc<dyn Log>,
     delay: DelayFn,
-    spawner: Spawner,
+    spawner: Option<Spawner>,
     cancel: WindowCancel,
     state: Arc<Mutex<State>>,
 }
@@ -105,19 +141,110 @@ impl ForwardedOpenCoalescer {
         delay: Option<DelayFn>,
         spawner: Option<Spawner>,
     ) -> Self {
-        todo!()
+        let default_delay: DelayFn = Arc::new(|window, cancel| {
+            if cancel.wait_timeout(window) {
+                Err(DelayFailure::Canceled)
+            } else {
+                Ok(())
+            }
+        });
+        Self {
+            open,
+            window,
+            log: log.unwrap_or_else(|| Arc::new(NullLog)),
+            delay: delay.unwrap_or(default_delay),
+            spawner,
+            cancel: WindowCancel::new(),
+            state: Arc::new(Mutex::new(State {
+                pending: false,
+                disposed: false,
+                first: None,
+            })),
+        }
     }
 
     /// Queues or merges a forwarded request (C# `Submit`). No effect after [`dispose`](Self::dispose). The first
     /// request of a burst (nothing pending) stores `paths.first()` and starts the window on a worker; later
     /// requests only fill the stored path when it is still `None` (`_first ??= first`).
     pub fn submit(&self, paths: &[String]) {
-        todo!("see contracts/W2-19.md section 'ForwardedOpenCoalescer'")
+        let incoming = paths.first().cloned();
+        {
+            let mut state = lock(&self.state);
+            if state.disposed {
+                return;
+            }
+            if state.pending {
+                state.first = state.first.take().or(incoming);
+                return;
+            }
+            state.pending = true;
+            state.first = incoming;
+        }
+
+        let open = Arc::clone(&self.open);
+        let window = self.window;
+        let log = Arc::clone(&self.log);
+        let delay = Arc::clone(&self.delay);
+        let cancel = self.cancel.clone();
+        let state = Arc::clone(&self.state);
+        let flush = move || flush_after_window(&open, window, log.as_ref(), &delay, &cancel, &state);
+
+        match &self.spawner {
+            Some(spawner) => spawner(Box::new(flush)),
+            None => {
+                let spawned = std::thread::Builder::new()
+                    .name("forwarded-open-window".to_owned())
+                    .spawn(flush);
+                if let Err(e) = spawned {
+                    // No C# counterpart: let the next submit retry.
+                    lock(&self.state).pending = false;
+                    self.log.error(
+                        "Forwarded-open window could not start",
+                        Some(&MessageError(e.to_string())),
+                    );
+                }
+            }
+        }
     }
 
-    /// Marks disposed, cancels the window (wakes a waiting worker). Idempotent; also runs on drop.
+    /// Marks disposed, cancels the window (wakes a waiting worker). Idempotent; also runs on drop. Never joins the
+    /// worker: the open callback may drop the coalescer.
     pub fn dispose(&self) {
-        todo!()
+        lock(&self.state).disposed = true;
+        self.cancel.cancel();
+    }
+}
+
+fn flush_after_window(
+    open: &OpenCallback,
+    window: Duration,
+    log: &dyn Log,
+    delay: &DelayFn,
+    cancel: &WindowCancel,
+    state: &Mutex<State>,
+) {
+    match delay(window, cancel) {
+        Ok(()) => {}
+        // Canceled without dispose leaves `pending` set, like C#.
+        Err(DelayFailure::Canceled) => return,
+        Err(DelayFailure::Failed(message)) => {
+            log.error("Forwarded-open window failed", Some(&MessageError(message)));
+        }
+    }
+    let first = {
+        let mut state = lock(state);
+        let first = state.first.take();
+        state.pending = false;
+        if state.disposed {
+            return;
+        }
+        first
+    };
+    if let Err(payload) = catch_unwind(AssertUnwindSafe(|| open(first))) {
+        log.error(
+            "Forwarded open failed",
+            Some(&MessageError(panic_message(payload.as_ref()))),
+        );
     }
 }
 
