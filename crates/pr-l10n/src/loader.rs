@@ -3,18 +3,19 @@
 //! (`%LOCALAPPDATA%\PhotoReviewRs\Languages`, docs/adr/R0002; the C# app uses `...\PhotoReview\Languages`).
 //! Files are untrusted: a broken or oversized file is skipped with a warning, never a panic.
 //!
-//! Unit W2-04. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-04.md`.
-
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
+//! Unit W2-04. Contract: `contracts/W2-04.md`.
 
 use std::cmp::Ordering;
-use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
+use std::collections::HashSet;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, PoisonError, RwLock};
 
 use pr_core::abstractions::FileSystem;
+use pr_core::text::dotnet_path::get_file_name_without_extension;
+use pr_core::text::{cmp_ignore_case, eq_ignore_case, ignore_case_key};
 
-use crate::localizer::Localizer;
+use crate::catalog::{LanguageCatalog, MAX_FILE_BYTES};
+use crate::localizer::{ENGLISH_CODE, Localizer, built_in_english};
 
 /// Setting value that follows the Windows UI language. C# `LanguageLoader.AutoCode`.
 pub const AUTO_CODE: &str = "auto";
@@ -52,7 +53,14 @@ impl UiCulture {
     /// (the empty name is the invariant culture). Exact for every culture name the golden `l10n-loader` probes; the
     /// platform layer may construct the struct directly from `GetLocaleInfoEx` instead.
     pub fn from_name(name: &str) -> Self {
-        todo!("see contracts/W2-04.md section 'UiCulture'")
+        if name.is_empty() {
+            return Self::invariant();
+        }
+        let language = name.split('-').next().unwrap_or(name);
+        UiCulture {
+            name: name.to_owned(),
+            two_letter_iso_language_name: language.to_lowercase(),
+        }
     }
 }
 
@@ -62,12 +70,16 @@ static CURRENT_UI_CULTURE: RwLock<Option<UiCulture>> = RwLock::new(None);
 
 /// C# `CultureInfo.CurrentUICulture`.
 pub fn current_ui_culture() -> UiCulture {
-    todo!("read CURRENT_UI_CULTURE, recover a poisoned lock with PoisonError::into_inner")
+    CURRENT_UI_CULTURE
+        .read()
+        .unwrap_or_else(PoisonError::into_inner)
+        .clone()
+        .unwrap_or_else(UiCulture::invariant)
 }
 
 /// Sets the ambient UI culture (the C# `CurrentUICulture` setter).
 pub fn set_current_ui_culture(culture: UiCulture) {
-    todo!()
+    *CURRENT_UI_CULTURE.write().unwrap_or_else(PoisonError::into_inner) = Some(culture);
 }
 
 /// Orders two native names for the language picker. C# uses `StringComparer.CurrentCultureIgnoreCase`; Rust has no
@@ -92,32 +104,180 @@ impl std::fmt::Debug for LanguageLoader {
     }
 }
 
+/// A catalog read from disk and whether it came from the user folder.
+struct ReadCatalog {
+    catalog: LanguageCatalog,
+    is_user: bool,
+}
+
 impl LanguageLoader {
     /// `user_dir == None` means "no user folder" (C# `null`).
     pub fn new(file_system: Arc<dyn FileSystem>, shipped_dir: impl Into<PathBuf>, user_dir: Option<PathBuf>) -> Self {
-        todo!("store the arguments; the default comparer is pr_core::text::cmp_ignore_case")
+        LanguageLoader {
+            file_system,
+            shipped_dir: shipped_dir.into(),
+            user_dir,
+            native_name_comparer: Arc::new(cmp_ignore_case),
+        }
     }
 
     /// Replaces the native-name collation (default: ordinal ignore case).
-    pub fn with_native_name_comparer(self, comparer: NativeNameComparer) -> Self {
-        todo!()
+    pub fn with_native_name_comparer(mut self, comparer: NativeNameComparer) -> Self {
+        self.native_name_comparer = comparer;
+        self
     }
 
     /// English first, then every other valid language by native name (a code found in both folders is listed once,
     /// the shipped entry wins). Broken files are skipped silently here; [`load`](Self::load) reports them.
     pub fn discover_languages(&self) -> Vec<LanguageInfo> {
-        todo!("ReadAll with a throw-away warnings list, then Discover")
+        let mut scratch = Vec::new();
+        self.discover(&self.read_all(&mut scratch))
+    }
+
+    fn discover(&self, catalogs: &[ReadCatalog]) -> Vec<LanguageInfo> {
+        let english = built_in_english();
+        let mut found: Vec<LanguageInfo> = vec![LanguageInfo {
+            code: ENGLISH_CODE.to_owned(),
+            name: english.name().to_owned(),
+            native_name: english.native_name().to_owned(),
+            is_user_provided: false,
+        }];
+        let mut seen = HashSet::new();
+        seen.insert(ignore_case_key(ENGLISH_CODE));
+        for read in catalogs {
+            let catalog = &read.catalog;
+            if seen.insert(ignore_case_key(catalog.code())) {
+                found.push(LanguageInfo {
+                    code: catalog.code().to_owned(),
+                    name: catalog.name().to_owned(),
+                    native_name: catalog.native_name().to_owned(),
+                    is_user_provided: read.is_user,
+                });
+            }
+        }
+        // English first, then a stable sort by native name (equal names keep discovery order).
+        let mut rest = found.split_off(1);
+        rest.sort_by(|a, b| (self.native_name_comparer)(&a.native_name, &b.native_name));
+        found.extend(rest);
+        found
     }
 
     /// Builds the localizer for `code` (`None`, blank and `"auto"` resolve through `ui_culture`, `None` culture =
     /// [`current_ui_culture`]). Unknown languages fall back to English. Never fails: problems are warnings in
     /// `Localizer::warnings`.
     pub fn load(&self, code: Option<&str>, ui_culture: Option<&UiCulture>) -> Localizer {
-        todo!("see contracts/W2-04.md section 'LanguageLoader::load'")
+        let mut warnings = Vec::new();
+        let all = self.read_all(&mut warnings); // one pass over the folders
+        let resolved = Self::resolve_in(&self.discover(&all), code, ui_culture);
+        let mut overlays: Vec<LanguageCatalog> = Vec::new();
+        if !eq_ignore_case(&resolved, ENGLISH_CODE) {
+            // Shipped first, user last: user entries override shipped ones key by key.
+            for is_user in [false, true] {
+                overlays.extend(
+                    all.iter()
+                        .filter(|x| x.is_user == is_user && eq_ignore_case(x.catalog.code(), &resolved))
+                        .map(|x| x.catalog.clone()),
+                );
+            }
+        } else {
+            // A user file may also override English wording.
+            overlays.extend(
+                all.iter()
+                    .filter(|x| x.is_user && eq_ignore_case(x.catalog.code(), ENGLISH_CODE))
+                    .map(|x| x.catalog.clone()),
+            );
+        }
+        Localizer::create(built_in_english(), &overlays, &warnings)
     }
 
     /// Maps a setting value to a language code that has a catalog; `"en"` when nothing matches.
     pub fn resolve(&self, code: Option<&str>, ui_culture: Option<&UiCulture>) -> String {
-        todo!()
+        Self::resolve_in(&self.discover_languages(), code, ui_culture)
+    }
+
+    fn resolve_in(languages: &[LanguageInfo], code: Option<&str>, ui_culture: Option<&UiCulture>) -> String {
+        let find = |wanted: &str| {
+            languages
+                .iter()
+                .map(|l| l.code.as_str())
+                .find(|c| eq_ignore_case(c, wanted))
+        };
+        if let Some(code) = code
+            && !code.trim().is_empty()
+            && !eq_ignore_case(code, AUTO_CODE)
+        {
+            return find(code).unwrap_or(ENGLISH_CODE).to_owned();
+        }
+        let culture = ui_culture.cloned().unwrap_or_else(current_ui_culture);
+        find(&culture.name)
+            .or_else(|| find(&culture.two_letter_iso_language_name))
+            .unwrap_or(ENGLISH_CODE)
+            .to_owned()
+    }
+
+    /// C# `ReadAll`: the shipped folder, then the user folder; warnings of every folder and file are appended in order.
+    fn read_all(&self, warnings: &mut Vec<String>) -> Vec<ReadCatalog> {
+        let mut all = Vec::new();
+        for catalog in self.read_folder(&self.shipped_dir, warnings) {
+            all.push(ReadCatalog {
+                catalog,
+                is_user: false,
+            });
+        }
+        if let Some(user_dir) = &self.user_dir {
+            for catalog in self.read_folder(user_dir, warnings) {
+                all.push(ReadCatalog { catalog, is_user: true });
+            }
+        }
+        all
+    }
+
+    fn read_folder(&self, dir: &Path, warnings: &mut Vec<String>) -> Vec<LanguageCatalog> {
+        let mut catalogs = Vec::new();
+        if !self.file_system.directory_exists(dir) {
+            return catalogs;
+        }
+        let files = match self.file_system.enumerate_files(dir, "*.json") {
+            Ok(files) => files,
+            Err(err) => {
+                warnings.push(format!("{}: cannot list files ({err})", dir.display()));
+                return catalogs;
+            }
+        };
+        let mut files: Vec<(String, PathBuf)> = files
+            .into_iter()
+            .map(|f| (f.to_string_lossy().into_owned(), f))
+            .collect();
+        files.sort_by(|a, b| cmp_ignore_case(&a.0, &b.0));
+
+        for (name, file) in files {
+            // Translator notes (en.notes.json) and other dotted names are not catalogs.
+            if get_file_name_without_extension(&name).contains('.') {
+                continue;
+            }
+            if let Some(stat) = self.file_system.get_file_stat(&file)
+                && stat.length > MAX_FILE_BYTES
+            {
+                warnings.push(format!("{name}: larger than {MAX_FILE_BYTES} bytes, skipped"));
+                continue;
+            }
+            let json = match self.file_system.read_all_text(&file) {
+                Ok(json) => json,
+                Err(err) => {
+                    warnings.push(format!("{name}: cannot read ({err})"));
+                    continue;
+                }
+            };
+            // The stat above can be missing or stale (the file grew after it): its UTF-8 byte count is the last line
+            // of defence.
+            if json.len() as u64 > MAX_FILE_BYTES {
+                warnings.push(format!("{name}: larger than {MAX_FILE_BYTES} bytes, skipped"));
+                continue;
+            }
+            if let Some(catalog) = LanguageCatalog::try_parse(&json, &name, warnings) {
+                catalogs.push(catalog);
+            }
+        }
+        catalogs
     }
 }
