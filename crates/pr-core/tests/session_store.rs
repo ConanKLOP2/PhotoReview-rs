@@ -1077,6 +1077,19 @@ fn deserialize_state_is_strict_about_duplicates_names_and_depth() {
     assert!(SessionStore::deserialize_state(&nested(64)).is_err());
 }
 
+#[test]
+fn depth_guard_ignores_brackets_after_an_escaped_quote_inside_a_string() {
+    // Kills mutant M20 (nests_too_deep escape handling): `\"` must not end the string, so the 70 '[' stay literal text.
+    let json = format!(r#"{{"Folder":"a\"{}"}}"#, "[".repeat(70));
+    let state = SessionStore::deserialize_state(&json).expect("valid").expect("object");
+    assert_eq!(state.folder, format!("a\"{}", "[".repeat(70)));
+    // `\` is an escaped backslash: the following quote DOES end the string, so a real 64-deep array is rejected.
+    let deep = format!(r#"{{"Folder":"\\","X":{}{}}}"#, "[".repeat(64), "]".repeat(64));
+    assert!(SessionStore::deserialize_state(&deep).is_err());
+    let ok = format!(r#"{{"Folder":"\\","X":{}{}}}"#, "[".repeat(63), "]".repeat(63));
+    assert!(SessionStore::deserialize_state(&ok).is_ok());
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 // Repair round 1: .NET quirks and mutation gaps
 // ---------------------------------------------------------------------------------------------------------------
