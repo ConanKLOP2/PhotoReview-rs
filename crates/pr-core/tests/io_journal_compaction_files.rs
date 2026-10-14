@@ -413,3 +413,54 @@ fn dispose_without_replace_deletes_temp_files_of_260_units_or_more() {
         assert!(!on_disk.exists(), "deleted: {}", given.display());
     }
 }
+
+/// C# `CreateFileW(.., FILE_SHARE_READ, ..)` for the staged replacement: while it is open, every other writer is turned
+/// away with a sharing violation (readers are still let in).
+#[test]
+#[ignore = "native"]
+fn staged_replacement_denies_other_writers_and_admits_readers() {
+    let root = TempRoot::new("jcf-share");
+    let temp = new_temp_path(&root);
+    let files = PhysicalJournalCompactionFiles;
+    let staged = files.create_staged_replacement(&temp).expect("create");
+
+    let err = OpenOptions::new()
+        .write(true)
+        .share_mode(SHARE_READ_WRITE_DELETE)
+        .open(&temp)
+        .expect_err("a writer must be refused");
+    assert_eq!(os_error_code(&err), Some(ERROR_SHARING_VIOLATION));
+    OpenOptions::new()
+        .read(true)
+        .share_mode(SHARE_READ_WRITE_DELETE)
+        .open(&temp)
+        .expect("a compatible reader is admitted");
+
+    drop(staged);
+    assert!(!temp.exists());
+}
+
+/// C# `ReplaceAtomically`: `ArgumentException.ThrowIfNullOrWhiteSpace(destination)` runs first, before the flush and
+/// `Path.GetFullPath`; nothing is renamed and the temp file is still deleted on drop.
+#[test]
+#[ignore = "native"]
+fn replace_atomically_blank_destination_is_the_whitespace_argument_error() {
+    let root = TempRoot::new("jcf-blank");
+    let temp = new_temp_path(&root);
+    let files = PhysicalJournalCompactionFiles;
+    let mut staged = files.create_staged_replacement(&temp).expect("create");
+    staged.write(b"content").expect("write");
+    for blank in ["", " ", "\t", " \t\r\n"] {
+        let err = staged.replace_atomically(Path::new(blank)).expect_err("blank");
+        assert_eq!(err.kind(), std::io::ErrorKind::InvalidInput, "{blank:?}");
+        assert_eq!(
+            err.to_string(),
+            "The value cannot be an empty string or composed entirely of whitespace.",
+            "{blank:?}"
+        );
+    }
+    assert!(!root.join("\t").exists());
+    assert!(temp.exists());
+    drop(staged);
+    assert!(!temp.exists());
+}
