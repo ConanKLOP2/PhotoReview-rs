@@ -9,16 +9,15 @@
 //! image is not delayed. Rust (R0003): [`spawn`] does the same on one short-lived named thread and returns a
 //! [`StartupRecoveryHandle`]; [`run`] / [`run_with_cutoff`] are the blocking body for callers already off the UI thread.
 
-// TEMPORARY (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::fmt;
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 use std::thread::JoinHandle;
 
-use crate::abstractions::{Clock, Log};
-use crate::file_actions::journal::{JournalCompactionResult, OperationJournal};
+use crate::abstractions::{Clock, Log, panic_message};
+use crate::file_actions::journal::{JournalCompactionOutcome, JournalCompactionResult, OperationJournal};
 use crate::file_actions::journal_line::JournalEntry;
+use crate::model::JournalState;
 use crate::time::DateTimeUtc;
 
 /// Name of the worker thread [`spawn`] starts (diagnostics only; C# used an anonymous pool thread).
@@ -27,7 +26,7 @@ pub const RECOVERY_THREAD_NAME: &str = "PhotoReview.JournalRecovery";
 /// C# `await JournalStartupRecovery.RunAsync(journal, clock, log)` without the thread hop: the blocking body. Reads
 /// `clock.utc_now()` once, then `run_with_cutoff(journal, that, log)`.
 pub fn run(journal: &OperationJournal, clock: &dyn Clock, log: Option<&dyn Log>) -> Vec<JournalEntry> {
-    todo!()
+    run_with_cutoff(journal, clock.utc_now(), log)
 }
 
 /// The body of C# `RunAsync` after `startedUtc` was taken. In order:
@@ -45,7 +44,46 @@ pub fn run_with_cutoff(
     started_utc: DateTimeUtc,
     log: Option<&dyn Log>,
 ) -> Vec<JournalEntry> {
-    todo!()
+    let attempt = catch_unwind(AssertUnwindSafe(|| {
+        let reconciled = journal.reconcile_pending_operations(Some(started_utc));
+        if reconciled.is_ok() {
+            // The quiet moment: after reconcile appended its outcomes, still on this worker thread.
+            compact(journal, log);
+        }
+        reconciled
+    }));
+    let reconciled = match attempt {
+        Ok(Ok(reconciled)) => reconciled,
+        Ok(Err(err)) => {
+            // A locked/unreadable journal must not take the viewer down; the Recovery window can still be opened.
+            if let Some(log) = log {
+                log.error("Startup journal reconcile failed", Some(&err));
+            }
+            return Vec::new();
+        }
+        Err(payload) => {
+            if let Some(log) = log {
+                let err = PanicError(panic_message(payload.as_ref()));
+                log.error("Startup journal reconcile failed", Some(&err));
+            }
+            return Vec::new();
+        }
+    };
+
+    let total = reconciled.len();
+    let failed: Vec<JournalEntry> = reconciled
+        .into_iter()
+        .filter(|entry| entry.state == JournalState::Failed)
+        .collect();
+    if total > 0 {
+        if let Some(log) = log {
+            log.warn(&format!(
+                "Startup journal reconcile: {total} pending operation(s), {} failed.",
+                failed.len()
+            ));
+        }
+    }
+    failed
 }
 
 /// C# `RunAsync` as the App calls it (fire and continue): reads `clock.utc_now()` NOW, on the calling thread, then runs
@@ -53,7 +91,21 @@ pub fn run_with_cutoff(
 /// cannot be spawned, logs `"Startup journal reconcile failed"` with the spawn error and returns a handle whose
 /// [`wait`](StartupRecoveryHandle::wait) yields an empty list.
 pub fn spawn(journal: Arc<OperationJournal>, clock: &dyn Clock, log: Option<Arc<dyn Log>>) -> StartupRecoveryHandle {
-    todo!()
+    // The cutoff is the moment startup began, read here, not when the worker gets scheduled.
+    let started_utc = clock.utc_now();
+    let worker_log = log.clone();
+    let spawned = std::thread::Builder::new()
+        .name(RECOVERY_THREAD_NAME.to_owned())
+        .spawn(move || run_with_cutoff(&journal, started_utc, worker_log.as_deref()));
+    match spawned {
+        Ok(thread) => StartupRecoveryHandle { thread: Some(thread) },
+        Err(err) => {
+            if let Some(log) = log.as_deref() {
+                log.error("Startup journal reconcile failed", Some(&err));
+            }
+            StartupRecoveryHandle { thread: None }
+        }
+    }
 }
 
 /// C# `Compact(journal, log)`: a compaction problem never affects startup (the journal is left as it was and the next
@@ -61,7 +113,16 @@ pub fn spawn(journal: Arc<OperationJournal>, clock: &dyn Clock, log: Option<Arc<
 /// IO/UnauthorizedAccess/PlatformNotSupported, i.e. a compaction bug) -> `log.error("Journal compaction failed",
 /// Some(&PanicError))` and return; otherwise [`log_compaction_result`].
 fn compact(journal: &OperationJournal, log: Option<&dyn Log>) {
-    todo!()
+    match catch_unwind(AssertUnwindSafe(|| journal.try_compact())) {
+        Ok(result) => log_compaction_result(&result, log),
+        Err(payload) => {
+            // Startup must not lose the reconcile result over an unexpected compaction bug.
+            if let Some(log) = log {
+                let err = PanicError(panic_message(payload.as_ref()));
+                log.error("Journal compaction failed", Some(&err));
+            }
+        }
+    }
 }
 
 /// The `switch (result.Outcome)` of C# `Compact`:
@@ -72,7 +133,26 @@ fn compact(journal: &OperationJournal, log: Option<&dyn Log>) {
 ///   W3-01 `JournalCompactionOutcome::as_str` (C# `Outcome.ToString()`, the variant name);
 /// * `NotSupported` / `BelowThreshold` / `NotWorthIt` -> nothing.
 fn log_compaction_result(result: &JournalCompactionResult, log: Option<&dyn Log>) {
-    todo!()
+    let Some(log) = log else {
+        return;
+    };
+    match result.outcome {
+        JournalCompactionOutcome::Compacted => log.info(&format!(
+            "Journal compacted: {} -> {} bytes.",
+            result.bytes_before, result.bytes_after
+        )),
+        JournalCompactionOutcome::Failed => log.warn(&format!(
+            "Journal compaction failed (journal unchanged): {}",
+            result.error.as_deref().unwrap_or_default()
+        )),
+        JournalCompactionOutcome::Busy | JournalCompactionOutcome::Changed => log.info(&format!(
+            "Journal compaction skipped ({}); journal unchanged.",
+            result.outcome.as_str()
+        )),
+        JournalCompactionOutcome::NotSupported
+        | JournalCompactionOutcome::BelowThreshold
+        | JournalCompactionOutcome::NotWorthIt => {}
+    }
 }
 
 /// A caught panic as the `Error` handed to `Log::error` (C#: the exception object). Display = the panic payload text
@@ -98,12 +178,14 @@ pub struct StartupRecoveryHandle {
 impl StartupRecoveryHandle {
     /// C# `Task.IsCompleted`. True when the work finished (or never started).
     pub fn is_finished(&self) -> bool {
-        todo!()
+        self.thread.as_ref().is_none_or(JoinHandle::is_finished)
     }
 
     /// Waits for the result (C# `await`): the entries reconcile marked Failed. Never call it on the UI thread. A panic
     /// that escaped the worker (impossible by construction: [`run_with_cutoff`] catches them) yields an empty list.
     pub fn wait(self) -> Vec<JournalEntry> {
-        todo!()
+        self.thread
+            .map(|thread| thread.join().unwrap_or_default())
+            .unwrap_or_default()
     }
 }
