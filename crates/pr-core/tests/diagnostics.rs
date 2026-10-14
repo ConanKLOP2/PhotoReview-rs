@@ -541,3 +541,34 @@ fn diag_options_matches_dotnet_golden() {
         assert_eq!(opts.describe(), str_of(case, "describe"), "{case}");
     }
 }
+
+// ---- mutation-killing tests (NaN placement, trailing NUL) ---------------------------------------------------------
+
+// C#: BenchmarkStatistics.Percentile (NaN sorts before every number, double.CompareTo)
+#[test]
+fn percentile_nan_sorts_before_numbers() {
+    let low = percentile(&[3.0, f64::NAN, 1.0], 0.0).expect("in range");
+    assert!(low.is_nan());
+    let mid = percentile(&[3.0, f64::NAN, 1.0], 0.5).expect("in range");
+    assert_eq!(mid.to_bits(), 1.0f64.to_bits());
+    let high = percentile(&[3.0, f64::NAN, 1.0], 1.0).expect("in range");
+    assert_eq!(high.to_bits(), 3.0f64.to_bits());
+    let top = percentile(&[f64::NAN, 1.0, 2.0], 1.0).expect("in range");
+    assert_eq!(top.to_bits(), 2.0f64.to_bits());
+    let first = percentile(&[1.0, 2.0, f64::NAN], 0.0).expect("in range");
+    assert!(first.is_nan());
+    let two = percentile(&[f64::NAN, f64::NAN, 5.0, 6.0], 1.0).expect("in range");
+    assert_eq!(two.to_bits(), 6.0f64.to_bits());
+}
+
+// C#: DiagOptions int.TryParse(NumberStyles.Integer): trailing NUL characters are accepted
+#[test]
+fn preload_workers_trailing_nul_quirk() {
+    let workers = |raw: &str| options(&[(PRELOAD_WORKERS_VAR, raw)]).preload_workers;
+    assert_eq!(workers("5\0"), Some(5));
+    assert_eq!(workers("7\0\0"), Some(7));
+    assert_eq!(workers("5 \0"), Some(5));
+    assert_eq!(workers("5\0 "), None);
+    assert_eq!(workers("5\0x"), None);
+    assert_eq!(workers("5\0 5"), None);
+}
