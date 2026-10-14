@@ -10,14 +10,15 @@
 //! Localization: `pr-l10n` does not exist yet, so every function that needs text takes a lookup closure
 //! `&dyn Fn(&str) -> String` mapping a catalog key (see [`CODE_KEYS`]) to text in the language the caller wants
 //! (English catalog for the journal, the current UI language for display).
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
+use std::collections::HashMap;
 use std::fmt;
 use std::io;
+use std::path::Path;
 
 use super::types::JournalGroupMember;
 use crate::abstractions::RecycleBin;
+use crate::sync::Canceled;
+use crate::text::ignore_case_key;
 
 // ---------------------------------------------------------------------------------------------------------------
 // Journal error codes
@@ -82,26 +83,32 @@ impl std::error::Error for UnknownJournalCode {}
 
 /// The catalog key for `code`, or `None` for an unknown code. Exact, case-sensitive match (C# `StringComparer.Ordinal`).
 pub fn catalog_key(code: &str) -> Option<&'static str> {
-    todo!()
+    CODE_KEYS.iter().find(|entry| entry.0 == code).map(|entry| entry.1)
 }
 
 /// `JournalErrors.IsKnown`: true when `code` is one of [`ALL_CODES`] (exact match; `None` is false).
 pub fn is_known(code: Option<&str>) -> bool {
-    todo!()
+    code.is_some_and(|code| catalog_key(code).is_some())
 }
 
 /// `JournalErrors.EnglishText` / `LocalizedText`: `localize(key)` for the key of `code`. The caller passes the
 /// English catalog for `EnglishText` (the text stored in the journal) and the current UI language for
 /// `LocalizedText`. Unknown code => `Err(UnknownJournalCode)`.
 pub fn text(code: &str, localize: &dyn Fn(&str) -> String) -> Result<String, UnknownJournalCode> {
-    todo!()
+    match catalog_key(code) {
+        Some(key) => Ok(localize(key)),
+        None => Err(UnknownJournalCode(code.to_owned())),
+    }
 }
 
 /// `JournalErrors.Describe(code, storedText)`: UI text for a journal error. A known `code` gives its localized text
 /// (`localize`); otherwise (`code` None, an unknown code from a newer build, an old record without a code) the
 /// `stored_text` exactly as written (which may itself be `None`).
 pub fn describe(code: Option<&str>, stored_text: Option<&str>, localize: &dyn Fn(&str) -> String) -> Option<String> {
-    todo!()
+    match code.and_then(catalog_key) {
+        Some(key) => Some(localize(key)),
+        None => stored_text.map(String::from),
+    }
 }
 
 /// An IO failure with a stable journal code (C# `JournalCodedException : IOException`). `message` is the UI text
@@ -118,30 +125,40 @@ pub struct JournalCodedError {
 impl JournalCodedError {
     /// C# `JournalCodedException(string code)`: the caller passes the localized text it computed with [`text`].
     pub fn new(code: impl Into<String>, message: impl Into<String>) -> Self {
-        todo!()
+        Self {
+            code: code.into(),
+            message: message.into(),
+            inner: None,
+        }
     }
 
     /// C# `JournalCodedException(string message, Exception innerException)`: `code` is the empty string.
     pub fn with_inner(message: impl Into<String>, inner: Box<dyn std::error::Error + Send + Sync>) -> Self {
-        todo!()
+        Self {
+            code: String::new(),
+            message: message.into(),
+            inner: Some(inner),
+        }
     }
 
     /// `io::Error::other(self)` (C# `IOException`: kind `Other`, no OS code).
     pub fn into_io_error(self) -> io::Error {
-        todo!()
+        io::Error::other(self)
     }
 }
 
 impl fmt::Display for JournalCodedError {
     /// The `message`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.write_str(&self.message)
     }
 }
 
 impl std::error::Error for JournalCodedError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        todo!()
+        self.inner
+            .as_deref()
+            .map(|inner| inner as &(dyn std::error::Error + 'static))
     }
 }
 
@@ -160,7 +177,31 @@ pub fn for_journal(
     err: &(dyn std::error::Error + 'static),
     english: &dyn Fn(&str) -> String,
 ) -> (Option<&'static str>, String) {
-    todo!()
+    let target = look_through_io_error(err);
+    if let Some(coded) = target.downcast_ref::<JournalCodedError>() {
+        if let Some(code) = ALL_CODES.iter().copied().find(|known| *known == coded.code) {
+            return (Some(code), english_text_of(code, english));
+        }
+    }
+    if target.downcast_ref::<Canceled>().is_some() {
+        return (Some(CANCELLED_BY_USER), english_text_of(CANCELLED_BY_USER, english));
+    }
+    (None, err.to_string())
+}
+
+/// The error inside an `io::Error` (`get_ref`), or `err` itself when it is not an `io::Error` or wraps nothing.
+fn look_through_io_error<'a>(err: &'a (dyn std::error::Error + 'static)) -> &'a (dyn std::error::Error + 'static) {
+    if let Some(io_err) = err.downcast_ref::<io::Error>() {
+        if let Some(inner) = io_err.get_ref() {
+            return inner;
+        }
+    }
+    err
+}
+
+/// English text of a code that is already known (its catalog key always exists).
+fn english_text_of(code: &str, english: &dyn Fn(&str) -> String) -> String {
+    catalog_key(code).map(english).unwrap_or_default()
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -180,7 +221,8 @@ pub const ERROR_ALREADY_EXISTS: i32 = 183;
 /// (fakes build the error from a kind only). Every other error -- access denied (5), sharing violation (32), disk
 /// full (112), no OS code -- is false.
 pub fn is_destination_exists(err: &io::Error) -> bool {
-    todo!()
+    matches!(err.raw_os_error(), Some(ERROR_FILE_EXISTS) | Some(ERROR_ALREADY_EXISTS))
+        || err.kind() == io::ErrorKind::AlreadyExists
 }
 
 /// The pure HRESULT rule behind C# `IsDestinationExists` (for an `IOException`): true when the low 16 bits are 80 or
@@ -188,7 +230,8 @@ pub fn is_destination_exists(err: &io::Error) -> bool {
 /// `0x80070050` and `0x800700B7` and `0x000700B7` are true; `0x00000050` (low word 80 but not a Win32 HRESULT),
 /// `0x800B0050` (another facility) and `0x80070070` (low word 0x70) are false. (`hresult as u32` for the masks.)
 pub fn hresult_is_destination_exists(hresult: i32) -> bool {
-    todo!()
+    let h = hresult as u32;
+    matches!(h & 0xFFFF, 80 | 183) && (h & 0x7FFF_0000) == 0x0007_0000
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -222,7 +265,78 @@ pub fn hresult_is_destination_exists(hresult: i32) -> bool {
 /// Examples: `"C:\a\b.jpg"` => `"C:\"`; `"c:/a"` => `"c:\"`; `"C:a"` => `"C:"`; `"\\srv\sh\x"` => `"\\srv\sh"`;
 /// `"\\?\C:\a"` => `"\\?\C:\"`; `"\\?\UNC\srv\sh\a"` => `"\\?\UNC\srv\sh"`; `"a\b"` => `""`; `""` => `None`.
 pub fn get_path_root(path: &str) -> Option<String> {
-    todo!()
+    if path.chars().all(|c| c == ' ') {
+        return None;
+    }
+    let chars: Vec<char> = path.chars().collect();
+    let len = chars.len();
+    let is_sep = |c: char| c == '\\' || c == '/';
+    let sep_at = |i: usize| chars.get(i).is_some_and(|&c| is_sep(c));
+
+    // `\??\` (explicit) or `\\?\`, `\\.\` (two separators, '.' or '?', separator).
+    let backslash_at = |i: usize| chars.get(i) == Some(&'\\');
+    let explicit_device =
+        backslash_at(0) && chars.get(1) == Some(&'?') && chars.get(2) == Some(&'?') && backslash_at(3);
+    let general_device = sep_at(0) && sep_at(1) && chars.get(2).is_some_and(|&c| c == '.' || c == '?') && sep_at(3);
+    let device = explicit_device || general_device;
+    let device_unc = device && len >= 8 && chars[4..7].iter().copied().eq("UNC".chars()) && sep_at(7);
+
+    let root_len = if (!device || device_unc) && sep_at(0) {
+        if device_unc || sep_at(1) {
+            // UNC: `\\server\share` (two separators are part of the server name), stop after the share's end.
+            let mut i = if device_unc { 8 } else { 2 };
+            let mut separators_left = 2_u32;
+            while i < len {
+                if !sep_at(i) {
+                    i += 1;
+                    continue;
+                }
+                separators_left -= 1;
+                if separators_left == 0 {
+                    break;
+                }
+                i += 1;
+            }
+            i
+        } else {
+            1
+        }
+    } else if device {
+        // Device path: everything up to and including the separator after the first component.
+        let mut i = 4;
+        while i < len && !sep_at(i) {
+            i += 1;
+        }
+        if i < len && i > 4 && sep_at(i) {
+            i += 1;
+        }
+        i
+    } else if len >= 2 && chars[1] == ':' && chars[0].is_ascii_alphabetic() {
+        if len > 2 && sep_at(2) { 3 } else { 2 }
+    } else {
+        0
+    };
+
+    if root_len == 0 {
+        return Some(String::new());
+    }
+
+    // NormalizeDirectorySeparators: a leading separator is kept as `\`, a separator directly followed by another
+    // separator is dropped, every other separator becomes `\`.
+    let mut out = String::with_capacity(root_len);
+    let mut start = 0;
+    if is_sep(chars[0]) {
+        out.push('\\');
+        start = 1;
+    }
+    for (i, &c) in chars.iter().enumerate().take(root_len).skip(start) {
+        if !is_sep(c) {
+            out.push(c);
+        } else if !(i + 1 < root_len && is_sep(chars[i + 1])) {
+            out.push('\\');
+        }
+    }
+    Some(out)
 }
 
 /// `RecycleBinCapacity.FirstOverflow` (F-WIN-2): the bin of a volume must hold ALL of that volume's non-permanent
@@ -242,5 +356,26 @@ pub fn first_overflow<'a>(
     recycle_bin: &dyn RecycleBin,
     members: &'a [JournalGroupMember],
 ) -> Option<&'a JournalGroupMember> {
-    todo!()
+    // Volumes in first-appearance order; each holds its members in input order.
+    let mut volumes: Vec<Vec<&'a JournalGroupMember>> = Vec::new();
+    let mut slot_of: HashMap<String, usize> = HashMap::new();
+    for member in members.iter().filter(|member| !member.permanent) {
+        let volume = ignore_case_key(&get_path_root(&member.source).unwrap_or_default());
+        let slot = *slot_of.entry(volume).or_insert_with(|| {
+            volumes.push(Vec::new());
+            volumes.len() - 1
+        });
+        volumes[slot].push(member);
+    }
+
+    for volume in &volumes {
+        let Some(first) = volume.first() else { continue };
+        // C# `Sum` throws on overflow; real file sizes cannot overflow, and saturating keeps the rule total.
+        let total = volume.iter().fold(0_i64, |sum, member| sum.saturating_add(member.size));
+        let total = u64::try_from(total).unwrap_or(0);
+        if !recycle_bin.fits_in_recycle_bin(Path::new(&first.source), total) {
+            return Some(*first);
+        }
+    }
+    None
 }
