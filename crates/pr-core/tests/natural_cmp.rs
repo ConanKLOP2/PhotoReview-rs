@@ -454,3 +454,62 @@ fn golden_natural_key_matches_dotnet() {
         assert_eq!(build_natural_key(name), str_of(case, "key"), "key of {name:?}");
     }
 }
+
+// Range-edge pin for the .NET char.IsDigit (Unicode Nd, BMP) table: an independent copy of the ranges, so a shifted
+// edge in the production table is caught. Both ends of every range are digits; the code points just outside are not.
+#[test]
+fn is_dotnet_digit_pins_every_range_edge() {
+    const EXPECTED: &[(u32, u32)] = &[
+        (0x0030, 0x0039),
+        (0x0660, 0x0669),
+        (0x06F0, 0x06F9),
+        (0x07C0, 0x07C9),
+        (0x0966, 0x096F),
+        (0x09E6, 0x09EF),
+        (0x0A66, 0x0A6F),
+        (0x0AE6, 0x0AEF),
+        (0x0B66, 0x0B6F),
+        (0x0BE6, 0x0BEF),
+        (0x0C66, 0x0C6F),
+        (0x0CE6, 0x0CEF),
+        (0x0D66, 0x0D6F),
+        (0x0DE6, 0x0DEF),
+        (0x0E50, 0x0E59),
+        (0x0ED0, 0x0ED9),
+        (0x0F20, 0x0F29),
+        (0x1040, 0x1049),
+        (0x1090, 0x1099),
+        (0x17E0, 0x17E9),
+        (0x1810, 0x1819),
+        (0x1946, 0x194F),
+        (0x19D0, 0x19D9),
+        (0x1A80, 0x1A89),
+        (0x1A90, 0x1A99),
+        (0x1B50, 0x1B59),
+        (0x1BB0, 0x1BB9),
+        (0x1C40, 0x1C49),
+        (0x1C50, 0x1C59),
+        (0xA620, 0xA629),
+        (0xA8D0, 0xA8D9),
+        (0xA900, 0xA909),
+        (0xA9D0, 0xA9D9),
+        (0xA9F0, 0xA9F9),
+        (0xAA50, 0xAA59),
+        (0xABF0, 0xABF9),
+        (0xFF10, 0xFF19),
+    ];
+    for &(first, last) in EXPECTED {
+        for v in [first, last] {
+            let c = char::from_u32(v).expect("BMP scalar");
+            assert!(is_dotnet_digit(c), "U+{v:04X} must be a digit");
+        }
+        for v in [first - 1, last + 1] {
+            let c = char::from_u32(v).expect("BMP scalar");
+            assert!(!is_dotnet_digit(c), "U+{v:04X} must not be a digit");
+        }
+    }
+    assert!(
+        !is_dotnet_digit('\u{1D7CE}'),
+        "supplementary digits are not char.IsDigit"
+    );
+}
