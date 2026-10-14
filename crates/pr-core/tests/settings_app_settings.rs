@@ -466,3 +466,41 @@ fn json_value_property_semantics() {
     assert!(doc.property("\u{FFFD}").is_none());
     assert_eq!(doc.property("ok"), Some(&json::JsonValue::Number("2".to_owned())));
 }
+
+fn parsed_string(escaped: &str) -> json::JsonValue {
+    json::parse(&format!("\"{escaped}\"")).expect("syntactically valid string")
+}
+
+#[test]
+fn surrogate_guard_boundaries_are_exact() {
+    use json::JsonValue::String as S;
+    // Just outside the surrogate range: ordinary characters.
+    assert_eq!(parsed_string(r"\ud7ff"), S(Some("\u{d7ff}".to_owned())));
+    assert_eq!(parsed_string(r"\ue000"), S(Some("\u{e000}".to_owned())));
+    // Both ends of the high range and the low range are unpaired when alone.
+    for lone in [r"\ud800", r"\udbff", r"\udc00", r"\udfff"] {
+        assert_eq!(parsed_string(lone), S(None), "{lone}");
+    }
+    // Valid pairs at both extremes.
+    assert_eq!(parsed_string(r"\ud800\udc00"), S(Some("\u{10000}".to_owned())));
+    assert_eq!(parsed_string(r"\udbff\udfff"), S(Some("\u{10ffff}".to_owned())));
+    // A high surrogate is paired only with a low one: neighbours of the low range do not pair.
+    assert_eq!(parsed_string(r"\ud800\ue000"), S(None));
+    assert_eq!(parsed_string(r"\ud800\udbff"), S(None));
+    assert_eq!(parsed_string(r"\ud800\ud7ff"), S(None));
+    // A low surrogate is never a high one: two of them do not form a pair.
+    assert_eq!(parsed_string(r"\udc00\udc00"), S(None));
+    assert_eq!(parsed_string(r"\udfff\udc00"), S(None));
+}
+
+#[test]
+fn to_f64_string_infinities_keep_their_sign() {
+    let num = |s: &str| json::to_f64(&parsed_string(s));
+    assert_eq!(num("Infinity"), Some(f64::INFINITY));
+    assert_eq!(num("-Infinity"), Some(f64::NEG_INFINITY));
+    assert!(num("NaN").is_some_and(f64::is_nan));
+    // Only the exact literals; a finite decimal string stays finite.
+    assert_eq!(num("infinity"), None);
+    assert_eq!(num("1.5"), Some(1.5));
+    assert_eq!(num("-1.5"), Some(-1.5));
+}
