@@ -13,6 +13,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-benchmark-percentile | Done (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
 | X-perf-analyzer | Done (W1-16..21) | `pr_perf` | goldens `perf-csv`, `perf-nav`, `perf-stats`, `perf-rules`, `perf-report`, `perf-analyze` | PerfAnalysis tool; output byte-identical (CRLF). Accepted divergences (README D5): UTF-16 BOM side files, `-0`/`1e400` number tokens, junction-cycle protection |
 | X-wave1-units | Done (22/22 when W1-20 dedupe lands) | see contracts/README.md roster | per-unit tests + goldens | Wave 1 leaf units: model enums, lenient JSON, flag fields, shortcuts, perf options, natural comparer, catalog types, LRU, file-action records, update version/URL policy, LocTemplate, GenerationClock, journal errors and line format, percentile/DiagOptions, perf analyzer, VBlankEstimator |
+| P-08 / INV-10 / D-08 | Done (W2-16) | `pr_core::diagnostics::file_log` | `diagnostics_file_log::*` (goldens `file-log-format`, `file-log-backup-name`, `file-log-bytes`) | `FileLog`: off by default and then no thread/dir/file, queue 10 000 (oldest dropped), rotate at `>=` max to `<stem>.1<ext>`, CRLF + no BOM. Accepted differences: error text is `Display` + source chain rendered on the caller's thread; `SystemLocalTime` reads UTC (D16: the app injects local time); handle-lifetime tests not ported |
 
 ---
 
