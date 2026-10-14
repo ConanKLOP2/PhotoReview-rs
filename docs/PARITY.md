@@ -36,6 +36,9 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | I18N translator modes | Done (W2-04, plumbing) | `pr_l10n::localizer::{create_pseudo, create_show_keys}` | `localizer::create_pseudo_*`, `localizer::create_show_keys_*`, golden `l10n-localizer` | `--i18n-pseudo` / `--i18n-keys` CLI args are App wave |
 | X-l10n-keygen | Done (W2-04) | `crates/pr-l10n/build.rs` + `build/keygen.rs` (C# `TrGenerator`, `FlatJsonReader`, `LocDiagnostics`) | `key_generator::*`, `flat_json::*`, `generated_tr::*`, goldens `l10n-generator`, `l10n-flat-json` | PRLOC001..007 are build errors; Rust naming `keys::SCREAMING_SNAKE` / `tr::snake_case`, keywords `r#`-escaped; `self`/`crate`/`super` keys are PRLOC003 |
 | I-17 | Done (W2-06) | `pr_core::catalog::capture_groups` | `catalog_capture_groups::*` (golden `capture-groups`, 39 cases) | JPEG+RAW pairing and XMP sidecar choice; ReviewCatalog-based tests belong to W2-10 |
+| C-25 | Done (W2-07) | `pr_core::catalog::compare::{find, build_index}` | `catalog_compare::*` (golden `compare-pair`, `numbered-pattern`) | Hand-written .NET regex matchers (`\d` = Unicode Nd, `$` before final `
+`); Find/BuildIndex trailing-space-extension quirk kept |
+| C-06 | Done (W2-07, decision part) | `pr_core::file_actions::duplicates::find` | `file_actions_duplicates::*` (golden `duplicates`) | Size groups, naming rule, survivor rule; hash is a caller closure (`HashFailure`); recycling is the App's (W8) |
 | X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
 
 ---
