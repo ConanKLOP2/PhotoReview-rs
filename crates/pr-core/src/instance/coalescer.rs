@@ -223,7 +223,10 @@ fn flush_after_window(
     cancel: &WindowCancel,
     state: &Mutex<State>,
 ) {
-    match delay(window, cancel) {
+    // C# catches any non-cancel exception from the delay; a panic is the Rust equivalent.
+    let outcome = catch_unwind(AssertUnwindSafe(|| delay(window, cancel)))
+        .unwrap_or_else(|payload| Err(DelayFailure::Failed(panic_message(payload.as_ref()))));
+    match outcome {
         Ok(()) => {}
         // Canceled without dispose leaves `pending` set, like C#.
         Err(DelayFailure::Canceled) => return,

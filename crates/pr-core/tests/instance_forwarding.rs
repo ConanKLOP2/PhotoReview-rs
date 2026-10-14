@@ -771,6 +771,34 @@ fn coalescer_window_delay_fails_is_logged_and_the_open_still_happens() {
 
     assert_eq!(rx.recv_timeout(TEN_SECONDS).unwrap(), Some(r"C:\a.jpg".to_owned()));
     assert!(log.contains(LogLevel::Error, "window failed"));
+    assert!(log.contains(LogLevel::Error, "timer broke"));
+}
+
+#[test]
+fn coalescer_window_delay_panics_is_logged_and_the_open_still_happens() {
+    // C#: Coalescer_WindowDelayFails_IsLoggedAndTheOpenStillHappens (a panic is the Rust form of a thrown delay)
+    let log = Arc::new(RecordingLog::new());
+    let (open, rx) = recording_open();
+    let delay: DelayFn = Arc::new(|_, _| panic!("delay exploded"));
+    let log_dyn: Arc<dyn Log> = log.clone();
+    let c = coalescer(open, Some(log_dyn), delay);
+
+    c.submit(&strs(&[r"C:\a.jpg"]));
+
+    assert_eq!(rx.recv_timeout(TEN_SECONDS).unwrap(), Some(r"C:\a.jpg".to_owned()));
+    assert!(log.contains(LogLevel::Error, "window failed"));
+    assert!(log.contains(LogLevel::Error, "delay exploded"));
+    c.submit(&strs(&[r"C:\b.jpg"]));
+    assert_eq!(rx.recv_timeout(TEN_SECONDS).unwrap(), Some(r"C:\b.jpg".to_owned()));
+}
+
+#[test]
+fn path_length_is_counted_in_utf16_units_not_chars() {
+    // Astral chars are 2 UTF-16 units: C:\ + 16382 x U+10000 = 32767 units (accepted), 16383 rejected.
+    let ok = format!(r"C:\{}", "\u{10000}".repeat(16382));
+    let bad = format!(r"C:\{}", "\u{10000}".repeat(16383));
+    assert!(is_acceptable_path(&ok));
+    assert!(!is_acceptable_path(&bad));
 }
 
 #[test]
