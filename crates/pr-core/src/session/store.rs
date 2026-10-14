@@ -318,14 +318,22 @@ impl SessionStore {
         if folder.contains('\0') {
             return Err(SessionPathError::Invalid);
         }
-        let full = std::path::absolute(folder).map_err(|e| {
-            if e.raw_os_error() == Some(206) {
-                SessionPathError::TooLong
-            } else {
-                SessionPathError::Invalid
-            }
-        })?;
-        let full = full.to_string_lossy().into_owned();
+        // .NET `Path.GetFullPath` keeps an NT-namespace path (`\??\C:`) exactly as typed (no `..` resolution);
+        // `std::path::absolute` would root it on the current drive.
+        let full = if folder.starts_with(r"\??\") {
+            folder.to_owned()
+        } else {
+            std::path::absolute(folder)
+                .map_err(|e| {
+                    if e.raw_os_error() == Some(206) {
+                        SessionPathError::TooLong
+                    } else {
+                        SessionPathError::Invalid
+                    }
+                })?
+                .to_string_lossy()
+                .into_owned()
+        };
         let root = get_path_root(&full).unwrap_or_default();
         if full.encode_utf16().count() > root.encode_utf16().count() {
             Ok(full.trim_end_matches(['\\', '/']).to_owned())

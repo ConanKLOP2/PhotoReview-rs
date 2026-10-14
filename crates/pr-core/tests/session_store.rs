@@ -1076,3 +1076,55 @@ fn deserialize_state_is_strict_about_duplicates_names_and_depth() {
     assert!(SessionStore::deserialize_state(&nested(63)).is_ok());
     assert!(SessionStore::deserialize_state(&nested(64)).is_err());
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 1: .NET quirks and mutation gaps
+// ---------------------------------------------------------------------------------------------------------------
+
+#[test]
+fn nt_namespace_prefix_is_kept() {
+    // .NET Path.GetFullPath keeps `\??\` paths as typed (verified against .NET 10).
+    assert_eq!(SessionStore::canonical_folder(r"\??\C:\a").expect("c"), r"\??\C:\a");
+    assert_eq!(SessionStore::canonical_folder(r"\??\C:\a\").expect("c"), r"\??\C:\a");
+    assert_eq!(
+        SessionStore::canonical_folder(r"\??\UNC\s\h\x").expect("c"),
+        r"\??\UNC\s\h\x"
+    );
+    assert_eq!(SessionStore::canonical_folder(r"\??\C:").expect("c"), r"\??\C:");
+}
+
+#[test]
+fn verbatim_trailing_forward_slash_is_trimmed() {
+    // Kills the mutant that trims only '\' (C# TrimEnd('\', '/')).
+    assert_eq!(SessionStore::canonical_folder(r"\?\C:\a/").expect("c"), r"\?\C:\a");
+    assert_eq!(SessionStore::canonical_folder(r"\?\C:\a\/").expect("c"), r"\?\C:\a");
+    assert_eq!(SessionStore::canonical_folder(r"\?\C:/a/b//").expect("c"), r"\?\C:/a/b");
+}
+
+#[test]
+fn save_with_unnameable_folder_still_creates_sessions_dir_and_warns() {
+    // C# creates the Sessions directory BEFORE GetPath throws (contract 4.2.a).
+    let fs = Arc::new(FakeFileSystem::new());
+    let log = Arc::new(RecordingLog::new());
+    let store = new_store(&fs).with_log(log.clone());
+    store.wait_for_startup_sweep();
+    assert_eq!(store.save(&SessionState::new("C:\\a\0b")), Ok(()));
+    assert!(fs.directory_exists(&sessions_dir()));
+    assert_eq!(warnings(&log).len(), 1);
+}
+
+#[test]
+fn load_read_error_is_silent() {
+    // C# swallows the read failure without logging (contract 3.4).
+    let fs = Arc::new(FakeFileSystem::new());
+    let log = Arc::new(RecordingLog::new());
+    let store = new_store(&fs).with_log(log.clone());
+    store.save(&SessionState::new(FOLDER)).expect("save");
+    fs.fail(
+        FsOp::ReadText,
+        store.get_path(FOLDER).expect("path"),
+        io::ErrorKind::Other,
+    );
+    let _ = store.load(FOLDER).expect("load");
+    assert!(warnings(&log).is_empty());
+}
