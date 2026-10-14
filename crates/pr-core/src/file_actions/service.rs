@@ -329,8 +329,8 @@ impl FileActionService {
     }
 
     /// The "stat that can fail" seam (contract open question P1, shared with W3-07). C# `GetFileStat` returns `null` for
-    /// a missing file and THROWS when the path cannot be inspected. Option A (recommended):
-    /// `self.fs.try_get_file_stat(Path::new(path))`; option B (until the lead decides): `Ok(self.fs.get_file_stat(..))`.
+    /// a missing file and THROWS when the path cannot be inspected. Decided (P-12, option A):
+    /// `self.fs.try_get_file_stat(Path::new(path))`.
     fn stat(&self, path: &str) -> io::Result<Option<FileStat>> {
         todo!("W3-04: P1 seam")
     }

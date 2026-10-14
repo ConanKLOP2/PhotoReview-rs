@@ -91,6 +91,19 @@ pub trait FileSystem: Send + Sync {
     fn directory_exists(&self, path: &Path) -> bool;
     /// `None` when the file does not exist (or cannot be stat'ed).
     fn get_file_stat(&self, path: &Path) -> Option<FileStat>;
+
+    /// The stat that can fail (decision P-12, D26(b); C# `GetFileStat` THROWS when a path cannot be inspected):
+    /// `Ok(Some)` = a file, `Ok(None)` = nothing there (missing, a directory, an unreachable folder or host, a name the
+    /// OS rejects), `Err` = the path cannot be inspected: blank or malformed path (`InvalidInput`), access denied
+    /// (`PermissionDenied`), a sharing/lock violation or another I/O failure. Recovery maps `Err` to "cannot tell" and
+    /// `Ok(None)` to "gone", so an implementation must never fold a denied stat into `Ok(None)`. [`get_file_stat`]
+    /// keeps its own semantics (every failure is `None`).
+    /// Default (wrappers and fakes that cannot fail): `Ok(self.get_file_stat(path))`.
+    ///
+    /// [`get_file_stat`]: Self::get_file_stat
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
+        Ok(self.get_file_stat(path))
+    }
     /// Move/rename; fails if `destination` exists (C# `File.Move` without overwrite).
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()>;
     /// Copy; fails if `destination` exists (C# `File.Copy` without overwrite).

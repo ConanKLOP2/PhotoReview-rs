@@ -133,7 +133,8 @@ impl<'a> JournalTransaction<'a> {
     }
 
     /// C# `VerifyDestination(IFileSystem, string destination, string errorCode)`:
-    /// `self.verify_destination_stat(fs.get_file_stat(Path::new(destination)), error_code)` (ONE stat).
+    /// `self.verify_destination_stat(fs.try_get_file_stat(Path::new(destination))?, error_code)` (ONE stat; P-12: a stat
+    /// that cannot be inspected is returned as the error, like the C# `GetFileStat` throw).
     pub fn verify_destination(&mut self, fs: &dyn FileSystem, destination: &str, error_code: &str) -> io::Result<()> {
         todo!()
     }

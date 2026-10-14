@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use pr_core::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
 use pr_core::io::counting::{CountingFileSystem, StatCounter};
-use pr_test_support::FakeFileSystem;
+use pr_test_support::{FakeFileSystem, FsOp};
 
 fn counter() -> (Arc<AtomicU64>, Arc<dyn StatCounter>) {
     let count = Arc::new(AtomicU64::new(0));
@@ -42,6 +42,26 @@ fn stat_queries_are_counted() {
     assert!(fs.get_file_stat(&p(r"C:\photos\missing.jpg")).is_none());
 
     assert_eq!(count.load(Ordering::SeqCst), 4);
+}
+
+// P-12 (no C# twin): the fallible stat is a metadata query too, counted before the call, also when it fails.
+#[test]
+fn try_get_file_stat_is_counted_and_forwards_the_error() {
+    let inner = Arc::new(FakeFileSystem::new());
+    inner.add_file(r"C:\photos\a.jpg", b"12345");
+    inner.fail(FsOp::Stat, r"C:\photos\locked.jpg", io::ErrorKind::PermissionDenied);
+    let (count, metrics) = counter();
+    let fs = CountingFileSystem::new(inner, metrics);
+
+    assert_eq!(
+        fs.try_get_file_stat(&p(r"C:\photos\a.jpg")).unwrap().map(|s| s.length),
+        Some(5)
+    );
+    assert_eq!(fs.try_get_file_stat(&p(r"C:\photos\missing.jpg")).unwrap(), None);
+    let err = fs.try_get_file_stat(&p(r"C:\photos\locked.jpg")).unwrap_err();
+    assert_eq!(err.kind(), io::ErrorKind::PermissionDenied);
+
+    assert_eq!(count.load(Ordering::SeqCst), 3);
 }
 
 // C#: CountingFileSystemTests.OtherOperationsAreNotCounted
@@ -196,6 +216,10 @@ impl FileSystem for RecordingFs {
         self.record("get_file_stat");
         None
     }
+    fn try_get_file_stat(&self, _: &Path) -> io::Result<Option<FileStat>> {
+        self.record("try_get_file_stat");
+        Ok(None)
+    }
     fn move_file(&self, _: &Path, _: &Path) -> io::Result<()> {
         self.record("move_file");
         Ok(())
@@ -304,6 +328,9 @@ fn counting_file_system_forwards_every_method_to_the_inner_file_system() {
     });
     check("get_file_stat", &|| {
         fs.get_file_stat(&a);
+    });
+    check("try_get_file_stat", &|| {
+        fs.try_get_file_stat(&a).unwrap();
     });
     check("move_file", &|| fs.move_file(&a, &b).unwrap());
     check("copy_file", &|| fs.copy_file(&a, &b).unwrap());

@@ -2,7 +2,7 @@
 //! `docs/architecture.md`, "Recovery check"; PARITY F-17, W-04).
 //!
 //! Read-only "is this journal entry still valid?" check for the Recovery window. It only calls
-//! [`FileSystem::directory_exists`] / [`FileSystem::get_file_stat`]: it never moves, writes or deletes and never touches
+//! [`FileSystem::directory_exists`] / [`FileSystem::try_get_file_stat`] (P-12): it never moves, writes or deletes and never touches
 //! the (append-only) journal. A path that cannot be inspected is [`RecoveryPathStatus::Unreadable`].
 //!
 //! * Path status: `Missing` = no file; `Changed` = size differs from the journal (the SOURCE also when its last-write

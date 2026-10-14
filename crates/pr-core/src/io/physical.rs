@@ -1068,6 +1068,25 @@ fn is_path_unreachable(err: &io::Error) -> bool {
     )
 }
 
+/// P-12 classification of a failed metadata query: `true` = "nothing there" (`Ok(None)`), `false` = "cannot be
+/// inspected" (`Err`). Missing = not found, every .NET "path unreachable" code ([`is_path_unreachable`]: missing
+/// file/folder, bad name, missing network host or share, drive not ready, too long), ERROR_INVALID_FUNCTION (1, a
+/// device such as `CON` that has no file information) and ERROR_DIRECTORY (267, a file used as a folder).
+/// Access denied (5), sharing (32) and lock (33) violations and anything else are NOT missing.
+pub fn is_stat_missing(err: &io::Error) -> bool {
+    const ERROR_INVALID_FUNCTION: i32 = 1;
+    const ERROR_DIRECTORY: i32 = 267;
+    match err.raw_os_error() {
+        Some(ERROR_INVALID_FUNCTION | ERROR_DIRECTORY) => true,
+        Some(ERROR_NETWORK_ACCESS_DENIED) => false,
+        Some(_) => is_path_unreachable(err),
+        None => err.kind() == io::ErrorKind::NotFound,
+    }
+}
+
+/// ERROR_NETWORK_ACCESS_DENIED: in .NET's "unreachable" list, but for a stat it is a denial, not an absence.
+const ERROR_NETWORK_ACCESS_DENIED: i32 = 65;
+
 // ---------------------------------------------------------------------------------------------------------------
 // FileSystem
 // ---------------------------------------------------------------------------------------------------------------
@@ -1106,6 +1125,31 @@ impl FileSystem for PhysicalFileSystem {
             return None;
         }
         Some(stat_of(&metadata))
+    }
+
+    /// P-12: the same lookup as [`get_file_stat`](Self::get_file_stat), but a path that cannot be inspected is an `Err`.
+    /// C# `GetFileStat` throws `ArgumentException` for a blank path and (from `Path.GetFullPath`) for a NUL: both are
+    /// `Err(InvalidInput)` here. A name that cannot exist (wildcards, `|`, a stream, a device such as `CON`, a missing
+    /// folder, drive or UNC host, a path too long) is `Ok(None)`, as in C# (`FileInfo.Exists` false; goldens
+    /// `recovery-check` `p-*`). Access denied, sharing/lock violations and other I/O failures are `Err` (the deliberate
+    /// P-12 rule: "cannot tell" is never reported as "gone").
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
+        if is_blank(path) {
+            return Err(blank_path_error());
+        }
+        let full = match full_path(path) {
+            Ok(full) => full,
+            // Path.GetFullPath on .NET Core does not throw PathTooLongException: FileInfo then reports "not there".
+            Err(err) if err.raw_os_error() == Some(ERROR_FILENAME_EXCED_RANGE) => return Ok(None),
+            Err(err) => return Err(err),
+        };
+        let trimmed = dotnet_path::trim_ending_directory_separator(&full);
+        match fs::symlink_metadata(ensure_extended_prefix_if_needed(trimmed)) {
+            Ok(metadata) if attributes_of(&metadata) & FILE_ATTRIBUTE_DIRECTORY != 0 => Ok(None),
+            Ok(metadata) => Ok(Some(stat_of(&metadata))),
+            Err(err) if is_stat_missing(&err) => Ok(None),
+            Err(err) => Err(err),
+        }
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {

@@ -388,8 +388,8 @@ impl RecoveryRetryService {
     }
 
     /// Every stat of this unit goes through here (C# `_fileSystem.GetFileStat(path)`, which may THROW). With the W3-07
-    /// seam (lead decision P1 option A): `self.file_system.try_get_file_stat(Path::new(path))`; under option B:
-    /// `Ok(self.file_system.get_file_stat(Path::new(path)))`. Exactly one file-system stat call per invocation.
+    /// seam (decided: P-12, option A): `self.file_system.try_get_file_stat(Path::new(path))`. Exactly one file-system
+    /// stat call per invocation.
     fn stat(&self, path: &str) -> io::Result<Option<FileStat>> {
         todo!("W3-06: stat through the W3-07 seam")
     }

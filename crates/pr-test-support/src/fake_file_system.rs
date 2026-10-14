@@ -113,6 +113,11 @@ impl FakeFileSystem {
         self.lock().files.get(&key(path.as_ref())).map(|e| e.data.clone())
     }
 
+    /// The stat of `path` WITHOUT counting the call or applying faults (for wrappers and assertions).
+    pub fn peek_stat(&self, path: impl AsRef<Path>) -> Option<FileStat> {
+        self.lock().files.get(&key(path.as_ref())).map(stat_of)
+    }
+
     pub fn set_last_write(&self, path: impl AsRef<Path>, value: DateTimeUtc) {
         if let Some(e) = self.lock().files.get_mut(&key(path.as_ref())) {
             e.last_write = value;
@@ -233,6 +238,13 @@ fn add_dirs(state: &mut State, dir: &Path) {
     }
 }
 
+fn stat_of(entry: &Entry) -> FileStat {
+    FileStat {
+        length: entry.data.len() as u64,
+        last_write_utc: entry.last_write,
+    }
+}
+
 fn not_found(path: &Path) -> io::Error {
     io::Error::new(io::ErrorKind::NotFound, format!("not found: {}", path.display()))
 }
@@ -279,12 +291,25 @@ impl FileSystem for FakeFileSystem {
         self.lock().dirs.contains_key(&key(path))
     }
 
+    /// An injected [`FsOp::Stat`] fault is swallowed here (`None`); [`try_get_file_stat`](Self::try_get_file_stat)
+    /// surfaces it.
     fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
-        let state = self.begin(FsOp::Stat, path).ok()?;
-        state.files.get(&key(path)).map(|e| FileStat {
-            length: e.data.len() as u64,
-            last_write_utc: e.last_write,
-        })
+        self.try_get_file_stat(path).ok().flatten()
+    }
+
+    /// P-12, like the C# fakes: the call is counted FIRST, then a blank path is `Err(InvalidInput)`
+    /// (`ArgumentException.ThrowIfNullOrWhiteSpace`), then an injected [`FsOp::Stat`] fault is returned as is
+    /// (`fail(FsOp::Stat, path, ErrorKind::PermissionDenied)` = an access-denied stat).
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
+        if path.as_os_str().to_string_lossy().trim().is_empty() {
+            *self.lock().counts.entry(FsOp::Stat).or_insert(0) += 1;
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "The value cannot be an empty string or composed entirely of whitespace.",
+            ));
+        }
+        let state = self.begin(FsOp::Stat, path)?;
+        Ok(state.files.get(&key(path)).map(stat_of))
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
@@ -580,6 +605,58 @@ mod tests {
         w.write_all(b"a\n").unwrap();
         w.write_all(b"b\n").unwrap();
         assert_eq!(fs.read_all_text(&p(r"C:\data\j.jsonl")).unwrap(), "a\nb\n");
+    }
+
+    #[test]
+    fn try_get_file_stat_tells_missing_from_cannot_inspect() {
+        // P-12: Ok(Some) file, Ok(None) missing, Err injected fault; get_file_stat keeps swallowing the fault.
+        let fs = FakeFileSystem::new();
+        fs.add_file(r"C:\a\x.jpg", b"123");
+        let stat = fs.try_get_file_stat(&p(r"C:\A\X.JPG")).unwrap().unwrap();
+        assert_eq!(stat.length, 3);
+        assert_eq!(fs.try_get_file_stat(&p(r"C:\a\gone.jpg")).unwrap(), None);
+        assert_eq!(
+            fs.try_get_file_stat(&p(r"C:\a")).unwrap(),
+            None,
+            "a folder is not a file"
+        );
+
+        fs.fail_times(FsOp::Stat, r"C:\a\x.jpg", io::ErrorKind::PermissionDenied, 1);
+        let err = fs.try_get_file_stat(&p(r"C:\a\x.jpg")).unwrap_err();
+        assert_eq!(err.kind(), io::ErrorKind::PermissionDenied);
+        assert!(
+            fs.try_get_file_stat(&p(r"C:\a\x.jpg")).unwrap().is_some(),
+            "the fault was used up"
+        );
+
+        fs.fail(FsOp::Stat, r"C:\a\x.jpg", io::ErrorKind::Other);
+        assert_eq!(
+            fs.get_file_stat(&p(r"C:\a\x.jpg")),
+            None,
+            "get_file_stat folds the fault into None"
+        );
+        assert_eq!(fs.count(FsOp::Stat), 6);
+    }
+
+    #[test]
+    fn try_get_file_stat_blank_path_is_invalid_input_and_still_counted() {
+        // P-12 / W3-07 note 2(b): the C# proxy counts the stat BEFORE its ThrowIfNullOrWhiteSpace.
+        let fs = FakeFileSystem::new();
+        for blank in ["", "   ", "\t"] {
+            let err = fs.try_get_file_stat(&p(blank)).unwrap_err();
+            assert_eq!(err.kind(), io::ErrorKind::InvalidInput, "{blank:?}");
+        }
+        assert_eq!(fs.get_file_stat(&p(" ")), None);
+        assert_eq!(fs.count(FsOp::Stat), 4);
+    }
+
+    #[test]
+    fn peek_stat_neither_counts_nor_faults() {
+        let fs = FakeFileSystem::new();
+        fs.add_file(r"C:\a\x.jpg", b"12");
+        fs.fail(FsOp::Stat, r"C:\a\x.jpg", io::ErrorKind::Other);
+        assert_eq!(fs.peek_stat(r"C:\a\x.jpg").map(|s| s.length), Some(2));
+        assert_eq!(fs.count(FsOp::Stat), 0);
     }
 
     #[test]
