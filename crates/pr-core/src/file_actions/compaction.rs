@@ -21,13 +21,14 @@
 //! The line predicates are `file_actions::journal_rules` (this unit's file, complete in the stub), ONE copy shared with
 //! the journal readers (`file_actions::journal`, W3-01): the plan must apply exactly the rules the readers apply.
 
-// TEMPORARY (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code, unused_imports)]
+use std::collections::{HashMap, HashSet};
+use std::ops::Range;
 
 use super::journal_line::{self, JournalEntry};
 use super::journal_rules::{
     STARTUP_COMMITTED_MOVE_LIMIT, is_stale_reconcile_after_committed, try_parse_tail_committed_move,
 };
+use crate::model::JournalState;
 
 /// C# `JournalCompactionPlan.Result(byte[] Kept, int DroppedLines, int KeptLines)`.
 ///
@@ -65,12 +66,126 @@ pub struct CompactionPlan {
 ///    `L.state` Committed or Dismissed, `i < L_index`, i is not in the window and not evidence. Unrecognized non-blank
 ///    lines are always kept.
 pub fn build(snapshot: &[u8]) -> CompactionPlan {
-    todo!("W3-02")
+    if snapshot.is_empty() {
+        return CompactionPlan::default();
+    }
+
+    // Pass 1: line boundaries (each range includes its own '\n') and recognized entries (one parse per line).
+    let mut ranges: Vec<Range<usize>> = Vec::new();
+    let mut entries: Vec<Option<JournalEntry>> = Vec::new();
+    let mut blank: Vec<bool> = Vec::new();
+    let mut position = 0;
+    while position < snapshot.len() {
+        let length = match snapshot[position..].iter().position(|&b| b == b'\n') {
+            Some(newline) => newline + 1,
+            None => snapshot.len() - position,
+        };
+        let range = position..position + length;
+        let content = line_content(&snapshot[range.clone()]);
+        let is_blank = is_blank_content(content);
+        // C#: `OperationJournal.ReadEntries` splits at a lone '\r' too, so a line holding one is never recognized here.
+        let entry = if is_blank || content.contains(&b'\r') {
+            None
+        } else {
+            journal_line::try_parse_utf8(content)
+        };
+        ranges.push(range);
+        entries.push(entry);
+        blank.push(is_blank);
+        position += length;
+    }
+
+    // Effective latest line per Id (ordinal key), with the FA-01 rule of the journal readers.
+    let mut latest: HashMap<&str, (usize, &JournalEntry)> = HashMap::new();
+    for (i, entry) in entries.iter().enumerate() {
+        let Some(entry) = entry else { continue };
+        let previous = latest.get(entry.id.as_str()).map(|&(_, previous)| previous);
+        if is_stale_reconcile_after_committed(entry, previous) {
+            continue;
+        }
+        latest.insert(entry.id.as_str(), (i, entry));
+    }
+
+    // The committed-Move lines the tail reader of `ReadCommittedMoves` returns (same predicate, newest first).
+    let mut committed_move_window: HashSet<usize> = HashSet::new();
+    for i in (0..ranges.len()).rev() {
+        if committed_move_window.len() >= STARTUP_COMMITTED_MOVE_LIMIT {
+            break;
+        }
+        if try_parse_tail_committed_move(line_content(&snapshot[ranges[i].clone()])).is_some() {
+            committed_move_window.insert(i);
+        }
+    }
+
+    // W2-FA-04: the LAST members-carrying line of an Id whose effective latest line carries no members (and is not
+    // Dismissed) is the downgrade repair's evidence: kept.
+    let mut last_members_line: HashMap<&str, usize> = HashMap::new();
+    for (i, entry) in entries.iter().enumerate() {
+        match entry {
+            Some(entry) if has_members(entry) => {
+                last_members_line.insert(entry.id.as_str(), i);
+            }
+            _ => {}
+        }
+    }
+    let mut evidence: HashSet<usize> = HashSet::new();
+    for (id, index) in last_members_line {
+        match latest.get(id) {
+            Some(&(_, latest_entry)) if !has_members(latest_entry) && latest_entry.state != JournalState::Dismissed => {
+                evidence.insert(index);
+            }
+            _ => {}
+        }
+    }
+
+    let is_droppable = |i: usize| -> bool {
+        if blank[i] {
+            return true;
+        }
+        let Some(entry) = &entries[i] else {
+            return false; // unparseable here: kept verbatim
+        };
+        let Some(&(latest_index, latest_entry)) = latest.get(entry.id.as_str()) else {
+            return false;
+        };
+        matches!(latest_entry.state, JournalState::Committed | JournalState::Dismissed)
+            && i < latest_index
+            && !committed_move_window.contains(&i)
+            && !evidence.contains(&i)
+    };
+
+    // Output order comes from this index loop only (never from a map).
+    let mut kept = Vec::with_capacity(snapshot.len());
+    let mut dropped_lines = 0;
+    for (i, range) in ranges.iter().enumerate() {
+        if is_droppable(i) {
+            dropped_lines += 1;
+            continue;
+        }
+        kept.extend_from_slice(&snapshot[range.clone()]);
+    }
+    CompactionPlan {
+        kept,
+        dropped_lines,
+        kept_lines: ranges.len() - dropped_lines,
+    }
+}
+
+/// C# `GroupMembers is { Count: > 0 }`.
+fn has_members(entry: &JournalEntry) -> bool {
+    entry.group_members.as_ref().is_some_and(|members| !members.is_empty())
+}
+
+/// C# `content.Trim(" \t\r"u8).IsEmpty`: the content holds ONLY those three bytes (`\x0C`, `\x0B`, NBSP, NUL are not
+/// blank).
+fn is_blank_content(content: &[u8]) -> bool {
+    content.iter().all(|b| matches!(b, b' ' | b'\t' | b'\r'))
 }
 
 /// C# `JournalCompactionPlan.Content`: a line without its terminator, as both journal readers see it: strip ONE trailing
 /// `\n`, then ONE trailing `\r` (so `"x\r\r\n"` -> `"x\r"`, `"x\r"` without `\n` -> `"x"`). The same stripping as the
 /// W3-01 tail reader (`ParseCommittedMoves` splits at `\n`, then strips one `\r`).
 pub fn line_content(line: &[u8]) -> &[u8] {
-    todo!("W3-02")
+    let line = line.strip_suffix(b"\n").unwrap_or(line);
+    line.strip_suffix(b"\r").unwrap_or(line)
 }
