@@ -4,6 +4,7 @@
 //! (`FileNotFoundException` → `NotFound`, `UnauthorizedAccessException` → `PermissionDenied`, sharing violation →
 //! raw OS error 32). Default method bodies reproduce the C# default interface methods exactly.
 
+use std::fs::File;
 use std::io::{self, Read, Seek, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -20,6 +21,27 @@ pub struct FileStat {
 /// A readable, seekable byte source (C# `Stream` opened for reading).
 pub trait ReadSeek: Read + Seek + Send {}
 impl<T: Read + Seek + Send> ReadSeek for T {}
+
+/// The stream [`FileSystem::open_append`] returns (C# `Stream` from `OpenAppend`). Decision P-11 (D26(a)): the journal's
+/// PowerLossSafe mode asks it for the real file behind it, the Rust image of C# `stream is FileStream fs`, and flushes
+/// that file to disk (`FlushFileBuffers`); any other stream gets a plain [`Write::flush`].
+pub trait AppendStream: Write + Send {
+    /// The OS file behind this stream, when there is one. Default: `None` (in-memory fakes, wrappers, sinks).
+    fn as_file_mut(&mut self) -> Option<&mut File> {
+        None
+    }
+}
+
+/// A real file: the only stream that can be flushed to disk.
+impl AppendStream for File {
+    fn as_file_mut(&mut self) -> Option<&mut File> {
+        Some(self)
+    }
+}
+
+impl AppendStream for io::Sink {}
+impl AppendStream for Vec<u8> {}
+impl AppendStream for io::Cursor<Vec<u8>> {}
 
 /// Why a scan entry was skipped (language-neutral; the window maps it to catalog text).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -102,7 +124,8 @@ pub trait FileSystem: Send + Sync {
     /// Read with share ReadWrite | Delete and SequentialScan (INV-8). C# default buffer: 64 KiB.
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>>;
     /// Append; `durable` adds write-through (ADR 0007: false = "fast" mode, data reaches only the OS cache on flush).
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>>;
+    /// The stream exposes the real file through [`AppendStream::as_file_mut`] when there is one (P-11).
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>>;
     /// Atomic replace through a temp file. `durable`: write-through + flush to disk (Settings); false: still atomic,
     /// no fsync (Session, ADR 0007 §2). C# default: durable.
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()>;

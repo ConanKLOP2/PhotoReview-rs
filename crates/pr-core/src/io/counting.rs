@@ -7,11 +7,11 @@
 //! inner file system's atomic create-new copy by "exists-check then copy" (C# `FileSystemWrapperForwardingTests`).
 
 use std::fmt;
-use std::io::{self, Write};
+use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use crate::abstractions::{CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
+use crate::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
 
 /// Counts metadata queries (C# `ReviewMetrics.RecordStat`). `ReviewMetrics` (W2-17) implements it; any `Fn()` closure does
 /// too, so tests can pass a counter.
@@ -90,7 +90,7 @@ impl FileSystem for CountingFileSystem {
         self.inner.open_read_shared(path, buffer_size)
     }
 
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.inner.open_append(path, durable)
     }
 

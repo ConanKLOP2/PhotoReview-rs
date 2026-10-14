@@ -8,7 +8,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use pr_core::abstractions::{FileStat, FileSystem, ReadSeek};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, ReadSeek};
 use pr_core::file_actions::duplicates::{HashFailure, find, has_numbered_suffix};
 use pr_core::sync::{CancelToken, Canceled};
 use pr_test_support::golden;
@@ -270,7 +270,7 @@ impl FileSystem for CancelOnFirstStat {
     fn open_read_shared(&self, _: &Path, _: usize) -> io::Result<Box<dyn ReadSeek>> {
         unimplemented!()
     }
-    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn io::Write + Send>> {
+    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn AppendStream>> {
         unimplemented!()
     }
     fn write_all_text_atomic(&self, _: &Path, _: &str, _: bool) -> io::Result<()> {

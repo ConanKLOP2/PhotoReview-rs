@@ -23,7 +23,7 @@ use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use crate::abstractions::{CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
+use crate::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
 use crate::file_actions::errors;
 use crate::text::dotnet_path::{self, PathError};
 use crate::text::ordinal_upper;
@@ -1184,13 +1184,15 @@ impl FileSystem for PhysicalFileSystem {
         }
     }
 
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         if is_blank(path) {
             return Err(blank_path_error());
         }
         // FileMode.Append, FileAccess.Write, FileShare.Read.
         // DIVERGENCE: the C# FileStream buffers 4096 bytes (data and some errors surface at Flush/Dispose); the raw File
         // writes through to the OS at every call. Callers write whole lines, so the file content is the same.
+        // P-11: the boxed `File` answers `as_file_mut()` with itself (C# `stream is FileStream`), so the journal can
+        // flush it to disk in PowerLossSafe mode.
         let mut append = options(FILE_SHARE_READ, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 });
         append.append(true).create(true);
         let file = open_like_file_stream(&append, path)?;

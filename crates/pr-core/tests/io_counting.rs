@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use pr_core::abstractions::{CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
+use pr_core::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
 use pr_core::io::counting::{CountingFileSystem, StatCounter};
 use pr_test_support::FakeFileSystem;
 
@@ -221,7 +221,7 @@ impl FileSystem for RecordingFs {
         self.record("open_read_shared");
         Ok(Box::new(io::Cursor::new(Vec::new())))
     }
-    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn AppendStream>> {
         self.record("open_append");
         Ok(Box::new(io::sink()))
     }

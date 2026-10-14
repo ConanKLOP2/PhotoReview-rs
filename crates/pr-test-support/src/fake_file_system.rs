@@ -7,7 +7,7 @@ use std::io::{self, Cursor, Write};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use pr_core::abstractions::{Clock, FileStat, FileSystem, ReadSeek};
+use pr_core::abstractions::{AppendStream, Clock, FileStat, FileSystem, ReadSeek};
 use pr_core::text::{cmp_ignore_case, path_key};
 use pr_core::time::DateTimeUtc;
 
@@ -343,7 +343,7 @@ impl FileSystem for FakeFileSystem {
 
     /// Creates the file when missing (FileMode.Append). Each `write` lands immediately (no buffering), stamped with
     /// the clock's time; a file deleted while the appender is open is recreated by the next write.
-    fn open_append(&self, path: &Path, _durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, _durable: bool) -> io::Result<Box<dyn AppendStream>> {
         let mut state = self.begin(FsOp::OpenAppend, path)?;
         require_parent(&state, path)?;
         let now = self.clock.utc_now();
@@ -492,6 +492,9 @@ impl Write for Appender {
     }
 }
 
+/// Not a real file: `as_file_mut` is `None`, so a PowerLossSafe journal falls back to a plain flush (P-11).
+impl AppendStream for Appender {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -577,6 +580,15 @@ mod tests {
         w.write_all(b"a\n").unwrap();
         w.write_all(b"b\n").unwrap();
         assert_eq!(fs.read_all_text(&p(r"C:\data\j.jsonl")).unwrap(), "a\nb\n");
+    }
+
+    #[test]
+    fn appender_is_not_a_real_file() {
+        // P-11: only a real OS file answers `as_file_mut`; the fake's stream must take the plain-flush path.
+        let fs = FakeFileSystem::new();
+        fs.add_dir(r"C:\data");
+        let mut w = fs.open_append(&p(r"C:\data\j.jsonl"), true).unwrap();
+        assert!(w.as_file_mut().is_none());
     }
 
     #[test]

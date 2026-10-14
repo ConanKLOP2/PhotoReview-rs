@@ -224,8 +224,8 @@ pub type DurabilityProvider = Arc<dyn Fn() -> JournalDurability + Send + Sync>;
 pub type AppendRetryDelay = Arc<dyn Fn(Duration) + Send + Sync>;
 /// C# `internal Action<FileStream> FlushToDisk` (test seam; default `File::sync_all`, C# `Flush(flushToDisk: true)`).
 /// Called once per PowerLossSafe append, after the bytes were written, ONLY when the append stream is a real file.
-/// Usable once the lead's `AppendStream` change of `FileSystem::open_append` lands (contract open question 1); until
-/// then the porter keeps the field and documents the fallback (plain `flush`).
+/// The real file is `AppendStream::as_file_mut()` of the stream `FileSystem::open_append` returned (decision P-11,
+/// contract open question 1): `Some(file)` => this seam, `None` => a plain `flush`.
 pub type FlushToDisk = Arc<dyn Fn(&mut File) -> io::Result<()> + Send + Sync>;
 
 /// The optional C# constructor parameters (`null` = default) plus the ambient C# services made explicit.

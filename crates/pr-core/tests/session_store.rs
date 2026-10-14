@@ -19,7 +19,7 @@ use std::sync::mpsc;
 use std::sync::{Arc, Condvar, Mutex, PoisonError};
 use std::time::Duration;
 
-use pr_core::abstractions::{FileStat, FileSystem, Log, ReadSeek};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, Log, ReadSeek};
 use pr_core::app_paths::AppPaths;
 use pr_core::file_actions::journal_line::JournalDateTime;
 use pr_core::io::physical::{PhysicalFileSystem, decode_text_like_dotnet};
@@ -141,7 +141,7 @@ impl FileSystem for Decorator {
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
         self.inner.open_read_shared(path, buffer_size)
     }
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn io::Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.inner.open_append(path, durable)
     }
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
