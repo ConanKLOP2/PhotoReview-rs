@@ -10,9 +10,6 @@
 //! `CanonicalizeAll`. Rust has no reflection, so [`ShortcutMappings::PROPERTY_NAMES`], [`ShortcutMappings::entries`],
 //! [`ShortcutMappings::get`] and [`ShortcutMappings::get_mut`] expose the same property list, in declaration order.
 
-// Stub: bodies are `todo!()`. The porter deletes this line together with the `todo!()`s.
-#![allow(unused_variables)]
-
 use serde::{Deserialize, Serialize};
 
 use crate::model::enums::FileOperationType;
@@ -117,23 +114,84 @@ impl ShortcutMappings {
     /// `ShortcutMappings.IsOptional`: true when `property_name` is one of [`ShortcutMappings::OPTIONAL_NAMES`].
     /// Ordinal and case-sensitive (`StringComparer.Ordinal`): `"lastimage"` and `" LastImage"` are not optional.
     pub fn is_optional(property_name: &str) -> bool {
-        todo!()
+        Self::OPTIONAL_NAMES.contains(&property_name)
     }
 
     /// The value of the property called `property_name` (a C# property name, case-sensitive), or `None` when there is
     /// no such property.
     pub fn get(&self, property_name: &str) -> Option<&str> {
-        todo!()
+        let value = match property_name {
+            "Next" => &self.next,
+            "Previous" => &self.previous,
+            "MoveToFolder2" => &self.move_to_folder2,
+            "SendToRecycleBin" => &self.send_to_recycle_bin,
+            "Compare" => &self.compare,
+            "NextFolder" => &self.next_folder,
+            "PreviousFolder" => &self.previous_folder,
+            "FirstImage" => &self.first_image,
+            "ZoomIn" => &self.zoom_in,
+            "ZoomOut" => &self.zoom_out,
+            "ToggleFit" => &self.toggle_fit,
+            "Skip" => &self.skip,
+            "Undo" => &self.undo,
+            "Fullscreen" => &self.fullscreen,
+            "MoveToFolder" => &self.move_to_folder,
+            "CopyToFolder" => &self.copy_to_folder,
+            "LastImage" => &self.last_image,
+            "ZoomActualSize" => &self.zoom_actual_size,
+            "ToggleInfoOverlay" => &self.toggle_info_overlay,
+            "ClickZoom" => &self.click_zoom,
+            "FitWidth" => &self.fit_width,
+            "FitHeight" => &self.fit_height,
+            "ToggleKeepZoom" => &self.toggle_keep_zoom,
+            "OpenFolder" => &self.open_folder,
+            "CustomZoom" => &self.custom_zoom,
+            "ToggleCaptureMember" => &self.toggle_capture_member,
+            _ => return None,
+        };
+        Some(value.as_str())
     }
 
     /// Mutable access to the property called `property_name`, or `None` when there is no such property.
     pub fn get_mut(&mut self, property_name: &str) -> Option<&mut String> {
-        todo!()
+        let value = match property_name {
+            "Next" => &mut self.next,
+            "Previous" => &mut self.previous,
+            "MoveToFolder2" => &mut self.move_to_folder2,
+            "SendToRecycleBin" => &mut self.send_to_recycle_bin,
+            "Compare" => &mut self.compare,
+            "NextFolder" => &mut self.next_folder,
+            "PreviousFolder" => &mut self.previous_folder,
+            "FirstImage" => &mut self.first_image,
+            "ZoomIn" => &mut self.zoom_in,
+            "ZoomOut" => &mut self.zoom_out,
+            "ToggleFit" => &mut self.toggle_fit,
+            "Skip" => &mut self.skip,
+            "Undo" => &mut self.undo,
+            "Fullscreen" => &mut self.fullscreen,
+            "MoveToFolder" => &mut self.move_to_folder,
+            "CopyToFolder" => &mut self.copy_to_folder,
+            "LastImage" => &mut self.last_image,
+            "ZoomActualSize" => &mut self.zoom_actual_size,
+            "ToggleInfoOverlay" => &mut self.toggle_info_overlay,
+            "ClickZoom" => &mut self.click_zoom,
+            "FitWidth" => &mut self.fit_width,
+            "FitHeight" => &mut self.fit_height,
+            "ToggleKeepZoom" => &mut self.toggle_keep_zoom,
+            "OpenFolder" => &mut self.open_folder,
+            "CustomZoom" => &mut self.custom_zoom,
+            "ToggleCaptureMember" => &mut self.toggle_capture_member,
+            _ => return None,
+        };
+        Some(value)
     }
 
     /// Every `(C# property name, value)` pair in declaration order; always 26 entries.
     pub fn entries(&self) -> Vec<(&'static str, &str)> {
-        todo!()
+        Self::PROPERTY_NAMES
+            .iter()
+            .map(|&name| (name, self.get(name).unwrap_or_default()))
+            .collect()
     }
 }
 
@@ -213,14 +271,37 @@ pub const ALIAS_PAIRS: [(&str, &str); 29] = [
 /// name is returned, which also repairs the casing (`"enter"` gives `"Enter"`). Any other text is returned trimmed and
 /// otherwise unchanged (`"f11"` stays `"f11"`). Idempotent.
 pub fn canonicalize(name: Option<&str>) -> String {
-    todo!()
+    let Some(text) = name.map(str::trim) else {
+        return String::new();
+    };
+    if text.is_empty() {
+        return String::new();
+    }
+    // C# looks the text up in an OrdinalIgnoreCase dictionary over ASCII keys: non-ASCII text never matches
+    // (golden rows: Kelvin sign, dotless i, fullwidth letters). Compare ASCII-only, not `text::eq_ignore_case`.
+    if !text.is_ascii() {
+        return text.to_owned();
+    }
+    for &(alias, canonical) in &ALIAS_PAIRS {
+        if alias.eq_ignore_ascii_case(text) || canonical.eq_ignore_ascii_case(text) {
+            return canonical.to_owned();
+        }
+    }
+    text.to_owned()
 }
 
 /// `ShortcutKeyCanonical.CanonicalizeAll` for the parts of `AppSettings` that exist in this unit: canonicalises every
 /// one of the 26 shortcut strings of `shortcuts` and the `shortcut` of every action, in place. (The `AppSettings`
 /// wrapper that also handles a missing `Shortcuts`/`Actions` is owned by the settings unit.)
 pub fn canonicalize_all(shortcuts: &mut ShortcutMappings, actions: &mut [ReviewAction]) {
-    todo!()
+    for name in ShortcutMappings::PROPERTY_NAMES {
+        if let Some(value) = shortcuts.get_mut(name) {
+            *value = canonicalize(Some(value.as_str()));
+        }
+    }
+    for action in actions {
+        action.shortcut = canonicalize(Some(action.shortcut.as_str()));
+    }
 }
 
 /// One user-defined review action: a key that moves, copies or recycles the current photo (`ReviewAction`).
@@ -268,6 +349,35 @@ impl ReviewAction {
     /// `confirm` is `false` everywhere. C# reads the names from the language catalog (`Tr.ActionDefaultName(n)`,
     /// `Tr.ActionDefaultBackup`); this crate cannot, so the caller passes them in.
     pub fn defaults(action_default_name: &dyn Fn(u32) -> String, backup_name: &str) -> Vec<ReviewAction> {
-        todo!()
+        vec![
+            ReviewAction {
+                name: action_default_name(2),
+                shortcut: "Enter".to_owned(),
+                operation: FileOperationType::Move,
+                destination: "Group-2".to_owned(),
+                confirm: false,
+            },
+            ReviewAction {
+                name: action_default_name(3),
+                shortcut: "F3".to_owned(),
+                operation: FileOperationType::Move,
+                destination: "Group-3".to_owned(),
+                confirm: false,
+            },
+            ReviewAction {
+                name: action_default_name(4),
+                shortcut: "F4".to_owned(),
+                operation: FileOperationType::Move,
+                destination: "Group-4".to_owned(),
+                confirm: false,
+            },
+            ReviewAction {
+                name: backup_name.to_owned(),
+                shortcut: "F5".to_owned(),
+                operation: FileOperationType::Copy,
+                destination: "Backup".to_owned(),
+                confirm: false,
+            },
+        ]
     }
 }
