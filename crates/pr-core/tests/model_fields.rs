@@ -3,7 +3,7 @@
 //! Port of `PhotoReview.Core/Model/TitleBarFields.cs` and `ExifInfoFields.cs` (baseline e441d67a), with the enum-level
 //! asserts of `TitleBarFieldsSettingsTests` and `ExifInfoSettingsTests`. The serde twins use test-local structs that
 //! stand in for `AppSettings`; tests marked "needs W1-02" call `serde_ext::{serialize_flags, deserialize_flags}`,
-//! which are the W1-02 porter's `todo!()` until that unit merges.
+//! which W1-02 has implemented and merged.
 
 use pr_core::model::serde_ext::FlagEnum;
 use pr_core::model::{ExifInfoFields, TitleBarFields};
