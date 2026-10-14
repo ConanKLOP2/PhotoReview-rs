@@ -14,18 +14,29 @@
 //! # dropped=<n>\r\n
 //! ```
 //!
-//! Unit W2-17. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-17.md`.
+//! Unit W2-17. Contract: `contracts/W2-17.md`.
+//!
+//! DIVERGENCES from C#: `qpcTicks` are a monotonic 100 ns counter, not `QueryPerformanceCounter`; the thread column is
+//! a small per-thread number, not the managed thread id; the queue capacity is clamped to at least 1.
 
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
-use std::io::Write;
-use std::sync::atomic::{AtomicBool, AtomicI64};
-use std::sync::mpsc::SyncSender;
-use std::sync::{Arc, Condvar, Mutex, RwLock};
+use std::cell::Cell;
+use std::io::{self, BufWriter, Write};
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicI64, Ordering};
+use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, TrySendError, sync_channel};
+use std::sync::{Arc, Condvar, Mutex, PoisonError, RwLock};
 use std::time::Duration;
 
-use super::perf::{PerfEvent, PerfListener, PerfSubscription, PerfValue};
+use super::perf::{
+    PerfEvent, PerfListener, PerfSubscription, PerfValue, PhotoReviewPerf, STOPWATCH_FREQUENCY, ms, timestamp,
+};
+use crate::time::DateTimeUtc;
+
+/// Buffer between the row formatter and the sink: small enough that a blocked sink stops the writer after a few
+/// hundred rows (the drop-accounting test relies on it). The real file has its own, larger buffer.
+const WRITER_BUFFER: usize = 8 * 1024;
+/// Buffer of the trace file itself (C# `FileStream` bufferSize 65536).
+const FILE_BUFFER: usize = 64 * 1024;
 
 /// The directory variable. C#: `PHOTOREVIEW_PERF_TRACE`; Rust prefix per docs/adr/R0002.
 pub const TRACE_ENV_VAR: &str = "PHOTOREVIEW_RS_PERF_TRACE";
@@ -80,31 +91,142 @@ pub struct LocalTimeParts {
 /// (`DateTimeUtc::now().ticks()`), `qpc_ticks` ([`timestamp`](super::perf::timestamp)) and `thread`
 /// ([`current_thread_number`]). `None` names or values (C# null) give an empty payload. Never panics.
 pub fn build_row(event_name: &str, names: Option<&[&str]>, values: Option<&[PerfValue]>) -> PerfRow {
-    todo!("see contracts/W2-17.md section 'BuildRow'")
+    let utc_ticks = DateTimeUtc::now().ticks();
+    let qpc_ticks = timestamp();
+    let thread = current_thread_number();
+
+    let mut nav = String::new();
+    let mut path_id = String::new();
+    let mut numeric: [String; 4] = Default::default();
+    let mut numeric_count = 0usize;
+    let mut text: Vec<String> = Vec::new();
+
+    if let (Some(names), Some(values)) = (names, values) {
+        for (name, value) in names.iter().zip(values.iter()) {
+            if (*name == "nav" || *name == "gen") && nav.is_empty() {
+                nav = format_value(value);
+            } else if *name == "pathId" && path_id.is_empty() {
+                path_id = format_value(value);
+            } else if matches!(value, PerfValue::Int(_) | PerfValue::Double(_) | PerfValue::Bool(_)) {
+                // Only the first four numerics get a column; later ones are counted and dropped.
+                if let Some(slot) = numeric.get_mut(numeric_count) {
+                    *slot = format_value(value);
+                }
+                numeric_count += 1;
+            } else if !matches!(value, PerfValue::Null) {
+                text.push(format_value(value));
+            }
+        }
+    }
+
+    let [a, b, c, d] = numeric;
+    PerfRow {
+        utc_ticks,
+        qpc_ticks,
+        thread,
+        event_name: event_name.to_owned(),
+        nav,
+        path_id,
+        a,
+        b,
+        c,
+        d,
+        text: text.join(";"),
+    }
 }
 
 /// `PerfCsvListener.FormatValue`: `Null` -> `""`, `Bool` -> `1`/`0`, `Double` -> [`format_g17`], `Int` -> invariant
 /// decimal, `Str` verbatim.
 pub fn format_value(value: &PerfValue) -> String {
-    todo!()
+    match value {
+        PerfValue::Null => String::new(),
+        PerfValue::Bool(b) => (if *b { "1" } else { "0" }).to_owned(),
+        PerfValue::Double(d) => format_g17(*d),
+        PerfValue::Int(i) => i.to_string(),
+        PerfValue::Str(s) => s.clone(),
+    }
 }
 
-/// .NET `double.ToString("G17", CultureInfo.InvariantCulture)`. Reference implementation in the contract
-/// (verified against the golden).
+/// .NET `double.ToString("G17", CultureInfo.InvariantCulture)`: the 17-significant-digit correctly rounded expansion
+/// with trailing zeros removed; scientific when the decimal exponent is `>= 17` or `< -4`.
 pub fn format_g17(value: f64) -> String {
-    todo!()
+    if value.is_nan() {
+        return "NaN".to_owned();
+    }
+    if value.is_infinite() {
+        return (if value > 0.0 { "Infinity" } else { "-Infinity" }).to_owned();
+    }
+    let negative = value.is_sign_negative();
+    if value == 0.0 {
+        return (if negative { "-0" } else { "0" }).to_owned();
+    }
+    // "d.dddddddddddddddde[-]X": 17 correctly rounded significant digits.
+    let formatted = format!("{:.16e}", value.abs());
+    let Some((mantissa, exponent)) = formatted.split_once('e') else {
+        return formatted;
+    };
+    let x: i32 = exponent.parse().unwrap_or(0);
+    let mut digits: String = mantissa.chars().filter(|c| *c != '.').collect();
+    while digits.len() > 1 && digits.ends_with('0') {
+        digits.pop();
+    }
+    let body = if !(-4..17).contains(&x) {
+        let rest = if digits.len() > 1 {
+            format!(".{}", &digits[1..])
+        } else {
+            String::new()
+        };
+        format!(
+            "{}{}E{}{:02}",
+            &digits[..1],
+            rest,
+            if x < 0 { '-' } else { '+' },
+            x.abs()
+        )
+    } else if x >= 0 {
+        let int_len = x as usize + 1;
+        if digits.len() <= int_len {
+            format!("{}{}", digits, "0".repeat(int_len - digits.len()))
+        } else {
+            format!("{}.{}", &digits[..int_len], &digits[int_len..])
+        }
+    } else {
+        format!("0.{}{}", "0".repeat((-x - 1) as usize), digits)
+    };
+    if negative { format!("-{body}") } else { body }
 }
 
 /// `PerfCsvListener.CsvEscape`: line breaks (`\r\n`, `\r`, `\n`) become one space each (`\r\n` counts as ONE space),
 /// then a value containing `,`, `"`, `\n` or `\r` is wrapped in quotes with `"` doubled. Empty stays empty.
 pub fn csv_escape(value: &str) -> String {
-    todo!()
+    if value.is_empty() {
+        return String::new();
+    }
+    let flattened = if value.contains(['\r', '\n']) {
+        value.replace("\r\n", " ").replace(['\r', '\n'], " ")
+    } else {
+        value.to_owned()
+    };
+    if flattened.contains([',', '"', '\n', '\r']) {
+        format!("\"{}\"", flattened.replace('"', "\"\""))
+    } else {
+        flattened
+    }
 }
 
 /// `Environment.CurrentManagedThreadId` stand-in: a small positive integer, stable per thread, assigned in order of
 /// first use (the first thread that asks gets 1).
 pub fn current_thread_number() -> i32 {
-    todo!()
+    static NEXT: AtomicI32 = AtomicI32::new(1);
+    thread_local! {
+        static NUMBER: Cell<i32> = const { Cell::new(0) };
+    }
+    NUMBER.with(|cell| {
+        if cell.get() == 0 {
+            cell.set(NEXT.fetch_add(1, Ordering::Relaxed));
+        }
+        cell.get()
+    })
 }
 
 /// The CSV writer. Subscribes to [`PhotoReviewPerf`](super::perf::PhotoReviewPerf) when started and unsubscribes in
@@ -133,6 +255,215 @@ struct Shared {
     dispose_wait: Duration,
 }
 
+impl Shared {
+    fn new(started: bool, dispose_wait: Duration) -> Self {
+        Self {
+            sender: RwLock::new(None),
+            started: AtomicBool::new(started),
+            dropped: AtomicI64::new(0),
+            writer_faulted: AtomicBool::new(false),
+            disposed: AtomicBool::new(false),
+            // A listener that never started has no writer to wait for.
+            finished: (Mutex::new(!started), Condvar::new()),
+            dispose_wait,
+        }
+    }
+
+    fn signal_finished(&self) {
+        let (lock, cv) = &self.finished;
+        *lock.lock().unwrap_or_else(PoisonError::into_inner) = true;
+        cv.notify_all();
+    }
+
+    fn count_dropped(&self, n: i64) {
+        self.dropped.fetch_add(n, Ordering::SeqCst);
+    }
+
+    /// The body of [`PerfCsvListener::enqueue`] (kept here so the subscription can hold an `Arc<Shared>`).
+    fn enqueue(&self, build: impl FnOnce() -> PerfRow) {
+        if !self.started.load(Ordering::SeqCst) {
+            return; // never started: nothing was queued, nothing is lost
+        }
+        if self.writer_faulted.load(Ordering::SeqCst) {
+            // Nobody reads the queue any more: count the row instead of letting it pile up.
+            self.count_dropped(1);
+            return;
+        }
+        // A malformed payload must never reach the emitting thread.
+        let Ok(row) = catch_unwind(AssertUnwindSafe(build)) else {
+            self.count_dropped(1);
+            return;
+        };
+        let guard = self.sender.read().unwrap_or_else(PoisonError::into_inner);
+        match guard.as_ref() {
+            Some(tx) => match tx.try_send(row) {
+                Ok(()) => {}
+                Err(TrySendError::Full(_) | TrySendError::Disconnected(_)) => self.count_dropped(1),
+            },
+            None => self.count_dropped(1),
+        }
+    }
+}
+
+impl PerfListener for Shared {
+    /// C# `OnEventWritten` -> `Enqueue(() => BuildRow(...))` using the event name, payload names and payload.
+    fn on_event_written(&self, event: &PerfEvent) {
+        self.enqueue(|| build_row(event.name, Some(event.payload_names), Some(&event.payload)));
+    }
+}
+
+/// The diagnostic variables written to the header, in the fixed order of [`DIAG_FLAG_HEADER_NAMES`], raw values.
+fn diag_field(diag: &dyn Fn(&str) -> Option<String>) -> String {
+    DIAG_FLAG_HEADER_NAMES
+        .iter()
+        .filter_map(|name| diag(name).filter(|v| !v.is_empty()).map(|v| format!("{name}={v}")))
+        .collect::<Vec<_>>()
+        .join(";")
+}
+
+fn write_row(writer: &mut impl Write, row: &PerfRow) -> io::Result<()> {
+    let line = format!(
+        "{},{},{},{},{},{},{},{},{},{},{}\n",
+        row.utc_ticks,
+        row.qpc_ticks,
+        row.thread,
+        csv_escape(&row.event_name),
+        csv_escape(&row.nav),
+        csv_escape(&row.path_id),
+        csv_escape(&row.a),
+        csv_escape(&row.b),
+        csv_escape(&row.c),
+        csv_escape(&row.d),
+        csv_escape(&row.text),
+    );
+    writer.write_all(line.as_bytes())
+}
+
+/// The writer thread body (C# `WriterLoopAsync` + `FinishWriter`).
+fn writer_loop(
+    rx: Receiver<PerfRow>,
+    mut writer: BufWriter<Box<dyn Write + Send>>,
+    shared: &Shared,
+    idle_flush: Duration,
+) {
+    let mut last_flush = timestamp();
+    // Rows handed to the writer since the last successful flush (lost if the writer faults).
+    let mut unflushed: i64 = 0;
+    let mut faulted = false;
+    loop {
+        if faulted {
+            // Nobody writes any more: count what is still queued until the queue is closed. The trailer is written
+            // only after that, so a sink that recovers meanwhile still receives it (C# writes it from Dispose).
+            match rx.recv() {
+                Ok(_) => shared.count_dropped(1),
+                Err(_) => break,
+            }
+            continue;
+        }
+        let result: io::Result<()> = match rx.recv_timeout(idle_flush) {
+            Err(RecvTimeoutError::Timeout) => {
+                // Idle for a whole interval: flush the tail of a burst now, so a killed process does not lose it.
+                let flushed = if unflushed > 0 {
+                    guarded(|| writer.flush())
+                } else {
+                    Ok(())
+                };
+                if flushed.is_ok() {
+                    unflushed = 0;
+                    last_flush = timestamp();
+                }
+                flushed
+            }
+            Err(RecvTimeoutError::Disconnected) => break,
+            Ok(row) => {
+                unflushed += 1;
+                let mut step = guarded(|| write_row(&mut writer, &row));
+                if step.is_ok() && ms(last_flush) >= 1000.0 {
+                    step = guarded(|| writer.flush());
+                    if step.is_ok() {
+                        unflushed = 0;
+                        last_flush = timestamp();
+                    }
+                }
+                step
+            }
+        };
+        if result.is_err() {
+            // Rows already handed to the writer but not flushed are abandoned even if they later reach the file.
+            shared.writer_faulted.store(true, Ordering::SeqCst);
+            shared.count_dropped(unflushed);
+            unflushed = 0;
+            faulted = true;
+        }
+    }
+
+    // Best effort: a broken stream makes the flush and the trailer fail silently.
+    let _ = guarded(|| writer.flush());
+    let _ = guarded(|| write!(writer, "# dropped={}\r\n", shared.dropped.load(Ordering::SeqCst)));
+    let _ = guarded(|| writer.flush());
+    // A panicking sink must not unwind out of the drop either.
+    let _ = catch_unwind(AssertUnwindSafe(|| drop(writer)));
+}
+
+/// Runs one stream operation; a panic inside the sink counts as an I/O failure (C# `WriterLoopAsync` catch-all).
+fn guarded(op: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
+    match catch_unwind(AssertUnwindSafe(op)) {
+        Ok(result) => result,
+        Err(_) => Err(io::Error::other("the trace sink panicked")),
+    }
+}
+
+/// C# `Directory.CreateDirectory(dir)`, `Path.Combine(dir, fileName)` and `new FileStream(path, FileMode.Create,
+/// FileAccess.Write, FileShare.Read, ...)`, step by step. The directory is created from `Path.GetFullPath(dir)`, which
+/// trims a trailing space or dot off the LAST segment, but the file path is combined from the ORIGINAL text: a last
+/// segment such as `x ` creates `x` and then fails to open `x /perf-..csv` (path not found, `None`), while a middle
+/// segment such as `x /y` is kept by both steps. The file is opened at `Path.GetFullPath(path)`, in the extended
+/// form only for 260 or more UTF-16 units (the name ends in `.csv`).
+#[cfg(windows)]
+fn create_trace_file(dir: &str, file_name: &str) -> Option<(std::fs::File, std::path::PathBuf)> {
+    use crate::abstractions::FileSystem as _;
+    use crate::io::physical::PhysicalFileSystem;
+    use crate::text::dotnet_path;
+    use std::os::windows::fs::OpenOptionsExt;
+
+    const BS: char = '\u{5c}';
+    PhysicalFileSystem.create_directory(std::path::Path::new(dir)).ok()?;
+    // Path.Combine: no separator is added after one that already ends the directory text.
+    let combined = if dir.ends_with([BS, '/']) {
+        format!("{dir}{file_name}")
+    } else {
+        format!("{dir}{BS}{file_name}")
+    };
+    let mut full = dotnet_path::get_full_path(&combined).ok()?;
+    let extended = format!("{BS}{BS}?{BS}");
+    if full.encode_utf16().count() >= 260 && dotnet_path::is_path_fully_qualified(&full) && !full.starts_with(&extended)
+    {
+        full = match full.strip_prefix(&format!("{BS}{BS}")) {
+            Some(unc) => format!("{extended}UNC{BS}{unc}"),
+            None => format!("{extended}{full}"),
+        };
+    }
+    let mut options = std::fs::OpenOptions::new();
+    // C# FileShare.Read: a second writer on the same trace file is refused instead of truncating it.
+    options.write(true).create(true).truncate(true).share_mode(1); // FILE_SHARE_READ
+    let path = std::path::PathBuf::from(full);
+    let file = options.open(&path).ok()?;
+    Some((file, path))
+}
+
+#[cfg(not(windows))]
+fn create_trace_file(dir: &str, file_name: &str) -> Option<(std::fs::File, std::path::PathBuf)> {
+    std::fs::create_dir_all(dir).ok()?;
+    let path = std::path::Path::new(dir).join(file_name);
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&path)
+        .ok()?;
+    Some((file, path))
+}
+
 impl PerfCsvListener {
     /// `TryStartFromEnvironment`: `lookup` reads the trace variable ([`TRACE_ENV_VAR`]); `None` or blank -> `None`.
     /// Creates the directory (and parents), then `perf-<pid>-<yyyyMMdd-HHmmss>.csv` (create/truncate, shared read),
@@ -144,7 +475,32 @@ impl PerfCsvListener {
         commit: Option<&str>,
         local_now: &dyn Fn() -> LocalTimeParts,
     ) -> Option<PerfCsvListener> {
-        todo!("see contracts/W2-17.md section 'try_start'")
+        let dir = lookup(TRACE_ENV_VAR)?;
+        if dir.trim().is_empty() {
+            return None;
+        }
+        let t = local_now();
+        let file_name = format!(
+            "perf-{}-{:04}{:02}{:02}-{:02}{:02}{:02}.csv",
+            std::process::id(),
+            t.year,
+            t.month,
+            t.day,
+            t.hour,
+            t.minute,
+            t.second
+        );
+        let (file, path) = create_trace_file(&dir, &file_name)?;
+        let sink: Box<dyn Write + Send> = Box::new(BufWriter::with_capacity(FILE_BUFFER, file));
+        let diag = |name: &str| lookup(&name.replacen("PHOTOREVIEW_", "PHOTOREVIEW_RS_", 1));
+        match Self::start(sink, CHANNEL_CAPACITY, FLUSH_INTERVAL, DISPOSE_WAIT, commit, &diag) {
+            Ok(listener) => Some(listener),
+            Err(_) => {
+                // Nothing may stay behind when the start fails after the file exists.
+                let _ = std::fs::remove_file(&path);
+                None
+            }
+        }
     }
 
     /// `try_start` reading the real process environment (`std::env::var_os`, lossy) for both variable families.
@@ -152,12 +508,16 @@ impl PerfCsvListener {
         commit: Option<&str>,
         local_now: &dyn Fn() -> LocalTimeParts,
     ) -> Option<PerfCsvListener> {
-        todo!()
+        let lookup = |name: &str| std::env::var_os(name).map(|v| v.to_string_lossy().into_owned());
+        Self::try_start(&lookup, commit, local_now)
     }
 
     /// C# `StartForTest`: a listener writing to `writer` with a custom queue capacity. `idle_flush` /
     /// `dispose_wait` default to [`FLUSH_INTERVAL`] / [`DISPOSE_WAIT`]. `diag` gives the values of the three
     /// [`DIAG_FLAG_HEADER_NAMES`] for the header.
+    ///
+    /// DIVERGENCE: where C# would throw (the header cannot be written or the thread cannot start) this returns a
+    /// listener that was never started.
     pub fn start_for_test(
         writer: Box<dyn Write + Send>,
         capacity: usize,
@@ -166,28 +526,85 @@ impl PerfCsvListener {
         commit: Option<&str>,
         diag: &dyn Fn(&str) -> Option<String>,
     ) -> PerfCsvListener {
-        todo!()
+        Self::start(
+            writer,
+            capacity,
+            idle_flush.unwrap_or(FLUSH_INTERVAL),
+            dispose_wait.unwrap_or(DISPOSE_WAIT),
+            commit,
+            diag,
+        )
+        .unwrap_or_else(|_| Self::unstarted())
     }
 
     /// A listener that was never started (C# `new PerfCsvListener()`): `enqueue` ignores rows without counting them.
     pub fn unstarted() -> PerfCsvListener {
-        todo!()
+        PerfCsvListener {
+            shared: Arc::new(Shared::new(false, DISPOSE_WAIT)),
+            subscription: Mutex::new(None),
+        }
+    }
+
+    fn start(
+        sink: Box<dyn Write + Send>,
+        capacity: usize,
+        idle_flush: Duration,
+        dispose_wait: Duration,
+        commit: Option<&str>,
+        diag: &dyn Fn(&str) -> Option<String>,
+    ) -> io::Result<PerfCsvListener> {
+        let shared = Arc::new(Shared::new(true, dispose_wait));
+        let mut writer = BufWriter::with_capacity(WRITER_BUFFER, sink);
+        // The header goes into the buffer before the thread starts; it reaches the sink with the first flush.
+        write!(
+            writer,
+            "# commit={} diag={} qpcFrequency={}\r\n",
+            commit.unwrap_or("unknown"),
+            diag_field(diag),
+            STOPWATCH_FREQUENCY
+        )?;
+        writer.write_all(b"utcTicks,qpcTicks,thread,event,nav,pathId,a,b,c,d,text\r\n")?;
+
+        let (tx, rx) = sync_channel::<PerfRow>(capacity.max(1));
+        *shared.sender.write().unwrap_or_else(PoisonError::into_inner) = Some(tx);
+
+        let thread_shared = Arc::clone(&shared);
+        let spawned = std::thread::Builder::new()
+            .name("perf-csv-writer".to_owned())
+            .spawn(move || {
+                // The loop swallows I/O errors itself; a panicking sink must still release dispose.
+                let _ = catch_unwind(AssertUnwindSafe(|| {
+                    writer_loop(rx, writer, &thread_shared, idle_flush);
+                }));
+                thread_shared.signal_finished();
+            });
+        if let Err(e) = spawned {
+            *shared.sender.write().unwrap_or_else(PoisonError::into_inner) = None;
+            return Err(e);
+        }
+
+        // Subscribe AFTER the queue exists, so no event can arrive at a listener that cannot take it.
+        let subscription = PhotoReviewPerf::log().subscribe(Arc::clone(&shared) as Arc<dyn PerfListener>);
+        Ok(PerfCsvListener {
+            shared,
+            subscription: Mutex::new(Some(subscription)),
+        })
     }
 
     /// C# `Enqueue(Func<Row>)`: builds and queues one row; never panics. A builder that panics, a full queue, a closed
     /// queue and a faulted writer each count one dropped row. A never-started listener ignores the call.
     pub fn enqueue(&self, build: impl FnOnce() -> PerfRow) {
-        todo!()
+        self.shared.enqueue(build);
     }
 
     /// Rows lost so far (full queue, build failure, closed queue, writer fault). C# `DroppedCount`.
     pub fn dropped_count(&self) -> i64 {
-        todo!()
+        self.shared.dropped.load(Ordering::SeqCst)
     }
 
     /// True after a write or flush error stopped the writer. C# `WriterFaulted`.
     pub fn writer_faulted(&self) -> bool {
-        todo!()
+        self.shared.writer_faulted.load(Ordering::SeqCst)
     }
 
     /// Completes the queue, waits up to the dispose wait for the writer thread to drain it and write the
@@ -195,32 +612,30 @@ impl PerfCsvListener {
     /// trailer when it gets there; nothing else touches the stream meanwhile (C# `FinishTask`, see
     /// [`wait_finished`](Self::wait_finished)).
     pub fn dispose(&self) {
-        todo!()
+        if self.shared.disposed.swap(true, Ordering::SeqCst) {
+            return;
+        }
+        // Closing the queue lets the writer thread drain it and finish.
+        *self.shared.sender.write().unwrap_or_else(PoisonError::into_inner) = None;
+        self.wait_finished(self.shared.dispose_wait);
+        let subscription = self.subscription.lock().unwrap_or_else(PoisonError::into_inner).take();
+        drop(subscription);
     }
 
     /// Waits until the writer thread has written the trailer and released the stream; false on timeout. Test seam for
     /// C# `FinishTask`.
     pub fn wait_finished(&self, timeout: Duration) -> bool {
-        todo!()
-    }
-}
-
-impl Shared {
-    /// The body of [`PerfCsvListener::enqueue`] (kept here so the subscription can hold an `Arc<Shared>`).
-    fn enqueue(&self, build: impl FnOnce() -> PerfRow) {
-        todo!()
-    }
-}
-
-impl PerfListener for Shared {
-    /// C# `OnEventWritten` -> `Enqueue(() => BuildRow(...))` using the event name, payload names and payload.
-    fn on_event_written(&self, event: &PerfEvent) {
-        todo!()
+        let (lock, cv) = &self.shared.finished;
+        let guard = lock.lock().unwrap_or_else(PoisonError::into_inner);
+        let (guard, _) = cv
+            .wait_timeout_while(guard, timeout, |finished| !*finished)
+            .unwrap_or_else(PoisonError::into_inner);
+        *guard
     }
 }
 
 impl Drop for PerfCsvListener {
     fn drop(&mut self) {
-        todo!("dispose()")
+        self.dispose();
     }
 }

@@ -6,13 +6,16 @@
 //! docs/adr/R0003-concurrency.md the Rust function is blocking and the hash is a plain closure the caller runs on the
 //! right lane. The C# `fileSystem == null` branch (`File.Exists`/`FileInfo`) is not ported: pass the real
 //! `PhysicalFileSystem`.
-// Temporary (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
 
+use std::collections::{HashMap, HashSet};
 use std::io;
+use std::path::Path;
 
 use crate::abstractions::FileSystem;
+use crate::catalog::natural_cmp::is_dotnet_digit;
 use crate::sync::{CancelToken, Canceled};
+use crate::text::dotnet_path::get_file_name_without_extension;
+use crate::text::ignore_case_key;
 
 /// Why the caller's hash function failed for one file.
 #[derive(Debug)]
@@ -51,7 +54,71 @@ pub fn find(
     file_system: &dyn FileSystem,
     cancel: &CancelToken,
 ) -> Result<Vec<String>, Canceled> {
-    todo!()
+    cancel.check()?;
+    if files.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    // Step 1: one stat per distinct path (first spelling wins), grouped by size in order of first appearance.
+    let mut seen: HashSet<String> = HashSet::new();
+    let mut size_index: HashMap<u64, usize> = HashMap::new();
+    let mut size_groups: Vec<(u64, Vec<&str>)> = Vec::new();
+    for path in files {
+        if !seen.insert(ignore_case_key(path)) {
+            continue;
+        }
+        cancel.check()?;
+        let Some(stat) = file_system.get_file_stat(Path::new(path)) else {
+            continue;
+        };
+        let idx = *size_index.entry(stat.length).or_insert_with(|| {
+            size_groups.push((stat.length, Vec::new()));
+            size_groups.len() - 1
+        });
+        size_groups[idx].1.push(path);
+    }
+    size_groups.retain(|(_, paths)| {
+        paths.len() > 1
+            && paths
+                .iter()
+                .any(|p| has_numbered_suffix(get_file_name_without_extension(p)) == remove_numbered)
+    });
+
+    // Step 2: hash each file of the kept groups; content groups keyed by size AND hash text (ignoring case).
+    let mut content_index: HashMap<String, usize> = HashMap::new();
+    let mut content_groups: Vec<Vec<&str>> = Vec::new();
+    for (size, paths) in &size_groups {
+        for &path in paths {
+            cancel.check()?;
+            match hash(path, cancel) {
+                Ok(h) => {
+                    let key = ignore_case_key(&format!("{size}|{h}"));
+                    let idx = *content_index.entry(key).or_insert_with(|| {
+                        content_groups.push(Vec::new());
+                        content_groups.len() - 1
+                    });
+                    content_groups[idx].push(path);
+                }
+                Err(HashFailure::Canceled) => return Err(Canceled),
+                Err(HashFailure::Unreadable(_)) => {}
+            }
+        }
+    }
+
+    // Step 3: naming rule; never remove a whole content group.
+    let mut remove = Vec::new();
+    for group in content_groups.iter().filter(|g| g.len() > 1) {
+        let mut matching: Vec<&str> = group
+            .iter()
+            .copied()
+            .filter(|p| has_numbered_suffix(get_file_name_without_extension(p)) == remove_numbered)
+            .collect();
+        if matching.len() == group.len() {
+            matching.remove(0);
+        }
+        remove.extend(matching.into_iter().map(str::to_owned));
+    }
+    Ok(remove)
 }
 
 /// `NumberedPattern` = ` \(\d+\)$` (unanchored at the start) applied to a file stem: the stem ends with a space, `(`, one or
@@ -59,5 +126,13 @@ pub fn find(
 /// `$` also matches before one final `'\n'`. Unlike `numbered_stem_base` a `'\n'` earlier in the stem does not matter:
 /// `"a\nb (1)"` => true. `"img (1)"` => true, `"img(1)"` => false, `"img (1) "` => false, `" (1)"` => true, `"img (１)"` => true.
 pub fn has_numbered_suffix(stem: &str) -> bool {
-    todo!()
+    let t = stem.strip_suffix('\n').unwrap_or(stem);
+    let Some(t) = t.strip_suffix(')') else {
+        return false;
+    };
+    let trimmed = t.trim_end_matches(is_dotnet_digit);
+    if trimmed.len() == t.len() {
+        return false;
+    }
+    trimmed.ends_with(" (")
 }

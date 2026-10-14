@@ -12,12 +12,10 @@
 //! Mapping from C# (docs/adr/R0003-concurrency.md): `Task<T>` becomes [`StatTask`] (a one-shot result slot that any
 //! thread can block on); there are no continuations, so the C# "continuation never runs on the worker thread" property
 //! is trivially true and needs no Rust code.
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::collections::VecDeque;
 use std::fmt;
-use std::sync::{Arc, Condvar, Mutex, OnceLock};
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard, OnceLock};
 use std::time::Duration;
 
 use crate::sync::CancelToken;
@@ -42,6 +40,11 @@ impl fmt::Display for StatError {
 
 impl std::error::Error for StatError {}
 
+/// Locks, recovering from poisoning (a user panic hook might poison; the data stays consistent).
+fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 /// Result slot shared by a [`StatTask`] and its queued job: the outcome (once known) and the wake-up for waiters.
 type Slot<T> = (Mutex<Option<Result<T, StatError>>>, Condvar);
 
@@ -59,22 +62,37 @@ impl<T> fmt::Debug for StatTask<T> {
 impl<T> StatTask<T> {
     /// `true` once the item ran, panicked or was canceled (C# `IsCompleted`). Does not consume the result.
     pub fn is_completed(&self) -> bool {
-        todo!()
+        lock(&self.slot.0).is_some()
     }
 
     /// `true` when the task completed as canceled (C# `IsCanceled`). Does not consume the result.
     pub fn is_canceled(&self) -> bool {
-        todo!()
+        matches!(&*lock(&self.slot.0), Some(Err(StatError::Canceled)))
     }
 
     /// Blocks until completed or `timeout` elapsed; `true` when completed. Never call it on the UI thread.
     pub fn wait_timeout(&self, timeout: Duration) -> bool {
-        todo!()
+        let guard = lock(&self.slot.0);
+        let (guard, _) = self
+            .slot
+            .1
+            .wait_timeout_while(guard, timeout, |r| r.is_none())
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        guard.is_some()
     }
 
     /// Blocks until completed and returns the outcome. Never call it on the UI thread.
     pub fn wait(self) -> Result<T, StatError> {
-        todo!()
+        let guard = lock(&self.slot.0);
+        let mut guard = self
+            .slot
+            .1
+            .wait_while(guard, |r| r.is_none())
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        match guard.take() {
+            Some(result) => result,
+            None => Err(StatError::Canceled), // unreachable: wait_while only returns once the slot is filled
+        }
     }
 }
 
@@ -133,6 +151,89 @@ impl NavigationStatWorker {
         work: impl FnOnce() -> T + Send + 'static,
         token: &CancelToken,
     ) -> StatTask<T> {
-        todo!()
+        let slot: Arc<Slot<T>> = Arc::new((Mutex::new(None), Condvar::new()));
+        let task = StatTask {
+            slot: Arc::clone(&slot),
+        };
+        if token.is_canceled() {
+            // Completed before returning; never touches the queue or starts the thread. `work` is dropped unrun.
+            fulfil(&slot, Err(StatError::Canceled));
+            return task;
+        }
+
+        let token = token.clone();
+        let job: Job = Box::new(move || {
+            if token.is_canceled() {
+                fulfil(&slot, Err(StatError::Canceled));
+                return;
+            }
+            let result = match catch_unwind(AssertUnwindSafe(work)) {
+                Ok(value) => Ok(value),
+                Err(payload) => Err(StatError::Panicked(panic_text(payload.as_ref()))),
+            };
+            fulfil(&slot, result);
+        });
+
+        let start_thread = {
+            let mut queue = lock(&self.state.queue);
+            queue.push_back(job);
+            let mut started = lock(&self.state.started);
+            let first = !*started;
+            *started = true;
+            first
+        };
+        if start_thread {
+            let state = Arc::clone(&self.state);
+            let spawned = std::thread::Builder::new()
+                .name("PhotoReview navigation stat".to_owned())
+                // C# runs this thread at AboveNormal; the App layer may raise it.
+                .spawn(move || worker_loop(&state));
+            if spawned.is_err() {
+                // Could not start a thread: allow a later `run` to retry; the queued item stays queued.
+                *lock(&self.state.started) = false;
+            }
+        } else {
+            self.state.wake.notify_one();
+        }
+        task
+    }
+}
+
+/// Stores the outcome once (first completion wins) and wakes every waiter.
+fn fulfil<T>(slot: &Slot<T>, result: Result<T, StatError>) {
+    let mut guard = lock(&slot.0);
+    if guard.is_none() {
+        *guard = Some(result);
+    }
+    drop(guard);
+    slot.1.notify_all();
+}
+
+fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
+    if let Some(s) = payload.downcast_ref::<&str>() {
+        (*s).to_owned()
+    } else if let Some(s) = payload.downcast_ref::<String>() {
+        s.clone()
+    } else {
+        "<non-string panic payload>".to_owned()
+    }
+}
+
+/// The worker thread: FIFO, no lock held while a job runs. Lock order is always queue then started.
+fn worker_loop(state: &WorkerState) {
+    loop {
+        let job = {
+            let mut queue = lock(&state.queue);
+            loop {
+                if let Some(job) = queue.pop_front() {
+                    break job;
+                }
+                queue = state
+                    .wake
+                    .wait(queue)
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+            }
+        };
+        job();
     }
 }

@@ -378,3 +378,13 @@ Sau mỗi lượt merge vào `integration/wave-N` và trước khi mở PR vào 
 - **Mutation-testing vô tận:** mỗi vòng verifier tìm mutant mới. Quy tắc dừng: mutant tương đương không tính; còn lại là lỗ hổng test hoặc khác biệt hành vi thì phải đóng; sau 3 vòng cho phép lead tự thêm test nhỏ.
 - **Nên sinh golden từ harness .NET khi hợp đồng nghi ngờ** (làm ở vòng 5 cho W1-21 và W1-10): hợp đồng viết tay có chỗ sai ("C# không đi theo junction").
 - **Haiku:** làm tốt unit thuần dữ liệu và parser nhỏ; fail ở nơi có nhiều nhánh biên (W1-14, W1-18) hoặc phụ thuộc quirks .NET. Hợp đồng nên đánh dấu "quirk .NET" để chuyển Sonnet ngay từ đầu.
+
+## 11. Bài học từ Wave 2 (2026-10-14)
+
+- **Kết quả:** 21 WU (W2-00..W2-20), 3 đợt tích hợp, 21 nhánh đều merge. Verdict PASS chỉ có W2-15, W2-16; các unit còn lại FAIL do mutant sống hoặc khác biệt hành vi nhỏ và được merge kèm danh sách vấn đề mở (xem PR).
+- **Test của chính unit có thể sai:** `numeric_path_trailing_whitespace_rules` (W2-20) khẳng định `"3 "` không parse được, trong khi .NET `Enum.TryParse` chấp nhận khoảng trắng cuối. Code đúng, test sai; gate workspace đỏ cho tới khi sửa test. Verifier phải chạy test của porter trên harness .NET, không chỉ đọc.
+- **Test `#[ignore]` che lỗi:** 42 test io_physical bị ignore trong lần chạy workspace (cần W2-00 và chạy `--include-ignored`). Gate phải chạy thêm `--include-ignored` cho các unit native hoặc phụ thuộc.
+- **Lỗi lặp lại ở quirk đường dẫn Windows:** dấu cách/chấm cuối đoạn đường dẫn (W2-14, W2-17), tiền tố NT `\??`, root UNC (W2-00). Hợp đồng nên liệt kê các case này và golden phải có chúng.
+- **Mutant sống tập trung ở hằng số thời gian và nhánh cổng:** flush timer, dung lượng kênh, quy tắc năm nhuận, chặn 403 (W2-17, W2-18, W2-12, W2-13, W2-19). Cần test đúng giá trị biên của hằng số, không chỉ hành vi chung.
+- **Xung đột chỉ ở `docs/PARITY.md`:** mọi nhánh cùng sửa file này. Giữ cả hai phía là đủ; lead nên sở hữu file và porter chỉ báo dòng cần thêm.
+- **Thứ tự phụ thuộc:** W2-00 -> W2-01/W2-20 -> W2-02/03 vẫn đúng; W2-03 cần normalizer của W2-02 và W2-14 resolve cần W2-00 để test không ignored.

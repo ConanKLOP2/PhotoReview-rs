@@ -8,10 +8,7 @@
 //!
 //! The pipe itself (named pipe, ACL, `PhotoReviewRs` names per docs/adr/R0002) is Wave 6 (`pr-platform-win`).
 //!
-//! Unit W2-19. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-19.md`.
-
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
+//! Unit W2-19. Contract: `contracts/W2-19.md`.
 
 use std::fmt;
 
@@ -54,34 +51,86 @@ impl std::error::Error for EncodeError {}
 /// [`MAX_PATHS`] paths; each path in turn with [`is_acceptable_path`]; total size. An empty list is valid (a
 /// plain "bring to front" request).
 pub fn encode(paths: &[String]) -> Result<Vec<u8>, EncodeError> {
-    todo!("see contracts/W2-19.md section 'encode'")
+    if paths.len() > MAX_PATHS {
+        return Err(EncodeError::TooManyPaths);
+    }
+    let mut text = String::from(HEADER);
+    text.push('\n');
+    for path in paths {
+        // SEC-02: the exact acceptability contract of the receiver.
+        if !is_acceptable_path(path) {
+            return Err(EncodeError::PathNotAcceptable(path.clone()));
+        }
+        text.push_str(path);
+        text.push('\n');
+    }
+    text.push('\n');
+    if text.len() > MAX_MESSAGE_BYTES {
+        return Err(EncodeError::MessageTooLarge);
+    }
+    Ok(text.into_bytes())
 }
 
 /// `IsComplete(message)`: the message ends with the empty terminator line, i.e. it has at least 2 bytes and the last
 /// two bytes are both `\n`.
 pub fn is_complete(message: &[u8]) -> bool {
-    todo!()
+    message.len() >= 2 && message[message.len() - 1] == b'\n' && message[message.len() - 2] == b'\n'
 }
 
 /// `TryDecode(message, pathExists, out paths)`: `Some(paths)` when the message is complete, strictly valid UTF-8,
 /// has the right header, at most [`MAX_PATHS`] paths, and every path is acceptable AND `path_exists` returns true
 /// for it. `path_exists` is called in order and the decode stops at the first path that fails either check. An empty
 /// path list is `Some(vec![])`. `None` is the C# `false` (C# leaves `paths` empty).
-pub fn try_decode(message: &[u8], path_exists: impl FnMut(&str) -> bool) -> Option<Vec<String>> {
-    todo!("see contracts/W2-19.md section 'try_decode'")
+pub fn try_decode(message: &[u8], mut path_exists: impl FnMut(&str) -> bool) -> Option<Vec<String>> {
+    if message.is_empty() || message.len() > MAX_MESSAGE_BYTES || !is_complete(message) {
+        return None;
+    }
+    let text = std::str::from_utf8(message).ok()?;
+    // The message ends with two '\n' (ASCII), so cutting two bytes is on a char boundary.
+    let body = &text[..text.len() - 2];
+    let lines: Vec<&str> = body.split('\n').collect();
+    if lines[0] != HEADER || lines.len() - 1 > MAX_PATHS {
+        return None;
+    }
+    let mut result = Vec::with_capacity(lines.len() - 1);
+    for line in &lines[1..] {
+        if !is_acceptable_path(line) || !path_exists(line) {
+            return None;
+        }
+        result.push((*line).to_owned());
+    }
+    Some(result)
 }
 
 /// C# private `IsAcceptablePath`: non-empty, at most [`MAX_PATH_CHARS`] UTF-16 units, no control character
 /// (`char::is_control`), not a device/extended/NT-object prefix (any of `\\?\`, `\\.\`, `\??\` and their `/`
 /// spellings), no `..` segment (split on `\` and `/`), and [`is_path_fully_qualified`].
+///
+/// RV-S05 (lone surrogates) cannot occur in a `&str`; the byte-level equivalent is the strict UTF-8 decode.
 pub fn is_acceptable_path(path: &str) -> bool {
-    todo!()
+    if path.is_empty() || path.encode_utf16().count() > MAX_PATH_CHARS {
+        return false;
+    }
+    if path.chars().any(char::is_control) {
+        return false;
+    }
+    let sep = |c: char| c == '\\' || c == '/';
+    let mut chars = path.chars();
+    if let (Some(c0), Some(c1), Some(c2)) = (chars.next(), chars.next(), chars.next())
+        && sep(c0)
+        && (sep(c1) || c1 == '?')
+        && (c2 == '?' || c2 == '.')
+    {
+        return false;
+    }
+    if path.split(['\\', '/']).any(|segment| segment == "..") {
+        return false;
+    }
+    is_path_fully_qualified(path)
 }
 
-/// .NET `Path.IsPathFullyQualified` on Windows (the rules of `PathInternal.IsPartiallyQualified` negated), for UTF-16
-/// strings: false for fewer than 2 chars; when the first char is `\` or `/`: true unless the second char is neither
-/// a separator nor `?` (so `\\x`, `//x`, `\?x`, `\??\...` are fully qualified; `\x` and `/x` are not); otherwise true
-/// only for `<ASCII letter>:<\ or />...` (length >= 3). Hoist candidate for a shared `paths` module (README D8).
+/// .NET `Path.IsPathFullyQualified` on Windows; delegates to the shared W2-00 implementation
+/// (`text::dotnet_path`), which has the same rules.
 pub fn is_path_fully_qualified(path: &str) -> bool {
-    todo!()
+    crate::text::dotnet_path::is_path_fully_qualified(path)
 }

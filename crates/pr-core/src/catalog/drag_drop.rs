@@ -6,10 +6,13 @@
 //!   `PhysicalFileSystem`, tests pass a `FakeFileSystem`).
 //! * C# returns the localized warning text (`Tr.CoreDragDrop*`). `pr-core` cannot depend on the localizer, so the result
 //!   carries a language-neutral [`DragDropWarning`]; the window maps it to text with [`DragDropWarning::catalog_key`].
-// Temporary (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
+
+use std::path::Path;
 
 use crate::abstractions::FileSystem;
+use crate::catalog::types::is_supported_with;
+use crate::text::dotnet_path::{get_directory_name, get_full_path, trim_ending_directory_separator};
+use crate::text::eq_ignore_case;
 
 /// `DragDropInputKind`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,7 +45,14 @@ impl DragDropWarning {
     /// `FolderUnknown` => `"core.dragDrop.folderUnknown"`, `MixedFolders` => `"core.dragDrop.mixedFolders"`,
     /// `UnsupportedIgnored` => `"core.dragDrop.unsupportedIgnored"`.
     pub fn catalog_key(self) -> &'static str {
-        todo!()
+        match self {
+            Self::NoValidInput => "core.dragDrop.noValidInput",
+            Self::OnlyFirstFolder => "core.dragDrop.onlyFirstFolder",
+            Self::NoSupportedImages => "core.dragDrop.noSupportedImages",
+            Self::FolderUnknown => "core.dragDrop.folderUnknown",
+            Self::MixedFolders => "core.dragDrop.mixedFolders",
+            Self::UnsupportedIgnored => "core.dragDrop.unsupportedIgnored",
+        }
     }
 }
 
@@ -60,8 +70,33 @@ pub struct DragDropInputResult {
 impl DragDropInputResult {
     /// `IsValid`: `kind != Invalid && folder_path.is_some()`.
     pub fn is_valid(&self) -> bool {
-        todo!()
+        self.kind != DragDropInputKind::Invalid && self.folder_path.is_some()
     }
+}
+
+/// `Invalid` result with no folder and no image.
+fn invalid(ignored: usize, warning: DragDropWarning) -> DragDropInputResult {
+    DragDropInputResult {
+        kind: DragDropInputKind::Invalid,
+        folder_path: None,
+        initial_image_path: None,
+        ignored_path_count: ignored,
+        warning: Some(warning),
+    }
+}
+
+/// The full path of `path` when the file system reports a directory (`want_dir`) or a file at it. Existence is checked on
+/// the full path, the way .NET `Directory.Exists` / `File.Exists` resolve their argument. A `get_full_path` failure means
+/// "does not exist": C# would let the exception escape here, but only a fake file system can fail after an `Exists` hit.
+fn existing_full_path(path: &str, want_dir: bool, file_system: &dyn FileSystem) -> Option<String> {
+    let full = get_full_path(path).ok()?;
+    let target = Path::new(&full);
+    let exists = if want_dir {
+        file_system.directory_exists(target)
+    } else {
+        file_system.file_exists(target)
+    };
+    exists.then_some(full)
 }
 
 /// `DragDropInputService.Parse(paths, rawEnabled, webpHeicEnabled)`. `paths == None` is C# `null`.
@@ -89,12 +124,85 @@ pub fn parse(
     webp_heic_enabled: bool,
     file_system: &dyn FileSystem,
 ) -> DragDropInputResult {
-    todo!()
+    let valid: Vec<&str> = paths
+        .unwrap_or(&[])
+        .iter()
+        .map(String::as_str)
+        .filter(|path| !path.trim().is_empty())
+        .collect();
+    if valid.is_empty() {
+        return invalid(0, DragDropWarning::NoValidInput);
+    }
+
+    // C# `FirstOrDefault(Directory.Exists)` is lazy: `find_map` stops at the first existing folder too.
+    let folder = valid
+        .iter()
+        .copied()
+        .find_map(|path| existing_full_path(path, true, file_system).map(|full| (path, full)));
+    if let Some((folder_raw, folder_full)) = folder {
+        let ignored = valid
+            .iter()
+            .copied()
+            .filter(|&path| !is_same_folder(path, folder_raw))
+            .count();
+        return DragDropInputResult {
+            kind: DragDropInputKind::Folder,
+            folder_path: Some(folder_full),
+            initial_image_path: None,
+            ignored_path_count: ignored,
+            warning: (ignored > 0).then_some(DragDropWarning::OnlyFirstFolder),
+        };
+    }
+
+    // (raw path, full path) of every existing, supported image, in input order.
+    let images: Vec<(&str, String)> = valid
+        .iter()
+        .copied()
+        .filter_map(|path| {
+            let full = existing_full_path(path, false, file_system)?;
+            is_supported_with(path, raw_enabled, webp_heic_enabled).then_some((path, full))
+        })
+        .collect();
+    let Some((_, initial)) = images.first() else {
+        return invalid(valid.len(), DragDropWarning::NoSupportedImages);
+    };
+    let Some(folder) = get_directory_name(initial) else {
+        return invalid(valid.len(), DragDropWarning::FolderUnknown);
+    };
+
+    let accepted = images
+        .iter()
+        .filter(|(_, full)| get_directory_name(full).is_some_and(|dir| eq_ignore_case(&dir, &folder)))
+        .count();
+    let ignored = valid.len().saturating_sub(accepted);
+    let warning = if accepted != images.len() {
+        Some(DragDropWarning::MixedFolders)
+    } else if ignored > 0 {
+        Some(DragDropWarning::UnsupportedIgnored)
+    } else {
+        None
+    };
+    DragDropInputResult {
+        kind: DragDropInputKind::Image,
+        folder_path: Some(folder),
+        initial_image_path: Some(initial.clone()),
+        ignored_path_count: ignored,
+        warning,
+    }
 }
 
 /// `IsSameFolder(path, folder)`: equal text (OrdinalIgnoreCase), or `trim_ending_directory_separator(get_full_path(path))`
 /// equals the same of `folder` (OrdinalIgnoreCase). A `get_full_path` failure => false (C# catches `ArgumentException`,
 /// `NotSupportedException`, `PathTooLongException` here).
 fn is_same_folder(path: &str, folder: &str) -> bool {
-    todo!()
+    if eq_ignore_case(path, folder) {
+        return true;
+    }
+    let (Ok(path_full), Ok(folder_full)) = (get_full_path(path), get_full_path(folder)) else {
+        return false;
+    };
+    eq_ignore_case(
+        trim_ending_directory_separator(&path_full),
+        trim_ending_directory_separator(&folder_full),
+    )
 }
