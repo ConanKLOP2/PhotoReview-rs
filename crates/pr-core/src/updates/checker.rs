@@ -172,10 +172,12 @@ impl UpdateChecker {
         if response.status != 403 {
             return false;
         }
+        // .NET's typed `Headers.RetryAfter` is a single-value header: only the FIRST raw value decides
+        // (`["abc", "30"]` is unparsable, `["30", "abc"]` is fine).
         if response
             .header_values("Retry-After")
-            .into_iter()
-            .any(retry_after_is_well_formed)
+            .first()
+            .is_some_and(|v| retry_after_is_well_formed(v))
         {
             return true;
         }
@@ -191,9 +193,12 @@ impl UpdateChecker {
         let Some(props) = scan_root_object(body) else {
             return bad();
         };
-        // `TryGetProperty`: ordinal, case-sensitive, the LAST duplicate wins.
-        let find = |name: &str| props.iter().rev().find(|p| p.name == name);
-        let tag = match find("tag_name") {
+        // `TryGetProperty`: ordinal, case-sensitive, scanned from the LAST property backwards (the last duplicate
+        // wins). `Err(LookupThrows)` is .NET's `InvalidOperationException` for a name holding a lone surrogate.
+        let Ok(tag_prop) = find_property(&props, "tag_name") else {
+            return bad();
+        };
+        let tag = match tag_prop {
             Some(Prop {
                 value: Value::Str(Some(s)),
                 ..
@@ -204,16 +209,22 @@ impl UpdateChecker {
         let Some(latest) = AppVersion::try_parse(tag) else {
             return bad();
         };
-        let is_true = |name: &str| matches!(find(name), Some(Prop { value: Value::True, .. }));
-        let draft = is_true("draft");
-        let pre = is_true("prerelease");
-        if draft || pre || latest.is_prerelease {
+        // C# evaluates both lookups unconditionally, so either may throw.
+        let (Ok(draft_prop), Ok(pre_prop)) = (find_property(&props, "draft"), find_property(&props, "prerelease"))
+        else {
+            return bad();
+        };
+        let is_true = |p: Option<&Prop>| matches!(p, Some(Prop { value: Value::True, .. }));
+        if is_true(draft_prop) || is_true(pre_prop) || latest.is_prerelease {
             return UpdateCheckResult::up_to_date(&current.to_string());
         }
         if latest.cmp(&current) != std::cmp::Ordering::Greater {
             return UpdateCheckResult::up_to_date(&latest.to_string());
         }
-        let url = match find("html_url") {
+        let Ok(url_prop) = find_property(&props, "html_url") else {
+            return bad();
+        };
+        let url = match url_prop {
             Some(Prop {
                 value: Value::Str(Some(s)),
                 ..
@@ -288,39 +299,44 @@ impl UpdateCheck for UpdateChecker {
 
 // ---- Retry-After ------------------------------------------------------------------------------------------------
 
-/// `RetryAfterHeaderValue` parse as .NET does it: delta-seconds that fit `i32`, or an HTTP-date from the formats of
-/// `HttpDateParser`. Only the formats the golden covers are accepted (contract note 4).
+/// `RetryConditionHeaderValue` parse as .NET does it (verified by a differential run against .NET 10): the value is
+/// trimmed of SP/HT only; a value starting with an ASCII digit must be ONLY digits (at most 10 characters, at most
+/// `i32::MAX`); anything else must be an HTTP-date in one of `HttpDateParser`'s formats (see [`is_http_date`]).
 fn retry_after_is_well_formed(value: &str) -> bool {
-    let v = value.trim();
-    if v.is_empty() {
+    let v = value.trim_matches(|c| c == ' ' || c == '\t');
+    let Some(first) = v.bytes().next() else {
         return false;
-    }
-    if v.bytes().all(|b| b.is_ascii_digit()) {
-        return v.parse::<i32>().is_ok();
+    };
+    if first.is_ascii_digit() {
+        return v.len() <= 10 && v.bytes().all(|b| b.is_ascii_digit()) && v.parse::<i32>().is_ok();
     }
     is_http_date(v)
 }
 
 const MONTHS: [&str; 12] = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
 ];
-const WEEKDAYS_SHORT: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_SHORT: [&str; 7] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const WEEKDAYS_LONG: [&str; 7] = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
 ];
 
-fn days_in_month(year: i64, month: usize) -> i64 {
+fn is_leap(year: i64) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+fn days_in_month(year: i64, month: i64) -> i64 {
     match month {
         1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
         4 | 6 | 9 | 11 => 30,
         _ => {
-            if (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 {
+            if is_leap(year) {
                 29
             } else {
                 28
@@ -330,114 +346,233 @@ fn days_in_month(year: i64, month: usize) -> i64 {
 }
 
 /// Day of week, 0 = Sunday (days-from-civil algorithm).
-fn weekday_of(year: i64, month: usize, day: i64) -> usize {
-    let m = month as i64;
-    let y = if m <= 2 { year - 1 } else { year };
+fn weekday_of(year: i64, month: i64, day: i64) -> usize {
+    let y = if month <= 2 { year - 1 } else { year };
     let era = y.div_euclid(400);
     let yoe = y - era * 400;
-    let mp = (m + 9) % 12;
+    let mp = (month + 9) % 12;
     let doy = (153 * mp + 2) / 5 + day - 1;
     let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
     let days = era * 146_097 + doe - 719_468; // 1970-01-01 is day 0, a Thursday
     (days + 4).rem_euclid(7) as usize
 }
 
-fn parse_digits(s: &str, min: usize, max: usize) -> Option<i64> {
-    if s.len() < min || s.len() > max || !s.bytes().all(|b| b.is_ascii_digit()) {
+/// One element of a `DateTime.TryParseExact` format string.
+#[derive(Clone, Copy)]
+enum DateTok {
+    /// `ddd`
+    WeekdayShort,
+    /// `dddd`
+    WeekdayLong,
+    /// `d` (1 or 2 digits)
+    Day,
+    /// `MMM`
+    Month,
+    /// `yy` (exactly 2 digits, pivot 2049)
+    Year2,
+    /// `yyyy` (exactly 4 digits)
+    Year4,
+    /// `H`, `m`, `s` (1 or 2 digits each)
+    Hour,
+    Minute,
+    Second,
+    /// `zzz`: sign, 1-2 hour digits, optional `:`, 2 minute digits, at most +-14:00
+    Zone,
+    /// A space: whitespace is skipped before every element (`DateTimeStyles.AllowWhiteSpaces`)
+    Space,
+    /// A literal character
+    Lit(char),
+    /// `'GMT'`: `GMT` or `UTC`, case-sensitive
+    Gmt,
+}
+
+use DateTok::{Day, Gmt, Hour, Lit, Minute, Month, Second, Space, WeekdayLong, WeekdayShort, Year2, Year4, Zone};
+
+/// `HttpDateParser`'s formats as observed on .NET 10 (every `'GMT'` format also accepts `UTC`).
+#[rustfmt::skip]
+const DATE_FORMATS: &[&[DateTok]] = &[
+    // ddd, d MMM yyyy H:m:s 'GMT'
+    &[WeekdayShort, Lit(','), Space, Day, Space, Month, Space, Year4, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Gmt],
+    // ddd, d MMM yyyy H:m:s
+    &[WeekdayShort, Lit(','), Space, Day, Space, Month, Space, Year4, Space, Hour, Lit(':'), Minute, Lit(':'), Second],
+    // d MMM yyyy H:m:s 'GMT'
+    &[Day, Space, Month, Space, Year4, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Gmt],
+    // d MMM yyyy H:m:s
+    &[Day, Space, Month, Space, Year4, Space, Hour, Lit(':'), Minute, Lit(':'), Second],
+    // ddd, d MMM yy H:m:s 'GMT'
+    &[WeekdayShort, Lit(','), Space, Day, Space, Month, Space, Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Gmt],
+    // ddd, d MMM yy H:m:s
+    &[WeekdayShort, Lit(','), Space, Day, Space, Month, Space, Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second],
+    // d MMM yy H:m:s 'GMT'
+    &[Day, Space, Month, Space, Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Gmt],
+    // d MMM yy H:m:s
+    &[Day, Space, Month, Space, Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second],
+    // dddd, d'-'MMM'-'yy H:m:s 'GMT'
+    &[WeekdayLong, Lit(','), Space, Day, Lit('-'), Month, Lit('-'), Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Gmt],
+    // dddd, d'-'MMM'-'yy H:m:s
+    &[WeekdayLong, Lit(','), Space, Day, Lit('-'), Month, Lit('-'), Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second],
+    // dddd, d'-'MMM'-'yy H:m:s zzz
+    &[WeekdayLong, Lit(','), Space, Day, Lit('-'), Month, Lit('-'), Year2, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Zone],
+    // ddd MMM d H:m:s yyyy (asctime)
+    &[WeekdayShort, Space, Month, Space, Day, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Year4],
+    // ddd, d MMM yyyy H:m:s zzz
+    &[WeekdayShort, Lit(','), Space, Day, Space, Month, Space, Year4, Space, Hour, Lit(':'), Minute, Lit(':'), Second, Space, Zone],
+];
+
+#[derive(Default)]
+struct DateFields {
+    weekday: Option<usize>,
+    day: i64,
+    month: i64,
+    year: i64,
+    year_digits: usize,
+    hour: i64,
+    minute: i64,
+    second: i64,
+}
+
+fn skip_ws(s: &[char], mut p: usize) -> usize {
+    while p < s.len() && s[p].is_whitespace() {
+        p += 1;
+    }
+    p
+}
+
+/// `lo..=hi` ASCII digits at `p`, greedy up to `hi`.
+fn read_digits(s: &[char], p: usize, lo: usize, hi: usize) -> Option<(i64, usize)> {
+    let mut q = p;
+    let mut value: i64 = 0;
+    while q < s.len() && q - p < hi && s[q].is_ascii_digit() {
+        value = value * 10 + i64::from(s[q].to_digit(10)?);
+        q += 1;
+    }
+    if q - p < lo {
         return None;
     }
-    s.parse().ok()
+    Some((value, q))
 }
 
-fn valid_time(s: &str) -> bool {
-    let parts: Vec<&str> = s.split(':').collect();
-    if parts.len() != 3 {
+/// Case-insensitive (ordinal) comparison of the lowercase ASCII `word` with the text at `p`.
+fn word_at(s: &[char], p: usize, word: &str) -> bool {
+    let n = word.chars().count();
+    s.len() >= p + n
+        && s[p..p + n]
+            .iter()
+            .zip(word.chars())
+            .all(|(a, b)| a.to_ascii_lowercase() == b)
+}
+
+fn match_format(s: &[char], format: &[DateTok]) -> bool {
+    let n = s.len();
+    let mut p = 0;
+    let mut f = DateFields::default();
+    for tok in format {
+        p = skip_ws(s, p);
+        match *tok {
+            Space => {}
+            Lit(c) => {
+                if p >= n || s[p] != c {
+                    return false;
+                }
+                p += 1;
+            }
+            Gmt => {
+                if s.len() >= p + 3 && (s[p..p + 3] == ['G', 'M', 'T'] || s[p..p + 3] == ['U', 'T', 'C']) {
+                    p += 3;
+                } else {
+                    return false;
+                }
+            }
+            WeekdayShort => {
+                let Some(i) = WEEKDAYS_SHORT.iter().position(|w| word_at(s, p, w)) else {
+                    return false;
+                };
+                f.weekday = Some(i);
+                p += 3;
+            }
+            WeekdayLong => {
+                let Some(i) = WEEKDAYS_LONG.iter().position(|w| word_at(s, p, w)) else {
+                    return false;
+                };
+                f.weekday = Some(i);
+                p += WEEKDAYS_LONG[i].len();
+            }
+            Day => {
+                let Some((v, q)) = read_digits(s, p, 1, 2) else {
+                    return false;
+                };
+                f.day = v;
+                p = q;
+            }
+            Month => {
+                let Some(i) = MONTHS.iter().position(|m| word_at(s, p, m)) else {
+                    return false;
+                };
+                f.month = i as i64 + 1;
+                p += 3;
+            }
+            Year2 | Year4 => {
+                let digits = if matches!(tok, Year2) { 2 } else { 4 };
+                let Some((v, q)) = read_digits(s, p, digits, digits) else {
+                    return false;
+                };
+                f.year = v;
+                f.year_digits = digits;
+                p = q;
+            }
+            Hour | Minute | Second => {
+                let Some((v, q)) = read_digits(s, p, 1, 2) else {
+                    return false;
+                };
+                match tok {
+                    Hour => f.hour = v,
+                    Minute => f.minute = v,
+                    _ => f.second = v,
+                }
+                p = q;
+            }
+            Zone => {
+                if p >= n || (s[p] != '+' && s[p] != '-') {
+                    return false;
+                }
+                p += 1;
+                let Some((h, q)) = read_digits(s, p, 1, 2) else {
+                    return false;
+                };
+                p = q;
+                if p < n && s[p] == ':' {
+                    p += 1;
+                }
+                let Some((m, q)) = read_digits(s, p, 2, 2) else {
+                    return false;
+                };
+                p = q;
+                if m >= 60 || h * 60 + m > 14 * 60 {
+                    return false;
+                }
+            }
+        }
+    }
+    if skip_ws(s, p) != n {
         return false;
     }
-    matches!(
-        (
-            parse_digits(parts[0], 1, 2),
-            parse_digits(parts[1], 2, 2),
-            parse_digits(parts[2], 2, 2)
-        ),
-        (Some(h), Some(m), Some(sec)) if h < 24 && m < 60 && sec < 60
-    )
-}
-
-fn valid_zone(s: &str) -> bool {
-    s == "GMT"
-        || (s.len() == 5 && (s.starts_with('+') || s.starts_with('-')) && s[1..].bytes().all(|b| b.is_ascii_digit()))
-}
-
-fn month_index(s: &str) -> Option<usize> {
-    MONTHS.iter().position(|m| *m == s).map(|i| i + 1)
-}
-
-fn date_consistent(weekday: usize, year: i64, month: usize, day: i64) -> bool {
-    day >= 1 && day <= days_in_month(year, month) && weekday_of(year, month, day) == weekday
+    if f.hour > 23 || f.minute > 59 || f.second > 59 {
+        return false;
+    }
+    if f.year_digits == 2 {
+        // .NET `TwoDigitYearMax` 2049: 00..=49 -> 2000s, 50..=99 -> 1900s.
+        f.year += if f.year <= 49 { 2000 } else { 1900 };
+    }
+    if f.year < 1 || !(1..=12).contains(&f.month) || f.day < 1 || f.day > days_in_month(f.year, f.month) {
+        return false;
+    }
+    f.weekday.is_none_or(|w| w == weekday_of(f.year, f.month, f.day))
 }
 
 fn is_http_date(v: &str) -> bool {
-    let tokens: Vec<&str> = v.split_ascii_whitespace().collect();
-    let Some(first) = tokens.first() else {
-        return false;
-    };
-    if let Some(name) = first.strip_suffix(',') {
-        if let Some(wd) = WEEKDAYS_SHORT.iter().position(|w| *w == name) {
-            // RFC 1123: `Wed, 21 Oct 2015 07:28:00 GMT` (zone optional, `+0000` accepted).
-            if tokens.len() != 5 && tokens.len() != 6 {
-                return false;
-            }
-            let (Some(day), Some(month), Some(year)) = (
-                parse_digits(tokens[1], 1, 2),
-                month_index(tokens[2]),
-                parse_digits(tokens[3], 4, 4),
-            ) else {
-                return false;
-            };
-            return date_consistent(wd, year, month, day)
-                && valid_time(tokens[4])
-                && tokens.get(5).is_none_or(|z| valid_zone(z));
-        }
-        if let Some(wd) = WEEKDAYS_LONG.iter().position(|w| *w == name) {
-            // RFC 850: `Wednesday, 21-Oct-15 07:28:00 GMT`.
-            if tokens.len() != 3 && tokens.len() != 4 {
-                return false;
-            }
-            let parts: Vec<&str> = tokens[1].split('-').collect();
-            if parts.len() != 3 {
-                return false;
-            }
-            let (Some(day), Some(month), Some(yy)) = (
-                parse_digits(parts[0], 1, 2),
-                month_index(parts[1]),
-                parse_digits(parts[2], 2, 2),
-            ) else {
-                return false;
-            };
-            // .NET two-digit-year pivot (2029).
-            let year = if yy <= 29 { 2000 + yy } else { 1900 + yy };
-            return date_consistent(wd, year, month, day)
-                && valid_time(tokens[2])
-                && tokens.get(3).is_none_or(|z| valid_zone(z));
-        }
-        return false;
-    }
-    // asctime: `Wed Oct 21 07:28:00 2015`.
-    if tokens.len() != 5 {
-        return false;
-    }
-    let Some(wd) = WEEKDAYS_SHORT.iter().position(|w| w == first) else {
-        return false;
-    };
-    let (Some(month), Some(day), Some(year)) = (
-        month_index(tokens[1]),
-        parse_digits(tokens[2], 1, 2),
-        parse_digits(tokens[4], 4, 4),
-    ) else {
-        return false;
-    };
-    date_consistent(wd, year, month, day) && valid_time(tokens[3])
+    let chars: Vec<char> = v.chars().collect();
+    let start = skip_ws(&chars, 0);
+    DATE_FORMATS.iter().any(|fmt| match_format(&chars[start..], fmt))
 }
 
 // ---- JSON reader (System.Text.Json `JsonDocument.Parse` rules) ---------------------------------------------------
@@ -455,15 +590,55 @@ enum Value {
 
 #[derive(Debug)]
 struct Prop {
-    name: String,
+    /// The property name exactly as written in the text (escapes NOT resolved), like .NET keeps it.
+    raw_name: String,
     value: Value,
+}
+
+/// .NET throws `InvalidOperationException` when a lookup has to unescape a name holding a lone surrogate; the
+/// checker maps that to `BadResponse`.
+struct LookupThrows;
+
+/// `JsonElement.TryGetProperty(key)` as .NET 10 implements it: scan from the last property backwards, the first
+/// match wins. A name WITHOUT an escape is compared as raw bytes. A name WITH an escape is only unescaped when it
+/// is longer than the key, the key is longer than the offset of the first backslash and everything before that
+/// backslash equals the key's start: a bad (lone surrogate) name therefore throws only for the lookups that get
+/// that far (differential run: `{"\ud800":1,"tag_name":..,"draft":true}` is fine, a missing `draft` throws).
+fn find_property<'a>(props: &'a [Prop], key: &str) -> Result<Option<&'a Prop>, LookupThrows> {
+    let key_bytes = key.as_bytes();
+    for p in props.iter().rev() {
+        let raw = p.raw_name.as_bytes();
+        let Some(backslash) = raw.iter().position(|b| *b == b'\\') else {
+            if raw == key_bytes {
+                return Ok(Some(p));
+            }
+            continue;
+        };
+        if raw.len() > key_bytes.len() && key_bytes.len() > backslash && raw[..backslash] == key_bytes[..backslash] {
+            let unescaped = unescape_name_tail(&p.raw_name[backslash..]).ok_or(LookupThrows)?;
+            if unescaped.as_bytes() == &key_bytes[backslash..] {
+                return Ok(Some(p));
+            }
+        }
+    }
+    Ok(None)
+}
+
+/// Unescapes a (validated) JSON string body; `None` when it holds a lone surrogate.
+fn unescape_name_tail(raw: &str) -> Option<String> {
+    let mut closed = String::with_capacity(raw.len() + 1);
+    closed.push_str(raw);
+    closed.push('"');
+    Scanner {
+        b: closed.as_bytes(),
+        pos: 0,
+    }
+    .string()?
 }
 
 struct Scanner<'a> {
     b: &'a [u8],
     pos: usize,
-    /// Set when a property name of the root object holds a lone surrogate.
-    bad_name: bool,
 }
 
 impl Scanner<'_> {
@@ -636,15 +811,16 @@ impl Scanner<'_> {
         loop {
             self.skip_ws();
             self.eat(b'"')?;
-            let name = self.string()?;
+            let name_start = self.pos;
+            // A name holding a lone surrogate still parses; it only throws when compared (`find_property`).
+            self.string()?;
+            let name_end = self.pos - 1;
             self.skip_ws();
             self.eat(b':')?;
             let value = self.value(depth)?;
             if let Some(list) = props.as_deref_mut() {
-                match name {
-                    Some(name) => list.push(Prop { name, value }),
-                    None => self.bad_name = true,
-                }
+                let raw_name = std::str::from_utf8(self.b.get(name_start..name_end)?).ok()?.to_owned();
+                list.push(Prop { raw_name, value });
             }
             self.skip_ws();
             if self.eat(b',').is_some() {
@@ -655,20 +831,19 @@ impl Scanner<'_> {
     }
 }
 
-/// Parses `text` as one JSON document whose root is an object. `None` = invalid JSON, root not an object, or a root
-/// property name holding a lone surrogate (all `BadResponse`).
+/// Parses `text` as one JSON document whose root is an object. `None` = invalid JSON or root not an object
+/// (`BadResponse`).
 fn scan_root_object(text: &str) -> Option<Vec<Prop>> {
     let mut s = Scanner {
         b: text.as_bytes(),
         pos: 0,
-        bad_name: false,
     };
     s.skip_ws();
     s.eat(b'{')?;
     let mut props = Vec::new();
     s.object(1, Some(&mut props))?;
     s.skip_ws();
-    if s.pos != s.b.len() || s.bad_name {
+    if s.pos != s.b.len() {
         return None;
     }
     Some(props)

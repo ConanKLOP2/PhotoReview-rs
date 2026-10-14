@@ -450,6 +450,171 @@ fn default_timeout_is_used_when_none() {
     assert_eq!(DEFAULT_TIMEOUT, Duration::from_secs(10));
 }
 
+// ---- differential-derived cases (repair round 1) ------------------------------------------------------------
+//
+// Expected values below were produced by running the C# `UpdateChecker` pieces (.NET 10, baseline d92d6aae) on
+// the same inputs: `HttpResponseMessage.Headers.RetryAfter` and `JsonDocument.Parse` + `TryGetProperty`.
+
+// C#: UpdateChecker.CheckAsync status gate (`IsSuccessStatusCode`): 300 with a parsable release is a failure.
+#[test]
+fn status_300_with_valid_release_is_bad_response() {
+    for status in [199u16, 300, 301, 302] {
+        let fake = json(status, &release("v2.0.94", TAG_URL, false, false));
+        assert_eq!(failure_of(&fake), UpdateFailure::BadResponse, "status {status}");
+    }
+    for status in [200u16, 201, 299] {
+        let fake = json(status, &release("v2.0.94", TAG_URL, false, false));
+        assert_eq!(
+            check(&fake).status(),
+            UpdateCheckStatus::UpdateAvailable,
+            "status {status}"
+        );
+    }
+}
+
+// C#: JsonDocument.Parse rejects every raw control character U+0000..U+001F inside a string.
+#[test]
+fn raw_control_character_in_json_string_is_bad_response() {
+    for c in ['\u{0}', '\u{1}', '\u{9}', '\u{a}', '\u{1e}', '\u{1f}'] {
+        let body = format!(r#"{{"x":"a{c}b","tag_name":"v2.0.94"}}"#);
+        assert_eq!(
+            failure_of(&json(200, &body)),
+            UpdateFailure::BadResponse,
+            "U+{:04X}",
+            c as u32
+        );
+    }
+    // U+0020 and U+007F are fine.
+    for c in [' ', '\u{7f}'] {
+        let body = format!(r#"{{"x":"a{c}b","tag_name":"v2.0.94"}}"#);
+        assert_eq!(check(&json(200, &body)).status(), UpdateCheckStatus::UpdateAvailable);
+    }
+}
+
+// C#: Interpret / JsonElement.TryGetProperty with a lone-surrogate property NAME: only a lookup that actually has
+// to unescape that name throws (and then BadResponse); everything else is unaffected.
+#[test]
+fn lone_surrogate_property_name_only_fails_when_compared() {
+    const RELEASES: &str = "https://github.com/ConanKLOP2/PhotoReview/releases";
+    let up_to_date_running = UpdateCheckResult::up_to_date("2.0.93");
+    let available = UpdateCheckResult::update_available("2.1.0", RELEASES);
+    let bad = UpdateCheckResult::failed(UpdateFailure::BadResponse);
+    let cases: &[(&str, &UpdateCheckResult)] = &[
+        // draft/prerelease are found before the bad name is reached; html_url (8 chars) is longer than the name.
+        (
+            r#"{"\ud800":1,"tag_name":"v2.1.0","draft":false,"prerelease":false}"#,
+            &available,
+        ),
+        (
+            r#"{"tag_name":"v2.1.0","\ud800":1,"draft":false,"prerelease":false}"#,
+            &available,
+        ),
+        // early exit: `draft` is found first, `prerelease` (10 chars) is longer than the name.
+        (r#"{"\ud800":1,"tag_name":"v3.0.0","draft":true}"#, &up_to_date_running),
+        (r#"{"tag_name":"v3.0.0","\ud800":1,"draft":true}"#, &up_to_date_running),
+        (
+            r#"{"tag_name":"v3.0.0","prerelease":true,"\ud800":1,"draft":false}"#,
+            &up_to_date_running,
+        ),
+        (
+            r#"{"\ud800":1,"draft":true,"prerelease":true,"tag_name":"v3.0.0"}"#,
+            &up_to_date_running,
+        ),
+        // shares a prefix with the key but is shorter / the escape starts after the key
+        (r#"{"a\ud800":1,"tag_name":"v2.1.0"}"#, &available),
+        (r#"{"tag_name\ud800":1,"tag_name":"v2.1.0"}"#, &available),
+        // `draft` (5 chars) is shorter than the 6-char name: unescaped while looking for it => throws
+        (r#"{"\ud800":1,"tag_name":"v2.1.0"}"#, &bad),
+        (r#"{"tag_name":"v2.1.0","\ud800":1}"#, &bad),
+        (r#"{"\u0074ag_name":"v2.1.0","\ud800x":1}"#, &bad),
+        // an escaped but valid name still matches
+        (r#"{"\u0074ag_name":"v2.1.0","d\u0072aft":true}"#, &up_to_date_running),
+        (
+            r#"{"tag\u005fname":"v2.1.0","html\u005furl":"https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.1.0"}"#,
+            &UpdateCheckResult::update_available(
+                "2.1.0",
+                "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.1.0",
+            ),
+        ),
+    ];
+    let current = pr_core::updates::version::AppVersion::try_parse(Some("2.0.93")).expect("version");
+    for (body, expected) in cases {
+        assert_eq!(&&UpdateChecker::interpret(body, current), expected, "{body}");
+    }
+}
+
+// C#: `Headers.RetryAfter` (typed, single value): trims SP/HT only, digits only (at most 10 characters, at most
+// Int32.MaxValue), HTTP-dates per `HttpDateParser` (case-insensitive names, flexible whitespace, `GMT`/`UTC`/numeric
+// zone up to +-14:00, two-digit years pivot at 2049, weekday must match), and only the FIRST raw value counts.
+#[test]
+fn retry_after_grammar_matches_dotnet() {
+    let cases: &[(&[&str], bool)] = &[
+        (&["00000000000000000030"], false),
+        (&["0000000030"], true),
+        (&["00000000030"], false),
+        (&[" 30"], true),
+        (&["30 "], true),
+        (&["\n30"], false),
+        (&["30\r\n"], false),
+        (&["\t30\t"], true),
+        (&["\u{a0}30"], false),
+        (&["abc", "30"], false),
+        (&["30", "abc"], true),
+        (&["", "30"], false),
+        (&["Wed, 21 Oct 2015 07:8:00 GMT"], true),
+        (&["Wed, 21 Oct 2015 07:28:5 GMT"], true),
+        (&["Wed, 21 Oct 2015 7:28:0 GMT"], true),
+        (&["Wed, 21 Oct 2015 07:28:00 UTC"], true),
+        (&["Wednesday, 21-Oct-15 07:28:00 UTC"], true),
+        (&["Wed, 21 Oct 2015 07:28:00 +00:00"], true),
+        (&["Wed, 21 Oct 15 07:28:00 GMT"], true),
+        (&["Wed,21 Oct 2015 07:28:00 GMT"], true),
+        (&["Wednesday,21-Oct-15 07:28:00 GMT"], true),
+        (&["Wed , 21 Oct 2015 07:28:00 GMT"], true),
+        (&["wed, 21 Oct 2015 07:28:00 GMT"], true),
+        (&["WED, 21 OCT 2015 07:28:00 GMT"], true),
+        (&["Wed, 21 oct 2015 07:28:00 GMT"], true),
+        (&["Wednesday, 21-oct-15 07:28:00 GMT"], true),
+        (&["wednesday, 21-Oct-15 07:28:00 GMT"], true),
+        (&["wed oct 21 07:28:00 2015"], true),
+        (&["Wed, 21 Oct 2015 07:28:00 gmt"], false),
+        (&["Wed, 21 Oct 2015\u{a0}07:28:00 GMT"], true),
+        (&["Wed, 21 Oct 2015 07:28:00\u{a0}GMT"], true),
+        (&["Wed, 21 Oct 2015 07:28:00 +9999"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 +2400"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 +0160"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 +1500"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 -9999"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 +1400"], true),
+        (&["Wed, 21 Oct 2015 07:28:00 +1401"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 -14:00"], true),
+        (&["Sunday, 21-Oct-35 07:28:00 GMT"], true),
+        (&["Monday, 21-Oct-35 07:28:00 GMT"], false),
+        (&["Thursday, 21-Oct-49 07:28:00 GMT"], true),
+        (&["Saturday, 21-Oct-50 07:28:00 GMT"], true),
+        (&["Friday, 21-Oct-50 07:28:00 GMT"], false),
+        (&["Wednesday, 21-Oct-29 07:28:00 GMT"], false),
+        (&["Sat, 29 Feb 2020 23:59:59 GMT"], true),
+        (&["Sun, 29 Feb 2015 23:59:59 GMT"], false),
+        (&["Wed, 21 Oct 2015 24:00:00 GMT"], false),
+        (&["Wed, 21 Oct 2015 07:60:00 GMT"], false),
+        (&["Wed, 21 Oct 2015 07:28:00 GMT\u{1f}"], false),
+    ];
+    for (values, well_formed) in cases {
+        let headers: Vec<(&str, &str)> = values.iter().map(|v| ("Retry-After", *v)).collect();
+        let expected = if *well_formed {
+            UpdateFailure::RateLimited
+        } else {
+            UpdateFailure::BadResponse
+        };
+        assert_eq!(
+            failure_of(&with_headers(403, &headers)),
+            expected,
+            "Retry-After {values:?}"
+        );
+    }
+}
+
 // ---- golden ---------------------------------------------------------------------------------------------------
 
 fn hex_decode(s: &str) -> Vec<u8> {
