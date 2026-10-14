@@ -799,7 +799,7 @@ fn snapshot_validator_matches_golden() {
 #[test]
 fn extended_prefix_followed_by_astral_char_then_colon_is_unchanged() {
     // C# indexes UTF-16 units: full[5] is a low surrogate for an astral char at index 4, so no prefix strip.
-    let p = "\\?\\u{1F600}:x";
+    let p = "\\\\?\\\u{1F600}:x";
     assert_eq!(normalize_path(p).as_deref(), Ok(p));
-    assert_eq!(normalize_path("\\?\C:\a").as_deref(), Ok("C:\a"));
+    assert_eq!(normalize_path(r"\\?\C:\a").as_deref(), Ok(r"C:\a"));
 }
