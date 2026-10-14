@@ -105,10 +105,59 @@ pub fn get_full_path(path: &str) -> Result<String, PathError> {
     if path.chars().all(|c| c == ' ') || path.contains('\0') {
         return Err(PathError::Argument);
     }
-    match std::path::absolute(path) {
-        Ok(p) => Ok(p.to_string_lossy().into_owned()),
-        Err(_) => Err(PathError::TooLong),
+    // .NET treats the NT prefix `\??\` as "extended" and returns the text unchanged (no normalization at all).
+    if path.starts_with(r"\??\") {
+        return Ok(path.to_owned());
     }
+    let full = match std::path::absolute(path) {
+        Ok(p) => p.to_string_lossy().into_owned(),
+        Err(_) => return Err(PathError::TooLong),
+    };
+    // .NET (`PathHelper.Normalize`) expands 8.3 short names with `GetLongPathName` when the result contains `~`,
+    // except for device paths. A path that does not exist keeps its short form.
+    if full.contains('~')
+        && !full.starts_with("\x5c\x5c.\x5c")
+        && !full.starts_with("\x5c\x5c?\x5c")
+        && let Some(long) = expand_short_names(&full)
+    {
+        return Ok(long);
+    }
+    Ok(full)
+}
+
+#[cfg(windows)]
+fn expand_short_names(full: &str) -> Option<String> {
+    use std::os::windows::ffi::{OsStrExt, OsStringExt};
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn GetLongPathNameW(short: *const u16, long: *mut u16, cch: u32) -> u32;
+    }
+
+    let wide: Vec<u16> = std::ffi::OsStr::new(full)
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+    let mut buf: Vec<u16> = vec![0; 1024];
+    // At most two attempts: the second one uses the exact size the first call reported.
+    for _ in 0..2 {
+        let cap = u32::try_from(buf.len()).unwrap_or(u32::MAX);
+        // SAFETY: `wide` is NUL-terminated and outlives the call; `buf` is valid for `cap` u16 writes.
+        let n = unsafe { GetLongPathNameW(wide.as_ptr(), buf.as_mut_ptr(), cap) } as usize;
+        if n == 0 {
+            return None;
+        }
+        if n < buf.len() {
+            return Some(std::ffi::OsString::from_wide(&buf[..n]).to_string_lossy().into_owned());
+        }
+        buf = vec![0; n + 1];
+    }
+    None
+}
+
+#[cfg(not(windows))]
+fn expand_short_names(_full: &str) -> Option<String> {
+    None
 }
 
 /// `Path.GetDirectoryName(string)`: `None` for an empty / only-spaces path or a root; `Some("")` for a bare name.

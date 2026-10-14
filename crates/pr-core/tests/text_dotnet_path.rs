@@ -129,3 +129,50 @@ fn get_full_path_very_long_does_not_panic() {
         Err(e) => panic!("unexpected {e:?}"),
     }
 }
+
+// Differential vs .NET 10: IsExtended covers the NT prefix; nothing is normalized or trimmed.
+#[test]
+fn get_full_path_nt_prefix_is_unchanged() {
+    for p in [r"\??\C:\a", r"\??\a.b ", r"\??\C:/a/../b"] {
+        assert_eq!(get_full_path(p), Ok(p.to_owned()), "{p:?}");
+    }
+}
+
+// Differential vs .NET 10: PathHelper.Normalize expands existing 8.3 names.
+#[cfg(windows)]
+#[test]
+fn get_full_path_expands_existing_short_names() {
+    if std::path::Path::new(r"C:\PROGRA~1").exists() {
+        let got = get_full_path(r"C:\PROGRA~1").expect("full path");
+        assert!(got.eq_ignore_ascii_case(r"C:\Program Files"), "{got:?}");
+    }
+    assert_eq!(get_full_path(r"C:\NOSUCH~1\x"), Ok(r"C:\NOSUCH~1\x".to_owned()));
+}
+
+// Kills the `i > 4` guard mutation: a bare device prefix followed by a separator has root length 4.
+#[test]
+fn bare_device_prefix_with_separator() {
+    for p in ["\x5c\x5c?\x5c\x5c", "\x5c\x5c.\x5c\x5c", "\x5c??\x5c\x5c"] {
+        assert_eq!(root_length(p), 4, "{p:?}");
+        assert_eq!(get_directory_name(p), Some(p[..4].to_owned()), "{p:?}");
+    }
+    assert_eq!(
+        get_directory_name("\x5c\x5c?\x5c\x5cx"),
+        Some("\x5c\x5c?\x5c".to_owned())
+    );
+}
+
+// Kills the run-collapse mutation of NormalizeDirectorySeparators.
+#[test]
+fn directory_name_collapses_separator_runs() {
+    assert_eq!(
+        get_directory_name("C:\x5ca\x5c\x5cb\x5cc.jpg"),
+        Some("C:\x5ca\x5cb".to_owned())
+    );
+    assert_eq!(get_directory_name("a\x5c\x5cb\x5cc.jpg"), Some("a\x5cb".to_owned()));
+    assert_eq!(get_directory_name("a//b/c.jpg"), Some("a\x5cb".to_owned()));
+    assert_eq!(
+        get_directory_name("\x5c??\x5c\x5cx\x5cy"),
+        Some("\x5c??\x5cx".to_owned())
+    );
+}
