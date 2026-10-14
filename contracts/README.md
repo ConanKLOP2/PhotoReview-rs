@@ -141,6 +141,7 @@ Order: W3-01 -> W3-02 / W3-03 -> W3-04 -> W3-05 / W3-06 -> W3-07 / W3-08. W3-02 
   (c) `RecycleBin::try_restore` bool vs `io::Result<bool>` (W3-05 Q1, recommended A); (d) FaultInjectionFileSystem and
   hook fakes in `pr-test-support`; (e) sync `operations-legacy.jsonl` and `journal-older-build/*.jsonl` fixtures;
   (f) a W3-09 integration unit for the fault/crash matrices. Each is spelled out in the unit contract.
+  **Resolved as proposals P-11..P-16 in `docs/PROPOSED-DECISIONS.md`** (all take the recommended option; the porters act on them).
 - **D27 Golden determinism:** all 15 Wave 3 goldens were generated twice and compared byte for byte. Paths in them are
   virtual (`C:\Users\test\...`); `recovery-check` has two physical cases that name a missing file / missing UNC host.
 - **D28 Stubs outrank draft prose:** where a contract still names a helper the wired stubs lack, the stub wins and the
