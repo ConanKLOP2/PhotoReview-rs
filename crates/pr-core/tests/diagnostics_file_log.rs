@@ -1343,3 +1343,105 @@ fn v_error_source_chain_uses_arrow_separator() {
     log.dispose();
     assert!(text.contains("outer-text\n ---> inner-text"), "{text}");
 }
+
+// ---- repair round 2 ---------------------------------------------------------------------------------------------
+
+/// A time source that parks the producer between the `drained` reset and the enqueue (C# has no such test; it kills the
+/// mutant that drops the 1 ms back-off in `flush`).
+struct BlockingTime {
+    entered: Arc<Event>,
+    gate: Arc<Event>,
+}
+
+impl fmt::Debug for BlockingTime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("BlockingTime")
+    }
+}
+
+impl LocalTimeSource for BlockingTime {
+    fn now(&self) -> LogTimestamp {
+        self.entered.set();
+        self.gate.wait(Duration::from_secs(20));
+        timestamp_from_ticks(0)
+    }
+}
+
+#[test]
+fn flush_backs_off_when_drained_is_set_while_an_entry_is_queued() {
+    // Rule (contract note 9): `drained` can be set while an entry is queued; flush must back off 1 ms per round
+    // instead of spinning out its budget, and must not return before the entry is on disk.
+    let root = TempRoot::new("filelog-flush-backoff");
+    let file = log_path(&root);
+    let entered = Arc::new(Event::default());
+    let gate = Arc::new(Event::default());
+    let time = BlockingTime {
+        entered: entered.clone(),
+        gate: gate.clone(),
+    };
+    let log = Arc::new(FileLog::with_time_source(&file, 1024 * 1024, Arc::new(time)).expect("log"));
+    log.set_enabled(true);
+    log.set_before_entry_written_hook(Some(Arc::new(|_| pause(300))));
+
+    let producer = {
+        let log = log.clone();
+        thread::spawn(move || log.info("backoff-entry"))
+    };
+    assert!(
+        entered.wait(Duration::from_secs(10)),
+        "producer never reached the time source"
+    );
+    // The writer wakes every 250 ms and runs an empty drain, which sets `drained` while the producer is parked.
+    pause(700);
+    gate.set();
+    assert!(producer.join().is_ok());
+
+    log.flush();
+
+    assert!(
+        read_text(&file).contains("backoff-entry"),
+        "flush returned before the queued entry was written"
+    );
+    log.dispose();
+}
+
+#[test]
+fn failed_rotation_keeps_the_old_log_content() {
+    // Rule (contract note 7): a rotation failure is swallowed, the entry is appended to the CURRENT file, the old content
+    // is not destroyed.
+    let root = TempRoot::new("filelog-failed-rotation-keeps");
+    let log_file = root.join("app.log");
+    let backup = root.join("app.1.log");
+    let mut old = "OLD-CONTENT-MARKER\r\n".to_string();
+    old.push_str(&"x".repeat(4096));
+    fs::write(&log_file, &old).expect("log");
+    fs::write(&backup, "old backup").expect("backup");
+    let mut permissions = fs::metadata(&backup).expect("meta").permissions();
+    permissions.set_readonly(true);
+    fs::set_permissions(&backup, permissions).expect("readonly");
+    let _guard = ReadOnlyGuard(backup);
+
+    let file = FileLog::new(&log_file, 1024).expect("log");
+    file.set_enabled(true);
+    file.info("new-entry-after-failed-rotation");
+    file.flush();
+
+    let content = read_text(&log_file);
+    assert!(content.contains("OLD-CONTENT-MARKER"), "old content was destroyed");
+    assert!(content.contains("new-entry-after-failed-rotation"));
+}
+
+#[test]
+fn backup_path_matches_csharp_on_raw_inputs() {
+    // C#: `Path.GetDirectoryName` / `Path.GetFileName*` / `Path.Combine` on non-normalised text (real .NET results).
+    let cases = [
+        (r"C:\a\dir\", r"C:\a\dir\.1"),
+        (r"C:\a\..", r"C:\a\..1"),
+        (r"C:\a\b.log\.", r"C:\a\b.log\.1"),
+        (r"C:\a\.\b.log", r"C:\a\.\b.1.log"),
+        ("C:/a/b.log", r"C:\a\b.1.log"),
+    ];
+    for (log, expected) in cases {
+        assert_eq!(backup_path(Path::new(log)), PathBuf::from(expected), "{log}");
+    }
+}

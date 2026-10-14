@@ -731,10 +731,10 @@ pub fn format_entry(
 /// `Path.GetFileNameWithoutExtension` and `<ext>` is `Path.GetExtension` including its dot (`app.log` -> `app.1.log`,
 /// `noext` -> `noext.1`, `.log` -> `.1.log`, `x.tar.gz` -> `x.tar.1.gz`). Pinned by golden `file-log-backup-name`.
 pub fn backup_path(log_file: &Path) -> PathBuf {
-    let name = log_file
-        .file_name()
-        .map(|n| n.to_string_lossy().into_owned())
-        .unwrap_or_default();
+    // Raw-string semantics of `Path.GetFileName` / `Path.GetDirectoryName` / `Path.Combine` (NOT `Path::file_name`,
+    // which skips `.`, trailing separators and so on).
+    let raw: Vec<char> = log_file.to_string_lossy().chars().collect();
+    let name: String = raw_file_name(&raw).iter().collect();
     // `Path.GetExtension`: from the LAST dot, dot included; "" when there is no dot or the dot is last.
     let (stem, ext) = match name.rfind('.') {
         Some(i) if i + 1 < name.len() => (&name[..i], &name[i..]),
@@ -742,8 +742,114 @@ pub fn backup_path(log_file: &Path) -> PathBuf {
         None => (name.as_str(), ""),
     };
     let backup_name = format!("{stem}.1{ext}");
-    match log_file.parent() {
-        Some(dir) => dir.join(backup_name),
-        None => PathBuf::from(backup_name),
+    let dir = match raw_directory_name(&raw) {
+        Some(dir) => dir,
+        None => return PathBuf::from(backup_name),
+    };
+    // `Path.Combine`: a rooted second part wins.
+    let bn: Vec<char> = backup_name.chars().collect();
+    let rooted =
+        bn.first().is_some_and(|c| is_sep(*c)) || (bn.len() >= 2 && bn[0].is_ascii_alphabetic() && bn[1] == ':');
+    if rooted || dir.is_empty() {
+        return PathBuf::from(backup_name);
     }
+    if dir.ends_with(['\\', '/']) {
+        PathBuf::from(format!("{dir}{backup_name}"))
+    } else {
+        PathBuf::from(format!("{dir}\\{backup_name}"))
+    }
+}
+
+fn is_sep(c: char) -> bool {
+    c == '\\' || c == '/'
+}
+
+/// `PathInternal.GetRootLength` (Windows).
+fn raw_root_length(p: &[char]) -> usize {
+    let len = p.len();
+    let ci_unc = |s: usize| {
+        len > s + 3
+            && p[s].eq_ignore_ascii_case(&'U')
+            && p[s + 1].eq_ignore_ascii_case(&'N')
+            && p[s + 2].eq_ignore_ascii_case(&'C')
+            && is_sep(p[s + 3])
+    };
+    let device = len >= 4 && is_sep(p[0]) && is_sep(p[1]) && (p[2] == '?' || p[2] == '.') && is_sep(p[3])
+        || (len >= 4 && p[0] == '\\' && p[1] == '?' && p[2] == '?' && p[3] == '\\');
+    let device_unc = device && ci_unc(4);
+    let mut i = 0;
+    if (!device || device_unc) && len > 0 && is_sep(p[0]) {
+        if device_unc || (len > 1 && is_sep(p[1])) {
+            i = if device_unc { 8 } else { 2 };
+            let mut n = 2;
+            while i < len {
+                if is_sep(p[i]) {
+                    n -= 1;
+                    if n <= 0 {
+                        break;
+                    }
+                }
+                i += 1;
+            }
+        } else {
+            i = 1;
+        }
+    } else if device {
+        i = 4;
+        while i < len && !is_sep(p[i]) {
+            i += 1;
+        }
+        if i < len && i > 4 && is_sep(p[i]) {
+            i += 1;
+        }
+    } else if len >= 2 && p[1] == ':' && p[0].is_ascii_alphabetic() {
+        i = 2;
+        if len > 2 && is_sep(p[2]) {
+            i += 1;
+        }
+    }
+    i.min(len)
+}
+
+/// `Path.GetFileName(string)`.
+fn raw_file_name(p: &[char]) -> &[char] {
+    let root = raw_root_length(p);
+    let start = match p.iter().rposition(|c| is_sep(*c)) {
+        Some(i) if i >= root => i + 1,
+        _ => root,
+    };
+    &p[start..]
+}
+
+/// `Path.GetDirectoryName(string)` (normalised separators); `None` for null.
+fn raw_directory_name(p: &[char]) -> Option<String> {
+    let root = raw_root_length(p);
+    if p.len() <= root {
+        return None;
+    }
+    let mut end = p.len();
+    while end > root && !is_sep(p[end - 1]) {
+        end -= 1;
+    }
+    while end > root && is_sep(p[end - 1]) {
+        end -= 1;
+    }
+    if end == 0 {
+        return None;
+    }
+    // `NormalizeDirectorySeparators`: `/` -> `\`, runs collapsed, a leading double backslash kept.
+    let mut out = String::new();
+    let mut prev_sep = false;
+    for (i, c) in p[..end].iter().enumerate() {
+        if is_sep(*c) {
+            if !prev_sep || (i == 1 && out == "\\") {
+                out.push('\\');
+            }
+            prev_sep = true;
+        } else {
+            out.push(*c);
+            prev_sep = false;
+        }
+    }
+    Some(out)
 }
