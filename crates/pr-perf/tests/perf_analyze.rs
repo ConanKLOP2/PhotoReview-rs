@@ -621,3 +621,156 @@ fn group_with_unknown_workers_sorts_before_a_known_worker_group() {
 // golden `run` cases, which compare the output files byte for byte.
 // DIVERGENCE: an unreadable CSV is reported with Rust's io::Error text inside `InvalidData("Could not analyze ...")`,
 // not the .NET exception text (contract open question 2); only the prefix is compared.
+
+// ---- survivors of verifier round 4: wrapping, rounding, empty rules path, R-CONT mode filter, symlinks ----
+
+/// A complete nav `i` (1 ms qpc tick = 1 us): ShowStart, a Lookup with the given text, Presented 10 ms later.
+fn lookup_nav(i: i64, lookup_text: &str) -> String {
+    let base = 1_000_000 * i;
+    format!(
+        "{base},{base},1,ShowStart,{i},,0,,,,Preview\n{b1},{b1},1,Lookup,{i},,,,,,{lookup_text}\n{b2},{b2},1,Presented,{i},,1,,,,final\n",
+        b1 = base + 100,
+        b2 = base + 10_000
+    )
+}
+
+// C#: PerfAnalyze.RunAsync (catch IOException -> InvalidDataException("Could not analyze '...': ..."))
+#[cfg(windows)]
+#[test]
+fn unreadable_csv_is_wrapped_as_invalid_data_could_not_analyze() {
+    use std::os::windows::fs::OpenOptionsExt;
+    let root = TempRoot::new("perf-analyze-locked");
+    write(root.path(), "perf-1.csv", format!("{HEADER}{}", one_nav(1)).as_bytes());
+    // An exclusive handle (share mode 0) makes csv::read fail with a sharing violation (an io::Error).
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .share_mode(0)
+        .open(root.path().join("perf-1.csv"));
+    let Ok(_lock) = lock else {
+        println!("SKIP unreadable_csv_is_wrapped: cannot open the file exclusively");
+        return;
+    };
+    let err = run(root.path(), None).expect_err("must fail");
+    match err {
+        PerfError::InvalidData(m) => {
+            assert!(m.starts_with("Could not analyze '"), "{m}");
+            assert!(m.contains("perf-1.csv"), "{m}");
+        }
+        other => panic!("expected InvalidData, got {other:?}"),
+    }
+}
+
+// C#: PerfAnalyze.EvaluateAllRules (`100.0 * (complete - ramHit) / complete`: multiply first)
+#[test]
+fn non_ram_hit_share_multiplies_before_dividing() {
+    let root = TempRoot::new("perf-analyze-share");
+    let mut csv = String::from(HEADER_1MHZ);
+    for i in 1..=50 {
+        csv.push_str(&lookup_nav(i, if i <= 21 { "ramHit" } else { "inflight" }));
+    }
+    write(root.path(), "perf-1.csv", csv.as_bytes());
+    let rules = TempRoot::new("perf-analyze-share-rules");
+    write(rules.path(), "rules.json", br#"{"R-PRE":{"nonRamHitShareS2Pct":58}}"#);
+
+    let result = run(root.path(), Some(&rules.path().join("rules.json"))).expect("run");
+
+    let g = &result.groups[0];
+    assert_eq!(g.summary.navs.len(), 50);
+    let r = rule(g, "R-PRE");
+    // 100 * 29 / 50 is exactly 58; 100 * (29 / 50) is 57.99999999999999.
+    assert_eq!(r.triggered, Some(true), "{}", r.evidence);
+}
+
+// C#: PerfAnalyze.RunAsync (`string.IsNullOrEmpty(rulesPath)` -> default rules)
+#[test]
+fn empty_rules_path_behaves_like_no_rules_path() {
+    let root = TempRoot::new("perf-analyze-empty-rules");
+    write(root.path(), "perf-1.csv", format!("{HEADER}{}", one_nav(1)).as_bytes());
+    let with_none = run(root.path(), None).expect("run none");
+    let with_empty = run(root.path(), Some(Path::new(""))).expect("run empty");
+    assert_eq!(with_none.groups.len(), with_empty.groups.len());
+    for (a, b) in with_none.groups.iter().zip(&with_empty.groups) {
+        let ra: Vec<_> = a.rules.iter().map(|r| (r.triggered, r.evidence.clone())).collect();
+        let rb: Vec<_> = b.rules.iter().map(|r| (r.triggered, r.evidence.clone())).collect();
+        assert_eq!(ra, rb);
+    }
+}
+
+/// One complete InflightJoin nav of the given mode (ShowStart text) with a decode of `decode_ms`.
+fn inflight_mode_csv(mode: &str, decode_ms: &str) -> String {
+    format!(
+        "{HEADER_1MHZ}1,100000,1,ShowStart,1,,0,,,,{mode}\n1,100100,1,Lookup,1,,,,,,inflight\n\
+         1,100150,4,Decode,1,,{decode_ms},,,,\n1,200000,1,Presented,1,,1,,,,final\n"
+    )
+}
+
+// C#: PerfAnalyze.EvaluateAllRules (R-CONT siblings: same Scenario AND Mode AND Cond)
+#[test]
+fn r_cont_does_not_pool_groups_of_different_mode() {
+    let root = TempRoot::new("perf-analyze-cont-mode");
+    for (dir, mode, workers, decode) in [("a", "Preview", 1, "10.0"), ("b", "Full", 4, "40.0")] {
+        write(
+            root.path(),
+            &format!("{dir}/perf-1.csv"),
+            inflight_mode_csv(mode, decode).as_bytes(),
+        );
+        write(
+            root.path(),
+            &format!("{dir}/session.json"),
+            format!(r#"{{"scenario":"S2","condition":"warm","preloadWorkers":{workers}}}"#).as_bytes(),
+        );
+    }
+    let result = run(root.path(), None).expect("run");
+    assert_eq!(result.groups.len(), 2);
+    let modes: Vec<&str> = result.groups.iter().map(|g| g.summary.key.mode.as_str()).collect();
+    assert_eq!(modes, ["Full", "Preview"]);
+    for g in &result.groups {
+        // Each group is its own only sibling: equal workers -> nothing to compare.
+        assert_eq!(rule(g, "R-CONT").triggered, None, "{}", rule(g, "R-CONT").evidence);
+    }
+}
+
+#[cfg(windows)]
+fn make_file_symlink(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::windows::fs::symlink_file(target, link)
+}
+#[cfg(windows)]
+fn make_dir_symlink(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::windows::fs::symlink_dir(target, link)
+}
+#[cfg(unix)]
+fn make_file_symlink(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::unix::fs::symlink(target, link)
+}
+#[cfg(unix)]
+fn make_dir_symlink(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::unix::fs::symlink(target, link)
+}
+
+// DIVERGENCE (decision, not a difference): C# `Directory.EnumerateFiles(dir, "perf-*.csv", AllDirectories)` lists a
+// symlink to a FILE as a file (the find entry is not a directory), so it is collected; a symlink/junction to a
+// DIRECTORY is neither listed (it is a directory) nor recursed into (reparse points are not followed). The port does
+// the same: pinned here. Creating symlinks needs a privilege on Windows: the test skips cleanly without it.
+#[test]
+fn symlinked_csv_file_is_collected_and_symlinked_directory_is_not_followed() {
+    let root = TempRoot::new("perf-analyze-symlink");
+    let outside = TempRoot::new("perf-analyze-symlink-outside");
+    let csv = format!("{HEADER}{}", one_nav(1));
+    write(root.path(), "perf-real.csv", csv.as_bytes());
+    write(outside.path(), "target.csv", csv.as_bytes());
+    write(outside.path(), "d/perf-inside.csv", csv.as_bytes());
+
+    if let Err(e) = make_file_symlink(&outside.path().join("target.csv"), &root.path().join("perf-link.csv")) {
+        println!("SKIP symlink test: cannot create symlinks here ({e})");
+        return;
+    }
+    if let Err(e) = make_dir_symlink(&outside.path().join("d"), &root.path().join("linkdir")) {
+        println!("SKIP symlink test: cannot create directory symlinks here ({e})");
+        return;
+    }
+
+    let result = run(root.path(), None).expect("run");
+
+    // perf-real.csv + the file symlink; nothing from below `linkdir`.
+    assert_eq!(result.csv_file_count, 2);
+}
