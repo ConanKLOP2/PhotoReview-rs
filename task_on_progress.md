@@ -1,36 +1,38 @@
 # Task on progress
 
-**Updated:** 2026-10-14 (session ended for token reasons; this branch `wip/wave2-contracts` holds the handoff)
+**Updated:** 2026-10-14 (branch `integration/wave-2`)
 
 ## State
-- master: Wave 0 + Wave 1 (22 units, 498+ tests) + sync to C# baseline d92d6aae (#6: W1 deltas BottomThird,
-  MiddleClickAction, FitWidth2/Refresh, WebP/HEIC; abstractions ShellIntegration/UiDispatcher/SettingsTarget/
-  try_delete_empty_directory; assets + 31 goldens regenerated). All merged, CI green.
-- This branch: `contracts/drafts-w2/` = raw Wave 2 contract drafts (20 units W2-01..20 + W2-00 shared notes) from 4
-  Sonnet writers. NOT reviewed, NOT wired. The workflow may not have finished every group.
+- master: Wave 0 + Wave 1 + sync to C# baseline d92d6aae.
+- `integration/wave-2`: all 21 Wave 2 units (W2-00..W2-20) merged in three batches; PR open to master.
+- Gate as run on this branch (CARGO_TARGET_DIR=target-wave-2/integ):
+  - `cargo fmt --all`: no changes.
+  - `cargo clippy --workspace --all-targets --locked -- -D warnings`: clean.
+  - `cargo test --workspace --locked --no-fail-fast`: 76 test binaries ok, 1 failed; 1375 passed, 1 failed, 54 ignored.
+    The failure is `pr-core settings_context_menu::numeric_path_trailing_whitespace_rules` (W2-20): the test asserts
+    `"3 "` does not parse, but .NET `Enum.TryParse` accepts trailing whitespace and the Rust code does too. The test is
+    wrong, not the code.
+  - 54 tests are `#[ignore]`d (42 of them `io_physical`, which per the W2-14 verdict pass with `--include-ignored`;
+    that run was not repeated here).
 
-## Update 2026-10-14 (later)
-- Workflow wave2-missing-contracts done: all 21 drafts (W2-00..20) now have `contract.md`, each re-verified against
-  C# d92d6aae by a second agent. W2-13 still has no golden-reference (oracle/inputs only). Not yet wired/run/gated.
-- Lead decisions still needed before wiring: SettingsTexts impl location (W2-01/W2-04), ownership of per-property
-  *SettingsTests (W2-02 vs W2-03), merge order W2-00 -> W2-01 -> W2-20 -> W2-02/03, io/mod.rs owner (W2-14/W2-15),
-  local time source for W2-16, HTTP transport for W2-18, `sha2` dependency (W2-17), oracle nondeterminism (W2-14).
+## Verdicts (from the verifier reports)
+- PASS: W2-15, W2-16.
+- FAIL, merged with open issues (listed in PARITY.md as Partial):
+  - W2-00: 3 surviving mutants (`directory_name_end` second trim after UNC root, `root_length` NT `\??` prefix, device UNC scan start).
+  - W2-01: 3 surviving mutants (surrogate guard widening, Infinity sign in `json::to_f64`), no behaviour diff.
+  - W2-03: 7 surviving mutants in settings store tests, no behaviour diff.
+  - W2-12: mutant M20 (`nests_too_deep` escape handling untested).
+  - W2-13: mutant M22 (`key_of` fallback for two uncanonicalisable folders).
+  - W2-14: 3 behaviour diffs on trailing space/dot directory segments (`directory_exists`, `get_file_stat`) plus 2 surviving mutants.
+  - W2-17: `PerfCsvListener::try_start/trace_dir_path` differs for trace dir segments ending in space or dot; many surviving mutants.
+  - W2-18: 3 surviving mutants in `is_rate_limited` / `is_leap`.
+  - W2-19: surviving mutant (`disposed` check in `flush_after_window`).
+  - W2-20: its own test is wrong (see above).
+- Other units (W2-02, 04..11) have no open issue recorded in the reports given to the integrator.
 
-## Update 2026-10-14 (Wave 2 contracts wired)
-- 21 contracts in `contracts/W2-xx.md`; stubs wired into crates; oracle commands merged into `tools/oracle-cs`
-  (OracleCs.csproj got Roslyn + Generator refs for W2-04). Rust 1.99.0 installed on this machine via rustup.
-- Verified on branch: `cargo check --workspace --all-targets --locked` ok, `cargo clippy ... -D warnings` ok,
-  `cargo fmt --all` applied. Oracle run at d92d6aae reproduces every golden-reference byte for byte except
-  `session-key` (cwd-dependent case dropped), `physical-fs-ops` (write_ticks nulled): both re-run deterministic.
-- Not yet run: `cargo test --workspace`, `tools/wave.ps1 -Wave 2 -Gate`. README roster + D12-D20 written.
-
-## Next (lead)
-1. Review each `contracts/drafts-w2/W2-xx/contract.md`: porter model, "Depends on", open questions; decide and add
-   lead decisions D12+ and a Wave 2 roster (dependency order) to contracts/README.md.
-2. Move contracts to `contracts/W2-xx.md`; copy stubs to their target paths; add mod lines (settings, catalog,
-   file_actions, session, io, diagnostics, updates, instance; pr-l10n catalog/loader/localizer + build.rs).
-3. Copy `oracle/W2-xx.cs` into tools/oracle-cs/Commands, add dispatch lines; copy golden-inputs; run
-   `tools/oracle.ps1 -Commit d92d6aae`; diff against golden-reference.
-4. Gate (`tools/wave.ps1 -Wave 2 -Gate`), PR, auto-merge. Then delete `contracts/drafts-w2/`.
-5. Run Wave 2 porting in DEPENDENCY ORDER (lessons in docs/MULTI-AGENT-PLAN.md §10), with a .NET harness in verify.
-6. Phase 0 still open: UI spikes (R0001; note C# moved to Win32 + Direct2D, ADR 0010), COM Explorer spike.
+## Next
+1. Fix the W2-20 test (trailing ASCII whitespace is accepted) so the workspace gate is green.
+2. Repair round for the FAIL units above (tests for surviving mutants; fix the W2-14 and W2-17 trailing space/dot diffs).
+3. Re-run the gate with `--include-ignored` for io_physical once W2-00 is final.
+4. Phase 0 still open: UI spikes (R0001; C# moved to Win32 + Direct2D, ADR 0010), COM Explorer spike.
+5. Then Wave 3 (data safety) per docs/MULTI-AGENT-PLAN.md, with lessons from section 11.
