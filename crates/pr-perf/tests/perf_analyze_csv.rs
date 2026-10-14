@@ -423,3 +423,11 @@ fn csv_module_exposes_read_and_decode_entry_points() {
     assert_eq!(file.qpc_frequency, 77);
     assert!(csv::read(&root.join("missing.csv")).is_err());
 }
+
+#[test]
+fn comment_prefix_skips_mixed_hash_and_space_runs_before_key_value() {
+    // C#: (no direct test) ParseCommentLine TrimStart('#', ' ') skips a '#' that follows a space
+    let file = parse_text(Path::new("c.csv"), "# #qpcFrequency=5\n#  # dropped=3\n");
+    assert_eq!(file.qpc_frequency, 5);
+    assert_eq!(file.dropped_rows, 3);
+}
