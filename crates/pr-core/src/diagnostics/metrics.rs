@@ -8,20 +8,20 @@
 //!
 //! Serialization: [`ReviewMetricsSnapshot`] serializes with `serde` to the same JSON `System.Text.Json` writes for the
 //! C# record (property names, order, `DecoderFallbacks` as an object keyed by the backend name, the computed
-//! `DecoderFallbackCount`); the benchmark report (Wave 7) embeds it.
+//! `DecoderFallbackCount`); the benchmark report (Wave 7) embeds it. DIVERGENCE: `serde_json` does not escape `<`, `>`
+//! and non-ASCII characters the way System.Text.Json's default encoder does; readers parse JSON and are unaffected.
 //!
-//! Unit W2-17. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-17.md`.
-
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
+//! Unit W2-17. Contract: `contracts/W2-17.md`.
 
 use std::collections::HashMap;
-use std::sync::Mutex;
-use std::sync::atomic::AtomicI64;
+use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::{Mutex, MutexGuard, PoisonError};
 
-use serde::ser::{Serialize, Serializer};
+use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 
 use crate::model::enums::DecoderBackend;
+use crate::model::serde_ext::LenientEnum;
+use crate::text::{cmp_ignore_case, ignore_case_key};
 
 /// Most distinct paths the per-path open table keeps; past it the least-opened paths are dropped
 /// (C# `MaxTrackedSourceOpenPaths`).
@@ -84,6 +84,43 @@ impl ReviewMetricsSnapshot {
     }
 }
 
+/// `DecoderFallbacks`: an object keyed by the backend name, in backend value order.
+struct FallbacksJson<'a>(&'a [(DecoderBackend, i64)]);
+
+impl Serialize for FallbacksJson<'_> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut map = serializer.serialize_map(Some(self.0.len()))?;
+        for (backend, count) in self.0 {
+            map.serialize_entry(backend.name(), count)?;
+        }
+        map.end()
+    }
+}
+
+/// `{"Path":..,"Count":..}`.
+struct SourceOpenJson<'a>(&'a SourceOpenEntry);
+
+impl Serialize for SourceOpenJson<'_> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut state = serializer.serialize_struct("SourceOpenEntry", 2)?;
+        state.serialize_field("Path", &self.0.path)?;
+        state.serialize_field("Count", &self.0.count)?;
+        state.end()
+    }
+}
+
+/// `{"Label":..,"Count":..}`.
+struct BucketJson<'a>(&'a PresentLatencyBucket);
+
+impl Serialize for BucketJson<'_> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut state = serializer.serialize_struct("PresentLatencyBucket", 2)?;
+        state.serialize_field("Label", &self.0.label)?;
+        state.serialize_field("Count", &self.0.count)?;
+        state.end()
+    }
+}
+
 impl Serialize for ReviewMetricsSnapshot {
     /// Writes the 19 properties in the C# order and PascalCase names:
     /// `CacheHits, CacheMisses, SourceBytesRead, SourceReads, DecodeMilliseconds, PresentedImages, PresentMilliseconds,
@@ -91,7 +128,29 @@ impl Serialize for ReviewMetricsSnapshot {
     /// DecoderFallbackCount, SourceOpenCount, TopSourceOpens [{Path, Count}], StatCount, SessionWriteCount,
     /// CrossThreadPresentCount, PresentHistogram [{Label, Count}]`.
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        todo!()
+        let top: Vec<SourceOpenJson<'_>> = self.top_source_opens.iter().map(SourceOpenJson).collect();
+        let histogram: Vec<BucketJson<'_>> = self.present_histogram.iter().map(BucketJson).collect();
+        let mut state = serializer.serialize_struct("ReviewMetricsSnapshot", 19)?;
+        state.serialize_field("CacheHits", &self.cache_hits)?;
+        state.serialize_field("CacheMisses", &self.cache_misses)?;
+        state.serialize_field("SourceBytesRead", &self.source_bytes_read)?;
+        state.serialize_field("SourceReads", &self.source_reads)?;
+        state.serialize_field("DecodeMilliseconds", &self.decode_milliseconds)?;
+        state.serialize_field("PresentedImages", &self.presented_images)?;
+        state.serialize_field("PresentMilliseconds", &self.present_milliseconds)?;
+        state.serialize_field("PreloadHits", &self.preload_hits)?;
+        state.serialize_field("InflightJoins", &self.inflight_joins)?;
+        state.serialize_field("DiskCacheHits", &self.disk_cache_hits)?;
+        state.serialize_field("UiAssignMilliseconds", &self.ui_assign_milliseconds)?;
+        state.serialize_field("DecoderFallbacks", &FallbacksJson(&self.decoder_fallbacks))?;
+        state.serialize_field("DecoderFallbackCount", &self.decoder_fallback_count())?;
+        state.serialize_field("SourceOpenCount", &self.source_open_count)?;
+        state.serialize_field("TopSourceOpens", &top)?;
+        state.serialize_field("StatCount", &self.stat_count)?;
+        state.serialize_field("SessionWriteCount", &self.session_write_count)?;
+        state.serialize_field("CrossThreadPresentCount", &self.cross_thread_present_count)?;
+        state.serialize_field("PresentHistogram", &histogram)?;
+        state.end()
     }
 }
 
@@ -127,85 +186,221 @@ impl Default for ReviewMetrics {
     }
 }
 
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
 impl ReviewMetrics {
     pub fn new() -> Self {
-        todo!("all counters 0")
+        Self {
+            cache_hits: AtomicI64::new(0),
+            cache_misses: AtomicI64::new(0),
+            source_bytes_read: AtomicI64::new(0),
+            source_reads: AtomicI64::new(0),
+            decode_milliseconds: AtomicI64::new(0),
+            decode_ewma_bits: AtomicI64::new(0),
+            presented_images: AtomicI64::new(0),
+            present_milliseconds: AtomicI64::new(0),
+            preload_hits: AtomicI64::new(0),
+            inflight_joins: AtomicI64::new(0),
+            disk_cache_hits: AtomicI64::new(0),
+            ui_assign_milliseconds: AtomicI64::new(0),
+            source_open_count: AtomicI64::new(0),
+            stat_count: AtomicI64::new(0),
+            session_write_count: AtomicI64::new(0),
+            cross_thread_present_count: AtomicI64::new(0),
+            present_buckets: std::array::from_fn(|_| AtomicI64::new(0)),
+            decoder_fallbacks: Mutex::new(HashMap::new()),
+            source_opens: Mutex::new(HashMap::new()),
+        }
     }
 
     pub fn record_preload_hit(&self) {
-        todo!()
+        self.preload_hits.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_inflight_join(&self) {
-        todo!()
+        self.inflight_joins.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_disk_cache_hit(&self) {
-        todo!()
+        self.disk_cache_hits.fetch_add(1, Ordering::SeqCst);
     }
 
     /// Adds `max(0, milliseconds)`.
     pub fn record_ui_assign(&self, milliseconds: i64) {
-        todo!()
+        self.ui_assign_milliseconds
+            .fetch_add(milliseconds.max(0), Ordering::SeqCst);
     }
 
     pub fn record_cache_hit(&self) {
-        todo!()
+        self.cache_hits.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_cache_miss(&self) {
-        todo!()
+        self.cache_misses.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_decoder_fallback(&self, backend: DecoderBackend) {
-        todo!()
+        let mut map = lock(&self.decoder_fallbacks);
+        let count = map.entry(backend.value()).or_insert(0);
+        *count = count.wrapping_add(1);
     }
 
     /// `RecordSourceRead(bytes, milliseconds, includeInDecodeEwma)`: negative values count as 0; one read; adds to the
     /// byte and decode-millisecond totals; updates the EWMA only when `include_in_decode_ewma` and `milliseconds > 0`.
     pub fn record_source_read(&self, bytes: i64, milliseconds: i64, include_in_decode_ewma: bool) {
-        todo!()
+        // A negative value (clock adjustment, a caller bug) must not shrink a running total.
+        let bytes = bytes.max(0);
+        let milliseconds = milliseconds.max(0);
+        self.source_reads.fetch_add(1, Ordering::SeqCst);
+        self.source_bytes_read.fetch_add(bytes, Ordering::SeqCst);
+        self.decode_milliseconds.fetch_add(milliseconds, Ordering::SeqCst);
+        if include_in_decode_ewma {
+            self.update_decode_ewma(milliseconds);
+        }
+    }
+
+    fn update_decode_ewma(&self, milliseconds: i64) {
+        if milliseconds <= 0 {
+            return;
+        }
+        loop {
+            let old_bits = self.decode_ewma_bits.load(Ordering::SeqCst);
+            let old = f64::from_bits(old_bits as u64);
+            let next = if old <= 0.0 {
+                milliseconds as f64
+            } else {
+                old + DECODE_EWMA_ALPHA * (milliseconds as f64 - old)
+            };
+            if self
+                .decode_ewma_bits
+                .compare_exchange(old_bits, next.to_bits() as i64, Ordering::SeqCst, Ordering::SeqCst)
+                .is_ok()
+            {
+                return;
+            }
+        }
     }
 
     /// Exponentially weighted moving average of source decode wall time in ms, or 0 before the first sample.
     pub fn decode_milliseconds_ewma(&self) -> f64 {
-        todo!()
+        f64::from_bits(self.decode_ewma_bits.load(Ordering::SeqCst) as u64)
     }
 
     /// `max(0, milliseconds)`: one presented image, adds the latency, increments its histogram bucket.
     pub fn record_presented(&self, milliseconds: i64) {
-        todo!()
+        let milliseconds = milliseconds.max(0);
+        self.presented_images.fetch_add(1, Ordering::SeqCst);
+        self.present_milliseconds.fetch_add(milliseconds, Ordering::SeqCst);
+        self.present_buckets[present_bucket_index(milliseconds)].fetch_add(1, Ordering::SeqCst);
     }
 
     /// Counts one open of a source image file (total and per path, paths compared OrdinalIgnoreCase); trims the table
     /// when it grows past [`MAX_TRACKED_SOURCE_OPEN_PATHS`].
     pub fn record_source_open(&self, path: &str) {
-        todo!()
+        self.source_open_count.fetch_add(1, Ordering::SeqCst);
+        let key = ignore_case_key(path);
+        let mut table = lock(&self.source_opens);
+        let entry = table.entry(key).or_insert_with(|| (path.to_owned(), 0));
+        entry.1 = entry.1.wrapping_add(1);
+        if table.len() > MAX_TRACKED_SOURCE_OPEN_PATHS {
+            Self::trim_source_opens(&mut table);
+        }
+    }
+
+    /// Drops the least-opened paths down to 3/4 of the cap, so the sort runs once per `MAX / 4` new paths, not on every
+    /// open. Ties are broken by key so the result is deterministic (C#: arbitrary). The total count is unaffected.
+    fn trim_source_opens(table: &mut HashMap<String, (String, i64)>) {
+        let keep = MAX_TRACKED_SOURCE_OPEN_PATHS * 3 / 4;
+        let excess = table.len().saturating_sub(keep);
+        if excess == 0 {
+            return;
+        }
+        let mut entries: Vec<(i64, String)> = table.iter().map(|(key, (_, count))| (*count, key.clone())).collect();
+        entries.sort();
+        for (_, key) in entries.into_iter().take(excess) {
+            table.remove(&key);
+        }
     }
 
     /// Distinct paths currently tracked (C# internal `TrackedSourceOpenPaths`, a test/diagnostic seam).
     pub fn tracked_source_open_paths(&self) -> usize {
-        todo!()
+        lock(&self.source_opens).len()
     }
 
     pub fn record_stat(&self) {
-        todo!()
+        self.stat_count.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_session_write(&self) {
-        todo!()
+        self.session_write_count.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn record_cross_thread_present(&self) {
-        todo!()
+        self.cross_thread_present_count.fetch_add(1, Ordering::SeqCst);
     }
 
     pub fn snapshot(&self) -> ReviewMetricsSnapshot {
-        todo!()
+        let mut fallbacks: Vec<(i32, i64)> = lock(&self.decoder_fallbacks).iter().map(|(k, v)| (*k, *v)).collect();
+        fallbacks.sort_by_key(|(value, _)| *value);
+        let decoder_fallbacks = fallbacks
+            .into_iter()
+            .filter_map(|(value, count)| {
+                DecoderBackend::MEMBERS
+                    .iter()
+                    .copied()
+                    .find(|member| member.value() == value)
+                    .map(|member| (member, count))
+            })
+            .collect();
+
+        let mut opens: Vec<SourceOpenEntry> = lock(&self.source_opens)
+            .values()
+            .map(|(path, count)| SourceOpenEntry {
+                path: path.clone(),
+                count: *count,
+            })
+            .collect();
+        opens.sort_by(|a, b| b.count.cmp(&a.count).then_with(|| cmp_ignore_case(&a.path, &b.path)));
+        opens.truncate(10);
+
+        let present_histogram = PRESENT_BUCKET_LABELS
+            .iter()
+            .zip(self.present_buckets.iter())
+            .map(|(label, count)| PresentLatencyBucket {
+                label: (*label).to_owned(),
+                count: count.load(Ordering::SeqCst),
+            })
+            .collect();
+
+        ReviewMetricsSnapshot {
+            cache_hits: self.cache_hits.load(Ordering::SeqCst),
+            cache_misses: self.cache_misses.load(Ordering::SeqCst),
+            source_bytes_read: self.source_bytes_read.load(Ordering::SeqCst),
+            source_reads: self.source_reads.load(Ordering::SeqCst),
+            decode_milliseconds: self.decode_milliseconds.load(Ordering::SeqCst),
+            presented_images: self.presented_images.load(Ordering::SeqCst),
+            present_milliseconds: self.present_milliseconds.load(Ordering::SeqCst),
+            preload_hits: self.preload_hits.load(Ordering::SeqCst),
+            inflight_joins: self.inflight_joins.load(Ordering::SeqCst),
+            disk_cache_hits: self.disk_cache_hits.load(Ordering::SeqCst),
+            ui_assign_milliseconds: self.ui_assign_milliseconds.load(Ordering::SeqCst),
+            decoder_fallbacks,
+            source_open_count: self.source_open_count.load(Ordering::SeqCst),
+            top_source_opens: opens,
+            stat_count: self.stat_count.load(Ordering::SeqCst),
+            session_write_count: self.session_write_count.load(Ordering::SeqCst),
+            cross_thread_present_count: self.cross_thread_present_count.load(Ordering::SeqCst),
+            present_histogram,
+        }
     }
 }
 
 /// Index (0..=7) of the histogram bucket for `milliseconds` (already clamped to >= 0). C# `PresentBucketIndex`.
 pub fn present_bucket_index(milliseconds: i64) -> usize {
-    todo!()
+    PRESENT_BUCKET_UPPER_BOUNDS_MS
+        .iter()
+        .position(|bound| milliseconds <= *bound)
+        .unwrap_or(PRESENT_BUCKET_UPPER_BOUNDS_MS.len())
 }
