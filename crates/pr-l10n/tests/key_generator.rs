@@ -420,3 +420,70 @@ fn flat_reader_error_messages() {
     );
     assert!(keygen::read_flat_json(&format!("{{\"_a\": {}{}}}", "[".repeat(65), "]".repeat(65))).is_ok());
 }
+
+#[test]
+fn d1_placeholder_named_like_prelude_variant_is_escaped() {
+    // A parameter named None/Some/Ok/Err would be read by rustc as a variant pattern: it gets a `_` suffix.
+    let result = run(&catalog(&[r#""k.v": "A {None} {Some} {Ok} {Err} b""#]));
+
+    assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+    let tr = keygen::render_tr(&result);
+    assert!(tr.contains(
+        "pub fn k_v(None_: impl Into<LocValue>, Some_: impl Into<LocValue>, Ok_: impl Into<LocValue>, \
+         Err_: impl Into<LocValue>) -> String {"
+    ));
+    assert!(tr.contains("LocArg::new(\"None\", None_)"));
+    assert_eq!(keygen::param_name("None"), "None_");
+    assert_eq!(keygen::param_name("none"), "none");
+}
+
+#[test]
+fn d2_bidi_control_in_english_text_does_not_reach_doc_comment() {
+    // rustc denies U+202A..U+202E and U+2066..U+2069 in comments and literals; C# does not care.
+    let result = run(&catalog(&[r#""k.bidi": "a\u202eb\u2066c\u2069d""#]));
+
+    assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+    let tr = keygen::render_tr(&result);
+    assert!(tr.contains("/// English: \"a b c d\"\n"), "{tr}");
+    assert!(
+        !tr.chars()
+            .any(|c| matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}'))
+    );
+}
+
+#[test]
+fn d3_invalid_escape_message_for_astral_char() {
+    // C# reads one UTF-16 unit after the backslash: a lone surrogate, shown as U+FFFD.
+    let error = keygen::read_flat_json("{\"a\": \"\\\u{1F600}\"}").expect_err("invalid escape");
+    assert_eq!(error.message, "invalid escape '\\\u{FFFD}'");
+    let bmp = keygen::read_flat_json("{\"a\": \"\\\u{65E5}\"}").expect_err("invalid escape");
+    assert_eq!(bmp.message, "invalid escape '\\\u{65E5}'");
+}
+
+#[test]
+fn m39_extra_catalog_order_is_utf16_ordinal() {
+    // Mutation M39: paths are ordered by UTF-16 code units (C# string.CompareOrdinal), not by code point:
+    // U+10000 (D800 DC00) sorts BEFORE U+E000 although its code point is larger.
+    let astral = "C:\\\u{10000}\\en.json";
+    let bmp = "C:\\\u{E000}\\en.json";
+    for inputs in [
+        [
+            input(bmp, &catalog(&["\"second\": \"x\""])),
+            input(astral, &catalog(&["\"first\": \"x\""])),
+        ],
+        [
+            input(astral, &catalog(&["\"first\": \"x\""])),
+            input(bmp, &catalog(&["\"second\": \"x\""])),
+        ],
+    ] {
+        let result = plan(&inputs);
+        assert_eq!(ids(&result), ["PRLOC007"]);
+        assert!(result.diagnostics[0].message.contains(bmp));
+        assert!(
+            result.diagnostics[0]
+                .message
+                .contains(&format!("only '{astral}' (first by path)"))
+        );
+        assert!(keygen::render_tr(&result).contains("pub fn first("));
+    }
+}

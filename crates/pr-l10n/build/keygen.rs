@@ -386,7 +386,10 @@ impl FlatJsonReader<'_> {
                     self.pos += 4;
                 }
                 other => {
-                    return Err(error_at(format!("invalid escape '\\{other}'"), escape_start));
+                    // C# reads ONE UTF-16 unit after the backslash: for an astral char that is a lone high
+                    // surrogate, which the message serialisation shows as U+FFFD.
+                    let shown = if (other as u32) > 0xFFFF { '\u{FFFD}' } else { other };
+                    return Err(error_at(format!("invalid escape '\\{shown}'"), escape_start));
                 }
             }
         }
@@ -816,9 +819,13 @@ pub fn fn_name(ident: &str) -> String {
 }
 
 /// Rust parameter name for a placeholder: the placeholder verbatim, `r#`-escaped when it is a Rust keyword, and
-/// `name_` for `self`/`Self`/`crate`/`super`.
+/// `name_` for `self`/`Self`/`crate`/`super` and for the prelude variants `None`/`Some`/`Ok`/`Err` (a parameter
+/// pattern with such a name would be read as a variant pattern, not a binding).
 pub fn param_name(placeholder: &str) -> String {
-    if matches!(placeholder, "self" | "Self" | "crate" | "super") {
+    if matches!(
+        placeholder,
+        "self" | "Self" | "crate" | "super" | "None" | "Some" | "Ok" | "Err"
+    ) {
         format!("{placeholder}_")
     } else if is_rust_keyword(placeholder) {
         format!("r#{placeholder}")
@@ -842,6 +849,11 @@ pub fn render_keys(plan: &Plan) -> String {
     out
 }
 
+/// Bidirectional control characters: rustc denies them in literals and comments (`text_direction_codepoint_*`).
+fn is_bidi_control(c: char) -> bool {
+    matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
+}
+
 /// A Rust string literal for ASCII-or-not text (escapes `\`, `"` and control characters).
 fn rust_literal(value: &str) -> String {
     let mut out = String::with_capacity(value.len() + 2);
@@ -853,7 +865,7 @@ fn rust_literal(value: &str) -> String {
             '\n' => out.push_str("\\n"),
             '\r' => out.push_str("\\r"),
             '\t' => out.push_str("\\t"),
-            c if c.is_control() => out.push_str(&format!("\\u{{{:x}}}", c as u32)),
+            c if c.is_control() || is_bidi_control(c) => out.push_str(&format!("\\u{{{:x}}}", c as u32)),
             c => out.push(c),
         }
     }
@@ -869,7 +881,7 @@ fn doc_text(text: &str) -> String {
         match c {
             '\r' => {}
             '\n' => out.push_str("\\n"),
-            c if c < ' ' || matches!(c, '\u{85}' | '\u{2028}' | '\u{2029}') => out.push(' '),
+            c if c < ' ' || matches!(c, '\u{85}' | '\u{2028}' | '\u{2029}') || is_bidi_control(c) => out.push(' '),
             c => out.push(c),
         }
     }

@@ -551,3 +551,78 @@ fn oversized_multibyte_file_without_stat_skipped() {
     assert!(!loader.discover_languages().iter().any(|l| l.code == "bg"));
     assert!(has_warning(loader.load(Some("bg"), None).warnings(), "larger than"));
 }
+
+/// File system that lists files in REVERSE order (a file system is free to list in any order).
+struct ReverseListFileSystem(FakeFileSystem);
+
+impl FileSystem for ReverseListFileSystem {
+    fn file_exists(&self, path: &Path) -> bool {
+        self.0.file_exists(path)
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.0.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
+        self.0.get_file_stat(path)
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.0.move_file(source, destination)
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.0.copy_file(source, destination)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        self.0.delete(path)
+    }
+    fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
+        self.0.open_read_shared(path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+        self.0.open_append(path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        self.0.write_all_text_atomic(path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        self.0.read_all_text(path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
+        let mut files = self.0.enumerate_files(directory, pattern)?;
+        files.reverse();
+        Ok(files)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
+        self.0.enumerate_directories(directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        self.0.create_directory(path)
+    }
+}
+
+fn same_code_files() -> FakeFileSystem {
+    let fs = FakeFileSystem::new();
+    fs.add_file(
+        r"C:\App\Languages\a.json",
+        br#"{ "_meta": {"code":"xx","nativeName":"First"}, "app.title": "from a" }"#,
+    );
+    fs.add_file(
+        r"C:\App\Languages\b.json",
+        br#"{ "_meta": {"code":"xx","nativeName":"Second"}, "app.title": "from b" }"#,
+    );
+    fs
+}
+
+#[test]
+fn m10_loader_sorts_files_itself() {
+    // Mutation M10: the loader orders files (ordinal ignore case on the full path) itself and does not rely on the
+    // order the file system lists them in; two files with the same code resolve the same way either way.
+    let sorted: Arc<dyn FileSystem> = Arc::new(same_code_files());
+    let reversed: Arc<dyn FileSystem> = Arc::new(ReverseListFileSystem(same_code_files()));
+
+    let a = LanguageLoader::new(sorted, r"C:\App\Languages", None).load(Some("xx"), None);
+    let b = LanguageLoader::new(reversed, r"C:\App\Languages", None).load(Some("xx"), None);
+
+    assert_eq!(a.get(KEY), "from b");
+    assert_eq!(b.get(KEY), a.get(KEY));
+    assert_eq!(b.native_name(), a.native_name());
+}
