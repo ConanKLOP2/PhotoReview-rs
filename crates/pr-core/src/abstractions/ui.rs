@@ -61,6 +61,24 @@ pub trait UiScheduler: Send + Sync {
     fn invoke(&self, action: UiAction) -> UiCompletion;
 }
 
+/// Port of `IUiDispatcher.cs` `UiPriority` (C# d92d6aae, C-04): WPF `DispatcherPriority` names; lower value = sooner.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum UiPriority {
+    Send = 0,
+    Normal = 1,
+    Render = 2,
+    Background = 3,
+}
+
+/// Port of `IUiDispatcher`: a [`UiScheduler`] with priorities. `post`/`invoke` mean [`UiPriority::Normal`].
+/// (C# `YieldAsync(priority)` has no equivalent: the UI thread never awaits, R0003.)
+pub trait UiDispatcher: UiScheduler {
+    /// True on the UI thread.
+    fn check_access(&self) -> bool;
+    fn post_with_priority(&self, action: UiAction, priority: UiPriority);
+    fn invoke_with_priority(&self, action: UiAction, priority: UiPriority) -> UiCompletion;
+}
+
 /// Runs everything inline on the calling thread (tests, CLI).
 #[derive(Debug, Default, Clone, Copy)]
 pub struct ImmediateUiScheduler;

@@ -11,6 +11,16 @@ pub struct BatchReviewItem {
     pub length: Option<u64>,
 }
 
+/// Which part of the Settings dialog to open on (C# `SettingsTarget`, d92d6aae).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SettingsTarget {
+    /// The last page shown (default behaviour).
+    #[default]
+    Default,
+    /// The Files page with the External Editor path field focused.
+    ExternalEditor,
+}
+
 /// Confirmation prompts and secondary windows.
 pub trait DialogService {
     /// Yes/No or OK/Cancel question; `true` = confirmed.
@@ -25,6 +35,11 @@ pub trait DialogService {
     fn show_diagnostics(&self);
     /// `true` when the user saved changes.
     fn show_settings(&self) -> bool;
+    /// Same dialog opened on the page/field for `target` (C# d92d6aae). Default ignores the target.
+    fn show_settings_at(&self, target: SettingsTarget) -> bool {
+        let _ = target;
+        self.show_settings()
+    }
     fn show_benchmark(&self, folder: Option<&Path>);
     /// Files skipped while loading a folder (AR19).
     fn show_skipped_files(&self, entries: &[SkippedEntry]);
