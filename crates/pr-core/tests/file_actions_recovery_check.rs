@@ -762,10 +762,12 @@ mod file_check {
             FILE_STAMP,
         ));
 
+        // CountingFileSystem counts every metadata query (C#: FileExists, DirectoryExists, GetFileStat): per path one
+        // folder check and one stat, so 2 + 2. The fake's own Stat counter (below) sees only the two stats.
         assert_eq!(
             stat_calls.load(Ordering::SeqCst),
-            2,
-            "one stat for the source, one for the destination"
+            4,
+            "a folder check and a stat for the source, the same for the destination"
         );
         assert_eq!(fs.count(FsOp::Stat), 2);
         for op in [
