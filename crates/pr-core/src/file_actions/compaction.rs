@@ -22,7 +22,6 @@
 //! the journal readers (`file_actions::journal`, W3-01): the plan must apply exactly the rules the readers apply.
 
 use std::collections::{HashMap, HashSet};
-use std::ops::Range;
 
 use super::journal_line::{self, JournalEntry};
 use super::journal_rules::{
@@ -70,18 +69,13 @@ pub fn build(snapshot: &[u8]) -> CompactionPlan {
         return CompactionPlan::default();
     }
 
-    // Pass 1: line boundaries (each range includes its own '\n') and recognized entries (one parse per line).
-    let mut ranges: Vec<Range<usize>> = Vec::new();
-    let mut entries: Vec<Option<JournalEntry>> = Vec::new();
-    let mut blank: Vec<bool> = Vec::new();
-    let mut position = 0;
-    while position < snapshot.len() {
-        let length = match snapshot[position..].iter().position(|&b| b == b'\n') {
-            Some(newline) => newline + 1,
-            None => snapshot.len() - position,
-        };
-        let range = position..position + length;
-        let content = line_content(&snapshot[range.clone()]);
+    // Pass 1: the lines (each with its own '\n'; a final line without one is the rest of the snapshot, C#
+    // `IndexOf('\n') < 0`) and their recognized entries (one parse per line).
+    let lines: Vec<&[u8]> = snapshot.split_inclusive(|&b| b == b'\n').collect();
+    let mut entries: Vec<Option<JournalEntry>> = Vec::with_capacity(lines.len());
+    let mut blank: Vec<bool> = Vec::with_capacity(lines.len());
+    for line in &lines {
+        let content = line_content(line);
         let is_blank = is_blank_content(content);
         // C#: `OperationJournal.ReadEntries` splits at a lone '\r' too, so a line holding one is never recognized here.
         let entry = if is_blank || content.contains(&b'\r') {
@@ -89,10 +83,8 @@ pub fn build(snapshot: &[u8]) -> CompactionPlan {
         } else {
             journal_line::try_parse_utf8(content)
         };
-        ranges.push(range);
         entries.push(entry);
         blank.push(is_blank);
-        position += length;
     }
 
     // Effective latest line per Id (ordinal key), with the FA-01 rule of the journal readers.
@@ -108,11 +100,11 @@ pub fn build(snapshot: &[u8]) -> CompactionPlan {
 
     // The committed-Move lines the tail reader of `ReadCommittedMoves` returns (same predicate, newest first).
     let mut committed_move_window: HashSet<usize> = HashSet::new();
-    for i in (0..ranges.len()).rev() {
+    for (i, line) in lines.iter().enumerate().rev() {
         if committed_move_window.len() >= STARTUP_COMMITTED_MOVE_LIMIT {
             break;
         }
-        if try_parse_tail_committed_move(line_content(&snapshot[ranges[i].clone()])).is_some() {
+        if try_parse_tail_committed_move(line_content(line)).is_some() {
             committed_move_window.insert(i);
         }
     }
@@ -157,17 +149,17 @@ pub fn build(snapshot: &[u8]) -> CompactionPlan {
     // Output order comes from this index loop only (never from a map).
     let mut kept = Vec::with_capacity(snapshot.len());
     let mut dropped_lines = 0;
-    for (i, range) in ranges.iter().enumerate() {
+    for (i, line) in lines.iter().enumerate() {
         if is_droppable(i) {
             dropped_lines += 1;
             continue;
         }
-        kept.extend_from_slice(&snapshot[range.clone()]);
+        kept.extend_from_slice(line);
     }
     CompactionPlan {
         kept,
         dropped_lines,
-        kept_lines: ranges.len() - dropped_lines,
+        kept_lines: lines.len() - dropped_lines,
     }
 }
 
