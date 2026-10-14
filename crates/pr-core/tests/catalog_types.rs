@@ -220,6 +220,9 @@ fn capture_group_different_groups_have_different_hash_codes() {
 
     assert_ne!(hash_of(&a), hash_of(&b));
     assert_ne!(hash_of(&a), hash_of(&with_sidecar));
+
+    let other_raw = CaptureGroup::new(r"C:\a.jpg", r"C:\a.nef", None).unwrap();
+    assert_ne!(hash_of(&a), hash_of(&other_raw));
 }
 
 // A missing sidecar and an empty sidecar are different values (`Some("")` is an error, checked below), so they must
@@ -408,6 +411,7 @@ fn matches_requires_both_length_and_last_write_to_be_known_and_equal() {
     assert!(!base.matches(&stat), "None never matches");
     assert!(base.with_metadata(10, stamp(), None, None).matches(&stat));
     assert!(!base.with_metadata(11, stamp(), None, None).matches(&stat));
+    assert!(!base.with_metadata(9, stamp(), None, None).matches(&stat));
     assert!(
         !base
             .with_metadata(10, at(stamp().ticks() + 1), None, None)
