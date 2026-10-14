@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-15 (branch `wave3/contracts`)
+**Updated:** 2026-10-15 (branch `integration/wave-3`)
 
 ## State
 - master: Wave 0 + Wave 1 + sync to C# baseline d92d6aae.
@@ -43,3 +43,15 @@
 - NOT run: cargo-mutants; Rust tests against the new goldens (none written yet). Open decisions D26 (a)-(f) in
   contracts/README.md are undecided; fixtures `operations-legacy.jsonl` and `journal-older-build/*.jsonl` are not synced.
 - Next: lead decides D26, Haiku ports tests per unit (red), then Opus porters in D23/D24 order.
+
+## Wave 3 lead foundation (branch `integration/wave-3`, CARGO_TARGET_DIR=target-wave-3/integ)
+- Done (one commit each): P-11 `AppendStream` + `open_append -> Box<dyn AppendStream>`; P-12 `FileSystem::try_get_file_stat`
+  (physical, counting, fake overrides; `io::physical::is_stat_missing`); P-13 `RecycleBin::try_restore -> io::Result<bool>`
+  (+ `FakeRecycleBin` send/delete/restore hooks); P-14 `pr_test_support::{HookFileSystem, FaultInjectionFileSystem}`;
+  P-15 fixtures synced at d92d6aae (sync script also maps the two W2-03 config fixtures, which a sync run used to delete).
+- Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
+  `cargo test --workspace --locked`: 1442 passed, 0 failed, 61 ignored; `--ignored` on `io_physical_seams` (2) and
+  `io_physical` (47): all passed.
+- NOT done: `CrashPointFileSystem`, `FaultableFileSystem`, `FaultInjectionMatrix`/`Rig`/`SecondOrder`/`FaultInvariants` (W3-09,
+  P-16); cargo-mutants on the new seams; no PR opened from this step.
+- Next: Haiku red-test pass per unit against the landed seams, then porters in D23/D24 order.
