@@ -152,7 +152,9 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
         None => host_port,
     };
     // .NET drops the bidi formatting controls (`UriHelper.IsBidiControlCharacter`) from the host before it checks
-    // the name: `https://git\u{200E}hub.com/...` is `github.com`.
+    // the name: `https://git\u{200E}hub.com/...` is `github.com`. Such a host is non-ASCII, so .NET also takes its
+    // IRI rewrite path for the whole URI (it trims the fragment's trailing white space, see `escape_uri_part`).
+    let host_had_bidi = host.chars().any(is_bidi_control);
     let host: String = host.chars().filter(|&c| !is_bidi_control(c)).collect();
     if !host.eq_ignore_ascii_case("github.com") {
         return None;
@@ -177,7 +179,7 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
     } else if let Some(f) = query_frag.strip_prefix('#') {
         fragment = Some(f);
     }
-    let iri_rewrite = needs_iri_rewrite(after);
+    let iri_rewrite = host_had_bidi || needs_iri_rewrite(after);
 
     let path = remove_dot_segments(&escape_uri_part(raw_path, Part::Path, iri_rewrite));
 

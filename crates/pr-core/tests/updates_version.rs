@@ -351,6 +351,92 @@ fn validate_strips_bidi_controls_from_host() {
     );
 }
 
+// C#: (no direct test) UpdateUrlPolicy.Validate, a bidi control dropped from the host still makes the URI
+// non-ASCII, so .NET takes its IRI rewrite path and trims the fragment's trailing space/tab/LF/CR (also a space
+// decoded from %20). The same URL with a plain ASCII host keeps the fragment as typed. Every expected value below
+// was produced by the C# UpdateUrlPolicy.Validate (e441d67a) on .NET 10.
+#[test]
+fn validate_bidi_host_trims_fragment_like_dotnet() {
+    let cases: &[(&str, Option<&str>)] = &[
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://github.com/ConanKLOP2/PhotoReview#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/^#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%5E#a"),
+        ),
+        (
+            "https://github.com/ConanKLOP2/PhotoReview/^#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%5E#a%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/%00#a%20\t",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%00#a"),
+        ),
+        (
+            "https://github.com/ConanKLOP2/PhotoReview/%00#a%20\t",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%00#a%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/}#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%7D#a"),
+        ),
+        (
+            "https://github.com/ConanKLOP2/PhotoReview/}#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%7D#a%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview#a \t",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://github.com\u{202A}/ConanKLOP2/PhotoReview#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://\u{200F}github.com/ConanKLOP2/PhotoReview#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://github.com\u{200E}:443/ConanKLOP2/PhotoReview#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://@git\u{200E}hub.com/ConanKLOP2/PhotoReview#a%20",
+            Some("https://@github.com/ConanKLOP2/PhotoReview#a"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview?q%20#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview?q%20#a"),
+        ),
+        // Only the fragment is trimmed: a trailing %20 in the query or path stays.
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview?q%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview?q%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview/a%20"),
+        ),
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/%2fx#%5c",
+            Some("https://github.com/ConanKLOP2/PhotoReview/%2fx#%5c"),
+        ),
+        // A bidi control in the port or before the `@` is not dropped.
+        ("https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview#a%20", None),
+        ("https://github.com:\u{200E}443/ConanKLOP2/PhotoReview#a%20", None),
+        ("https://\u{200E}@github.com/ConanKLOP2/PhotoReview#a%20", None),
+    ];
+    for &(url, expected) in cases {
+        assert_eq!(validate_update_url(Some(url)).as_deref(), expected, "{url:?}");
+    }
+}
+
 // C#: (no direct test) UpdateUrlPolicy.Validate IRI character range edges, expected strings
 // produced by running the exact C# Validate body on .NET 10. Columns: code point, literal char in
 // query, literal char in path, %-escaped (lowercase) in query, %-escaped (lowercase) in path.
