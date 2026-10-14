@@ -11,10 +11,11 @@
 //! analyzer throws), the .NET-compatible number parsers and [`DiagFlags`].
 //!
 //! Unit W1-16. Contract: contracts/W1-16/contract.md. R0003: blocking `fn`, `Result` instead of exceptions.
-#![allow(unused_variables, dead_code, reason = "stub: todo!() bodies, remove when filling")]
 
 use std::fmt;
 use std::path::{Path, PathBuf};
+
+use pr_core::text::eq_ignore_case;
 
 /// `Stopwatch.Frequency` of the machine the C# oracle ran on (Windows 10+: always 10 MHz). C# uses it when a CSV
 /// header carries no valid `qpcFrequency` (see [`read`]).
@@ -79,23 +80,23 @@ pub struct PerfRow {
 impl PerfRow {
     /// `ANum`: column `a` as a finite `f64`, else `None` (see [`parse_double_finite`]).
     pub fn a_num(&self) -> Option<f64> {
-        todo!()
+        parse_double_finite(&self.a)
     }
     /// `BNum`.
     pub fn b_num(&self) -> Option<f64> {
-        todo!()
+        parse_double_finite(&self.b)
     }
     /// `CNum`.
     pub fn c_num(&self) -> Option<f64> {
-        todo!()
+        parse_double_finite(&self.c)
     }
     /// `DNum`.
     pub fn d_num(&self) -> Option<f64> {
-        todo!()
+        parse_double_finite(&self.d)
     }
     /// `NavId`: column `nav` as `long.TryParse(NumberStyles.Integer, Invariant)` (see [`parse_integer_i64`]).
     pub fn nav_id(&self) -> Option<i64> {
-        todo!()
+        parse_integer_i64(&self.nav)
     }
 }
 
@@ -113,15 +114,25 @@ impl DiagFlags {
     }
     /// Builds a map from pairs, applying [`DiagFlags::insert`] to each.
     pub fn from_pairs<'a>(pairs: impl IntoIterator<Item = (&'a str, &'a str)>) -> Self {
-        todo!()
+        let mut flags = Self::new();
+        for (key, value) in pairs {
+            flags.insert(key, value);
+        }
+        flags
     }
     /// `flags[key] = value`.
     pub fn insert(&mut self, key: &str, value: &str) {
-        todo!()
+        match self.entries.iter_mut().find(|(k, _)| eq_ignore_case(k, key)) {
+            Some(entry) => entry.1 = value.to_owned(),
+            None => self.entries.push((key.to_owned(), value.to_owned())),
+        }
     }
     /// `TryGetValue`, case-insensitive on the key.
     pub fn get(&self, key: &str) -> Option<&str> {
-        todo!()
+        self.entries
+            .iter()
+            .find(|(k, _)| eq_ignore_case(k, key))
+            .map(|(_, v)| v.as_str())
     }
     /// Entries in insertion order (the C# `Dictionary` enumeration order when nothing was removed).
     pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {
@@ -150,39 +161,128 @@ impl PerfCsvFile {
     /// `QpcToMs`: `deltaTicks * 1000.0 / QpcFrequency` evaluated left to right in `f64`
     /// (`delta as f64 * 1000.0 / freq as f64`). No guard for a zero frequency: the result is then ±inf or NaN.
     pub fn qpc_to_ms(&self, delta_ticks: i64) -> f64 {
-        todo!()
+        delta_ticks as f64 * 1000.0 / self.qpc_frequency as f64
     }
 }
 
 /// `PerfCsvReader.Read(path)`: reads the file (blocking), decodes it with [`decode_bytes`] and parses it with
 /// [`parse_text`]. A missing or unreadable file is `Err(PerfError::Io)` (C# `File.ReadLines` throws).
 pub fn read(path: &Path) -> Result<PerfCsvFile, PerfError> {
-    todo!()
+    let bytes = std::fs::read(path)?;
+    let text = decode_bytes(&bytes);
+    Ok(parse_text(path, &text))
 }
 
 /// The decoding `File.ReadLines` applies: UTF-8 with a leading BOM removed, invalid sequences replaced by U+FFFD
 /// (`String::from_utf8_lossy` has the same replacement rule as .NET Core 3.0+). UTF-16/32 BOM files are not
 /// supported (the listener never writes them; see contract "Open questions").
 pub fn decode_bytes(bytes: &[u8]) -> String {
-    todo!()
+    const BOM: &[u8] = &[0xEF, 0xBB, 0xBF];
+    let bytes = bytes.strip_prefix(BOM).unwrap_or(bytes);
+    String::from_utf8_lossy(bytes).into_owned()
 }
 
 /// The parsing half of [`read`], on already decoded text. Lines end at `\n`, `\r\n` or a lone `\r`
 /// (`StreamReader.ReadLine`); the final line needs no terminator. `path` is stored in the result unchanged.
 pub fn parse_text(path: &Path, text: &str) -> PerfCsvFile {
-    todo!()
+    let mut diag_flags = DiagFlags::new();
+    let mut frequency_candidate: Option<i64> = None;
+    let mut dropped_rows: i64 = 0;
+    let mut rows = Vec::new();
+
+    for line in split_lines(text) {
+        if line.is_empty() {
+            continue;
+        }
+        if line.starts_with('#') {
+            parse_comment_line(line, &mut diag_flags, &mut frequency_candidate, &mut dropped_rows);
+            continue;
+        }
+        if line.starts_with("utcTicks,") {
+            continue;
+        }
+        let mut fields = split_csv_line(line);
+        if fields.len() < 11 {
+            continue;
+        }
+        let (Some(utc_ticks), Some(qpc_ticks), Some(thread)) = (
+            parse_integer_i64(&fields[0]),
+            parse_integer_i64(&fields[1]),
+            parse_integer_i32(&fields[2]),
+        ) else {
+            continue;
+        };
+        rows.push(PerfRow {
+            utc_ticks,
+            qpc_ticks,
+            thread,
+            event: std::mem::take(&mut fields[3]),
+            nav: std::mem::take(&mut fields[4]),
+            path_id: std::mem::take(&mut fields[5]),
+            a: std::mem::take(&mut fields[6]),
+            b: std::mem::take(&mut fields[7]),
+            c: std::mem::take(&mut fields[8]),
+            d: std::mem::take(&mut fields[9]),
+            text: std::mem::take(&mut fields[10]),
+        });
+    }
+
+    let qpc_frequency = match frequency_candidate {
+        Some(f) if f > 0 => f,
+        _ => STOPWATCH_FREQUENCY,
+    };
+    PerfCsvFile {
+        path: path.to_path_buf(),
+        diag_flags,
+        qpc_frequency,
+        dropped_rows,
+        rows,
+    }
+}
+
+/// `StreamReader.ReadLine` line splitting: `\n`, `\r\n` or a lone `\r` ends a line; a final line without a
+/// terminator still counts; a trailing terminator does not produce an extra empty line.
+fn split_lines(text: &str) -> impl Iterator<Item = &str> {
+    let mut rest = text;
+    std::iter::from_fn(move || {
+        if rest.is_empty() {
+            return None;
+        }
+        match rest.find(['\r', '\n']) {
+            Some(i) => {
+                let line = &rest[..i];
+                let after = &rest[i + 1..];
+                let skip = usize::from(rest.as_bytes()[i] == b'\r' && after.starts_with('\n'));
+                rest = &after[skip..];
+                Some(line)
+            }
+            None => {
+                let line = rest;
+                rest = "";
+                Some(line)
+            }
+        }
+    })
 }
 
 /// `long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out v)`: optional leading/trailing .NET
 /// whitespace (`\t \n \v \f \r` and space), optional one sign (`+`/`-`), ASCII digits only, no overflow; trailing
 /// `\0` characters are ignored (the .NET parser tolerates them). Empty or sign-only text is `None`.
 pub fn parse_integer_i64(s: &str) -> Option<i64> {
-    todo!()
+    dotnet_trim(s).parse::<i64>().ok()
 }
 
 /// `int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out v)`: [`parse_integer_i64`] rules, range of `i32`.
 pub fn parse_integer_i32(s: &str) -> Option<i32> {
-    todo!()
+    dotnet_trim(s).parse::<i32>().ok()
+}
+
+/// .NET number-parser preprocessing shared by the integer and float parsers: trailing `\0` characters are ignored,
+/// then `\t \n \v \f \r` and space are trimmed from both ends (NOT Rust's `str::trim`, which also trims U+00A0 etc.).
+/// Returns `""` for empty text, which every parser rejects.
+fn dotnet_trim(s: &str) -> &str {
+    s.trim_end_matches('\0')
+        .trim_matches(|c: char| matches!(c, '\t' | '\n' | '\u{000B}' | '\u{000C}' | '\r' | ' '))
 }
 
 /// The private `PerfRow.ParseDouble`: `None` for empty text; else `double.TryParse(s, NumberStyles.Float,
@@ -190,5 +290,77 @@ pub fn parse_integer_i32(s: &str) -> Option<i32> {
 /// `\0` ignored; `NaN`/`Infinity` words are numbers to .NET) and the value must be finite, so NaN, ±Infinity and
 /// overflowing text such as `1e999` are `None`. Underflow (`1e-999`) is `Some(0.0)`.
 pub fn parse_double_finite(s: &str) -> Option<f64> {
-    todo!()
+    dotnet_trim(s).parse::<f64>().ok().filter(|v| v.is_finite())
+}
+
+/// `ParseCommentLine`: `#` and space characters at the start are skipped, the rest is split on spaces and each
+/// `key=value` token is applied. Only `qpcFrequency`, `dropped` and `diag` have a meaning; keys are case-sensitive.
+fn parse_comment_line(
+    line: &str,
+    diag_flags: &mut DiagFlags,
+    frequency_candidate: &mut Option<i64>,
+    dropped_rows: &mut i64,
+) {
+    let content = line.trim_start_matches(['#', ' ']);
+    for token in content.split(' ').filter(|t| !t.is_empty()) {
+        let Some(eq) = token.find('=') else {
+            continue;
+        };
+        if eq == 0 {
+            continue;
+        }
+        let key = &token[..eq];
+        let value = &token[eq + 1..];
+        match key {
+            "qpcFrequency" => {
+                if let Some(v) = parse_integer_i64(value) {
+                    *frequency_candidate = Some(v);
+                }
+            }
+            "dropped" => {
+                if let Some(v) = parse_integer_i64(value) {
+                    *dropped_rows = v;
+                }
+            }
+            "diag" => {
+                for pair in value.split(';').filter(|p| !p.is_empty()) {
+                    if let Some(i) = pair.find('=').filter(|&i| i > 0) {
+                        diag_flags.insert(&pair[..i], &pair[i + 1..]);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// `SplitCsvLine`: a `"` opens or closes quotes (a doubled `"` inside quotes is one `"`); a `,` outside quotes ends
+/// the field. Always returns `commas outside quotes + 1` fields.
+fn split_csv_line(line: &str) -> Vec<String> {
+    let mut fields = Vec::with_capacity(11);
+    let mut current = String::new();
+    let mut in_quotes = false;
+    let mut chars = line.chars().peekable();
+    while let Some(c) = chars.next() {
+        if in_quotes {
+            if c == '"' {
+                if chars.peek() == Some(&'"') {
+                    chars.next();
+                    current.push('"');
+                } else {
+                    in_quotes = false;
+                }
+            } else {
+                current.push(c);
+            }
+        } else {
+            match c {
+                '"' => in_quotes = true,
+                ',' => fields.push(std::mem::take(&mut current)),
+                _ => current.push(c),
+            }
+        }
+    }
+    fields.push(current);
+    fields
 }

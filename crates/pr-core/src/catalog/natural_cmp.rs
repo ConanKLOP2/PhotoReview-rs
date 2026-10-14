@@ -16,12 +16,10 @@
 //! surrogate pair in C#) is not a digit at all.
 //!
 //! Pinned by `tests/golden/natural-cmp.json` and `tests/golden/natural-key.json` (see contracts/W1-06/golden.md).
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::cmp::Ordering;
 
 use crate::abstractions::NaturalComparer;
+use crate::text::cmp_ignore_case;
 
 /// Width of the zero-padded digit-count prefix in a key (the former `ToString("D10")`).
 pub const LENGTH_PREFIX_WIDTH: usize = 10;
@@ -78,7 +76,21 @@ pub const NOT_LOWERED_BY_DOTNET: &[char] = &[
 /// .NET `char.IsDigit(c)` for the UTF-16 code unit `c`: true only for BMP characters inside
 /// [`DECIMAL_DIGIT_RANGES`]. Any `c` above U+FFFF is `false` (C# sees two surrogate halves, neither is a digit).
 pub fn is_dotnet_digit(c: char) -> bool {
-    todo!("binary search or linear scan of DECIMAL_DIGIT_RANGES; c as u32 > 0xFFFF => false")
+    let v = c as u32;
+    if v > 0xFFFF {
+        return false;
+    }
+    DECIMAL_DIGIT_RANGES
+        .binary_search_by(|&(first, last)| {
+            if last < v {
+                Ordering::Less
+            } else if first > v {
+                Ordering::Greater
+            } else {
+                Ordering::Equal
+            }
+        })
+        .is_ok()
 }
 
 /// .NET `char.ToLowerInvariant(c)` applied to one UTF-16 code unit.
@@ -89,7 +101,17 @@ pub fn is_dotnet_digit(c: char) -> bool {
 /// * Otherwise: the simple lower-case mapping, i.e. `c.to_lowercase()` when it yields exactly ONE char, else `c`
 ///   (this keeps `'İ'` U+0130 unchanged, as .NET does).
 pub fn lower_invariant(c: char) -> char {
-    todo!()
+    if c.is_ascii() {
+        return c.to_ascii_lowercase();
+    }
+    if c as u32 > 0xFFFF || NOT_LOWERED_BY_DOTNET.contains(&c) {
+        return c;
+    }
+    let mut lower = c.to_lowercase();
+    match (lower.next(), lower.next()) {
+        (Some(one), None) => one,
+        _ => c,
+    }
 }
 
 /// `ManagedNaturalComparer.BuildNaturalKey`. An empty name gives an empty key.
@@ -100,14 +122,43 @@ pub fn lower_invariant(c: char) -> char {
 ///
 /// Examples: `"a2"` -> `"a00000000012\0"`; `"007.jpg"` -> `"00000000017\0.jpg"`; `"0"` -> `"0000000000\0"`.
 pub fn build_natural_key(name: &str) -> String {
-    todo!()
+    let chars: Vec<char> = name.chars().collect();
+    let mut key = String::with_capacity(name.len() + LENGTH_PREFIX_WIDTH + 1);
+    let mut i = 0;
+    while i < chars.len() {
+        if is_dotnet_digit(chars[i]) {
+            let start = i;
+            while i < chars.len() && is_dotnet_digit(chars[i]) {
+                i += 1;
+            }
+            let run = &chars[start..i];
+            // Strip leading ASCII '0' only; an all-zero run leaves no digits.
+            let significant = run.iter().position(|&c| c != '0').unwrap_or(run.len());
+            let digits = &run[significant..];
+            key.push_str(&format!("{:0width$}", digits.len(), width = LENGTH_PREFIX_WIDTH));
+            key.extend(digits.iter());
+            key.push('\0');
+        } else {
+            key.push(lower_invariant(chars[i]));
+            i += 1;
+        }
+    }
+    key
 }
 
 /// `ManagedNaturalComparer.Compare` for two non-null names. See the module doc for the three comparison steps.
 /// String comparison uses `crate::text::cmp_ignore_case` (OrdinalIgnoreCase) and `str::cmp` (Ordinal: UTF-8 byte
 /// order equals code-point order, which equals the C# UTF-16 order whenever the two strings differ only in case).
 pub fn compare_natural(x: &str, y: &str) -> Ordering {
-    todo!()
+    let by_key = cmp_ignore_case(&build_natural_key(x), &build_natural_key(y));
+    if by_key != Ordering::Equal {
+        return by_key;
+    }
+    let by_text = cmp_ignore_case(x, y);
+    if by_text != Ordering::Equal {
+        return by_text;
+    }
+    x.cmp(y)
 }
 
 /// `ManagedNaturalComparer` (C# singleton `ManagedNaturalComparer.Instance`). Stateless.
@@ -123,6 +174,11 @@ impl NaturalComparer for ManagedNaturalComparer {
     /// `None` is a null string: `(None, None)` => Equal; `(None, Some)` => Less; `(Some, None)` => Greater;
     /// otherwise [`compare_natural`].
     fn compare(&self, a: Option<&str>, b: Option<&str>) -> Ordering {
-        todo!()
+        match (a, b) {
+            (None, None) => Ordering::Equal,
+            (None, Some(_)) => Ordering::Less,
+            (Some(_), None) => Ordering::Greater,
+            (Some(x), Some(y)) => compare_natural(x, y),
+        }
     }
 }

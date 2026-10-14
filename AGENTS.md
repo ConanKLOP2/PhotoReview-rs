@@ -55,6 +55,8 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - `master` is the only source of truth; work in `git worktree add .claude/worktrees/<name> -b <branch> origin/master`;
   never leave edits in the main checkout; no bare `git stash`; no stacked PRs.
 - After each completed change: commit and push a branch for review.
+- A squash-merged branch head is NOT an ancestor of master (merge-base check says no). Confirm the content is in master (`git diff <head> origin/master` shows only unrelated files), then delete branch and worktree.
+- Worktrees: every worktree builds in its own cargo target dir (`tools/wave.ps1` does it); a shared one hands one worktree another one's stale artifacts.
 
 ## Asking the user to decide
 

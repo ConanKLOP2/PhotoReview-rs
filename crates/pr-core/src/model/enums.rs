@@ -13,9 +13,6 @@
 //! `Default::default()` is C# `default(T)`, the member with value 0. That is NOT always the `AppSettings` default
 //! (for example `ImageSortMode::default()` is `Name`, the setting defaults to `Default`); the settings module owns those.
 
-// Stub: only `uses_explorer_order` still has a `todo!()` body. The porter deletes this line with it.
-#![allow(unused_variables)]
-
 use crate::model::serde_ext::LenientEnum;
 
 /// Declares one persisted enum plus its `LenientEnum`, `Default`, `Serialize` and `Deserialize` impls.
@@ -289,5 +286,8 @@ model_enum! {
 /// app's own sort (`Name`, `SizeDescending`, `SizeAscending`). `Default`, `NameAscending` and `NameDescending` are
 /// decided by the app: the Explorer query is not even started.
 pub fn uses_explorer_order(mode: ImageSortMode) -> bool {
-    todo!()
+    !matches!(
+        mode,
+        ImageSortMode::Default | ImageSortMode::NameAscending | ImageSortMode::NameDescending
+    )
 }

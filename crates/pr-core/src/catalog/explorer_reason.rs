@@ -7,8 +7,6 @@
 //!
 //! The separator cannot be escaped: a `'|'` inside the code or a detail is replaced by `'/'` by [`format`], which
 //! keeps [`parse`] returning exactly the details that were given.
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
 
 pub const TIMEOUT: &str = "timeout";
 pub const CANCELED: &str = "canceled";
@@ -52,12 +50,24 @@ pub const SEPARATOR: char = '|';
 /// `'|'` with `'/'`. With no details the result is the cleaned code alone (no trailing separator). An empty detail is
 /// kept (`format("x", &[""])` is `"x|"`).
 pub fn format(code: &str, details: &[&str]) -> String {
-    todo!()
+    fn clean(value: &str) -> String {
+        value.replace(SEPARATOR, "/")
+    }
+    let mut out = clean(code);
+    for detail in details {
+        out.push(SEPARATOR);
+        out.push_str(&clean(detail));
+    }
+    out
 }
 
 /// `ExplorerReason.Parse`: splits on every `'|'`; the first piece is the code, the rest are the details (possibly
 /// empty strings). A text without `'|'` is returned as its own code with no details; `""` gives code `""` and no
 /// details; `"a||b"` gives code `"a"` and details `["", "b"]`.
 pub fn parse(reason: &str) -> (String, Vec<String>) {
-    todo!()
+    // `split` always yields at least one piece, so the empty fallback is never used for a non-empty input.
+    let mut pieces = reason.split(SEPARATOR);
+    let code = pieces.next().unwrap_or("").to_owned();
+    let details = pieces.map(str::to_owned).collect();
+    (code, details)
 }

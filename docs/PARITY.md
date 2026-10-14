@@ -10,8 +10,9 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-datetime-json | Done | `pr_core::time::DateTimeUtc` | `golden_text_time::datetime_json_*` (golden `datetime-json`) | Every on-disk UTC timestamp (journal, session, fingerprint); .NET ticks |
 | X-ordinal-ignore-case | Done | `pr_core::text` | `golden_text_time::ordinal_ignore_case_matches_dotnet` | Table generated from .NET 10 (1422 mappings) |
 | X-abstractions | Done (traits) | `pr_core::abstractions` | per-trait unit tests; fakes in `pr-test-support` | Port of `Core/Abstractions` per R0003; `VBlankEstimator` → W1-22, `ExplorerOrderTypes` moved here from W1-07 |
-| X-benchmark-percentile | Todo (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
-| X-perf-analyzer | Todo (W1-16..21) | `pr_perf` | goldens `perf-*` | PerfAnalysis tool: CSV reader, nav, stats, rules, report, analyze; output byte-identical (CRLF) |
+| X-benchmark-percentile | Done (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
+| X-perf-analyzer | Done (W1-16..21) | `pr_perf` | goldens `perf-csv`, `perf-nav`, `perf-stats`, `perf-rules`, `perf-report`, `perf-analyze` | PerfAnalysis tool; output byte-identical (CRLF). Accepted divergences (README D5): UTF-16 BOM side files, `-0`/`1e400` number tokens, junction-cycle protection |
+| X-wave1-units | Done (22/22 when W1-20 dedupe lands) | see contracts/README.md roster | per-unit tests + goldens | Wave 1 leaf units: model enums, lenient JSON, flag fields, shortcuts, perf options, natural comparer, catalog types, LRU, file-action records, update version/URL policy, LocTemplate, GenerationClock, journal errors and line format, percentile/DiagOptions, perf analyzer, VBlankEstimator |
 
 ---
 

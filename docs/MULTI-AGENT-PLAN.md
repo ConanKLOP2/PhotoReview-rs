@@ -368,3 +368,13 @@ Sau mỗi lượt merge vào `integration/wave-N` và trước khi mở PR vào 
   Opus (hợp đồng, WU đỏ, tích hợp), vì WU đỏ là các file lớn nhất.
 - Wave 1 là wave thử: đo tỷ lệ Haiku PASS ngay lần đầu, rồi chỉnh hợp đồng và §7 trước khi mở rộng. Nếu tỷ lệ PASS lần đầu dưới 50% thì
   chuyển các WU 🟢 khó (parser, PerfAnalysis) sang Sonnet.
+
+## 10. Bài học từ Wave 1 (2026-10-14)
+
+- **Số vòng:** 22 WU cần 1 vòng port + 4 vòng sửa (khoảng 9 triệu token). 10/22 pass ngay vòng 1; phần còn lại chủ yếu là lỗ hổng test do verifier tìm bằng mutation, không phải lỗi hành vi (hành vi thật chỉ có ở W1-10, W1-14, W1-18, W1-21).
+- **Thư mục build dùng chung giữa các worktree là lỗi nặng nhất:** agent thấy test panic ở dòng `todo!()` cũ, port đúng vẫn fail gate. Mỗi worktree một `CARGO_TARGET_DIR` (đã vào `wave.ps1`).
+- **Phụ thuộc chéo:** hợp đồng nói "chỉ gọi hàm của unit mình" nhưng test của W1-03/17/19/21 gọi hàm unit khác. Chạy wave theo thứ tự phụ thuộc, hoặc tích hợp từng đợt rồi rebase nhánh còn lại (đã làm).
+- **Verifier có harness .NET thật là thứ giá trị nhất:** nó tìm ra sai lệch mà không ai đọc code C# thấy được (junction, double BOM, ký tự bidi trong host, độ sâu JSON).
+- **Mutation-testing vô tận:** mỗi vòng verifier tìm mutant mới. Quy tắc dừng: mutant tương đương không tính; còn lại là lỗ hổng test hoặc khác biệt hành vi thì phải đóng; sau 3 vòng cho phép lead tự thêm test nhỏ.
+- **Nên sinh golden từ harness .NET khi hợp đồng nghi ngờ** (làm ở vòng 5 cho W1-21 và W1-10): hợp đồng viết tay có chỗ sai ("C# không đi theo junction").
+- **Haiku:** làm tốt unit thuần dữ liệu và parser nhỏ; fail ở nơi có nhiều nhánh biên (W1-14, W1-18) hoặc phụ thuộc quirks .NET. Hợp đồng nên đánh dấu "quirk .NET" để chuyển Sonnet ngay từ đầu.

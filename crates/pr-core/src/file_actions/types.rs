@@ -9,8 +9,6 @@
 //!
 //! Paths are `String`s like the C# `string` (they are journaled and compared as text). Equality is the C# record
 //! equality: every field, strings compared exactly (case-sensitive), which is what `#[derive(PartialEq)]` gives.
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
 
 use crate::abstractions::FileStat;
 use crate::catalog::types::CaptureGroup;
@@ -36,7 +34,9 @@ pub const FINGERPRINT_TOLERANCE_TICKS: i64 = 2 * TICKS_PER_SECOND;
 /// difference between `stat.last_write_utc` and `recorded_utc`, in ticks, is `<= FINGERPRINT_TOLERANCE_TICKS`
 /// (inclusive: exactly 2 s apart still matches, 2 s + 1 tick does not; earlier and later are treated alike).
 pub fn matches_moved_destination(stat: &FileStat, size: i64, recorded_utc: DateTimeUtc) -> bool {
-    todo!()
+    let same_length = matches!(i64::try_from(stat.length), Ok(length) if length == size);
+    let tolerance = FINGERPRINT_TOLERANCE_TICKS.unsigned_abs();
+    same_length && stat.last_write_utc.ticks().abs_diff(recorded_utc.ticks()) <= tolerance
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,12 @@ pub struct FileActionRequest {
 impl FileActionRequest {
     /// `destination` = None, `allow_permanent_delete` = false.
     pub fn new(source: impl Into<String>, operation: FileOperationType) -> Self {
-        todo!()
+        Self {
+            source: source.into(),
+            operation,
+            destination: None,
+            allow_permanent_delete: false,
+        }
     }
 }
 
@@ -97,7 +102,20 @@ impl FileActionResult {
         last_write_utc: DateTimeUtc,
         error: Option<String>,
     ) -> Self {
-        todo!()
+        Self {
+            succeeded,
+            operation,
+            source: source.into(),
+            destination_path,
+            size,
+            last_write_utc,
+            error,
+            rejected: false,
+            journal_persisted: true,
+            journal_error: None,
+            permanently_deleted: false,
+            source_removed: false,
+        }
     }
 }
 
@@ -117,7 +135,12 @@ pub struct CaptureGroupActionRequest {
 impl CaptureGroupActionRequest {
     /// `destination` = None, `allow_permanent_delete` = false.
     pub fn new(group: CaptureGroup, operation: FileOperationType) -> Self {
-        todo!()
+        Self {
+            group,
+            operation,
+            destination: None,
+            allow_permanent_delete: false,
+        }
     }
 }
 
@@ -139,7 +162,15 @@ pub struct CaptureGroupMemberResult {
 impl CaptureGroupMemberResult {
     /// Defaults: `error` None, `source_exists` false, `destination_exists` false, `state_known` TRUE.
     pub fn new(member: JournalGroupMember, completed: bool, conflict: bool) -> Self {
-        todo!()
+        Self {
+            member,
+            completed,
+            conflict,
+            error: None,
+            source_exists: false,
+            destination_exists: false,
+            state_known: true,
+        }
     }
 }
 
@@ -174,7 +205,19 @@ impl CaptureGroupActionResult {
         members: Vec<CaptureGroupMemberResult>,
         error: Option<String>,
     ) -> Self {
-        todo!()
+        Self {
+            succeeded,
+            rejected,
+            operation,
+            group_id: group_id.into(),
+            entry,
+            members,
+            error,
+            journal_persisted: true,
+            journal_error: None,
+            permanently_deleted: false,
+            skipped_missing: None,
+        }
     }
 }
 
@@ -206,6 +249,14 @@ impl UndoResult {
         destination: Option<String>,
         error_message: Option<String>,
     ) -> Self {
-        todo!()
+        Self {
+            succeeded,
+            operation,
+            source: source.into(),
+            destination,
+            error_message,
+            rejected: false,
+            restored_paths: None,
+        }
     }
 }
