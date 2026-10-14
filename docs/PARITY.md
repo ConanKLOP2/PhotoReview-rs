@@ -45,6 +45,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | Q-FMT-WEBP-HEIC (drag and drop) | Done (W2-11, drop part) | `pr_core::catalog::drag_drop::parse` | `catalog_drag_drop::parse_heic_file_with_webp_heic_switch_on_is_valid`, `..._switch_off_is_invalid` | A dropped .heic or .webp opens only while the WebP/HEIC switch is on. |
 | F-23 | Done (W2-13) | `pr_core::session::writer::SessionWriter` | `session_writer::*` (29 C# twins, golden `session-writer-sequence`) | 500 ms debounce on one short-lived timer thread per window (injectable `DebounceTimer`), newest state per folder (per-folder versions; `C:\a\`/`C:\A` one key), bounded flush (2 s budget for lock + save on a `PhotoReview.SessionSave` thread), dispose waits at most 2 s in total, `Drop` = dispose. No twin: `Update_NullSkipped_DoesNotThrow`, negative-debounce rows (`Vec`/`Duration` cannot be null/negative) |
 | F-22 | Doing (W2-13: write part done) | `SessionWriter` -> `SessionStore::save` | `session_writer::*` | Debounced writes of the session state; the store itself (format, load, sweep) is W2-12 |
+| K-32, C-28, S-64 (normalize part), S-* range rows | Done (W2-02) | `pr_core::settings::normalizer::{normalize, disable_conflicting_optional_shortcuts, build_repair_text, SettingsValidator, SettingsParseResult}` | `settings_normalizer::*` (goldens `settings-normalize` 294, `settings-validate` 84, `settings-repair-text` 22) | Repair report order pinned by golden; `SettingsStore::parse_text` pipeline is W2-03 |
 
 ---
 
