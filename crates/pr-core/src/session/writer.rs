@@ -407,7 +407,11 @@ impl Shared {
         gate.timer = Some((id, token.clone()));
         let completion = Completion::new();
         gate.last_run = completion.clone();
-        let failure: Option<TimerError> = match self.timer.start(self.debounce, &token) {
+        // C# catches ANY exception from `_delay` (thrown synchronously inside Update): a panicking timer is handled like
+        // one that returns `Err`, so it can neither escape `update` nor leave the schedule set.
+        let started = catch_unwind(AssertUnwindSafe(|| self.timer.start(self.debounce, &token)))
+            .unwrap_or_else(|payload| Err(Box::new(PanicError(panic_message(&*payload)))));
+        let failure: Option<TimerError> = match started {
             Err(error) => Some(error),
             Ok(running) => {
                 let shared = Arc::clone(self);
@@ -434,7 +438,9 @@ impl Shared {
 
     /// C# `RunTimerAsync` (timer thread).
     fn run_timer(self: &Arc<Self>, id: u64, running: Box<dyn RunningTimer>) {
-        match running.wait() {
+        let outcome = catch_unwind(AssertUnwindSafe(|| running.wait()))
+            .unwrap_or_else(|payload| Err(Box::new(PanicError(panic_message(&*payload)))));
+        match outcome {
             Ok(TimerOutcome::Elapsed) => {}
             Ok(TimerOutcome::Canceled) => return,
             Err(error) => {
@@ -644,7 +650,7 @@ impl SessionWriter {
     ) -> Result<Self, InvalidDebounce> {
         let debounce = debounce.unwrap_or(DEFAULT_DEBOUNCE);
         // Zero would run the write inside update on the caller's thread; an over-long value makes Task.Delay throw in C#.
-        if debounce.is_zero() || debounce.as_millis() > u128::from(MAX_DEBOUNCE_MILLISECONDS) {
+        if debounce.is_zero() || debounce > Duration::from_millis(MAX_DEBOUNCE_MILLISECONDS) {
             return Err(InvalidDebounce(debounce));
         }
         Ok(Self {

@@ -539,11 +539,18 @@ fn dispose_returns_within_bound_when_write_in_flight() {
         let _ = tx.send(());
     });
     let completed = rx.recv_timeout(HANG);
+    let landed = f.fs.landed_channel();
     release.complete();
     assert!(completed.is_ok(), "dispose did not return within its bound");
 
+    writer.when_idle();
     f.fs.set_hook(None);
-    writer.when_idle(); // the timer thread writes "a" once released
+    // The in-flight write of "a" finishes on the timer thread after the release; when_idle does not cover it (C#
+    // Wait.UntilAsync).
+    assert!(
+        landed.recv_timeout(HANG).is_ok(),
+        "the in-flight write of a never landed"
+    );
     assert_eq!(f.current(r"C:\photos").as_deref(), Some("a")); // "b" was skipped, not written
     writer.dispose(); // double dispose is a no-op
     // Rust addition: the skipped "b" was not requeued after dispose, so not even a later flush writes it.
@@ -1227,4 +1234,208 @@ fn golden_session_writer_sequence() {
         }
         assert_eq!(f.errors().len() as u64, int(&case["log_errors"]), "{name} log errors");
     }
+}
+
+// ===================== Verifier regressions (repair round 1) =====================
+
+impl ManualTimer {
+    /// Fires only the `index`-th registered timer (0 = first `start`).
+    fn fire_index(&self, index: usize) {
+        let waiter = self.waiters.lock().unwrap_or_else(PoisonError::into_inner)[index].clone();
+        let mut outcome = waiter.0.lock().unwrap_or_else(PoisonError::into_inner);
+        if outcome.is_none() {
+            *outcome = Some(TimerOutcome::Elapsed);
+        }
+        waiter.1.notify_all();
+    }
+}
+
+// Own test (contract mutation "drop the timer-id check"): a stale timer of a flushed window that reports Elapsed must not
+// write the NEW window early.
+#[test]
+fn stale_timer_after_flush_does_not_write_the_new_window() {
+    let f = Fixture::with_timer(ManualTimer::with_cancel(false));
+    let writer = f.writer();
+    update(&writer, r"C:\photos", "a");
+    writer.flush();
+    assert_eq!(f.writes(), 1);
+    update(&writer, r"C:\photos", "b");
+    assert_eq!(f.timer.requests(), 2);
+    f.timer.fire_index(0); // the stale timer of the flushed window
+    thread::sleep(Duration::from_millis(300));
+    assert_eq!(f.writes(), 1, "stale timer wrote the new window early");
+    f.timer.fire_index(1);
+    writer.when_idle();
+    assert_eq!(f.writes(), 2);
+    assert_eq!(f.current(r"C:\photos").as_deref(), Some("b"));
+}
+
+// Own test: flush forgets the schedule, so the next update opens a new debounce window.
+#[test]
+fn flush_forgets_the_schedule() {
+    let f = Fixture::new();
+    let writer = f.writer();
+    update(&writer, r"C:\photos", "a");
+    writer.flush();
+    update(&writer, r"C:\photos", "b");
+    assert_eq!(
+        f.timer.requests(),
+        2,
+        "after flush the next update must schedule a new window"
+    );
+    f.timer.fire_all();
+    writer.when_idle();
+    assert_eq!(f.current(r"C:\photos").as_deref(), Some("b"));
+}
+
+/// A timer whose `wait` fails (`Err`) or panics, counting `start` calls.
+struct FailingWaitTimer {
+    calls: AtomicUsize,
+    panic: bool,
+}
+
+struct FailingRun {
+    panic: bool,
+}
+
+impl RunningTimer for FailingRun {
+    fn wait(self: Box<Self>) -> Result<TimerOutcome, TimerError> {
+        if self.panic {
+            panic!("wait panicked");
+        }
+        Err(Box::new(io::Error::other("wait broke")))
+    }
+}
+
+impl DebounceTimer for FailingWaitTimer {
+    fn start(&self, _span: Duration, _cancel: &CancelToken) -> Result<Box<dyn RunningTimer>, TimerError> {
+        self.calls.fetch_add(1, SeqCst);
+        Ok(Box::new(FailingRun { panic: self.panic }))
+    }
+}
+
+fn failing_wait_case(panic: bool) {
+    let f = Fixture::new();
+    let timer = Arc::new(FailingWaitTimer {
+        calls: AtomicUsize::new(0),
+        panic,
+    });
+    let writer = SessionWriter::new(
+        Arc::clone(&f.store),
+        Some(Arc::clone(&f.log) as Arc<dyn pr_core::abstractions::Log>),
+        None,
+        Some(Arc::clone(&timer) as Arc<dyn DebounceTimer>),
+    )
+    .unwrap_or_else(|e| panic!("writer: {e}"));
+    update(&writer, r"C:\photos", "a");
+    writer.when_idle();
+    assert!(f.has_error("Session write timer failed"));
+    update(&writer, r"C:\photos", "b");
+    writer.when_idle();
+    assert_eq!(timer.calls.load(SeqCst), 2, "second update must schedule again");
+    writer.flush();
+    assert_eq!(f.current(r"C:\photos").as_deref(), Some("b"));
+}
+
+// Own test (C# RunTimerAsync catch around `await _delay`): a failing timer wait forgets the schedule.
+#[test]
+fn timer_wait_error_forgets_the_schedule() {
+    failing_wait_case(false);
+}
+
+// Own test: a panicking timer wait is handled like an error (C# catches any exception).
+#[test]
+fn timer_wait_panic_forgets_the_schedule() {
+    failing_wait_case(true);
+}
+
+/// A timer whose first `start` panics (the C# `_delay` throwing synchronously); later calls delegate to a ManualTimer.
+struct PanicOnceTimer {
+    calls: AtomicUsize,
+    inner: ManualTimer,
+}
+
+impl DebounceTimer for PanicOnceTimer {
+    fn start(&self, span: Duration, cancel: &CancelToken) -> Result<Box<dyn RunningTimer>, TimerError> {
+        if self.calls.fetch_add(1, SeqCst) == 0 {
+            panic!("delay threw");
+        }
+        self.inner.start(span, cancel)
+    }
+}
+
+// Own test (C# BrokenTimer_DoesNotFaultOrWedgeTheWriter with a throwing `_delay`): a panicking `start` neither escapes
+// `update` nor wedges the writer.
+#[test]
+fn panicking_timer_start_does_not_escape_update_or_wedge_the_writer() {
+    let f = Fixture::new();
+    let timer = Arc::new(PanicOnceTimer {
+        calls: AtomicUsize::new(0),
+        inner: ManualTimer::new(),
+    });
+    let writer = SessionWriter::new(
+        Arc::clone(&f.store),
+        Some(Arc::clone(&f.log) as Arc<dyn pr_core::abstractions::Log>),
+        None,
+        Some(Arc::clone(&timer) as Arc<dyn DebounceTimer>),
+    )
+    .unwrap_or_else(|e| panic!("writer: {e}"));
+    let first = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        writer.update(&state(r"C:\photos", "a", &[]))
+    }));
+    assert!(
+        matches!(first, Ok(Ok(()))),
+        "C# Update never throws for a throwing delay"
+    );
+    assert!(f.has_error("Session write timer failed"));
+    update(&writer, r"C:\photos", "b");
+    assert_eq!(timer.calls.load(SeqCst), 2, "second update must schedule again");
+    timer.inner.fire_all();
+    writer.when_idle();
+    assert_eq!(f.current(r"C:\photos").as_deref(), Some("b"));
+}
+
+// Own test (C# compares the fractional TimeSpan.TotalMilliseconds): 4294967294.5 ms is over the limit.
+#[test]
+fn debounce_fractional_ms_over_limit_rejected() {
+    let f = Fixture::new();
+    let d = Duration::from_micros(4_294_967_294_500);
+    assert_eq!(
+        SessionWriter::new(Arc::clone(&f.store), None, Some(d), None).err(),
+        Some(InvalidDebounce(d))
+    );
+}
+
+// Own test (semantics 7): one budget covers the lock wait AND the save; a flush that waited for the lock only has the
+// rest of the budget left for its own save.
+#[test]
+fn bounded_flush_one_budget_covers_lock_wait_and_save() {
+    let f = Fixture::new();
+    let writer = Arc::new(f.writer());
+    writer.set_bounded_wait_for_tests(Duration::from_millis(1200));
+    let (entered, release) = (Event::new(), Event::new());
+    f.fs.set_hook(Some(blocking_hook(&entered, &release)));
+    update(&writer, r"C:\photos", "one");
+    f.timer.fire_all();
+    wait_event(&entered, "first save entered");
+    // The flush's own save will block until released after the assertion.
+    let (entered2, release2) = (Event::new(), Event::new());
+    f.fs.set_hook(Some(blocking_hook(&entered2, &release2)));
+    update(&writer, r"C:\photos", "two");
+    let first_release = release.clone();
+    let releaser = thread::spawn(move || {
+        thread::sleep(Duration::from_millis(700));
+        first_release.complete();
+    });
+    let started = Instant::now();
+    let w = Arc::clone(&writer);
+    run_bounded("flush", move || w.flush());
+    let elapsed = started.elapsed();
+    release2.complete();
+    let _ = releaser.join();
+    assert!(
+        elapsed < Duration::from_millis(1500),
+        "flush took {elapsed:?}; the budget must cover lock wait + save"
+    );
+    assert!(f.has_error("the save is still running after the wait budget"));
 }
