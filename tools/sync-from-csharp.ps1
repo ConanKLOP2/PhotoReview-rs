@@ -31,6 +31,12 @@ $map = [ordered]@{
     'src/PhotoReview.Core/Localization/Languages/' = 'assets/languages/'
     'tests/Fixtures/'                              = 'tests/fixtures/'
     'tools/diag/samples/'                          = 'tests/fixtures/diag/'
+    # Core test fixtures (W2-03 config files, Wave 3 journal fixtures P-15). A key may name one file; these come after
+    # 'tests/Fixtures/' because that entry empties tests/fixtures/ first.
+    'tests/PhotoReview.Core.Tests/Fixtures/config-v1.json'          = 'tests/fixtures/config-v1.json'
+    'tests/PhotoReview.Core.Tests/Fixtures/config-v2.json'          = 'tests/fixtures/config-v2.json'
+    'tests/PhotoReview.Core.Tests/Fixtures/operations-legacy.jsonl' = 'tests/fixtures/operations-legacy.jsonl'
+    'tests/PhotoReview.Core.Tests/Fixtures/journal-older-build/'    = 'tests/fixtures/journal-older-build/'
 }
 
 function Get-Sha256([string]$path) { (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLowerInvariant() }

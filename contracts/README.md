@@ -142,6 +142,15 @@ Order: W3-01 -> W3-02 / W3-03 -> W3-04 -> W3-05 / W3-06 -> W3-07 / W3-08. W3-02 
   hook fakes in `pr-test-support`; (e) sync `operations-legacy.jsonl` and `journal-older-build/*.jsonl` fixtures;
   (f) a W3-09 integration unit for the fault/crash matrices. Each is spelled out in the unit contract.
   **Resolved as proposals P-11..P-16 in `docs/PROPOSED-DECISIONS.md`** (all take the recommended option; the porters act on them).
+  **Landed on `integration/wave-3` (lead foundation, before the red-test pass):**
+  (a) `abstractions::AppendStream { fn as_file_mut(&mut self) -> Option<&mut File> }`, `FileSystem::open_append -> io::Result<Box<dyn AppendStream>>`;
+  (b) `FileSystem::try_get_file_stat(&Path) -> io::Result<Option<FileStat>>` (W3-07 P1 lists the overrides; `io::physical::is_stat_missing`);
+  (c) `RecycleBin::try_restore(..) -> io::Result<bool>`; `FakeRecycleBin::{set_send_hook, set_delete_permanently_hook, set_restore_hook, restore_calls}`;
+  (d) `pr_test_support::{HookFileSystem, FaultInjectionFileSystem}` (+ `FaultKind`, `FaultPlan`, `ProcessCrashed`, `is_process_crash`,
+  `FsEvent`, hook type aliases) and `FakeFileSystem::peek_stat`. Units use these instead of the local `HookFileSystem` /
+  `HookRecycleBin` / `ScriptedFs` copies their contracts describe (a unit-specific scripted fake may still WRAP them);
+  `CrashPointFileSystem`, `FaultableFileSystem` and the `FaultInjectionMatrix`/`Rig` helpers are NOT ported yet (W3-09);
+  (e) fixtures `tests/fixtures/operations-legacy.jsonl` and `tests/fixtures/journal-older-build/*.jsonl` synced (SYNC-LEDGER).
 - **D27 Golden determinism:** all 15 Wave 3 goldens were generated twice and compared byte for byte. Paths in them are
   virtual (`C:\Users\test\...`); `recovery-check` has two physical cases that name a missing file / missing UNC host.
 - **D28 Stubs outrank draft prose:** where a contract still names a helper the wired stubs lack, the stub wins and the
