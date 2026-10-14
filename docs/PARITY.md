@@ -35,6 +35,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | D-15 | Done (W2-04, read side) | `pr_l10n::loader::LanguageLoader` | `loader::*` (dotted names skipped, 1 MiB limit with and without stat, BOM, locked file) | `TranslationExport` (`<code>.todo.json`) is App wave |
 | I18N translator modes | Done (W2-04, plumbing) | `pr_l10n::localizer::{create_pseudo, create_show_keys}` | `localizer::create_pseudo_*`, `localizer::create_show_keys_*`, golden `l10n-localizer` | `--i18n-pseudo` / `--i18n-keys` CLI args are App wave |
 | X-l10n-keygen | Done (W2-04) | `crates/pr-l10n/build.rs` + `build/keygen.rs` (C# `TrGenerator`, `FlatJsonReader`, `LocDiagnostics`) | `key_generator::*`, `flat_json::*`, `generated_tr::*`, goldens `l10n-generator`, `l10n-flat-json` | PRLOC001..007 are build errors; Rust naming `keys::SCREAMING_SNAKE` / `tr::snake_case`, keywords `r#`-escaped; `self`/`crate`/`super` keys are PRLOC003 |
+| I-17 | Done (W2-06) | `pr_core::catalog::capture_groups` | `catalog_capture_groups::*` (golden `capture-groups`, 39 cases) | JPEG+RAW pairing and XMP sidecar choice; ReviewCatalog-based tests belong to W2-10 |
 | X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
 
 ---
