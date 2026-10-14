@@ -77,6 +77,24 @@ fn matches_moved_destination_different_size_within_tolerance_is_rejected() {
     assert!(!matches_moved_destination(&stat, 10, stamp()));
 }
 
+// C#: n/a (kills a one-sided `length <= size` comparison)
+#[test]
+fn matches_moved_destination_shorter_length_is_rejected() {
+    let stat = FileStat {
+        length: 9,
+        last_write_utc: stamp(),
+    };
+    assert!(!matches_moved_destination(&stat, 10, stamp()));
+    let zero = FileStat {
+        length: 0,
+        last_write_utc: stamp(),
+    };
+    assert!(!matches_moved_destination(&zero, 1, stamp()));
+    // a negative recorded size never matches a non-negative length
+    assert!(!matches_moved_destination(&zero, -1, stamp()));
+    assert!(!matches_moved_destination(&stat, -1, stamp()));
+}
+
 // C#: n/a (Rust length conversion: a u64 above i64::MAX never matches; a naive `as i64` would make u64::MAX equal -1)
 #[test]
 fn matches_moved_destination_length_above_i64_max_never_matches() {
