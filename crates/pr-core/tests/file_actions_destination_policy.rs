@@ -256,6 +256,37 @@ fn validate_no_escape_blank_arguments_are_errors() {
     );
 }
 
+// Mutation repair (M8): the containment prefix comparison is OrdinalIgnoreCase.
+#[test]
+fn validate_no_escape_prefix_comparison_is_case_insensitive() {
+    for (s, d) in [(r"C:\Photos", r"c:\photos\sub"), (r"C:\", r"c:\x")] {
+        assert_eq!(
+            validate_no_escape_via_reparse_point(s, d, &ReparseFs::new()),
+            Ok(A::Ok),
+            "{s} {d}"
+        );
+    }
+}
+
+// Mutation repair (M11): the whole four-char `\\?\` prefix is required to strip.
+#[test]
+fn validate_incomplete_extended_prefix_is_invalid_chars() {
+    for d in [r"\\?x", r"\\?"] {
+        assert_eq!(validate(Some(d)), A::InvalidChars, "{d:?}");
+    }
+}
+
+// Mutation repair (M20): a whitespace-only destination is a BlankPath error.
+#[test]
+fn validate_no_escape_whitespace_destination_is_error() {
+    assert_eq!(
+        validate_no_escape_via_reparse_point(r"C:\a", "  ", &ReparseFs::new()),
+        Err(ArgumentError::BlankPath {
+            param_name: "destinationFolderOrPath"
+        })
+    );
+}
+
 // C#: FileActionSafetyEdgeTests.Policy_PaddedParentSegment_Escapes
 #[test]
 fn policy_padded_parent_segment_escapes() {
