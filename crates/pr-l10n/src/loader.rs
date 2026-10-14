@@ -87,6 +87,53 @@ pub fn set_current_ui_culture(culture: UiCulture) {
 /// `CompareStringEx`-based comparer later (docs: contracts/W2-04.md open question 3).
 pub type NativeNameComparer = Arc<dyn Fn(&str, &str) -> Ordering + Send + Sync>;
 
+const LATIN1_BASE: &str = "AAAAAAACEEEEIIIIDNOOOOO*OUUUUYTsaaaaaaaceeeeiiiidnooooo/ouuuuyty";
+const LATIN_EXT_A_BASE: &str = "AaAaAaCcCcCcCcDdDdEeEeEeEeEeGgGgGgGgHhHhIiIiIiIiIiIiJjKkkLlLlLlLlLlNnNnNnnNnOoOoOoOoRrRrRrSsSsSsSsTtTtTtUuUuUuUuUuUuWwYyYZzZzZzs";
+
+/// Base letter of a precomposed Latin letter (Latin-1, Latin Extended-A, Vietnamese), the char itself otherwise.
+fn fold_accent(c: char) -> char {
+    let code = c as u32;
+    let base = |table: &str, offset: u32| table.chars().nth(offset as usize).filter(|b| *b != '*' && *b != '/');
+    match code {
+        0xC0..=0xFF => base(LATIN1_BASE, code - 0xC0),
+        0x100..=0x17F => base(LATIN_EXT_A_BASE, code - 0x100),
+        0x1A0 => Some('O'),
+        0x1A1 => Some('o'),
+        0x1AF => Some('U'),
+        0x1B0 => Some('u'),
+        0x1EA0..=0x1EF9 => {
+            let group = match code {
+                0x1EA0..=0x1EB7 => 'A',
+                0x1EB8..=0x1EC7 => 'E',
+                0x1EC8..=0x1ECB => 'I',
+                0x1ECC..=0x1EE3 => 'O',
+                0x1EE4..=0x1EF1 => 'U',
+                _ => 'Y',
+            };
+            Some(if code % 2 == 0 {
+                group
+            } else {
+                group.to_ascii_lowercase()
+            })
+        }
+        _ => None,
+    }
+    .unwrap_or(c)
+}
+
+/// Default native-name order: compares by base letter ignoring case (so an accented initial sorts with its plain
+/// letter, like a culture-aware collation), ties are broken by the accented spelling.
+/// Approximates C# `StringComparer.CurrentCultureIgnoreCase`; inject a platform comparer for exact parity.
+fn default_native_name_cmp(a: &str, b: &str) -> Ordering {
+    let primary = |s: &str| -> String {
+        s.chars()
+            .filter(|c| !('\u{300}'..='\u{36F}').contains(c))
+            .map(fold_accent)
+            .collect()
+    };
+    cmp_ignore_case(&primary(a), &primary(b)).then_with(|| cmp_ignore_case(a, b))
+}
+
 /// Finds and loads translation files. C# `LanguageLoader`.
 pub struct LanguageLoader {
     file_system: Arc<dyn FileSystem>,
@@ -117,11 +164,11 @@ impl LanguageLoader {
             file_system,
             shipped_dir: shipped_dir.into(),
             user_dir,
-            native_name_comparer: Arc::new(cmp_ignore_case),
+            native_name_comparer: Arc::new(default_native_name_cmp),
         }
     }
 
-    /// Replaces the native-name collation (default: ordinal ignore case).
+    /// Replaces the native-name collation (default: an accent-folding approximation of the C# culture order).
     pub fn with_native_name_comparer(mut self, comparer: NativeNameComparer) -> Self {
         self.native_name_comparer = comparer;
         self

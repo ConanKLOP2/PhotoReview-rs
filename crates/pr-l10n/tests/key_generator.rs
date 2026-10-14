@@ -487,3 +487,24 @@ fn m39_extra_catalog_order_is_utf16_ordinal() {
         assert!(keygen::render_tr(&result).contains("pub fn first("));
     }
 }
+
+#[test]
+fn plural_group_params_follow_one_placeholder_order_when_one_adds_several() {
+    // Mutation gap (verifier M14): `.one` introduces two placeholders that `.other` lacks; they join the
+    // parameter chain in `.one` order (a, b), after the `.other` placeholders.
+    let result = run(&catalog(&[r#""x.one": "{a} {b}""#, r#""x.other": "{c} many""#]));
+
+    assert!(result.diagnostics.is_empty(), "{:?}", result.diagnostics);
+    let tr = keygen::render_tr(&result);
+    assert!(
+        tr.contains(
+            "pub fn x(count: i64, c: impl Into<LocValue>, a: impl Into<LocValue>, b: impl Into<LocValue>) -> String {"
+        ),
+        "{tr}"
+    );
+    let bare = run(&catalog(&[r#""x.one": "{a} {b}""#, r#""x.other": "many""#]));
+    assert!(
+        keygen::render_tr(&bare)
+            .contains("pub fn x(count: i64, a: impl Into<LocValue>, b: impl Into<LocValue>) -> String {")
+    );
+}

@@ -626,3 +626,16 @@ fn m10_loader_sorts_files_itself() {
     assert_eq!(b.get(KEY), a.get(KEY));
     assert_eq!(b.native_name(), a.native_name());
 }
+
+#[test]
+fn discover_languages_default_native_name_order_folds_accents() {
+    // Differential finding vs C# CurrentCultureIgnoreCase: an accented initial sorts with its base letter
+    // (en, cs, de, es, zu); the ordinal comparer gave en, de, es, zu, cs.
+    let f = Fixture::new();
+    f.add_simple(SHIPPED_DIR, "de.json", "de", "Deutsch", None);
+    f.add_simple(SHIPPED_DIR, "cs.json", "cs", "\u{10C}e\u{161}tina", None);
+    f.add_simple(SHIPPED_DIR, "es.json", "es", "Espa\u{F1}ol", None);
+    f.add_simple(SHIPPED_DIR, "zu.json", "zu", "Zulu", None);
+
+    assert_eq!(codes(&f.loader()), ["en", "cs", "de", "es", "zu"]);
+}
