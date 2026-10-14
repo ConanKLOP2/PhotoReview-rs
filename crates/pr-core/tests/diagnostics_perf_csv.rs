@@ -1332,3 +1332,179 @@ fn one_second_rule_flushes_while_rows_keep_arriving() {
     listener.dispose();
     assert!(seen >= 1, "no flush during a 1.6 s busy stream (flushes={seen})");
 }
+
+// ---- W2-17 repair: C# path semantics of the trace directory, constants and timers -------------------------------
+
+/// Every `perf-*.csv` below `dir`, as paths relative to it with `/` separators (read through the extended form so
+/// names with a trailing space or dot are listed as they are).
+#[cfg(windows)]
+fn trace_files_below(dir: &str) -> Vec<String> {
+    fn walk(dir: &std::path::Path, base: &str, out: &mut Vec<String>) {
+        let Ok(entries) = std::fs::read_dir(dir) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            let rel = if base.is_empty() {
+                name.clone()
+            } else {
+                format!("{base}/{name}")
+            };
+            if entry.file_type().is_ok_and(|t| t.is_dir()) {
+                walk(&entry.path(), &rel, out);
+            } else if name.starts_with("perf-") && name.ends_with(".csv") {
+                out.push(rel);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    // canonicalize expands 8.3 names, which the extended form would not.
+    if let Ok(canonical) = std::fs::canonicalize(dir) {
+        walk(&canonical, "", &mut out);
+    }
+    out
+}
+
+/// C# `Directory.CreateDirectory(dir)` then `FileStream(Path.Combine(dir, name))`: the directory comes from
+/// `Path.GetFullPath(dir)`, the file path from the original text. Expected values were measured with .NET 10
+/// (`Some(relative dir)` = the file lands there, `None` = start refused).
+#[cfg(windows)]
+#[test]
+fn trace_dir_last_segment_trailing_space_or_dot_follows_get_full_path() {
+    let _guard = global_state();
+    let cases: &[(&str, Option<&str>)] = &[
+        (r"a", Some("a")),
+        (r"a ", None),
+        (r"a.", Some("a")),
+        (r"a. ", None),
+        (r"e. . ", None),
+        (r"k ..", None),
+        (r"j  .  ", None),
+        (r"c/d ", None),
+        (r"x \y", Some("x /y")),
+        (r"x.\y", Some("x/y")),
+        (r"x \y ", None),
+        (r"x \y.", Some("x /y")),
+        (r"a\..\b ", None),
+        (r"q \", Some("q ")),
+        (r"q.\", Some("q")),
+        (r"q \r\", Some("q /r")),
+        (r"q \.\", Some("q ")),
+        (r"q \..\s", Some("s")),
+        (r"m \n \", Some("m /n ")),
+        (r"w . \z", Some("w . /z")),
+    ];
+    let now = || LocalTimeParts {
+        year: 2020,
+        month: 1,
+        day: 1,
+        hour: 0,
+        minute: 0,
+        second: 0,
+    };
+    let mut failures = Vec::new();
+    for (index, (rel, expected)) in cases.iter().enumerate() {
+        let base = std::env::temp_dir().join(format!("w217-dir-{}-{index}", std::process::id()));
+        let base_text = base.to_string_lossy().into_owned();
+        std::fs::create_dir_all(&base).expect("temp base");
+        let canonical_base = std::fs::canonicalize(&base)
+            .expect("canonical base")
+            .to_string_lossy()
+            .into_owned();
+        let dir = format!(r"{base_text}\{rel}");
+        let lookup = |name: &str| (name == TRACE_ENV_VAR).then(|| dir.clone());
+        let listener = PerfCsvListener::try_start(&lookup, None, &now);
+        let started = listener.is_some();
+        if let Some(l) = listener {
+            l.dispose();
+        }
+        let files = trace_files_below(&base_text);
+        let _ = std::fs::remove_dir_all(&canonical_base);
+        let expected_files: Vec<String> = expected
+            .iter()
+            .map(|d| format!("{d}/perf-{}-20200101-000000.csv", std::process::id()))
+            .collect();
+        if started != expected.is_some() || files != expected_files {
+            failures.push(format!(
+                "{rel:?}: started={started} files={files:?}, expected {expected:?}"
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "differs from C#:\n{}", failures.join("\n"));
+}
+
+#[test]
+fn csharp_constants_are_pinned() {
+    use pr_core::diagnostics::perf_csv::{CHANNEL_CAPACITY, DISPOSE_WAIT, FLUSH_INTERVAL};
+    assert_eq!(CHANNEL_CAPACITY, 100_000);
+    assert_eq!(FLUSH_INTERVAL, Duration::from_secs(1));
+    assert_eq!(DISPOSE_WAIT, Duration::from_secs(5));
+}
+
+// The default idle interval (C# `_idleFlushInterval = 1 s`): one row, then silence -> the tail is flushed after ~1 s.
+#[test]
+fn default_idle_interval_flushes_a_quiet_tail_after_about_one_second() {
+    let _guard = global_state();
+    let sink = Probe::memory();
+    let listener = start(&sink, 1000);
+    let began = Instant::now();
+    listener.enqueue(simple_row);
+    assert!(
+        spin_until(Duration::from_secs(10), || sink.flushes() > 0),
+        "the quiet tail was never flushed"
+    );
+    let waited = began.elapsed();
+    listener.dispose();
+    assert!(waited >= Duration::from_millis(800), "flushed after only {waited:?}");
+    assert!(waited <= Duration::from_millis(3000), "flushed only after {waited:?}");
+}
+
+// The 1 s rule (C# `Stopwatch` check): rows keep arriving every 20 ms, so only the time-since-last-flush rule can fire;
+// the idle timer is 30 s. The first flush comes at ~1 s, not per row and not never.
+#[test]
+fn busy_stream_first_flush_comes_at_the_one_second_mark() {
+    let _guard = global_state();
+    let sink = Probe::memory();
+    let listener =
+        PerfCsvListener::start_for_test(sink.sink(), 1000, Some(Duration::from_secs(30)), None, None, &no_diag);
+    let began = Instant::now();
+    let mut first_flush = None;
+    while began.elapsed() < Duration::from_millis(2200) {
+        listener.enqueue(simple_row);
+        std::thread::sleep(Duration::from_millis(10));
+        if first_flush.is_none() && sink.flushes() > 0 {
+            first_flush = Some(began.elapsed());
+        }
+    }
+    let flushes = sink.flushes();
+    listener.dispose();
+    let first = first_flush.expect("no flush during a 2.2 s busy stream");
+    assert!(first >= Duration::from_millis(900), "first flush after only {first:?}");
+    assert!(first <= Duration::from_millis(1500), "first flush after {first:?}");
+    assert!((1..=4).contains(&flushes), "flushes={flushes}");
+}
+
+// The default dispose wait (C# `_disposeWait = 5 s`): a writer blocked in the sink makes dispose give up after ~5 s.
+#[test]
+fn default_dispose_wait_is_about_five_seconds() {
+    let _guard = global_state();
+    let sink = Probe::with_mode(GateMode::FirstWrite);
+    let listener = start(&sink, 1000);
+    for _ in 0..200 {
+        listener.enqueue(simple_row);
+    }
+    assert!(
+        sink.wait_entered(Duration::from_secs(20)),
+        "the writer never reached the sink"
+    );
+    let began = Instant::now();
+    listener.dispose();
+    let waited = began.elapsed();
+    sink.open_gate();
+    assert!(listener.wait_finished(Duration::from_secs(20)));
+    assert!(
+        waited >= Duration::from_millis(4500),
+        "dispose gave up after {waited:?}"
+    );
+    assert!(waited <= Duration::from_secs(8), "dispose waited {waited:?}");
+}

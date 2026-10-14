@@ -413,71 +413,55 @@ fn guarded(op: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
     }
 }
 
-/// .NET Core addresses files through the `\\?\` extended prefix, so a directory segment that ends in a space or a dot
-/// survives; plain Win32 normalization (what `std::fs` uses for ordinary paths) strips it. Such a path is rewritten
-/// lexically to the extended form; every other path is used as given.
+/// C# `Directory.CreateDirectory(dir)`, `Path.Combine(dir, fileName)` and `new FileStream(path, FileMode.Create,
+/// FileAccess.Write, FileShare.Read, ...)`, step by step. The directory is created from `Path.GetFullPath(dir)`, which
+/// trims a trailing space or dot off the LAST segment, but the file path is combined from the ORIGINAL text: a last
+/// segment such as `x ` creates `x` and then fails to open `x /perf-..csv` (path not found, `None`), while a middle
+/// segment such as `x /y` is kept by both steps. The file is opened at `Path.GetFullPath(path)`, in the extended
+/// form only for 260 or more UTF-16 units (the name ends in `.csv`).
 #[cfg(windows)]
-fn trace_dir_path(dir: &str) -> std::path::PathBuf {
-    use std::path::PathBuf;
-    let s = dir.replace('/', "\\");
-    let needs = s
-        .split('\\')
-        .any(|seg| seg != "." && seg != ".." && (seg.ends_with(' ') || seg.ends_with('.')));
-    if !needs || s.starts_with(r"\\?\") || s.starts_with(r"\\.\") {
-        return PathBuf::from(dir);
-    }
-    let bytes = s.as_bytes();
-    let (prefix, rest): (String, String) = if let Some(unc) = s.strip_prefix(r"\\") {
-        let mut parts = unc.splitn(3, '\\');
-        match (parts.next(), parts.next()) {
-            (Some(server), Some(share)) if !server.is_empty() && !share.is_empty() => (
-                format!(r"\\?\UNC\{server}\{share}"),
-                parts.next().unwrap_or("").to_owned(),
-            ),
-            _ => return PathBuf::from(dir),
-        }
-    } else if bytes.len() >= 3 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':' && bytes[2] == b'\\' {
-        (format!(r"\\?\{}:", char::from(bytes[0])), s[3..].to_owned())
-    } else if bytes.len() >= 2 && bytes[1] == b':' {
-        return PathBuf::from(dir); // drive-relative: leave to the OS
+fn create_trace_file(dir: &str, file_name: &str) -> Option<(std::fs::File, std::path::PathBuf)> {
+    use crate::abstractions::FileSystem as _;
+    use crate::io::physical::PhysicalFileSystem;
+    use crate::text::dotnet_path;
+    use std::os::windows::fs::OpenOptionsExt;
+
+    const BS: char = '\u{5c}';
+    PhysicalFileSystem.create_directory(std::path::Path::new(dir)).ok()?;
+    // Path.Combine: no separator is added after one that already ends the directory text.
+    let combined = if dir.ends_with([BS, '/']) {
+        format!("{dir}{file_name}")
     } else {
-        let Ok(cwd) = std::env::current_dir() else {
-            return PathBuf::from(dir);
-        };
-        let cwd = cwd.to_string_lossy().into_owned();
-        let cb = cwd.as_bytes();
-        if cb.len() < 3 || cb[1] != b':' || cwd.starts_with(r"\\") {
-            return PathBuf::from(dir);
-        }
-        let drive = format!(r"\\?\{}:", char::from(cb[0]));
-        if let Some(rooted) = s.strip_prefix('\\') {
-            (drive, rooted.to_owned())
-        } else {
-            (drive, format!("{}\\{}", &cwd[3..], s))
-        }
+        format!("{dir}{BS}{file_name}")
     };
-    let mut stack: Vec<&str> = Vec::new();
-    for seg in rest.split('\\') {
-        match seg {
-            "" | "." => {}
-            ".." => {
-                stack.pop();
-            }
-            other => stack.push(other),
-        }
+    let mut full = dotnet_path::get_full_path(&combined).ok()?;
+    let extended = format!("{BS}{BS}?{BS}");
+    if full.encode_utf16().count() >= 260 && dotnet_path::is_path_fully_qualified(&full) && !full.starts_with(&extended)
+    {
+        full = match full.strip_prefix(&format!("{BS}{BS}")) {
+            Some(unc) => format!("{extended}UNC{BS}{unc}"),
+            None => format!("{extended}{full}"),
+        };
     }
-    let mut out = prefix;
-    for seg in stack {
-        out.push('\\');
-        out.push_str(seg);
-    }
-    out.push('\\');
-    PathBuf::from(out)
+    let mut options = std::fs::OpenOptions::new();
+    // C# FileShare.Read: a second writer on the same trace file is refused instead of truncating it.
+    options.write(true).create(true).truncate(true).share_mode(1); // FILE_SHARE_READ
+    let path = std::path::PathBuf::from(full);
+    let file = options.open(&path).ok()?;
+    Some((file, path))
 }
 
 #[cfg(not(windows))]
-fn trace_dir_path(dir: &str) -> std::path::PathBuf {
-    std::path::PathBuf::from(dir)
+fn create_trace_file(dir: &str, file_name: &str) -> Option<(std::fs::File, std::path::PathBuf)> {
+    std::fs::create_dir_all(dir).ok()?;
+    let path = std::path::Path::new(dir).join(file_name);
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&path)
+        .ok()?;
+    Some((file, path))
 }
 
 impl PerfCsvListener {
@@ -506,18 +490,7 @@ impl PerfCsvListener {
             t.minute,
             t.second
         );
-        let dir_path = trace_dir_path(&dir);
-        std::fs::create_dir_all(&dir_path).ok()?;
-        let path = dir_path.join(file_name);
-        let mut options = std::fs::OpenOptions::new();
-        options.write(true).create(true).truncate(true);
-        #[cfg(windows)]
-        {
-            // C# FileShare.Read: a second writer on the same trace file is refused instead of truncating it.
-            use std::os::windows::fs::OpenOptionsExt;
-            options.share_mode(1); // FILE_SHARE_READ
-        }
-        let file = options.open(&path).ok()?;
+        let (file, path) = create_trace_file(&dir, &file_name)?;
         let sink: Box<dyn Write + Send> = Box::new(BufWriter::with_capacity(FILE_BUFFER, file));
         let diag = |name: &str| lookup(&name.replacen("PHOTOREVIEW_", "PHOTOREVIEW_RS_", 1));
         match Self::start(sink, CHANNEL_CAPACITY, FLUSH_INTERVAL, DISPOSE_WAIT, commit, &diag) {
