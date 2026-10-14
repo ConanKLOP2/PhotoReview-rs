@@ -3,26 +3,23 @@
 **Updated:** 2026-10-14
 
 ## State
-- Wave 0 done (two branches, neither merged when written). Repo: https://github.com/ConanKLOP2/PhotoReview-rs
-  (public), local `D:\MyProject\PhotoReview-rs`.
-- Merged on master: skeleton, toolchain pin Rust 1.99.0 + `Cargo.lock` + `--locked` CI (PR #1).
-- PR #2 (docs/MULTI-AGENT-PLAN.md) and PR #3 (`wave0/foundations`) open, CI green. Auto-merge cannot be armed until
-  master has required checks (`build-test`, `repo-checks`); the user said they would add them.
-- PR #3 `wave0/foundations`: ADR R0003; `pr_core::{abstractions, time, text, sync, catalog::explorer_types}`;
-  `pr-test-support`; oracle (`tools/oracle-cs`, `tools/oracle.ps1`); `tools/wave.ps1`.
-- Branch `wave1/contracts` (built on `wave0/foundations`; PR opened only after #3 merges, no stacked PRs): W0-06.
-  22 Wave 1 contracts in `contracts/W1-*.md` + `contracts/README.md` (roster, porter model per unit, lead decisions
-  D1-D11); all stubs in place with `todo!()` bodies, module wiring, deps (serde, serde_json raw_value, indexmap);
-  oracle now 31 commands (`tools/oracle-cs/Commands/*.cs`, PerfAnalysis.dll referenced), 26 new goldens (~2.3 MB),
-  `tests/fixtures/diag/` synced. Gate (`tools/wave.ps1 -Wave 1 -Gate`) passed. Contracts were written by Sonnet agents
-  that also checked their goldens against throw-away prototypes; the oracle outputs match their reference outputs.
-- Oracle findings now in goldens: .NET OrdinalIgnoreCase / System.Text.Json DateTime quirks (Wave 0); `char.IsDigit`
-  = BMP Nd only; 8 BMP letters .NET 10 does not lower; `Path.GetPathRoot` normalizes separators; `int.TryParse`
-  accepts trailing NULs; LINQ sorts put NaN lowest and `MaxBy` keeps the first max; .NET `double.ToString` switches to
-  E notation at exponent >= 17 or <= -5.
+- Wave 0 and Wave 1 contracts merged on master (#1-#4). Wave 1 porting done on branch `integration/wave-1`
+  (this PR): all 22 units ported, 21 merged and gated; W1-20 helper de-duplication lands last.
+- Results: 22 units, 1 port round + 4 repair rounds (mutation + differential verification against real C# builds).
+  Gate (`tools/wave.ps1 -Wave 1 -Gate`): fmt, clippy -D warnings, all tests, synced assets: passed on the merged tree.
+- Accepted divergences (contracts/README.md D5 and per-unit `// DIVERGENCE:` comments): bare `-0` / `1e400` number
+  tokens (serde_json), UTF-16 BOM side files (perf units), offset timestamps converted to UTC (W1-14), invalid UTF-8
+  in a journal property name (W1-14), junction-cycle protection (W1-21; .NET never terminates).
+- Corrections to contracts found in verification: W1-21 "C# does not follow reparse points" was wrong (.NET 10 follows
+  junctions); contract text fixed.
+- `tools/wave.ps1` now gives every worktree its own cargo target dir (shared dir caused false gate failures).
 
 ## Next
-1. User: add required checks on master; merge #2 and #3. Then rebase `wave1/contracts` onto master, open its PR.
-2. Wave 1 porting (docs/MULTI-AGENT-PLAN.md §5, roster in contracts/README.md): needs the user's explicit go
-   ("chạy workflow wave 1") before launching many agents.
+1. Merge the Wave 1 PR (auto-merge armed). Then delete `.claude/worktrees/W1-*`, `integ`, `wu/*` branches
+   (content is squashed into master; check by diff, not merge-base).
+2. Wave 2 (docs/MULTI-AGENT-PLAN.md §3): Settings (AppSettings 390 lines, normalizer, store, INV-11), catalog
+   services, session store/writer, physical file system (INV-8), logs, instance forwarding. Needs contracts first
+   (Contract Writer round, as for Wave 1) and the user's "chạy workflow wave 2".
 3. Still open in Phase 0: UI spikes (R0001), COM Explorer spike.
+4. Known follow-ups: UTF-16 BOM decode in `pr_perf::csv::decode_bytes` (W1-16 owns); hoist shared helpers
+   (`get_extension`, `get_path_root`, `fmt_fixed`/`fmt_double`) into a lead-owned module (contracts D8).
