@@ -1,8 +1,6 @@
 //! W1-21: the `--perf-analyze` pipeline (`PerfAnalyze.cs`, `NaNAsNullDoubleConverter.cs`).
 //!
-//! The end-to-end tests drive `pr_perf::analyze::run`, which needs the sibling units W1-16..W1-20 (csv, nav, stats,
-//! rules, report). Until those are merged their stubs still contain `todo!()`, so every test that reaches them is
-//! `#[ignore]`d with that reason; remove the `ignore` attributes once W1-16..W1-20 are on master (they must pass).
+//! The end-to-end tests drive `pr_perf::analyze::run` (units W1-16..W1-20 are merged; all tests run).
 
 use std::fs;
 use std::path::Path;
@@ -90,7 +88,6 @@ fn nan_as_null_double_read_maps_null_number_and_other_tokens() {
 
 // C#: NaNAsNullDoubleConverter.Write (golden perf-analyze `json_double`)
 #[test]
-#[ignore = "needs W1-18 fmt_double merged"]
 fn golden_json_double_cases() {
     let g = golden::load("perf-analyze");
     let mut n = 0;
@@ -112,7 +109,6 @@ fn golden_json_double_cases() {
 
 // C#: PerfAnalyzeTests.PerfAnalyzeOnTheSampleDirectoryWritesSummaryMdAndJson
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn run_on_the_sample_directory_writes_summary_md_and_json() {
     let root = TempRoot::new("perf-analyze-sample");
     write(root.path(), "perf-sample.csv", sample_csv().as_bytes());
@@ -137,7 +133,6 @@ fn run_on_the_sample_directory_writes_summary_md_and_json() {
 
 // C#: PerfAnalyzeTests.PerfAnalyzeWithOnlyIncompleteNavsStillWritesJson
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn run_with_only_incomplete_navs_still_writes_json() {
     let root = TempRoot::new("perf-analyze-incomplete");
     write(
@@ -156,7 +151,6 @@ fn run_with_only_incomplete_navs_still_writes_json() {
 
 // C#: PerfAnalyzeTests.PerfAnalyzeThrowsWhenNoCsvFilesArePresent
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn run_without_csv_files_is_invalid_operation() {
     let root = TempRoot::new("perf-analyze-empty");
     let err = run(root.path(), None).expect_err("must fail");
@@ -165,7 +159,6 @@ fn run_without_csv_files_is_invalid_operation() {
 
 // C#: PerfAnalyzeTests.PerfAnalyzeKeepsWorkerTreatmentsSeparateAndOnlyComparesSameCondition
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn run_keeps_worker_treatments_separate_and_only_compares_same_condition() {
     let root = TempRoot::new("perf-analyze-workers");
     let csv = sample_csv();
@@ -209,7 +202,6 @@ fn run_keeps_worker_treatments_separate_and_only_compares_same_condition() {
 
 // C#: PerfAnalyzeReportTests.DroppedRowsAreSurfacedInMarkdownAndJson
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn dropped_rows_are_surfaced_in_markdown_and_json() {
     let root = TempRoot::new("perf-analyze-dropped");
     write(
@@ -236,7 +228,6 @@ fn dropped_rows_are_surfaced_in_markdown_and_json() {
 
 // C#: PerfAnalyzeReportTests.NoDroppedRowsMeansNoWarning
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn no_dropped_rows_means_no_warning() {
     let root = TempRoot::new("perf-analyze-nodrop");
     write(
@@ -258,7 +249,6 @@ fn no_dropped_rows_means_no_warning() {
 
 // C#: PerfAnalyzeReportTests.GroupsAreOrderedByWorkerCountNumericallyNotAsText
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn groups_are_ordered_by_worker_count_numerically_not_as_text() {
     let root = TempRoot::new("perf-analyze-order");
     for workers in [10, 2] {
@@ -286,7 +276,6 @@ fn groups_are_ordered_by_worker_count_numerically_not_as_text() {
 
 // C#: PerfAnalyzeReportTests.PipeInAGroupNameIsEscapedSoTheTableKeepsItsColumns
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn pipe_in_a_group_name_is_escaped_so_the_table_keeps_its_columns() {
     let root = TempRoot::new("perf-analyze-pipe");
     write(
@@ -366,7 +355,6 @@ fn check_groups(name: &str, case: &Value, result: &AnalysisResult) {
 
 // C#: PerfAnalyze.RunAsync (golden perf-analyze `run`, 19 cases)
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn golden_run_cases() {
     let g = golden::load("perf-analyze");
     let mut n = 0;
@@ -480,7 +468,6 @@ fn rule<'a>(g: &'a pr_perf::analyze::GroupResult, name: &str) -> &'a pr_perf::ru
 
 // C#: PerfAnalyze.EvaluateAllRules (`DispatcherLongOps.Count(d => d.Ms > dispatcherThreshold)`, strict >)
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn dispatcher_long_op_of_exactly_the_threshold_is_not_counted() {
     let at = TempRoot::new("perf-analyze-dispatch-at");
     write(at.path(), "perf-1.csv", dispatcher_csv("16.0").as_bytes());
@@ -511,7 +498,6 @@ fn dispatcher_long_op_of_exactly_the_threshold_is_not_counted() {
 
 // C#: PerfAnalyze.EvaluateAllRules (decodeNavs include InflightJoin)
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn inflight_join_navs_count_as_decode_navs_for_r_dec() {
     let root = TempRoot::new("perf-analyze-inflight-dec");
     write(root.path(), "perf-1.csv", inflight_csv("40.0").as_bytes());
@@ -529,7 +515,6 @@ fn inflight_join_navs_count_as_decode_navs_for_r_dec() {
 
 // C#: PerfAnalyze.AverageDecodeMs (InflightJoin navs feed the R-CONT decode averages)
 #[test]
-#[ignore = "needs W1-16..W1-20 (csv/nav/stats/rules/report) merged"]
 fn inflight_join_navs_feed_the_r_cont_decode_averages() {
     let root = TempRoot::new("perf-analyze-inflight-cont");
     for (workers, decode) in [(1, "10.0"), (4, "20.0")] {
@@ -555,3 +540,84 @@ fn inflight_join_navs_feed_the_r_cont_decode_averages() {
         assert_eq!(r.triggered, Some(true));
     }
 }
+
+/// One complete nav whose ShowStart text (the nav's mode) is `mode`.
+fn mode_csv(mode: &str) -> String {
+    format!("{HEADER}1,1000,1,ShowStart,1,,0,,,,{mode}\n2,1500,1,Presented,1,,1,,,,final\n")
+}
+
+fn key_order(result: &AnalysisResult) -> Vec<(String, String, String, Option<i32>)> {
+    result
+        .groups
+        .iter()
+        .map(|g| {
+            let k = &g.summary.key;
+            (k.scenario.clone(), k.mode.clone(), k.cond.clone(), k.preload_workers)
+        })
+        .collect()
+}
+
+// C#: PerfAnalyze.RunAsync (`.ThenBy(k => k.Mode, StringComparer.Ordinal)`): groups tying on scenario differ only by mode
+#[test]
+fn groups_tied_on_scenario_are_ordered_by_mode_ordinally() {
+    let root = TempRoot::new("perf-analyze-mode-order");
+    // First-seen order (sorted file paths): Preview, then Full. Only the mode key can reorder them.
+    write(root.path(), "a/perf-1.csv", mode_csv("Preview").as_bytes());
+    write(root.path(), "b/perf-1.csv", mode_csv("Full").as_bytes());
+    for d in ["a", "b"] {
+        write(
+            root.path(),
+            &format!("{d}/session.json"),
+            br#"{"scenario":"S2","condition":"warm","preloadWorkers":2}"#,
+        );
+    }
+    let result = run(root.path(), None).expect("run");
+    let modes: Vec<String> = key_order(&result).into_iter().map(|k| k.1).collect();
+    assert_eq!(modes, ["Full", "Preview"]);
+}
+
+// C#: PerfAnalyze.RunAsync (`.ThenBy(k => k.PreloadWorkers ?? -1)`): unknown workers sort before known ones
+#[test]
+fn group_with_unknown_workers_sorts_before_a_known_worker_group() {
+    let root = TempRoot::new("perf-analyze-unknown-workers");
+    // First-seen: unknown workers (a), then workers=0 (b). With `-1` the order stays; any larger sentinel flips it.
+    write(root.path(), "a/perf-1.csv", mode_csv("Preview").as_bytes());
+    write(root.path(), "b/perf-1.csv", mode_csv("Preview").as_bytes());
+    write(
+        root.path(),
+        "a/session.json",
+        br#"{"scenario":"S2","condition":"warm"}"#,
+    );
+    write(
+        root.path(),
+        "b/session.json",
+        br#"{"scenario":"S2","condition":"warm","preloadWorkers":0}"#,
+    );
+    let result = run(root.path(), None).expect("run");
+    let workers: Vec<Option<i32>> = key_order(&result).into_iter().map(|k| k.3).collect();
+    assert_eq!(workers, [None, Some(0)]);
+
+    // Reverse first-seen order: known workers first in file order, unknown must still come first.
+    let root2 = TempRoot::new("perf-analyze-unknown-workers-rev");
+    write(root2.path(), "a/perf-1.csv", mode_csv("Preview").as_bytes());
+    write(root2.path(), "b/perf-1.csv", mode_csv("Preview").as_bytes());
+    write(
+        root2.path(),
+        "a/session.json",
+        br#"{"scenario":"S2","condition":"warm","preloadWorkers":0}"#,
+    );
+    write(
+        root2.path(),
+        "b/session.json",
+        br#"{"scenario":"S2","condition":"warm"}"#,
+    );
+    let result = run(root2.path(), None).expect("run");
+    let workers: Vec<Option<i32>> = key_order(&result).into_iter().map(|k| k.3).collect();
+    assert_eq!(workers, [None, Some(0)]);
+}
+
+// DIVERGENCE: summary.md/summary.json keep the CRLF line endings the C# StringBuilder.AppendLine writes on Windows
+// (lead decision D5), and the CSV reader is UTF-8 only (D9: no system code page fallback). Both are pinned by the
+// golden `run` cases, which compare the output files byte for byte.
+// DIVERGENCE: an unreadable CSV is reported with Rust's io::Error text inside `InvalidData("Could not analyze ...")`,
+// not the .NET exception text (contract open question 2); only the prefix is compared.
