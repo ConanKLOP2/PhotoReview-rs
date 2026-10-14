@@ -622,3 +622,59 @@ fn rules_config_load_detects_utf16_and_utf32_byte_order_marks_like_read_all_text
     std::fs::write(&path, utf16.iter().flat_map(|u| u.to_le_bytes()).collect::<Vec<u8>>()).expect("write");
     assert!(matches!(RulesConfig::load(&path), Err(PerfError::InvalidData(_))));
 }
+
+fn load_bytes(root: &TempRoot, name: &str, bytes: &[u8]) -> Result<RulesConfig, PerfError> {
+    let path = root.join(name);
+    std::fs::write(&path, bytes).expect("write rules file");
+    RulesConfig::load(&path)
+}
+
+fn assert_load_invalid(root: &TempRoot, name: &str, bytes: &[u8]) {
+    let path_text = root.join(name).display().to_string();
+    match load_bytes(root, name, bytes) {
+        Err(PerfError::InvalidData(msg)) => {
+            assert!(
+                msg.starts_with(&format!("Invalid rules file '{path_text}': ")),
+                "{name}: {msg}"
+            )
+        }
+        other => panic!("{name}: expected InvalidData, got {other:?}"),
+    }
+}
+
+#[test]
+fn rules_config_load_strips_exactly_one_bom_like_read_all_text() {
+    // C#: File.ReadAllText removes ONE byte order mark and JsonSerializer.Deserialize(string) throws on a leading
+    // U+FEFF, so a second BOM is InvalidDataException("Invalid rules file ...") (verified with a .NET 10 oracle).
+    let root = TempRoot::new("rules-double-bom");
+    let json = r#"{"R":{"k":1}}"#;
+    let utf8_bom: &[u8] = &[0xEF, 0xBB, 0xBF];
+    // Single UTF-8 BOM: accepted.
+    let cfg = load_bytes(&root, "one.json", &[utf8_bom, json.as_bytes()].concat()).expect("single BOM");
+    assert_eq!(cfg.get("R", "k", 7.0), 1.0);
+    // Two UTF-8 BOMs: rejected.
+    assert_load_invalid(&root, "two.json", &[utf8_bom, utf8_bom, json.as_bytes()].concat());
+    // UTF-8 BOM followed by a literal U+FEFF character (also EF BB BF, written via the char): rejected.
+    assert_load_invalid(
+        &root,
+        "bom-char.json",
+        &[utf8_bom, format!("\u{feff}{json}").as_bytes()].concat(),
+    );
+    // UTF-16 LE with one BOM: accepted; with two BOMs: rejected.
+    let utf16: Vec<u8> = json.encode_utf16().flat_map(|u| u.to_le_bytes()).collect();
+    let cfg = load_bytes(&root, "utf16-one.json", &[&[0xFF, 0xFE][..], &utf16].concat()).expect("UTF-16 one BOM");
+    assert_eq!(cfg.get("R", "k", 7.0), 1.0);
+    assert_load_invalid(
+        &root,
+        "utf16-two.json",
+        &[&[0xFF, 0xFE, 0xFF, 0xFE][..], &utf16].concat(),
+    );
+    // `parse` takes the undecoded UTF-8 text: one U+FEFF is the BOM File.ReadAllText removes, a second is an error.
+    assert_eq!(
+        RulesConfig::parse(&format!("\u{feff}{json}"), "p.json")
+            .expect("one BOM")
+            .get("R", "k", 7.0),
+        1.0
+    );
+    assert_invalid(&format!("\u{feff}\u{feff}{json}"));
+}

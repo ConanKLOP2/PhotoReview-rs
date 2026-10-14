@@ -107,22 +107,31 @@ impl RulesConfig {
             .unwrap_or(default)
     }
 
-    /// `RulesConfig.Load(path)`: reads the file (blocking) and calls [`RulesConfig::parse`]. A file-system failure is
-    /// `Err(PerfError::Io)` (not wrapped).
+    /// `RulesConfig.Load(path)`: reads the file (blocking) like `File.ReadAllText` (which removes exactly ONE byte
+    /// order mark while decoding) and deserializes the text. A file-system failure is `Err(PerfError::Io)` (not
+    /// wrapped). Any U+FEFF left after decoding (a second BOM) is a JSON syntax error, as in
+    /// `JsonSerializer.Deserialize(string)`.
     pub fn load(path: &Path) -> Result<RulesConfig, PerfError> {
         let bytes = std::fs::read(path)?;
         let text = decode_text(&bytes);
-        Self::parse(&text, &path.display().to_string())
+        Self::deserialize(&text, &path.display().to_string())
     }
 
     /// The parsing half of `Load`. `path_for_message` is only used in the error text. A JSON syntax error, a non-object
     /// root, a section that is not an object or `null`, or a value that is not a number is
     /// `Err(PerfError::InvalidData("Invalid rules file '<path>': <detail>"))`. JSON `null` as the whole document and
-    /// `"R-X": null` sections mean "all defaults". A UTF-8 BOM is ignored (`File.ReadAllText`).
+    /// `"R-X": null` sections mean "all defaults". `json` is treated as the UTF-8 file content before
+    /// `File.ReadAllText`: ONE leading U+FEFF (the UTF-8 BOM it removes) is skipped; a second one is a syntax error.
     pub fn parse(json: &str, path_for_message: &str) -> Result<RulesConfig, PerfError> {
+        let text = json.strip_prefix('\u{feff}').unwrap_or(json);
+        Self::deserialize(text, path_for_message)
+    }
+
+    /// `JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, double>?>>(text)` of already decoded text:
+    /// no BOM is skipped here.
+    fn deserialize(text: &str, path_for_message: &str) -> Result<RulesConfig, PerfError> {
         let invalid =
             |detail: String| PerfError::InvalidData(format!("Invalid rules file '{path_for_message}': {detail}"));
-        let text = json.strip_prefix('\u{feff}').unwrap_or(json);
         // Deserialized entry by entry (like System.Text.Json into
         // `Dictionary<string, Dictionary<string, double>?>`): every value is validated as it is read, so an invalid
         // value is an error even when a later duplicate key would replace it; a valid duplicate replaces the earlier
