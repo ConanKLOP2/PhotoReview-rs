@@ -14,15 +14,15 @@
 //!
 //! Types mirror the C# records; the Recovery presenter (App wave) builds [`RecoveryPathCheck`] /
 //! [`RecoveryCheckResult`] by hand in its tests, so every field is `pub`.
-//!
-//! STUB: signatures and data types are final, bodies are `todo!()`.
-#![allow(unused_variables, dead_code)] // D11: only while this stub has `todo!()` bodies; the porter removes it.
 
 use std::fmt;
+use std::path::Path;
 use std::sync::Arc;
 
 use crate::abstractions::FileSystem;
 use crate::file_actions::journal_line::{JournalEntry, JournalGroupMember};
+use crate::model::{FileOperationType, JournalState};
+use crate::text::dotnet_path::get_directory_name;
 use crate::time::DateTimeUtc;
 
 /// Live state of one path named by a journal entry, compared with what the journal recorded.
@@ -168,7 +168,42 @@ impl RecoveryFileCheck {
     ///   `check_path(destination, entry.size, entry.last_write_utc, compare_last_write: false)`; verdict =
     ///   [`decide`](Self::decide).
     pub fn check(&self, entry: &JournalEntry) -> RecoveryCheckResult {
-        todo!("W3-07: port RecoveryFileCheck.Check")
+        if let Some(members) = entry.group_members.as_deref().filter(|members| !members.is_empty()) {
+            let checks: Vec<RecoveryGroupMemberCheck> = members
+                .iter()
+                .map(|member| self.check_group_member(entry, member))
+                .collect();
+            let verdict = aggregate_group_verdict(entry, &checks);
+            let (source, destination) = match checks.first() {
+                Some(first) => (first.check.source.clone(), first.check.destination.clone()),
+                // Unreachable: `members` is non-empty, so `checks` holds one check per member.
+                None => (
+                    RecoveryPathCheck::new(entry.source.clone(), RecoveryPathStatus::Unreadable, None, None, false),
+                    None,
+                ),
+            };
+            return RecoveryCheckResult {
+                entry: entry.clone(),
+                source,
+                destination,
+                verdict,
+                group_members: Some(checks),
+            };
+        }
+        let source = self.check_path(&entry.source, entry.size, entry.last_write_utc.value, true);
+        let destination = entry
+            .destination
+            .as_deref()
+            .filter(|destination| !is_null_or_white_space(destination))
+            .map(|destination| self.check_path(destination, entry.size, entry.last_write_utc.value, false));
+        let verdict = Self::decide(entry, &source, destination.as_ref());
+        RecoveryCheckResult {
+            entry: entry.clone(),
+            source,
+            destination,
+            verdict,
+            group_members: None,
+        }
     }
 
     /// C# `internal static Decide`: the verdict of one non-group entry from the two path checks. Exposed `pub` so the
@@ -189,7 +224,65 @@ impl RecoveryFileCheck {
         source: &RecoveryPathCheck,
         destination: Option<&RecoveryPathCheck>,
     ) -> RecoveryVerdict {
-        todo!("W3-07: port RecoveryFileCheck.Decide")
+        let s = source.status;
+        if entry.op_type == FileOperationType::Recycle {
+            return match s {
+                RecoveryPathStatus::Missing if entry.permanent == Some(true) => RecoveryVerdict::PermanentlyDeleted,
+                RecoveryPathStatus::Missing => RecoveryVerdict::RecycleUnverifiable,
+                RecoveryPathStatus::Unreadable => RecoveryVerdict::Unknown,
+                RecoveryPathStatus::Exists | RecoveryPathStatus::Changed => RecoveryVerdict::NotRecycled,
+            };
+        }
+
+        let Some(destination) = destination else {
+            return RecoveryVerdict::Unknown;
+        };
+        let d = destination.status;
+
+        if entry.state == JournalState::Committed {
+            if d == RecoveryPathStatus::Exists {
+                return RecoveryVerdict::AlreadyDone;
+            }
+            return if d == RecoveryPathStatus::Missing && s == RecoveryPathStatus::Missing {
+                RecoveryVerdict::Lost
+            } else {
+                RecoveryVerdict::Unknown
+            };
+        }
+        if !matches!(entry.state, JournalState::Prepared | JournalState::Failed) {
+            return RecoveryVerdict::Unknown;
+        }
+        if s == RecoveryPathStatus::Unreadable || d == RecoveryPathStatus::Unreadable {
+            return RecoveryVerdict::Unknown;
+        }
+
+        let source_present = matches!(s, RecoveryPathStatus::Exists | RecoveryPathStatus::Changed);
+        let destination_present = matches!(d, RecoveryPathStatus::Exists | RecoveryPathStatus::Changed);
+
+        if !destination_present {
+            if !source_present {
+                return RecoveryVerdict::Lost;
+            }
+            return if s == RecoveryPathStatus::Exists {
+                RecoveryVerdict::CanRetry
+            } else {
+                RecoveryVerdict::SourceChanged
+            };
+        }
+        if !source_present {
+            return if d == RecoveryPathStatus::Exists {
+                RecoveryVerdict::AlreadyDone
+            } else {
+                RecoveryVerdict::DestinationChanged
+            };
+        }
+        if entry.op_type == FileOperationType::Copy
+            && s == RecoveryPathStatus::Exists
+            && d == RecoveryPathStatus::Exists
+        {
+            return RecoveryVerdict::AlreadyDone;
+        }
+        RecoveryVerdict::Conflict
     }
 
     /// C# `CheckGroupMember(group, member)`: `check()` of a copy of the group entry with `source`, `destination`,
@@ -199,7 +292,38 @@ impl RecoveryFileCheck {
     /// size and last-write equal to the member => `AlreadyDone`; `Exists` otherwise => `Conflict`; `Missing` =>
     /// `RecycleUnverifiable` even when the member is `permanent`; `Changed`/`Unreadable` => `Unknown`).
     fn check_group_member(&self, group: &JournalEntry, member: &JournalGroupMember) -> RecoveryGroupMemberCheck {
-        todo!("W3-07: port RecoveryFileCheck.CheckGroupMember")
+        let single_entry = JournalEntry {
+            source: member.source.clone(),
+            destination: member.destination.clone(),
+            size: member.size,
+            last_write_utc: member.last_write_utc,
+            permanent: Some(member.permanent),
+            group_id: None,
+            group_members: None,
+            undo: None,
+            ..group.clone()
+        };
+        let mut single = self.check(&single_entry);
+        if group.undo == Some(true) && group.op_type == FileOperationType::Recycle {
+            // "Is the file back at its original path?" Ticks only (C# `DateTime ==` ignores Kind).
+            let verdict = match single.source.status {
+                RecoveryPathStatus::Exists
+                    if single.source.current_size == Some(member.size)
+                        && single.source.current_last_write_utc == Some(member.last_write_utc.value) =>
+                {
+                    RecoveryVerdict::AlreadyDone
+                }
+                RecoveryPathStatus::Exists => RecoveryVerdict::Conflict,
+                RecoveryPathStatus::Missing => RecoveryVerdict::RecycleUnverifiable,
+                RecoveryPathStatus::Changed | RecoveryPathStatus::Unreadable => RecoveryVerdict::Unknown,
+            };
+            single.entry = group.clone();
+            single.verdict = verdict;
+        }
+        RecoveryGroupMemberCheck {
+            member: member.clone(),
+            check: single,
+        }
     }
 
     /// C# `CheckPath`. Order of calls: folder first (`get_directory_name(path)`, non-empty => `directory_exists`),
@@ -212,7 +336,36 @@ impl RecoveryFileCheck {
         recorded_last_write_utc: DateTimeUtc,
         compare_last_write: bool,
     ) -> RecoveryPathCheck {
-        todo!("W3-07: port RecoveryFileCheck.CheckPath")
+        let mut folder_exists = false;
+        if let Some(folder) = get_directory_name(path).filter(|folder| !folder.is_empty()) {
+            // C# `DirectoryExists` throws `ArgumentException` for a whitespace-only folder, before any stat.
+            if is_null_or_white_space(&folder) {
+                return RecoveryPathCheck::new(path, RecoveryPathStatus::Unreadable, None, None, false);
+            }
+            folder_exists = self.file_system.directory_exists(Path::new(&folder));
+        }
+        // P-12 (option A): no blank/NUL pre-check on `path`; the seam reports such a path as `Err` after counting the
+        // stat, like the C# proxies.
+        let stat = match self.file_system.try_get_file_stat(Path::new(path)) {
+            Err(_) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Unreadable, None, None, folder_exists),
+            Ok(None) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Missing, None, None, folder_exists),
+            Ok(Some(stat)) => stat,
+        };
+        let length = i64::try_from(stat.length);
+        let changed =
+            length != Ok(recorded_size) || (compare_last_write && stat.last_write_utc != recorded_last_write_utc);
+        let status = if changed {
+            RecoveryPathStatus::Changed
+        } else {
+            RecoveryPathStatus::Exists
+        };
+        RecoveryPathCheck::new(
+            path,
+            status,
+            Some(length.unwrap_or(i64::MAX)),
+            Some(stat.last_write_utc),
+            folder_exists,
+        )
     }
 }
 
@@ -232,5 +385,72 @@ impl RecoveryFileCheck {
 /// 6. contains `Conflict` => `Conflict`; `SourceChanged`; `DestinationChanged`; `Lost`; `NotRecycled` (in that
 ///    order); otherwise `Unknown`.
 fn aggregate_group_verdict(entry: &JournalEntry, members: &[RecoveryGroupMemberCheck]) -> RecoveryVerdict {
-    todo!("W3-07: port RecoveryFileCheck.AggregateGroupVerdict")
+    use RecoveryVerdict as V;
+    let verdicts: Vec<RecoveryVerdict> = members.iter().map(RecoveryGroupMemberCheck::verdict).collect();
+    let all = |pred: &dyn Fn(RecoveryVerdict) -> bool| verdicts.iter().all(|v| pred(*v));
+    let contains = |wanted: RecoveryVerdict| verdicts.contains(&wanted);
+    let undo = entry.undo == Some(true);
+
+    if undo
+        && entry.op_type == FileOperationType::Move
+        && all(&|v| matches!(v, V::CanRetry | V::AlreadyDone))
+        && contains(V::CanRetry)
+    {
+        return V::CanRetry;
+    }
+    if undo
+        && entry.op_type == FileOperationType::Recycle
+        && all(&|v| matches!(v, V::RecycleUnverifiable | V::AlreadyDone))
+        && contains(V::RecycleUnverifiable)
+    {
+        return V::CanRetry;
+    }
+    // A non-undo Delete (Recycle) group that stopped part-way: the members still on disk can be recycled again, the
+    // members already gone stay as they are. A present member that no longer matches the journal blocks the retry.
+    if entry.op_type == FileOperationType::Recycle
+        && !undo
+        && all(&|v| matches!(v, V::NotRecycled | V::RecycleUnverifiable | V::PermanentlyDeleted))
+        && contains(V::NotRecycled)
+    {
+        let retryable = members
+            .iter()
+            .filter(|member| member.verdict() == V::NotRecycled)
+            .all(|member| member.source().status == RecoveryPathStatus::Exists);
+        return if retryable { V::CanRetry } else { V::NotRecycled };
+    }
+    if all(&|v| matches!(v, V::AlreadyDone | V::RecycleUnverifiable | V::PermanentlyDeleted)) {
+        // Only when EVERY file was deleted permanently is the whole capture unrecoverable.
+        if all(&|v| v == V::PermanentlyDeleted) {
+            return V::PermanentlyDeleted;
+        }
+        if contains(V::PermanentlyDeleted) {
+            return V::PartiallyPermanentlyDeleted;
+        }
+        // An undo of a Recycle whose members are all back on disk is done; only a plain Recycle stays unverifiable.
+        return if entry.op_type == FileOperationType::Recycle && !undo {
+            V::RecycleUnverifiable
+        } else {
+            V::AlreadyDone
+        };
+    }
+    if all(&|v| matches!(v, V::AlreadyDone | V::CanRetry)) && contains(V::CanRetry) {
+        return V::CanRetry;
+    }
+    for verdict in [
+        V::Conflict,
+        V::SourceChanged,
+        V::DestinationChanged,
+        V::Lost,
+        V::NotRecycled,
+    ] {
+        if contains(verdict) {
+            return verdict;
+        }
+    }
+    V::Unknown
+}
+
+/// C# `string.IsNullOrWhiteSpace` for a non-null string (`char::is_whitespace` = .NET `char.IsWhiteSpace`).
+fn is_null_or_white_space(text: &str) -> bool {
+    text.chars().all(char::is_whitespace)
 }

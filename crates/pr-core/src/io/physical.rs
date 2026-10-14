@@ -1130,25 +1130,28 @@ impl FileSystem for PhysicalFileSystem {
     /// P-12: the same lookup as [`get_file_stat`](Self::get_file_stat), but a path that cannot be inspected is an `Err`.
     /// C# `GetFileStat` throws `ArgumentException` for a blank path and (from `Path.GetFullPath`) for a NUL: both are
     /// `Err(InvalidInput)` here. A name that cannot exist (wildcards, `|`, a stream, a device such as `CON`, a missing
-    /// folder, drive or UNC host, a path too long) is `Ok(None)`, as in C# (`FileInfo.Exists` false; goldens
-    /// `recovery-check` `p-*`). Access denied, sharing/lock violations and other I/O failures are `Err` (the deliberate
-    /// P-12 rule: "cannot tell" is never reported as "gone").
+    /// folder, drive or UNC host, a component too long) is `Ok(None)`, as in C# (`FileInfo.Exists` false; goldens
+    /// `recovery-check` `p-*`). A whole path longer than the OS limit makes `Path.GetFullPath` throw
+    /// `PathTooLongException` (an `IOException`), so it is an `Err` with raw OS error 206 (golden
+    /// `p-path-40000-chars`: source Unreadable). Every failure of the metadata query itself (access denied, sharing/lock
+    /// violations, other I/O) is `Ok(None)`, exactly like C#: `FileInfo.Exists` swallows the error and `GetFileStat`
+    /// returns `null` (confirmed with a .NET probe on the d92d6aae `PhotoReview.Core.dll`: a file whose folder listing
+    /// and read-attributes rights are denied is `Missing`, verdict `Lost`). [`is_stat_missing`] still classifies the
+    /// error for callers that want to tell "absent" from "denied", but it no longer decides the result here.
     fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
         if is_blank(path) {
             return Err(blank_path_error());
         }
-        let full = match full_path(path) {
-            Ok(full) => full,
-            // Path.GetFullPath on .NET Core does not throw PathTooLongException: FileInfo then reports "not there".
-            Err(err) if err.raw_os_error() == Some(ERROR_FILENAME_EXCED_RANGE) => return Ok(None),
-            Err(err) => return Err(err),
-        };
+        // `new FileInfo(path)` runs Path.GetFullPath, which throws `ArgumentException` (blank/NUL) and
+        // `PathTooLongException` (an `IOException`) when the resolved path is longer than the OS limit (golden
+        // `recovery-check` `p-path-40000-chars`: source Unreadable). Both are `Err` here, never "not there".
+        let full = full_path(path)?;
         let trimmed = dotnet_path::trim_ending_directory_separator(&full);
         match fs::symlink_metadata(ensure_extended_prefix_if_needed(trimmed)) {
             Ok(metadata) if attributes_of(&metadata) & FILE_ATTRIBUTE_DIRECTORY != 0 => Ok(None),
             Ok(metadata) => Ok(Some(stat_of(&metadata))),
-            Err(err) if is_stat_missing(&err) => Ok(None),
-            Err(err) => Err(err),
+            // C# `info.Exists ? ... : null`: `FileSystemInfo.Exists` is false for ANY attribute-query failure.
+            Err(_) => Ok(None),
         }
     }
 
