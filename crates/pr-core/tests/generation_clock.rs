@@ -179,7 +179,22 @@ fn stale_and_future_tokens_are_not_current() {
     let f = clock.current_folder();
     clock.next_folder();
     assert!(!clock.is_folder_current(f));
+    assert!(!clock.is_folder_current(clock.current_folder() + 1));
     let i = clock.current_interaction();
     clock.next_interaction();
     assert!(!clock.is_interaction_current(i));
+    assert!(!clock.is_interaction_current(clock.current_interaction() + 1));
+}
+
+#[test]
+fn future_tokens_are_never_current() {
+    // C#: own test (contract note 4: equality, not ordering)
+    for g in ALL {
+        let clock = GenerationClock::new(7, 7, 7);
+        assert!(is_current(&clock, g, 7), "{g:?}");
+        assert!(!is_current(&clock, g, 8), "{g:?}");
+        assert!(!is_current(&clock, g, 6), "{g:?}");
+        assert!(!is_current(&clock, g, i64::MAX), "{g:?}");
+        assert!(!is_current(&clock, g, i64::MIN), "{g:?}");
+    }
 }
