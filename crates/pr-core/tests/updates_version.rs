@@ -1,0 +1,224 @@
+//! Port of the C# `Updates` tests (W1-10): AppVersion, UpdateUrlPolicy, UpdateCheckResult.
+
+use std::cmp::Ordering;
+
+use pr_core::updates::version::{
+    AppVersion, RELEASES_PAGE_URL, UpdateCheckResult, UpdateCheckStatus, UpdateFailure, validate_update_url,
+};
+use pr_test_support::golden;
+
+fn v(text: &str) -> AppVersion {
+    AppVersion::try_parse(Some(text)).unwrap_or_else(|| panic!("should parse: {text:?}"))
+}
+
+fn sign(o: Ordering) -> i32 {
+    match o {
+        Ordering::Less => -1,
+        Ordering::Equal => 0,
+        Ordering::Greater => 1,
+    }
+}
+
+// C#: AppVersionTests.CompareTo_OrdersVersionsNumerically
+#[test]
+fn compare_to_orders_versions_numerically() {
+    let rows = [
+        ("2.0.93", "2.0.93", 0),
+        ("2.0.94", "2.0.93", 1),
+        ("2.0.92", "2.0.93", -1),
+        ("2.1.0", "2.0.99", 1),
+        ("3.0.0", "2.99.99", 1),
+        ("2.0.100", "2.0.99", 1),
+        ("v2.0.94", "2.0.93", 1),
+        ("V2.0.93", "2.0.93", 0),
+        ("2.0.93", "2.0.93+1a2b3c4d", 0),
+        ("2.0.94", "2.0.93+1a2b3c4d.dirty", 1),
+        ("2.0.93", "2.0.93-beta.1", 1),
+        ("2.0.93-beta.1", "2.0.93", -1),
+        ("2.0.94-rc.1", "2.0.93", 1),
+    ];
+    for (l, r, expected) in rows {
+        assert_eq!(sign(v(l).cmp(&v(r))), expected, "{l} vs {r}");
+    }
+}
+
+// C#: AppVersionTests.TryParse_Garbage_ReturnsFalse
+#[test]
+fn try_parse_garbage_returns_none() {
+    assert_eq!(AppVersion::try_parse(None), None);
+    for text in [
+        "",
+        "   ",
+        "garbage",
+        "2.0",
+        "2.0.93.1",
+        "2.x.93",
+        "2..93",
+        "-1.0.0",
+        "2.0.93-",
+        "99999999999.0.0",
+        "v",
+    ] {
+        assert_eq!(AppVersion::try_parse(Some(text)), None, "{text:?}");
+    }
+}
+
+// C#: AppVersionTests.TryParse_Prerelease_IsFlagged
+#[test]
+fn try_parse_prerelease_is_flagged() {
+    let p = v("v2.1.0-beta.2+abc");
+    assert!(p.is_prerelease);
+    assert_eq!(p.to_string(), "2.1.0");
+    assert!(!v("2.1.0").is_prerelease);
+}
+
+// C#: AppVersionOperatorTests.Operators_MatchOrdering
+#[test]
+fn operators_match_ordering() {
+    let rows = [
+        ("2.0.92", "2.0.93", -1),
+        ("2.0.93", "2.0.93", 0),
+        ("2.0.94", "2.0.93", 1),
+        ("2.0.93-beta.1", "2.0.93", -1),
+    ];
+    for (left, right, s) in rows {
+        let (l, r) = (v(left), v(right));
+        assert_eq!(l < r, s < 0, "{left} < {right}");
+        assert_eq!(l > r, s > 0, "{left} > {right}");
+        assert_eq!(l <= r, s <= 0, "{left} <= {right}");
+        assert_eq!(l >= r, s >= 0, "{left} >= {right}");
+    }
+}
+
+// C#: AppVersionOperatorTests.TryParse_RejectsNonDigits
+#[test]
+fn try_parse_rejects_non_digits() {
+    for text in ["1.2.3\0", "1.2\0.3", "1.2.3x", "1.2.-3", "+1.2.3", "-1.2.3"] {
+        assert_eq!(AppVersion::try_parse(Some(text)), None, "{text:?}");
+    }
+}
+
+// C#: AppVersionOperatorTests.TryParse_RejectsEmptyComponents
+#[test]
+fn try_parse_rejects_empty_components() {
+    for text in ["1..3", ".2.3", "1.2."] {
+        assert_eq!(AppVersion::try_parse(Some(text)), None, "{text:?}");
+    }
+}
+
+// C#: UpdateUrlPolicyTests.Validate_ProjectUrl_ReturnsUrl
+#[test]
+fn validate_project_url_returns_url() {
+    for url in [
+        "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94",
+        "https://github.com/ConanKLOP2/PhotoReview/releases",
+        "https://github.com/ConanKLOP2/PhotoReview",
+        "https://GITHUB.com/conanklop2/photoreview/releases/latest",
+    ] {
+        assert!(validate_update_url(Some(url)).is_some(), "{url}");
+    }
+    assert_eq!(
+        validate_update_url(Some(RELEASES_PAGE_URL)).as_deref(),
+        Some(RELEASES_PAGE_URL)
+    );
+}
+
+// C#: UpdateUrlPolicyTests.Validate_Other_ReturnsNull
+#[test]
+fn validate_other_returns_none() {
+    assert_eq!(validate_update_url(None), None);
+    for url in [
+        "",
+        "not a url",
+        "http://github.com/ConanKLOP2/PhotoReview/releases",
+        "https://github.com/Evil/PhotoReview/releases",
+        "https://github.com/ConanKLOP2/PhotoReviewEvil/releases",
+        "https://github.com/ConanKLOP2/Other",
+        "https://github.com.evil.example/ConanKLOP2/PhotoReview/releases",
+        "https://evil.example/https://github.com/ConanKLOP2/PhotoReview",
+        "https://github.com@evil.example/ConanKLOP2/PhotoReview/releases",
+        "https://user:pw@github.com/ConanKLOP2/PhotoReview/releases",
+        "https://github.com:8443/ConanKLOP2/PhotoReview/releases",
+        "https://github.com/ConanKLOP2/PhotoReview/../Evil/x",
+        "file:///C:/Windows/System32/calc.exe",
+        "ms-settings:",
+        "javascript:alert(1)",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url}");
+    }
+}
+
+// C#: (no direct test) UpdateCheckResult.UpToDate
+#[test]
+fn update_check_result_up_to_date_sets_version_only() {
+    let r = UpdateCheckResult::up_to_date("2.0.93");
+    assert_eq!(r.status(), UpdateCheckStatus::UpToDate);
+    assert_eq!(r.latest_version(), Some("2.0.93"));
+    assert_eq!(r.download_url(), None);
+    assert_eq!(r.failure(), UpdateFailure::None);
+}
+
+// C#: (no direct test) UpdateCheckResult.UpdateAvailable
+#[test]
+fn update_check_result_update_available_sets_version_and_url() {
+    let r = UpdateCheckResult::update_available("2.0.94", "https://example.invalid/x");
+    assert_eq!(r.status(), UpdateCheckStatus::UpdateAvailable);
+    assert_eq!(r.latest_version(), Some("2.0.94"));
+    assert_eq!(r.download_url(), Some("https://example.invalid/x"));
+    assert_eq!(r.failure(), UpdateFailure::None);
+}
+
+// C#: (no direct test) UpdateCheckResult.Failed
+#[test]
+fn update_check_result_failed_sets_failure_only() {
+    let r = UpdateCheckResult::failed(UpdateFailure::RateLimited);
+    assert_eq!(r.status(), UpdateCheckStatus::Failed);
+    assert_eq!(r.latest_version(), None);
+    assert_eq!(r.download_url(), None);
+    assert_eq!(r.failure(), UpdateFailure::RateLimited);
+}
+
+// C#: golden app-version
+#[test]
+fn golden_app_version() {
+    let g = golden::load("app-version");
+    for case in &g.cases {
+        match golden::str_of(case, "kind") {
+            "parse" => {
+                let text = case["text"].as_str();
+                let parsed = AppVersion::try_parse(text);
+                if golden::bool_of(case, "ok") {
+                    let p = parsed.unwrap_or_else(|| panic!("should parse: {case}"));
+                    assert_eq!(i64::from(p.major), golden::i64_of(case, "major"), "{case}");
+                    assert_eq!(i64::from(p.minor), golden::i64_of(case, "minor"), "{case}");
+                    assert_eq!(i64::from(p.patch), golden::i64_of(case, "patch"), "{case}");
+                    assert_eq!(p.is_prerelease, golden::bool_of(case, "prerelease"), "{case}");
+                    assert_eq!(p.to_string(), golden::str_of(case, "to_string"), "{case}");
+                } else {
+                    assert_eq!(parsed, None, "{case}");
+                }
+            }
+            "compare" => {
+                let (a, b) = (v(golden::str_of(case, "a")), v(golden::str_of(case, "b")));
+                assert_eq!(i64::from(sign(a.cmp(&b))), golden::i64_of(case, "sign"), "{case}");
+                assert_eq!(a < b, golden::bool_of(case, "lt"), "{case}");
+                assert_eq!(a > b, golden::bool_of(case, "gt"), "{case}");
+                assert_eq!(a <= b, golden::bool_of(case, "le"), "{case}");
+                assert_eq!(a >= b, golden::bool_of(case, "ge"), "{case}");
+                assert_eq!(a == b, golden::bool_of(case, "equal"), "{case}");
+            }
+            other => panic!("unknown kind {other}"),
+        }
+    }
+}
+
+// C#: golden update-url-policy
+#[test]
+fn golden_update_url_policy() {
+    let g = golden::load("update-url-policy");
+    for case in &g.cases {
+        let url = case["url"].as_str();
+        let expected = case["result"].as_str();
+        assert_eq!(validate_update_url(url).as_deref(), expected, "{case}");
+    }
+}
