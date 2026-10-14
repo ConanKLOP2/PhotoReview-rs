@@ -70,6 +70,14 @@ impl JournalDateTime {
     /// System.Text.Json reading of a `DateTime` text via [`DateTimeUtc::parse_json`]: `Z` -> utc, no zone ->
     /// unspecified, `+hh:mm` offset -> converted to UTC, utc (deliberate difference). `None` = the C# reader throws.
     pub fn parse_json(text: &str) -> Option<Self> {
+        // System.Text.Json rejects a '.' not followed by a digit; DateTimeUtc::parse_json (outside this unit) is lenient.
+        let b = text.as_bytes();
+        if b.iter()
+            .enumerate()
+            .any(|(i, &c)| c == b'.' && !b.get(i + 1).is_some_and(u8::is_ascii_digit))
+        {
+            return None;
+        }
         let (value, kind) = DateTimeUtc::parse_json(text)?;
         Some(match kind {
             SourceKind::Unspecified => Self::unspecified(value),
@@ -203,7 +211,7 @@ fn push_unit(out: &mut String, unit: u16) {
 ///   `0x00..=0x1F` -> `\u00XX` (UPPERCASE hex);
 /// * `& ' + < > `` ` `` and DEL (0x7F) -> `\u00XX` (uppercase hex);
 /// * every non-ASCII char -> `\uXXXX` (uppercase hex) per UTF-16 unit (an astral char becomes a surrogate pair
-///   `😀`);
+///   `Ã°Å¸Ëœâ‚¬`);
 /// * everything else (including `/`) is written as is. Numbers, `null`, braces, commas stay compact (default trait
 ///   methods).
 #[derive(Debug, Clone, Copy, Default)]

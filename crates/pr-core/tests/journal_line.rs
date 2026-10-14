@@ -652,3 +652,29 @@ fn writer_is_compact_and_keeps_null_destination_and_error() {
         r#"{"Id":"w","Type":"Recycle","State":"Failed","Source":"C:\\a.jpg","Destination":null,"Size":0,"LastWriteUtc":"0001-01-01T00:00:00","TimestampUtc":"2026-09-29T00:00:00Z","Error":null,"Permanent":false,"GroupMembers":[]}"#
     );
 }
+
+// C#: JournalLineParser.TryParse - a fraction separator without digits is rejected (verifier differential).
+#[test]
+fn timestamp_with_bare_fraction_dot_is_rejected_for_both_overloads() {
+    for ts in ["2026-01-01T00:00:00.", "2026-01-01T00:00:00.Z"] {
+        let line = format!(
+            r#"{{"Id":"i","Type":"Move","State":"Prepared","Source":"x","LastWriteUtc":"{ts}","TimestampUtc":"2026-01-01T00:00:00"}}"#
+        );
+        assert!(try_parse(&line).is_none(), "{ts}");
+        assert!(try_parse_utf8(line.as_bytes()).is_none(), "{ts}");
+    }
+}
+
+// Kills the equivalent-looking `comma` guard mutant: a comma text must be rejected for Type and State.
+#[test]
+fn comma_enum_text_is_rejected_for_type_and_state() {
+    for (ty, st) in [
+        ("Move,Copy", "Prepared"),
+        ("Move", "Prepared,Failed"),
+        ("1,2", "0"),
+        ("Move", "0,1"),
+    ] {
+        let line = format!(r#"{{"Id":"i","Type":"{ty}","State":"{st}","Source":"x"}}"#);
+        assert!(try_parse(&line).is_none(), "{ty}/{st}");
+    }
+}
