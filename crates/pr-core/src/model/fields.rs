@@ -101,7 +101,7 @@ macro_rules! flag_set {
     };
 }
 
-/// Which parts are shown in the main window's title bar (in this fixed order, joined with " · "), on top of the
+/// Which parts are shown in the main window's title bar (in this fixed order, joined with " Â· "), on top of the
 /// "Photo Review" app name. Written to config.json as comma-separated names (`"FolderName, FileName"`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TitleBarFields(u32);
