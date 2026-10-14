@@ -418,3 +418,28 @@ fn apply_json_property_salvage_keeps_other_properties_intact() {
     assert_eq!(s.actions[0].name, "Mine");
     assert_eq!(s.shortcuts.next, "N");
 }
+
+#[test]
+fn double_exact_tie_formats_like_dotnet() {
+    // Differential run against the C# oracle: exact decimal tie rounds half to even.
+    let v = f64::from_bits(0x42e9_4bd1_3631_6c04);
+    assert_eq!(json::format_f64(v).as_deref(), Some("222507385850720.12"));
+    assert_eq!(json::format_f64(-v).as_deref(), Some("-222507385850720.12"));
+}
+
+#[test]
+fn lone_low_surrogate_in_typed_value_is_error() {
+    assert!(AppSettings::from_json(r#"{"LastMoveToFolder":"\udc00"}"#, &EnglishSettingsTexts).is_err());
+}
+
+#[test]
+fn lone_high_surrogate_dbff_in_typed_value_is_error() {
+    assert!(AppSettings::from_json(r#"{"LastMoveToFolder":"\udbff"}"#, &EnglishSettingsTexts).is_err());
+    assert!(AppSettings::from_json(r#"{"LastMoveToFolder":"\udbffx"}"#, &EnglishSettingsTexts).is_err());
+}
+
+#[test]
+fn u2028_in_line_comment_is_error() {
+    assert!(AppSettings::from_json("{} //\u{2028}", &EnglishSettingsTexts).is_err());
+    assert!(AppSettings::from_json("{} //\u{2029}", &EnglishSettingsTexts).is_err());
+}

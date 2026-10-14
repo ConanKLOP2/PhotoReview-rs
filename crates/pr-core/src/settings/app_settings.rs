@@ -1546,7 +1546,19 @@ pub mod json {
         if !v.is_finite() {
             return None;
         }
-        let sci = format!("{v:e}");
+        let shortest = format!("{v:e}");
+        // The shortest form rounds an exact decimal tie half up; .NET rounds half to even.
+        // Re-format the exact value at the same digit count (exact formatting is half-even).
+        let digit_count = shortest
+            .split_once('e')
+            .map(|(m, _)| m.chars().filter(char::is_ascii_digit).count())
+            .unwrap_or(1);
+        let sci = format!("{:.*e}", digit_count.saturating_sub(1), v);
+        let sci = if sci.parse::<f64>().ok() == Some(v) {
+            sci
+        } else {
+            shortest
+        };
         let (mantissa, exp) = sci.split_once('e')?;
         let exponent: i32 = exp.parse().ok()?;
         let (negative, mantissa) = match mantissa.strip_prefix('-') {
