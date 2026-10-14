@@ -137,8 +137,8 @@ impl PerfCsvListener {
     /// `TryStartFromEnvironment`: `lookup` reads the trace variable ([`TRACE_ENV_VAR`]); `None` or blank -> `None`.
     /// Creates the directory (and parents), then `perf-<pid>-<yyyyMMdd-HHmmss>.csv` (create/truncate, shared read),
     /// writes the header and starts the writer. Any failure leaves nothing behind and returns `None`.
-    /// `commit` is the app version text for the header (`None` -> `"unknown"`); `diag_lookup` reads the C#-named
-    /// diagnostic variables for the header.
+    /// `commit` is the app version text for the header (`None` -> `"unknown"`). The header's diagnostic flags are read
+    /// through the same `lookup`, mapping each C# header name (`PHOTOREVIEW_DIAG_*`) to its `PHOTOREVIEW_RS_` spelling.
     pub fn try_start(
         lookup: &dyn Fn(&str) -> Option<String>,
         commit: Option<&str>,

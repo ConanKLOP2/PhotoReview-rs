@@ -1,0 +1,25 @@
+{
+  "cases": [
+    { "name": "single-value", "busy_first": false,
+      "items": [ { "id": "a", "kind": "value", "value": 7, "token": "none" } ] },
+    { "name": "fifo-order-behind-a-busy-item", "busy_first": true,
+      "items": [ { "id": "a", "kind": "value", "value": 1, "token": "none" },
+                 { "id": "b", "kind": "value", "value": 2, "token": "none" },
+                 { "id": "c", "kind": "value", "value": 3, "token": "none" } ] },
+    { "name": "already-cancelled-token-never-runs-and-completes-at-once", "busy_first": true,
+      "items": [ { "id": "a", "kind": "value", "value": 1, "token": "cancelled-before" } ] },
+    { "name": "cancelled-while-queued-is-dropped-others-run", "busy_first": true,
+      "items": [ { "id": "a", "kind": "value", "value": 1, "token": "cancel-while-queued" },
+                 { "id": "b", "kind": "value", "value": 2, "token": "none" },
+                 { "id": "c", "kind": "value", "value": 3, "token": "cancel-while-queued" },
+                 { "id": "d", "kind": "value", "value": 4, "token": "none" } ] },
+    { "name": "panic-faults-only-that-item", "busy_first": true,
+      "items": [ { "id": "a", "kind": "throw", "value": 0, "token": "none" },
+                 { "id": "b", "kind": "value", "value": 7, "token": "none" } ] },
+    { "name": "cancelled-and-throwing-items-mixed", "busy_first": true,
+      "items": [ { "id": "a", "kind": "throw", "value": 0, "token": "cancel-while-queued" },
+                 { "id": "b", "kind": "throw", "value": 0, "token": "cancelled-before" },
+                 { "id": "c", "kind": "value", "value": 9, "token": "none" } ] },
+    { "name": "empty-queue-after-gate", "busy_first": true, "items": [] }
+  ]
+}

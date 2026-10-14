@@ -9,6 +9,13 @@
 - This branch: `contracts/drafts-w2/` = raw Wave 2 contract drafts (20 units W2-01..20 + W2-00 shared notes) from 4
   Sonnet writers. NOT reviewed, NOT wired. The workflow may not have finished every group.
 
+## Update 2026-10-14 (later)
+- Workflow wave2-missing-contracts done: all 21 drafts (W2-00..20) now have `contract.md`, each re-verified against
+  C# d92d6aae by a second agent. W2-13 still has no golden-reference (oracle/inputs only). Not yet wired/run/gated.
+- Lead decisions still needed before wiring: SettingsTexts impl location (W2-01/W2-04), ownership of per-property
+  *SettingsTests (W2-02 vs W2-03), merge order W2-00 -> W2-01 -> W2-20 -> W2-02/03, io/mod.rs owner (W2-14/W2-15),
+  local time source for W2-16, HTTP transport for W2-18, `sha2` dependency (W2-17), oracle nondeterminism (W2-14).
+
 ## Next (lead)
 1. Review each `contracts/drafts-w2/W2-xx/contract.md`: porter model, "Depends on", open questions; decide and add
    lead decisions D12+ and a Wave 2 roster (dependency order) to contracts/README.md.

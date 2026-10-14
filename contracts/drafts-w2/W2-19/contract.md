@@ -1,0 +1,142 @@
+# W2-19: Instance forwarding core (ForwardedPathProtocol, ForwardedOpenCoalescer, SecondInstanceHandoff, FolderOwnership, InstanceForwarding)
+- Color: 🟡 | Porter: **sonnet** (strict UTF-8/UTF-16 length rules and `Path.IsPathFullyQualified` edge cases in the protocol; a small
+  concurrency core with an injectable delay/spawner in the coalescer) | Test porter: haiku for the protocol/handoff tests, the porter itself
+  for the coalescer tests (thread gating) | Verifier: sonnet
+- C# sources (baseline d92d6aae), under `src/PhotoReview.Core/Instance/`:
+  - `ForwardedPathProtocol.cs` (89 lines) -> stub `protocol.rs`
+  - `ForwardedOpenCoalescer.cs` (80) -> stub `coalescer.rs`
+  - `SecondInstanceHandoff.cs` (31) -> stub `handoff.rs`
+  - `InstanceForwarding.cs` (21; `ForwardOutcome` + `IInstanceForwardClient`) -> stub `forwarding.rs` (complete: data and trait only)
+  - `FolderOwnership.cs` (29; `FolderOpenDecision` + `IFolderOwnership`) -> stub `ownership.rs` (complete: data and trait only)
+  (read with `git -C C:\MyProjects\PhotoReview show d92d6aae:src/PhotoReview.Core/Instance/<file>`)
+- C# tests to port (all at d92d6aae, `tests/PhotoReview.Core.Tests/Instance/`):
+  - `ForwardedPathProtocolLimitTests.cs`: all 18 tests/theories (`Encode_ExactlyMaxPaths_...`, `Encode_MessageOfExactlyMaxBytes_...`,
+    `TryDecode_MessageOfExactlyMaxBytes_IsAccepted`, `TryDecode_CompleteMessageOfMaxBytesPlusOne_IsRejected`, `TryDecode_ExactlyMaxPaths_...`,
+    `TryDecode_FifteenPaths_IsAccepted`, `Encode_PathOfExactlyMaxPathChars_...`, `TryDecode_PathOfMaxPathCharsPlusOne_IsRejected`,
+    `TryDecode_EmptyPathLine_IsRejected`, `IsComplete_OnlyAMessageEndingWithAnEmptyLineIsComplete`, `TryDecode_EmptyMessage_...`,
+    `TryDecode_UnterminatedMessage_...`, `TryDecode_HeaderOnly_IsAnEmptyValidRequest`, `Path_DeviceOrExtendedNamespace_...`,
+    `Path_OneOrTwoCharacters_...`, `Path_TwoSeparators_NeverCrashesTheShapeCheck` (Rust: assert no panic and that the verdict is `Ok`/`Some`),
+    `Path_OrdinaryFullyQualifiedPath_IsAccepted`, `TryDecode_PathThatDoesNotExist_IsRejected`; the Theories keep every `InlineData` row).
+  - `ForwardingCoreTests.cs`: `Protocol_RoundTrip`, `Protocol_EmptyList_IsValid`, `Protocol_RejectsBadInput`, `Protocol_RejectsHostilePrefixes_EvenIfExists`,
+    `Protocol_Encode_RejectsWhatDecodeWouldReject`, `Encode_PathWithLoneSurrogate_ThrowsArgumentException` (NOT portable: a Rust `&str` cannot hold a
+    lone surrogate; drop it and say so in a comment), `TryDecode_BytesOfLoneSurrogate_ReturnsFalse` (bytes `ED A0 80`; Rust `from_utf8` rejects it),
+    `Encode_ValidSurrogatePair_RoundTrips`, `Protocol_Encode_OutputIsAlwaysAcceptedByDecode`, `Protocol_RejectsInvalidUtf8_Oversize_TooMany`,
+    `Coalescer_BurstOfLaunches_OpensFirstPathOnce`, `Coalescer_SeparateBursts_AreSeparateOpens`,
+    `Coalescer_Submit_DoesNotRunOrWaitForTheOpenCallback`, `Coalescer_Dispose_CancelsPendingOpen`,
+    `Handoff_ExitsOnlyWhenTheOwnerTookOrLikelyTookTheRequest`, `Handoff_ClientThrows_FallsBack`.
+    The C# tests use `Path.Combine(Path.GetTempPath(), "fwd", "a.jpg")` as the existing photo: use a fixed `C:\fwd\a.jpg` and a closure `exists`.
+  - `InstanceAndWorkerMutationGapTests.cs`, ONLY the instance half: `TryForward_Outcome_IsLoggedWithThePathCountAndMappedToTheExitDecision`,
+    `TryForward_ClientThrows_LogsAWarningNamingTheExceptionAndReturnsFalse`, `Coalescer_OpenCallbackThrows_IsLoggedAndTheNextSubmitStillWorks`,
+    `Coalescer_WindowDelayFails_IsLoggedAndTheOpenStillHappens`, `Coalescer_WindowIsCancelledWithoutDispose_DoesNotOpenAnything`.
+    NOT here: `StatWorker_*` (NavigationStatWorker belongs to another unit). `MutationRecordingLog` => `pr_test_support::RecordingLog`
+    (`contains(LogLevel::X, needle)`, `entries()`).
+  - NOT here: `tests/PhotoReview.Core.Tests/Settings/InstanceModeSettingsTests.cs` (settings unit); `tests/PhotoReview.Integration.Tests/Instance*`
+    (named pipe, mutex, `InstanceScope`: Wave 6, `pr-platform-win`).
+  - Golden test (new, required): `tests/golden/forwarded-path.json` (114 cases: 1 constants, 65 encode, 37 decode, 11 complete).
+- PARITY rows: Q-R10 (forwarded-path wire format and limits), Q-R12 (`Unknown` outcome exits like `Delivered`), Q-R18 (folder ownership decision),
+  SEC-02 (Encode shares IsAcceptablePath with the decoder), RV-S05 (surrogate handling), RV-P01 (Submit never runs/waits for the open callback).
+  Instance modes (PerFolder / SingleWindow) are App/Platform (W6/W8).
+- Owned files (the ONLY files you may create/modify):
+    crates/pr-core/src/instance/mod.rs            (NEW; lead may instead create it: contents `pub mod coalescer; pub mod forwarding; pub mod handoff;
+                                                   pub mod ownership; pub mod protocol;` and `pub mod instance;` in `lib.rs` is lead-owned)
+    crates/pr-core/src/instance/protocol.rs       (stub: contracts-w2/W2-19/stubs/.../protocol.rs)
+    crates/pr-core/src/instance/coalescer.rs      (stub)
+    crates/pr-core/src/instance/handoff.rs        (stub)
+    crates/pr-core/src/instance/forwarding.rs     (complete, copy as is)
+    crates/pr-core/src/instance/ownership.rs      (complete, copy as is)
+    crates/pr-core/tests/instance_forwarding.rs   (all tests above, incl. the golden test)
+- Read-only inputs: `tests/golden/forwarded-path.json`.
+- Public API (stub, do NOT change signatures): `protocol::{HEADER, MAX_MESSAGE_BYTES, MAX_PATHS, MAX_PATH_CHARS, EncodeError, encode, is_complete,
+  try_decode, is_acceptable_path, is_path_fully_qualified}`, `coalescer::{OpenCallback, Spawner, WindowCancel, DelayFailure, DelayFn,
+  ForwardedOpenCoalescer::{new, submit, dispose}}`, `handoff::{DEFAULT_TIMEOUT, try_forward}`, `forwarding::{ForwardOutcome, ForwardError,
+  InstanceForwardClient}`, `ownership::{FolderOpenDecision, FolderOwnership}`.
+  Rust shape vs C#: async methods are plain blocking functions (no async runtime, R0003); `CancellationToken` => `sync::CancelToken`,
+  `OperationCanceledException` => `sync::Canceled` / `ForwardError::Canceled`; `ArgumentException(paramName "paths")` => `EncodeError`.
+- Semantics notes:
+  1. **Wire format.** `HEADER "\n"` + (each path + `"\n"`) + `"\n"`, UTF-8 without BOM. Constants: `PHOTOREVIEW-OPEN 1`, 65536 bytes, 16 paths,
+     32767 UTF-16 units.
+  2. **`encode` check order (matters for which error wins):** (a) `paths.len() > 16` => `TooManyPaths` BEFORE any path is looked at; (b) each path in
+     order with `is_acceptable_path` => `PathNotAcceptable(path)` at the first bad one; (c) byte length of the whole message `> 65536` =>
+     `MessageTooLarge`. 65536 is accepted (golden `limit-message-exactly-65536-bytes-ok`), 65537 rejected. The size is in UTF-8 BYTES
+     (golden `limit-message-counts-bytes-not-chars`: a 32767-unit path of `é` (2 bytes each) plus a 100-char path is far over 65536 bytes although the UTF-16/char total is small => rejected). Empty list => `HEADER\n\n` (valid).
+     Duplicates and order are kept. No normalisation, no trimming, no existence check.
+  3. **`is_complete`**: `len >= 2 && last two bytes are both b'\n'`. `"\n\n"` and `"x\n\n"` are complete; `"x\r\n\r\n"` is NOT.
+  4. **`try_decode` order (all `None` on failure; no partial result):** `len == 0 || len > 65536 || !is_complete` => `None`; strict UTF-8
+     (`std::str::from_utf8`; no lossy, no BOM stripping: a leading BOM makes the header comparison fail, golden `decode-utf8-bom-before-header`);
+     `text` minus the last 2 chars (`"\n\n"`), `split('\n')`; `lines[0] != HEADER` => `None`; `lines.len() - 1 > 16` => `None` BEFORE any
+     `path_exists` call (golden `decode-seventeen-paths-rejected-before-exists`); then per line in order: `is_acceptable_path(line) &&
+     path_exists(line)`, the first failure returns `None` (so `path_exists` is never called for an unacceptable line, nor for later lines:
+     goldens `decode-unacceptable-path-never-reaches-exists`, `decode-first-path-missing-stops-at-first`). The callback gets the line exactly as
+     received (case preserved). `"HEADER\n\n"` => `Some(vec![])`; `"HEADER\n\n\n"` => one empty line => unacceptable => `None`; CRLF
+     input fails (header `"...1\r"`).
+  5. **`is_acceptable_path`** (C# private `IsAcceptablePath`), in order: empty or `> 32767` UTF-16 units (`path.encode_utf16().count()`, NOT
+     `chars().count()` or `len()`: an astral char is 2); any `char::is_control` (Cc: U+0000-001F, U+007F-009F; U+0085 and U+009F rejected, U+00A0 and
+     U+2028 accepted); (the C# lone-surrogate rule RV-S05 cannot trigger in Rust: a `&str` has none; the byte-level equivalent is the strict
+     UTF-8 decode in `try_decode`); device/extended/NT prefix: `len >= 3 && sep(p[0]) && (sep(p[1]) || p[1] == '?') && (p[2] == '?' || p[2] == '.')`
+     where `sep` = `\` or `/` (rejects `\\?\`, `\\.\`, `\??\`, and `/` spellings, and the 3-char `\\?`, `\??`; accepts `\?x`, `\?\C:\x`, `\\`, `//`);
+     any segment equal to `..` after splitting on `\` and `/` (`...` and `a..b` are fine); finally `is_path_fully_qualified`.
+     Windows-illegal characters (`| * < > "`) and leading/trailing spaces are NOT checked.
+  6. **`is_path_fully_qualified`** is `Path.IsPathFullyQualified` on Windows; the rules are in the stub doc and are the same as W2-00
+     `dotnet_path::is_path_fully_qualified`. Index by UTF-16 unit / char positions 0..2 only (ASCII checks), no panic on 1-char input.
+     See Open questions on the duplicate.
+  7. **Coalescer window.** `submit(paths)`: `let incoming = paths.first().cloned()`. Under the lock: disposed => return; pending => `state.first =
+     state.first.take().or(incoming)` (C# `_first ??= first`: a later request only fills an EMPTY slot; `Some(a)` then `None` then `Some(b)` keeps `a`; `None`
+     then `Some(b)` becomes `b`) and return; else `pending = true; state.first = incoming` and start the flush OUTSIDE the lock via the spawner.
+     Flush: `delay(window, cancel)`: `Err(Canceled)` => return silently (pending stays `true`, nothing opened: a coalescer whose delay was cancelled
+     without dispose swallows every later request; keep this, golden-less test `Coalescer_WindowIsCancelledWithoutDispose_...`);
+     `Err(Failed(msg))` => `log.error("Forwarded-open window failed", ..)` and CONTINUE to open. Then under the lock: take `state.first`, set it
+     `None`, `pending = false`, and if `disposed` return WITHOUT opening. Call `open(first)` outside the lock; a panic in `open` (`catch_unwind`
+     with `AssertUnwindSafe`) is logged as `Forwarded open failed` and does not break later submits (pending was already reset).
+  8. **`dispose`**: set `disposed` under the lock, then `cancel.cancel()` (wakes a waiting window). Idempotent; also called from `Drop`. It must NOT
+     join the worker thread (the open callback may drop/dispose the coalescer: deadlock). Opens the first path exactly once per burst; a
+     path-less burst opens `None` once.
+  9. **Default delay / spawner.** `delay == None` => `cancel.wait_timeout(window)` returning true maps to `Err(Canceled)`. `spawner == None` =>
+     `std::thread::Builder::new().name("forwarded-open-window")`; a spawn failure is logged `error` and resets `pending = false` (so the next
+     submit retries; C# cannot fail here). Test spawner: `Arc::new(|f| f())` runs the whole flush inline, which is the C# "already-complete delay
+     runs the whole flush inside Submit" behaviour that `Coalescer_OpenCallbackThrows_...` relies on.
+  10. **Handoff.** `try_forward(client, paths, timeout, log, cancel)`: `client.send(paths, timeout, cancel)` (a panic inside `send` is caught like
+      a C# exception). `Err(Canceled)` => `Err(Canceled)`, nothing logged. `Err(Failed{kind})` (or a panic: kind `"Panic"`; the ported `TryForward_ClientThrows_...` asserts the warn contains the `kind` the fake client returned, e.g. `"InvalidOperation"`, not the C# `InvalidOperationException`) => ONE `warn`
+      `Forwarding to the running instance failed: {kind}` and `Ok(false)`, NO info line. `Ok(outcome)` => ONE `info`
+      `Forward to running instance: {outcome} ({n} path(s))` with `n = existing_paths.len()`; result `outcome in {Delivered, Unknown}`.
+      `log == None` => nothing logged. `DEFAULT_TIMEOUT` = 1500 ms. Do not pre-check `cancel` (C# does not).
+  11. **Forwarding/ownership files** are pure data and traits. `ForwardOutcome::name()` returns the C# member name used in the log line.
+- Traps checklist (docs/MULTI-AGENT-PLAN §7): 1 (no case folding anywhere: `path_exists` gets the raw line), 2/7 (Windows paths: `//`, `\??\`, `\?x`,
+  UNC; goldens), 3 (UTF-16 length vs `len()` vs `chars().count()`; byte-size limit; `..` is not a char count), 8 (`None` vs `Some("")` first path:
+  `submit(&[""])` stores `Some("")`, the slot is then non-empty), 9 (the three C# `catch` branches in the flush stay three branches: cancel / other
+  delay failure / open failure), 10 (no HashMap; order of `exists_calls` is observable).
+  Extra traps: threads: never hold the state lock while calling `open`, `delay` or the `log`; `std::thread` only, no tokio.
+- Depends on (functions called by the implementation or its tests):
+  - W2-00 `crate::text::dotnet_path::is_path_fully_qualified` (MUST be merged first, if the duplicate is removed; see Open questions).
+  - W0 `abstractions::{Log, NullLog}`, `sync::{CancelToken, Canceled}`.
+  - pr-test-support `RecordingLog`, `golden` loader. No other W2 unit.
+- Done when: every listed test has a Rust twin with `// C#: <Class>.<Method>`; the golden `forwarded-path.json` passes (hex of every encode with
+  `hex != null` equals the output; for `hex == null` compare `length`; decode compares `ok`, `paths` and `exists_calls`; the `ArgumentException`
+  `param` maps to every `EncodeError` variant); the coalescer tests use a gated `DelayFn` and wait on a channel/condvar with a 10 s timeout (never
+  `sleep`-based assertions); no test leaves a worker thread running; clippy clean; the stub's `#![allow(...)]` lines removed from `protocol.rs`,
+  `coalescer.rs`, `handoff.rs`; `instance/mod.rs` exported.
+
+## Golden package
+- `oracle/W2-19.cs`: one command `forwarded-path` (dispatch line in the file header: `"forwarded-path" => Commands.ForwardedPathCases(inputs),`).
+  Ops: `encode` (reports `ok`, `length`, `hex` when <= 512 bytes else null, `path_lengths`, and on failure `exception`/`param`), `decode` (accepts
+  `text` or `hex`; `exists` = `"all"` | `"none"` | list; reports `ok`, `paths`, `exists_calls`), `complete`, `constants`. Large paths are described as
+  `{"prefix","fill","length"}` so the input JSON stays small.
+- `golden-inputs/forwarded-path.json` (114 cases) and `golden-reference/forwarded-path.json` (same 114 ids, `csharp_commit` d92d6aae, verified
+  consistent with the C# source in this review).
+- Case design: acceptance edge cases (`\?x` accepted, `\??` rejected, `\\`, `//`, `\/` accepted, drive-relative / rooted / digit and non-ASCII drive
+  rejected, U+2028 and U+00A0 accepted, U+0085/U+009F/U+007F rejected, `..` segments in both separators, all prefixes in both spellings); limits at
+  Max and Max+1 (paths, chars, bytes, bytes-not-chars); decode framing (no terminator, extra empty line, CRLF, BOM, invalid UTF-8, overlong,
+  WTF-8 lone surrogate, 4-byte sequence), exists call order; `complete` truth table.
+- The coalescer, handoff and ownership types are not in the golden (callback and thread behaviour, no serialised output); they are covered by the
+  ported unit tests.
+
+## Open questions
+- **Duplicate `is_path_fully_qualified`.** The stub declares `protocol::is_path_fully_qualified` (comment: "hoist candidate"), while W2-00 owns
+  `dotnet_path::is_path_fully_qualified` with the same rules. Recommended: W2-19 calls the W2-00 function and deletes the local one (README D8:
+  helpers live where their first unit put them), keeping `is_acceptable_path` public; the golden gives the verdict either way. If W2-00 is not
+  merged first, keep the local copy and let the lead dedupe.
+- **`Log::error` takes `Option<&dyn Error>`** but `DelayFailure::Failed(String)` and a caught panic are not `Error`s. Recommended: a private
+  `struct MessageError(String)` implementing `Error` and passed as `Some(&err)`; tests assert on the message text only (`RecordingLog` prints
+  `"{message}: {error}"`).
+- **Panic catching vs `panic = "abort"`:** if any profile uses `panic = "abort"`, `catch_unwind` silently stops covering the "open throws" /
+  "client throws" tests. Check `Cargo.toml` profiles; tests run under `dev`/`test` (unwind).
+- **Spawn failure policy** (note 9) has no C# counterpart; lead may prefer `expect` (thread spawn failure is process-fatal anyway).

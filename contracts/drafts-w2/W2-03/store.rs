@@ -209,7 +209,7 @@ impl SettingsStore {
     }
 
     /// `ParseText(json)`: the ONE parse pipeline for config.json-shaped text, shared by `load` and Settings > Import.
-    /// No disk access. `Err` when the text is not a JSON object (or `null`) at all, or is not parseable JSON.
+    /// No disk access. `Err` when the text is not parseable JSON or not a JSON object (the JSON text `null` is `Ok` with `is_json_null` and defaults).
     ///
     /// Steps: parse; read the whole document, or on failure salvage property by property ([`SettingsStore::try_salvage`]);
     /// mark an unversioned file as legacy; migrate; `normalizer::normalize` (the result minus `salvaged` is appended to

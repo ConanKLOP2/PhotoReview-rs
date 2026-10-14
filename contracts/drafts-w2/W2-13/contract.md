@@ -5,7 +5,7 @@
   - `SessionWriterTests.cs` (15): `ManyUpdatesCoalesceIntoOneWrite`, `UpdateAfterWriteStartsNewWindow`, `NewerSnapshotWinsOverOlderTimerBatch`, `FlushWritesImmediatelyAndOnlyOnce`, `FlushOnFolderChangePersistsOldFolder`, `EachFolderKeepsItsOwnPendingState`, `UpdateCopiesTheState`, `DisposeFlushes`, `Dispose_ReturnsWithinBound_WhenWriteInFlight`, `Dispose_WhileTimerHoldsDrainedBatch_StillWritesIt`, `Dispose_WhileTimerHoldsDrainedBatch_ReturnsOnlyAfterTheWriteLanded`, `WriteBatch_NonIoException_DoesNotDropRestOfBatch`, `Update_TrailingSeparatorVariants_NewestWins`, `Flush_WriterBusy_ReturnsAfterBoundedWaitAndRequeues`. `Update_NullSkipped_DoesNotThrow`: NO Rust twin (`Vec<String>` cannot be null); say so.
   - `SessionWriterShutdownAndVersionTests.cs` (15 methods, 18 cases): `Update_CustomDebounce_IsPassedToTheTimer`, `Update_NoDebounceGiven_UsesDefaultDebounce`, `Update_AfterDispose_IsIgnored`, `Update_FolderThatCannotBeCanonicalised_DoesNotThrowAndOtherFoldersAreStillWritten`, `Flush_StaleBatchDrainedBeforeNewerUpdate_DoesNotOverwriteTheNewerState`, `Flush_SaveWorkerCannotBeStarted_ReleasesTheWriterLockAndTheStateIsWrittenByTheNextFlush`, `Flush_TimedOutBatchWhoseStateWasSuperseded_IsNotRequeuedOverTheNewerState`, `Flush_FailingWrite_IsLoggedWithTheFolderAndTheException`, `Dispose_NothingEverPending_LogsNoError`, `Dispose_AfterACompletedWrite_LogsNoError`, `Dispose_WhenTheDrainedBatchIsWrittenWhileWaiting_ReturnsWithoutTimeoutError`, `Dispose_WriteStuckLongerThanShutdownWait_GivesUpAfterTheBoundIncludingTimeAlreadySpent` (`#[ignore = "slow: waits the 2 s shutdown budget"]`), `Dispose_SaveStallsAfterTheLockWasAcquired_StillReturnsWithinTheBoundAndWritesLaterInTheBackground`, `Constructor_InvalidDebounce_Throws` (rows `0` and `4294967295 ms`; the negative rows have no `Duration` twin, say so), `BrokenTimer_DoesNotFaultOrWedgeTheWriter`.
   - Own Rust tests: `Completion` (new/completed/complete idempotent/wait_timeout true+false); `ThreadTimer`: `start(20 ms, token)` + `wait` gives `Elapsed`; a token cancelled before/while waiting gives `Canceled` and returns well before the span (use span 30 s and assert it returns, hang-guarded); `SessionWriter: Send + Sync`; dropping a writer with a pending state writes it (`Drop` = `dispose`).
-  - No golden: the behaviour is timing/concurrency, the C# tests are the oracle. The folder identity used for coalescing (`KeyOf`) is pinned by W2-12's golden `session-key`.
+  - Golden (small, timing-free): `tests/golden/session-writer-sequence.json` (see "Golden package" below). The races/bounded waits have no golden; the C# tests are the oracle. The folder identity used for coalescing (`KeyOf`) is also pinned by W2-12's golden `session-key`.
 - PARITY rows: F-23 (500 ms debounce, newest state per folder, flush on folder change, dispose waits at most 2 s), F-22 (the write part)
 - Owned files (the ONLY files you may create/modify):
     crates/pr-core/src/session/writer.rs
@@ -49,7 +49,7 @@ Threads, not async (R0003). Per debounce window ONE short-lived timer thread (`P
 - `timer: Option<(u64, CancelToken)>`: the scheduled debounce window; `None` = nothing scheduled. `next_timer_id` makes ids unique.
 - `last_run: Completion` (initially `Completion::completed()`): the most recently started timer thread.
 - `in_flight: u32`: batches drained by some writer (timer thread or flusher) and not yet written.
-- Key: `key_of(folder)` = `SessionStore::canonical_folder(folder)` on `Ok`, the raw `folder` string on `Err(Invalid | TooLong)` (C# catches ArgumentException, NotSupportedException, PathTooLongException); the map key is `text::ignore_case_key(&key)` (OrdinalIgnoreCase). So `C:\a\`, `C:\a` and `C:\A\` are one entry and the newest wins.
+- Key: `key_of(folder)` = `SessionStore::canonical_folder(folder)` on `Ok`, the raw `folder` string on ANY `Err(SessionPathError)` (`Invalid | TooLong`; `Blank` cannot occur after the blank check) (C# catches ArgumentException, NotSupportedException, PathTooLongException); the map key is `text::ignore_case_key(&key)` (OrdinalIgnoreCase). So `C:\a\`, `C:\a` and `C:\A\` are one entry and the newest wins.
 
 ### 2. `new`
 `debounce` default `DEFAULT_DEBOUNCE`; `Err(InvalidDebounce(d))` when `d.is_zero()` or `d.as_millis() > MAX_DEBOUNCE_MILLISECONDS as u128` (zero would write inside `update` on the caller's thread). `timer` default `Arc::new(ThreadTimer)`. Nothing starts until the first `update`.
@@ -133,6 +133,8 @@ Under the gate: `if disposed { return }`; for each `(key, state, version)`: if `
 - "Wait until `load` returns X" (C# `Wait.UntilAsync`): have `GateFs` send on a channel AFTER the inner write returns, and wait for that message; no polling.
 - Shorten the real waits: tests that C# runs with the 2 s default may call `set_bounded_wait_for_tests(Duration::from_millis(200))`, except `Dispose_WriteStuckLongerThanShutdownWait...` which uses 1900 ms and is `#[ignore = "slow"]`.
 - `Dispose_ReturnsWithinBound_WhenWriteInFlight`: dispose on a helper thread, result via `recv_timeout(20 s)`; after releasing the gate, "a" lands, "b" is never written.
+- `Flush_FailingWrite_IsLoggedWithTheFolderAndTheException`: C# throws an `InvalidDataException` from the write hook and asserts `Assert.Same(boom, error.Exception)`. In Rust the GateFs hook `panic!("boom")`s (an `io::Error` would be swallowed by `store.save` and logged by the STORE, not the writer); assert exactly one writer error whose message contains the folder and whose error text contains `boom` (`Assert.Same` has no twin: the panic is wrapped in `PanicError`).
+- `before_shutdown_wait` hook: clone the `Arc` out of `hooks` before taking the gate (so `hooks` is not held), then call it with the gate held.
 - `Update_FolderThatCannotBeCanonicalised...`: folder `"C:\\bad\0folder"` is accepted by `update` (key falls back to the raw string); `flush` logs through the store (path error) and the other folder is still written.
 
 ## Traps checklist
@@ -145,6 +147,19 @@ MULTI-AGENT-PLAN section 7 items 1 (`ignore_case_key` for keys), 9 (each C# `cat
 
 ## Done when
 All listed tests pass, 20 consecutive runs of `cargo test -p pr-core --test session_writer -- --test-threads=1` pass (races), clippy `-D warnings` and `cargo fmt` clean, every C# test has a Rust twin with `// C#: <Class>.<Method>` or a stated reason, `#![allow(unused_variables, dead_code)]` removed. Verifier mutations that must make a test fail: drop the timer-id check in `run_timer`; drop the version check in `save_batch`; do not decrement `in_flight` on early return; do not release `write_lock` when the spawner fails; wait the full 2 s after the flush in `dispose`; requeue after dispose; requeue a superseded version; replace `ignore_case_key` by the raw key; coalesce nothing (schedule one timer per update); write after `dispose`; make `update` store the caller's state without cloning.
+
+## Golden package
+- `oracle/W2-13.cs`: command `session-writer-sequence` (dispatch line in the file header; needs `W2-00.cs` for `W2Util`). Drives a real `SessionWriter`
+  over a real temp `SessionStore` with a hand-fired `delay` (TaskCompletionSource list); ops `update` / `fire` / `flush` / `dispose`; reports the
+  constructor exception type, the timer spans (ms), per op `{exception, timer_requests, files}` and per probe folder the loaded `{current, skipped}`.
+- `golden-inputs/session-writer-sequence.json` (14 cases): constructor bounds (`null`, 1234, 0, -1, 4294967294, 4294967295), coalescing, new window
+  after a write, trailing-separator/case variants as one folder, per-folder state, late timer fire after flush, flush/dispose with nothing pending,
+  update after dispose, blank folder (`ArgumentException`), uncanonicalisable folder.
+- `golden-reference/`: EMPTY. Not generated (the oracle runner `tools/oracle.ps1` needs the file copied into `tools/oracle-cs`, outside this
+  draft folder); the Golden Generator role copies the file, adds the dispatch line and runs it.
+- Rust twin: `tests/session_writer.rs` golden test builds the writer with the ManualTimer; `timer: Some(..)` spans compare as ms; ops map 1:1
+  (`BlankFolder` <-> `ArgumentException`; the negative debounce row is unrepresentable with `Duration`: assert only the C# value `ArgumentOutOfRangeException`
+  is documented, skip the row in Rust; `4294967295` => `InvalidDebounce`). `fire` = `fire_all()` then `when_idle()`.
 
 ## Open questions
 - Q1: the production `ThreadTimer` polls the cancel token every <= 10 ms. If the lead prefers zero polling, `CancelToken` would need a wake-up primitive (`sync.rs` is lead-owned); not needed for correctness.

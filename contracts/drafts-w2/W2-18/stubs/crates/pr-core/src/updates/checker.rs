@@ -16,7 +16,7 @@ use std::time::Duration;
 use crate::sync::{CancelToken, Canceled};
 use crate::updates::version::{AppVersion, UpdateCheckResult, UpdateFailure};
 
-/// The endpoint (C# `LatestReleaseUrl`). Still the C# project's repository: see contracts/W2-18.md open question 1.
+/// The endpoint (C# `LatestReleaseUrl`). Still the C# project's repository: see contracts/W2-18.md open question 2.
 pub const LATEST_RELEASE_URL: &str = "https://api.github.com/repos/ConanKLOP2/PhotoReview/releases/latest";
 
 /// C# `DefaultTimeout`.
