@@ -2,8 +2,6 @@
 //!
 //! [`ExplorerOrderProvider`]: crate::abstractions::ExplorerOrderProvider
 
-use std::path::PathBuf;
-
 use crate::time::DateTimeUtc;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,11 +48,12 @@ pub struct ExplorerQueryProgress {
     pub com_calls: i32,
 }
 
-/// What an Explorer query returned. `reason` uses the `ExplorerReason` wire form (`code|detail|...`, contracts/W1-07).
+/// What an Explorer query returned. Paths are `String`s like every catalog/journal record (contracts/README.md D1).
+/// `reason` uses the `ExplorerReason` wire form (`code|detail|...`, contracts/W1-07).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExplorerViewSnapshot {
-    pub folder: PathBuf,
-    pub ordered_paths: Vec<PathBuf>,
+    pub folder: String,
+    pub ordered_paths: Vec<String>,
     pub sort_columns: Vec<ExplorerSortColumn>,
     pub group_state: ExplorerGroupState,
     pub status: ExplorerOrderStatus,

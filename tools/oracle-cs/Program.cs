@@ -16,6 +16,7 @@ if (args.Length != 4)
 
 var (command, inputPath, outputPath, commit) = (args[0], args[1], args[2], args[3]);
 var inputs = JsonNode.Parse(File.ReadAllText(inputPath))!.AsObject();
+PerfCommands.FixturesDir = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(inputPath))!, "..", "fixtures");
 
 if (command == "ordinal-casing-table")
 {
@@ -32,6 +33,38 @@ JsonArray cases = command switch
     "datetime-json" => Commands.DateTimeJson(inputs),
     "ordinal-ignore-case" => Commands.OrdinalIgnoreCase(inputs),
     "natural-cmp" => Commands.NaturalCompare(inputs),
+    // Wave 1 commands: one file per unit in tools/oracle-cs/Commands/. Later waves add their own file and a line here.
+    // W1-01..05 contracts
+    "model-enums" => Commands.ModelEnums(inputs),
+    "lenient-enum" => Commands.LenientEnum(inputs),
+    "flag-enum-json" => Commands.FlagEnumJson(inputs),
+    "flag-fields" => Commands.FlagFields(inputs),
+    "shortcut-canonical" => Commands.ShortcutCanonical(inputs),
+    "perf-options" => Commands.PerfOptions(inputs),
+    // W1-06 .. W1-08
+    "natural-key" => Commands.NaturalKey(inputs),
+    "image-file-types" => Commands.ImageFileTypesCases(inputs),
+    "lru-trace" => Commands.LruTrace(inputs),
+    // W1-10, W1-11
+    "app-version" => Commands.AppVersionCases(inputs),
+    "update-url-policy" => Commands.UpdateUrlPolicyCases(inputs),
+    "loc-template" => Commands.LocTemplateCases(inputs),
+    "loc-render" => Commands.LocRenderCases(inputs),
+    "loc-pseudo" => Commands.LocPseudoCases(inputs),
+    // W1-13, W1-14, W1-15, W1-22
+    "path-root" => Commands.PathRoot(inputs),
+    "journal-error-text" => Commands.JournalErrorText(inputs),
+    "journal-lines" => Commands.JournalLineCases(inputs),
+    "percentile" => Commands.PercentileCases(inputs),
+    "diag-options" => Commands.DiagOptionsCases(inputs),
+    "vblank" => Commands.VBlankCases(inputs),
+    // W1-16 .. W1-21 (PerfAnalysis, tools/oracle-cs/Commands/Perf.cs)
+    "perf-csv" => PerfCommands.Csv(inputs),
+    "perf-nav" => PerfCommands.Nav(inputs),
+    "perf-stats" => PerfCommands.Stats(inputs),
+    "perf-rules" => PerfCommands.Rules(inputs),
+    "perf-report" => PerfCommands.Report(inputs),
+    "perf-analyze" => PerfCommands.Analyze(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 
@@ -47,7 +80,7 @@ File.WriteAllText(outputPath, doc.ToJsonString(options) + "\n");
 Console.WriteLine($"{command}: {cases.Count} case(s) -> {outputPath}");
 return 0;
 
-static class Commands
+static partial class Commands
 {
     private static readonly JsonSerializerOptions Plain = new();
 

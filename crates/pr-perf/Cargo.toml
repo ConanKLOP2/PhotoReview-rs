@@ -11,4 +11,11 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+indexmap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 pr-core.workspace = true
+
+[dev-dependencies]
+pr-test-support.workspace = true
+serde_json.workspace = true

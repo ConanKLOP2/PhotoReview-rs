@@ -1,0 +1,71 @@
+{
+  "generator": "oracle-cs journal-error-text",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "code": "SourceStillExistsAfterRecovery",
+      "known": true,
+      "english": "The source still exists after session recovery."
+    },
+    {
+      "code": "PendingUnconfirmed",
+      "known": true,
+      "english": "Could not confirm the pending operation; it will not be replayed automatically."
+    },
+    {
+      "code": "VerifySizeChanged",
+      "known": true,
+      "english": "Post-operation check failed: the destination size changed."
+    },
+    {
+      "code": "RetryVerifyFailed",
+      "known": true,
+      "english": "Destination check after retry failed."
+    },
+    {
+      "code": "DestinationOutsideSource",
+      "known": true,
+      "english": "The destination folder must not be outside the folder being reviewed."
+    },
+    {
+      "code": "MoveSourceNotRemoved",
+      "known": true,
+      "english": "The file was copied to the destination, but the original could not be removed (it may be read-only or in use). Both copies now exist; nothing was deleted."
+    },
+    {
+      "code": "CancelledByUser",
+      "known": true,
+      "english": "The operation was cancelled before it finished."
+    },
+    {
+      "code": "UnrepresentablePath",
+      "known": true,
+      "english": "A file path contains an unpaired UTF-16 surrogate, which cannot be recorded faithfully in the operation journal. Nothing was changed."
+    },
+    {
+      "code": "",
+      "known": false,
+      "english": null
+    },
+    {
+      "code": "Nope",
+      "known": false,
+      "english": null
+    },
+    {
+      "code": "sourcestillexistsafterrecovery",
+      "known": false,
+      "english": null
+    },
+    {
+      "code": "CancelledByUser ",
+      "known": false,
+      "english": null
+    },
+    {
+      "code": null,
+      "known": false,
+      "english": null
+    }
+  ]
+}

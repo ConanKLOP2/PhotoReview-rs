@@ -1,0 +1,12 @@
+{
+  "padding_max": 300,
+  "texts": [
+    "", "a", "ab", "abcdefghij", "Sample", "Hello {name}!", "{n} files", "{a}", "{a}{b}", "{a} and {b}", "x{y}", "{z}y",
+    "{{literal}} {v} }}{{", "{{x}}", "{{}}", "{{{a}}}", "日本語 {name} です", "😀 {name} 😀", "😀😀😀", "مرحبا {name}",
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 !?-_.,:;()[]",
+    "The quick brown fox jumps over the lazy dog, twice, and then once more for good measure.",
+    "Ünïcödé àlrèâdy accented {name} ß ø å", "line1\nline2 {x}", "  leading and trailing  ", "{ x}", "Unbalanced {name",
+    "Stray } brace", "{1x}", "{}", "{with space}", "{a{b}", "{x}}", "100% {count}", "{{", "}}",
+    "aaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ]
+}

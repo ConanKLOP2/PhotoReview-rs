@@ -1,0 +1,160 @@
+{
+  "reports": [
+    {
+      "name": "full-three-groups",
+      "csv_file_count": 3,
+      "groups": [
+        {
+          "key": { "scenario": "S2", "mode": "Preview", "cond": "warm", "workers": 2 },
+          "count": 30, "incomplete": 4,
+          "first": { "p50": 4.5, "p95": 9.25, "max": 12 },
+          "final": { "p50": 10.04, "p95": 20.05, "max": 25.55 },
+          "rendered": { "p50": 0.05, "p95": 0.25, "max": 100000 },
+          "hit_rate": 0.3333333333333333,
+          "kind_counts": [ ["SourceMiss", 8], ["RamHit", 10], ["Thumbnail+RamHit", 4], ["DiskCacheHit", 8] ],
+          "slowest_phase_share": [ ["t_assign", 0.0125], ["t_decode", 0.62], ["t_render", 0.0125], ["t_input", 1.5] ],
+          "preload_workers": 2, "gc": 3.5, "frame_p95": 18.25,
+          "preload_items": [
+            { "slot": 0, "path_id": "a1", "queue_wait": 30.5, "kind": "decoded", "ms": 45.25 },
+            { "slot": 1, "path_id": "a2", "queue_wait": 2, "kind": "hit", "ms": 0 },
+            { "slot": 2, "path_id": "a3", "queue_wait": 15, "kind": "decoded", "ms": 12.5 },
+            { "slot": 3, "path_id": "a4", "queue_wait": 7.75, "kind": "decoded", "ms": 80 },
+            { "slot": 0, "path_id": "a5", "queue_wait": 100, "kind": "skipped", "ms": 999 }
+          ],
+          "paused": 2, "cancel": 1,
+          "dispatcher": [
+            { "ms": 20.5, "priority": "Background", "name": "SessionSave" },
+            { "ms": 19.5, "priority": "Normal", "name": "LayoutUpdate" },
+            { "ms": 0.15, "priority": "Normal", "name": "Tiny" },
+            { "ms": 0.1, "priority": "Normal", "name": "Tiny" },
+            { "ms": 10, "priority": "Normal", "name": "Tie|A" },
+            { "ms": 10, "priority": "Normal", "name": "TieB" },
+            { "ms": 5, "priority": "Normal", "name": "TieB" },
+            { "ms": 5, "priority": "Normal", "name": "TieC" },
+            { "ms": 5, "priority": "Normal", "name": "TieC" },
+            { "ms": 5, "priority": "Normal", "name": "TieC" },
+            { "ms": 30, "priority": "Normal", "name": "Big" },
+            { "ms": 1, "priority": "Normal", "name": "" }
+          ],
+          "dispatcher_before": 1, "dropped": 0,
+          "folder_gens": [
+            { "gen": 3, "t1": 120.25, "t2": 1500, "t3": 180.75, "t3_phase": "explorerApplied" },
+            { "gen": 1, "t1": null, "t2": 250.5, "t3": null, "t3_phase": "" },
+            { "gen": 2, "t2": 99.95, "t3": 12, "t3_phase": "explorer|Fallback" },
+            { "gen": 1, "t2": 0.05 }
+          ],
+          "startup_runs": [
+            [ ["appStartup", 250], ["servicesBuilt", 300], ["firstPresented", 717.5] ],
+            [ ["appStartup", 270], ["servicesBuilt", 280], ["firstPresented", 700] ],
+            [ ["appStartup", 260], ["servicesBuilt", 290], ["onlyHere", 5.25] ]
+          ],
+          "rules": [
+            { "rule": "R-IO", "triggered": null, "evidence": "0/3 SourceMiss navs have t_read", "note": "No source-read timing" },
+            { "rule": "R-DEC", "triggered": true, "evidence": "avg(t_decode/finalVisual)=60.0% over 4 navs (threshold 40%)", "note": null },
+            { "rule": "R-UI", "triggered": false, "evidence": "a|b\r\nc\nd\re", "note": "n|o\r\nt\ne" },
+            { "rule": "R-PRE", "triggered": false, "evidence": "RamHit finalVisual P95=20.0ms (threshold ≤50ms); non-RamHit share=25.0% (threshold ≥10% for S2)", "note": "" },
+            { "rule": "R-CONT", "triggered": true, "evidence": "<b>bold</b> & 'quote' \"dq\" + plus \\ back / slash `tick`", "note": "café 日本 😀" }
+          ]
+        },
+        {
+          "key": { "scenario": "S3@F1|x", "mode": "Fast", "cond": "cold-app", "workers": null },
+          "count": 5, "incomplete": 5,
+          "kind_counts": [], "slowest_phase_share": [],
+          "dispatcher_before": 0, "dropped": 12,
+          "rules": [
+            { "rule": "R-GC", "triggered": null, "evidence": "No process.json/% time in GC for this group.", "note": "Needs dotnet-counters (D09) or process.json (D06)." }
+          ]
+        },
+        {
+          "key": { "scenario": "S4", "mode": "Preview", "cond": "cold-os", "workers": 0 },
+          "count": 40, "incomplete": 0,
+          "first": { "p50": 1, "p95": 2, "max": 3 },
+          "final": { "p50": 4, "p95": 5, "max": 6 },
+          "rendered": { "p50": 7, "p95": 8, "max": 9 },
+          "hit_rate": 1,
+          "kind_counts": [ ["RamHit", 40] ],
+          "slowest_phase_share": [ ["t_assign", 0.1] ],
+          "preload_workers": 0, "gc": 0, "frame_p95": 0,
+          "rules": []
+        }
+      ]
+    },
+    {
+      "name": "no-groups",
+      "csv_file_count": 0,
+      "groups": []
+    },
+    {
+      "name": "non-finite-and-extreme-numbers",
+      "csv_file_count": 1,
+      "groups": [
+        {
+          "key": { "scenario": "S2", "mode": "Preview", "cond": "warm", "workers": 1 },
+          "count": 25, "incomplete": 0,
+          "first": { "p50": "Infinity", "p95": "-Infinity", "max": "NaN" },
+          "final": { "p50": 1e21, "p95": 1e-7, "max": -0.0 },
+          "rendered": { "p50": 123456789.12345679, "p95": 0.30000000000000004, "max": 1e15 },
+          "hit_rate": "Infinity",
+          "kind_counts": [ ["A", 2147483647] ],
+          "slowest_phase_share": [ ["t_a", "NaN"], ["t_b", "Infinity"], ["t_c", 1e-5], ["t_d", 100000000000000000000], ["t_e", 0.1], ["t_f", 4.35] ],
+          "preload_workers": -3, "gc": "NaN", "frame_p95": "Infinity",
+          "preload_items": [ { "slot": 0, "path_id": "x", "queue_wait": "Infinity", "kind": "decoded", "ms": "NaN" }, { "slot": 0, "path_id": "x", "queue_wait": 1.25, "kind": "decoded", "ms": 0.125 } ],
+          "dispatcher": [ { "ms": 1e300, "priority": "p", "name": "huge" }, { "ms": 1e300, "priority": "p", "name": "huge" } ],
+          "folder_gens": [ { "gen": 9223372036854775807, "t1": 0.04, "t2": 1e21, "t3": -0.04, "t3_phase": "p" } ],
+          "startup_runs": [ [ ["p1", 0.05], ["p2", 1e21], ["p3", 4.35], ["p4", -0.0] ] ],
+          "dropped": 9223372036854775807,
+          "rules": [ { "rule": "R-X", "triggered": true, "evidence": "e", "note": "n" } ]
+        }
+      ]
+    },
+    {
+      "name": "startup-medians-and-ordering",
+      "csv_file_count": 2,
+      "groups": [
+        {
+          "key": { "scenario": "S1", "mode": "Fast", "cond": "warm", "workers": 4 },
+          "count": 25, "incomplete": 0,
+          "first": { "p50": 1, "p95": 1, "max": 1 }, "final": { "p50": 1, "p95": 1, "max": 1 },
+          "hit_rate": 0.5,
+          "kind_counts": [ ["B", 3], ["A", 3], ["C", 5], ["D", 1] ],
+          "slowest_phase_share": [ ["t_b", 0.5], ["t_a", 0.5], ["t_c", 0.75] ],
+          "startup_runs": [
+            [ ["A", 10], ["B", 20], ["C", 5] ],
+            [ ["A", 30], ["B", 20] ],
+            [ ["A", 20], ["D", 7] ],
+            [ ["E", 20], ["E2", 20.5], ["F", 20] ]
+          ]
+        },
+        {
+          "key": { "scenario": "S1", "mode": "Fast", "cond": "warm", "workers": 10 },
+          "count": 25, "incomplete": 0,
+          "startup_runs": [ [ ["A", 10], ["B", 30] ], [ ["A", 30], ["B", 10] ] ]
+        },
+        {
+          "key": { "scenario": "S1", "mode": "Fast", "cond": "warm", "workers": 3 },
+          "count": 1, "incomplete": 0,
+          "startup_runs": [ [ ["only", 1.5] ] ]
+        }
+      ]
+    },
+    {
+      "name": "unicode-and-escapes",
+      "csv_file_count": 1,
+      "groups": [
+        {
+          "key": { "scenario": "Sé日😀", "mode": "M\"q'<>&+", "cond": "c\\d/e", "workers": 1 },
+          "count": 25, "incomplete": 0,
+          "kind_counts": [ ["kéy|1", 1], ["k\r\ny", 2] ],
+          "slowest_phase_share": [ ["té", 0.5] ],
+          "dispatcher": [ { "ms": 17, "priority": "p", "name": "né|\r\nx×" } ],
+          "folder_gens": [ { "gen": 1, "t3_phase": "phé×" } ],
+          "startup_runs": [ [ ["phé|ase", 3] ] ],
+          "rules": [ { "rule": "Ré|1", "triggered": false, "evidence": "≤≥× “q” \u0000\u001f\u007f\u0080  ﻿", "note": "line1\nline2\ttab\u000b\f" } ]
+        }
+      ]
+    }
+  ],
+  "json_string": [
+    "", "plain", "a b", "café", "日本", "😀", "\u0000", "\u0001\u001f", "\u007f", "\u0080", " ", "  ", "﻿", "\"", "\\", "/", "'", "&", "<", ">", "+", "`", "=", "%", "~", "!", "#", "$", "(", ")", "*", ",", "-", ".", ":", ";", "?", "@", "[", "]", "^", "_", "{", "|", "}", "\b\f\n\r\t", "\u000b", "ASCII printable !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+  ]
+}

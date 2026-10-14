@@ -1,0 +1,7 @@
+{
+  "codes": [
+    "SourceStillExistsAfterRecovery", "PendingUnconfirmed", "VerifySizeChanged", "RetryVerifyFailed", "DestinationOutsideSource",
+    "MoveSourceNotRemoved", "CancelledByUser", "UnrepresentablePath",
+    "", "Nope", "sourcestillexistsafterrecovery", "CancelledByUser ", null
+  ]
+}

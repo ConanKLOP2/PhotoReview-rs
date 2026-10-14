@@ -1,0 +1,206 @@
+{
+  "generator": "oracle-cs path-root",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "path": "C:\\a\\b.jpg",
+      "root": "C:\\"
+    },
+    {
+      "path": "c:\\a",
+      "root": "c:\\"
+    },
+    {
+      "path": "C:/a/b",
+      "root": "C:\\"
+    },
+    {
+      "path": "C:a",
+      "root": "C:"
+    },
+    {
+      "path": "C:",
+      "root": "C:"
+    },
+    {
+      "path": "C:\\",
+      "root": "C:\\"
+    },
+    {
+      "path": "C:/",
+      "root": "C:\\"
+    },
+    {
+      "path": "D:\\x\\y\\z.jpg",
+      "root": "D:\\"
+    },
+    {
+      "path": "1:\\a",
+      "root": ""
+    },
+    {
+      "path": "@:\\a",
+      "root": ""
+    },
+    {
+      "path": "[:\\a",
+      "root": ""
+    },
+    {
+      "path": "é:\\a",
+      "root": ""
+    },
+    {
+      "path": "\\a\\b",
+      "root": "\\"
+    },
+    {
+      "path": "/a/b",
+      "root": "\\"
+    },
+    {
+      "path": "\\",
+      "root": "\\"
+    },
+    {
+      "path": "/",
+      "root": "\\"
+    },
+    {
+      "path": "\\\\srv\\sh\\x\\y",
+      "root": "\\\\srv\\sh"
+    },
+    {
+      "path": "\\\\srv\\sh\\",
+      "root": "\\\\srv\\sh"
+    },
+    {
+      "path": "\\\\srv\\sh",
+      "root": "\\\\srv\\sh"
+    },
+    {
+      "path": "\\\\srv",
+      "root": "\\\\srv"
+    },
+    {
+      "path": "\\\\",
+      "root": "\\\\"
+    },
+    {
+      "path": "\\\\\\srv\\sh\\x",
+      "root": "\\\\srv"
+    },
+    {
+      "path": "//srv/sh/x",
+      "root": "\\\\srv\\sh"
+    },
+    {
+      "path": "\\/srv\\sh\\x",
+      "root": "\\\\srv\\sh"
+    },
+    {
+      "path": "\\\\?\\C:\\a\\b",
+      "root": "\\\\?\\C:\\"
+    },
+    {
+      "path": "\\\\?\\C:",
+      "root": "\\\\?\\C:"
+    },
+    {
+      "path": "\\\\?\\C:\\",
+      "root": "\\\\?\\C:\\"
+    },
+    {
+      "path": "\\\\?\\UNC\\srv\\sh\\a",
+      "root": "\\\\?\\UNC\\srv\\sh"
+    },
+    {
+      "path": "\\\\?\\UNC\\srv\\sh",
+      "root": "\\\\?\\UNC\\srv\\sh"
+    },
+    {
+      "path": "\\\\?\\unc\\srv\\sh\\a",
+      "root": "\\\\?\\unc\\"
+    },
+    {
+      "path": "\\\\.\\C:\\a",
+      "root": "\\\\.\\C:\\"
+    },
+    {
+      "path": "\\\\.\\PhysicalDrive0",
+      "root": "\\\\.\\PhysicalDrive0"
+    },
+    {
+      "path": "\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}\\a\\b.jpg",
+      "root": "\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}\\"
+    },
+    {
+      "path": "\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}",
+      "root": "\\\\?\\Volume{01234567-89ab-cdef-0123-456789abcdef}"
+    },
+    {
+      "path": "\\??\\C:\\a",
+      "root": "\\??\\C:\\"
+    },
+    {
+      "path": "\\\\?\\",
+      "root": "\\\\?\\"
+    },
+    {
+      "path": "\\\\?\\\\a",
+      "root": "\\\\?\\"
+    },
+    {
+      "path": "\\\\?\\a\\b",
+      "root": "\\\\?\\a\\"
+    },
+    {
+      "path": "a\\b",
+      "root": ""
+    },
+    {
+      "path": "a",
+      "root": ""
+    },
+    {
+      "path": "a.jpg",
+      "root": ""
+    },
+    {
+      "path": ".\\a",
+      "root": ""
+    },
+    {
+      "path": "..\\a",
+      "root": ""
+    },
+    {
+      "path": "",
+      "root": null
+    },
+    {
+      "path": " ",
+      "root": null
+    },
+    {
+      "path": "   ",
+      "root": null
+    },
+    {
+      "path": null,
+      "root": null
+    },
+    {
+      "path": " C:\\a",
+      "root": ""
+    },
+    {
+      "path": "C:\\a ",
+      "root": "C:\\"
+    },
+    {
+      "path": "C :\\a",
+      "root": ""
+    }
+  ]
+}

@@ -19,6 +19,9 @@
     <Reference Include="PhotoReview.Core">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Core.dll</HintPath>
     </Reference>
+    <Reference Include="PhotoReview.PerfAnalysis">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

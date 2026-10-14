@@ -1,0 +1,140 @@
+{
+  "generator": "oracle-cs flag-fields",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "type": "TitleBarFields",
+      "members": [
+        {
+          "name": "None",
+          "value": 0
+        },
+        {
+          "name": "FolderName",
+          "value": 1
+        },
+        {
+          "name": "FolderPath",
+          "value": 2
+        },
+        {
+          "name": "IndexCount",
+          "value": 4
+        },
+        {
+          "name": "FileName",
+          "value": 8
+        },
+        {
+          "name": "FileSize",
+          "value": 16
+        },
+        {
+          "name": "Dimensions",
+          "value": 32
+        },
+        {
+          "name": "ModifiedDate",
+          "value": 64
+        },
+        {
+          "name": "DateTaken",
+          "value": 128
+        },
+        {
+          "name": "Camera",
+          "value": 256
+        },
+        {
+          "name": "Lens",
+          "value": 512
+        },
+        {
+          "name": "Iso",
+          "value": 1024
+        },
+        {
+          "name": "FocalLength",
+          "value": 2048
+        },
+        {
+          "name": "Aperture",
+          "value": 4096
+        },
+        {
+          "name": "ShutterSpeed",
+          "value": 8192
+        },
+        {
+          "name": "All",
+          "value": 16383
+        },
+        {
+          "name": "Default",
+          "value": 1
+        }
+      ],
+      "all": 16383,
+      "default": 1
+    },
+    {
+      "type": "ExifInfoFields",
+      "members": [
+        {
+          "name": "None",
+          "value": 0
+        },
+        {
+          "name": "FileName",
+          "value": 1
+        },
+        {
+          "name": "DateTaken",
+          "value": 2
+        },
+        {
+          "name": "Dimensions",
+          "value": 4
+        },
+        {
+          "name": "Camera",
+          "value": 8
+        },
+        {
+          "name": "Lens",
+          "value": 16
+        },
+        {
+          "name": "Iso",
+          "value": 32
+        },
+        {
+          "name": "FocalLength",
+          "value": 64
+        },
+        {
+          "name": "Aperture",
+          "value": 128
+        },
+        {
+          "name": "ShutterSpeed",
+          "value": 256
+        },
+        {
+          "name": "ModifiedDate",
+          "value": 512
+        },
+        {
+          "name": "All",
+          "value": 1023
+        },
+        {
+          "name": "Default",
+          "value": 506
+        }
+      ],
+      "all": 1023,
+      "default": 506
+    }
+  ]
+}

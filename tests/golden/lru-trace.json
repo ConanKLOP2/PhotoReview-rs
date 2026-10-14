@@ -1,0 +1,839 @@
+{
+  "generator": "oracle-cs lru-trace",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "b"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aa",
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "cc"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aa",
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "c"
+          ],
+          "hit": true,
+          "value": "cc",
+          "count": 2,
+          "size": 4
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "b"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "set",
+            "a",
+            "too-big-for-capacity"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": true,
+          "value": "b",
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "bb"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "cccc"
+          ],
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "c"
+          ],
+          "hit": true,
+          "value": "cccc",
+          "count": 1,
+          "size": 4
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "bb"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aa",
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "cc"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aa",
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "c"
+          ],
+          "hit": true,
+          "value": "cc",
+          "count": 2,
+          "size": 4
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "bb"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "a",
+            "a"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "ccc"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "a",
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "c"
+          ],
+          "hit": true,
+          "value": "ccc",
+          "count": 2,
+          "size": 4
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "bb"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "a",
+            "aaa"
+          ],
+          "count": 1,
+          "size": 3
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "c"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aaa",
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "c"
+          ],
+          "hit": true,
+          "value": "c",
+          "count": 2,
+          "size": 4
+        }
+      ]
+    },
+    {
+      "capacity": 3,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            ""
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            ""
+          ],
+          "count": 2,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            ""
+          ],
+          "count": 3,
+          "size": 3
+        },
+        {
+          "op": [
+            "set",
+            "d",
+            ""
+          ],
+          "count": 3,
+          "size": 3
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 3,
+          "size": 3
+        },
+        {
+          "op": [
+            "get",
+            "d"
+          ],
+          "hit": true,
+          "value": "",
+          "count": 3,
+          "size": 3
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aaaa"
+          ],
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aaaa",
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "b"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": true,
+          "value": "b",
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aaaaa"
+          ],
+          "count": 0,
+          "size": 0
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 0,
+          "size": 0
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "b"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "remove",
+            "a"
+          ],
+          "removed": true,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "remove",
+            "a"
+          ],
+          "removed": false,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "remove",
+            "zz"
+          ],
+          "removed": false,
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 10,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "img1",
+            "1111"
+          ],
+          "count": 1,
+          "size": 4
+        },
+        {
+          "op": [
+            "set",
+            "img2",
+            "22"
+          ],
+          "count": 2,
+          "size": 6
+        },
+        {
+          "op": [
+            "set",
+            "dsc1",
+            "3"
+          ],
+          "count": 3,
+          "size": 7
+        },
+        {
+          "op": [
+            "remove_prefix",
+            "img"
+          ],
+          "removed": 2,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "remove_prefix",
+            "img"
+          ],
+          "removed": 0,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "remove_prefix",
+            "zzz"
+          ],
+          "removed": 0,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "dsc1"
+          ],
+          "hit": true,
+          "value": "3",
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 10,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "1"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "22"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "clear"
+          ],
+          "count": 0,
+          "size": 0
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 0,
+          "size": 0
+        },
+        {
+          "op": [
+            "set",
+            "c",
+            "3"
+          ],
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 4,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "A",
+            "a"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "set",
+            "a",
+            "bb"
+          ],
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "get",
+            "A"
+          ],
+          "hit": true,
+          "value": "a",
+          "count": 2,
+          "size": 3
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "bb",
+          "count": 2,
+          "size": 3
+        }
+      ]
+    },
+    {
+      "capacity": 1,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "x"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "y"
+          ],
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": false,
+          "value": null,
+          "count": 1,
+          "size": 1
+        },
+        {
+          "op": [
+            "get",
+            "b"
+          ],
+          "hit": true,
+          "value": "y",
+          "count": 1,
+          "size": 1
+        }
+      ]
+    },
+    {
+      "capacity": 0,
+      "ctor_error": true
+    },
+    {
+      "capacity": -5,
+      "ctor_error": true
+    },
+    {
+      "capacity": 9223372036854775807,
+      "steps": [
+        {
+          "op": [
+            "set",
+            "a",
+            "aa"
+          ],
+          "count": 1,
+          "size": 2
+        },
+        {
+          "op": [
+            "set",
+            "b",
+            "bb"
+          ],
+          "count": 2,
+          "size": 4
+        },
+        {
+          "op": [
+            "get",
+            "a"
+          ],
+          "hit": true,
+          "value": "aa",
+          "count": 2,
+          "size": 4
+        }
+      ]
+    }
+  ]
+}

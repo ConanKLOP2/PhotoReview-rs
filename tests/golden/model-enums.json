@@ -1,0 +1,398 @@
+{
+  "generator": "oracle-cs model-enums",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "enum": "ImageSortMode",
+      "members": [
+        {
+          "name": "Name",
+          "value": 0,
+          "aliases": [
+            "PortraitFirst"
+          ],
+          "json": "Name",
+          "uses_explorer_order": true
+        },
+        {
+          "name": "SizeDescending",
+          "value": 1,
+          "aliases": [
+            "Size"
+          ],
+          "json": "SizeDescending",
+          "uses_explorer_order": true
+        },
+        {
+          "name": "SizeAscending",
+          "value": 2,
+          "aliases": [],
+          "json": "SizeAscending",
+          "uses_explorer_order": true
+        },
+        {
+          "name": "Default",
+          "value": 3,
+          "aliases": [],
+          "json": "Default",
+          "uses_explorer_order": false
+        },
+        {
+          "name": "NameAscending",
+          "value": 4,
+          "aliases": [],
+          "json": "NameAscending",
+          "uses_explorer_order": false
+        },
+        {
+          "name": "NameDescending",
+          "value": 5,
+          "aliases": [],
+          "json": "NameDescending",
+          "uses_explorer_order": false
+        }
+      ]
+    },
+    {
+      "enum": "InitialViewMode",
+      "members": [
+        {
+          "name": "Fit",
+          "value": 0,
+          "aliases": [],
+          "json": "Fit"
+        },
+        {
+          "name": "Percent100",
+          "value": 1,
+          "aliases": [
+            "100%"
+          ],
+          "json": "100%"
+        },
+        {
+          "name": "Percent200",
+          "value": 2,
+          "aliases": [
+            "200%"
+          ],
+          "json": "200%"
+        },
+        {
+          "name": "Percent400",
+          "value": 3,
+          "aliases": [
+            "400%"
+          ],
+          "json": "400%"
+        },
+        {
+          "name": "FitWidth",
+          "value": 4,
+          "aliases": [
+            "fit-width"
+          ],
+          "json": "FitWidth"
+        },
+        {
+          "name": "FitHeight",
+          "value": 5,
+          "aliases": [
+            "fit-height"
+          ],
+          "json": "FitHeight"
+        },
+        {
+          "name": "ClickZoomLevel",
+          "value": 6,
+          "aliases": [
+            "click-zoom"
+          ],
+          "json": "ClickZoomLevel"
+        }
+      ]
+    },
+    {
+      "enum": "LoadingMode",
+      "members": [
+        {
+          "name": "Fast",
+          "value": 0,
+          "aliases": [],
+          "json": "Fast"
+        },
+        {
+          "name": "Preview",
+          "value": 1,
+          "aliases": [],
+          "json": "Preview"
+        },
+        {
+          "name": "Original",
+          "value": 2,
+          "aliases": [],
+          "json": "Original"
+        }
+      ]
+    },
+    {
+      "enum": "DecoderBackend",
+      "members": [
+        {
+          "name": "Wpf",
+          "value": 0,
+          "aliases": [],
+          "json": "Wpf"
+        },
+        {
+          "name": "WicDirect",
+          "value": 1,
+          "aliases": [],
+          "json": "WicDirect"
+        },
+        {
+          "name": "TurboJpeg",
+          "value": 2,
+          "aliases": [],
+          "json": "TurboJpeg"
+        },
+        {
+          "name": "LibRaw",
+          "value": 3,
+          "aliases": [],
+          "json": "LibRaw"
+        }
+      ]
+    },
+    {
+      "enum": "RawPairMode",
+      "members": [
+        {
+          "name": "Separate",
+          "value": 0,
+          "aliases": [],
+          "json": "Separate"
+        },
+        {
+          "name": "PreferJpeg",
+          "value": 1,
+          "aliases": [],
+          "json": "PreferJpeg"
+        },
+        {
+          "name": "PreferRaw",
+          "value": 2,
+          "aliases": [],
+          "json": "PreferRaw"
+        }
+      ]
+    },
+    {
+      "enum": "RawFullDecode",
+      "members": [
+        {
+          "name": "Never",
+          "value": 0,
+          "aliases": [],
+          "json": "Never"
+        },
+        {
+          "name": "OnZoom",
+          "value": 1,
+          "aliases": [],
+          "json": "OnZoom"
+        }
+      ]
+    },
+    {
+      "enum": "MouseWheelAction",
+      "members": [
+        {
+          "name": "Zoom",
+          "value": 0,
+          "aliases": [],
+          "json": "Zoom"
+        },
+        {
+          "name": "Navigate",
+          "value": 1,
+          "aliases": [],
+          "json": "Navigate"
+        }
+      ]
+    },
+    {
+      "enum": "ScalingQuality",
+      "members": [
+        {
+          "name": "Linear",
+          "value": 0,
+          "aliases": [],
+          "json": "Linear"
+        },
+        {
+          "name": "HighQuality",
+          "value": 1,
+          "aliases": [],
+          "json": "HighQuality"
+        }
+      ]
+    },
+    {
+      "enum": "ImageTransition",
+      "members": [
+        {
+          "name": "None",
+          "value": 0,
+          "aliases": [],
+          "json": "None"
+        },
+        {
+          "name": "Fade",
+          "value": 1,
+          "aliases": [],
+          "json": "Fade"
+        }
+      ]
+    },
+    {
+      "enum": "InstanceMode",
+      "members": [
+        {
+          "name": "SingleWindow",
+          "value": 0,
+          "aliases": [],
+          "json": "SingleWindow"
+        },
+        {
+          "name": "PerFolder",
+          "value": 1,
+          "aliases": [],
+          "json": "PerFolder"
+        }
+      ]
+    },
+    {
+      "enum": "JournalState",
+      "members": [
+        {
+          "name": "Prepared",
+          "value": 0,
+          "aliases": [],
+          "json": "Prepared"
+        },
+        {
+          "name": "Committed",
+          "value": 1,
+          "aliases": [],
+          "json": "Committed"
+        },
+        {
+          "name": "Failed",
+          "value": 2,
+          "aliases": [],
+          "json": "Failed"
+        },
+        {
+          "name": "Dismissed",
+          "value": 3,
+          "aliases": [],
+          "json": "Dismissed"
+        }
+      ]
+    },
+    {
+      "enum": "FileOperationType",
+      "members": [
+        {
+          "name": "Move",
+          "value": 0,
+          "aliases": [],
+          "json": "Move"
+        },
+        {
+          "name": "Copy",
+          "value": 1,
+          "aliases": [],
+          "json": "Copy"
+        },
+        {
+          "name": "Recycle",
+          "value": 2,
+          "aliases": [
+            "Delete"
+          ],
+          "json": "Recycle"
+        }
+      ]
+    },
+    {
+      "enum": "JournalDurability",
+      "members": [
+        {
+          "name": "Fast",
+          "value": 0,
+          "aliases": [],
+          "json": "Fast"
+        },
+        {
+          "name": "PowerLossSafe",
+          "value": 1,
+          "aliases": [],
+          "json": "PowerLossSafe"
+        }
+      ]
+    },
+    {
+      "enum": "FitWidthAnchor",
+      "members": [
+        {
+          "name": "Centre",
+          "value": 0,
+          "aliases": [],
+          "json": "Centre"
+        },
+        {
+          "name": "TopThird",
+          "value": 1,
+          "aliases": [],
+          "json": "TopThird"
+        }
+      ]
+    },
+    {
+      "enum": "KeyboardZoomAnchor",
+      "members": [
+        {
+          "name": "Pointer",
+          "value": 0,
+          "aliases": [],
+          "json": "Pointer"
+        },
+        {
+          "name": "ViewportCentre",
+          "value": 1,
+          "aliases": [],
+          "json": "ViewportCentre"
+        }
+      ]
+    },
+    {
+      "enum": "KineticGlideSmoothing",
+      "members": [
+        {
+          "name": "Off",
+          "value": 0,
+          "aliases": [],
+          "json": "Off"
+        },
+        {
+          "name": "Predict",
+          "value": 1,
+          "aliases": [],
+          "json": "Predict"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "generator": "oracle-cs perf-options",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "name": "ImageCacheCapacityBytes",
+      "type": "Int64",
+      "value": 17179869184
+    },
+    {
+      "name": "ImageCacheRamPercent",
+      "type": "Int32",
+      "value": 50
+    },
+    {
+      "name": "MaxImageCacheRamPercent",
+      "type": "Int32",
+      "value": 90
+    },
+    {
+      "name": "MinImageCacheRamPercent",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "name": "MemoryReserveBytes",
+      "type": "Int64",
+      "value": 2147483648
+    },
+    {
+      "name": "PreloadWorkerCount",
+      "type": "Int32",
+      "value": 8
+    },
+    {
+      "name": "MaxPreloadWorkerCount",
+      "type": "Int32",
+      "value": 64
+    },
+    {
+      "name": "PreloadMemoryLoadLimit",
+      "type": "Double",
+      "value": 0.9
+    },
+    {
+      "name": "PreviewDiskCacheCapacityBytes",
+      "type": "Int64",
+      "value": 4294967296
+    },
+    {
+      "name": "UseSourceBytesCache",
+      "type": "Boolean",
+      "value": false
+    },
+    {
+      "name": "SourceBytesCapacityBytes",
+      "type": "Int64",
+      "value": 17179869184
+    },
+    {
+      "name": "PreloadForwardCount",
+      "type": "Int32",
+      "value": 32
+    },
+    {
+      "name": "PreloadBackwardCount",
+      "type": "Int32",
+      "value": 8
+    },
+    {
+      "name": "MinPreloadForwardCount",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "name": "MinPreloadBackwardCount",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "name": "MaxPreloadCount",
+      "type": "Int32",
+      "value": 500
+    }
+  ]
+}

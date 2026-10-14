@@ -27,7 +27,7 @@ does almost no network I/O; its blocking work is disk reads, decodes and Shell C
 ### Cancellation and staleness
 - `CancellationToken` → `pr_core::sync::CancelToken` (cloneable flag). Check it between steps; `token.check()?`
   returns `Err(Canceled)` like `ThrowIfCancellationRequested`.
-- Generations (C# `GenerationClock`, W1-12) are `AtomicU64` counters; a result carries the generation it was started
+- Generations (C# `GenerationClock`, W1-12) are atomic counters of the C# width (`AtomicI64` for `long`, wrapping); a result carries the generation it was started
   under and is dropped on arrival when it no longer matches (INV-1, INV-5, INV-7). Dropping, not cancelling, is the
   correctness mechanism; cancelling only saves work.
 

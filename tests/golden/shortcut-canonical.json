@@ -1,0 +1,1111 @@
+{
+  "generator": "oracle-cs shortcut-canonical",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "kind": "alias-pair",
+      "alias": "Return",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Prior",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Next",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Capital",
+      "canonical": "CapsLock"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Snapshot",
+      "canonical": "PrintScreen"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "KanaMode",
+      "canonical": "HangulMode"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "HanjaMode",
+      "canonical": "KanjiMode"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem1",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem2",
+      "canonical": "OemQuestion"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem3",
+      "canonical": "OemTilde"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem4",
+      "canonical": "OemOpenBrackets"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem5",
+      "canonical": "OemPipe"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem6",
+      "canonical": "OemCloseBrackets"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem7",
+      "canonical": "OemQuotes"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Oem102",
+      "canonical": "OemBackslash"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemAttn",
+      "canonical": "DbeAlphanumeric"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemFinish",
+      "canonical": "DbeKatakana"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemCopy",
+      "canonical": "DbeHiragana"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemAuto",
+      "canonical": "DbeSbcsChar"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemEnlw",
+      "canonical": "DbeDbcsChar"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "OemBackTab",
+      "canonical": "DbeRoman"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Attn",
+      "canonical": "DbeNoRoman"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "CrSel",
+      "canonical": "DbeEnterWordRegisterMode"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "ExSel",
+      "canonical": "DbeEnterImeConfigureMode"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "EraseEof",
+      "canonical": "DbeFlushString"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Play",
+      "canonical": "DbeCodeInput"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Zoom",
+      "canonical": "DbeNoCodeInput"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "NoName",
+      "canonical": "DbeDetermineString"
+    },
+    {
+      "kind": "alias-pair",
+      "alias": "Pa1",
+      "canonical": "DbeEnterDialogConversionMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": null,
+      "canonical": ""
+    },
+    {
+      "kind": "canonicalize",
+      "name": "",
+      "canonical": ""
+    },
+    {
+      "kind": "canonicalize",
+      "name": " ",
+      "canonical": ""
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\t\r\n",
+      "canonical": ""
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Enter",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "enter",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "ENTER",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Return",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": " return ",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "RETURN",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\tReturn\n",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Prior",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "prior",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "PageUp",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "pageup",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Next",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "NEXT",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "next",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "PageDown",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "pagedown",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Capital",
+      "canonical": "CapsLock"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "capital",
+      "canonical": "CapsLock"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "CapsLock",
+      "canonical": "CapsLock"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "capslock",
+      "canonical": "CapsLock"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Snapshot",
+      "canonical": "PrintScreen"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "PrintScreen",
+      "canonical": "PrintScreen"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "printscreen",
+      "canonical": "PrintScreen"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "KanaMode",
+      "canonical": "HangulMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "HangulMode",
+      "canonical": "HangulMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "HanjaMode",
+      "canonical": "KanjiMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "KanjiMode",
+      "canonical": "KanjiMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "kanamode",
+      "canonical": "HangulMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "HANJAMODE",
+      "canonical": "KanjiMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem1",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "oem1",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OEM1",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemSemicolon",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "oemsemicolon",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem2",
+      "canonical": "OemQuestion"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemQuestion",
+      "canonical": "OemQuestion"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem3",
+      "canonical": "OemTilde"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemTilde",
+      "canonical": "OemTilde"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem4",
+      "canonical": "OemOpenBrackets"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemOpenBrackets",
+      "canonical": "OemOpenBrackets"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem5",
+      "canonical": "OemPipe"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemPipe",
+      "canonical": "OemPipe"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem6",
+      "canonical": "OemCloseBrackets"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemCloseBrackets",
+      "canonical": "OemCloseBrackets"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem7",
+      "canonical": "OemQuotes"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemQuotes",
+      "canonical": "OemQuotes"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem102",
+      "canonical": "OemBackslash"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "oem102",
+      "canonical": "OemBackslash"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemBackslash",
+      "canonical": "OemBackslash"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemAttn",
+      "canonical": "DbeAlphanumeric"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeAlphanumeric",
+      "canonical": "DbeAlphanumeric"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemFinish",
+      "canonical": "DbeKatakana"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeKatakana",
+      "canonical": "DbeKatakana"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemCopy",
+      "canonical": "DbeHiragana"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeHiragana",
+      "canonical": "DbeHiragana"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemAuto",
+      "canonical": "DbeSbcsChar"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeSbcsChar",
+      "canonical": "DbeSbcsChar"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemEnlw",
+      "canonical": "DbeDbcsChar"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeDbcsChar",
+      "canonical": "DbeDbcsChar"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemBackTab",
+      "canonical": "DbeRoman"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeRoman",
+      "canonical": "DbeRoman"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Attn",
+      "canonical": "DbeNoRoman"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeNoRoman",
+      "canonical": "DbeNoRoman"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "CrSel",
+      "canonical": "DbeEnterWordRegisterMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeEnterWordRegisterMode",
+      "canonical": "DbeEnterWordRegisterMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "ExSel",
+      "canonical": "DbeEnterImeConfigureMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeEnterImeConfigureMode",
+      "canonical": "DbeEnterImeConfigureMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "EraseEof",
+      "canonical": "DbeFlushString"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeFlushString",
+      "canonical": "DbeFlushString"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Play",
+      "canonical": "DbeCodeInput"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeCodeInput",
+      "canonical": "DbeCodeInput"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Zoom",
+      "canonical": "DbeNoCodeInput"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeNoCodeInput",
+      "canonical": "DbeNoCodeInput"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "NoName",
+      "canonical": "DbeDetermineString"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeDetermineString",
+      "canonical": "DbeDetermineString"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Pa1",
+      "canonical": "DbeEnterDialogConversionMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "DbeEnterDialogConversionMode",
+      "canonical": "DbeEnterDialogConversionMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Add",
+      "canonical": "Add"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemPlus",
+      "canonical": "OemPlus"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Subtract",
+      "canonical": "Subtract"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemMinus",
+      "canonical": "OemMinus"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Z",
+      "canonical": "Z"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "z",
+      "canonical": "z"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "F11",
+      "canonical": "F11"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "f11",
+      "canonical": "f11"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "D1",
+      "canonical": "D1"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "d1",
+      "canonical": "d1"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Space",
+      "canonical": "Space"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Delete",
+      "canonical": "Delete"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Escape",
+      "canonical": "Escape"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Bogus",
+      "canonical": "Bogus"
+    },
+    {
+      "kind": "canonicalize",
+      "name": " Bogus ",
+      "canonical": "Bogus"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Return,Enter",
+      "canonical": "Return,Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Return Enter",
+      "canonical": "Return Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Ctrl+Return",
+      "canonical": "Ctrl+Return"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Return+",
+      "canonical": "Return+"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Prior\u0000",
+      "canonical": "Prior\u0000"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Return\u0000",
+      "canonical": "Return\u0000"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\u00A0Return\u00A0",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\u3000Prior\u3000",
+      "canonical": "PageUp"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\u2003Next",
+      "canonical": "PageDown"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\u0085Return",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\u000BReturn\f",
+      "canonical": "Enter"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "​Return",
+      "canonical": "​Return"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "\uFEFFReturn",
+      "canonical": "\uFEFFReturn"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "KanaMode",
+      "canonical": "KanaMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "KanjiMode",
+      "canonical": "KanjiMode"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "CapsLocK",
+      "canonical": "CapsLocK"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "OemBacKTab",
+      "canonical": "OemBacKTab"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Capıtal",
+      "canonical": "Capıtal"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "CAPİTAL",
+      "canonical": "CAPİTAL"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Priör",
+      "canonical": "Priör"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Oem1",
+      "canonical": "OemSemicolon"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Ｏem1",
+      "canonical": "Ｏem1"
+    },
+    {
+      "kind": "canonicalize",
+      "name": "Snapsſot",
+      "canonical": "Snapsſot"
+    },
+    {
+      "kind": "is-optional",
+      "name": "LastImage",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "lastimage",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "LASTIMAGE",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "ZoomActualSize",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "ToggleInfoOverlay",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "MoveToFolder",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "CopyToFolder",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "ClickZoom",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "FitWidth",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "FitHeight",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "ToggleKeepZoom",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "OpenFolder",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "CustomZoom",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "ToggleCaptureMember",
+      "optional": true
+    },
+    {
+      "kind": "is-optional",
+      "name": "Next",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Previous",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "MoveToFolder2",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "SendToRecycleBin",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Compare",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "NextFolder",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "PreviousFolder",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "FirstImage",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "ZoomIn",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "ZoomOut",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "ToggleFit",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Skip",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Undo",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Fullscreen",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "Bogus",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": " LastImage",
+      "optional": false
+    },
+    {
+      "kind": "is-optional",
+      "name": "LastImage ",
+      "optional": false
+    },
+    {
+      "kind": "shortcut-defaults",
+      "properties": [
+        {
+          "name": "Next",
+          "default": "Right",
+          "optional": false
+        },
+        {
+          "name": "Previous",
+          "default": "Left",
+          "optional": false
+        },
+        {
+          "name": "MoveToFolder2",
+          "default": "Enter",
+          "optional": false
+        },
+        {
+          "name": "SendToRecycleBin",
+          "default": "Delete",
+          "optional": false
+        },
+        {
+          "name": "Compare",
+          "default": "C",
+          "optional": false
+        },
+        {
+          "name": "NextFolder",
+          "default": "PageDown",
+          "optional": false
+        },
+        {
+          "name": "PreviousFolder",
+          "default": "PageUp",
+          "optional": false
+        },
+        {
+          "name": "FirstImage",
+          "default": "Home",
+          "optional": false
+        },
+        {
+          "name": "ZoomIn",
+          "default": "Add",
+          "optional": false
+        },
+        {
+          "name": "ZoomOut",
+          "default": "Subtract",
+          "optional": false
+        },
+        {
+          "name": "ToggleFit",
+          "default": "F",
+          "optional": false
+        },
+        {
+          "name": "Skip",
+          "default": "Space",
+          "optional": false
+        },
+        {
+          "name": "Undo",
+          "default": "Z",
+          "optional": false
+        },
+        {
+          "name": "Fullscreen",
+          "default": "F11",
+          "optional": false
+        },
+        {
+          "name": "MoveToFolder",
+          "default": "M",
+          "optional": true
+        },
+        {
+          "name": "CopyToFolder",
+          "default": "Y",
+          "optional": true
+        },
+        {
+          "name": "LastImage",
+          "default": "End",
+          "optional": true
+        },
+        {
+          "name": "ZoomActualSize",
+          "default": "D1",
+          "optional": true
+        },
+        {
+          "name": "ToggleInfoOverlay",
+          "default": "I",
+          "optional": true
+        },
+        {
+          "name": "ClickZoom",
+          "default": "D2",
+          "optional": true
+        },
+        {
+          "name": "FitWidth",
+          "default": "W",
+          "optional": true
+        },
+        {
+          "name": "FitHeight",
+          "default": "H",
+          "optional": true
+        },
+        {
+          "name": "ToggleKeepZoom",
+          "default": "K",
+          "optional": true
+        },
+        {
+          "name": "OpenFolder",
+          "default": "O",
+          "optional": true
+        },
+        {
+          "name": "CustomZoom",
+          "default": "D3",
+          "optional": true
+        },
+        {
+          "name": "ToggleCaptureMember",
+          "default": "",
+          "optional": true
+        }
+      ],
+      "optional_names": [
+        "LastImage",
+        "ZoomActualSize",
+        "ToggleInfoOverlay",
+        "MoveToFolder",
+        "CopyToFolder",
+        "ClickZoom",
+        "FitWidth",
+        "FitHeight",
+        "ToggleKeepZoom",
+        "OpenFolder",
+        "CustomZoom",
+        "ToggleCaptureMember"
+      ],
+      "json": {
+        "Next": "Right",
+        "Previous": "Left",
+        "MoveToFolder2": "Enter",
+        "SendToRecycleBin": "Delete",
+        "Compare": "C",
+        "NextFolder": "PageDown",
+        "PreviousFolder": "PageUp",
+        "FirstImage": "Home",
+        "ZoomIn": "Add",
+        "ZoomOut": "Subtract",
+        "ToggleFit": "F",
+        "Skip": "Space",
+        "Undo": "Z",
+        "Fullscreen": "F11",
+        "MoveToFolder": "M",
+        "CopyToFolder": "Y",
+        "LastImage": "End",
+        "ZoomActualSize": "D1",
+        "ToggleInfoOverlay": "I",
+        "ClickZoom": "D2",
+        "FitWidth": "W",
+        "FitHeight": "H",
+        "ToggleKeepZoom": "K",
+        "OpenFolder": "O",
+        "CustomZoom": "D3",
+        "ToggleCaptureMember": ""
+      }
+    },
+    {
+      "kind": "action-default",
+      "shortcut": "Enter",
+      "operation": "Move",
+      "destination": "Group-2",
+      "confirm": false
+    },
+    {
+      "kind": "action-default",
+      "shortcut": "F3",
+      "operation": "Move",
+      "destination": "Group-3",
+      "confirm": false
+    },
+    {
+      "kind": "action-default",
+      "shortcut": "F4",
+      "operation": "Move",
+      "destination": "Group-4",
+      "confirm": false
+    },
+    {
+      "kind": "action-default",
+      "shortcut": "F5",
+      "operation": "Copy",
+      "destination": "Backup",
+      "confirm": false
+    }
+  ]
+}

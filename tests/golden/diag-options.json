@@ -1,0 +1,1622 @@
+{
+  "generator": "oracle-cs diag-options",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": true,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PREREAD=1"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "0",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "true",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "True",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "TRUE",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "yes",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": " 1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1 ",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "11",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "01",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "on",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "１",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": true,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "DISABLE_DISKCACHE=1"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "0",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "true",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "True",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "TRUE",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "yes",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": " 1",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1 ",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "11",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "01",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "on",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "１",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "1",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": true,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "FORCE_LOG=1"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "0",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "true",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "True",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "TRUE",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "yes",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": " 1",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "1 ",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "11",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "01",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "on",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "１",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 0,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=0"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 1,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=1"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "8",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 8,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=8"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "16",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 16,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=16"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": " 5 ",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 5,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=5"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "+5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 5,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=5"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "-0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 0,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=0"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "05",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 5,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=5"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "005",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 5,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=5"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "17",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "-1",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "100",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "abc",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "2.5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "5x",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "x5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "5 5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "0x5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "٥",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "１",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "\t5\n",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 5,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=5"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "\u00A05",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "5\u00A0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1e1",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "16.0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "+16",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 16,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=16"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "+17",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "99999999999",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "2147483648",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "-2147483649",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "9223372036854775808",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "+",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "-",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": " ",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1,5",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "1_0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "--1",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "+-1",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "\u000B7\f",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 7,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=7"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "12\r\n",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": 12,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=12"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "Agent run"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "Agent run",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=Agent run"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "  padded  "
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "  padded  ",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=  padded  "
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": ""
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "   "
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "\t"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "\u00A0"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "\u3000x"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "\u3000x",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=\u3000x"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "a;b=c"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "a;b=c",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=a;b=c"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "日本語"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "日本語",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=日本語"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "x\ny"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "x\ny",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=x\ny"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "ünï"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "ünï",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=ünï"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "\uD83D\uDE00"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "\uD83D\uDE00",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=\uD83D\uDE00"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "[x]"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "[x]",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=[x]"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "lbl"
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "lbl",
+      "any_enabled": true,
+      "describe": "INSTANCE_LABEL=lbl"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "2",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "1",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "lbl"
+      },
+      "pre_read": true,
+      "preload_workers": 2,
+      "disable_disk_cache": true,
+      "force_log": true,
+      "instance_label": "lbl",
+      "any_enabled": true,
+      "describe": "PREREAD=1;PRELOAD_WORKERS=2;DISABLE_DISKCACHE=1;FORCE_LOG=1;INSTANCE_LABEL=lbl"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "0",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": true,
+      "preload_workers": 0,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "PREREAD=1;PRELOAD_WORKERS=0"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "3",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "a;b"
+      },
+      "pre_read": false,
+      "preload_workers": 3,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "a;b",
+      "any_enabled": true,
+      "describe": "PRELOAD_WORKERS=3;INSTANCE_LABEL=a;b"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": null,
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "1",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "1",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": null
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": true,
+      "force_log": true,
+      "instance_label": null,
+      "any_enabled": true,
+      "describe": "DISABLE_DISKCACHE=1;FORCE_LOG=1"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "0",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": "99",
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": "x",
+        "PHOTOREVIEW_DIAG_FORCE_LOG": "",
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": " "
+      },
+      "pre_read": false,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": null,
+      "any_enabled": false,
+      "describe": "(none)"
+    },
+    {
+      "env": {
+        "PHOTOREVIEW_DIAG_PREREAD": "1",
+        "PHOTOREVIEW_DIAG_PRELOAD_WORKERS": null,
+        "PHOTOREVIEW_DIAG_DISABLE_DISKCACHE": null,
+        "PHOTOREVIEW_DIAG_FORCE_LOG": null,
+        "PHOTOREVIEW_DIAG_INSTANCE_LABEL": "  keep spaces  "
+      },
+      "pre_read": true,
+      "preload_workers": null,
+      "disable_disk_cache": false,
+      "force_log": false,
+      "instance_label": "  keep spaces  ",
+      "any_enabled": true,
+      "describe": "PREREAD=1;INSTANCE_LABEL=  keep spaces  "
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "names": [
+    null, "", " ", "\t\r\n",
+    "Enter", "enter", "ENTER", "Return", " return ", "RETURN", "\tReturn\n",
+    "Prior", "prior", "PageUp", "pageup", "Next", "NEXT", "next", "PageDown", "pagedown",
+    "Capital", "capital", "CapsLock", "capslock", "Snapshot", "PrintScreen", "printscreen",
+    "KanaMode", "HangulMode", "HanjaMode", "KanjiMode", "kanamode", "HANJAMODE",
+    "Oem1", "oem1", "OEM1", "OemSemicolon", "oemsemicolon", "Oem2", "OemQuestion", "Oem3", "OemTilde", "Oem4", "OemOpenBrackets", "Oem5", "OemPipe",
+    "Oem6", "OemCloseBrackets", "Oem7", "OemQuotes", "Oem102", "oem102", "OemBackslash",
+    "OemAttn", "DbeAlphanumeric", "OemFinish", "DbeKatakana", "OemCopy", "DbeHiragana", "OemAuto", "DbeSbcsChar", "OemEnlw", "DbeDbcsChar",
+    "OemBackTab", "DbeRoman", "Attn", "DbeNoRoman", "CrSel", "DbeEnterWordRegisterMode", "ExSel", "DbeEnterImeConfigureMode",
+    "EraseEof", "DbeFlushString", "Play", "DbeCodeInput", "Zoom", "DbeNoCodeInput", "NoName", "DbeDetermineString", "Pa1", "DbeEnterDialogConversionMode",
+    "Add", "OemPlus", "Subtract", "OemMinus", "Z", "z", "F11", "f11", "D1", "d1", "Space", "Delete", "Escape", "Bogus", " Bogus ",
+    "Return,Enter", "Return Enter", "Ctrl+Return", "Return+", "Prior\u0000", "Return\u0000",
+    "\u00a0Return\u00a0", "\u3000Prior\u3000", "\u2003Next", "\u0085Return", "\u000bReturn\u000c", "\u200bReturn", "\ufeffReturn",
+    "\u212aanaMode", "\u212aanjiMode", "CapsLoc\u212a", "OemBac\u212aTab", "Cap\u0131tal", "CAP\u0130TAL", "Pri\u00f6r", "Oem\u0031", "\uff2fem1", "Snaps\u017fot"
+  ],
+  "optional_probes": [
+    "LastImage", "lastimage", "LASTIMAGE", "ZoomActualSize", "ToggleInfoOverlay", "MoveToFolder", "CopyToFolder", "ClickZoom", "FitWidth", "FitHeight",
+    "ToggleKeepZoom", "OpenFolder", "CustomZoom", "ToggleCaptureMember",
+    "Next", "Previous", "MoveToFolder2", "SendToRecycleBin", "Compare", "NextFolder", "PreviousFolder", "FirstImage", "ZoomIn", "ZoomOut",
+    "ToggleFit", "Skip", "Undo", "Fullscreen", "", "Bogus", " LastImage", "LastImage "
+  ]
+}
