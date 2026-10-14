@@ -6,9 +6,6 @@
 //! (a pre-check that found the path free proves nothing: a foreign file may appear later). `created` is the
 //! [`FileStat`] observed right after the copy.
 
-// TEMPORARY (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables)]
-
 use std::path::Path;
 
 use crate::abstractions::{FileStat, FileSystem};
@@ -25,7 +22,18 @@ use crate::abstractions::{FileStat, FileSystem};
 /// be inspected (`get_file_stat` returns `None`) or deleted (`delete` returns `Err`) stays; the caller reports its own
 /// original error. Exactly one `get_file_stat` and at most one `delete` call; no other file-system call.
 pub fn remove_if_partial(file_system: &dyn FileSystem, destination: &Path, source_size: i64, created: &FileStat) {
-    todo!("W3-08")
+    // `&FileStat` cannot be null: C# `ArgumentNullException.ThrowIfNull(created)` has no twin.
+    // ONE stat: `None` (missing, or the stat itself failed) means "cannot be inspected" => kept.
+    let Some(stat) = file_system.get_file_stat(destination) else {
+        return;
+    };
+    // C# order: length check first, then `IsSameFile`, both on the same stat. `source_size > 0` makes the `as u64`
+    // cast lossless; the stat length is never cast to a signed type.
+    if source_size > 0 && stat.length < source_size as u64 && is_same_file(&stat, created) {
+        // Best effort (C# `catch (Exception)`): a file that cannot be deleted stays; the caller reports its own
+        // original error and the Failed journal line still describes the operation.
+        let _ = file_system.delete(destination);
+    }
 }
 
 /// `PartialDestinationCleanup.IsSameFile(now, created)`: `now.length == created.length && now.last_write_utc ==
@@ -33,5 +41,5 @@ pub fn remove_if_partial(file_system: &dyn FileSystem, destination: &Path, sourc
 /// through the same file system; a tolerance would only widen what a replacement can pass as). Also used by
 /// `FileActionService` (W3-04, group copy rollback at C# lines 344 and 364), hence `pub`.
 pub fn is_same_file(now: &FileStat, created: &FileStat) -> bool {
-    todo!("W3-08")
+    now.length == created.length && now.last_write_utc == created.last_write_utc
 }
