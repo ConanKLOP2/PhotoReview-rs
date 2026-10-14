@@ -379,6 +379,84 @@ fn nan_percentiles_are_na_in_markdown_and_null_in_json() {
     assert!(!render_json(&result).contains("NaN"));
 }
 
+// C#: (adapted from GroupSummary.LowSampleWarning => Count - Incomplete < 20)
+#[test]
+fn low_sample_warning_boundary_is_strictly_below_twenty_complete_navs() {
+    for (count, incomplete, low) in [
+        (20, 0, false),
+        (19, 0, true),
+        (25, 5, false),
+        (25, 6, true),
+        // C# int subtraction is unchecked: i32::MIN - 1 wraps to i32::MAX (not low, no panic).
+        (i32::MIN, 1, false),
+    ] {
+        let mut s = summary("S1", "Fast", "warm", Some(1));
+        s.count = count;
+        s.incomplete = incomplete;
+        let result = result_of(vec![group(s, vec![])], 1);
+        let doc: Value = serde_json::from_str(&render_json(&result)).expect("parse");
+        assert_eq!(
+            doc["groups"][0]["lowSampleWarning"].as_bool(),
+            Some(low),
+            "json count={count} incomplete={incomplete}"
+        );
+        let md = render_markdown(&result);
+        let row = md
+            .split("\r\n")
+            .find(|l| l.starts_with(&format!("| S1/Fast/warm/workers=1 | {count} | {incomplete} | ")))
+            .expect("navigation row");
+        let notes = if low { "| N<20 |" } else { "|  |" };
+        assert!(row.ends_with(notes), "md count={count} incomplete={incomplete}: {row}");
+    }
+}
+
+fn dispatcher_row(md: &str) -> &str {
+    let section = md.split("## Dispatcher (>16ms)").nth(1).expect("dispatcher section");
+    section
+        .split("\r\n")
+        .find(|l| l.starts_with("| S1/"))
+        .expect("dispatcher row")
+}
+
+fn op(ms: f64, name: &str) -> DispatcherLongOpRow {
+    DispatcherLongOpRow {
+        ms,
+        priority: "Normal".to_owned(),
+        name: name.to_owned(),
+    }
+}
+
+#[test]
+fn dispatcher_total_ms_is_plain_sum_including_negative_and_nan() {
+    let mut s = summary("S1", "Fast", "warm", Some(1));
+    s.dispatcher_long_ops.push(op(-5.0, "a"));
+    let md = render_markdown(&result_of(vec![group(s, vec![])], 1));
+    assert_eq!(
+        dispatcher_row(&md),
+        "| S1/Fast/warm/workers=1 | 1 | 0 | -5.0 | a\u{d7}1 (-5.0ms) |"
+    );
+
+    let mut s = summary("S1", "Fast", "warm", Some(1));
+    s.dispatcher_long_ops.push(op(-5.0, "a"));
+    s.dispatcher_long_ops.push(op(3.0, "b"));
+    let md = render_markdown(&result_of(vec![group(s, vec![])], 1));
+    assert!(
+        dispatcher_row(&md).starts_with("| S1/Fast/warm/workers=1 | 2 | 0 | -2.0 | "),
+        "{}",
+        dispatcher_row(&md)
+    );
+
+    let mut s = summary("S1", "Fast", "warm", Some(1));
+    s.dispatcher_long_ops.push(op(-5.0, "a"));
+    s.dispatcher_long_ops.push(op(f64::NAN, "b"));
+    let md = render_markdown(&result_of(vec![group(s, vec![])], 1));
+    assert!(
+        dispatcher_row(&md).starts_with("| S1/Fast/warm/workers=1 | 2 | 0 | NaN | "),
+        "{}",
+        dispatcher_row(&md)
+    );
+}
+
 #[test]
 fn render_uses_crlf_and_markdown_ends_with_newline_json_does_not() {
     let result = result_of(vec![], 0);

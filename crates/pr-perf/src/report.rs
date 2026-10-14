@@ -192,7 +192,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
     );
     for g in &result.groups {
         let s = &g.summary;
-        let low = s.count - s.incomplete < 20;
+        let low = s.count.wrapping_sub(s.incomplete) < 20;
         line(
             &mut sb,
             &format!(
@@ -511,7 +511,7 @@ pub fn render_json(result: &AnalysisResult) -> String {
         .iter()
         .map(|g| {
             let s = &g.summary;
-            let low = s.count - s.incomplete < 20;
+            let low = s.count.wrapping_sub(s.incomplete) < 20;
             let folder = s
                 .folder_gens
                 .iter()
