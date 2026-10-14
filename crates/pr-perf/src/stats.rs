@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.PerfAnalysis/PerfAnalyzeStats.cs` (C# baseline e441d67a, 249 lines): per-run metadata
+﻿//! Port of `PhotoReview.PerfAnalysis/PerfAnalyzeStats.cs` (C# baseline e441d67a, 249 lines): per-run metadata
 //! (`RunFileMeta`), nearest-rank percentiles and slowest-decile phase shares (`PerfStats`), and the per-group
 //! summary (`GroupKey`, `GroupSummary`).
 //!
@@ -102,10 +102,45 @@ fn read_json_object(path: &Path) -> Option<Map<String, Value>> {
     }
     let bytes = std::fs::read(path).ok()?;
     let text = decode_bytes(&bytes);
+    // C# `JsonDocument.Parse` (MaxDepth 64) throws on deeper nesting, so such a file is ignored.
+    if exceeds_json_depth(&text, 64) {
+        return None;
+    }
     match serde_json::from_str::<Value>(&text).ok()? {
         Value::Object(map) => Some(map),
         _ => None,
     }
+}
+
+/// True when `{`/`[` nesting (outside strings) goes deeper than `max` levels.
+fn exceeds_json_depth(text: &str, max: usize) -> bool {
+    let mut depth = 0_usize;
+    let mut in_string = false;
+    let mut escaped = false;
+    for b in text.bytes() {
+        if in_string {
+            if escaped {
+                escaped = false;
+            } else if b == b'\\' {
+                escaped = true;
+            } else if b == b'"' {
+                in_string = false;
+            }
+            continue;
+        }
+        match b {
+            b'"' => in_string = true,
+            b'{' | b'[' => {
+                depth += 1;
+                if depth > max {
+                    return true;
+                }
+            }
+            b'}' | b']' => depth = depth.saturating_sub(1),
+            _ => {}
+        }
+    }
+    false
 }
 
 /// C# `string.EndsWith("-" + known, OrdinalIgnoreCase)`.

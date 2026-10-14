@@ -1,4 +1,4 @@
-//! Port tests for `pr_perf::stats` (unit W1-17). C# baseline e441d67a: `src/PhotoReview.PerfAnalysis/PerfAnalyzeStats.cs`.
+﻿//! Port tests for `pr_perf::stats` (unit W1-17). C# baseline e441d67a: `src/PhotoReview.PerfAnalysis/PerfAnalyzeStats.cs`.
 //! Every test names the C# test it ports in a `// C#:` comment. The golden test replays every `perf-stats` case.
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
@@ -690,4 +690,112 @@ fn golden_perf_stats_all_cases() {
         g.cases.len(),
         failures.join("\n")
     );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// W1-17 round-2 additions: mutant killers, JSON depth limit, accepted divergences
+// ---------------------------------------------------------------------------------------------------------------------
+
+fn load_side_files(session: Option<&[u8]>, process: Option<&[u8]>) -> RunFileMeta {
+    let root = TempRoot::new("side-files");
+    if let Some(b) = session {
+        std::fs::write(root.join("session.json"), b).expect("write session.json");
+    }
+    if let Some(b) = process {
+        std::fs::write(root.join("process.json"), b).expect("write process.json");
+    }
+    let file = PerfCsvFile {
+        path: root.join("perf-1.csv"),
+        diag_flags: DiagFlags::new(),
+        qpc_frequency: 1,
+        dropped_rows: 0,
+        rows: Vec::new(),
+    };
+    RunFileMeta::load(&file)
+}
+
+#[test]
+fn gc_percent_divides_first_then_multiplies() {
+    // C# `gpd / eld * 100.0`: (1/3)*100 = 33.33333333333333, whereas 1*100/3 would be 33.333333333333336.
+    let meta = load_side_files(None, Some(br#"{"gcPauseDeltaMs":1,"elapsedMs":3}"#));
+    assert_eq!(meta.gc_time_percent, Some(33.33333333333333));
+    assert_ne!(meta.gc_time_percent, Some(1.0_f64 * 100.0 / 3.0));
+}
+
+#[test]
+fn one_character_folder_alias_is_appended() {
+    let meta = load_side_files(Some(br#"{"folderAlias":"F"}"#), None);
+    assert_eq!(meta.scenario, "unknown@F");
+}
+
+#[test]
+fn nan_values_sort_first_like_double_compare() {
+    let mk = |v: f64| NavRecord {
+        incomplete: false,
+        first_visual_ms: Some(v),
+        ..NavRecord::default()
+    };
+    let orders: [[f64; 3]; 6] = [
+        [f64::NAN, 1.0, 2.0],
+        [f64::NAN, 2.0, 1.0],
+        [1.0, f64::NAN, 2.0],
+        [2.0, f64::NAN, 1.0],
+        [1.0, 2.0, f64::NAN],
+        [2.0, 1.0, f64::NAN],
+    ];
+    for order in orders {
+        let navs: Vec<NavRecord> = order.iter().map(|&v| mk(v)).collect();
+        let s = GroupSummary::build(GroupKey::new("s", "m", "c", None), &navs);
+        // sorted: NaN, 1, 2 -> P50 rank 2 = 1, max = last = 2.
+        assert_eq!(s.first_p50, 1.0, "{order:?}");
+        assert_eq!(s.first_max, 2.0, "{order:?}");
+    }
+}
+
+fn nested_arrays(n: usize) -> String {
+    format!("{}{}", "[".repeat(n), "]".repeat(n))
+}
+
+#[test]
+fn json_deeper_than_64_is_ignored_like_json_document_max_depth() {
+    // root object + 64 nested arrays = depth 65: C# JsonDocument.Parse throws, the file is ignored.
+    let deep = format!(r#"{{"scenario":"A","x":{}}}"#, nested_arrays(64));
+    assert_eq!(load_side_files(Some(deep.as_bytes()), None).scenario, "unknown");
+    // root object + 63 nested arrays = depth 64: accepted.
+    let ok = format!(r#"{{"scenario":"A","x":{}}}"#, nested_arrays(63));
+    assert_eq!(load_side_files(Some(ok.as_bytes()), None).scenario, "A");
+    // Brackets inside strings do not count.
+    let in_str = format!(r#"{{"scenario":"{}\"{}"}}"#, "[".repeat(100), "[".repeat(100));
+    assert_eq!(load_side_files(Some(in_str.as_bytes()), None).scenario.len(), 201);
+    // process.json uses the same limit.
+    let deep_p = format!(r#"{{"gcTimePercent":5,"x":{}}}"#, nested_arrays(64));
+    assert_eq!(load_side_files(None, Some(deep_p.as_bytes())).gc_time_percent, None);
+}
+
+// DIVERGENCE (README D5): a UTF-16 (BOM FF FE) session.json is decoded by C# `File.ReadAllText`, but the Rust port
+// reads UTF-8 only (`csv::decode_bytes`, owned by W1-16), so the file is not parseable and is ignored.
+#[test]
+fn divergence_utf16_bom_side_file_is_ignored() {
+    let mut bytes = vec![0xFF, 0xFE];
+    for u in r#"{"scenario":"U"}"#.encode_utf16() {
+        bytes.extend_from_slice(&u.to_le_bytes());
+    }
+    assert_eq!(load_side_files(Some(&bytes), None).scenario, "unknown");
+}
+
+// DIVERGENCE (README D5): `"preloadWorkers":-0` is Some(0) in C# (`TryGetInt32`); serde_json reads the token as a
+// float, so the Rust port falls through to the env lookup / header fallback and leaves workers unset.
+#[test]
+fn divergence_negative_zero_preload_workers() {
+    let meta = load_side_files(Some(br#"{"preloadWorkers":-0}"#), None);
+    assert_eq!(meta.preload_workers, None);
+}
+
+// DIVERGENCE (README D5): `1e400` is +Infinity in C# (`TryGetDouble`); serde_json rejects the whole document, so the
+// Rust port ignores the file (frameTimeP95Ms in the same file is lost too).
+#[test]
+fn divergence_overflowing_number_token_rejects_the_file() {
+    let meta = load_side_files(None, Some(br#"{"gcTimePercent":1e400,"frameTimeP95Ms":20.5}"#));
+    assert_eq!(meta.gc_time_percent, None);
+    assert_eq!(meta.frame_time_p95_ms, None);
 }
