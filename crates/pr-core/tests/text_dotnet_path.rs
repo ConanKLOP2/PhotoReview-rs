@@ -215,3 +215,50 @@ fn get_full_path_tab_or_nbsp_only_is_not_empty() {
     }
     assert_eq!(get_full_path("   "), Err(PathError::Argument));
 }
+
+// Hand-written cases from the .NET `PathInternal.GetRootLength` / `Path.GetDirectoryNameOffset` algorithms
+// (mutation-kill tests; not in the golden). `@` stands for a backslash.
+fn bs(s: &str) -> String {
+    s.replace('@', "\\")
+}
+
+#[test]
+fn directory_name_trims_separator_run_after_unc_root() {
+    // The run of separators between the UNC root and the file name is trimmed back to the root, not left as `\`.
+    assert_eq!(get_directory_name(&bs("@@srv@share@@x")), Some(bs("@@srv@share")));
+    assert_eq!(get_directory_name_raw(&bs("@@srv@share@@x")), bs("@@srv@share"));
+    assert_eq!(get_directory_name_raw(&bs("@@srv@share@@@x")), bs("@@srv@share"));
+    assert_eq!(get_directory_name_raw(&bs("@@srv@share/@x")), bs("@@srv@share"));
+    assert_eq!(
+        get_directory_name_raw(&bs("@@?@UNC@srv@share@@x")),
+        bs("@@?@UNC@srv@share")
+    );
+}
+
+#[test]
+fn root_length_nt_prefix_needs_separator_after_question_marks() {
+    // `\??` without the fourth char being a separator is not a device prefix: root is the single leading `\`.
+    for (p, n) in [("@??x", 1), ("@??", 1), ("@??a@b", 1), ("@??@", 4), ("@??@C:@a", 7)] {
+        assert_eq!(root_length(&bs(p)), n, "{p:?}");
+    }
+}
+
+#[test]
+fn root_length_device_unc_skips_the_unc_separator() {
+    // Scan starts after `\?\UNC\`: the separator at index 7 must not count towards the two that end the share.
+    for (p, n) in [
+        ("@@?@UNC@srv@share@x", 17),
+        ("@@?@UNC@srv@share", 17),
+        ("@@?@UNC@srv@", 12),
+        ("@@?@UNC@srv", 11),
+        ("@@.@UNC/srv/share/x", 17),
+    ] {
+        assert_eq!(root_length(&bs(p)), n, "{p:?}");
+    }
+    assert_eq!(
+        get_directory_name(&bs("@@?@UNC@srv@share@x")),
+        Some(bs("@@?@UNC@srv@share"))
+    );
+    assert_eq!(get_directory_name(&bs("@@?@UNC@srv@share")), None);
+    assert_eq!(get_file_name(&bs("@@?@UNC@srv@share@x.jpg")), "x.jpg");
+}
