@@ -305,6 +305,25 @@ fn validate_requires_two_separators_after_scheme() {
     }
 }
 
+// C#: (no direct test) UpdateUrlPolicy.Validate, inputs shorter than the shortest valid `https://x` prefix. The
+// 7-character `https:/` and `https:\` are the boundary: the length guard must reject them before indexing byte 7
+// (a guard one too small would read past the end).
+#[test]
+fn validate_rejects_inputs_too_short_for_scheme_and_two_separators() {
+    for url in [
+        "",
+        "h",
+        "https",
+        "https:",
+        "https:/",
+        "https:\\",
+        "https:/\\",
+        "https://",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url:?}");
+    }
+}
+
 // C#: (no direct test) UpdateUrlPolicy.Validate, bidi controls in the host. .NET drops LRM, RLM and LRE..RLO
 // (`UriHelper.IsBidiControlCharacter`) from the host only; other format chars and the isolates are not dropped.
 // Every expected value below was produced by the C# UpdateUrlPolicy.Validate (e441d67a) on .NET 10.
