@@ -1,9 +1,9 @@
 //! Port target: `PhotoReview.Core/Localization` + `PhotoReview.Localization.Generator` (key codegen moves to build.rs).
 
-pub mod template;
 pub mod catalog;
 pub mod loader;
 pub mod localizer;
+pub mod template;
 
 pub mod keys {
     include!(concat!(env!("OUT_DIR"), "/tr_keys.rs"));

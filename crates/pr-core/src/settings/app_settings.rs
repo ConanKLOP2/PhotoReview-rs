@@ -229,7 +229,9 @@ pub struct SettingsJsonError {
 
 impl SettingsJsonError {
     pub fn new(message: impl Into<String>) -> Self {
-        Self { message: message.into() }
+        Self {
+            message: message.into(),
+        }
     }
 }
 
@@ -521,8 +523,13 @@ impl AppSettings {
     }
 
     /// As [`AppSettings::from_json`] for an already parsed document.
-    pub fn from_json_value(root: &json::JsonValue, texts: &dyn SettingsTexts) -> Result<Option<AppSettings>, SettingsJsonError> {
-        todo!("W2-01: Null -> Ok(None); Object -> new + apply_json_property for each entry (a None name is an Err); anything else is an Err")
+    pub fn from_json_value(
+        root: &json::JsonValue,
+        texts: &dyn SettingsTexts,
+    ) -> Result<Option<AppSettings>, SettingsJsonError> {
+        todo!(
+            "W2-01: Null -> Ok(None); Object -> new + apply_json_property for each entry (a None name is an Err); anything else is an Err"
+        )
     }
 
     /// Reads ONE property the way System.Text.Json does for that property's C# type and stores it.

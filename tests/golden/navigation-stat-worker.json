@@ -1,0 +1,187 @@
+{
+  "generator": "oracle-cs navigation-stat-worker",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "single-value",
+      "busy_first": false,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "value",
+          "value": 7,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        }
+      ],
+      "ran_order": [
+        "a"
+      ],
+      "single_worker_thread": true
+    },
+    {
+      "name": "fifo-order-behind-a-busy-item",
+      "busy_first": true,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "value",
+          "value": 1,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "b",
+          "status": "value",
+          "value": 2,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "c",
+          "status": "value",
+          "value": 3,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        }
+      ],
+      "ran_order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "single_worker_thread": true
+    },
+    {
+      "name": "already-cancelled-token-never-runs-and-completes-at-once",
+      "busy_first": true,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "canceled",
+          "value": null,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": true
+        }
+      ],
+      "ran_order": [],
+      "single_worker_thread": true
+    },
+    {
+      "name": "cancelled-while-queued-is-dropped-others-run",
+      "busy_first": true,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "canceled",
+          "value": null,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "b",
+          "status": "value",
+          "value": 2,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "c",
+          "status": "canceled",
+          "value": null,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "d",
+          "status": "value",
+          "value": 4,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        }
+      ],
+      "ran_order": [
+        "b",
+        "d"
+      ],
+      "single_worker_thread": true
+    },
+    {
+      "name": "panic-faults-only-that-item",
+      "busy_first": true,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "faulted",
+          "value": null,
+          "exception_type": "InvalidOperationException",
+          "message": "boom-a",
+          "canceled_at_return": false
+        },
+        {
+          "id": "b",
+          "status": "value",
+          "value": 7,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        }
+      ],
+      "ran_order": [
+        "a",
+        "b"
+      ],
+      "single_worker_thread": true
+    },
+    {
+      "name": "cancelled-and-throwing-items-mixed",
+      "busy_first": true,
+      "outcomes": [
+        {
+          "id": "a",
+          "status": "canceled",
+          "value": null,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        },
+        {
+          "id": "b",
+          "status": "canceled",
+          "value": null,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": true
+        },
+        {
+          "id": "c",
+          "status": "value",
+          "value": 9,
+          "exception_type": null,
+          "message": null,
+          "canceled_at_return": false
+        }
+      ],
+      "ran_order": [
+        "c"
+      ],
+      "single_worker_thread": true
+    },
+    {
+      "name": "empty-queue-after-gate",
+      "busy_first": true,
+      "outcomes": [],
+      "ran_order": [],
+      "single_worker_thread": true
+    }
+  ]
+}

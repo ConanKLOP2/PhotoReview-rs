@@ -393,7 +393,7 @@
       "ok": true,
       "value": {
         "length": 26,
-        "write_ticks": 637135310451234567,
+        "write_ticks": null,
         "utc": true
       },
       "after": {}
@@ -414,7 +414,7 @@
       "ok": true,
       "value": {
         "length": 3,
-        "write_ticks": 637765919990000000,
+        "write_ticks": null,
         "utc": true
       },
       "after": {}
@@ -434,7 +434,7 @@
       "ok": true,
       "value": {
         "length": 0,
-        "write_ticks": 639275699418504562,
+        "write_ticks": null,
         "utc": true
       },
       "after": {}
@@ -489,7 +489,7 @@
       "ok": true,
       "value": {
         "length": 3,
-        "write_ticks": 639275699418561971,
+        "write_ticks": null,
         "utc": true
       },
       "after": {}
@@ -509,7 +509,7 @@
       "ok": true,
       "value": {
         "length": 1,
-        "write_ticks": 639275699418592008,
+        "write_ticks": null,
         "utc": true
       },
       "after": {}
@@ -876,7 +876,7 @@
       ],
       "ok": false,
       "exception": "IOException",
-      "win32": 80,
+      "win32": 0,
       "after": {
         "dst_exists": false
       }
@@ -958,7 +958,7 @@
       "value": {
         "same_write_time": true,
         "readonly": true,
-        "write_ticks": 637135310457654321
+        "write_ticks": null
       },
       "after": {}
     },
@@ -1123,7 +1123,7 @@
       ],
       "ok": false,
       "exception": "IOException",
-      "win32": 80,
+      "win32": 0,
       "after": {
         "dst_exists": true
       }
@@ -1812,12 +1812,12 @@
           {
             "path": "<root>\\a.txt",
             "length": 3,
-            "write_ticks": 637243456895000000
+            "write_ticks": null
           },
           {
             "path": "<root>\\b.jpg",
             "length": 2,
-            "write_ticks": 639275699421982439
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -1851,12 +1851,12 @@
           {
             "path": "<root>\\C.JPG",
             "length": 1,
-            "write_ticks": 639275699422053771
+            "write_ticks": null
           },
           {
             "path": "<root>\\b.jpg",
             "length": 1,
-            "write_ticks": 639275699422053771
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -1881,7 +1881,7 @@
           {
             "path": "<root>\\a.txt",
             "length": 3,
-            "write_ticks": 639275699422103363
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -1906,7 +1906,7 @@
           {
             "path": "<root>\\a.txt",
             "length": 3,
-            "write_ticks": 639275699422124614
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -1936,7 +1936,7 @@
           {
             "path": "<root>\\locked.jpg",
             "length": 3,
-            "write_ticks": 639275699422144445
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -2000,7 +2000,7 @@
           {
             "path": "<root>\\good.jpg",
             "length": 2,
-            "write_ticks": 639275699422200616
+            "write_ticks": null
           }
         ],
         "skipped": [
@@ -2036,7 +2036,7 @@
           {
             "path": "<root>\\busy.jpg",
             "length": 1,
-            "write_ticks": 639275699422285841
+            "write_ticks": null
           }
         ],
         "skipped": []
@@ -2071,7 +2071,7 @@
           {
             "path": "<root>\\good.jpg",
             "length": 1,
-            "write_ticks": 639275699422306861
+            "write_ticks": null
           }
         ],
         "skipped": []

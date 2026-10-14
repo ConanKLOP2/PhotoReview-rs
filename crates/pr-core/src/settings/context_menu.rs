@@ -144,7 +144,13 @@ const fn info(
     locked: bool,
     needs_photo: bool,
 ) -> ContextMenuItemInfo {
-    ContextMenuItemInfo { id, parent, group, locked, needs_photo }
+    ContextMenuItemInfo {
+        id,
+        parent,
+        group,
+        locked,
+        needs_photo,
+    }
 }
 
 use ContextMenuItemId as Id;
@@ -175,8 +181,7 @@ pub const ITEMS: [ContextMenuItemInfo; 18] = [
 
 /// `ContextMenuItems.DefaultHidden`: the ids hidden by default (the pre-customisation defaults: the zoom cluster and
 /// Move to Recycle Bin).
-pub const DEFAULT_HIDDEN: [ContextMenuItemId; 4] =
-    [Id::MoveToRecycleBin, Id::Fit, Id::ZoomToLevel, Id::ZoomSubmenu];
+pub const DEFAULT_HIDDEN: [ContextMenuItemId; 4] = [Id::MoveToRecycleBin, Id::Fit, Id::ZoomToLevel, Id::ZoomSubmenu];
 
 /// `ContextMenuItems.Info(id)`: the table row of `id` (C# `Items.First`).
 pub fn item_info(id: ContextMenuItemId) -> &'static ContextMenuItemInfo {

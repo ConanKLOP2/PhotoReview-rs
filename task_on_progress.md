@@ -16,11 +16,13 @@
   *SettingsTests (W2-02 vs W2-03), merge order W2-00 -> W2-01 -> W2-20 -> W2-02/03, io/mod.rs owner (W2-14/W2-15),
   local time source for W2-16, HTTP transport for W2-18, `sha2` dependency (W2-17), oracle nondeterminism (W2-14).
 
-## Update 2026-10-14 (wiring, UNVERIFIED)
-- Stubs copied into crates (pr-core text/settings/catalog/file_actions/diagnostics/updates + new io/session/instance
-  modules; pr-l10n catalog/loader/localizer/build.rs, lib.rs with keys/tr). mod lines added. NOT compiled: this machine
-  has no Rust toolchain (cargo/rustc/rustup not found), so fmt/clippy/test were not run. Oracle commands not yet merged
-  into tools/oracle-cs, contracts not yet moved to contracts/W2-xx.md, README roster/D12+ not written.
+## Update 2026-10-14 (Wave 2 contracts wired)
+- 21 contracts in `contracts/W2-xx.md`; stubs wired into crates; oracle commands merged into `tools/oracle-cs`
+  (OracleCs.csproj got Roslyn + Generator refs for W2-04). Rust 1.99.0 installed on this machine via rustup.
+- Verified on branch: `cargo check --workspace --all-targets --locked` ok, `cargo clippy ... -D warnings` ok,
+  `cargo fmt --all` applied. Oracle run at d92d6aae reproduces every golden-reference byte for byte except
+  `session-key` (cwd-dependent case dropped), `physical-fs-ops` (write_ticks nulled): both re-run deterministic.
+- Not yet run: `cargo test --workspace`, `tools/wave.ps1 -Wave 2 -Gate`. README roster + D12-D20 written.
 
 ## Next (lead)
 1. Review each `contracts/drafts-w2/W2-xx/contract.md`: porter model, "Depends on", open questions; decide and add

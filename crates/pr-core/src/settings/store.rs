@@ -1,4 +1,4 @@
-﻿//! Loading, repairing, backing up and saving `config.json`.
+//! Loading, repairing, backing up and saving `config.json`.
 //!
 //! Port of `PhotoReview.Core/Settings/SettingsStore.cs` (baseline d92d6aae) plus ONE Rust-only function, the
 //! first-run import of the C# app's `config.json` (docs/adr/R0002). Contract: `contracts/W2-03/contract.md`.
@@ -106,7 +106,9 @@ pub struct SettingsStore {
 
 impl fmt::Debug for SettingsStore {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("SettingsStore").field("app_paths", &self.app_paths).finish_non_exhaustive()
+        f.debug_struct("SettingsStore")
+            .field("app_paths", &self.app_paths)
+            .finish_non_exhaustive()
     }
 }
 

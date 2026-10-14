@@ -133,7 +133,7 @@ static partial class Commands
                             {
                                 ["same_write_time"] = File.GetLastWriteTimeUtc(Arg(0)) == File.GetLastWriteTimeUtc(Arg(1)),
                                 ["readonly"] = (File.GetAttributes(Arg(1)) & FileAttributes.ReadOnly) != 0,
-                                ["write_ticks"] = File.GetLastWriteTimeUtc(Arg(1)).Ticks,
+                                ["write_ticks"] = (long?)null, // nondeterministic (copy time); same_write_time carries the check
                             };
                             break;
                         case "trycopynew": try { value = fs.TryCopyNew(Arg(0), Arg(1)); } finally { after["dst_exists"] = File.Exists(Arg(1)) || Directory.Exists(Arg(1)); } break;
@@ -146,7 +146,7 @@ static partial class Commands
                         case "stat":
                         {
                             var st = fs.GetFileStat(Arg(0));
-                            value = st is null ? null : new JsonObject { ["length"] = st.Length, ["write_ticks"] = st.LastWriteUtc.Ticks, ["utc"] = st.LastWriteUtc.Kind == DateTimeKind.Utc };
+                            value = st is null ? null : new JsonObject { ["length"] = st.Length, ["write_ticks"] = (long?)null, ["utc"] = st.LastWriteUtc.Kind == DateTimeKind.Utc };
                             break;
                         }
                         case "fileexists": value = fs.FileExists(Arg(0)); break;
@@ -168,7 +168,7 @@ static partial class Commands
                             Func<string, bool> include = p => suffix is null || p.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
                             Action<SkippedEntry> onSkipped = s => skipped.Add(new JsonObject { ["path"] = Mask(s.Path), ["kind"] = s.Kind.ToString(), ["reason_present"] = !string.IsNullOrWhiteSpace(s.Reason) });
                             var listing = op == "enumstat" ? fs.EnumerateFilesWithStat(Arg(0), include, onSkipped) : fs.EnumerateReadableFilesWithStat(Arg(0), include, onSkipped);
-                            var files = listing.Select(f => new JsonObject { ["path"] = Mask(f.Path), ["length"] = f.Stat?.Length, ["write_ticks"] = f.Stat?.LastWriteUtc.Ticks }).OrderBy(x => x["path"]!.GetValue<string>(), StringComparer.Ordinal).ToList();
+                            var files = listing.Select(f => new JsonObject { ["path"] = Mask(f.Path), ["length"] = f.Stat?.Length, ["write_ticks"] = (long?)null }).OrderBy(x => x["path"]!.GetValue<string>(), StringComparer.Ordinal).ToList();
                             value = new JsonObject { ["files"] = new JsonArray(files.Select(x => (JsonNode)x).ToArray()), ["skipped"] = skipped };
                             break;
                         }

@@ -1,0 +1,443 @@
+{
+  "generator": "oracle-cs session-writer-sequence",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "ctor-default-debounce",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "ctor-custom-debounce",
+      "debounce_ms": 1234,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        }
+      ],
+      "spans_ms": [
+        1234
+      ],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "ctor-zero-debounce",
+      "debounce_ms": 0,
+      "ctor_exception": "ArgumentOutOfRangeException",
+      "steps": [],
+      "spans_ms": [],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "ctor-negative-debounce",
+      "debounce_ms": -1,
+      "ctor_exception": "ArgumentOutOfRangeException",
+      "steps": [],
+      "spans_ms": [],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "ctor-max-debounce",
+      "debounce_ms": 4294967294,
+      "ctor_exception": null,
+      "steps": [],
+      "spans_ms": [],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "ctor-over-max-debounce",
+      "debounce_ms": 4294967295,
+      "ctor_exception": "ArgumentOutOfRangeException",
+      "steps": [],
+      "spans_ms": [],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "coalesce-many-updates-one-timer-one-file",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "fire",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "C:\\Photos\\A\\3.jpg",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "update-after-write-starts-new-window",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "fire",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 2,
+          "files": 1
+        },
+        {
+          "op": "fire",
+          "exception": null,
+          "timer_requests": 2,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500,
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "C:\\Photos\\A\\2.jpg",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "trailing-separator-and-case-variants-are-one-folder",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "newest",
+          "skipped": []
+        },
+        {
+          "folder": "c:\\photos\\a\\",
+          "current": "newest",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "each-folder-keeps-its-own-state",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 2
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "a2",
+          "skipped": []
+        },
+        {
+          "folder": "C:\\Photos\\B",
+          "current": "b1",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "flush-then-late-timer-fire-writes-nothing-more",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        },
+        {
+          "op": "fire",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "a1",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "flush-without-updates-writes-nothing",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 0,
+          "files": 0
+        },
+        {
+          "op": "dispose",
+          "exception": null,
+          "timer_requests": 0,
+          "files": 0
+        }
+      ],
+      "spans_ms": [],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": null,
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "dispose-flushes-pending",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "dispose",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "a1",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "update-after-dispose-is-ignored",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "dispose",
+          "exception": null,
+          "timer_requests": 0,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 0,
+          "files": 0
+        },
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 0,
+          "files": 0
+        }
+      ],
+      "spans_ms": [],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": null,
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    },
+    {
+      "name": "blank-folder-throws",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": "ArgumentException",
+          "timer_requests": 0,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": "ArgumentException",
+          "timer_requests": 0,
+          "files": 0
+        }
+      ],
+      "spans_ms": [],
+      "probes": [],
+      "log_errors": 0
+    },
+    {
+      "name": "folder-cannot-be-canonicalised-other-folder-still-written",
+      "debounce_ms": null,
+      "ctor_exception": null,
+      "steps": [
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "update",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 0
+        },
+        {
+          "op": "flush",
+          "exception": null,
+          "timer_requests": 1,
+          "files": 1
+        }
+      ],
+      "spans_ms": [
+        500
+      ],
+      "probes": [
+        {
+          "folder": "C:\\Photos\\A",
+          "current": "a1",
+          "skipped": []
+        }
+      ],
+      "log_errors": 0
+    }
+  ]
+}

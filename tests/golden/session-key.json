@@ -708,13 +708,6 @@
       "canonical_exception": "ArgumentException",
       "key": null,
       "exception": "ArgumentException"
-    },
-    {
-      "folder": "\t",
-      "canonical": "C:\\Users\\KymdanVti\\AppData\\Local\\Temp\\claude\\D--MyProject-PhotoReview\\b0511a92-445d-4fc1-a4e3-180282da7208\\scratchpad\\contracts-w2\\\t",
-      "upper": "C:\\USERS\\KYMDANVTI\\APPDATA\\LOCAL\\TEMP\\CLAUDE\\D--MYPROJECT-PHOTOREVIEW\\B0511A92-445D-4FC1-A4E3-180282DA7208\\SCRATCHPAD\\CONTRACTS-W2\\\t",
-      "key": null,
-      "exception": "ArgumentException"
     }
   ]
 }

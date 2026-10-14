@@ -67,3 +67,43 @@ functions only.
   `NumberCulture` lookup (W8, UI).
 - **D11 Temporary `#![allow(unused_variables, dead_code)]`** at the top of a stub is allowed only while it has
   `todo!()` bodies; the porter removes it in the same commit that removes the last `todo!()`.
+
+## Wave 2 roster (dependency order)
+
+Merge in this order; a porter may start once its "Depends on" units are merged (stub types already compile).
+
+| WU | Unit | Rust | Porter | Goldens |
+|---|---|---|---|---|
+| W2-00 | .NET `Path.*` helpers | `pr_core::text::dotnet_path` | Sonnet | `dotnet-path` |
+| W2-20 | ContextMenuLayout | `pr_core::settings::context_menu` | Sonnet | `context-menu` |
+| W2-01 | AppSettings + config JSON | `pr_core::settings::app_settings` | Sonnet | `settings-json` |
+| W2-02 | Normalizer / validator | `pr_core::settings::normalizer` | Sonnet | `settings-normalize`, `-validate`, `-repair-text` |
+| W2-03 | SettingsStore (INV-11) | `pr_core::settings::store` | Sonnet | `settings-store`, `settings-parse-text` |
+| W2-04 | Localization core + keygen | `pr_l10n::{catalog,loader,localizer}`, `build.rs` | Sonnet | `l10n-*` |
+| W2-05..11 | Catalog services | `pr_core::catalog::*`, `file_actions::{duplicates,destination_policy}` | Sonnet (W2-11 Haiku) | per unit |
+| W2-12 | SessionStore | `pr_core::session::store` | Sonnet | `session-key`, `session-json-*` |
+| W2-13 | SessionWriter | `pr_core::session::writer` | **Opus** | `session-writer-sequence` |
+| W2-14 | PhysicalFileSystem, Counting | `pr_core::io::{physical,counting}` | **Opus** (`physical.rs`) | `physical-fs-*` |
+| W2-15 | NavigationStatWorker | `pr_core::io::navigation_stat` | Sonnet | `navigation-stat-worker` |
+| W2-16 | FileLog (INV-10) | `pr_core::diagnostics::file_log` | Sonnet | `file-log-*` |
+| W2-17 | Perf diagnostics | `pr_core::diagnostics::{metrics,perf,perf_csv}` | Sonnet | `perf-*`, `review-metrics` |
+| W2-18 | UpdateChecker | `pr_core::updates::checker` | Sonnet | `update-checker` |
+| W2-19 | Instance forwarding | `pr_core::instance::*` | Sonnet | `forwarded-path` |
+
+## Lead decisions (Wave 2)
+
+- **D12 Merge order:** W2-00 -> W2-20 -> W2-01 -> W2-02/W2-03; W2-04 after W2-00. Everything else is independent.
+- **D13 `SettingsTexts`** stays a `pr-core` trait; the catalog-backed implementation is supplied by the App composition
+  root (not W2-04). W2-01 goldens only need the English implementation.
+- **D14 Test ownership:** the per-property `*SettingsTests` that go through the normalizer belong to W2-02; those
+  through store/parse belong to W2-03. W2-01 keeps reader/writer tests only.
+- **D15 Module ownership:** `pr_core::io` (mod.rs) is lead-owned; W2-14 and W2-15 only fill their own files.
+- **D16 Local time** (W2-16): inject a `LocalTimeSource`; `pr-core` takes no `windows-sys` dependency.
+- **D17 HTTP transport** (W2-18): behind a trait, real transport lands in `pr-platform-win` later; endpoint and allow-list
+  stay those of C# for parity.
+- **D18 `sha2`** crate is the SHA-256 for W2-17.
+- **D19 Golden determinism:** oracle output must not depend on cwd, clock or file times. Removed from goldens:
+  `session-key` case with folder `"	"` (resolves against cwd); `physical-fs-ops` `write_ticks` now null (copy
+  time). Equality of times is still checked by `same_write_time`.
+- **D20 Accepted divergence (W2-04):** invalid UTF-8 in a language file becomes a "cannot read" warning in Rust
+  (`read_all_text` returns InvalidData) where C# substitutes U+FFFD. Record `// DIVERGENCE:` and a `Different` row.
