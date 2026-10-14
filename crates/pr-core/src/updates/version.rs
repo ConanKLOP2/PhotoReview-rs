@@ -151,6 +151,9 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
         }
         None => host_port,
     };
+    // .NET drops the bidi formatting controls (`UriHelper.IsBidiControlCharacter`) from the host before it checks
+    // the name: `https://git\u{200E}hub.com/...` is `github.com`.
+    let host: String = host.chars().filter(|&c| !is_bidi_control(c)).collect();
     if !host.eq_ignore_ascii_case("github.com") {
         return None;
     }
@@ -320,6 +323,11 @@ fn is_iri_char(ch: char, is_query: bool) -> bool {
         return false;
     }
     cp <= 0xEFFFD && !(0xE0000..=0xE0FFF).contains(&cp) || (is_query && cp >= 0xF0000)
+}
+
+/// .NET `UriHelper.IsBidiControlCharacter`: LRM, RLM and LRE..RLO (NOT U+061C or the U+2066..U+2069 isolates).
+fn is_bidi_control(c: char) -> bool {
+    matches!(c, '\u{200E}' | '\u{200F}' | '\u{202A}'..='\u{202E}')
 }
 
 fn is_high_surrogate(u: u16) -> bool {

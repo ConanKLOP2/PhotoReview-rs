@@ -264,6 +264,12 @@ fn validate_matches_net_uri_escape_edge_cases() {
         ("#%41%20", "#A"),
         ("#\u{e9}%2e%20%20", "#%C3%A9."),
         ("#\u{e9}\t%20", "#%C3%A9"),
+        // Literal CR, tab and LF are trimmed too (the `%20` keeps them off the end of the string for `Trim`).
+        ("/%41#x\r%20", "/A#x"),
+        ("/%41#x\t%20", "/A#x"),
+        ("/%41#x\n%20", "/A#x"),
+        ("#%41\r%20", "#A"),
+        ("/%C3%A9#x\r\n\t %20", "/%C3%A9#x"),
         ("/%41#a%20", "/A#a"),
         ("/%zz#%20", "/%25zz#"),
         // ...but not without that path, not mid-fragment, not in path or query, not after a swallowed `%`.
@@ -274,6 +280,8 @@ fn validate_matches_net_uri_escape_edge_cases() {
         ("/\u{e9}%2e%20", "/%C3%A9.%20"),
         ("?\u{e9}%20", "?%C3%A9%20"),
         ("#%%20", "#%25%20"),
+        ("/x#a\r%20", "/x#a%0D%20"),
+        ("/%41#x\r%20y", "/A#x%0D%20y"),
     ];
     for &(input, expected) in rows {
         let url = format!("{P}{input}");
@@ -295,4 +303,50 @@ fn validate_requires_two_separators_after_scheme() {
     ] {
         assert_eq!(validate_update_url(Some(url)), None, "{url}");
     }
+}
+
+// C#: (no direct test) UpdateUrlPolicy.Validate, bidi controls in the host. .NET drops LRM, RLM and LRE..RLO
+// (`UriHelper.IsBidiControlCharacter`) from the host only; other format chars and the isolates are not dropped.
+// Every expected value below was produced by the C# UpdateUrlPolicy.Validate (e441d67a) on .NET 10.
+#[test]
+fn validate_strips_bidi_controls_from_host() {
+    let accepted: &[(&str, &str)] = &[
+        (
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview",
+            "https://github.com/ConanKLOP2/PhotoReview",
+        ),
+        (
+            "https://github.com\u{202E}/ConanKLOP2/PhotoReview/releases",
+            "https://github.com/ConanKLOP2/PhotoReview/releases",
+        ),
+        (
+            "https://\u{200F}GitHub.Com\u{202A}:443/ConanKLOP2/PhotoReview?q#f",
+            "https://github.com/ConanKLOP2/PhotoReview?q#f",
+        ),
+        (
+            "https://@github\u{202B}\u{202C}\u{202D}.com/ConanKLOP2/PhotoReview",
+            "https://@github.com/ConanKLOP2/PhotoReview",
+        ),
+    ];
+    for &(url, expected) in accepted {
+        assert_eq!(validate_update_url(Some(url)).as_deref(), Some(expected), "{url:?}");
+    }
+    for url in [
+        "https://git\u{061C}hub.com/ConanKLOP2/PhotoReview",
+        "https://git\u{2066}hub.com/ConanKLOP2/PhotoReview",
+        "https://git\u{2069}hub.com/ConanKLOP2/PhotoReview",
+        "https://git\u{200B}hub.com/ConanKLOP2/PhotoReview",
+        "https://\u{200E}@github.com/ConanKLOP2/PhotoReview",
+        "https://github.com:443\u{200E}/ConanKLOP2/PhotoReview",
+        "https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview",
+        "https://\u{200E}/ConanKLOP2/PhotoReview",
+        "https://evil\u{200E}.example/ConanKLOP2/PhotoReview",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url:?}");
+    }
+    // Outside the host a bidi control is an ordinary non-ASCII char.
+    assert_eq!(
+        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview/\u{200E}")).as_deref(),
+        Some("https://github.com/ConanKLOP2/PhotoReview/%E2%80%8E")
+    );
 }
