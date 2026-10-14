@@ -1248,3 +1248,87 @@ fn golden_perf_csv_file_matches_csharp() {
         assert_eq!(mask(&sink.text()), golden::str_of(case, "masked_text"), "{id}");
     }
 }
+
+// ---- repair round 2 ---------------------------------------------------------------------------------------------
+
+struct PanickingSink;
+
+impl Write for PanickingSink {
+    fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+        panic!("sink exploded")
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+// C# WriterLoopAsync catch-all: any exception from the stream marks the writer faulted and counts the rows.
+#[test]
+fn panicking_sink_marks_writer_faulted_and_counts_rows() {
+    let _guard = global_state();
+    let no_diag = |_: &str| None;
+    let listener = PerfCsvListener::start_for_test(
+        Box::new(PanickingSink),
+        100,
+        Some(Duration::from_millis(50)),
+        Some(Duration::from_secs(5)),
+        None,
+        &no_diag,
+    );
+    for _ in 0..10 {
+        listener.enqueue(simple_row);
+    }
+    assert!(
+        spin_until(Duration::from_secs(5), || listener.writer_faulted()),
+        "a sink panic must set writer_faulted"
+    );
+    // Later rows are counted, not queued forever.
+    let before = listener.dropped_count();
+    listener.enqueue(simple_row);
+    assert_eq!(listener.dropped_count(), before + 1);
+    listener.dispose();
+    assert!(listener.dropped_count() >= 1);
+}
+
+// A trace directory with a middle segment ending in a space is accepted by C# (.NET Core extended-prefix paths).
+#[cfg(windows)]
+#[test]
+fn trace_dir_with_trailing_space_segment_is_accepted() {
+    let _guard = global_state();
+    let base = std::env::temp_dir().join(format!("w217-trailing-space-{}", std::process::id()));
+    std::fs::create_dir_all(&base).expect("temp base");
+    let dir = format!(r"{}\x \y", base.display());
+    let lookup = |name: &str| (name == TRACE_ENV_VAR).then(|| dir.clone());
+    let now = || LocalTimeParts {
+        year: 2020,
+        month: 1,
+        day: 1,
+        hour: 0,
+        minute: 0,
+        second: 0,
+    };
+    let listener = PerfCsvListener::try_start(&lookup, None, &now);
+    let started = listener.is_some();
+    drop(listener);
+    let _ = std::fs::remove_dir_all(format!(r"\\?\{}", base.display()));
+    assert!(started, "trailing-space directory segment must be accepted");
+}
+
+// The 1 s rule must flush while rows keep arriving (the idle flush never fires with a 30 s interval).
+#[test]
+fn one_second_rule_flushes_while_rows_keep_arriving() {
+    let _guard = global_state();
+    let sink = Probe::memory();
+    let no_diag = |_: &str| None;
+    let listener =
+        PerfCsvListener::start_for_test(sink.sink(), 1000, Some(Duration::from_secs(30)), None, None, &no_diag);
+    let end = Instant::now() + Duration::from_millis(1600);
+    while Instant::now() < end {
+        listener.enqueue(simple_row);
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    let seen = sink.flushes();
+    listener.dispose();
+    assert!(seen >= 1, "no flush during a 1.6 s busy stream (flushes={seen})");
+}

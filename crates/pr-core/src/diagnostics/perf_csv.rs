@@ -22,7 +22,6 @@
 use std::cell::Cell;
 use std::io::{self, BufWriter, Write};
 use std::panic::{AssertUnwindSafe, catch_unwind};
-use std::path::Path;
 use std::sync::atomic::{AtomicBool, AtomicI32, AtomicI64, Ordering};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, TrySendError, sync_channel};
 use std::sync::{Arc, Condvar, Mutex, PoisonError, RwLock};
@@ -364,7 +363,11 @@ fn writer_loop(
         let result: io::Result<()> = match rx.recv_timeout(idle_flush) {
             Err(RecvTimeoutError::Timeout) => {
                 // Idle for a whole interval: flush the tail of a burst now, so a killed process does not lose it.
-                let flushed = if unflushed > 0 { writer.flush() } else { Ok(()) };
+                let flushed = if unflushed > 0 {
+                    guarded(|| writer.flush())
+                } else {
+                    Ok(())
+                };
                 if flushed.is_ok() {
                     unflushed = 0;
                     last_flush = timestamp();
@@ -374,9 +377,9 @@ fn writer_loop(
             Err(RecvTimeoutError::Disconnected) => break,
             Ok(row) => {
                 unflushed += 1;
-                let mut step = write_row(&mut writer, &row);
+                let mut step = guarded(|| write_row(&mut writer, &row));
                 if step.is_ok() && ms(last_flush) >= 1000.0 {
-                    step = writer.flush();
+                    step = guarded(|| writer.flush());
                     if step.is_ok() {
                         unflushed = 0;
                         last_flush = timestamp();
@@ -395,10 +398,86 @@ fn writer_loop(
     }
 
     // Best effort: a broken stream makes the flush and the trailer fail silently.
-    let _ = writer.flush();
-    let _ = write!(writer, "# dropped={}\r\n", shared.dropped.load(Ordering::SeqCst));
-    let _ = writer.flush();
-    drop(writer);
+    let _ = guarded(|| writer.flush());
+    let _ = guarded(|| write!(writer, "# dropped={}\r\n", shared.dropped.load(Ordering::SeqCst)));
+    let _ = guarded(|| writer.flush());
+    // A panicking sink must not unwind out of the drop either.
+    let _ = catch_unwind(AssertUnwindSafe(|| drop(writer)));
+}
+
+/// Runs one stream operation; a panic inside the sink counts as an I/O failure (C# `WriterLoopAsync` catch-all).
+fn guarded(op: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
+    match catch_unwind(AssertUnwindSafe(op)) {
+        Ok(result) => result,
+        Err(_) => Err(io::Error::other("the trace sink panicked")),
+    }
+}
+
+/// .NET Core addresses files through the `\\?\` extended prefix, so a directory segment that ends in a space or a dot
+/// survives; plain Win32 normalization (what `std::fs` uses for ordinary paths) strips it. Such a path is rewritten
+/// lexically to the extended form; every other path is used as given.
+#[cfg(windows)]
+fn trace_dir_path(dir: &str) -> std::path::PathBuf {
+    use std::path::PathBuf;
+    let s = dir.replace('/', "\\");
+    let needs = s
+        .split('\\')
+        .any(|seg| seg != "." && seg != ".." && (seg.ends_with(' ') || seg.ends_with('.')));
+    if !needs || s.starts_with(r"\\?\") || s.starts_with(r"\\.\") {
+        return PathBuf::from(dir);
+    }
+    let bytes = s.as_bytes();
+    let (prefix, rest): (String, String) = if let Some(unc) = s.strip_prefix(r"\\") {
+        let mut parts = unc.splitn(3, '\\');
+        match (parts.next(), parts.next()) {
+            (Some(server), Some(share)) if !server.is_empty() && !share.is_empty() => (
+                format!(r"\\?\UNC\{server}\{share}"),
+                parts.next().unwrap_or("").to_owned(),
+            ),
+            _ => return PathBuf::from(dir),
+        }
+    } else if bytes.len() >= 3 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':' && bytes[2] == b'\\' {
+        (format!(r"\\?\{}:", char::from(bytes[0])), s[3..].to_owned())
+    } else if bytes.len() >= 2 && bytes[1] == b':' {
+        return PathBuf::from(dir); // drive-relative: leave to the OS
+    } else {
+        let Ok(cwd) = std::env::current_dir() else {
+            return PathBuf::from(dir);
+        };
+        let cwd = cwd.to_string_lossy().into_owned();
+        let cb = cwd.as_bytes();
+        if cb.len() < 3 || cb[1] != b':' || cwd.starts_with(r"\\") {
+            return PathBuf::from(dir);
+        }
+        let drive = format!(r"\\?\{}:", char::from(cb[0]));
+        if let Some(rooted) = s.strip_prefix('\\') {
+            (drive, rooted.to_owned())
+        } else {
+            (drive, format!("{}\\{}", &cwd[3..], s))
+        }
+    };
+    let mut stack: Vec<&str> = Vec::new();
+    for seg in rest.split('\\') {
+        match seg {
+            "" | "." => {}
+            ".." => {
+                stack.pop();
+            }
+            other => stack.push(other),
+        }
+    }
+    let mut out = prefix;
+    for seg in stack {
+        out.push('\\');
+        out.push_str(seg);
+    }
+    out.push('\\');
+    PathBuf::from(out)
+}
+
+#[cfg(not(windows))]
+fn trace_dir_path(dir: &str) -> std::path::PathBuf {
+    std::path::PathBuf::from(dir)
 }
 
 impl PerfCsvListener {
@@ -427,8 +506,9 @@ impl PerfCsvListener {
             t.minute,
             t.second
         );
-        std::fs::create_dir_all(&dir).ok()?;
-        let path = Path::new(&dir).join(file_name);
+        let dir_path = trace_dir_path(&dir);
+        std::fs::create_dir_all(&dir_path).ok()?;
+        let path = dir_path.join(file_name);
         let mut options = std::fs::OpenOptions::new();
         options.write(true).create(true).truncate(true);
         #[cfg(windows)]
