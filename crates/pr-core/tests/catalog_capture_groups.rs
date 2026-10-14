@@ -177,10 +177,7 @@ fn build_sidecar_that_is_not_an_xmp_file_is_not_attached_to_the_group() {
 #[test]
 fn build_lone_same_stem_non_xmp_sidecar_is_ignored() {
     // Extra guard (mirrors C# IndexSidecars `.xmp`-only filter): a single `a.txt` must not become the xmp.
-    let groups = build(
-        &s(&["C:\p\a.jpg", "C:\p\a.cr2"]),
-        Some(&s(&["C:\p\a.txt"])),
-    );
+    let groups = build(&s(&[r"C:\p\a.jpg", r"C:\p\a.cr2"]), Some(&s(&[r"C:\p\a.txt"])));
     assert_eq!(groups.len(), 1);
     assert_eq!(groups[0].xmp_path(), None);
 }
