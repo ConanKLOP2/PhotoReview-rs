@@ -554,6 +554,45 @@ fn coalescer_dispose_cancels_pending_open() {
 }
 
 #[test]
+fn coalescer_dispose_while_delay_ignores_cancel_still_does_not_open() {
+    // Kills the mutant removing `if state.disposed { return; }` in flush_after_window: the delay ignores the cancel
+    // signal and completes Ok AFTER dispose, so only the disposed check keeps the open callback from running.
+    let gate = Arc::new(Gate::default());
+    let (started_tx, started_rx) = mpsc::channel::<()>();
+    let (done_tx, done_rx) = mpsc::channel::<()>();
+    let delay: DelayFn = {
+        let gate = Arc::clone(&gate);
+        let started_tx = Mutex::new(started_tx);
+        Arc::new(move |_, _cancel| {
+            let _ = started_tx.lock().unwrap().send(());
+            gate.wait();
+            Ok(())
+        })
+    };
+    let (open, opened_rx) = recording_open();
+    // The spawner runs the flush on a thread and reports when the whole flush has returned.
+    let spawner: Spawner = {
+        let done_tx = Mutex::new(done_tx);
+        Arc::new(move |f| {
+            let done = done_tx.lock().unwrap().clone();
+            std::thread::spawn(move || {
+                f();
+                let _ = done.send(());
+            });
+        })
+    };
+    let c = ForwardedOpenCoalescer::new(open, Duration::from_secs(1), None, Some(delay), Some(spawner));
+
+    c.submit(&strs(&[PHOTO]));
+    started_rx.recv_timeout(TEN_SECONDS).unwrap();
+    c.dispose();
+    gate.release();
+    done_rx.recv_timeout(TEN_SECONDS).unwrap();
+
+    assert!(opened_rx.try_recv().is_err(), "a disposed coalescer must not open");
+}
+
+#[test]
 fn coalescer_default_delay_is_woken_by_dispose() {
     // Default delay + default spawner: dispose wakes the waiting window, nothing opens.
     let opened = Arc::new(AtomicUsize::new(0));
