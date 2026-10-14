@@ -62,6 +62,20 @@ fn pair_catalog(mode: RawPairMode) -> ReviewCatalog {
     c
 }
 
+#[test]
+fn restore_members_group_with_non_restorable_missing_member_does_not_reform() {
+    // Repair round 1: kills the mutant dropping `is_restorable_image(member, true)` in try_reform_group
+    // (C# TryReformGroup requires a missing listed member to be a restorable image).
+    let mut c = ReviewCatalog::new();
+    reset_entries(&mut c, &["C:\\photos\\p.cr2"], RawPairMode::PreferJpeg);
+    let group = group2("C:\\photos\\a.txt", "C:\\photos\\p.cr2");
+    let restored = c.restore_members(&s(&["C:\\photos\\a.txt"]), 0, Some(&group), true);
+    assert!(!restored);
+    assert_eq!(c.count(), 1);
+    assert_eq!(paths_vec(&c), s(&["C:\\photos\\p.cr2"]));
+    assert!(no_groups(&c));
+}
+
 fn no_groups(c: &ReviewCatalog) -> bool {
     c.entries_snapshot().iter().all(|e| e.capture_group.is_none())
 }
