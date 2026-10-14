@@ -626,3 +626,74 @@ fn build_timings_2000_navs() {
 fn build_timings_10000_navs() {
     run_build_timings(10_000);
 }
+
+// ---------------------------------------------------------------- tie-order hardening (round-2 survivors)
+
+// C#: PerfAnalyzeNavBuilder.Build, `row.QpcTicks < firstRelevantQpc` is strict
+#[test]
+fn dispatcher_long_op_at_exactly_the_first_show_start_qpc_is_kept() {
+    let file = file_of(
+        vec![
+            row(1, 1_000, 1, "DispatcherLongOp", "", "5", "Normal;Before"),
+            row(1, 2_000, 1, "ShowStart", "1", "", "Fast"),
+            row(1, 2_000, 1, "DispatcherLongOp", "", "7", "Normal;AtStart"),
+        ],
+        1_000_000,
+    );
+    let a = build(&file);
+    assert_eq!(a.dispatcher_long_ops_before_start_count, 1);
+    assert_eq!(a.dispatcher_long_ops.len(), 1);
+    assert_eq!(a.dispatcher_long_ops[0].name, "AtStart");
+}
+
+// C#: same guard with a Folder(start) threshold
+#[test]
+fn dispatcher_long_op_at_exactly_the_folder_start_qpc_is_kept() {
+    let file = file_of(
+        vec![
+            row(1, 3_000, 1, "Folder", "1", "0", "start"),
+            row(1, 3_000, 1, "DispatcherLongOp", "", "7", "Normal;AtStart"),
+        ],
+        1_000_000,
+    );
+    let a = build(&file);
+    assert_eq!(a.dispatcher_long_ops_before_start_count, 0);
+    assert_eq!(a.dispatcher_long_ops.len(), 1);
+}
+
+// C#: OrderBy(QpcTicks) is stable; equal qpc on different threads keeps file order
+#[test]
+fn equal_qpc_rows_of_one_nav_on_different_threads_keep_file_order() {
+    let file = file_of(
+        vec![
+            row(1, 100, 1, "Stat", "1", "1", ""),
+            row(1, 100, 2, "Stat", "1", "2", ""),
+            row(1, 100, 2, "Lookup", "1", "", "ramHit"),
+            row(1, 100, 1, "Lookup", "1", "", "miss"),
+        ],
+        1_000_000,
+    );
+    let a = build(&file);
+    assert_eq!(a.navs.len(), 1);
+    assert_eq!(a.navs[0].t_stat_ms, Some(2.0));
+    assert_eq!(a.navs[0].lookup_result, "miss");
+}
+
+// C#: BuildFolderSummaries sorts by QpcTicks stably; same-text rows with equal qpc pick the first in file order
+#[test]
+fn equal_qpc_same_text_folder_rows_pick_the_first_in_file_order() {
+    let file = file_of(
+        vec![
+            row(1, 100, 1, "Folder", "3", "1", "catalogReady"),
+            row(1, 100, 1, "Folder", "3", "2", "catalogReady"),
+            row(1, 200, 1, "Folder", "3", "5", "explorerApplied"),
+            row(1, 200, 1, "Folder", "3", "6", "explorerFallback"),
+        ],
+        1_000_000,
+    );
+    let a = build(&file);
+    assert_eq!(a.folder_gens.len(), 1);
+    assert_eq!(a.folder_gens[0].t1_catalog_ready_ms, Some(1.0));
+    assert_eq!(a.folder_gens[0].t3_ms, Some(5.0));
+    assert_eq!(a.folder_gens[0].t3_phase, "explorerApplied");
+}
