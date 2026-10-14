@@ -196,3 +196,18 @@ fn vblank_golden_replays_every_case_after_every_operation() {
         }
     }
 }
+
+// Kills the `f64::min` mutant of `math_min`: `refreshes` wraps to 0, so `period` is -inf and the projection
+// of the newest sample is `0 * -inf = NaN`, which .NET `Math.Min` propagates (`(long)NaN == 0`).
+#[test]
+fn wrapped_refresh_count_makes_the_projection_nan() {
+    let mut estimator = VBlankEstimator::new();
+    // Intervals 1, 1, i64::MAX, i64::MAX - 1: counts 1, 1, i64::MAX (saturated), i64::MAX (saturated) sum to 0.
+    for t in [i64::MIN, i64::MIN + 1, i64::MIN + 2, 1, i64::MAX] {
+        estimator.add(t);
+    }
+    assert_eq!(estimator.count(), 5);
+    let timing = estimator.current().expect("baseline is 1, so a timing is reported");
+    assert_eq!(timing.last_vblank, 0);
+    assert_eq!(timing.refresh_period, i64::MIN);
+}
