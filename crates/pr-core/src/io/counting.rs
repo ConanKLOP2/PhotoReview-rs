@@ -5,8 +5,6 @@
 //! overridden, including the ones with default bodies (`try_copy_new*`, `enumerate_*_with_stat`, `try_probe_readable`,
 //! `try_delete_empty_directory`, `resolve_real_path`): a wrapper that left a default in place would silently replace the
 //! inner file system's atomic create-new copy by "exists-check then copy" (C# `FileSystemWrapperForwardingTests`).
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
 
 use std::fmt;
 use std::io::{self, Write};
@@ -43,33 +41,36 @@ impl fmt::Debug for CountingFileSystem {
 impl CountingFileSystem {
     /// C# `new CountingFileSystem(inner, metrics)`.
     pub fn new(inner: Arc<dyn FileSystem>, metrics: Arc<dyn StatCounter>) -> Self {
-        todo!()
+        Self { inner, metrics }
     }
 }
 
 impl FileSystem for CountingFileSystem {
     fn file_exists(&self, path: &Path) -> bool {
-        todo!()
+        self.metrics.record_stat();
+        self.inner.file_exists(path)
     }
 
     fn directory_exists(&self, path: &Path) -> bool {
-        todo!()
+        self.metrics.record_stat();
+        self.inner.directory_exists(path)
     }
 
     fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
-        todo!()
+        self.metrics.record_stat();
+        self.inner.get_file_stat(path)
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
-        todo!()
+        self.inner.move_file(source, destination)
     }
 
     fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
-        todo!()
+        self.inner.copy_file(source, destination)
     }
 
     fn try_copy_new(&self, source: &Path, destination: &Path) -> io::Result<bool> {
-        todo!()
+        self.inner.try_copy_new(source, destination)
     }
 
     fn try_copy_new_with_proof(
@@ -78,31 +79,31 @@ impl FileSystem for CountingFileSystem {
         destination: &Path,
         proof: &CopyCreationProof,
     ) -> io::Result<bool> {
-        todo!()
+        self.inner.try_copy_new_with_proof(source, destination, proof)
     }
 
     fn delete(&self, path: &Path) -> io::Result<()> {
-        todo!()
+        self.inner.delete(path)
     }
 
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
-        todo!()
+        self.inner.open_read_shared(path, buffer_size)
     }
 
     fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
-        todo!()
+        self.inner.open_append(path, durable)
     }
 
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
-        todo!()
+        self.inner.write_all_text_atomic(path, text, durable)
     }
 
     fn read_all_text(&self, path: &Path) -> io::Result<String> {
-        todo!()
+        self.inner.read_all_text(path)
     }
 
     fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
-        todo!()
+        self.inner.enumerate_files(directory, pattern)
     }
 
     fn enumerate_files_with_stat(
@@ -111,11 +112,11 @@ impl FileSystem for CountingFileSystem {
         include: &dyn Fn(&Path) -> bool,
         on_skipped: &mut dyn FnMut(SkippedEntry),
     ) -> io::Result<Vec<(PathBuf, Option<FileStat>)>> {
-        todo!()
+        self.inner.enumerate_files_with_stat(directory, include, on_skipped)
     }
 
     fn try_probe_readable(&self, path: &Path) -> Result<(), String> {
-        todo!()
+        self.inner.try_probe_readable(path)
     }
 
     fn enumerate_readable_files_with_stat(
@@ -124,22 +125,23 @@ impl FileSystem for CountingFileSystem {
         include: &dyn Fn(&Path) -> bool,
         on_skipped: &mut dyn FnMut(SkippedEntry),
     ) -> io::Result<Vec<(PathBuf, Option<FileStat>)>> {
-        todo!()
+        self.inner
+            .enumerate_readable_files_with_stat(directory, include, on_skipped)
     }
 
     fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
-        todo!()
+        self.inner.enumerate_directories(directory)
     }
 
     fn create_directory(&self, path: &Path) -> io::Result<()> {
-        todo!()
+        self.inner.create_directory(path)
     }
 
     fn try_delete_empty_directory(&self, path: &Path) -> bool {
-        todo!()
+        self.inner.try_delete_empty_directory(path)
     }
 
     fn resolve_real_path(&self, path: &Path) -> io::Result<PathBuf> {
-        todo!()
+        self.inner.resolve_real_path(path)
     }
 }
