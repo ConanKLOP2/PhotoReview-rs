@@ -2580,3 +2580,66 @@ fn import_after_locked_default_load_resets_keep_flag() {
     assert_eq!(loaded.click_zoom_percent, 250);
     assert!(r.read().contains("\"ClickZoomPercent\": 250"));
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 2 guards
+// ---------------------------------------------------------------------------------------------------------------
+
+#[test]
+fn import_of_json_null_is_not_an_import() {
+    let r = Rig::new();
+    r.fs.add_file(csharp_cfg(), b"null");
+    let store = r.store();
+
+    let loaded = store.load_first_run_with_import(&csharp_cfg()).expect("import");
+
+    let mut expected = defaults();
+    expected.config_version = 3;
+    assert_eq!(*loaded, expected);
+    assert!(r.has(Lv::Warn, "not a JSON object"));
+    assert!(!r.has(Lv::Info, "Imported the settings of the C# app"));
+    assert_eq!(r.text_of(&csharp_cfg()), "null");
+    assert!(r.fs.file_exists(&r.cfg()));
+}
+
+// C#: Load with an explicit path whose corrupt-file backup fails keeps _keepCorruptFile = (path is null) = false,
+// so a later Save still writes the default config file.
+#[test]
+fn explicit_corrupt_backup_failure_does_not_block_default_save() {
+    let r = Rig::new();
+    let other = PathBuf::from(r"C:\elsewhere\config.json");
+    r.fs.add_file(&other, b"{ this is not valid json }");
+    r.fs.fail(FsOp::Copy, &other, io::ErrorKind::PermissionDenied);
+    let store = r.store();
+
+    let loaded = store.load(Some(&other)).expect("load");
+    store.save((*loaded).clone()).expect("save");
+
+    assert!(r.fs.file_exists(&r.cfg()));
+    assert!(r.read().contains("\"ConfigVersion\": 3"));
+}
+
+// C#: NewerBackupSortKey uses int.TryParse(NumberStyles.None): a signed counter is unparseable (counter 0, whole
+// suffix is the stamp), so "-+9" sorts as the oldest of its stamp and is kept while the true oldest is pruned.
+#[test]
+fn newer_backup_prune_treats_signed_counter_as_unparseable() {
+    let r = Rig::new();
+    let names = [
+        "20200101000001-+9",
+        "20200101000001-20",
+        "20200101000001-21",
+        "20200101000001-22",
+    ];
+    for n in names {
+        r.fs.add_file(format!("{}.newer-{n}", r.cfg().display()), b"old");
+    }
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+
+    store.save((*loaded).clone()).expect("save");
+
+    let left: Vec<String> = r.newer_backups().iter().map(|f| name_of(f)).collect();
+    assert!(left.iter().any(|n| n.ends_with("-+9")), "{left:?}");
+    assert!(!left.iter().any(|n| n.ends_with("-21")), "{left:?}");
+}

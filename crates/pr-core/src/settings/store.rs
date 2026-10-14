@@ -550,6 +550,12 @@ impl SettingsStore {
             }
         };
         let parsed = match Self::parse_text(&text, &*self.texts) {
+            Ok(p) if p.is_json_null => {
+                self.log.warn(
+                    "The C# config.json is not a JSON object, so the first-run import is skipped and defaults are used",
+                );
+                return self.load(None);
+            }
             Ok(p) => p,
             Err(e) => {
                 self.log.warn(&format!(
