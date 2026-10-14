@@ -436,6 +436,7 @@ const ERROR_LOCK_VIOLATION: i32 = 33;
 const ERROR_INVALID_PARAMETER: i32 = 87;
 const ERROR_ALREADY_EXISTS: i32 = 183;
 const ERROR_FILENAME_EXCED_RANGE: i32 = 206;
+const ERROR_CANT_RESOLVE_FILENAME: i32 = 1921;
 
 const FILE_LIST_DIRECTORY: u32 = 0x1;
 const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
@@ -611,16 +612,16 @@ fn options(share: u32, flags: u32) -> OpenOptions {
     options
 }
 
-/// .NET `File.Exists`-style probe on an already full path: the entry exists and is not a directory.
+/// .NET `File.Exists`-style probe on an already full path: the entry exists and is not a directory. Like .NET
+/// (`FillAttributeInfo`), a name left ending with a space or a dot after the trailing separator is trimmed is queried in
+/// the extended form, so `<dir>\b.txt \` is NOT `<dir>\b.txt`.
 fn file_exists_full(full: &str) -> bool {
-    entry_attributes(dotnet_path::trim_ending_directory_separator(full))
-        .is_some_and(|attributes| attributes & FILE_ATTRIBUTE_DIRECTORY == 0)
+    win32_file_exists(full)
 }
 
-/// .NET `Directory.Exists`-style probe on an already full path.
+/// .NET `Directory.Exists`-style probe on an already full path (`<dir>\sub \` is not `<dir>\sub`, see [`file_exists_full`]).
 fn directory_exists_full(full: &str) -> bool {
-    entry_attributes(dotnet_path::trim_ending_directory_separator(full))
-        .is_some_and(|attributes| attributes & FILE_ATTRIBUTE_DIRECTORY != 0)
+    win32_directory_exists(full).0
 }
 
 /// `new FileStream(path, ...)` (also `File.ReadAllText`): .NET opens `Path.GetFullPath(path)`, so `<dir>\sub/` becomes
@@ -993,10 +994,8 @@ fn final_link_target_slow(link: &str) -> io::Result<String> {
     while let Some(target) = current {
         hops += 1;
         if hops > MAX_FOLLOWED_LINKS {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                format!("Too many levels of symbolic links: '{link}'."),
-            ));
+            // .NET throws an IOException with ERROR_CANT_RESOLVE_FILENAME (1921) here.
+            return Err(io::Error::from_raw_os_error(ERROR_CANT_RESOLVE_FILENAME));
         }
         current = immediate_link_target(&target);
         previous = Some(target);
@@ -1097,9 +1096,12 @@ impl FileSystem for PhysicalFileSystem {
         if is_blank(path) {
             return None;
         }
-        // new FileInfo(path): full path with ONE trailing separator trimmed (unlike File.Exists), attributes of the entry.
+        // new FileInfo(path): full path with ONE trailing separator trimmed (unlike File.Exists), attributes of the entry,
+        // queried in the extended form when the trimmed name ends with a space or a dot (FillAttributeInfo): `b.txt \` is
+        // `b.txt ` (missing), not `b.txt`.
         let full = full_path(path).ok()?;
-        let metadata = fs::symlink_metadata(dotnet_path::trim_ending_directory_separator(&full)).ok()?;
+        let trimmed = dotnet_path::trim_ending_directory_separator(&full);
+        let metadata = fs::symlink_metadata(ensure_extended_prefix_if_needed(trimmed)).ok()?;
         if attributes_of(&metadata) & FILE_ATTRIBUTE_DIRECTORY != 0 {
             return None;
         }

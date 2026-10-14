@@ -1304,6 +1304,82 @@ fn enumerate_files_with_stat_folder_does_not_exist_propagates() {
     assert!(skipped.is_empty());
 }
 
+// C#: new DirectoryInfo(dir).EnumerateFiles("*") lists files only: a subfolder, a junction to a folder and a dangling
+// junction (all carry the DIRECTORY attribute) are skipped, not listed and not reported.
+#[test]
+#[ignore = "native"]
+fn enumerate_files_with_stat_skips_subfolders_and_junctions() {
+    let root = TempRoot::new("physical-io-gap");
+    let dir = dir_in(root.path(), "photos");
+    file_in(&dir, "a.jpg", b"aa");
+    dir_in(&dir, "nested");
+    file_in(&dir, r"nested\inner.jpg", b"i");
+    let target = dir_in(root.path(), "elsewhere");
+    let mut links = Links::default();
+    links.junction(&dir.join("link"), &target);
+    links.junction(&dir.join("dangling"), &root.join("gone"));
+    file_in(&dir, "b.jpg", b"bbb");
+    let mut skipped = Vec::new();
+
+    let mut got = phys()
+        .enumerate_files_with_stat(&dir, &|_| true, &mut |s| skipped.push(s))
+        .unwrap();
+    got.sort_by(|a, b| a.0.cmp(&b.0));
+
+    let names: Vec<String> = got
+        .iter()
+        .map(|(p, _)| p.file_name().unwrap().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(names, vec!["a.jpg", "b.jpg"]);
+    assert_eq!(got[0].1.as_ref().map(|s| s.length), Some(2));
+    assert_eq!(got[1].1.as_ref().map(|s| s.length), Some(3));
+    assert!(skipped.is_empty());
+}
+
+/// `<root>\l1 -> <root>\gone` (missing), `l2 -> l1`, ... `ln -> l(n-1)`: a dangling chain of `n` junctions, which the
+/// OS cannot open, so `resolve_real_path` follows it by hand (`GetFinalLinkTargetSlow`).
+fn dangling_junction_chain(root: &TempRoot, links: &mut Links, n: usize) -> (PathBuf, PathBuf) {
+    let gone = root.join("gone");
+    let mut previous = gone.clone();
+    for i in 1..=n {
+        previous = links.junction(&root.join(format!("l{i}")), &previous);
+    }
+    (previous, gone)
+}
+
+// C#: FileSystem.GetFinalLinkTargetSlow follows at most MaxFollowedLinks (63) hops: a 63-link dangling chain still
+// resolves to its missing final target.
+#[test]
+#[ignore = "native"]
+fn resolve_real_path_dangling_chain_of_63_junctions_resolves_to_the_missing_target() {
+    let root = TempRoot::new("physical-io-hops");
+    let mut links = Links::default();
+    let (head, gone) = dangling_junction_chain(&root, &mut links, 63);
+
+    let resolved = phys().resolve_real_path(&head.join("photo.jpg")).unwrap();
+
+    assert!(
+        eq_ignore_case(&resolved, &gone.join("photo.jpg")),
+        "{} vs {}",
+        resolved.display(),
+        gone.display()
+    );
+}
+
+// C#: one more hop (64) is "too many levels of links" (IOException, win32 1921; oracle-cs physical-fs-ops at d92d6aae):
+// resolve_real_path fails closed instead of returning a target. With junctions only, the OS itself stops after 63 reparse
+// points with 1921 before the manual walk starts, so this pins the OS answer, not the MAX_FOLLOWED_LINKS check.
+#[test]
+#[ignore = "native"]
+fn resolve_real_path_dangling_chain_of_64_junctions_fails() {
+    let root = TempRoot::new("physical-io-hops");
+    let mut links = Links::default();
+    let (head, _) = dangling_junction_chain(&root, &mut links, 64);
+
+    let err = phys().resolve_real_path(&head.join("photo.jpg")).unwrap_err();
+    assert_eq!(err.raw_os_error(), Some(1921), "{err}");
+}
+
 // C#: PhysicalIoMutationGapTests.ResolveRealPath_PlainPath_IsReturnedUnchanged
 #[test]
 #[ignore = "native"]
@@ -1481,7 +1557,7 @@ fn resolve_real_path_reparse_loop_fails_and_a_path_beside_it_resolves() {
 // ---------------------------------------------------------------------------------------------------------------
 
 #[test]
-#[ignore = "needs W2-00 (text::dotnet_path) merged: un-ignore after the D12 merge order lands W2-00"]
+#[ignore = "native"]
 fn golden_physical_fs_resolve() {
     let golden = golden::load("physical-fs-resolve");
     assert_eq!(golden.cases.len(), 34);
@@ -1927,6 +2003,81 @@ fn enumerate_files_trailing_space_directory_is_normalised() {
     assert_eq!(names_of(&got), vec!["c.txt"]);
     // The entries are joined to the directory as spelled (FileSystemEntry.ToSpecifiedFullPath).
     assert_eq!(got[0], spelled(&root, r"\sub \c.txt"));
+}
+
+// C#: Directory.Exists / File.Exists / new FileInfo(path).Exists on segments ending with a space or a dot. Path.GetFullPath
+// trims the trailing dots/spaces of the LAST segment and the trailing dots of a segment before a separator (not its
+// spaces); FillAttributeInfo then trims ONE trailing separator and queries the extended (`\\?\`) form when what is left
+// ends with a space or a dot, so the OS does not trim it again. Expected values from oracle-cs physical-fs-ops at
+// d92d6aae over `<root>\sub\b.txt` (.NET 10).
+#[test]
+#[ignore = "native"]
+fn exists_and_stat_trailing_space_or_dot_segments_follow_dotnet() {
+    let root = TempRoot::new("dotnet-norm");
+    file_in(root.path(), r"sub\b.txt", b"bbb");
+    let fs = phys();
+    let at = |suffix: &str| spelled(&root, suffix);
+
+    for (suffix, expected) in [
+        (r"\sub \", false),
+        (r"\sub .\", false),
+        (r"\sub ", true),
+        (r"\sub.", true),
+        (r"\sub. ", true),
+        (r"\sub \.", true),
+        (r"\sub \x\..", true),
+        (r"\sub \..\sub", true),
+        (r"\sub\", true),
+        (r"\sub", true),
+    ] {
+        assert_eq!(
+            fs.directory_exists(&at(suffix)),
+            expected,
+            "directory_exists(<root>{suffix})"
+        );
+    }
+
+    for (suffix, expected) in [
+        (r"\sub\b.txt \", false),
+        (r"\sub\b.txt ", true),
+        (r"\sub\b.txt.", true),
+        (r"\sub\b.txt.\", true),
+        (r"\sub \b.txt", false),
+        (r"\sub.\b.txt", true),
+        (r"\sub\b.txt\", true),
+        (r"\sub \..\sub\b.txt", true),
+    ] {
+        let stat = fs.get_file_stat(&at(suffix));
+        assert_eq!(stat.is_some(), expected, "get_file_stat(<root>{suffix})");
+        if let Some(stat) = stat {
+            assert_eq!(stat.length, 3, "get_file_stat(<root>{suffix}).length");
+        }
+    }
+
+    for (suffix, expected) in [
+        (r"\sub\b.txt ", true),
+        (r"\sub\b.txt.", true),
+        (r"\sub \b.txt", false),
+        (r"\sub.\b.txt", true),
+        (r"\sub\b.txt \", false),
+    ] {
+        assert_eq!(fs.file_exists(&at(suffix)), expected, "file_exists(<root>{suffix})");
+    }
+}
+
+// C#: File.Move checks FileSystem.FileExists(fullSource) the same way: `b.txt .\` names `b.txt ` (extended), which does not
+// exist, so the move is FileNotFound and the file stays.
+#[test]
+#[ignore = "native"]
+fn move_source_with_trailing_space_segment_is_not_found() {
+    let root = TempRoot::new("dotnet-norm");
+    let file = file_in(root.path(), r"sub\b.txt", b"bbb");
+    let err = phys()
+        .move_file(&spelled(&root, r"\sub\b.txt \"), &spelled(&root, r"\sub\c.txt"))
+        .unwrap_err();
+    assert_eq!(err.raw_os_error(), Some(2), "{err}");
+    assert!(file.exists());
+    assert!(!root.join(r"sub\c.txt").exists());
 }
 
 // C#: same for a trailing dot.
