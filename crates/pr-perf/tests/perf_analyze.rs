@@ -747,12 +747,59 @@ fn make_dir_symlink(target: &Path, link: &Path) -> std::io::Result<()> {
     std::os::unix::fs::symlink(target, link)
 }
 
-// DIVERGENCE (decision, not a difference): C# `Directory.EnumerateFiles(dir, "perf-*.csv", AllDirectories)` lists a
-// symlink to a FILE as a file (the find entry is not a directory), so it is collected; a symlink/junction to a
-// DIRECTORY is neither listed (it is a directory) nor recursed into (reparse points are not followed). The port does
-// the same: pinned here. Creating symlinks needs a privilege on Windows: the test skips cleanly without it.
+/// Directory junction (`mklink /J`, no privilege needed) on Windows; a directory symlink elsewhere.
+#[cfg(windows)]
+fn make_junction(target: &Path, link: &Path) -> bool {
+    std::process::Command::new("cmd")
+        .arg("/c")
+        .arg("mklink")
+        .arg("/J")
+        .arg(link)
+        .arg(target)
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+}
+#[cfg(not(windows))]
+fn make_junction(target: &Path, link: &Path) -> bool {
+    make_dir_symlink(target, link).is_ok()
+}
+
+/// Removes the link itself (never the target contents) so a later recursive delete cannot touch the target.
+fn remove_link(link: &Path) {
+    let _ = fs::remove_dir(link);
+}
+
+// Verified with a real .NET 10 / Windows harness: `Directory.EnumerateFiles(run, "perf-*.csv", AllDirectories)`
+//  (a) descends into a directory junction and lists `run\jn\perf-a.csv`;
+//  (b) file symlink to a perf-*.csv: could not be probed (mklink without privilege: "not enough privilege"); a file
+//      symlink is a file entry, so it is collected (the port resolves the link target type);
+//  (c) a directory symlink: same as (a) by the same mechanism (could not be created without privilege);
+//  (d) a junction pointing at an ancestor is NOT detected: .NET recurses until paths are ~335k chars long and had not
+//      terminated after 40 s (75k results). The port deliberately diverges: the cycle is entered once, see below.
 #[test]
-fn symlinked_csv_file_is_collected_and_symlinked_directory_is_not_followed() {
+fn junction_to_directory_is_descended_like_directory_enumerate_files() {
+    let root = TempRoot::new("perf-analyze-junction");
+    let outside = TempRoot::new("perf-analyze-junction-outside");
+    let csv = format!("{HEADER}{}", one_nav(1));
+    write(root.path(), "perf-real.csv", csv.as_bytes());
+    write(outside.path(), "d/perf-inside.csv", csv.as_bytes());
+    write(outside.path(), "d/other.csv", csv.as_bytes());
+    let link = root.path().join("jn");
+    if !make_junction(&outside.path().join("d"), &link) {
+        println!("SKIP junction test: cannot create a directory junction here");
+        return;
+    }
+
+    let result = run(root.path(), None);
+    remove_link(&link);
+
+    // perf-real.csv + jn/perf-inside.csv (other.csv does not match the pattern).
+    assert_eq!(result.expect("run").csv_file_count, 2);
+}
+
+#[test]
+fn symlinked_csv_file_and_symlinked_directory_are_collected() {
     let root = TempRoot::new("perf-analyze-symlink");
     let outside = TempRoot::new("perf-analyze-symlink-outside");
     let csv = format!("{HEADER}{}", one_nav(1));
@@ -764,13 +811,35 @@ fn symlinked_csv_file_is_collected_and_symlinked_directory_is_not_followed() {
         println!("SKIP symlink test: cannot create symlinks here ({e})");
         return;
     }
-    if let Err(e) = make_dir_symlink(&outside.path().join("d"), &root.path().join("linkdir")) {
+    let dir_link = root.path().join("linkdir");
+    if let Err(e) = make_dir_symlink(&outside.path().join("d"), &dir_link) {
         println!("SKIP symlink test: cannot create directory symlinks here ({e})");
         return;
     }
 
-    let result = run(root.path(), None).expect("run");
+    let result = run(root.path(), None);
+    remove_link(&dir_link);
 
-    // perf-real.csv + the file symlink; nothing from below `linkdir`.
-    assert_eq!(result.csv_file_count, 2);
+    // perf-real.csv + the file symlink + linkdir/perf-inside.csv.
+    assert_eq!(result.expect("run").csv_file_count, 3);
+}
+
+// DIVERGENCE: cycle protection. .NET would recurse through the junction until the path is too long (never ends in
+// practice); the port enters each directory at most once per descent chain, so the result is just the real file.
+#[test]
+fn junction_cycle_to_an_ancestor_terminates_without_duplicates() {
+    let root = TempRoot::new("perf-analyze-junction-cycle");
+    let csv = format!("{HEADER}{}", one_nav(1));
+    write(root.path(), "perf-real.csv", csv.as_bytes());
+    write(root.path(), "sub/perf-sub.csv", csv.as_bytes());
+    let link = root.path().join("sub").join("back");
+    if !make_junction(root.path(), &link) {
+        println!("SKIP junction cycle test: cannot create a directory junction here");
+        return;
+    }
+
+    let result = run(root.path(), None);
+    remove_link(&link);
+
+    assert_eq!(result.expect("run").csv_file_count, 2);
 }

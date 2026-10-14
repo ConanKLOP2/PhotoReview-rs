@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.PerfAnalysis/PerfAnalyze.cs` (C# baseline e441d67a, 214 lines) and
+﻿//! Port of `PhotoReview.PerfAnalysis/PerfAnalyze.cs` (C# baseline e441d67a, 214 lines) and
 //! `NaNAsNullDoubleConverter.cs` (18 lines): the `--perf-analyze <runDir> [--rules <json>]` pipeline. Finds every
 //! `perf-*.csv` under a run directory, reads and groups them, evaluates the nine decision rules per group and writes
 //! `summary.md` + `summary.json` into the run directory.
@@ -81,23 +81,51 @@ fn is_perf_csv_name(name: &str) -> bool {
 }
 
 /// Collects every `perf-*.csv` file below `dir`, skipping any `warmup` directory (case-insensitive).
+///
+/// `Directory.EnumerateFiles(dir, "perf-*.csv", SearchOption.AllDirectories)` on .NET 10 / Windows (verified with a
+/// real harness): directory junctions (`mklink /J`) and directory symlinks ARE descended into (the entry is listed as
+/// `run\jn\perf-a.csv`), and a symlink to a file is collected as a file. The link TARGET's type decides, so this uses
+/// `fs::metadata` (follows links), not `DirEntry::file_type`. A broken link is neither (skipped).
+///
+/// DIVERGENCE: cycle protection. .NET has no cycle detection: a junction pointing at an ancestor is recursed until the
+/// path length explodes (the probe was still running at ~75k results / 335k-char paths after 40 s, never terminating
+/// in practice). Here a directory whose canonical path is already on the current descent chain is not entered again.
+/// Two links to the same non-ancestor directory are both listed, as in .NET.
 fn collect_csv(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), PerfError> {
+    let mut chain: Vec<PathBuf> = Vec::new();
+    collect_csv_inner(dir, out, &mut chain)
+}
+
+fn collect_csv_inner(dir: &Path, out: &mut Vec<PathBuf>, chain: &mut Vec<PathBuf>) -> Result<(), PerfError> {
+    // A canonicalisation failure (racing delete, odd path) cannot be a proven cycle: fall back to the plain path.
+    let canon = fs::canonicalize(dir).unwrap_or_else(|_| dir.to_path_buf());
+    if chain.contains(&canon) {
+        return Ok(());
+    }
+    chain.push(canon);
+    let result = collect_csv_entries(dir, out, chain);
+    chain.pop();
+    result
+}
+
+fn collect_csv_entries(dir: &Path, out: &mut Vec<PathBuf>, chain: &mut Vec<PathBuf>) -> Result<(), PerfError> {
     for entry in fs::read_dir(dir).map_err(PerfError::Io)? {
         let entry = entry.map_err(PerfError::Io)?;
-        let file_type = entry.file_type().map_err(PerfError::Io)?;
         let name = entry.file_name().to_string_lossy().into_owned();
         let path = entry.path();
-        if file_type.is_dir() {
+        let Ok(meta) = fs::metadata(&path) else {
+            continue;
+        };
+        if meta.is_dir() {
             if !eq_ignore_case(&name, "warmup") {
-                collect_csv(&path, out)?;
+                collect_csv_inner(&path, out, chain)?;
             }
-        } else if (file_type.is_file() || (file_type.is_symlink() && path.is_file())) && is_perf_csv_name(&name) {
+        } else if meta.is_file() && is_perf_csv_name(&name) {
             out.push(path);
         }
     }
     Ok(())
 }
-
 /// Mean of the present values, summed left to right (`None` when none).
 fn average_or_none(values: impl Iterator<Item = Option<f64>>) -> Option<f64> {
     let mut sum = 0.0_f64;
