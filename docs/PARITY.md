@@ -13,6 +13,8 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | X-benchmark-percentile | Done (W1-15) | `pr_core::diagnostics::bench_stats` | golden `percentile` | No C# PARITY row; BenchmarkStatistics |
 | X-perf-analyzer | Done (W1-16..21) | `pr_perf` | goldens `perf-csv`, `perf-nav`, `perf-stats`, `perf-rules`, `perf-report`, `perf-analyze` | PerfAnalysis tool; output byte-identical (CRLF). Accepted divergences (README D5): UTF-16 BOM side files, `-0`/`1e400` number tokens, junction-cycle protection |
 | X-wave1-units | Done (22/22 when W1-20 dedupe lands) | see contracts/README.md roster | per-unit tests + goldens | Wave 1 leaf units: model enums, lenient JSON, flag fields, shortcuts, perf options, natural comparer, catalog types, LRU, file-action records, update version/URL policy, LocTemplate, GenerationClock, journal errors and line format, percentile/DiagOptions, perf analyzer, VBlankEstimator |
+| P-09 | Done (W2-18) | `pr_core::updates::checker` | `updates_checker::*`, golden `update-checker` (126 cases) | UpdateChecker behind `HttpTransport`; strict STJ-style JSON reader (depth 64, lone surrogates); `Retry-After` dates match the 12 golden formats only |
+| X-http-transport | Todo | `pr_core::updates::checker::HttpTransport` | - | Trait only; the real transport (proxy, trust store, 50 redirects, whole-exchange timeout) is a later platform unit (contract W2-18 open question 1) |
 
 ---
 
