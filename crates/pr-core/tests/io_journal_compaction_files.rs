@@ -464,3 +464,33 @@ fn replace_atomically_blank_destination_is_the_whitespace_argument_error() {
     drop(staged);
     assert!(!temp.exists());
 }
+
+/// C# `ReplaceAtomically` validates the destination BEFORE `_stream.Flush(flushToDisk: true)`: with a blank destination
+/// the buffered bytes are never written (and a flush error could never replace the argument error).
+#[test]
+#[ignore = "native"]
+fn replace_atomically_blank_destination_does_not_flush_the_buffer_first() {
+    let root = TempRoot::new("jcf-blank-order");
+    let temp = new_temp_path(&root);
+    let files = PhysicalJournalCompactionFiles;
+    let mut staged = files.create_staged_replacement(&temp).expect("create");
+    staged.write(b"buffered-content").expect("write");
+    for blank in ["", " "] {
+        staged.replace_atomically(Path::new(blank)).expect_err("blank");
+        let mut reader = OpenOptions::new()
+            .read(true)
+            .share_mode(SHARE_READ_WRITE_DELETE)
+            .open(&temp)
+            .expect("a compatible reader opens the temp file");
+        let mut bytes = Vec::new();
+        reader.read_to_end(&mut bytes).expect("read");
+        drop(reader);
+        assert!(
+            bytes.is_empty(),
+            "{blank:?}: C# never flushes before the blank check; got {} bytes",
+            bytes.len()
+        );
+    }
+    drop(staged);
+    assert!(!temp.exists());
+}
