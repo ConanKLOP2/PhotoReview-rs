@@ -20,8 +20,10 @@ $root = (& git -C $PSScriptRoot rev-parse --show-toplevel).Trim()
 $common = (& git -C $PSScriptRoot rev-parse --path-format=absolute --git-common-dir).Trim()
 $main = Split-Path $common
 $integration = "integration/wave-$Wave"
-# One shared target dir per wave so 8 parallel porters do not each build from scratch.
-$env:CARGO_TARGET_DIR = Join-Path $main "target-wave-$Wave"
+# Each worktree builds in its own target dir: cargo cannot tell two worktrees of one workspace apart, so a shared dir
+# hands one worktree another one's stale (todo!() stub) artifacts. Wave 1 learned this the hard way.
+$leaf = Split-Path $root -Leaf
+$env:CARGO_TARGET_DIR = Join-Path (Join-Path $main "target-wave-$Wave") $leaf
 
 function Invoke-Step([string]$name, [scriptblock]$body) {
     Write-Host "== $name"
