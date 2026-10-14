@@ -13,7 +13,8 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::path::Path;
 
-use serde_json::Value;
+use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
+use serde_json::value::RawValue;
 
 use crate::csv::PerfError;
 use crate::nav::{FolderGenSummary, NavRecord};
@@ -122,40 +123,105 @@ impl RulesConfig {
         let invalid =
             |detail: String| PerfError::InvalidData(format!("Invalid rules file '{path_for_message}': {detail}"));
         let text = json.strip_prefix('\u{feff}').unwrap_or(json);
-        let root: Value = serde_json::from_str(text).map_err(|e| invalid(e.to_string()))?;
-        let mut data = HashMap::new();
-        match root {
-            Value::Null => {}
-            Value::Object(rules) => {
-                for (rule, section) in rules {
-                    match section {
-                        // A null section ("R-X": null) means "all defaults".
-                        Value::Null => {}
-                        Value::Object(keys) => {
-                            let mut values = HashMap::with_capacity(keys.len());
-                            for (key, value) in keys {
-                                let number = value
-                                    .as_f64()
-                                    .ok_or_else(|| invalid(format!("value of '{rule}.{key}' is not a number")))?;
-                                values.insert(key, number);
-                            }
-                            data.insert(rule, values);
-                        }
-                        _ => return Err(invalid(format!("section '{rule}' is not an object"))),
-                    }
-                }
-            }
-            _ => return Err(invalid("root is not an object".to_owned())),
-        }
+        // Deserialized entry by entry (like System.Text.Json into
+        // `Dictionary<string, Dictionary<string, double>?>`): every value is validated as it is read, so an invalid
+        // value is an error even when a later duplicate key would replace it; a valid duplicate replaces the earlier
+        // one (a whole section for a duplicate rule name).
+        let root: Option<HashMap<String, Option<Section>>> =
+            serde_json::from_str(text).map_err(|e| invalid(e.to_string()))?;
+        let data = root
+            .unwrap_or_default()
+            .into_iter()
+            // A null section ("R-X": null) means "all defaults".
+            .filter_map(|(rule, section)| Some((rule, section?.0)))
+            .collect();
         Ok(RulesConfig { data })
     }
 }
 
-/// The decoding `File.ReadAllText` applies to a UTF-8 file: a leading UTF-8 BOM is removed and invalid sequences
-/// become U+FFFD. Same rule as `csv::decode_bytes` (W1-16), kept local so this unit does not depend on an unmerged unit.
+/// One `{key: number}` section of a rules file.
+struct Section(HashMap<String, f64>);
+
+impl<'de> Deserialize<'de> for Section {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserializer.deserialize_map(SectionVisitor)
+    }
+}
+
+struct SectionVisitor;
+
+impl<'de> Visitor<'de> for SectionVisitor {
+    type Value = Section;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("an object of numbers")
+    }
+
+    fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Section, A::Error> {
+        let mut values = HashMap::new();
+        while let Some(key) = map.next_key::<String>()? {
+            let raw: Box<RawValue> = map.next_value()?;
+            let number = json_number_to_f64(raw.get())
+                .ok_or_else(|| de::Error::custom(format!("value of '{key}' is not a number")))?;
+            values.insert(key, number);
+        }
+        Ok(Section(values))
+    }
+}
+
+/// System.Text.Json `GetDouble` of a JSON token: a number token is parsed with correct rounding and an out-of-range
+/// magnitude becomes +-Infinity (`1e400`) or zero (`1e-400`); any other token (string, bool, null, array, object) is
+/// `None`. serde_json's own float parsing is not used because it rejects `1e400` and is not always correctly rounded.
+fn json_number_to_f64(token: &str) -> Option<f64> {
+    let first = token.as_bytes().first()?;
+    if *first != b'-' && !first.is_ascii_digit() {
+        return None;
+    }
+    // serde_json has already checked the JSON number grammar, which Rust's float syntax accepts.
+    token.parse::<f64>().ok()
+}
+
+/// The decoding `File.ReadAllText` applies: the BOM picks the encoding (UTF-8 `EF BB BF`, UTF-16 LE `FF FE`,
+/// UTF-16 BE `FE FF`, UTF-32 LE `FF FE 00 00`, UTF-32 BE `00 00 FE FF`) and is removed; without a BOM the text is
+/// UTF-8. Invalid sequences become U+FFFD.
 fn decode_text(bytes: &[u8]) -> String {
-    let body = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(bytes);
-    String::from_utf8_lossy(body).into_owned()
+    if let Some(body) = bytes.strip_prefix(&[0x00, 0x00, 0xFE, 0xFF]) {
+        decode_utf32(body, u32::from_be_bytes)
+    } else if let Some(body) = bytes.strip_prefix(&[0xFF, 0xFE, 0x00, 0x00]) {
+        decode_utf32(body, u32::from_le_bytes)
+    } else if let Some(body) = bytes.strip_prefix(&[0xFF, 0xFE]) {
+        decode_utf16(body, u16::from_le_bytes)
+    } else if let Some(body) = bytes.strip_prefix(&[0xFE, 0xFF]) {
+        decode_utf16(body, u16::from_be_bytes)
+    } else {
+        let body = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(bytes);
+        String::from_utf8_lossy(body).into_owned()
+    }
+}
+
+fn decode_utf16(body: &[u8], unit: fn([u8; 2]) -> u16) -> String {
+    let chunks = body.chunks_exact(2);
+    let trailing = !chunks.remainder().is_empty();
+    let units = chunks.map(|c| unit([c[0], c[1]]));
+    let mut text: String = char::decode_utf16(units)
+        .map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER))
+        .collect();
+    if trailing {
+        text.push(char::REPLACEMENT_CHARACTER);
+    }
+    text
+}
+
+fn decode_utf32(body: &[u8], unit: fn([u8; 4]) -> u32) -> String {
+    let chunks = body.chunks_exact(4);
+    let trailing = !chunks.remainder().is_empty();
+    let mut text: String = chunks
+        .map(|c| char::from_u32(unit([c[0], c[1], c[2], c[3]])).unwrap_or(char::REPLACEMENT_CHARACTER))
+        .collect();
+    if trailing {
+        text.push(char::REPLACEMENT_CHARACTER);
+    }
+    text
 }
 
 /// Result of one rule for one group (C# record `RuleResult(Rule, Triggered, Evidence, Note = null)`).

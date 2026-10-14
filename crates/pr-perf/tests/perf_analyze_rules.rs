@@ -513,3 +513,112 @@ fn rules_config_parse_strips_a_leading_bom() {
     assert_eq!(cfg.get("R-Y", "k", 7.0), 5.0);
     assert!(RulesConfig::parse("\u{feff}{}", "p.json").is_ok());
 }
+
+// Round-1 behaviour differences (fixed in rules.rs). Expected results come from System.Text.Json / File.ReadAllText
+// (.NET 10) run on the same inputs.
+
+fn assert_invalid(json: &str) {
+    match RulesConfig::parse(json, "p.json") {
+        Err(PerfError::InvalidData(msg)) => assert!(msg.starts_with("Invalid rules file 'p.json': "), "{msg}"),
+        Err(other) => panic!("{json}: expected InvalidData, got {other:?}"),
+        Ok(_) => panic!("{json}: expected InvalidData, got Ok"),
+    }
+}
+
+#[test]
+fn rules_config_invalid_value_is_an_error_even_when_a_later_duplicate_replaces_it() {
+    // C# deserializes entry by entry and fails on the first bad value; it is not "last wins, then validate".
+    assert_invalid(r#"{"R":{"k":"x"},"R":{"k":1}}"#);
+    assert_invalid(r#"{"R":{"k":"x","k":1}}"#);
+    assert_invalid(r#"{"R":5,"R":null}"#);
+    assert_invalid(r#"{"R":{"k":null,"k":1}}"#);
+    // Valid duplicates: the last wins, for a key and for a whole section.
+    let cfg = RulesConfig::parse(r#"{"R":{"k":1,"k":2}}"#, "p.json").expect("duplicate key");
+    assert_eq!(cfg.get("R", "k", 7.0), 2.0);
+    let cfg = RulesConfig::parse(r#"{"R":{"k":1},"R":{"j":2}}"#, "p.json").expect("duplicate section");
+    assert_eq!(cfg.get("R", "k", 7.0), 7.0);
+    assert_eq!(cfg.get("R", "j", 7.0), 2.0);
+    let cfg = RulesConfig::parse(r#"{"R":{"k":1},"R":null}"#, "p.json").expect("null duplicate section");
+    assert_eq!(cfg.get("R", "k", 7.0), 7.0);
+}
+
+#[test]
+fn rules_config_out_of_range_numbers_become_infinity_or_zero_like_get_double() {
+    let cfg = RulesConfig::parse(
+        r#"{"R":{"big":1e400,"neg":-1e400,"tiny":1e-400,"nz":-0,"dup":1e400,"dup":1}}"#,
+        "p.json",
+    )
+    .expect("System.Text.Json accepts 1e400 as Infinity");
+    assert_eq!(cfg.get("R", "big", 7.0), f64::INFINITY);
+    assert_eq!(cfg.get("R", "neg", 7.0), f64::NEG_INFINITY);
+    assert_eq!(cfg.get("R", "tiny", 7.0), 0.0);
+    assert!(cfg.get("R", "nz", 7.0).is_sign_negative());
+    assert_eq!(cfg.get("R", "dup", 7.0), 1.0);
+    let r = evaluate_r_gc(
+        &RulesConfig::parse(r#"{"R-GC":{"gcTimePct":1e400}}"#, "p.json").expect("parse"),
+        Some(50.0),
+    );
+    assert_eq!(r.triggered, Some(false));
+    assert_eq!(r.evidence, "% time in GC=50.0% (threshold Infinity%)");
+}
+
+#[test]
+fn rules_config_numbers_are_correctly_rounded() {
+    // Halfway / near-halfway decimal texts where a fast float parser can be one ulp off.
+    let cases = [
+        ("9007199254740993", 9007199254740992.0),
+        ("2.2250738585072011e-308", 2.225073858507201e-308),
+        ("0.1000000000000000055511151231257827021181583404541015625", 0.1),
+        ("1.00000000000000011102230246251565404236316680908203125", 1.0),
+        ("123456789012345678901234567890", 1.2345678901234568e29),
+    ];
+    for (text, expected) in cases {
+        let cfg = RulesConfig::parse(&format!(r#"{{"R":{{"k":{text}}}}}"#), "p.json").expect("parse");
+        assert_eq!(cfg.get("R", "k", 7.0).to_bits(), f64::to_bits(expected), "{text}");
+    }
+}
+
+#[test]
+fn rules_config_load_detects_utf16_and_utf32_byte_order_marks_like_read_all_text() {
+    let root = TempRoot::new("rules-encodings");
+    let json = r#"{"R-GC":{"gcTimePct":7}}"#;
+    let utf16: Vec<u16> = json.encode_utf16().collect();
+    let utf32: Vec<u32> = json.chars().map(u32::from).collect();
+    let files: [(&str, Vec<u8>); 5] = [
+        ("utf8bom.json", [&[0xEF, 0xBB, 0xBF][..], json.as_bytes()].concat()),
+        (
+            "utf16le.json",
+            [vec![0xFF, 0xFE], utf16.iter().flat_map(|u| u.to_le_bytes()).collect()].concat(),
+        ),
+        (
+            "utf16be.json",
+            [vec![0xFE, 0xFF], utf16.iter().flat_map(|u| u.to_be_bytes()).collect()].concat(),
+        ),
+        (
+            "utf32le.json",
+            [
+                vec![0xFF, 0xFE, 0, 0],
+                utf32.iter().flat_map(|u| u.to_le_bytes()).collect(),
+            ]
+            .concat(),
+        ),
+        (
+            "utf32be.json",
+            [
+                vec![0, 0, 0xFE, 0xFF],
+                utf32.iter().flat_map(|u| u.to_be_bytes()).collect(),
+            ]
+            .concat(),
+        ),
+    ];
+    for (name, bytes) in files {
+        let path = root.join(name);
+        std::fs::write(&path, bytes).expect("write rules file");
+        let cfg = RulesConfig::load(&path).unwrap_or_else(|e| panic!("{name}: {e:?}"));
+        assert_eq!(cfg.get("R-GC", "gcTimePct", 10.0), 7.0, "{name}");
+    }
+    // Without a BOM the bytes are UTF-8, so UTF-16 text is a syntax error (C# JsonException).
+    let path = root.join("utf16-nobom.json");
+    std::fs::write(&path, utf16.iter().flat_map(|u| u.to_le_bytes()).collect::<Vec<u8>>()).expect("write");
+    assert!(matches!(RulesConfig::load(&path), Err(PerfError::InvalidData(_))));
+}
