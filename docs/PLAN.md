@@ -40,7 +40,7 @@ Quy mô nguồn: khoảng 52K dòng C# trong 10 project, khoảng 123K dòng tes
 - [x] Repo, workspace, AGENTS.md, CI, ADR R0001 (đề xuất) và R0002 (đã chấp nhận)
 - [x] Sync ngôn ngữ và fixture từ C# (`tools/sync-from-csharp.ps1`), baseline `e441d67a`
 - [x] `pr_core::app_paths` + `identity` (tách dữ liệu khỏi bản C#) kèm test
-- [ ] Cài toolchain (rustup + MSVC Build Tools), chạy `cargo test`, commit `Cargo.lock`, bật `--locked` trong CI, pin version trong `rust-toolchain.toml`
+- [x] Toolchain Rust 1.99.0 (pin trong `rust-toolchain.toml`), MSVC Build Tools; `Cargo.lock` + `--locked` trong CI; fmt/clippy/11 test xanh
 - [x] Kiểm kê tính năng (khoảng 245 mục: K/C/S/W/F/I/P/INV/D) vào [PARITY.md](PARITY.md)
 - [ ] Spike UI egui và Slint theo giao thức trong R0001, có số đo; chốt R0001
 - [ ] Spike COM: đọc thứ tự Explorer cho folder khoảng 1800 file, mục tiêu khoảng 60 ms như C#

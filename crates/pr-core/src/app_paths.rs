@@ -58,7 +58,11 @@ impl AppPaths {
         let local = std::env::var_os("LOCALAPPDATA").map(PathBuf::from);
         let data_root = std::env::var(DATA_ROOT_ENV).ok();
         let isolate = std::env::var(ISOLATE_CONFIG_ENV).ok();
-        Self::new(&resolve_local_app_data(local), data_root.as_deref(), is_truthy(isolate.as_deref()))
+        Self::new(
+            &resolve_local_app_data(local),
+            data_root.as_deref(),
+            is_truthy(isolate.as_deref()),
+        )
     }
 }
 
@@ -121,7 +125,11 @@ mod tests {
             &p.window_placement_file,
         ];
         for path in all {
-            assert!(!path.starts_with(&csharp), "{} is under the C# app root", path.display());
+            assert!(
+                !path.starts_with(&csharp),
+                "{} is under the C# app root",
+                path.display()
+            );
         }
     }
 
