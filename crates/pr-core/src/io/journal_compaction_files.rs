@@ -49,6 +49,12 @@ const FILE_RENAME_FLAG_POSIX_SEMANTICS: u32 = 0x2;
 
 /// `ERROR_FILENAME_EXCED_RANGE`: what `PathTooLongException` maps to (as in `io::physical`).
 const ERROR_FILENAME_EXCED_RANGE: i32 = 206;
+/// `ERROR_PATH_NOT_FOUND`.
+const ERROR_PATH_NOT_FOUND: i32 = 3;
+/// `ERROR_ACCESS_DENIED`.
+const ERROR_ACCESS_DENIED: i32 = 5;
+/// .NET `PathInternal.MaxShortPath`: a path of this many UTF-16 units or more needs the `\\?\` form.
+const MAX_SHORT_PATH: usize = 260;
 
 /// The real Windows primitives. Stateless.
 #[derive(Debug, Clone, Copy, Default)]
@@ -303,7 +309,7 @@ fn ensure_extended_prefix(path: &str) -> String {
 /// units or longer, or ends with a period or a space.
 #[cfg_attr(not(windows), allow(dead_code))]
 fn ensure_extended_prefix_if_needed(path: &str) -> String {
-    if path.encode_utf16().count() >= 260 || path.ends_with(['.', ' ']) {
+    if path.encode_utf16().count() >= MAX_SHORT_PATH || path.ends_with(['.', ' ']) {
         ensure_extended_prefix(path)
     } else {
         path.to_owned()
@@ -312,15 +318,29 @@ fn ensure_extended_prefix_if_needed(path: &str) -> String {
 
 /// C# `new FileStream(path, Open, Read, FileShare.Read | FileShare.Delete, 64 KiB, SequentialScan)`: the full path,
 /// extended when needed, opened for reading with an explicit share mode (std's default shares ReadWrite|Delete).
+/// `SafeFileHandle.Open` reports "path not found" on a bare root (`C:\`) as access denied (raw 5), exactly like
+/// `io::physical::open_like_file_stream`.
 #[cfg(windows)]
 fn open_deny_writers(path: &Path) -> io::Result<File> {
     use std::os::windows::fs::OpenOptionsExt;
     let full = full_path(path)?;
-    OpenOptions::new()
+    let opened = OpenOptions::new()
         .read(true)
         .share_mode(FILE_SHARE_READ | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_SEQUENTIAL_SCAN)
-        .open(ensure_extended_prefix_if_needed(&full))
+        .open(ensure_extended_prefix_if_needed(&full));
+    opened.map_err(|err| map_root_path_not_found(err, &full))
+}
+
+/// .NET `FileSystem.GetExceptionForWin32Error` as `SafeFileHandle.Open` applies it: ERROR_PATH_NOT_FOUND on a path that
+/// is only a root becomes ERROR_ACCESS_DENIED (`UnauthorizedAccessException`, HResult 0x80070005).
+#[cfg_attr(not(windows), allow(dead_code))]
+fn map_root_path_not_found(err: io::Error, full: &str) -> io::Error {
+    if err.raw_os_error() == Some(ERROR_PATH_NOT_FOUND) && full.len() == dotnet_path::root_length(full) {
+        io::Error::from_raw_os_error(ERROR_ACCESS_DENIED)
+    } else {
+        err
+    }
 }
 
 /// Off Windows `FileStream` has no share modes: a plain read open (contract open question 5, untested).
@@ -412,17 +432,13 @@ fn rename_by_handle(_: &File, _: &str) -> io::Result<()> {
     Err(io::Error::new(io::ErrorKind::Unsupported, NOT_WINDOWS_MESSAGE))
 }
 
-/// .NET `File.Delete` = `DeleteFileW` on the full path (extended when 260 units or longer). NOT `fs::remove_file`, which
-/// clears the read-only attribute first (trap T6).
+/// .NET `File.Delete` = `DeleteFileW` on the full path, through `EnsureExtendedPrefixIfNeeded` (`\\?\` form when 260
+/// units or longer; the trailing period/space branch never fires: `path` comes from `get_full_path`, which trimmed them).
+/// NOT `fs::remove_file`, which clears the read-only attribute first (trap T6).
 #[cfg(windows)]
 fn delete_file(path: &Path) -> io::Result<()> {
     use std::os::windows::ffi::OsStrExt;
-    let full = path.to_string_lossy();
-    let text = if full.encode_utf16().count() >= 260 {
-        ensure_extended_prefix(&full)
-    } else {
-        full.into_owned()
-    };
+    let text = ensure_extended_prefix_if_needed(&path.to_string_lossy());
     let wide: Vec<u16> = std::ffi::OsStr::new(&text)
         .encode_wide()
         .chain(std::iter::once(0))
@@ -497,5 +513,99 @@ mod tests {
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
         let err = files.create_staged_replacement(Path::new("")).err().expect("blank");
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
+    }
+
+    /// The blank check runs before `Path.GetFullPath` (C# `ThrowIfNullOrWhiteSpace` first): the message is the
+    /// `ArgumentException` text, not the `GetFullPath` one.
+    #[test]
+    fn blank_paths_report_the_whitespace_argument_message() {
+        let expected = "The value cannot be an empty string or composed entirely of whitespace.";
+        let files = PhysicalJournalCompactionFiles;
+        for blank in ["", " ", " \t "] {
+            let err = files.open_read_deny_writers(Path::new(blank)).err().expect("blank");
+            assert_eq!(err.to_string(), expected, "open {blank:?}");
+            let err = files.create_staged_replacement(Path::new(blank)).err().expect("blank");
+            assert_eq!(err.to_string(), expected, "create {blank:?}");
+        }
+        assert!(is_blank(Path::new(" \t\r\n")));
+        assert!(!is_blank(Path::new(" a ")));
+    }
+
+    #[test]
+    fn compaction_file_error_exposes_its_message_and_os_error_source() {
+        let error = CompactionFileError::new(
+            "Could not replace C:\\j with the compacted journal",
+            io::Error::from_raw_os_error(32),
+        );
+        assert_eq!(error.message(), "Could not replace C:\\j with the compacted journal");
+        assert_eq!(error.os_error().raw_os_error(), Some(32));
+        let source = std::error::Error::source(&error).expect("the OS error is the source");
+        let source = source.downcast_ref::<io::Error>().expect("an io::Error");
+        assert_eq!(source.raw_os_error(), Some(32));
+    }
+
+    #[test]
+    fn is_device_recognises_the_three_device_prefixes_with_either_separator() {
+        for device in [
+            r"\\?\C:\a",
+            r"\\.\C:\a",
+            r"\??\C:\a",
+            r"//?/C:/a",
+            r"//./C:/a",
+            r"\/?\C:\a",
+            r"/\.\x",
+        ] {
+            assert!(is_device(device), "{device}");
+        }
+        for plain in [
+            r"C:\a",
+            r"\\server\share",
+            r"\\?",
+            r"\\x\a",
+            r"\?.\a",
+            r"/??\a",
+            r"\??/a",
+            r"\?\\a",
+            r"\\?x",
+            "",
+        ] {
+            assert!(!is_device(plain), "{plain}");
+        }
+    }
+
+    #[test]
+    fn ensure_extended_prefix_prefixes_only_fully_qualified_non_device_paths() {
+        assert_eq!(ensure_extended_prefix(r"C:\a\b"), r"\\?\C:\a\b");
+        assert_eq!(ensure_extended_prefix(r"\\server\share\f"), r"\\?\UNC\server\share\f");
+        assert_eq!(ensure_extended_prefix(r"\\?\C:\a"), r"\\?\C:\a");
+        assert_eq!(ensure_extended_prefix(r"\\.\C:\a"), r"\\.\C:\a");
+        assert_eq!(ensure_extended_prefix(r"a\b"), r"a\b");
+        assert_eq!(ensure_extended_prefix(r"C:a"), r"C:a");
+    }
+
+    #[test]
+    fn ensure_extended_prefix_if_needed_switches_at_260_units_or_a_trailing_period_or_space() {
+        let base = r"C:\";
+        let at = |units: usize| format!("{base}{}", "a".repeat(units - base.len()));
+        let short = at(MAX_SHORT_PATH - 1);
+        assert_eq!(ensure_extended_prefix_if_needed(&short), short);
+        let long = at(MAX_SHORT_PATH);
+        assert_eq!(ensure_extended_prefix_if_needed(&long), format!(r"\\?\{long}"));
+        // UTF-16 units, not bytes: 203 units (403 UTF-8 bytes) stay short.
+        let wide_chars = format!("{base}{}", "\u{e9}".repeat(200));
+        assert_eq!(ensure_extended_prefix_if_needed(&wide_chars), wide_chars);
+        assert_eq!(ensure_extended_prefix_if_needed(r"C:\a."), r"\\?\C:\a.");
+        assert_eq!(ensure_extended_prefix_if_needed(r"C:\a "), r"\\?\C:\a ");
+        assert_eq!(ensure_extended_prefix_if_needed(r"C:\a"), r"C:\a");
+    }
+
+    #[test]
+    fn path_not_found_on_a_bare_root_becomes_access_denied() {
+        let code = |err: io::Error, full: &str| map_root_path_not_found(err, full).raw_os_error();
+        assert_eq!(code(io::Error::from_raw_os_error(3), r"C:\"), Some(5));
+        assert_eq!(code(io::Error::from_raw_os_error(3), r"\\server\share"), Some(5));
+        assert_eq!(code(io::Error::from_raw_os_error(3), r"C:\missing\x"), Some(3));
+        assert_eq!(code(io::Error::from_raw_os_error(2), r"C:\"), Some(2));
+        assert_eq!(code(io::Error::from_raw_os_error(32), r"C:\a"), Some(32));
     }
 }

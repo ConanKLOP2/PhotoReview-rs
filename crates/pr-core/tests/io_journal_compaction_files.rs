@@ -10,6 +10,7 @@
 
 use std::fs::{self, OpenOptions};
 use std::io::Read;
+use std::os::windows::ffi::OsStrExt;
 use std::os::windows::fs::OpenOptionsExt;
 use std::panic::{self, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
@@ -260,4 +261,155 @@ fn staged_replacement_dispose_leftover_temp_that_cannot_be_deleted_does_not_thro
         temp.exists(),
         "the read-only leftover stays for the next compaction to remove"
     );
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Rust-only parity tests (no C# twin): the root-path error mapping, the flush before the rename, and paths of 260 UTF-16
+// units or more (the `\\?\` form .NET adds itself). Same rules as above: own `TempRoot`, never the Recycle Bin.
+// ---------------------------------------------------------------------------------------------------------------
+
+/// `ERROR_ACCESS_DENIED`: what .NET's `FileStream` reports (`UnauthorizedAccessException`, 0x80070005) for a bare root.
+const ERROR_ACCESS_DENIED: i32 = 5;
+
+/// A compatible reader of a file that a staged replacement still holds (GENERIC_WRITE | DELETE, sharing Read only).
+fn read_through_compatible_reader(path: &Path) -> Vec<u8> {
+    let mut reader = OpenOptions::new()
+        .read(true)
+        .share_mode(SHARE_READ_WRITE_DELETE)
+        .open(path)
+        .expect("a compatible reader opens the file");
+    let mut bytes = Vec::new();
+    reader.read_to_end(&mut bytes).expect("read");
+    bytes
+}
+
+/// A path under `root` of exactly `units` UTF-16 units ending in `file_name`, its parent folders created (std creates
+/// long folders itself).
+fn path_of_length(root: &TempRoot, units: usize, file_name: &str) -> PathBuf {
+    let base = root.path().to_str().expect("a Unicode temp root").to_owned();
+    assert!(
+        base.len() + 1 + file_name.len() + 2 <= units,
+        "the temp root is too long for this test"
+    );
+    let mut folder = PathBuf::from(&base);
+    let mut used = base.len();
+    loop {
+        let left = units - used - 1 - file_name.len(); // what remains before `\<file_name>`
+        if left == 0 {
+            break;
+        }
+        // Each folder costs `\` plus its name; keep names <= 200 and never leave a remainder of exactly 1.
+        let name_len = if left <= 201 { left - 1 } else { (left - 2).min(200) };
+        folder.push("d".repeat(name_len));
+        used += 1 + name_len;
+    }
+    fs::create_dir_all(&folder).expect("create the long folders");
+    let path = folder.join(file_name);
+    assert_eq!(path.as_os_str().encode_wide().count(), units);
+    path
+}
+
+/// C# `new FileStream("C:\\", ...)` throws `UnauthorizedAccessException` (0x80070005), not `DirectoryNotFoundException`:
+/// `SafeFileHandle.Open` maps ERROR_PATH_NOT_FOUND on a bare root to access denied.
+#[test]
+#[ignore = "native"]
+fn open_read_deny_writers_on_a_root_is_access_denied_like_file_stream() {
+    let drive = std::env::var("SystemDrive").unwrap_or_else(|_| "C:".to_owned());
+    let files = PhysicalJournalCompactionFiles;
+    for root in [format!("{drive}\\"), format!("{drive}/")] {
+        let err = files
+            .open_read_deny_writers(Path::new(&root))
+            .err()
+            .expect("a root is not a file");
+        assert_eq!(os_error_code(&err), Some(ERROR_ACCESS_DENIED), "{root}");
+    }
+}
+
+/// `flush_to_disk` pushes the buffered bytes into the file: another handle sees them while the staged replacement is
+/// still open.
+#[test]
+#[ignore = "native"]
+fn flush_to_disk_makes_the_buffered_bytes_visible_before_the_handle_closes() {
+    let root = TempRoot::new("journal-compaction-files");
+    let temp = new_temp_path(&root);
+    let files = PhysicalJournalCompactionFiles;
+    let mut replacement = files.create_staged_replacement(&temp).expect("create the staged file");
+    // Just under the C# 64 KiB FileStream buffer: nothing reaches the file before the flush.
+    let payload: Vec<u8> = (0..65_535usize).map(|i| b'a' + (i % 26) as u8).collect();
+    replacement.write(&payload).expect("write");
+    assert_eq!(read_through_compatible_reader(&temp), b"", "still in the 64 KiB buffer");
+
+    replacement.flush_to_disk().expect("flush");
+
+    assert_eq!(read_through_compatible_reader(&temp), payload);
+}
+
+/// `replace_atomically` flushes BEFORE renaming (C# `Flush(flushToDisk: true)` first): the renamed journal already holds
+/// every byte while the staged replacement is still alive, with no explicit `flush_to_disk` call by the caller.
+#[test]
+#[ignore = "native"]
+fn replace_atomically_flushes_the_buffered_bytes_before_the_rename() {
+    let root = TempRoot::new("journal-compaction-files");
+    let target = target_path(&root);
+    fs::write(&target, b"old-content").expect("write the target");
+    let files = PhysicalJournalCompactionFiles;
+    let mut replacement = files
+        .create_staged_replacement(&new_temp_path(&root))
+        .expect("create the staged file");
+    replacement.write(b"new-content").expect("write");
+
+    replacement.replace_atomically(&target).expect("rename");
+
+    assert_eq!(read_through_compatible_reader(&target), b"new-content");
+    drop(replacement);
+    assert_eq!(fs::read(&target).expect("read the target"), b"new-content");
+}
+
+/// .NET opens a path of 260 UTF-16 units or more in the `\\?\` form; the lock opens and reads it.
+#[test]
+#[ignore = "native"]
+fn open_read_deny_writers_opens_paths_of_260_units_or_more() {
+    let root = TempRoot::new("jcf-long");
+    for units in [260, 300] {
+        let target = path_of_length(&root, units, &format!("operations-{units}.jsonl"));
+        fs::write(&target, b"long-content").expect("write the long target");
+        let files = PhysicalJournalCompactionFiles;
+
+        let mut locked = files
+            .open_read_deny_writers(&target)
+            .expect("the lock opens a long path");
+
+        let mut bytes = Vec::new();
+        locked.read_to_end(&mut bytes).expect("read");
+        assert_eq!(bytes, b"long-content", "{units} units");
+    }
+}
+
+/// `Drop` deletes a staged replacement at 260 units or more like `File.Delete` (`DeleteFileW` on the `\\?\` form), also
+/// when the caller passed the `\\?\` form itself (a device path is never prefixed twice).
+#[test]
+#[ignore = "native"]
+fn dispose_without_replace_deletes_temp_files_of_260_units_or_more() {
+    let root = TempRoot::new("jcf-long");
+    let files = PhysicalJournalCompactionFiles;
+    let mut cases = Vec::new();
+    for units in [260, 300] {
+        let temp = path_of_length(&root, units, &format!("staged-{units}.compact.tmp"));
+        cases.push((temp.clone(), temp));
+    }
+    let plain = path_of_length(&root, 280, "staged-device.compact.tmp");
+    let device = PathBuf::from(format!(r"\\?\{}", plain.display()));
+    cases.push((device, plain));
+
+    for (given, on_disk) in cases {
+        let mut replacement = files
+            .create_staged_replacement(&given)
+            .expect("create the long staged file");
+        replacement.write(b"content").expect("write");
+        assert!(on_disk.exists(), "{}", given.display());
+
+        drop(replacement);
+
+        assert!(!on_disk.exists(), "deleted: {}", given.display());
+    }
 }
