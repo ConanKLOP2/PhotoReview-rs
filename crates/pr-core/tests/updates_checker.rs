@@ -838,3 +838,80 @@ fn golden_update_checker_cases() {
         }
     }
 }
+
+// ---- W2-18 repair: mutation-killing tests for is_rate_limited / is_leap -------------------------------------------
+
+fn limited(status: u16, headers: &[(&str, &str)]) -> bool {
+    let headers = headers.iter().map(|(n, v)| (n.to_string(), v.to_string())).collect();
+    let r = response(status, headers, Some(0), Vec::new(), Arc::new(AtomicBool::new(false)));
+    UpdateChecker::is_rate_limited(&r)
+}
+
+fn retry_after_ok(value: &str) -> bool {
+    limited(403, &[("Retry-After", value)])
+}
+
+#[test]
+fn remaining_zero_is_trimmed_of_unicode_whitespace() {
+    for v in [
+        "0",
+        " 0",
+        "0 ",
+        "\t0\t",
+        "\u{00A0}0",
+        "0\u{00A0}",
+        "\u{2003}0\u{2003}",
+        "\u{3000}0",
+        "\u{0085}0",
+    ] {
+        assert!(limited(403, &[("X-RateLimit-Remaining", v)]), "{v:?}");
+    }
+    for v in ["00", "-0", "", " ", "\u{00A0}", "1", "0.0", "+0", "0\u{200B}"] {
+        assert!(!limited(403, &[("X-RateLimit-Remaining", v)]), "{v:?}");
+    }
+    // Repeated header: any value that is zero suffices.
+    assert!(limited(
+        403,
+        &[("X-RateLimit-Remaining", "5"), ("X-RateLimit-Remaining", "\u{00A0}0")]
+    ));
+}
+
+#[test]
+fn rate_limit_headers_only_count_on_403() {
+    // 429 is always limited, even without headers.
+    assert!(limited(429, &[]));
+    for status in [200u16, 201, 204, 302, 400, 401, 402, 404, 418, 500, 503] {
+        assert!(!limited(status, &[]), "{status}");
+        assert!(
+            !limited(status, &[("X-RateLimit-Remaining", "0")]),
+            "{status} remaining 0"
+        );
+        assert!(!limited(status, &[("Retry-After", "30")]), "{status} retry-after");
+    }
+    assert!(!limited(403, &[]));
+    assert!(limited(403, &[("X-RateLimit-Remaining", "0")]));
+    assert!(limited(403, &[("Retry-After", "30")]));
+}
+
+#[test]
+fn retry_after_date_century_leap_year_rule() {
+    // A leading digit would be parsed as delta-seconds, so every date carries a (correct) weekday.
+    assert!(retry_after_ok("Tue, 29 Feb 2000 00:00:00 GMT")); // divisible by 400: leap
+    assert!(retry_after_ok("Thu, 29 Feb 2024 00:00:00 GMT")); // divisible by 4: leap
+    assert!(retry_after_ok("Tue, 29 Feb 2400 00:00:00 GMT"));
+    assert!(retry_after_ok("Tue Feb 29 00:00:00 2000"));
+    for wd in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] {
+        // Century year that is not divisible by 400, and ordinary non-leap years: 29 Feb never exists.
+        for y in [1900, 2100, 2200, 2300, 2023, 2001, 1999] {
+            let d = format!("{wd}, 29 Feb {y} 00:00:00 GMT");
+            assert!(!retry_after_ok(&d), "{d}");
+        }
+    }
+    assert!(!retry_after_ok("Tue, 30 Feb 2000 00:00:00 GMT"));
+    assert!(retry_after_ok("Wed, 28 Feb 1900 00:00:00 GMT"));
+    assert!(!retry_after_ok("Wed, 29 Feb 2000 00:00:00 GMT")); // wrong weekday
+    assert!(retry_after_ok("Thu, 01 Mar 1900 00:00:00 GMT"));
+    // Two-digit year pivot: yy 00 -> 2000 (leap), yy 99 -> 1999.
+    assert!(retry_after_ok("Tuesday, 29-Feb-00 00:00:00 GMT"));
+    assert!(!retry_after_ok("Monday, 29-Feb-99 00:00:00 GMT"));
+}
