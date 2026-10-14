@@ -342,9 +342,19 @@ impl Inner {
 
     fn drain_to_disk(&self) -> io::Result<()> {
         let path = &self.file_path;
-        if let Some(parent) = path.parent() {
-            if !parent.as_os_str().is_empty() {
-                fs::create_dir_all(parent)?;
+        // C# `Path.GetDirectoryName`: everything before the LAST separator, so a trailing separator makes the whole
+        // path the directory (`C:\x\newdir\` -> `C:\x\newdir`), unlike `Path::parent`.
+        let text = path.to_string_lossy();
+        if let Some(idx) = text.rfind(['\\', '/']) {
+            let dir = &text[..idx];
+            if !dir.is_empty() {
+                // `C:` (from `C:\x`) is a drive-relative path; `C:\` is the root.
+                let dir = if dir.ends_with(':') {
+                    format!("{dir}\\")
+                } else {
+                    dir.to_owned()
+                };
+                fs::create_dir_all(dir)?;
             }
         }
         if self.needs_rotation() {

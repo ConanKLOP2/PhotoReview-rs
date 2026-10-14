@@ -1213,3 +1213,133 @@ fn golden_file_log_bytes() {
         );
     }
 }
+
+// ---- Repair round 1: pins for behaviours the first verifier found unpinned ----
+
+#[test]
+fn v_trailing_separator_creates_directory_like_csharp() {
+    // C#: Path.GetDirectoryName(@"C:\x\newdir\") == @"C:\x\newdir", so CreateDirectory creates it before the open fails.
+    let root = TempRoot::new("filelog-trailing-sep");
+    let dir = root.join("newdir");
+    let mut text = dir.to_string_lossy().into_owned();
+    text.push(std::path::MAIN_SEPARATOR);
+    let log = FileLog::new(Path::new(&text), DEFAULT_MAX_LOG_BYTES).expect("path");
+    log.set_enabled(true);
+    log.info("x");
+    log.flush();
+    log.dispose();
+    assert!(dir.is_dir(), "directory before the trailing separator must be created");
+}
+
+#[test]
+fn v_set_enabled_false_flushes_synchronously() {
+    // C#: Enabled = false calls Flush; entries queued before the call are on disk when the setter returns.
+    for i in 0..10 {
+        let root = TempRoot::new(&format!("filelog-disable-flush-{i}"));
+        let file = log_path(&root);
+        let log = enabled_log(&file);
+        for n in 0..200 {
+            log.info(&format!("e{n}"));
+        }
+        log.set_enabled(false);
+        let text = read_text(&file);
+        assert_eq!(count(&text, "] e"), 200, "iteration {i}");
+        log.dispose();
+    }
+}
+
+#[test]
+fn v_restart_after_plain_shutdown() {
+    let root = TempRoot::new("filelog-restart");
+    let file = log_path(&root);
+    let log = enabled_log(&file);
+    log.info("before");
+    log.shutdown();
+    log.set_enabled(true);
+    assert!(log.enabled());
+    log.info("after");
+    log.flush();
+    let text = read_text(&file);
+    assert!(text.contains("before") && text.contains("after"), "{text}");
+    log.dispose();
+}
+
+#[test]
+fn v_flush_waiting_on_failing_drain_returns_when_drain_fails() {
+    let root = TempRoot::new("filelog-flush-fail");
+    let log = enabled_log(&unwritable_log_path(&root));
+    log.info("doomed");
+    let start = Instant::now();
+    log.flush();
+    let elapsed = start.elapsed();
+    log.dispose();
+    assert!(elapsed < Duration::from_millis(1000), "flush took {elapsed:?}");
+}
+
+#[test]
+fn v_system_time_millis_truncated() {
+    let mut checked = 0;
+    for _ in 0..20_000 {
+        let before = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("epoch");
+        let t = SystemLocalTime.now();
+        let after = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("epoch");
+        if before.as_secs() != after.as_secs() {
+            continue;
+        }
+        checked += 1;
+        assert!(
+            u32::from(t.millisecond) >= before.subsec_millis() && u32::from(t.millisecond) <= after.subsec_millis(),
+            "ms {} not within {}..={}",
+            t.millisecond,
+            before.subsec_millis(),
+            after.subsec_millis()
+        );
+    }
+    assert!(checked > 1000);
+}
+
+#[test]
+fn v_thread_number_starts_at_one() {
+    // The counter is process-wide, so only "never 0" and "distinct" are assertable here.
+    let numbers: Vec<u32> = (0..8)
+        .map(|_| thread::spawn(current_thread_number).join().expect("thread"))
+        .collect();
+    assert!(numbers.iter().all(|&n| n >= 1), "{numbers:?}");
+}
+
+#[derive(Debug)]
+struct Outer(Inner);
+#[derive(Debug)]
+struct Inner;
+impl fmt::Display for Outer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("outer-text")
+    }
+}
+impl fmt::Display for Inner {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("inner-text")
+    }
+}
+impl Error for Inner {}
+impl Error for Outer {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        Some(&self.0)
+    }
+}
+
+#[test]
+fn v_error_source_chain_uses_arrow_separator() {
+    let root = TempRoot::new("filelog-chain");
+    let file = log_path(&root);
+    let log = enabled_log(&file);
+    log.error("head", Some(&Outer(Inner)));
+    log.flush();
+    let text = read_text(&file);
+    log.dispose();
+    assert!(text.contains("outer-text\n ---> inner-text"), "{text}");
+}
