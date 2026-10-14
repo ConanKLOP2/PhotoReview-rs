@@ -1,0 +1,1619 @@
+{
+  "generator": "oracle-cs journal-ops",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "append-creates-folder-and-file",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-two-lines-crlf",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-to-empty-file-no-repair",
+      "initial": [],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "torn-tail-is-repaired",
+      "initial": [
+        {
+          "text": "{\"Id\":\"torn\",\"Ty",
+          "eol": ""
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A22746F726E222C2254790D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "tail-ending-in-bare-lf-is-not-repaired",
+      "initial": [
+        {
+          "text": "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2278222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C782E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C782E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "tail-ending-in-cr-is-repaired",
+      "initial": [
+        {
+          "text": "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2278222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C782E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C782E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "other-writer-tears-tail-after-own-append",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append_raw",
+          "bytes": [
+            {
+              "text": "{\"partial",
+              "eol": ""
+            }
+          ]
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append_raw",
+          "append_opens": 0
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B227061727469616C0D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "failed-append-then-next-append-repairs",
+      "initial": [
+        {
+          "text": "{\"Id\":\"torn\",\"Ty",
+          "eol": ""
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"first\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\first.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\first.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "fail_append": 1
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"second\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\second.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\second.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "throws": "IOException",
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"second\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\second.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\second.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A22746F726E222C2254790D0A7B224964223A227365636F6E64222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C7365636F6E642E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C7365636F6E642E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-io-error-is-not-retried",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "fail_append": 1
+        }
+      ],
+      "steps": [
+        {
+          "throws": "IOException",
+          "op": "append",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": false,
+      "final_hex": null
+    },
+    {
+      "name": "latest-state-per-id",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":\"boom\"}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"d\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\d.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\d.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"d\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\d.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\d.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":\"boom\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30325A222C224572726F72223A22626F6F6D227D0D0A7B224964223A2263222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C632E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C632E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2264222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C642E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C642E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2264222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C642E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C642E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30335A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "first-appearance-order-is-kept-on-reassign",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"y\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\y.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\y.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"e\"}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\z.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\z.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"y\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\y.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\y.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"z\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\z.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\z.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"x\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\x.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\x.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"e\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2278222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C782E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C782E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2279222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C792E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C792E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2278222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C782E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C782E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A2265227D0D0A7B224964223A227A222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C7A2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C7A2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "fa01-reconcile-failed-after-committed-is-skipped",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "op"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "fa01-source-still-exists-code-after-committed-is-skipped",
+      "initial": [
+        {
+          "text": "{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\r.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\r.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"x\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "r"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"r\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\r.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2272222C2254797065223A2252656379636C65222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C722E6A7067222C2244657374696E6174696F6E223A6E756C6C2C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2272222C2254797065223A2252656379636C65222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C722E6A7067222C2244657374696E6174696F6E223A6E756C6C2C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A2278222C224572726F72436F6465223A22536F757263655374696C6C45786973747341667465725265636F76657279227D0D0A"
+    },
+    {
+      "name": "fa01-non-reconcile-failed-after-committed-wins",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"io\",\"ErrorCode\":\"VerifySizeChanged\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "op"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"io\",\"ErrorCode\":\"VerifySizeChanged\"}",
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"io\",\"ErrorCode\":\"VerifySizeChanged\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A22696F222C224572726F72436F6465223A2256657269667953697A654368616E676564227D0D0A"
+    },
+    {
+      "name": "fa01-codeless-failed-after-committed-wins",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"io\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "op"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":\"io\"}",
+          "op": "read_latest",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A22696F227D0D0A"
+    },
+    {
+      "name": "fa01-reconcile-failed-first-line-is-latest",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "op"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "fa01-reconcile-failed-after-prepared-is-latest",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "op"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "read-latest-unknown-id-and-missing-file",
+      "initial": null,
+      "ops": [
+        {
+          "op": "read_latest",
+          "id": "nope"
+        },
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "entry": null,
+          "op": "read_latest",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": false,
+      "final_hex": null
+    },
+    {
+      "name": "dismiss-current-failed",
+      "initial": [
+        {
+          "text": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 50,
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ]
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "dismissed": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:50Z\",\"Error\":null}"
+          ],
+          "skipped": [],
+          "op": "dismiss",
+          "append_opens": 1
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22626F6F6D222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A35305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dismiss-stale-snapshot-is-skipped",
+      "initial": [
+        {
+          "text": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        },
+        {
+          "op": "dismiss",
+          "now": 50,
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ]
+        },
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "dismissed": [],
+          "skipped": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "dismiss",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dismiss-mixed-and-duplicates-one-write",
+      "initial": [
+        {
+          "text": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"y\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:05Z\",\"Error\":null}"
+        },
+        {
+          "op": "dismiss",
+          "now": 60,
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}",
+            "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"y\"}",
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}"
+          ]
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "dismissed": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:00Z\",\"Error\":null}",
+            "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:00Z\",\"Error\":null}",
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:00Z\",\"Error\":null}"
+          ],
+          "skipped": [
+            "{\"Id\":\"c\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\c.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"y\"}"
+          ],
+          "op": "dismiss",
+          "append_opens": 1
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278227D0D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2263222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C632E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C632E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2279227D0D0A7B224964223A2263222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C632E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C632E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30355A222C224572726F72223A6E756C6C7D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dismiss-only-stale-touches-no-file",
+      "initial": null,
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 5,
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "dismissed": [],
+          "skipped": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}"
+          ],
+          "op": "dismiss",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": false,
+      "final_hex": null
+    },
+    {
+      "name": "dismiss-group-entry-by-value",
+      "initial": [
+        {
+          "text": "{\"Id\":\"g\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\",\"GroupId\":\"cap-1\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\g.cr3\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.cr3\",\"Size\":9,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 7,
+          "entries": [
+            "{\"Id\":\"g\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\",\"GroupId\":\"cap-1\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\g.cr3\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.cr3\",\"Size\":9,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}"
+          ]
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "dismissed": [
+            "{\"Id\":\"g\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:07Z\",\"Error\":null,\"GroupId\":\"cap-1\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\g.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\g.cr3\",\"Destination\":\"C:\\\\photos\\\\sel\\\\g.cr3\",\"Size\":9,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}"
+          ],
+          "skipped": [],
+          "op": "dismiss",
+          "append_opens": 1
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2267222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C672E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22626F6F6D222C2247726F75704964223A226361702D31222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C672E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D2C7B22536F75726365223A22433A5C5C70686F746F735C5C672E637233222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E637233222C2253697A65223A392C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D5D7D0D0A7B224964223A2267222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C672E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30375A222C224572726F72223A6E756C6C2C2247726F75704964223A226361702D31222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C672E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D2C7B22536F75726365223A22433A5C5C70686F746F735C5C672E637233222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C672E637233222C2253697A65223A392C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D5D7D0D0A"
+    },
+    {
+      "name": "dismiss-keeps-unspecified-last-write-kind",
+      "initial": [
+        {
+          "text": "{\"Id\":\"u\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\u.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\u.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00\",\"TimestampUtc\":\"2026-09-25T00:00:00\",\"Error\":\"e\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 9,
+          "entries": [
+            "{\"Id\":\"u\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\u.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\u.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00\",\"TimestampUtc\":\"2026-09-25T00:00:00\",\"Error\":\"e\"}"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "dismissed": [
+            "{\"Id\":\"u\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\u.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\u.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00\",\"TimestampUtc\":\"2026-09-25T00:00:09Z\",\"Error\":null}"
+          ],
+          "skipped": [],
+          "op": "dismiss",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2275222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C752E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C752E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A3030222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A3030222C224572726F72223A2265227D0D0A7B224964223A2275222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C752E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C752E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A3030222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30395A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dismiss-reconcile-failed-after-committed-snapshot-is-skipped",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 9,
+          "entries": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ]
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "dismissed": [],
+          "skipped": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          ],
+          "op": "dismiss",
+          "append_opens": 0
+        },
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "dismiss-append-fails",
+      "initial": [
+        {
+          "text": "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "dismiss",
+          "now": 9,
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}"
+          ],
+          "fail_append": 1
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "throws": "IOException",
+          "op": "dismiss",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A2261222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C612E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C612E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278227D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-exact-tail",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":null}"
+          ],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": true,
+          "op": "append_if_unchanged_since",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30325A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30335A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-somebody-elses-line",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:07Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":null}"
+          ],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:08Z\",\"Error\":\"z\"}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": false,
+          "op": "append_if_unchanged_since",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30375A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-extra-line-after-own",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:02Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": false,
+          "op": "append_if_unchanged_since",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30325A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-anchor-is-latest-empty-own",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": true,
+          "op": "append_if_unchanged_since",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-last-equal-anchor-counts",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": true,
+          "op": "append_if_unchanged_since",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-anchor-absent-history-is-own",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"other\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\other.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\other.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": true,
+          "op": "append_if_unchanged_since",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F74686572222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F746865722E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F746865722E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30335A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-anchor-absent-history-differs",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": false,
+          "op": "append_if_unchanged_since",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-no-file-empty-own-appends",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": true,
+          "op": "append_if_unchanged_since",
+          "append_opens": 1
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-if-unchanged-since-no-file-nonempty-own-creates-nothing",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "own_since": [
+            "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:03Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": false,
+          "op": "append_if_unchanged_since",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": false,
+      "final_hex": null
+    },
+    {
+      "name": "append-if-unchanged-since-ignores-fa01",
+      "initial": [
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"Could not confirm the pending operation; it will not be replayed automatically.\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "append_if_unchanged_since",
+          "anchor": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "own_since": [],
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:04Z\",\"Error\":null}"
+        }
+      ],
+      "steps": [
+        {
+          "appended": false,
+          "op": "append_if_unchanged_since",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A22436F756C64206E6F7420636F6E6669726D207468652070656E64696E67206F7065726174696F6E3B2069742077696C6C206E6F74206265207265706C61796564206175746F6D61746963616C6C792E222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "full-reader-line-rules",
+      "initial": [
+        {
+          "hex": "EFBBBF7B224964223A22626F6D222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C626F6D2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C626F6D2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "text": "{\r\"Id\":\"innercr\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\innercr.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\innercr.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "hex": "7B224964223A22626164222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5CFF686F746F735C5C6261642E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6261642E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+        },
+        {
+          "text": "{\"Id\":\"lonecr\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\lonecr.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\lonecr.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r"
+        },
+        {
+          "text": "{\"Id\":\"lf\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\lf.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\lf.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\n"
+        },
+        {
+          "text": "",
+          "eol": "\r\n"
+        },
+        {
+          "text": "   ",
+          "eol": "\r\n"
+        },
+        {
+          "text": "not json",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"ok\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\ok.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\ok.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "entries": [
+            "{\"Id\":\"bom\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\bom.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\bom.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"lonecr\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\lonecr.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\lonecr.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"lf\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\lf.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\lf.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "entries": [
+            "{\"Id\":\"bad\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\\\uFFFDhotos\\\\bad.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\bad.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"ok\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\ok.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\ok.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          ],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "EFBBBF7B224964223A22626F6D222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C626F6D2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C626F6D2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B0D224964223A22696E6E65726372222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C696E6E657263722E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C696E6E657263722E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A22626164222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5CFF686F746F735C5C6261642E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6261642E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226C6F6E656372222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6C6F6E6563722E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6C6F6E6563722E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D7B224964223A226C66222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6C662E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6C662E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0A0D0A2020200D0A6E6F74206A736F6E0D0A7B224964223A226F6B222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F6B2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F6B2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "utf16-journal-is-read-then-appended-utf8-is-garbage",
+      "initial": [
+        {
+          "hex": "FFFE7B0022004900640022003A002200610022002C002200540079007000650022003A0022004D006F007600650022002C0022005300740061007400650022003A0022005000720065007000610072006500640022002C00220053006F00750072006300650022003A00220043003A005C005C00700068006F0074006F0073005C005C0061002E006A007000670022002C002200440065007300740069006E006100740069006F006E0022003A00220043003A005C005C00700068006F0074006F0073005C005C00730065006C005C005C0061002E006A007000670022002C002200530069007A00650022003A0031002C0022004C006100730074005700720069007400650055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C002200540069006D0065007300740061006D00700055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C0022004500720072006F00720022003A006E0075006C006C007D000D000A00"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_pending_and_failed"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"b\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\b.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\b.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"a\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\a.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\a.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "FFFE7B0022004900640022003A002200610022002C002200540079007000650022003A0022004D006F007600650022002C0022005300740061007400650022003A0022005000720065007000610072006500640022002C00220053006F00750072006300650022003A00220043003A005C005C00700068006F0074006F0073005C005C0061002E006A007000670022002C002200440065007300740069006E006100740069006F006E0022003A00220043003A005C005C00700068006F0074006F0073005C005C00730065006C005C005C0061002E006A007000670022002C002200530069007A00650022003A0031002C0022004C006100730074005700720069007400650055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C002200540069006D0065007300740061006D00700055007400630022003A00220032003000320036002D00300039002D00320035005400300030003A00300030003A00300030005A0022002C0022004500720072006F00720022003A006E0075006C006C007D000D000A000D0A7B224964223A2262222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C622E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C622E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "unknown-type-or-state-is-skipped",
+      "initial": [
+        {
+          "text": "{\"Id\":\"bogus-1\",\"Type\":\"Teleport\",\"State\":\"Prepared\",\"Source\":\"C:/x.jpg\",\"Destination\":\"C:/y.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-01-01T00:00:00Z\",\"TimestampUtc\":\"2026-01-01T00:00:00Z\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"bogus-2\",\"Type\":\"Move\",\"State\":\"Exploded\",\"Source\":\"C:/x.jpg\",\"Destination\":\"C:/y.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-01-01T00:00:00Z\",\"TimestampUtc\":\"2026-01-01T00:00:00Z\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"bogus-3\",\"Source\":\"C:/x.jpg\",\"Destination\":\"C:/y.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-01-01T00:00:00Z\",\"TimestampUtc\":\"2026-01-01T00:00:00Z\"}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "entries": [],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A22626F6775732D31222C2254797065223A2254656C65706F7274222C225374617465223A225072657061726564222C22536F75726365223A22433A2F782E6A7067222C2244657374696E6174696F6E223A22433A2F792E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30312D30315430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30312D30315430303A30303A30305A227D0D0A7B224964223A22626F6775732D32222C2254797065223A224D6F7665222C225374617465223A224578706C6F646564222C22536F75726365223A22433A2F782E6A7067222C2244657374696E6174696F6E223A22433A2F792E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30312D30315430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30312D30315430303A30303A30305A227D0D0A7B224964223A22626F6775732D33222C22536F75726365223A22433A2F782E6A7067222C2244657374696E6174696F6E223A22433A2F792E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30312D30315430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30312D30315430303A30303A30305A227D0D0A"
+    },
+    {
+      "name": "committed-moves-small-journal-filters-type-and-state",
+      "initial": [
+        {
+          "text": "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\m1.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m1.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"c1\",\"Type\":\"Copy\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\c1.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\c1.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"r1\",\"Type\":\"Recycle\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\r1.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"m2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\m2.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m2.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"gm\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\gm.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\gm.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\gm.jpg\",\"Destination\":\"C:\\\\sel\\\\gm.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\gm.cr3\",\"Destination\":\"C:\\\\sel\\\\gm.cr3\",\"Size\":7,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"m3\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\m3.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m3.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"m4\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\m4.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m4.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"Undo\":true}",
+          "eol": "\r\n"
+        }
+      ],
+      "ops": [
+        {
+          "op": "read_committed_moves"
+        }
+      ],
+      "steps": [
+        {
+          "entries": [
+            "{\"Id\":\"m1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\m1.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m1.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+            "{\"Id\":\"gm\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\gm.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\gm.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\gm.jpg\",\"Destination\":\"C:\\\\sel\\\\gm.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\gm.cr3\",\"Destination\":\"C:\\\\sel\\\\gm.cr3\",\"Size\":7,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+            "{\"Id\":\"m4\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\m4.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\m4.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"Undo\":true}"
+          ],
+          "op": "read_committed_moves",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226D31222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6D312E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6D312E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226331222C2254797065223A22436F7079222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C63312E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C63312E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A227231222C2254797065223A2252656379636C65222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C72312E6A7067222C2244657374696E6174696F6E223A6E756C6C2C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226D32222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6D322E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6D322E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A22676D222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C676D2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C676D2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C2C2247726F75704964223A22636170222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C676D2E6A7067222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C676D2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D2C7B22536F75726365223A22433A5C5C70686F746F735C5C676D2E637233222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C676D2E637233222C2253697A65223A372C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D5D7D0D0A7B224964223A226D33222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6D332E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6D332E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278227D0D0A7B224964223A226D34222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6D342E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6D342E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C2C22556E646F223A747275657D0D0A"
+    },
+    {
+      "name": "append-escapes-special-characters",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"sp\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\café +<a>&'`\uD83D\uDE00.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\sp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"sp\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\caf\\u00E9 \\u002B\\u003Ca\\u003E\\u0026\\u0027\\u0060\\uD83D\\uDE00.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\sp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A227370222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6361665C7530304539205C75303032425C7530303343615C75303033455C75303032365C75303032375C75303036305C75443833445C75444530302E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C73702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "append-all-optional-fields",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"opt\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\opt.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"msg\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Permanent\":true,\"Undo\":true,\"GroupId\":\"cap-9\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\opt.jpg\",\"Destination\":null,\"Size\":3,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":true}]}"
+        },
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"empty-members\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\empty-members.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\empty-members.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap-0\",\"GroupMembers\":[]}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"empty-members\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\empty-members.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\empty-members.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap-0\",\"GroupMembers\":[]}",
+            "{\"Id\":\"opt\",\"Type\":\"Recycle\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\opt.jpg\",\"Destination\":null,\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"msg\",\"ErrorCode\":\"SourceStillExistsAfterRecovery\",\"Permanent\":true,\"Undo\":true,\"GroupId\":\"cap-9\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\opt.jpg\",\"Destination\":null,\"Size\":3,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":true}]}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226F7074222C2254797065223A2252656379636C65222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F70742E6A7067222C2244657374696E6174696F6E223A6E756C6C2C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A226D7367222C224572726F72436F6465223A22536F757263655374696C6C45786973747341667465725265636F76657279222C225065726D616E656E74223A747275652C22556E646F223A747275652C2247726F75704964223A226361702D39222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C6F70742E6A7067222C2244657374696E6174696F6E223A6E756C6C2C2253697A65223A332C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A747275657D5D7D0D0A7B224964223A22656D7074792D6D656D62657273222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C656D7074792D6D656D626572732E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C656D7074792D6D656D626572732E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C2C2247726F75704964223A226361702D30222C2247726F75704D656D62657273223A5B5D7D0D0A"
+    },
+    {
+      "name": "append-unspecified-kind-round-trips",
+      "initial": null,
+      "ops": [
+        {
+          "op": "append",
+          "entry": "{\"Id\":\"k\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\k.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\k.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00\",\"TimestampUtc\":\"2026-09-25T00:00:00\",\"Error\":null}"
+        },
+        {
+          "op": "read_pending_and_failed"
+        }
+      ],
+      "steps": [
+        {
+          "op": "append",
+          "append_opens": 1
+        },
+        {
+          "entries": [
+            "{\"Id\":\"k\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\k.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\k.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00\",\"TimestampUtc\":\"2026-09-25T00:00:00\",\"Error\":null}"
+          ],
+          "op": "read_pending_and_failed",
+          "append_opens": 0
+        }
+      ],
+      "final_exists": true,
+      "final_hex": "7B224964223A226B222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6B2E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6B2E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A3030222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A3030222C224572726F72223A6E756C6C7D0D0A"
+    }
+  ]
+}

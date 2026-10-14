@@ -1,0 +1,1130 @@
+{
+  "generator": "oracle-cs journal-transaction",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "first-attempt-commit-uses-the-transaction-clock",
+      "case": {
+        "name": "first-attempt-commit-uses-the-transaction-clock",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "verify_stat",
+            "length": 10,
+            "code": "VerifySizeChanged"
+          },
+          {
+            "do": "commit"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "verify_stat",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":null}",
+          "journal_error_set": false,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "verify-size-mismatch-then-fail-coded",
+      "case": {
+        "name": "verify-size-mismatch-then-fail-coded",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "verify_stat",
+            "length": 11,
+            "code": "VerifySizeChanged"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "coded": "VerifySizeChanged"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "throws": "JournalCodedException",
+          "code": "VerifySizeChanged",
+          "do": "verify_stat",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"Post-operation check failed: the destination size changed.\",\"ErrorCode\":\"VerifySizeChanged\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22506F73742D6F7065726174696F6E20636865636B206661696C65643A207468652064657374696E6174696F6E2073697A65206368616E6765642E222C224572726F72436F6465223A2256657269667953697A654368616E676564227D0D0A"
+    },
+    {
+      "name": "verify-missing-destination",
+      "case": {
+        "name": "verify-missing-destination",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "verify_stat",
+            "length": null,
+            "code": "RetryVerifyFailed"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "throws": "JournalCodedException",
+          "code": "RetryVerifyFailed",
+          "do": "verify_stat",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "fail-io-message-without-code",
+      "case": {
+        "name": "fail-io-message-without-code",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom & <io>"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"boom \\u0026 \\u003Cio\\u003E\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22626F6F6D205C7530303236205C7530303343696F5C7530303345227D0D0A"
+    },
+    {
+      "name": "fail-canceled-is-cancelled-by-user",
+      "case": {
+        "name": "fail-canceled-is-cancelled-by-user",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "canceled": true
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"The operation was cancelled before it finished.\",\"ErrorCode\":\"CancelledByUser\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22546865206F7065726174696F6E207761732063616E63656C6C6564206265666F72652069742066696E69736865642E222C224572726F72436F6465223A2243616E63656C6C6564427955736572227D0D0A"
+    },
+    {
+      "name": "fail-move-source-not-removed",
+      "case": {
+        "name": "fail-move-source-not-removed",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "coded": "MoveSourceNotRemoved"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"The file was copied to the destination, but the original could not be removed (it may be read-only or in use). Both copies now exist; nothing was deleted.\",\"ErrorCode\":\"MoveSourceNotRemoved\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A225468652066696C652077617320636F7069656420746F207468652064657374696E6174696F6E2C2062757420746865206F726967696E616C20636F756C64206E6F742062652072656D6F76656420286974206D617920626520726561642D6F6E6C79206F7220696E20757365292E20426F746820636F70696573206E6F772065786973743B206E6F7468696E67207761732064656C657465642E222C224572726F72436F6465223A224D6F7665536F757263654E6F7452656D6F766564227D0D0A"
+    },
+    {
+      "name": "dismiss-rolled-back",
+      "case": {
+        "name": "dismiss-rolled-back",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "dismiss_rolled_back"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Dismissed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":null}",
+          "journal_error_set": false,
+          "do": "dismiss_rolled_back",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224469736D6973736564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "mark-mutation-completed",
+      "case": {
+        "name": "mark-mutation-completed",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "mark"
+          },
+          {
+            "do": "commit"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "mark",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":null}",
+          "journal_error_set": false,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "first-attempt-prepared-append-fails-writes-no-line",
+      "case": {
+        "name": "first-attempt-prepared-append-fails-writes-no-line",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "try_begin",
+            "fail_append": 1
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "throws": "IOException",
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": false,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        },
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": null
+    },
+    {
+      "name": "first-attempt-not-begun-dismiss-writes-nothing",
+      "case": {
+        "name": "first-attempt-not-begun-dismiss-writes-nothing",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "dismiss_rolled_back"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "dismiss_rolled_back",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": null
+    },
+    {
+      "name": "outcome-append-fails-returns-no-record",
+      "case": {
+        "name": "outcome-append-fails-returns-no-record",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            },
+            "fail_append": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": null,
+          "journal_error_set": true,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dismiss-rolled-back-append-fails",
+      "case": {
+        "name": "dismiss-rolled-back-append-fails",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "dismiss_rolled_back",
+            "fail_append": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": null,
+          "journal_error_set": true,
+          "do": "dismiss_rolled_back",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "commit-append-fails-still-returns-the-entry",
+      "case": {
+        "name": "commit-append-fails-still-returns-the-entry",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "commit",
+            "fail_append": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":null}",
+          "journal_error_set": true,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "try-begin-twice-appends-twice",
+      "case": {
+        "name": "try-begin-twice-appends-twice",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "commit"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":null}",
+          "journal_error_set": false,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "dispose-releases-the-marker",
+      "case": {
+        "name": "dispose-releases-the-marker",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "dispose"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "dispose",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "retry-still-current-fail-returns-the-record",
+      "case": {
+        "name": "retry-still-current-fail-returns-the-record",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"boom\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22626F6F6D227D0D0A"
+    },
+    {
+      "name": "retry-superseded-at-begin",
+      "case": {
+        "name": "retry-superseded-at-begin",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": false,
+          "do": "try_begin",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        },
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "retry-begin-superseded-throws",
+      "case": {
+        "name": "retry-begin-superseded-throws",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "begin"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "throws": "InvalidOperationException",
+          "do": "begin",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "retry-superseded-after-begin",
+      "case": {
+        "name": "retry-superseded-after-begin",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "other_append",
+            "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "other_append",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "retry-prepared-append-threw-still-journals-the-failure",
+      "case": {
+        "name": "retry-prepared-append-threw-still-journals-the-failure",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin",
+            "fail_append": 1
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "throws": "IOException",
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": false,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"boom\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": false,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22626F6F6D227D0D0A"
+    },
+    {
+      "name": "retry-dismiss-rolled-back-superseded",
+      "case": {
+        "name": "retry-dismiss-rolled-back-superseded",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "other_append",
+            "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          },
+          {
+            "do": "dismiss_rolled_back"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "other_append",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "dismiss_rolled_back",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A"
+    },
+    {
+      "name": "retry-commit-is-unconditional-and-keeps-the-error",
+      "case": {
+        "name": "retry-commit-is-unconditional-and-keeps-the-error",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "other_append",
+            "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}"
+          },
+          {
+            "do": "commit"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "other_append",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "journal_error_set": false,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A"
+    },
+    {
+      "name": "retry-anchor-repeated-after-another-line-uses-the-last-copy",
+      "case": {
+        "name": "retry-anchor-repeated-after-another-line-uses-the-last-copy",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": true,
+          "do": "try_begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:01:40Z\",\"Error\":\"boom\"}",
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22626F6F6D227D0D0A"
+    },
+    {
+      "name": "retry-superseded-at-begin-then-anchor-current-again",
+      "case": {
+        "name": "retry-superseded-at-begin-then-anchor-current-again",
+        "prepared": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "retry_of": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+        "initial": [
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+            "eol": "\r\n"
+          },
+          {
+            "text": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null}",
+            "eol": "\r\n"
+          }
+        ],
+        "steps": [
+          {
+            "do": "try_begin"
+          },
+          {
+            "do": "other_append",
+            "entry": "{\"Id\":\"op\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\op.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\op.jpg\",\"Size\":10,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}"
+          },
+          {
+            "do": "fail",
+            "error": {
+              "io": "boom"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "result": false,
+          "do": "try_begin",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        },
+        {
+          "do": "other_append",
+          "append_opens": 0,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        },
+        {
+          "entry": null,
+          "journal_error_set": false,
+          "do": "fail",
+          "append_opens": 1,
+          "is_prepared": false,
+          "superseded": true,
+          "mutation_completed": false,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30315A222C224572726F72223A6E756C6C7D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A2278222C224572726F72436F6465223A2250656E64696E67556E636F6E6669726D6564227D0D0A7B224964223A226F70222C2254797065223A224D6F7665222C225374617465223A224661696C6564222C22536F75726365223A22433A5C5C70686F746F735C5C6F702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6F702E6A7067222C2253697A65223A31302C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30313A34305A222C224572726F72223A22626F6F6D227D0D0A"
+    },
+    {
+      "name": "group-prepared-commit",
+      "case": {
+        "name": "group-prepared-commit",
+        "prepared": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\grp.cr3\",\"Destination\":\"C:\\\\sel\\\\grp.cr3\",\"Size\":5,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+        "tx_now": 3600,
+        "steps": [
+          {
+            "do": "begin"
+          },
+          {
+            "do": "mark"
+          },
+          {
+            "do": "commit"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "begin",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": false,
+          "live": true
+        },
+        {
+          "do": "mark",
+          "append_opens": 0,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": true
+        },
+        {
+          "entry": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T01:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false},{\"Source\":\"C:\\\\photos\\\\grp.cr3\",\"Destination\":\"C:\\\\sel\\\\grp.cr3\",\"Size\":5,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "journal_error_set": false,
+          "do": "commit",
+          "append_opens": 1,
+          "is_prepared": true,
+          "superseded": false,
+          "mutation_completed": true,
+          "live": false
+        }
+      ],
+      "final_hex": "7B224964223A22677270222C2254797065223A224D6F7665222C225374617465223A225072657061726564222C22536F75726365223A22433A5C5C70686F746F735C5C6772702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6772702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430303A30303A30305A222C224572726F72223A6E756C6C2C2247726F75704964223A22636170222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C6772702E6A7067222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C6772702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D2C7B22536F75726365223A22433A5C5C70686F746F735C5C6772702E637233222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C6772702E637233222C2253697A65223A352C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D5D7D0D0A7B224964223A22677270222C2254797065223A224D6F7665222C225374617465223A22436F6D6D6974746564222C22536F75726365223A22433A5C5C70686F746F735C5C6772702E6A7067222C2244657374696E6174696F6E223A22433A5C5C70686F746F735C5C73656C5C5C6772702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C2254696D657374616D70557463223A22323032362D30392D32355430313A30303A30305A222C224572726F72223A6E756C6C2C2247726F75704964223A22636170222C2247726F75704D656D62657273223A5B7B22536F75726365223A22433A5C5C70686F746F735C5C6772702E6A7067222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C6772702E6A7067222C2253697A65223A312C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D2C7B22536F75726365223A22433A5C5C70686F746F735C5C6772702E637233222C2244657374696E6174696F6E223A22433A5C5C73656C5C5C6772702E637233222C2253697A65223A352C224C6173745772697465557463223A22323032362D30392D32355430303A30303A30305A222C225065726D616E656E74223A66616C73657D5D7D0D0A"
+    }
+  ]
+}

@@ -1,0 +1,5250 @@
+{
+ "cases": [
+  {
+   "name": "single-move-succeeds",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-copy-succeeds-keeps-source",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-undo-move-keeps-undo-flag",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": true,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-move-cross-volume-creates-destination-folders",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "D:\\sorted\\deep\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-prepared-snapshot-is-retried-too",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Prepared",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": null,
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-move-with-empty-member-list-is-a-single-move",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null,
+     "members": []
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-cancelled-needs-confirmation",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "The operation was cancelled before it finished.",
+     "error_code": "CancelledByUser",
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-cancelled-confirmed-finishes",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "The operation was cancelled before it finished.",
+     "error_code": "CancelledByUser",
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "confirmed": true
+  },
+  {
+   "name": "single-recycle-is-refused",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-r",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-recycle-is-refused-even-with-a-bin",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-r",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "single-null-destination-is-refused",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-empty-destination-is-refused",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-whitespace-destination-is-refused",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": " \t",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-source-missing",
+   "files": [],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-source-size-changed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 5,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-source-time-changed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000001
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-destination-exists",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.jpg",
+     "len": 9,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "single-stale-snapshot-committed-elsewhere",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    },
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Committed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000001,
+     "error": "other window",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "snapshot": 0
+  },
+  {
+   "name": "single-stale-snapshot-dismissed-elsewhere",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    },
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Dismissed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000001,
+     "error": "other window",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "snapshot": 0
+  },
+  {
+   "name": "single-stale-snapshot-failed-again-elsewhere",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    },
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000001,
+     "error": "other window",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "snapshot": 0
+  },
+  {
+   "name": "single-id-live-elsewhere",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "live": true
+  },
+  {
+   "name": "single-move-throws-is-journaled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "disk unplugged"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-move-leaves-source-is-move-source-not-removed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "leave_source": true
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-commit-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "journal unavailable"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "single-move-and-failure-append-fail",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "move unavailable"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    },
+    {
+     "on": "append",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "journal unavailable"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "single-prepared-append-fails-then-failure-is-journaled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "journal unavailable"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "single-prepared-and-failure-append-fail",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "journal unavailable"
+      }
+     ]
+    },
+    {
+     "on": "append",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "still full"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "single-copy-fails-midway-keeps-partial",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "copy",
+     "nth": 1,
+     "do": [
+      {
+       "partial": 2,
+       "message": "Simulated disk full during copy."
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-copy-foreign-file-appears-is-not-deleted",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "copy",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\out\\a.jpg",
+        "len": 2,
+        "ticks": 639264384000000000
+       }
+      },
+      {
+       "throw": "destination already exists"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-copy-destination-appears-before-try-copy-new",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\out\\a.jpg",
+        "len": 2,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-move-foreign-file-appears-is-not-deleted",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\out\\a.jpg",
+        "len": 7,
+        "ticks": 639264384000000000
+       }
+      },
+      {
+       "throw": "destination already exists"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-copy-verify-size-mismatch",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "copy",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 6,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-source-replaced-after-prepared-r17",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 4,
+        "ticks": 639264384300000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-source-gone-after-prepared-r17",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "delete": "C:\\photos\\a.jpg"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "single-precheck-stat-throws",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "simulated invalid path",
+       "exception": "ArgumentException"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "single-restat-after-prepared-throws",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "share gone"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "single-cancelled-before-the-hand-off",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "cancel_before": true
+  },
+  {
+   "name": "single-cancelled-before-but-refused-earlier",
+   "files": [],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "cancel_before": true
+  },
+  {
+   "name": "single-cancelled-before-and-live",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "cancel_before": true,
+   "live": true
+  },
+  {
+   "name": "single-gate-held-is-busy-and-reads-nothing",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "gate": "held"
+  },
+  {
+   "name": "single-gate-free-is-taken-and-released",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "gate": "free"
+  },
+  {
+   "name": "single-gate-held-wins-over-cancel",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "op-1",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": null
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "gate": "held",
+   "cancel_before": true
+  },
+  {
+   "name": "group-move-succeeds",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-copy-succeeds",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-copy-one-destination-complete-copies-the-other",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-move-one-member-done-moves-the-other",
+   "files": [
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-move-cancelled-during-first-member",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "cancel": true
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-cancelled-needs-confirmation",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "The operation was cancelled before it finished.",
+     "error_code": "CancelledByUser",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-cancelled-confirmed-finishes",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "The operation was cancelled before it finished.",
+     "error_code": "CancelledByUser",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "confirmed": true
+  },
+  {
+   "name": "group-move-member-flagged-permanent-still-retries",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-undo-move-succeeds",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-precheck-source-vanishes",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "delete": "C:\\photos\\a.jpg"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-precheck-source-resized",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 5,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-precheck-source-touched",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 4,
+        "ticks": 639264384300000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-precheck-destination-appears",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\out\\a.jpg",
+        "len": 19,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-after-prepared-source-vanishes",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 3,
+     "do": [
+      {
+       "delete": "C:\\photos\\a.jpg"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-after-prepared-source-touched",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 3,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 4,
+        "ticks": 639264384300000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-after-prepared-destination-appears",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 3,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\out\\a.jpg",
+        "len": 19,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-second-member-changes-after-first-moved",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 3,
+     "do": [
+      {
+       "delete": "C:\\photos\\a.cr2"
+      }
+     ],
+     "path": "C:\\photos\\a.cr2"
+    }
+   ]
+  },
+  {
+   "name": "group-move-leaves-source-retry-verify-failed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "leave_source": true
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-moved-file-has-another-size",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 14,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-copy-verify-size-mismatch",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "copy",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.cr2",
+        "len": 3,
+        "ticks": 639264384000000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.cr2"
+    }
+   ]
+  },
+  {
+   "name": "group-commit-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "disk full"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "group-move-throws-is-journaled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "boom"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group-move-and-failure-append-fail",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "move",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "boom"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    },
+    {
+     "on": "append",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "disk full"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "group-prepared-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "disk full"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "group-copy-partial-on-second-member",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Copy",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "copy",
+     "nth": 1,
+     "do": [
+      {
+       "partial": 3,
+       "message": "Simulated disk full during copy."
+      }
+     ],
+     "path": "C:\\photos\\a.cr2"
+    }
+   ]
+  },
+  {
+   "name": "group-precheck-stat-throws-io",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "share gone"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "group-precheck-stat-throws-unauthorized",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "share gone",
+       "exception": "UnauthorizedAccessException"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "group-precheck-stat-throws-not-supported",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "throw": "share gone",
+       "exception": "NotSupportedException"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "group-restat-after-prepared-throws",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 3,
+     "do": [
+      {
+       "throw": "share gone"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ],
+   "needs_stat_seam": true
+  },
+  {
+   "name": "group-already-fully-moved-is-already-handled",
+   "files": [
+    {
+     "path": "C:\\photos\\out\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-both-present-is-conflict",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-destination-changed",
+   "files": [
+    {
+     "path": "C:\\photos\\out\\a.jpg",
+     "len": 9,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\out\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-source-changed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 5,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-all-lost-is-source-changed-text",
+   "files": [],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "group-id-live-elsewhere",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "live": true
+  },
+  {
+   "name": "group-stale-snapshot",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    },
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Committed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000001,
+     "error": "other window",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "snapshot": 0
+  },
+  {
+   "name": "group-cancelled-before-the-hand-off",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "cancel_before": true
+  },
+  {
+   "name": "group-cancelled-before-and-live-is-already-handled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "cancel_before": true,
+   "live": true
+  },
+  {
+   "name": "group-gate-held-is-busy",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "grp",
+     "type": "Move",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": "C:\\photos\\out\\a.jpg",
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "earlier failure",
+     "error_code": null,
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": "C:\\photos\\out\\a.jpg",
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": "C:\\photos\\out\\a.cr2",
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "gate": "held"
+  },
+  {
+   "name": "group-recycle-type-without-a-bin-is-refused",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000
+  },
+  {
+   "name": "delete-group-recycles-both",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-recycles-only-members-still-present",
+   "files": [
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-permanent-member-setting-off",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": true,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [
+     "C:\\photos\\a.cr2"
+    ],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-permanent-member-setting-explicitly-off",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": true,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [
+     "C:\\photos\\a.cr2"
+    ],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "allow_permanent": false
+  },
+  {
+   "name": "delete-group-permanent-member-setting-on-deletes-only-it",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": true,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [
+     "C:\\photos\\a.cr2"
+    ],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "allow_permanent": true
+  },
+  {
+   "name": "delete-group-permanent-member-drive-now-has-a-bin",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": true,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "allow_permanent": true
+  },
+  {
+   "name": "delete-group-member-on-drive-without-bin-not-permanent",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [
+     "C:\\photos\\a.cr2"
+    ],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-bin-cannot-hold-the-sum",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": false,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-source-still-exists-after-recycle",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": true
+   }
+  },
+  {
+   "name": "delete-group-precheck-member-vanishes",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "delete": "C:\\photos\\a.jpg"
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "delete-group-precheck-member-touched",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "hooks": [
+    {
+     "on": "stat",
+     "nth": 2,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 4,
+        "ticks": 639264384300000000
+       }
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "delete-group-member-changed-since-journal",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 5,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-all-already-recycled",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  },
+  {
+   "name": "delete-group-cancelled-during-first-recycle",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "hooks": [
+    {
+     "on": "recycle",
+     "nth": 1,
+     "do": [
+      {
+       "cancel": true
+      }
+     ],
+     "path": "C:\\photos\\a.jpg"
+    }
+   ]
+  },
+  {
+   "name": "delete-group-recycle-throws",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": null,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "hooks": [
+    {
+     "on": "recycle",
+     "nth": 1,
+     "do": [
+      {
+       "throw": "shell refused"
+      }
+     ],
+     "path": "C:\\photos\\a.cr2"
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-restores-every-member",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-permanent-missing-member-is-refused",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": true,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": true
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-bin-refuses-but-leaves-a-file",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "refuse-leave-file",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-bin-says-ok-but-nothing-came-back",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok-no-file",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-one-member-already-back",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-foreign-file-appears-after-the-precheck",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "hooks": [
+    {
+     "on": "append",
+     "nth": 1,
+     "do": [
+      {
+       "write": {
+        "path": "C:\\photos\\a.jpg",
+        "len": 3,
+        "ticks": 639264384000000000
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-binned-copy-has-another-time",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   },
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000001
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-without-a-bin",
+   "files": [],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "binned": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ]
+  },
+  {
+   "name": "undo-delete-group-all-back-is-already-handled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "len": 4,
+     "ticks": 639264384000000000
+    },
+    {
+     "path": "C:\\photos\\a.cr2",
+     "len": 8,
+     "ticks": 639264384000000000
+    }
+   ],
+   "seed": [
+    {
+     "id": "del",
+     "type": "Recycle",
+     "state": "Failed",
+     "source": "C:\\photos\\a.jpg",
+     "destination": null,
+     "size": 4,
+     "last_write_ticks": 639264384000000000,
+     "timestamp_ticks": 639264384000000000,
+     "error": "x",
+     "error_code": "SourceStillExistsAfterRecovery",
+     "permanent": null,
+     "undo": true,
+     "group_id": "capture",
+     "members": [
+      {
+       "source": "C:\\photos\\a.jpg",
+       "destination": null,
+       "size": 4,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      },
+      {
+       "source": "C:\\photos\\a.cr2",
+       "destination": null,
+       "size": 8,
+       "last_write_ticks": 639264384000000000,
+       "permanent": false
+      }
+     ]
+    }
+   ],
+   "journal_clock_ticks": 639264384600000000,
+   "service_clock_ticks": 639264385200000000,
+   "bin": {
+    "no_bin": [],
+    "fits": true,
+    "restore": "ok",
+    "recycle_noop": false
+   }
+  }
+ ]
+}

@@ -1,0 +1,347 @@
+{
+  "cases": [
+    {
+      "name": "shorter-and-same-stamp-is-deleted",
+      "kind": "cleanup",
+      "dest": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "as-long-as-the-source-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 4,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 4,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "longer-than-the-source-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 5,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 5,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "one-byte-shorter-is-deleted",
+      "kind": "cleanup",
+      "dest": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "empty-destination-empty-source-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "source_size": 0,
+      "delete_fails": false
+    },
+    {
+      "name": "empty-destination-nonempty-source-is-deleted",
+      "kind": "cleanup",
+      "dest": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "negative-source-size-keeps-an-empty-destination",
+      "kind": "cleanup",
+      "dest": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 0,
+        "ticks": 638000000000000000
+      },
+      "source_size": -1,
+      "delete_fails": false
+    },
+    {
+      "name": "source-size-over-int32-deletes-a-short-file",
+      "kind": "cleanup",
+      "dest": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "source_size": 10000000000,
+      "delete_fails": false
+    },
+    {
+      "name": "replaced-by-a-file-of-another-length-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 1,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "replaced-same-length-other-second-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 2,
+        "ticks": 638000000010000000
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "replaced-same-length-one-tick-later-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 2,
+        "ticks": 638000000000000001
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "replaced-same-length-one-tick-earlier-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 2,
+        "ticks": 637999999999999999
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "shorter-than-source-but-longer-than-created-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 1,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "shorter-than-source-and-created-is-longer-is-kept",
+      "kind": "cleanup",
+      "dest": {
+        "len": 1,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 3,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "destination-missing-does-nothing",
+      "kind": "cleanup",
+      "dest": null,
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": false
+    },
+    {
+      "name": "delete-fails-is-swallowed-and-file-stays",
+      "kind": "cleanup",
+      "dest": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 2,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": true
+    },
+    {
+      "name": "complete-copy-with-failing-delete-is-untouched",
+      "kind": "cleanup",
+      "dest": {
+        "len": 4,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 4,
+        "ticks": 638000000000000000
+      },
+      "source_size": 4,
+      "delete_fails": true
+    },
+    {
+      "name": "same-file-equal",
+      "kind": "same-file",
+      "now": {
+        "len": 5,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 5,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-length-differs",
+      "kind": "same-file",
+      "now": {
+        "len": 5,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 6,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-time-differs-one-tick",
+      "kind": "same-file",
+      "now": {
+        "len": 5,
+        "ticks": 638000000000000001
+      },
+      "created": {
+        "len": 5,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-time-differs-one-second",
+      "kind": "same-file",
+      "now": {
+        "len": 5,
+        "ticks": 638000000010000000
+      },
+      "created": {
+        "len": 5,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-both-differ",
+      "kind": "same-file",
+      "now": {
+        "len": 1,
+        "ticks": 1
+      },
+      "created": {
+        "len": 2,
+        "ticks": 2
+      }
+    },
+    {
+      "name": "same-file-zero-length-equal",
+      "kind": "same-file",
+      "now": {
+        "len": 0,
+        "ticks": 0
+      },
+      "created": {
+        "len": 0,
+        "ticks": 0
+      }
+    },
+    {
+      "name": "same-file-int64-max-length-equal",
+      "kind": "same-file",
+      "now": {
+        "len": 9223372036854775807,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 9223372036854775807,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-int64-max-length-vs-one-less",
+      "kind": "same-file",
+      "now": {
+        "len": 9223372036854775807,
+        "ticks": 638000000000000000
+      },
+      "created": {
+        "len": 9223372036854775806,
+        "ticks": 638000000000000000
+      }
+    },
+    {
+      "name": "same-file-max-ticks-equal",
+      "kind": "same-file",
+      "now": {
+        "len": 1,
+        "ticks": 3155378975999999999
+      },
+      "created": {
+        "len": 1,
+        "ticks": 3155378975999999999
+      }
+    }
+  ]
+}

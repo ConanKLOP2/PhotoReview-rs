@@ -1,0 +1,330 @@
+{
+  "cases": [
+    {
+      "name": "no-compaction-files-not-supported",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "no_compaction_files": true
+    },
+    {
+      "name": "journal-folder-missing-below-threshold",
+      "segments": [],
+      "missing_dir": true
+    },
+    {
+      "name": "small-journal-below-threshold",
+      "segments": [
+        {
+          "entries": [
+            0,
+            5
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ]
+    },
+    {
+      "name": "big-pairs-compacted",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ]
+    },
+    {
+      "name": "big-prepared-only-not-worth-it",
+      "segments": [
+        {
+          "entries": [
+            0,
+            6000
+          ],
+          "states": [
+            "Prepared"
+          ],
+          "pad": 80
+        }
+      ]
+    },
+    {
+      "name": "exactly-threshold-compacted",
+      "segments": [
+        {
+          "entries": [
+            0,
+            1400
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "pad_to": 1048576
+    },
+    {
+      "name": "one-byte-under-threshold",
+      "segments": [
+        {
+          "entries": [
+            0,
+            1400
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "pad_to": 1048575
+    },
+    {
+      "name": "file-at-threshold-but-last-line-partial-is-below-threshold",
+      "segments": [
+        {
+          "entries": [
+            0,
+            1400
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        },
+        {
+          "text": "{\"Id\":\"partial-tail",
+          "eol": ""
+        }
+      ],
+      "pad_to": 1048576
+    },
+    {
+      "name": "torn-tail-in-file-goes-to-delta-with-newline",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        },
+        {
+          "text": "{\"Id\":\"torn\",\"Ty",
+          "eol": ""
+        }
+      ]
+    },
+    {
+      "name": "lines-appended-meanwhile-are-kept",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "before_lock_append": [
+        {
+          "text": "{\"Id\":\"late1\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\late1.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\late1.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"late2\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\late2.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\late2.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        }
+      ]
+    },
+    {
+      "name": "torn-line-appended-meanwhile-gets-a-newline",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "before_lock_append": [
+        {
+          "text": "{\"Id\":\"half",
+          "eol": ""
+        }
+      ]
+    },
+    {
+      "name": "rewritten-meanwhile-changed",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "before_lock_rewrite": {
+        "segments": [
+          {
+            "entries": [
+              0,
+              100
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ]
+      }
+    },
+    {
+      "name": "rewritten-meanwhile-with-same-prefix-longer-is-compacted",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        }
+      ],
+      "before_lock_rewrite": {
+        "segments": [
+          {
+            "entries": [
+              0,
+              9000
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          },
+          {
+            "entries": [
+              9000,
+              9001
+            ],
+            "states": [
+              "Prepared",
+              "Committed"
+            ],
+            "pad": 80
+          }
+        ]
+      }
+    },
+    {
+      "name": "fa01-residue-and-unparseable-lines-kept",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80
+        },
+        {
+          "text": "{\"Id\":\"e000005\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\e000005.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\e000005.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:16:39Z\",\"Error\":\"x\",\"ErrorCode\":\"PendingUnconfirmed\"}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "garbage line",
+          "eol": "\r\n"
+        },
+        {
+          "text": "",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"pend\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\pend.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\pend.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null}",
+          "eol": "\r\n"
+        },
+        {
+          "text": "{\"Id\":\"fail\",\"Type\":\"Move\",\"State\":\"Failed\",\"Source\":\"C:\\\\photos\\\\fail.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\fail.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":\"boom\"}",
+          "eol": "\r\n"
+        }
+      ]
+    },
+    {
+      "name": "group-line-and-lf-journal",
+      "segments": [
+        {
+          "entries": [
+            0,
+            9000
+          ],
+          "states": [
+            "Prepared",
+            "Committed"
+          ],
+          "pad": 80,
+          "eol": "\n"
+        },
+        {
+          "text": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Prepared\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:00Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "eol": "\n"
+        },
+        {
+          "text": "{\"Id\":\"grp\",\"Type\":\"Move\",\"State\":\"Committed\",\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\photos\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"TimestampUtc\":\"2026-09-25T00:00:01Z\",\"Error\":null,\"GroupId\":\"cap\",\"GroupMembers\":[{\"Source\":\"C:\\\\photos\\\\grp.jpg\",\"Destination\":\"C:\\\\sel\\\\grp.jpg\",\"Size\":1,\"LastWriteUtc\":\"2026-09-25T00:00:00Z\",\"Permanent\":false}]}",
+          "eol": "\n"
+        }
+      ]
+    }
+  ]
+}

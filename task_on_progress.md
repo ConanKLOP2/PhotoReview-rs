@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-14 (branch `integration/wave-2`)
+**Updated:** 2026-10-15 (branch `wave3/contracts`)
 
 ## State
 - master: Wave 0 + Wave 1 + sync to C# baseline d92d6aae.
@@ -30,3 +30,16 @@
 1. Decide whether the 4 W2-14 mutants need a privileged-symlink test (CI with Developer Mode) or are accepted as equivalent.
 2. Phase 0 still open: UI spikes (R0001; C# moved to Win32 + Direct2D, ADR 0010), COM Explorer spike.
 3. Then Wave 3 (data safety) per docs/MULTI-AGENT-PLAN.md, with lessons from section 11.
+
+## Wave 3 contracts (branch `wave3/contracts`)
+- Wired: 8 contracts (`contracts/W3-01..08.md`), 12 stub files (`file_actions/{journal,transaction,compaction,
+  journal_rules,reconcile,startup_recovery,service,undo,recovery_retry,recovery_check,partial_cleanup}.rs`,
+  `io/journal_compaction_files.rs`), 8 oracle files in `tools/oracle-cs/Commands/` plus 15 dispatch lines,
+  15 inputs in `tests/golden-inputs/`, 15 goldens in `tests/golden/`.
+- Run: `tools/oracle.ps1 -Commit d92d6aae` once per command (15 runs, all built and ran); every golden regenerated a
+  second time and compared byte for byte: identical. No pre-existing golden changed.
+- Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
+  `cargo test --workspace --locked`: 1406 passed, 0 failed, 59 ignored (no new tests: stubs are `todo!()`).
+- NOT run: cargo-mutants; Rust tests against the new goldens (none written yet). Open decisions D26 (a)-(f) in
+  contracts/README.md are undecided; fixtures `operations-legacy.jsonl` and `journal-older-build/*.jsonl` are not synced.
+- Next: lead decides D26, Haiku ports tests per unit (red), then Opus porters in D23/D24 order.

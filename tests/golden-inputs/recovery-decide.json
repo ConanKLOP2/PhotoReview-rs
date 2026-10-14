@@ -1,0 +1,31 @@
+{
+  "types": [
+    "Move",
+    "Copy",
+    "Recycle"
+  ],
+  "states": [
+    "Prepared",
+    "Committed",
+    "Failed",
+    "Dismissed"
+  ],
+  "permanent": [
+    null,
+    true,
+    false
+  ],
+  "source_statuses": [
+    "Exists",
+    "Missing",
+    "Changed",
+    "Unreadable"
+  ],
+  "destination_statuses": [
+    null,
+    "Exists",
+    "Missing",
+    "Changed",
+    "Unreadable"
+  ]
+}

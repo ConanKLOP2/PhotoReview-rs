@@ -1,0 +1,2897 @@
+{
+ "command": "file-action-scenarios",
+ "cases": [
+  {
+   "name": "single-move-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-copy-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-recycle-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   }
+  },
+  {
+   "name": "single-move-absolute-destination-outside-is-allowed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "D:\\out"
+   },
+   "dirs": [
+    "D:\\"
+   ],
+   "probe_dirs": [
+    "D:\\out"
+   ]
+  },
+  {
+   "name": "single-move-nested-relative-destination-creates-parents",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel\\best\\keep"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel",
+    "C:\\photos\\sel\\best",
+    "C:\\photos\\sel\\best\\keep"
+   ]
+  },
+  {
+   "name": "single-move-unicode-file-name",
+   "files": [
+    {
+     "path": "C:\\photos\\ảnh & <x>.jpg",
+     "bytes": 3,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\ảnh & <x>.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "single-move-destination-with-trailing-separator",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel\\"
+   }
+  },
+  {
+   "name": "single-move-destination-forward-slash",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel/sub"
+   }
+  },
+  {
+   "name": "single-move-no-destination",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-move-whitespace-destination",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "   "
+   }
+  },
+  {
+   "name": "single-copy-empty-destination",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": ""
+   }
+  },
+  {
+   "name": "single-move-same-folder-absolute",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "C:\\PHOTOS"
+   }
+  },
+  {
+   "name": "single-move-same-folder-absolute-trailing-separator",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "C:\\photos\\"
+   }
+  },
+  {
+   "name": "single-move-parent-traversal",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "..\\other"
+   }
+  },
+  {
+   "name": "single-move-dot-segment-is-same-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "."
+   }
+  },
+  {
+   "name": "single-move-drive-relative",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "D:x"
+   }
+  },
+  {
+   "name": "single-move-rooted-without-drive",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "\\x"
+   }
+  },
+  {
+   "name": "single-move-invalid-char",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "se|l"
+   }
+  },
+  {
+   "name": "single-move-destination-exists",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\sel\\a.jpg",
+     "bytes": 2,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "single-move-source-missing-creates-no-folder",
+   "files": [],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-copy-source-missing",
+   "files": [],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-recycle-source-missing",
+   "files": [],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   }
+  },
+  {
+   "name": "single-move-source-without-folder",
+   "files": [],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "single-recycle-no-bin-not-allowed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ]
+   }
+  },
+  {
+   "name": "single-recycle-bin-cannot-hold",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 10
+    }
+   }
+  },
+  {
+   "name": "single-recycle-bin-holds-exactly",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 11
+    }
+   }
+  },
+  {
+   "name": "single-recycle-no-bin-allowed-does-not-ask-capacity",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": true
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "bin_capacity": {
+     "C:\\": 0
+    }
+   }
+  },
+  {
+   "name": "single-recycle-with-bin-ignores-allow-permanent",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": true
+   }
+  },
+  {
+   "name": "single-move-io-error",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\a.jpg": "disk on fire"
+    }
+   }
+  },
+  {
+   "name": "single-move-leaves-source",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "move_leaves_source": [
+     "C:\\photos\\a.jpg"
+    ]
+   }
+  },
+  {
+   "name": "single-move-size-changed-source-gone",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "move_truncate": {
+     "C:\\photos\\a.jpg": 4
+    }
+   }
+  },
+  {
+   "name": "single-copy-partial-unclaimed-is-kept",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_partial": {
+     "C:\\photos\\a.jpg": {
+      "bytes": 4,
+      "message": "disk full"
+     }
+    }
+   }
+  },
+  {
+   "name": "single-copy-fail-before-writing",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_fail": {
+     "C:\\photos\\a.jpg": "access denied"
+    }
+   }
+  },
+  {
+   "name": "single-copy-shorter-own-copy-is-removed",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_size": {
+     "C:\\photos\\a.jpg": 4
+    }
+   }
+  },
+  {
+   "name": "single-copy-longer-own-copy-is-kept",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_size": {
+     "C:\\photos\\a.jpg": 20
+    }
+   }
+  },
+  {
+   "name": "single-copy-foreign-file-appears-is-kept",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "foreign_on_copy": {
+     "C:\\photos\\a.jpg": 3
+    }
+   }
+  },
+  {
+   "name": "single-copy-complete-then-cancelled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_then_cancel": [
+     "C:\\photos\\a.jpg"
+    ]
+   }
+  },
+  {
+   "name": "single-recycle-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "recycle_fail": {
+     "C:\\photos\\a.jpg": "shell said no"
+    }
+   }
+  },
+  {
+   "name": "single-recycle-shell-leaves-file",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "recycle_leaves": [
+     "C:\\photos\\a.jpg"
+    ]
+   }
+  },
+  {
+   "name": "single-permanent-leaves-file",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": true
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "permanent_leaves": [
+     "C:\\photos\\a.jpg"
+    ]
+   }
+  },
+  {
+   "name": "single-permanent-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": true
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "permanent_fail": {
+     "C:\\photos\\a.jpg": "device not ready"
+    }
+   }
+  },
+  {
+   "name": "single-move-pre-cancelled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "pre_cancelled": true,
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-copy-pre-cancelled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Copy",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "pre_cancelled": true
+  },
+  {
+   "name": "single-recycle-pre-cancelled",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "pre_cancelled": true
+  },
+  {
+   "name": "single-move-override-moves-then-cancels",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "move_override": "move-then-cancel"
+  },
+  {
+   "name": "single-move-override-moves-then-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "move_override": "move-then-fail"
+  },
+  {
+   "name": "single-move-prepared-append-fails-removes-created-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-move-prepared-append-fails-removes-created-parents",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel\\best"
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel",
+    "C:\\photos\\sel\\best"
+   ]
+  },
+  {
+   "name": "single-move-prepared-append-fails-keeps-existing-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   },
+   "dirs": [
+    "C:\\photos\\sel"
+   ],
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-recycle-prepared-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   }
+  },
+  {
+   "name": "single-move-commit-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "single-recycle-commit-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Recycle",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false
+   },
+   "faults": {
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "single-move-failed-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\a.jpg": "disk on fire"
+    },
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "single-move-pre-cancelled-dismiss-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "pre_cancelled": true,
+   "faults": {
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "group-move-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-copy-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-recycle-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   }
+  },
+  {
+   "name": "group-move-without-xmp-ok",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-absolute-destination",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "D:\\out"
+   },
+   "dirs": [
+    "D:\\"
+   ]
+  },
+  {
+   "name": "group-move-no-destination",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   }
+  },
+  {
+   "name": "group-move-same-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "C:\\photos"
+   }
+  },
+  {
+   "name": "group-move-parent-traversal",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "..\\x"
+   }
+  },
+  {
+   "name": "group-move-relative-destination-members-in-other-folders",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\other\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\other\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-absolute-destination-members-in-other-folders",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\other\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\other\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "D:\\out"
+   },
+   "dirs": [
+    "D:\\"
+   ]
+  },
+  {
+   "name": "group-move-destination-exists-for-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\sel\\IMG_0001.CR3",
+     "bytes": 1,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-xmp-missing-is-skipped",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-raw-missing-is-skipped",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-only-sidecar-left",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-move-nothing-left",
+   "files": [],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-recycle-no-bin-not-allowed",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ]
+   }
+  },
+  {
+   "name": "group-recycle-capacity-fits-each-not-sum",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 100
+    }
+   }
+  },
+  {
+   "name": "group-recycle-capacity-fits-exact-sum",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 105
+    }
+   }
+  },
+  {
+   "name": "group-recycle-capacity-per-volume-second-overflows",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "E:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "E:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 50,
+     "E:\\": 59
+    }
+   }
+  },
+  {
+   "name": "group-recycle-capacity-per-volume-each-fits",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "E:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "E:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "bin_capacity": {
+     "C:\\": 50,
+     "E:\\": 60
+    }
+   }
+  },
+  {
+   "name": "group-recycle-permanent-member-does-not-count-against-capacity",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "E:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "E:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "E:\\"
+    ],
+    "bin_capacity": {
+     "C:\\": 45,
+     "E:\\": 0
+    }
+   }
+  },
+  {
+   "name": "group-recycle-all-no-bin-allowed",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ]
+   }
+  },
+  {
+   "name": "group-recycle-one-member-no-bin-allowed",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "E:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "E:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "E:\\"
+    ]
+   }
+  },
+  {
+   "name": "group-move-on-no-bin-drive-is-not-permanent",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ]
+   }
+  },
+  {
+   "name": "group-permanent-leaves-file",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "permanent_leaves": [
+     "C:\\photos\\IMG_0001.CR3"
+    ]
+   }
+  },
+  {
+   "name": "group-permanent-second-member-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "permanent_fail": {
+     "C:\\photos\\IMG_0001.CR3": "device not ready"
+    }
+   }
+  },
+  {
+   "name": "group-permanent-first-member-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": true,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "no_bin_roots": [
+     "C:\\"
+    ],
+    "permanent_fail": {
+     "C:\\photos\\IMG_0001.JPG": "device not ready"
+    }
+   }
+  },
+  {
+   "name": "group-move-second-member-fails-rolls-back",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated second-member failure"
+    }
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-move-rollback-blocked",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated second-member failure",
+     "C:\\photos\\sel\\IMG_0001.JPG": "rollback refused"
+    }
+   }
+  },
+  {
+   "name": "group-move-rollback-on-fat-rounded-stamp",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052012345678"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052012345678"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052012345678"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated"
+    },
+    "move_round_2s": true
+   }
+  },
+  {
+   "name": "group-move-leaves-source-of-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_leaves_source": [
+     "C:\\photos\\IMG_0001.CR3"
+    ]
+   }
+  },
+  {
+   "name": "group-move-size-changed-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_truncate": {
+     "C:\\photos\\IMG_0001.CR3": 7
+    }
+   }
+  },
+  {
+   "name": "group-move-same-path-twice",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.JPG",
+    "allow_permanent": false,
+    "destination": "sel"
+   }
+  },
+  {
+   "name": "group-move-third-member-fails-after-two-moved",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\IMG_0001.xmp": "sidecar locked"
+    }
+   }
+  },
+  {
+   "name": "group-copy-second-member-fails-deletes-own-copies",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated"
+    }
+   }
+  },
+  {
+   "name": "group-copy-partial-unclaimed-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_partial": {
+     "C:\\photos\\IMG_0001.CR3": {
+      "bytes": 4,
+      "message": "disk full"
+     }
+    }
+   }
+  },
+  {
+   "name": "group-copy-wrong-size-raw-is-rolled-back",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_size": {
+     "C:\\photos\\IMG_0001.CR3": 7
+    }
+   }
+  },
+  {
+   "name": "group-copy-foreign-file-appears-for-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "foreign_on_copy": {
+     "C:\\photos\\IMG_0001.CR3": 3
+    }
+   }
+  },
+  {
+   "name": "group-copy-rollback-delete-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated"
+    },
+    "delete_fail": {
+     "C:\\photos\\sel\\IMG_0001.JPG": "in use"
+    }
+   }
+  },
+  {
+   "name": "group-recycle-second-member-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "recycle_fail": {
+     "C:\\photos\\IMG_0001.CR3": "boom"
+    }
+   }
+  },
+  {
+   "name": "group-recycle-first-member-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "recycle_fail": {
+     "C:\\photos\\IMG_0001.JPG": "boom"
+    }
+   }
+  },
+  {
+   "name": "group-recycle-shell-leaves-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "recycle_leaves": [
+     "C:\\photos\\IMG_0001.CR3"
+    ]
+   }
+  },
+  {
+   "name": "group-move-override-moves-then-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "move_override": "move-then-fail"
+  },
+  {
+   "name": "group-move-pre-cancelled",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "pre_cancelled": true,
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-move-cancelled-during-first-member",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "cancel_on": {
+     "op": "move",
+     "path": "C:\\photos\\IMG_0001.JPG"
+    }
+   }
+  },
+  {
+   "name": "group-copy-cancelled-during-first-member",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "cancel_on": {
+     "op": "copy",
+     "path": "C:\\photos\\IMG_0001.JPG"
+    }
+   }
+  },
+  {
+   "name": "group-recycle-cancelled-during-first-member",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "cancel_on": {
+     "op": "recycle",
+     "path": "C:\\photos\\IMG_0001.JPG"
+    }
+   }
+  },
+  {
+   "name": "group-move-cancelled-after-folder-created",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "cancel_on": {
+     "op": "mkdir",
+     "path": "C:\\photos\\sel"
+    }
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-move-cancelled-after-folder-created",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "faults": {
+    "cancel_on": {
+     "op": "mkdir",
+     "path": "C:\\photos\\sel"
+    }
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "single-move-pre-cancelled-with-override-still-moves",
+   "files": [
+    {
+     "path": "C:\\photos\\a.jpg",
+     "bytes": 11,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "single",
+    "op": "Move",
+    "source": "C:\\photos\\a.jpg",
+    "allow_permanent": false,
+    "destination": "sel"
+   },
+   "pre_cancelled": true,
+   "move_override": "move-then-fail"
+  },
+  {
+   "name": "group-copy-complete-then-cancelled-raw",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Copy",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "copy_then_cancel": [
+     "C:\\photos\\IMG_0001.CR3"
+    ]
+   }
+  },
+  {
+   "name": "group-move-override-moves-then-cancels",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "move_override": "move-then-cancel"
+  },
+  {
+   "name": "group-move-prepared-append-fails-removes-created-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   },
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-move-prepared-append-fails-keeps-existing-folder",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     1
+    ]
+   },
+   "dirs": [
+    "C:\\photos\\sel"
+   ],
+   "probe_dirs": [
+    "C:\\photos\\sel"
+   ]
+  },
+  {
+   "name": "group-move-commit-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "group-move-rolled-back-dismiss-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Move",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp",
+    "destination": "sel"
+   },
+   "faults": {
+    "move_fail": {
+     "C:\\photos\\IMG_0001.CR3": "simulated"
+    },
+    "append_fail": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "group-recycle-failed-append-fails",
+   "files": [
+    {
+     "path": "C:\\photos\\IMG_0001.JPG",
+     "bytes": 40,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.CR3",
+     "bytes": 60,
+     "ticks": "639254052000000000"
+    },
+    {
+     "path": "C:\\photos\\IMG_0001.xmp",
+     "bytes": 5,
+     "ticks": "639254052000000000"
+    }
+   ],
+   "request": {
+    "kind": "group",
+    "op": "Recycle",
+    "jpeg": "C:\\photos\\IMG_0001.JPG",
+    "raw": "C:\\photos\\IMG_0001.CR3",
+    "allow_permanent": false,
+    "xmp": "C:\\photos\\IMG_0001.xmp"
+   },
+   "faults": {
+    "recycle_fail": {
+     "C:\\photos\\IMG_0001.CR3": "boom"
+    },
+    "append_fail": [
+     2
+    ]
+   }
+  }
+ ]
+}
