@@ -91,7 +91,6 @@ fn try_get_file_stat_physical_matches_the_recovery_check_goldens() {
             "pr-oracle-no-such-file-w307.jpg".to_owned(),
         ),
         ("p-component-300-chars", format!(r"{dir}\{}.jpg", "a".repeat(300))),
-        ("p-path-40000-chars", format!(r"{dir}\{}", r"aaaaaaaaa\".repeat(4000))),
         ("p-reserved-device-name", format!(r"{dir}\CON")),
         (
             "p-unc-missing-server",
@@ -102,6 +101,24 @@ fn try_get_file_stat_physical_matches_the_recovery_check_goldens() {
             Ok(None) => {}
             other => panic!("{name}: expected Ok(None), got {other:?}"),
         }
+    }
+
+    // p-path-40000-chars: Path.GetFullPath throws PathTooLongException (an IOException) for a resolved path longer than
+    // the OS limit, so C# RecoveryFileCheck says Unreadable; here it is Err with ERROR_FILENAME_EXCED_RANGE (206).
+    for (name, path) in [
+        ("p-path-40000-chars", format!(r"{dir}\{}.jpg", "a".repeat(40000))),
+        (
+            "p-path-40000-chars-nested",
+            format!(r"{dir}\{}", r"aaaaaaaaa\".repeat(4000)),
+        ),
+    ] {
+        let err = fs.try_get_file_stat(Path::new(&path)).unwrap_err();
+        assert_eq!(err.raw_os_error(), Some(206), "{name}: {err:?}");
+        assert_eq!(
+            fs.get_file_stat(Path::new(&path)),
+            None,
+            "{name}: get_file_stat unchanged"
+        );
     }
 
     for (name, path) in [

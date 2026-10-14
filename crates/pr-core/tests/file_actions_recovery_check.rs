@@ -1329,3 +1329,11 @@ fn golden_recovery_check_physical_cases_match_oracle() {
         failures.join("\n")
     );
 }
+
+/// Rust-only: `RecoveryFileCheck` holds an `Arc<dyn FileSystem>` (no `Debug`), so its `Debug` is written by hand; the
+/// Recovery presenter logs it. Kills the `fmt -> Ok(Default::default())` mutant (empty output).
+#[test]
+fn debug_recovery_file_check_names_the_type() {
+    let check = RecoveryFileCheck::new(Arc::new(FakeFileSystem::new()));
+    assert_eq!(format!("{check:?}"), "RecoveryFileCheck { .. }");
+}
