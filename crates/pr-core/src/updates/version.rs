@@ -174,8 +174,9 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
     } else if let Some(f) = query_frag.strip_prefix('#') {
         fragment = Some(f);
     }
+    let iri_rewrite = needs_iri_rewrite(after);
 
-    let path = remove_dot_segments(&escape_uri_part(raw_path, true));
+    let path = remove_dot_segments(&escape_uri_part(raw_path, Part::Path, iri_rewrite));
 
     // 5. Allow-list.
     const PROJECT: &str = "/ConanKLOP2/PhotoReview";
@@ -196,17 +197,34 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
     out.push_str(&path);
     if let Some(q) = query {
         out.push('?');
-        out.push_str(&escape_uri_part(q, false));
+        out.push_str(&escape_uri_part(q, Part::Query, iri_rewrite));
     }
     if let Some(f) = fragment {
         out.push('#');
-        out.push_str(&escape_uri_part(f, false));
+        out.push_str(&escape_uri_part(f, Part::Fragment, iri_rewrite));
     }
     Some(out)
 }
 
-fn hex_val(c: char) -> Option<u8> {
-    c.to_digit(16).map(|d| d as u8)
+/// Hex value of a UTF-16 code unit that is an ASCII hex digit (either case).
+fn hex_val(unit: u16) -> Option<u8> {
+    char::from_u32(u32::from(unit))
+        .and_then(|c| c.to_digit(16))
+        .map(|d| d as u8)
+}
+
+/// The byte encoded by `%XX` at `units[i..i + 3]`, if those three units are `%` and two hex digits.
+fn escape_at(units: &[u16], i: usize) -> Option<u8> {
+    if units.get(i) != Some(&u16::from(b'%')) {
+        return None;
+    }
+    let hi = hex_val(*units.get(i + 1)?)?;
+    let lo = hex_val(*units.get(i + 2)?)?;
+    Some(hi * 16 + lo)
+}
+
+fn is_unreserved(b: u8) -> bool {
+    b.is_ascii_alphanumeric() || matches!(b, b'-' | b'.' | b'_' | b'~')
 }
 
 fn push_escaped(out: &mut String, byte: u8) {
@@ -214,45 +232,39 @@ fn push_escaped(out: &mut String, byte: u8) {
     out.push_str(&format!("{byte:02X}"));
 }
 
-/// Escapes a path (`is_path`: `\` becomes `/`) or query/fragment (`\` becomes `%5C`) the way `System.Uri` does for
-/// the subset of inputs the update-URL policy sees.
-fn escape_uri_part(input: &str, is_path: bool) -> String {
-    let chars: Vec<char> = input.chars().collect();
-    let escape_at = |i: usize| -> Option<u8> {
-        if chars.get(i) == Some(&'%') {
-            let hi = hex_val(*chars.get(i + 1)?)?;
-            let lo = hex_val(*chars.get(i + 2)?)?;
-            Some(hi * 16 + lo)
-        } else {
-            None
-        }
-    };
-    let mut out = String::with_capacity(input.len());
+const REPLACEMENT: u16 = 0xFFFD;
+
+/// Pass 1 (`IriHelper.EscapeUnescapeIri`), on UTF-16 code units like .NET: decodes `%XX` escapes of ASCII
+/// unreserved chars and of complete, valid UTF-8 sequences; keeps every other escape verbatim. A `%` with at least
+/// two more units after it that does NOT start a valid escape is copied TOGETHER WITH the next two units, unexamined
+/// (so in `%%2E` the `%2E` is never decoded, and in `%%<emoji>` the high surrogate is split from its low half).
+/// A `%` with fewer than two units after it is copied alone. Lone surrogates become U+FFFD.
+fn unescape_iri(units: &[u16], is_query: bool) -> Vec<u16> {
+    let n = units.len();
+    let mut out = Vec::with_capacity(n);
     let mut i = 0;
-    while i < chars.len() {
-        let c = chars[i];
-        if c == '%' {
-            match escape_at(i) {
-                None => {
-                    out.push_str("%25");
-                    i += 1;
-                }
-                Some(b) if b < 0x80 => {
-                    if b.is_ascii_alphanumeric() || matches!(b, b'-' | b'.' | b'_' | b'~') {
-                        out.push(b as char);
-                    } else {
-                        out.extend(&chars[i..i + 3]);
-                    }
+    while i < n {
+        let c = units[i];
+        if c == u16::from(b'%') {
+            if n - i <= 2 {
+                out.push(c);
+                i += 1;
+                continue;
+            }
+            match escape_at(units, i) {
+                // `%20` is decoded too; pass 2 re-escapes the space, so it only matters for the fragment trim.
+                Some(b) if b < 0x80 && (is_unreserved(b) || b == b' ') => {
+                    out.push(u16::from(b));
                     i += 3;
                 }
-                Some(_) => {
+                Some(b) if b >= 0x80 => {
                     let mut run: Vec<u8> = Vec::new();
                     let mut j = i;
-                    while let Some(b) = escape_at(j) {
-                        if b < 0x80 {
+                    while let Some(rb) = escape_at(units, j) {
+                        if rb < 0x80 {
                             break;
                         }
-                        run.push(b);
+                        run.push(rb);
                         j += 3;
                     }
                     let need = match run[0] {
@@ -261,38 +273,156 @@ fn escape_uri_part(input: &str, is_path: bool) -> String {
                         0xF0..=0xF4 => 4,
                         _ => 0,
                     };
-                    if need > 0 && run.len() >= need && std::str::from_utf8(&run[..need]).is_ok() {
-                        for &b in &run[..need] {
-                            push_escaped(&mut out, b);
+                    let decoded = run.get(..need).and_then(|seq| std::str::from_utf8(seq).ok());
+                    match decoded {
+                        Some(text) if need > 0 && text.chars().all(|ch| is_iri_char(ch, is_query)) => {
+                            out.extend(text.encode_utf16());
+                            i += 3 * need;
                         }
-                        i += 3 * need;
-                    } else {
-                        out.extend(&chars[i..i + 3]);
-                        i += 3;
+                        _ => {
+                            out.extend_from_slice(&units[i..i + 3]);
+                            i += 3;
+                        }
                     }
+                }
+                _ => {
+                    // Not a valid escape, or an ASCII escape that is not unreserved: three units verbatim.
+                    out.extend_from_slice(&units[i..i + 3]);
+                    i += 3;
                 }
             }
             continue;
         }
-        i += 1;
-        if c == '\\' {
-            if is_path {
-                out.push('/');
-            } else {
-                out.push_str("%5C");
-            }
-        } else if (c as u32) <= 0x20 || c as u32 == 0x7F || matches!(c, '"' | '<' | '>' | '^' | '`' | '{' | '|' | '}') {
-            push_escaped(&mut out, c as u32 as u8);
-        } else if c.is_ascii() {
-            out.push(c);
+        if is_high_surrogate(c) && units.get(i + 1).is_some_and(|&d| is_low_surrogate(d)) {
+            out.extend_from_slice(&units[i..i + 2]);
+            i += 2;
+        } else if is_high_surrogate(c) || is_low_surrogate(c) {
+            out.push(REPLACEMENT);
+            i += 1;
         } else {
-            let mut buf = [0u8; 4];
-            for &b in c.encode_utf8(&mut buf).as_bytes() {
-                push_escaped(&mut out, b);
-            }
+            out.push(c);
+            i += 1;
         }
     }
     out
+}
+
+/// `IriHelper.CheckIriUnicodeRange` (RFC 3987 `ucschar`, plus `iprivate` in a query) minus the bidi controls that
+/// .NET never unescapes: only such chars are decoded from a UTF-8 escape sequence; the rest stay escaped verbatim.
+fn is_iri_char(ch: char, is_query: bool) -> bool {
+    let cp = u32::from(ch);
+    if cp < 0x10000 {
+        return matches!(cp, 0xA0..=0xD7FF | 0xF900..=0xFDCF | 0xFDF0..=0xFFEF)
+            || (is_query && (0xE000..=0xF8FF).contains(&cp));
+    }
+    let in_plane = cp & 0xFFFF;
+    if in_plane >= 0xFFFE {
+        return false;
+    }
+    cp <= 0xEFFFD && !(0xE0000..=0xE0FFF).contains(&cp) || (is_query && cp >= 0xF0000)
+}
+
+fn is_high_surrogate(u: u16) -> bool {
+    (0xD800..=0xDBFF).contains(&u)
+}
+
+fn is_low_surrogate(u: u16) -> bool {
+    (0xDC00..=0xDFFF).contains(&u)
+}
+
+/// Pass 2 (`UriHelper.EscapeString` with `checkExistingEscaped`): keeps valid `%XX` escapes verbatim, escapes a
+/// stray `%` as `%25`, escapes control/space/unsafe ASCII and every non-ASCII char (UTF-8, uppercase hex; a lone
+/// surrogate as U+FFFD). In a path (`is_path`) `\` becomes `/`, elsewhere it is escaped as `%5C`.
+fn escape_units(units: &[u16], is_path: bool) -> String {
+    let n = units.len();
+    let mut out = String::with_capacity(n);
+    let mut i = 0;
+    while i < n {
+        let c = units[i];
+        if c == u16::from(b'%') {
+            if escape_at(units, i).is_some() {
+                for &u in &units[i..i + 3] {
+                    out.push(char::from(u as u8));
+                }
+                i += 3;
+            } else {
+                out.push_str("%25");
+                i += 1;
+            }
+            continue;
+        }
+        if c < 0x80 {
+            let b = c as u8;
+            if b == b'\\' {
+                if is_path {
+                    out.push('/');
+                } else {
+                    out.push_str("%5C");
+                }
+            } else if b <= 0x20 || b == 0x7F || matches!(b, b'"' | b'<' | b'>' | b'^' | b'`' | b'{' | b'|' | b'}') {
+                push_escaped(&mut out, b);
+            } else {
+                out.push(char::from(b));
+            }
+            i += 1;
+            continue;
+        }
+        let (ch, used) = if is_high_surrogate(c) && units.get(i + 1).is_some_and(|&d| is_low_surrogate(d)) {
+            let hi = u32::from(c - 0xD800);
+            let lo = u32::from(units[i + 1] - 0xDC00);
+            (char::from_u32(0x10000 + (hi << 10) + lo), 2)
+        } else {
+            (char::from_u32(u32::from(c)), 1)
+        };
+        let ch = ch.unwrap_or(char::REPLACEMENT_CHARACTER);
+        let mut buf = [0u8; 4];
+        for &b in ch.encode_utf8(&mut buf).as_bytes() {
+            push_escaped(&mut out, b);
+        }
+        i += used;
+    }
+    out
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Part {
+    Path,
+    Query,
+    Fragment,
+}
+
+/// Whether .NET takes its IRI rewrite path for this URI (`raw` = everything after the authority): it holds a
+/// non-ASCII char, or a `%` that is not the start of an escape of a reserved/unsafe ASCII char (an unreserved-char
+/// escape, an escape of a byte >= 0x80, or a `%` without two hex digits after it). Only that path trims the
+/// fragment's trailing white space (see [`escape_uri_part`]).
+fn needs_iri_rewrite(raw: &str) -> bool {
+    let units: Vec<u16> = raw.encode_utf16().collect();
+    units.iter().enumerate().any(|(i, &u)| {
+        u >= 0x80
+            || (u == u16::from(b'%')
+                && match escape_at(&units, i) {
+                    Some(b) => b >= 0x80 || is_unreserved(b),
+                    None => true,
+                })
+    })
+}
+
+/// Escapes a path, query or fragment the way `System.Uri.AbsoluteUri` does for the inputs the update-URL policy
+/// sees: [`unescape_iri`] then [`escape_units`]. On the IRI rewrite path (`iri_rewrite`) .NET also drops the
+/// fragment's trailing space, tab, LF and CR chars (literal, or a space decoded from `%20`): `#%41%20` gives `#A`
+/// while `#a%20` (no rewrite) keeps `#a%20`.
+fn escape_uri_part(input: &str, part: Part, iri_rewrite: bool) -> String {
+    let units: Vec<u16> = input.encode_utf16().collect();
+    let mut unescaped = unescape_iri(&units, part == Part::Query);
+    if iri_rewrite && part == Part::Fragment {
+        while unescaped
+            .last()
+            .is_some_and(|&u| matches!(u, 0x20 | 0x09 | 0x0A | 0x0D))
+        {
+            unescaped.pop();
+        }
+    }
+    escape_units(&unescaped, part == Part::Path)
 }
 
 /// RFC 3986 dot-segment removal on an absolute path (starts with `/`).

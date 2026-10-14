@@ -222,3 +222,77 @@ fn golden_update_url_policy() {
         assert_eq!(validate_update_url(url).as_deref(), expected, "{case}");
     }
 }
+
+// C#: (no direct test) UpdateUrlPolicy.Validate, System.Uri escape edge cases. Every expected value below was
+// produced by the C# UpdateUrlPolicy.Validate (e441d67a) on .NET 10.
+#[test]
+fn validate_matches_net_uri_escape_edge_cases() {
+    const P: &str = "https://github.com/ConanKLOP2/PhotoReview";
+    let rows: &[(&str, &str)] = &[
+        // A lead byte followed by an invalid continuation stays verbatim (case kept).
+        ("/%c3%c3", "/%c3%c3"),
+        ("/%c3%28", "/%c3%28"),
+        ("/%e0%41", "/%e0A"),
+        // An invalid `%` swallows the next two chars unexamined, so an escape right after it is not decoded.
+        ("/%%2E", "/%25%2E"),
+        ("/%%41", "/%25%41"),
+        ("/%A%2E", "/%25A%2E"),
+        ("/%zz%2E", "/%25zz."),
+        ("/%%%2E", "/%25%25%2E"),
+        ("/%%%%2E", "/%25%25%25."),
+        ("?%A%2E", "?%25A%2E"),
+        ("#%%2E", "#%25%2E"),
+        ("/x/%%2E%2E/y", "/x/%25%2E./y"),
+        ("/x/%2E%2E/y", "/y"),
+        // ...and it works on UTF-16 units: the emoji's surrogate pair is split, each half becomes U+FFFD.
+        ("/%%\u{1F600}", "/%25%25%EF%BF%BD%EF%BF%BD"),
+        // Decoded UTF-8 must be an IRI char (RFC 3987 ucschar; iprivate only in the query), else kept verbatim.
+        ("/%c2%85", "/%c2%85"),
+        ("/%c2%a0", "/%C2%A0"),
+        ("/%ef%bf%be", "/%ef%bf%be"),
+        ("/%ee%80%80", "/%ee%80%80"),
+        ("?%ee%80%80", "?%EE%80%80"),
+        ("#%ee%80%80", "#%ee%80%80"),
+        ("/%f3%b0%80%80", "/%f3%b0%80%80"),
+        ("?%f3%b0%80%80", "?%F3%B0%80%80"),
+        ("/%f3%a0%80%81", "/%f3%a0%80%81"),
+        ("/%f3%a1%80%80", "/%F3%A1%80%80"),
+        ("/%e2%80%8e", "/%E2%80%8E"),
+        // On the IRI rewrite path the fragment loses its trailing white space (also a decoded `%20`).
+        ("#\u{e9}%20", "#%C3%A9"),
+        ("#\u{e9}%2e%20", "#%C3%A9."),
+        ("#%41%20", "#A"),
+        ("#\u{e9}%2e%20%20", "#%C3%A9."),
+        ("#\u{e9}\t%20", "#%C3%A9"),
+        ("/%41#a%20", "/A#a"),
+        ("/%zz#%20", "/%25zz#"),
+        // ...but not without that path, not mid-fragment, not in path or query, not after a swallowed `%`.
+        ("#a%20", "#a%20"),
+        ("#%20", "#%20"),
+        ("/%22#%20", "/%22#%20"),
+        ("#\u{e9}%20b", "#%C3%A9%20b"),
+        ("/\u{e9}%2e%20", "/%C3%A9.%20"),
+        ("?\u{e9}%20", "?%C3%A9%20"),
+        ("#%%20", "#%25%20"),
+    ];
+    for &(input, expected) in rows {
+        let url = format!("{P}{input}");
+        let want = format!("{P}{expected}");
+        assert_eq!(
+            validate_update_url(Some(&url)).as_deref(),
+            Some(want.as_str()),
+            "{url:?}"
+        );
+    }
+}
+
+// C#: (no direct test) UpdateUrlPolicy.Validate, both chars after `https:` must be separators.
+#[test]
+fn validate_requires_two_separators_after_scheme() {
+    for url in [
+        "https:/Xgithub.com/ConanKLOP2/PhotoReview",
+        "https:X/github.com/ConanKLOP2/PhotoReview",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url}");
+    }
+}
