@@ -11,16 +11,17 @@
 //!
 //! The catalog does NOT use `GenerationClock`; stale-result dropping (INV-1/5/7) is done by its callers
 //! (`FolderLoadCoordinator`, `FileActionController`) with `StructuralVersion` / generations they hold themselves.
-// Temporary (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::thread::ThreadId;
 
-use crate::catalog::types::{CaptureGroup, CatalogEntry};
+use crate::catalog::capture_groups;
+use crate::catalog::types::{
+    CaptureGroup, CatalogEntry, RAW_EXTENSIONS, SUPPORTED_EXTENSIONS, WEBP_HEIC_EXTENSIONS, extension_in, get_extension,
+};
 use crate::model::RawPairMode;
+use crate::text::{eq_ignore_case, ignore_case_key};
 use crate::time::DateTimeUtc;
 
 /// `MaxRemovedBeforeRebuild`: after this many incremental removals the next lookup rebuilds the whole path index.
@@ -76,16 +77,23 @@ impl ReviewCatalog {
 
     /// `BindToCurrentThread()`: remembers `std::thread::current().id()` as the owner.
     pub fn bind_to_current_thread(&mut self) {
-        todo!()
+        self.owner_thread = Some(std::thread::current().id());
     }
 
-    /// `AssertOwnerThread(member)` (`[Conditional("DEBUG")]`): when `cfg!(debug_assertions)` and the catalog is bound to
-    /// another thread than the caller, panic with exactly
-    /// `"ReviewCatalog.{member} called on thread {current:?}; the catalog is bound to thread {owner:?} (UI thread only, ADR 0005)."`
-    /// where `member` is the C# method name (`"Reset"`, `"SetCurrent"`, ...). Unbound or same thread: nothing. Reads never
-    /// check. Every mutator calls it first with its C# name.
+    /// `AssertOwnerThread(member)` (`[Conditional("DEBUG")]`): in builds with `debug_assertions`, panics when the catalog
+    /// is bound to another thread than the caller. Unbound or same thread: nothing. Reads never check.
     fn assert_owner_thread(&self, member: &str) {
-        todo!()
+        if !cfg!(debug_assertions) {
+            return;
+        }
+        if let Some(owner) = self.owner_thread {
+            let current = std::thread::current().id();
+            if owner != current {
+                panic!(
+                    "ReviewCatalog.{member} called on thread {current:?}; the catalog is bound to thread {owner:?} (UI thread only, ADR 0005)."
+                );
+            }
+        }
     }
 
     /// `StructuralVersion`: bumped (wrapping `i32`) whenever membership or order changes (Reset, Remove, Restore,
@@ -107,61 +115,105 @@ impl ReviewCatalog {
 
     /// `Current`: the entry at `current_index` or `None` (empty catalog, or index out of range).
     pub fn current(&self) -> Option<&CatalogEntry> {
-        todo!()
+        usize::try_from(self.current_index)
+            .ok()
+            .and_then(|index| self.entries.get(index))
     }
 
     /// `Paths`: the entry paths in order (a capture-group entry contributes only its own representative path). Cached in
     /// an `Arc<[String]>` that is rebuilt after any structural change; a previously returned `Arc` is a snapshot and
     /// is never mutated.
     pub fn paths(&self) -> Arc<[String]> {
-        todo!()
+        let mut cache = self.paths_cache.borrow_mut();
+        if let Some(cached) = cache.as_ref() {
+            return Arc::clone(cached);
+        }
+        let built: Arc<[String]> = self.entries.iter().map(|e| e.path().to_owned()).collect();
+        *cache = Some(Arc::clone(&built));
+        built
     }
 
     /// `PathAt(index)`: the path of entry `index`. Panics when out of range (C# `ArgumentOutOfRangeException`: a caller bug).
     pub fn path_at(&self, index: usize) -> &str {
-        todo!()
+        self.entries[index].path()
     }
 
     /// `IndexOf(path)`: index of the entry whose path, OR (capture group) whose other image-member path, equals `path`
-    /// OrdinalIgnoreCase; the FIRST such entry wins; `-1` for blank (`trim().is_empty()`) or unknown paths and for
-    /// paths of removed entries. Rebuilds the index lazily when dirty (counts in `index_rebuild_count_for_tests`).
-    /// With `removed_positions` empty the stored position is returned; otherwise `-1` if the stored position is itself in
-    /// `removed_positions`, else `stored - (count of removed positions below stored)`.
+    /// OrdinalIgnoreCase; the FIRST such entry wins; `-1` for blank or unknown paths and for paths of removed entries.
     pub fn index_of(&self, path: &str) -> i32 {
-        todo!()
+        if path.trim().is_empty() {
+            return -1;
+        }
+        self.ensure_index();
+        let stored = match self.index_by_path.borrow().get(&ignore_case_key(path)) {
+            Some(&stored) => stored,
+            None => return -1,
+        };
+        let removed = self.removed_positions.borrow();
+        if removed.is_empty() {
+            return stored;
+        }
+        match removed.binary_search(&stored) {
+            Ok(_) => -1,
+            // `Err(n)`: `n` removed positions lie below `stored`.
+            Err(below) => stored - below as i32,
+        }
     }
 
-    /// `EnsureIndex()`: no-op when clean; else clear the map and `removed_positions`, clear
-    /// `index_has_duplicate_keys`, bump the rebuild counter, then for each entry `i`: `try_add(key(entry.path), i)` (FIRST
-    /// occurrence wins; a failed add sets `index_has_duplicate_keys`), and for a capture-group entry also
-    /// `try_add(key(member), i)` for each `image_paths` member that is not the entry's own path (OrdinalIgnoreCase;
-    /// a failed add sets the duplicate flag too). Finally mark clean.
+    /// `EnsureIndex()`: no-op when clean; else rebuild the path index (first occurrence wins).
     fn ensure_index(&self) {
-        todo!()
+        if !self.index_dirty.get() {
+            return;
+        }
+        let mut map = self.index_by_path.borrow_mut();
+        map.clear();
+        self.removed_positions.borrow_mut().clear();
+        let mut duplicates = false;
+        self.index_rebuild_count.set(self.index_rebuild_count.get() + 1);
+        for (i, entry) in self.entries.iter().enumerate() {
+            let position = i as i32;
+            if try_add(&mut map, entry.path(), position) {
+                duplicates = true;
+            }
+            if let Some(group) = &entry.capture_group {
+                for member in group.image_paths() {
+                    if !eq_ignore_case(member, entry.path()) && try_add(&mut map, member, position) {
+                        duplicates = true;
+                    }
+                }
+            }
+        }
+        self.index_has_duplicate_keys.set(duplicates);
+        self.index_dirty.set(false);
     }
 
     /// `InvalidateIndex()`: index dirty, paths cache dropped, `structural_version += 1` (wrapping).
     fn invalidate_index(&mut self) {
-        todo!()
+        self.index_dirty.set(true);
+        *self.paths_cache.borrow_mut() = None;
+        self.structural_version = self.structural_version.wrapping_add(1);
     }
 
-    /// `Reset(entries, rawPairMode, sidecarPaths)`: owner check; keep only entries with a non-blank path (always true for a
-    /// valid `CatalogEntry`, keep the filter for parity); `capture_groups::group_entries(&fresh, raw_pair_mode, sidecar_paths)`;
+    /// `Reset(entries, rawPairMode, sidecarPaths)`: owner check; keep only entries with a non-blank path; group pairs;
     /// replace all entries; remember the mode; `current_index = 0` if non-empty else `-1`; `invalidate_index`.
-    /// Calling it with `Separate` and no sidecars is the "plain paths" reset used by tests and the unpaired load.
     pub fn reset(&mut self, entries: Vec<CatalogEntry>, raw_pair_mode: RawPairMode, sidecar_paths: Option<&[String]>) {
-        todo!()
+        self.assert_owner_thread("Reset");
+        let fresh: Vec<CatalogEntry> = entries.into_iter().filter(|e| !e.path().trim().is_empty()).collect();
+        self.entries = capture_groups::group_entries(&fresh, raw_pair_mode, sidecar_paths);
+        self.raw_pair_mode = raw_pair_mode;
+        self.current_index = if self.entries.is_empty() { -1 } else { 0 };
+        self.invalidate_index();
     }
 
     /// `Find(path)`: the entry `index_of(path)` points to.
     pub fn find(&self, path: &str) -> Option<&CatalogEntry> {
-        todo!()
+        usize::try_from(self.index_of(path))
+            .ok()
+            .and_then(|index| self.entries.get(index))
     }
 
-    /// `UpdateMetadata(path, length, lastWriteUtc, width, height)`: owner check; false when `index_of(path) < 0`, and ALSO
-    /// false (nothing changes) when the entry found is not the entry whose own path equals `path` (OrdinalIgnoreCase): a
-    /// capture-group entry found through its other member must not get that member's stat. Otherwise replace the entry
-    /// by `entry.with_metadata(length, last_write_utc, width, height)` and return true. No version bump, no index change.
+    /// `UpdateMetadata(path, length, lastWriteUtc, width, height)`: false when the path is unknown or is only a
+    /// capture-group member path (the stat belongs to ONE file); no version bump, no index change.
     pub fn update_metadata(
         &mut self,
         path: &str,
@@ -170,45 +222,104 @@ impl ReviewCatalog {
         width: Option<i32>,
         height: Option<i32>,
     ) -> bool {
-        todo!()
+        self.assert_owner_thread("UpdateMetadata");
+        let Ok(index) = usize::try_from(self.index_of(path)) else {
+            return false;
+        };
+        if !eq_ignore_case(self.entries[index].path(), path) {
+            return false;
+        }
+        self.entries[index] = self.entries[index].with_metadata(length, last_write_utc, width, height);
+        true
     }
 
-    /// `SetCurrent(index)`: owner check; empty catalog and `index == -1` => `current_index = -1`, true; `0 <= index < count`
-    /// => set, true; else false and unchanged.
+    /// `SetCurrent(index)`: empty catalog and `index == -1` => `-1`, true; `0 <= index < count` => set, true; else false.
     pub fn set_current(&mut self, index: i32) -> bool {
-        todo!()
+        self.assert_owner_thread("SetCurrent");
+        if self.entries.is_empty() && index == -1 {
+            self.current_index = -1;
+            return true;
+        }
+        if index >= 0 && (index as usize) < self.entries.len() {
+            self.current_index = index;
+            return true;
+        }
+        false
     }
 
-    /// `Remove(path)`: owner check; returns the new `current_index`.
-    /// * `removed = index_of(path)`; `< 0` => return the unchanged `current_index`.
-    /// * Fast path (when `!index_has_duplicate_keys && removed_positions.len() < MAX_REMOVED_BEFORE_REBUILD` and the map has
-    ///   `key(path)`): insert that stored position into the sorted `removed_positions`, remove the entry, drop the paths
-    ///   cache, `structural_version += 1`; the index stays clean. Otherwise remove the entry and `invalidate_index`.
-    /// * Now empty => `current_index = -1`, return -1.
-    /// * `current >= 0 && removed < current` => `current_index = current - 1`, return it; `current >= 0 && removed > current`
-    ///   => unchanged; otherwise (removed the current entry, or there was none) `next = min(max(removed, 0), count - 1)`,
-    ///   set and return it (the entry that took its place, or the last one).
+    /// `Remove(path)`: returns the new `current_index`. Incremental fast path keeps the index stale and records the
+    /// stored position in the sorted `removed_positions`.
     pub fn remove(&mut self, path: &str) -> i32 {
-        todo!()
+        self.assert_owner_thread("Remove");
+        let removed = self.index_of(path);
+        let Ok(removed_at) = usize::try_from(removed) else {
+            return self.current_index;
+        };
+
+        let stored = if !self.index_has_duplicate_keys.get()
+            && self.removed_positions.borrow().len() < MAX_REMOVED_BEFORE_REBUILD
+        {
+            self.index_by_path.borrow().get(&ignore_case_key(path)).copied()
+        } else {
+            None
+        };
+        if let Some(stored) = stored {
+            {
+                let mut positions = self.removed_positions.borrow_mut();
+                let at = positions.binary_search(&stored).unwrap_or_else(|e| e);
+                positions.insert(at, stored);
+            }
+            self.entries.remove(removed_at);
+            *self.paths_cache.borrow_mut() = None;
+            self.structural_version = self.structural_version.wrapping_add(1);
+        } else {
+            self.entries.remove(removed_at);
+            self.invalidate_index();
+        }
+
+        if self.entries.is_empty() {
+            self.current_index = -1;
+            return -1;
+        }
+
+        let current = self.current_index;
+        if current >= 0 && removed < current {
+            self.current_index = current - 1;
+            return self.current_index;
+        }
+        if current >= 0 && removed > current {
+            return current;
+        }
+        let next = removed.max(0).min(self.entries.len() as i32 - 1);
+        self.current_index = next;
+        next
     }
 
-    /// `Restore(path, index)`: owner check; false for a blank path or when `index_of(path) >= 0` (no duplicates). Else insert
-    /// `CatalogEntry::new(path)` at `clamp(index, 0, count)`, `invalidate_index`; `current_index == -1` => becomes the
-    /// inserted index; else if `inserted <= current_index` => `current_index += 1`. True.
+    /// `Restore(path, index)`: false for a blank path or an already listed one; else insert at `clamp(index, 0, count)`.
     pub fn restore(&mut self, path: &str, index: i32) -> bool {
-        todo!()
+        self.assert_owner_thread("Restore");
+        if path.trim().is_empty() {
+            return false;
+        }
+        if self.index_of(path) >= 0 {
+            return false;
+        }
+        let Ok(entry) = CatalogEntry::new(path) else {
+            return false;
+        };
+        let clamped = index.clamp(0, self.entries.len() as i32);
+        self.entries.insert(clamped as usize, entry);
+        self.invalidate_index();
+        if self.current_index == -1 {
+            self.current_index = clamped;
+        } else if clamped <= self.current_index {
+            self.current_index += 1;
+        }
+        true
     }
 
-    /// `RestoreMembers(paths, index, group, rawEnabled)` (undo of a recycle/move of a plain photo or a whole capture). True
-    /// when at least one entry was restored or re-formed. Steps (see contracts/W2-10.md for the line-by-line description):
-    /// owner check; `group = None` when `!raw_enabled`; `all` = non-blank `paths`, distinct OrdinalIgnoreCase, input order;
-    /// `reformed = try_reform_group(&all, group)`; when reformed drop the group's image members from `all`;
-    /// `unique` = `all` filtered by `is_restorable_image(p, raw_enabled)` and `index_of(p) < 0`; empty => return `reformed`;
-    /// in a pairing mode build the groups (the explicit `group` when BOTH its image members are in `unique`, plus
-    /// `capture_groups::build(rest, xmp paths of all)`); emit entries in `unique` order (a group's single entry, with
-    /// `get_representative_path(mode)`, at the position of its first member; non-members as plain `CatalogEntry::new(path)`);
-    /// insert at `clamp(index, 0, count)`; `invalidate_index`; `current_index < 0` => `insert_at`, else if
-    /// `insert_at <= current_index` => `current_index += restored.len()`.
+    /// `RestoreMembers(paths, index, group, rawEnabled)` (undo of a recycle/move of a plain photo or a whole capture).
+    /// True when at least one entry was restored or re-formed (see contracts/W2-10.md).
     pub fn restore_members(
         &mut self,
         paths: &[String],
@@ -216,67 +327,377 @@ impl ReviewCatalog {
         group: Option<&CaptureGroup>,
         raw_enabled: bool,
     ) -> bool {
-        todo!()
+        self.assert_owner_thread("RestoreMembers");
+        let group = if raw_enabled { group } else { None };
+        let mut seen_keys: HashSet<String> = HashSet::new();
+        let mut all: Vec<String> = Vec::new();
+        for path in paths {
+            if path.trim().is_empty() {
+                continue;
+            }
+            if seen_keys.insert(ignore_case_key(path)) {
+                all.push(path.clone());
+            }
+        }
+        let reformed = self.try_reform_group(&all, group);
+        if reformed {
+            if let Some(group) = group {
+                all.retain(|path| !group.image_paths().iter().any(|member| eq_ignore_case(member, path)));
+            }
+        }
+        let unique: Vec<String> = all
+            .iter()
+            .filter(|path| Self::is_restorable_image(path, raw_enabled))
+            .filter(|path| self.index_of(path) < 0)
+            .cloned()
+            .collect();
+        if unique.is_empty() {
+            return reformed;
+        }
+
+        let mut groups: Vec<CaptureGroup> = Vec::new();
+        if self.raw_pair_mode != RawPairMode::Separate {
+            let present: HashSet<String> = unique.iter().map(|p| ignore_case_key(p)).collect();
+            let mut explicit_added = false;
+            if let Some(group) = group {
+                if group
+                    .image_paths()
+                    .iter()
+                    .all(|p| present.contains(&ignore_case_key(p)))
+                {
+                    groups.push(group.clone());
+                    explicit_added = true;
+                }
+            }
+            let rest: Vec<String> = unique
+                .iter()
+                .filter(|path| match group {
+                    Some(group) if explicit_added => {
+                        !group.image_paths().iter().any(|member| eq_ignore_case(member, path))
+                    }
+                    _ => true,
+                })
+                .cloned()
+                .collect();
+            let xmps: Vec<String> = all
+                .iter()
+                .filter(|path| eq_ignore_case(get_extension(path), ".xmp"))
+                .cloned()
+                .collect();
+            groups.extend(capture_groups::build(&rest, Some(&xmps)));
+        }
+
+        let mut group_by_member: HashMap<String, usize> = HashMap::new();
+        for (position, candidate) in groups.iter().enumerate() {
+            group_by_member.insert(ignore_case_key(candidate.jpeg_path()), position);
+            group_by_member.insert(ignore_case_key(candidate.raw_path()), position);
+        }
+
+        let mut emitted: HashSet<CaptureGroup> = HashSet::new();
+        let mut restored: Vec<CatalogEntry> = Vec::with_capacity(unique.len());
+        for path in &unique {
+            match group_by_member.get(&ignore_case_key(path)) {
+                None => {
+                    if let Ok(entry) = CatalogEntry::new(path.as_str()) {
+                        restored.push(entry);
+                    }
+                }
+                Some(&owner_at) => {
+                    let owner = &groups[owner_at];
+                    if emitted.insert(owner.clone()) {
+                        // Groups only exist in a pairing mode, so the representative lookup cannot fail.
+                        if let Ok(representative) = owner.get_representative_path(self.raw_pair_mode) {
+                            if let Ok(mut entry) = CatalogEntry::new(representative) {
+                                entry.capture_group = Some(owner.clone());
+                                restored.push(entry);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let insert_at = index.clamp(0, self.entries.len() as i32);
+        let restored_count = restored.len() as i32;
+        let tail = self.entries.split_off(insert_at as usize);
+        self.entries.extend(restored);
+        self.entries.extend(tail);
+        self.invalidate_index();
+        if self.current_index < 0 {
+            self.current_index = insert_at;
+        } else if insert_at <= self.current_index {
+            self.current_index += restored_count;
+        }
+        true
     }
 
-    /// `TryReformGroup(restoredPaths, group)`: folds a partially restored capture back into one grouped entry. Returns false
-    /// (nothing changed) when `group` is `None`, the mode is `Separate`, an image member that is already listed belongs to an
-    /// entry that already has a group, a member that is NOT listed is not in `restored_paths` (OrdinalIgnoreCase) or is not
-    /// restorable (`is_restorable_image(member, true)`), or no member is listed. Otherwise (details in the contract) the
-    /// lowest-indexed standalone entry becomes the grouped entry (keeping the displayed member if the current entry is one of
-    /// them), the other standalone entry is removed, `current_index` follows, `invalidate_index`, true.
+    /// `TryReformGroup(restoredPaths, group)`: folds a partially restored capture back into one grouped entry.
     fn try_reform_group(&mut self, restored_paths: &[String], group: Option<&CaptureGroup>) -> bool {
-        todo!()
+        let Some(group) = group else {
+            return false;
+        };
+        if self.raw_pair_mode == RawPairMode::Separate {
+            return false;
+        }
+        let mut standalone: Vec<usize> = Vec::new();
+        for member in group.image_paths() {
+            match usize::try_from(self.index_of(member)) {
+                Ok(at) => {
+                    if self.entries[at].capture_group.is_some() {
+                        return false;
+                    }
+                    standalone.push(at);
+                }
+                Err(_) => {
+                    let listed = restored_paths.iter().any(|p| eq_ignore_case(p, member));
+                    if !listed || !Self::is_restorable_image(member, true) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if standalone.is_empty() {
+            return false;
+        }
+
+        standalone.sort_unstable();
+        let slot = standalone[0];
+        let Ok(representative) = group.get_representative_path(self.raw_pair_mode) else {
+            return false;
+        };
+        let current_entry = usize::try_from(self.current_index)
+            .ok()
+            .filter(|c| standalone.contains(c))
+            .map(|c| self.entries[c].clone());
+        let keep_existing = current_entry.is_some();
+        let existing = current_entry.unwrap_or_else(|| self.entries[slot].clone());
+        let replacement = if keep_existing || eq_ignore_case(existing.path(), representative) {
+            let mut kept = existing;
+            kept.capture_group = Some(group.clone());
+            kept
+        } else {
+            match CatalogEntry::new(representative) {
+                Ok(mut fresh) => {
+                    fresh.capture_group = Some(group.clone());
+                    fresh
+                }
+                Err(_) => return false,
+            }
+        };
+        self.entries[slot] = replacement;
+        for i in (1..standalone.len()).rev() {
+            let removed = standalone[i];
+            self.entries.remove(removed);
+            if self.current_index == removed as i32 {
+                self.current_index = slot as i32;
+            } else if self.current_index > removed as i32 {
+                self.current_index -= 1;
+            }
+        }
+        self.invalidate_index();
+        true
     }
 
-    /// `IsRestorableImage(path, rawEnabled)`: `get_extension(path)` is in `SUPPORTED_EXTENSIONS` or `WEBP_HEIC_EXTENSIONS`
-    /// (whatever the WebP/HEIC switch says), or `raw_enabled` and it is in `RAW_EXTENSIONS` (all OrdinalIgnoreCase).
-    /// `.xmp`, `.avif`, `.txt` are not restorable.
+    /// `IsRestorableImage(path, rawEnabled)`: supported or WebP/HEIC extension, or RAW when `raw_enabled`.
     fn is_restorable_image(path: &str, raw_enabled: bool) -> bool {
-        todo!()
+        let extension = get_extension(path);
+        extension_in(SUPPORTED_EXTENSIONS, extension)
+            || extension_in(WEBP_HEIC_EXTENSIONS, extension)
+            || (raw_enabled && extension_in(RAW_EXTENSIONS, extension))
     }
 
-    /// `ReplaceOrder(newOrder)`: owner check; applies the order Explorer reported. In a pairing mode first try
-    /// `try_collapse_member_order` (a list naming every image MEMBER, jpeg and raw, collapses to the representatives in
-    /// first-seen order). Returns false and changes nothing unless the (collapsed) order is a true permutation of the entry
-    /// paths: same count, every element known (OrdinalIgnoreCase), no repeats. On success rebuild `entries` in that order,
-    /// `invalidate_index`, then keep the CURRENT entry by path: `current_index = index_of(old current path)` (0 if lost / empty),
-    /// or `0`/`-1` when there was no current entry.
+    /// `ReplaceOrder(newOrder)`: applies the order Explorer reported; false (nothing changes) unless it is a true
+    /// permutation of the entry paths (after collapsing a member order in a pairing mode).
     pub fn replace_order(&mut self, new_order: &[String]) -> bool {
-        todo!()
+        self.assert_owner_thread("ReplaceOrder");
+        let collapsed = if self.raw_pair_mode != RawPairMode::Separate {
+            self.try_collapse_member_order(new_order)
+        } else {
+            None
+        };
+        let effective: &[String] = collapsed.as_deref().unwrap_or(new_order);
+        if effective.len() != self.entries.len() {
+            return false;
+        }
+
+        let current_set: HashSet<String> = self.entries.iter().map(|e| ignore_case_key(e.path())).collect();
+        let mut seen: HashSet<String> = HashSet::new();
+        for path in effective {
+            let key = ignore_case_key(path);
+            if !current_set.contains(&key) || !seen.insert(key) {
+                return false;
+            }
+        }
+
+        let current_path = self.current().map(|e| e.path().to_owned());
+
+        // First wins; only reached for a true permutation.
+        let mut entry_map: HashMap<String, usize> = HashMap::new();
+        for (i, entry) in self.entries.iter().enumerate() {
+            entry_map.entry(ignore_case_key(entry.path())).or_insert(i);
+        }
+        let mut reordered = Vec::with_capacity(self.entries.len());
+        for path in effective {
+            match entry_map.get(&ignore_case_key(path)) {
+                Some(&i) => reordered.push(self.entries[i].clone()),
+                None => return false,
+            }
+        }
+        self.entries = reordered;
+        self.invalidate_index();
+
+        let fallback = if self.entries.is_empty() { -1 } else { 0 };
+        self.current_index = match current_path {
+            Some(path) => {
+                let new_index = self.index_of(&path);
+                if new_index >= 0 { new_index } else { fallback }
+            }
+            None => fallback,
+        };
+        true
     }
 
-    /// `TryCollapseMemberOrder(memberOrder, out collapsedOrder)`: every entry contributes its `capture_group.image_paths()` (or
-    /// just its path); `expected_members` (OrdinalIgnoreCase set) and `representative_by_member` (first wins) are built; the
-    /// order must have exactly `expected_members.len()` elements, each known and not repeated; the result lists each
-    /// representative once, at the position of its first member seen; it must have exactly `entries.len()` items.
+    /// `TryCollapseMemberOrder(memberOrder, out collapsedOrder)`: a list naming every image member collapses to the
+    /// representatives in first-seen order.
     fn try_collapse_member_order(&self, member_order: &[String]) -> Option<Vec<String>> {
-        todo!()
+        let mut representative_by_member: HashMap<String, &str> = HashMap::new();
+        let mut expected: HashSet<String> = HashSet::new();
+        for entry in &self.entries {
+            match &entry.capture_group {
+                Some(group) => {
+                    for path in group.image_paths() {
+                        expected.insert(ignore_case_key(path));
+                        representative_by_member
+                            .entry(ignore_case_key(path))
+                            .or_insert_with(|| entry.path());
+                    }
+                }
+                None => {
+                    expected.insert(ignore_case_key(entry.path()));
+                    representative_by_member
+                        .entry(ignore_case_key(entry.path()))
+                        .or_insert_with(|| entry.path());
+                }
+            }
+        }
+
+        if member_order.len() != expected.len() {
+            return None;
+        }
+        let mut seen_members: HashSet<String> = HashSet::new();
+        let mut seen_representatives: HashSet<String> = HashSet::new();
+        let mut result: Vec<String> = Vec::with_capacity(self.entries.len());
+        for path in member_order {
+            let key = ignore_case_key(path);
+            if !expected.contains(&key) || !seen_members.insert(key.clone()) {
+                return None;
+            }
+            let representative = representative_by_member.get(&key)?;
+            if seen_representatives.insert(ignore_case_key(representative)) {
+                result.push((*representative).to_owned());
+            }
+        }
+        if result.len() != self.entries.len() {
+            return None;
+        }
+        Some(result)
     }
 
-    /// `RemovePaths(paths)` (AR16: the background readability probe found these files unreadable): owner check; returns the
-    /// paths actually removed, in catalog order. `doomed` = non-blank `paths` (OrdinalIgnoreCase set); `doomed` or the catalog
-    /// empty => empty result. Per entry: a capture-group entry with ALL image members doomed is removed (reported: its own
-    /// path, then the other doomed members); with ONE doomed member it degrades in place to the surviving member as a
-    /// standalone entry (kept as `entry` with `capture_group = None` when the survivor is the entry's own path, else a NEW
-    /// `CatalogEntry::new(survivor)` without metadata; the doomed members are reported); a plain doomed entry is removed
-    /// (reported). Nothing removed/degraded => empty result and NOTHING changes (no version bump). Otherwise replace the
-    /// entries, `invalidate_index`, and `current_index` = `-1` when empty; the new position of the first surviving/degraded
-    /// entry at or after the old current position (so a removed current advances like `remove`, and a kept current stays
-    /// on the same photo at its new index); the last entry when none follows; `0` when there was no current.
+    /// `RemovePaths(paths)` (AR16): removes unreadable files, returns the paths actually removed in catalog order.
     pub fn remove_paths(&mut self, paths: &[String]) -> Vec<String> {
-        todo!()
+        self.assert_owner_thread("RemovePaths");
+        let doomed: HashSet<String> = paths
+            .iter()
+            .filter(|p| !p.trim().is_empty())
+            .map(|p| ignore_case_key(p))
+            .collect();
+        if doomed.is_empty() || self.entries.is_empty() {
+            return Vec::new();
+        }
+        let is_doomed = |p: &str| doomed.contains(&ignore_case_key(p));
+
+        let mut removed: Vec<String> = Vec::new();
+        let mut kept: Vec<CatalogEntry> = Vec::with_capacity(self.entries.len());
+        let old_current = self.current_index;
+        let mut next_current: i32 = -1;
+        for (i, original) in self.entries.iter().enumerate() {
+            let mut entry = original.clone();
+            let mut entry_doomed = is_doomed(entry.path());
+            if let Some(group) = &original.capture_group {
+                let members = group.image_paths();
+                let bad: Vec<&String> = members.iter().filter(|p| is_doomed(p)).collect();
+                if bad.len() == members.len() {
+                    removed.push(entry.path().to_owned());
+                    removed.extend(
+                        bad.iter()
+                            .filter(|p| !eq_ignore_case(p, entry.path()))
+                            .map(|p| (*p).clone()),
+                    );
+                    continue;
+                }
+                if !bad.is_empty() {
+                    // Degrade in place: the readable partner stays reachable as a standalone entry.
+                    let survivor = members.iter().find(|p| !is_doomed(p));
+                    removed.extend(bad.iter().map(|p| (*p).clone()));
+                    if let Some(survivor) = survivor {
+                        if eq_ignore_case(entry.path(), survivor) {
+                            entry.capture_group = None;
+                        } else if let Ok(fresh) = CatalogEntry::new(survivor.as_str()) {
+                            entry = fresh;
+                        } else {
+                            entry.capture_group = None;
+                        }
+                    }
+                    entry_doomed = false;
+                }
+            }
+
+            if entry_doomed {
+                removed.push(entry.path().to_owned());
+                continue;
+            }
+            if next_current < 0 && old_current >= 0 && i as i32 >= old_current {
+                next_current = kept.len() as i32;
+            }
+            kept.push(entry);
+        }
+
+        if removed.is_empty() {
+            return Vec::new();
+        }
+        self.entries = kept;
+        self.invalidate_index();
+        self.current_index = if self.entries.is_empty() {
+            -1
+        } else if old_current < 0 {
+            0
+        } else if next_current >= 0 {
+            next_current
+        } else {
+            self.entries.len() as i32 - 1
+        };
+        removed
     }
 
     /// `EntriesSnapshot()`: a clone of every entry (metadata included) for consumers off the UI thread.
     pub fn entries_snapshot(&self) -> Vec<CatalogEntry> {
-        todo!()
+        self.entries.clone()
     }
 
-    /// `IndexRebuildCountForTests`: how many times the path index was rebuilt from scratch (public only because
-    /// integration tests live outside the crate).
+    /// `IndexRebuildCountForTests`: how many times the path index was rebuilt from scratch.
     #[doc(hidden)]
     pub fn index_rebuild_count_for_tests(&self) -> u32 {
         self.index_rebuild_count.get()
+    }
+}
+
+/// `Dictionary.TryAdd` with the OrdinalIgnoreCase key: returns true when the key ALREADY existed (nothing added).
+fn try_add(map: &mut HashMap<String, i32>, path: &str, position: i32) -> bool {
+    match map.entry(ignore_case_key(path)) {
+        std::collections::hash_map::Entry::Occupied(_) => true,
+        std::collections::hash_map::Entry::Vacant(slot) => {
+            slot.insert(position);
+            false
+        }
     }
 }
