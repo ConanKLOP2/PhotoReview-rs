@@ -793,6 +793,61 @@ fn coalescer_window_is_cancelled_without_dispose_does_not_open_anything() {
     assert_eq!(opened.load(Ordering::SeqCst), 0);
 }
 
+#[test]
+fn coalescer_cancelled_window_without_dispose_swallows_later_requests_even_when_delay_would_succeed() {
+    // Rust-only guard for the same C# test: `pending` must stay true after a cancelled window (contract note 7).
+    let opened = Arc::new(AtomicUsize::new(0));
+    let open: OpenCallback = {
+        let opened = Arc::clone(&opened);
+        Arc::new(move |_| {
+            opened.fetch_add(1, Ordering::SeqCst);
+        })
+    };
+    let calls = Arc::new(AtomicUsize::new(0));
+    let delay: DelayFn = {
+        let calls = Arc::clone(&calls);
+        Arc::new(move |_, _| {
+            if calls.fetch_add(1, Ordering::SeqCst) == 0 {
+                Err(DelayFailure::Canceled)
+            } else {
+                Ok(())
+            }
+        })
+    };
+    let c = ForwardedOpenCoalescer::new(open, Duration::from_secs(1), None, Some(delay), Some(inline_spawner()));
+    c.submit(&strs(&[r"C:.jpg"]));
+    c.submit(&strs(&[r"C:.jpg"]));
+    assert_eq!(opened.load(Ordering::SeqCst), 0);
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn coalescer_submit_after_dispose_does_not_even_start_a_window() {
+    // Rust-only guard: C# `Submit` returns at once when disposed, so neither spawner nor delay runs.
+    let spawned = Arc::new(AtomicUsize::new(0));
+    let delayed = Arc::new(AtomicUsize::new(0));
+    let open: OpenCallback = Arc::new(|_| {});
+    let spawner: Spawner = {
+        let spawned = Arc::clone(&spawned);
+        Arc::new(move |f| {
+            spawned.fetch_add(1, Ordering::SeqCst);
+            f()
+        })
+    };
+    let delay: DelayFn = {
+        let delayed = Arc::clone(&delayed);
+        Arc::new(move |_, _| {
+            delayed.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        })
+    };
+    let c = ForwardedOpenCoalescer::new(open, Duration::from_secs(1), None, Some(delay), Some(spawner));
+    c.dispose();
+    c.submit(&strs(&[r"C:.jpg"]));
+    assert_eq!(spawned.load(Ordering::SeqCst), 0);
+    assert_eq!(delayed.load(Ordering::SeqCst), 0);
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 // Golden: forwarded-path.json
 
