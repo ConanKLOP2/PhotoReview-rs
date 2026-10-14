@@ -443,3 +443,26 @@ fn u2028_in_line_comment_is_error() {
     assert!(AppSettings::from_json("{} //\u{2028}", &EnglishSettingsTexts).is_err());
     assert!(AppSettings::from_json("{} //\u{2029}", &EnglishSettingsTexts).is_err());
 }
+
+#[test]
+fn json_value_property_semantics() {
+    // Mirrors JsonElement.TryGetProperty: last duplicate wins, ordinal case-sensitive.
+    let doc = json::parse(r#"{"A":1,"A":2,"a":3}"#).expect("parse");
+    assert_eq!(doc.property("A"), Some(&json::JsonValue::Number("2".to_owned())));
+    assert_eq!(doc.property("a"), Some(&json::JsonValue::Number("3".to_owned())));
+    assert!(doc.property("B").is_none());
+    assert!(doc.property("").is_none());
+    // Non-object receivers.
+    for text in ["[1]", "1", "null", "true", "\"A\""] {
+        assert!(json::parse(text).expect("parse").property("A").is_none());
+    }
+    // Value kinds are returned as-is, not collapsed.
+    let doc = json::parse(r#"{"N":null,"T":true,"O":{"x":1}}"#).expect("parse");
+    assert_eq!(doc.property("N"), Some(&json::JsonValue::Null));
+    assert_eq!(doc.property("T"), Some(&json::JsonValue::Bool(true)));
+    assert!(matches!(doc.property("O"), Some(json::JsonValue::Object(_))));
+    // A name containing an unpaired surrogate never matches a valid query.
+    let doc = json::parse(r#"{"\ud800":1,"ok":2}"#).expect("parse");
+    assert!(doc.property("\u{FFFD}").is_none());
+    assert_eq!(doc.property("ok"), Some(&json::JsonValue::Number("2".to_owned())));
+}
