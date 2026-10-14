@@ -4,15 +4,13 @@
 //!
 //! Paths in this module are `String`/`&str` exactly like the C# `string` paths (they are compared and stored as
 //! text, never touched on disk here). Convert with `Path::new(&entry.path())` at the file-system boundary.
-// STUB (contract writer): the bodies are `todo!()`; the porter removes this allow together with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, Mutex, MutexGuard, OnceLock, PoisonError};
 
 use crate::abstractions::FileStat;
 use crate::model::RawPairMode;
+use crate::text::{eq_ignore_case, ignore_case_key};
 use crate::time::DateTimeUtc;
 
 use super::explorer_types::ExplorerViewSnapshot;
@@ -61,31 +59,51 @@ pub const RAW_EXTENSIONS: &[&str] = &[".cr2", ".cr3", ".nef", ".arw", ".dng", ".
 /// `"a..jpg"` -> `".jpg"`; `"C:\\d.jpg\\f"` -> `""`; `"C:f.jpg"` -> `".jpg"`; `"a.jpg "` -> `".jpg "`.
 /// Pinned by golden `image-file-types` (field `extension`).
 pub fn get_extension(path: &str) -> &str {
-    todo!()
+    // Scan from the end: a '.' ends the search (the extension starts there unless it is the last char), a directory
+    // separator stops it without a result. ':' is not a stop (.NET Path.GetExtension on Windows).
+    for (i, ch) in path.char_indices().rev() {
+        if ch == '.' {
+            return if i + 1 == path.len() { "" } else { &path[i..] };
+        }
+        if ch == '\\' || ch == '/' {
+            break;
+        }
+    }
+    ""
 }
 
 /// True when `ext` (with its dot) is in `list`, compared with `crate::text::eq_ignore_case`.
 pub fn extension_in(list: &[&str], ext: &str) -> bool {
-    todo!()
+    list.iter().any(|candidate| eq_ignore_case(candidate, ext))
 }
 
 /// `ImageFileTypes.IsRawPath`: true when [`get_extension`] of `path` is one of [`RAW_EXTENSIONS`]
 /// (OrdinalIgnoreCase). `""` is false. (C# also accepts a null string and returns false: callers holding an
 /// `Option<&str>` use `path.is_some_and(is_raw_path)`.)
 pub fn is_raw_path(path: &str) -> bool {
-    todo!()
+    extension_in(RAW_EXTENSIONS, get_extension(path))
 }
 
 /// `ImageFileTypes.IsSupported(path)` = `is_supported_with_raw(path, false)`.
 pub fn is_supported(path: &str) -> bool {
-    todo!()
+    is_supported_with_raw(path, false)
 }
 
 /// `ImageFileTypes.IsSupported(path, rawEnabled)`: false when `path` is empty or only whitespace
 /// (`char::is_whitespace` matches .NET `IsNullOrWhiteSpace`); false when the extension is empty; true when the
 /// extension is in [`SUPPORTED_EXTENSIONS`]; otherwise `raw_enabled && ` extension in [`RAW_EXTENSIONS`].
 pub fn is_supported_with_raw(path: &str, raw_enabled: bool) -> bool {
-    todo!()
+    if path.trim().is_empty() {
+        return false;
+    }
+    let ext = get_extension(path);
+    if ext.is_empty() {
+        return false;
+    }
+    if extension_in(SUPPORTED_EXTENSIONS, ext) {
+        return true;
+    }
+    raw_enabled && extension_in(RAW_EXTENSIONS, ext)
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -114,42 +132,76 @@ impl CaptureGroup {
         raw_path: impl Into<String>,
         xmp_path: Option<String>,
     ) -> Result<Self, ArgumentError> {
-        todo!()
+        let jpeg_path: String = jpeg_path.into();
+        let raw_path: String = raw_path.into();
+        if jpeg_path.trim().is_empty() {
+            return Err(ArgumentError::BlankPath { param_name: "jpegPath" });
+        }
+        if raw_path.trim().is_empty() {
+            return Err(ArgumentError::BlankPath { param_name: "rawPath" });
+        }
+        if let Some(xmp) = &xmp_path {
+            if xmp.trim().is_empty() {
+                return Err(ArgumentError::BlankPath { param_name: "xmpPath" });
+            }
+        }
+        let mut paths = vec![jpeg_path.clone(), raw_path.clone()];
+        if let Some(xmp) = &xmp_path {
+            paths.push(xmp.clone());
+        }
+        Ok(Self {
+            jpeg_path,
+            raw_path,
+            xmp_path,
+            paths,
+        })
     }
 
     pub fn jpeg_path(&self) -> &str {
-        todo!()
+        &self.jpeg_path
     }
 
     pub fn raw_path(&self) -> &str {
-        todo!()
+        &self.raw_path
     }
 
     pub fn xmp_path(&self) -> Option<&str> {
-        todo!()
+        self.xmp_path.as_deref()
     }
 
     /// `GetRepresentativePath`: `PreferJpeg` => JPEG path, `PreferRaw` => RAW path, `Separate` =>
     /// `Err(ArgumentError::OutOfRange { param_name: "mode" })` ("Separate mode does not create capture groups").
     pub fn get_representative_path(&self, mode: RawPairMode) -> Result<&str, ArgumentError> {
-        todo!()
+        match mode {
+            RawPairMode::PreferJpeg => Ok(&self.jpeg_path),
+            RawPairMode::PreferRaw => Ok(&self.raw_path),
+            RawPairMode::Separate => Err(ArgumentError::OutOfRange { param_name: "mode" }),
+        }
     }
 
     /// `ImagePaths`: `[jpeg, raw]`.
     pub fn image_paths(&self) -> &[String] {
-        todo!()
+        // `paths` always starts with the JPEG and RAW paths (checked in `new`), so the first two entries exist.
+        &self.paths[..2]
     }
 
     /// `Paths`: `[jpeg, raw]` plus the sidecar when there is one (always in this order).
     pub fn paths(&self) -> &[String] {
-        todo!()
+        &self.paths
     }
 }
 
 impl PartialEq for CaptureGroup {
     /// Three paths, OrdinalIgnoreCase (`xmp_path` None == None only).
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        let xmp_equal = match (&self.xmp_path, &other.xmp_path) {
+            (None, None) => true,
+            (Some(a), Some(b)) => eq_ignore_case(a, b),
+            _ => false,
+        };
+        eq_ignore_case(&self.jpeg_path, &other.jpeg_path)
+            && eq_ignore_case(&self.raw_path, &other.raw_path)
+            && xmp_equal
     }
 }
 
@@ -159,7 +211,9 @@ impl Hash for CaptureGroup {
     /// Must agree with `eq`: hash `crate::text::ignore_case_key` of the JPEG path, of the RAW path and of the sidecar
     /// (`Option` of the key, so `None` and `Some("")` hash differently).
     fn hash<H: Hasher>(&self, state: &mut H) {
-        todo!()
+        ignore_case_key(&self.jpeg_path).hash(state);
+        ignore_case_key(&self.raw_path).hash(state);
+        self.xmp_path.as_deref().map(ignore_case_key).hash(state);
     }
 }
 
@@ -187,23 +241,36 @@ impl CatalogEntry {
     /// C# `new CatalogEntry(path)`: all other fields `None`. Errors: [`ArgumentError::BlankPath`] (`"path"`) when
     /// `path` is empty or whitespace-only (`str::trim().is_empty()`).
     pub fn new(path: impl Into<String>) -> Result<Self, ArgumentError> {
-        todo!()
+        let path = require_path(path.into())?;
+        Ok(Self {
+            path,
+            length: None,
+            last_write_utc: None,
+            width: None,
+            height: None,
+            capture_group: None,
+        })
     }
 
     pub fn path(&self) -> &str {
-        todo!()
+        &self.path
     }
 
     /// C# `entry with { Path = value }`: same validation as [`CatalogEntry::new`]; keeps every other field.
     pub fn with_path(self, path: impl Into<String>) -> Result<Self, ArgumentError> {
-        todo!()
+        let path = require_path(path.into())?;
+        Ok(Self { path, ..self })
     }
 
     /// `Matches(FileStat)`: true when `length` is `Some` and equals `stat.length`, and `last_write_utc` is `Some` and
     /// equals `stat.last_write_utc` (exact tick equality). A `None` field never matches. `stat.length` above
     /// `i64::MAX` never matches.
     pub fn matches(&self, stat: &FileStat) -> bool {
-        todo!()
+        let length_matches = match (self.length, i64::try_from(stat.length)) {
+            (Some(known), Ok(actual)) => known == actual,
+            _ => false,
+        };
+        length_matches && self.last_write_utc == Some(stat.last_write_utc)
     }
 
     /// `WithMetadata`: records a fresh stat. Returns a copy with `length` and `last_write_utc` set and:
@@ -218,7 +285,24 @@ impl CatalogEntry {
         width: Option<i32>,
         height: Option<i32>,
     ) -> CatalogEntry {
-        todo!()
+        let unchanged = self.length == Some(length) && self.last_write_utc == Some(last_write_utc);
+        CatalogEntry {
+            path: self.path.clone(),
+            length: Some(length),
+            last_write_utc: Some(last_write_utc),
+            width: width.or(if unchanged { self.width } else { None }),
+            height: height.or(if unchanged { self.height } else { None }),
+            capture_group: self.capture_group.clone(),
+        }
+    }
+}
+
+/// C# `RequirePath`: a path that is empty or whitespace-only is an error; otherwise it is kept exactly as given.
+fn require_path(path: String) -> Result<String, ArgumentError> {
+    if path.trim().is_empty() {
+        Err(ArgumentError::BlankPath { param_name: "path" })
+    } else {
+        Ok(path)
     }
 }
 
@@ -238,22 +322,24 @@ pub struct ExplorerQueryHandle {
 impl ExplorerQueryHandle {
     /// A new pending handle.
     pub fn new() -> Self {
-        todo!()
+        Self {
+            cell: Arc::new(OnceLock::new()),
+        }
     }
 
     /// Stores the snapshot. Returns false (and changes nothing) when the handle was already completed or failed.
     pub fn complete(&self, snapshot: ExplorerViewSnapshot) -> bool {
-        todo!()
+        self.cell.set(Some(Arc::new(snapshot))).is_ok()
     }
 
     /// Marks the query failed or canceled. Returns false when it was already completed or failed.
     pub fn fail(&self) -> bool {
-        todo!()
+        self.cell.set(None).is_ok()
     }
 
     /// The snapshot when the query completed successfully; `None` while pending, failed or canceled.
     pub fn snapshot(&self) -> Option<Arc<ExplorerViewSnapshot>> {
-        todo!()
+        self.cell.get().cloned().flatten()
     }
 }
 
@@ -266,18 +352,24 @@ pub struct LatestExplorerSnapshot {
 
 impl LatestExplorerSnapshot {
     pub fn new() -> Self {
-        todo!()
+        Self {
+            handle: Mutex::new(None),
+        }
     }
 
     /// `Set`: records the query of a new load; `None` when that load does not use the Explorer order. Replaces the
     /// previous one. Lock poisoning is recovered (`PoisonError::into_inner`), never `unwrap()`.
     pub fn set(&self, handle: Option<ExplorerQueryHandle>) {
-        todo!()
+        let mut slot: MutexGuard<'_, Option<ExplorerQueryHandle>> =
+            self.handle.lock().unwrap_or_else(PoisonError::into_inner);
+        *slot = handle;
     }
 
     /// `Current`: the completed snapshot of the latest load, or `None` when none was recorded, it is still running,
     /// it failed or it was canceled. Never blocks. Do not hold the lock while calling into the handle.
     pub fn current(&self) -> Option<Arc<ExplorerViewSnapshot>> {
-        todo!()
+        // Clone the handle out, release the lock, then read the cell.
+        let handle = self.handle.lock().unwrap_or_else(PoisonError::into_inner).clone()?;
+        handle.snapshot()
     }
 }
