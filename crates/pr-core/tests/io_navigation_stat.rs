@@ -141,6 +141,14 @@ fn work_panics_faults_only_that_task() {
     let bad = worker.run(|| -> i32 { panic!("stat failed") }, &CancelToken::none());
     let good = worker.run(|| 7, &CancelToken::none());
 
+    // Wait for completion without consuming, then check the flags.
+    assert!(bad.wait_timeout(Duration::from_secs(20)));
+    assert!(good.wait_timeout(Duration::from_secs(20)));
+    // A faulted task is completed but not canceled.
+    assert!(bad.is_completed());
+    assert!(!bad.is_canceled());
+    assert!(good.is_completed());
+    assert!(!good.is_canceled());
     assert!(matches!(bad.wait(), Err(StatError::Panicked(m)) if m.contains("stat failed")));
     assert_eq!(good.wait(), Ok(7));
 }
