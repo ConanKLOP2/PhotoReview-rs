@@ -4,3 +4,6 @@
 /native/x64/*.dll
 /work/
 .claude/worktrees/
+/target-wave-*/
+tools/oracle-cs/bin/
+tools/oracle-cs/obj/

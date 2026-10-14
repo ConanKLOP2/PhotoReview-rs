@@ -13,11 +13,16 @@
   ./tools/sync-from-csharp.ps1 -Check
 #>
 param(
-    [string]$CSharpRepo = (Join-Path $PSScriptRoot '..\..\PhotoReview'),
+    [string]$CSharpRepo,
     [string]$Commit = 'origin/master',
     [switch]$Check
 )
 $ErrorActionPreference = 'Stop'
+if (-not $CSharpRepo -and -not $Check) {
+    # Sibling of the MAIN checkout (also right when this runs from a worktree under .claude/worktrees/).
+    $common = (& git -C $PSScriptRoot rev-parse --path-format=absolute --git-common-dir).Trim()
+    $CSharpRepo = Join-Path (Split-Path (Split-Path $common)) 'PhotoReview'
+}
 $root = Resolve-Path (Join-Path $PSScriptRoot '..')
 $manifest = Join-Path $root 'assets\SYNC-MANIFEST.txt'
 

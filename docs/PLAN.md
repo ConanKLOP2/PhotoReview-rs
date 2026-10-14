@@ -44,7 +44,9 @@ Quy mô nguồn: khoảng 52K dòng C# trong 10 project, khoảng 123K dòng tes
 - [x] Kiểm kê tính năng (khoảng 245 mục: K/C/S/W/F/I/P/INV/D) vào [PARITY.md](PARITY.md)
 - [ ] Spike UI egui và Slint theo giao thức trong R0001, có số đo; chốt R0001
 - [ ] Spike COM: đọc thứ tự Explorer cho folder khoảng 1800 file, mục tiêu khoảng 60 ms như C#
-- [ ] ADR R0003 concurrency (thread, channel, generation, UI-thread affinity theo C# ADR 0005)
+- [x] ADR R0003 concurrency + quy tắc map C# sang Rust
+- [x] Wave 0 (multi-agent): trait `pr_core::abstractions`, `time` (DateTime .NET), `text` (OrdinalIgnoreCase lấy bảng từ .NET), `sync::CancelToken`, crate `pr-test-support` (fake FS/clock/recycle bin/UI/log/memory, golden loader), oracle C# (`tools/oracle.ps1`), `tools/wave.ps1`
+- [ ] Hợp đồng và stub cho Wave 1 (W0-06)
 - **Gate:** R0001 và R0003 đã chốt, CI xanh
 
 ### Phase 1: Core (không UI)

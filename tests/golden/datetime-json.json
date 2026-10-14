@@ -1,0 +1,250 @@
+{
+  "generator": "oracle-cs datetime-json",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "kind": "write",
+      "ticks": 0,
+      "json": "0001-01-01T00:00:00Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 1,
+      "json": "0001-01-01T00:00:00.0000001Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 621355968000000000,
+      "json": "1970-01-01T00:00:00Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 621355969234567000,
+      "json": "1970-01-01T00:02:03.4567Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 621355968001234567,
+      "json": "1970-01-01T00:00:00.1234567Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 621355968001200000,
+      "json": "1970-01-01T00:00:00.12Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 621355968010000000,
+      "json": "1970-01-01T00:00:01Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 638636789123456789,
+      "json": "2024-10-04T22:48:32.3456789Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 637134336000000000,
+      "json": "2020-01-01T00:00:00Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 638447040000000000,
+      "json": "2024-02-28T08:00:00Z"
+    },
+    {
+      "kind": "write",
+      "ticks": 3155378975999999999,
+      "json": "9999-12-31T23:59:59.9999999Z"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.1234567Z",
+      "ok": true,
+      "ticks": 639275440671234567,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47Z",
+      "ok": true,
+      "ticks": 639275440670000000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.12Z",
+      "ok": true,
+      "ticks": 639275440671200000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.0Z",
+      "ok": true,
+      "ticks": 639275440670000000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T10:07:47+07:00",
+      "ok": true,
+      "ticks": 639275440670000000,
+      "source_kind": "Local"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47-01:30",
+      "ok": true,
+      "ticks": 639275494670000000,
+      "source_kind": "Local"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47",
+      "ok": true,
+      "ticks": 639275440670000000,
+      "source_kind": "Unspecified"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.12345678Z",
+      "ok": true,
+      "ticks": 639275440671234567,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.123456789012Z",
+      "ok": true,
+      "ticks": 639275440671234567,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14",
+      "ok": true,
+      "ticks": 639275328000000000,
+      "source_kind": "Unspecified"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07Z",
+      "ok": true,
+      "ticks": 639275440200000000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14t03:07:47z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14t03:07:47Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47+14:00",
+      "ok": true,
+      "ticks": 639274936670000000,
+      "source_kind": "Local"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47+15:00",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47+0700",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47+07",
+      "ok": true,
+      "ticks": 639275188670000000,
+      "source_kind": "Local"
+    },
+    {
+      "kind": "parse",
+      "json": "0001-01-01T00:00:00+01:00",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14 03:07:47Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "garbage",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-02-30T00:00:00Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2024-02-29T12:00:00Z",
+      "ok": true,
+      "ticks": 638448048000000000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "0001-01-01T00:00:00Z",
+      "ok": true,
+      "ticks": 0,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "9999-12-31T23:59:59.9999999Z",
+      "ok": true,
+      "ticks": 3155378975999999999,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T24:00:00Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:60Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "+2026-10-14T03:07:47Z",
+      "ok": false
+    },
+    {
+      "kind": "parse",
+      "json": "2026-10-14T03:07:47.Z",
+      "ok": true,
+      "ticks": 639275440670000000,
+      "source_kind": "Utc"
+    },
+    {
+      "kind": "parse",
+      "json": "2026-1-14T03:07:47Z",
+      "ok": false
+    }
+  ]
+}

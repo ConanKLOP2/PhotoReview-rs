@@ -1,0 +1,230 @@
+{
+  "generator": "oracle-cs natural-cmp",
+  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "cases": [
+    {
+      "kind": "pair",
+      "a": "a2",
+      "b": "a10",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a02",
+      "b": "a2",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "IMG_9",
+      "b": "img_10",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": null,
+      "b": "a",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": null,
+      "b": null,
+      "compare": 0
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": null,
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "",
+      "b": "",
+      "compare": 0
+    },
+    {
+      "kind": "pair",
+      "a": "",
+      "b": "a",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "a",
+      "compare": 0
+    },
+    {
+      "kind": "pair",
+      "a": "file1.jpg",
+      "b": "file1.JPG",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "x1.5",
+      "b": "x1.10",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a 2",
+      "b": "a  2",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "0",
+      "b": "00",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "00",
+      "b": "0",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "9999999999999999999999",
+      "b": "1",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "99999999999999999999990",
+      "b": "99999999999999999999989",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "ä",
+      "b": "b",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "photo (2)",
+      "b": "photo (10)",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a-1",
+      "b": "a_1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "abc",
+      "b": "ABD",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a1b2",
+      "b": "a1b10",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "1a",
+      "b": "a1",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "١٢",
+      "b": "12",
+      "compare": 1
+    },
+    {
+      "kind": "pair",
+      "a": "Ảnh 2",
+      "b": "ảnh 10",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a",
+      "b": "aa",
+      "compare": -1
+    },
+    {
+      "kind": "pair",
+      "a": "a.jpg",
+      "b": "a (1).jpg",
+      "compare": 1
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "IMG_10.jpg",
+        "IMG_9.jpg",
+        "img_1.jpg",
+        "IMG_100.JPG",
+        "_a.jpg",
+        "a.jpg"
+      ],
+      "sorted": [
+        "a.jpg",
+        "img_1.jpg",
+        "IMG_9.jpg",
+        "IMG_10.jpg",
+        "IMG_100.JPG",
+        "_a.jpg"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "1",
+        "01",
+        "001",
+        "10",
+        "2"
+      ],
+      "sorted": [
+        "001",
+        "01",
+        "1",
+        "2",
+        "10"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "DSC0001.NEF",
+        "DSC0001.JPG",
+        "DSC0002.jpg",
+        "dsc0001.cr3"
+      ],
+      "sorted": [
+        "dsc0001.cr3",
+        "DSC0001.JPG",
+        "DSC0001.NEF",
+        "DSC0002.jpg"
+      ]
+    },
+    {
+      "kind": "sort",
+      "input": [
+        "photo (10).jpg",
+        "photo (2).jpg",
+        "photo.jpg",
+        "photo (1).jpg",
+        "Photo 1.jpg"
+      ],
+      "sorted": [
+        "photo (1).jpg",
+        "photo (2).jpg",
+        "photo (10).jpg",
+        "Photo 1.jpg",
+        "photo.jpg"
+      ]
+    }
+  ]
+}
