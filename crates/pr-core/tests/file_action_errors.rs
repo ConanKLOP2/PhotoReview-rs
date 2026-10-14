@@ -85,8 +85,13 @@ impl RecycleBin for PerVolumeBin {
         Err(io::Error::from(ErrorKind::Unsupported))
     }
 
-    fn try_restore(&self, _original_path: &Path, _expected_size: u64, _expected_last_write_utc: DateTimeUtc) -> bool {
-        false
+    fn try_restore(
+        &self,
+        _original_path: &Path,
+        _expected_size: u64,
+        _expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        Ok(false)
     }
 
     fn fits_in_recycle_bin(&self, path: &Path, file_size: u64) -> bool {
@@ -512,8 +517,13 @@ impl RecycleBin for RecordingBin {
         Err(io::Error::from(ErrorKind::Unsupported))
     }
 
-    fn try_restore(&self, _original_path: &Path, _expected_size: u64, _expected_last_write_utc: DateTimeUtc) -> bool {
-        false
+    fn try_restore(
+        &self,
+        _original_path: &Path,
+        _expected_size: u64,
+        _expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        Ok(false)
     }
 
     fn fits_in_recycle_bin(&self, _path: &Path, file_size: u64) -> bool {

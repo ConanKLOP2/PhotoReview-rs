@@ -14,7 +14,7 @@ mod temp_root;
 pub use fake_clock::FakeClock;
 pub use fake_file_system::{FakeFileSystem, FsOp};
 pub use fake_memory_probe::FakeMemoryProbe;
-pub use fake_recycle_bin::FakeRecycleBin;
+pub use fake_recycle_bin::{BinHook, FakeRecycleBin};
 pub use fake_ui::QueuedUiScheduler;
 pub use recording_log::{LogLevel, RecordingLog};
 pub use temp_root::TempRoot;
