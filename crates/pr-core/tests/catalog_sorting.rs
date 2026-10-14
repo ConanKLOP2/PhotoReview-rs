@@ -724,7 +724,13 @@ fn sibling_folders_parent_cannot_be_listed_returns_empty_and_logs_the_error() {
     let entries = log.entries();
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].0, LogLevel::Error);
-    assert!(entries[0].1.contains(&*parent.to_string_lossy()), "{}", entries[0].1);
+    // The temp root may be spelled with an 8.3 short name (CI: RUNNER~1) while the log shows the long one: compare the
+    // tail that is stable under that expansion.
+    let tail = format!(
+        "{}\\missing-parent",
+        root.path().file_name().expect("temp root name").to_string_lossy()
+    );
+    assert!(entries[0].1.contains(&tail), "{}", entries[0].1);
     assert!(
         entries[0].1.starts_with("Failed to enumerate sibling folders of "),
         "{}",
