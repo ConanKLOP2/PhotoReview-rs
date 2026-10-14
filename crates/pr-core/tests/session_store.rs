@@ -1096,9 +1096,12 @@ fn nt_namespace_prefix_is_kept() {
 #[test]
 fn verbatim_trailing_forward_slash_is_trimmed() {
     // Kills the mutant that trims only '\' (C# TrimEnd('\', '/')).
-    assert_eq!(SessionStore::canonical_folder(r"\?\C:\a/").expect("c"), r"\?\C:\a");
-    assert_eq!(SessionStore::canonical_folder(r"\?\C:\a\/").expect("c"), r"\?\C:\a");
-    assert_eq!(SessionStore::canonical_folder(r"\?\C:/a/b//").expect("c"), r"\?\C:/a/b");
+    assert_eq!(SessionStore::canonical_folder(r"\\?\C:\a/").expect("c"), r"\\?\C:\a");
+    assert_eq!(SessionStore::canonical_folder(r"\\?\C:\a\/").expect("c"), r"\\?\C:\a");
+    assert_eq!(
+        SessionStore::canonical_folder(r"\\?\C:/a/b//").expect("c"),
+        r"\\?\C:/a/b"
+    );
 }
 
 #[test]
