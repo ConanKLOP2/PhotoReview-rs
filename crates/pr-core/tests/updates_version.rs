@@ -350,3 +350,137 @@ fn validate_strips_bidi_controls_from_host() {
         Some("https://github.com/ConanKLOP2/PhotoReview/%E2%80%8E")
     );
 }
+
+// C#: (no direct test) UpdateUrlPolicy.Validate IRI character range edges, expected strings
+// produced by running the exact C# Validate body on .NET 10. Columns: code point, literal char in
+// query, literal char in path, %-escaped (lowercase) in query, %-escaped (lowercase) in path.
+#[test]
+fn validate_iri_char_range_edges_match_dotnet() {
+    const BASE: &str = "https://github.com/ConanKLOP2/PhotoReview";
+    let rows: &[(u32, &str, &str, &str, &str)] = &[
+        (0x9F, "?q=a%C2%9Fb", "/a%C2%9Fb", "?q=%c2%9f", "/a%c2%9fb"),
+        (0xA0, "?q=a%C2%A0b", "/a%C2%A0b", "?q=%C2%A0", "/a%C2%A0b"),
+        (0xD7FF, "?q=a%ED%9F%BFb", "/a%ED%9F%BFb", "?q=%ED%9F%BF", "/a%ED%9F%BFb"),
+        (0xE000, "?q=a%EE%80%80b", "/a%EE%80%80b", "?q=%EE%80%80", "/a%ee%80%80b"),
+        (0xF8FF, "?q=a%EF%A3%BFb", "/a%EF%A3%BFb", "?q=%EF%A3%BF", "/a%ef%a3%bfb"),
+        (0xF900, "?q=a%EF%A4%80b", "/a%EF%A4%80b", "?q=%EF%A4%80", "/a%EF%A4%80b"),
+        (0xFDCF, "?q=a%EF%B7%8Fb", "/a%EF%B7%8Fb", "?q=%EF%B7%8F", "/a%EF%B7%8Fb"),
+        (0xFDD0, "?q=a%EF%B7%90b", "/a%EF%B7%90b", "?q=%ef%b7%90", "/a%ef%b7%90b"),
+        (0xFDEF, "?q=a%EF%B7%AFb", "/a%EF%B7%AFb", "?q=%ef%b7%af", "/a%ef%b7%afb"),
+        (0xFDF0, "?q=a%EF%B7%B0b", "/a%EF%B7%B0b", "?q=%EF%B7%B0", "/a%EF%B7%B0b"),
+        (0xFFEF, "?q=a%EF%BF%AFb", "/a%EF%BF%AFb", "?q=%EF%BF%AF", "/a%EF%BF%AFb"),
+        (0xFFF0, "?q=a%EF%BF%B0b", "/a%EF%BF%B0b", "?q=%ef%bf%b0", "/a%ef%bf%b0b"),
+        (0xFFFD, "?q=a%EF%BF%BDb", "/a%EF%BF%BDb", "?q=%ef%bf%bd", "/a%ef%bf%bdb"),
+        (0xFFFE, "?q=a%EF%BF%BEb", "/a%EF%BF%BEb", "?q=%ef%bf%be", "/a%ef%bf%beb"),
+        (0xFFFF, "?q=a%EF%BF%BFb", "/a%EF%BF%BFb", "?q=%ef%bf%bf", "/a%ef%bf%bfb"),
+        (
+            0x10000,
+            "?q=a%F0%90%80%80b",
+            "/a%F0%90%80%80b",
+            "?q=%F0%90%80%80",
+            "/a%F0%90%80%80b",
+        ),
+        (
+            0x1FFFD,
+            "?q=a%F0%9F%BF%BDb",
+            "/a%F0%9F%BF%BDb",
+            "?q=%F0%9F%BF%BD",
+            "/a%F0%9F%BF%BDb",
+        ),
+        (
+            0x1FFFE,
+            "?q=a%F0%9F%BF%BEb",
+            "/a%F0%9F%BF%BEb",
+            "?q=%f0%9f%bf%be",
+            "/a%f0%9f%bf%beb",
+        ),
+        (
+            0xE0000,
+            "?q=a%F3%A0%80%80b",
+            "/a%F3%A0%80%80b",
+            "?q=%f3%a0%80%80",
+            "/a%f3%a0%80%80b",
+        ),
+        (
+            0xE0FFF,
+            "?q=a%F3%A0%BF%BFb",
+            "/a%F3%A0%BF%BFb",
+            "?q=%f3%a0%bf%bf",
+            "/a%f3%a0%bf%bfb",
+        ),
+        (
+            0xE1000,
+            "?q=a%F3%A1%80%80b",
+            "/a%F3%A1%80%80b",
+            "?q=%F3%A1%80%80",
+            "/a%F3%A1%80%80b",
+        ),
+        (
+            0xEFFFD,
+            "?q=a%F3%AF%BF%BDb",
+            "/a%F3%AF%BF%BDb",
+            "?q=%F3%AF%BF%BD",
+            "/a%F3%AF%BF%BDb",
+        ),
+        (
+            0xEFFFE,
+            "?q=a%F3%AF%BF%BEb",
+            "/a%F3%AF%BF%BEb",
+            "?q=%f3%af%bf%be",
+            "/a%f3%af%bf%beb",
+        ),
+        (
+            0xF0000,
+            "?q=a%F3%B0%80%80b",
+            "/a%F3%B0%80%80b",
+            "?q=%F3%B0%80%80",
+            "/a%f3%b0%80%80b",
+        ),
+        (
+            0xFFFFD,
+            "?q=a%F3%BF%BF%BDb",
+            "/a%F3%BF%BF%BDb",
+            "?q=%F3%BF%BF%BD",
+            "/a%f3%bf%bf%bdb",
+        ),
+        (
+            0x100000,
+            "?q=a%F4%80%80%80b",
+            "/a%F4%80%80%80b",
+            "?q=%F4%80%80%80",
+            "/a%f4%80%80%80b",
+        ),
+        (
+            0x10FFFD,
+            "?q=a%F4%8F%BF%BDb",
+            "/a%F4%8F%BF%BDb",
+            "?q=%F4%8F%BF%BD",
+            "/a%f4%8f%bf%bdb",
+        ),
+        (
+            0x10FFFE,
+            "?q=a%F4%8F%BF%BEb",
+            "/a%F4%8F%BF%BEb",
+            "?q=%f4%8f%bf%be",
+            "/a%f4%8f%bf%beb",
+        ),
+    ];
+    for &(cp, q_lit, p_lit, q_esc, p_esc) in rows {
+        let ch = char::from_u32(cp).expect("scalar value");
+        let mut buf = [0u8; 4];
+        let esc: String = ch.encode_utf8(&mut buf).bytes().map(|b| format!("%{b:02x}")).collect();
+        let cases = [
+            (format!("{BASE}?q=a{ch}b"), q_lit),
+            (format!("{BASE}/a{ch}b"), p_lit),
+            (format!("{BASE}?q={esc}"), q_esc),
+            (format!("{BASE}/a{esc}b"), p_esc),
+        ];
+        for (input, suffix) in cases {
+            assert_eq!(
+                validate_update_url(Some(&input)),
+                Some(format!("{BASE}{suffix}")),
+                "U+{cp:04X}: {input:?}"
+            );
+        }
+    }
+}
