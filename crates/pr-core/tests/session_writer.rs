@@ -757,6 +757,58 @@ fn flush_save_worker_cannot_be_started_releases_the_writer_lock_and_the_state_is
     assert_eq!(f.current(r"C:\photos").as_deref(), Some("kept"));
 }
 
+// Rust-only (C# `catch (Exception)` around StartSaveForTests): a spawner that PANICS is handled like one that fails:
+// the writer lock is released, the error is logged, the state is requeued and the next flush writes it.
+#[test]
+fn flush_save_worker_spawner_panics_releases_the_writer_lock_and_the_state_is_written_by_the_next_flush() {
+    let f = Fixture::new();
+    let writer = f.writer();
+    writer.set_bounded_wait_for_tests(Duration::from_millis(200)); // a leaked lock makes the second flush give up after this
+    writer.set_save_spawner_for_tests(Some(Box::new(|_work| panic!("spawner boom"))));
+    update(&writer, r"C:\photos", "kept");
+
+    let first = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| writer.flush()));
+    assert!(first.is_ok(), "flush must not propagate a spawner panic");
+    writer.set_save_spawner_for_tests(None);
+    writer.flush();
+
+    assert!(f.has_error("could not be started"));
+    assert!(!f.has_error("writer busy"));
+    assert_eq!(f.current(r"C:\photos").as_deref(), Some("kept"));
+}
+
+// Rust-only (contract section 1, plan trap 10): a batch is written in first-insertion order; updating a folder
+// already pending replaces its snapshot in place and does not move it.
+#[test]
+fn flush_writes_the_batch_in_first_insertion_order() {
+    let f = Fixture::new();
+    let writer = f.writer();
+    let order = Arc::new(Mutex::new(Vec::<String>::new()));
+    let sink = Arc::clone(&order);
+    f.fs.set_hook(Some(Arc::new(move |path: &Path| {
+        sink.lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .push(path.to_string_lossy().into_owned());
+    })));
+    let stems: Vec<String> = ["a", "b", "c"]
+        .iter()
+        .map(|n| f.key_stem(&format!(r"C:\{n}")))
+        .collect();
+    update(&writer, r"C:\a", "1");
+    update(&writer, r"C:\b", "1");
+    update(&writer, r"C:\c", "1");
+    update(&writer, r"C:\a", "2");
+
+    writer.flush();
+
+    let written = order.lock().unwrap_or_else(PoisonError::into_inner).clone();
+    assert_eq!(written.len(), 3, "{written:?}");
+    for (path, stem) in written.iter().zip(&stems) {
+        assert!(path.contains(stem.as_str()), "write order {written:?} vs {stems:?}");
+    }
+    assert_eq!(f.current(r"C:\a").as_deref(), Some("2"));
+}
+
 // C#: SessionWriterShutdownAndVersionTests.Flush_TimedOutBatchWhoseStateWasSuperseded_IsNotRequeuedOverTheNewerState
 #[test]
 fn flush_timed_out_batch_whose_state_was_superseded_is_not_requeued_over_the_newer_state() {

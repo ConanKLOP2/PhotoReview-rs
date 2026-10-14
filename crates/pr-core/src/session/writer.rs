@@ -534,10 +534,13 @@ impl Shared {
             let _release = ReleaseOnDrop(&shared.write_lock);
             shared.save_batch(&work_batch);
         });
-        let started = match spawner {
+        // C# wraps the start in `catch (Exception)`: a spawner that panics is handled exactly like one that fails.
+        let started: Result<Completion, Box<dyn Error>> = catch_unwind(AssertUnwindSafe(|| match spawner {
             Some(spawner) => spawner(work),
             None => spawn_save_thread(work),
-        };
+        }))
+        .map_err(|payload| -> Box<dyn Error> { Box::new(PanicError(panic_message(&*payload))) })
+        .and_then(|result| result.map_err(|error| -> Box<dyn Error> { Box::new(error) }));
         let completion = match started {
             Ok(completion) => completion,
             Err(error) => {
@@ -546,7 +549,7 @@ impl Shared {
                 self.write_lock.release();
                 self.log_error(
                     "Session write skipped: the save worker could not be started",
-                    Some(&error),
+                    Some(&*error),
                 );
                 self.requeue_skipped(&batch);
                 return;
