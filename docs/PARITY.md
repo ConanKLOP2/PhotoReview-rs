@@ -25,6 +25,7 @@ Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2
 | INV-8 | Doing (W2-14: file-system part done) | `PhysicalFileSystem::open_read_shared` | ops `openread-then-rename` | Share ReadWrite or Delete + SequentialScan; decoders come later |
 | SEC-01 / F-05 | Doing (W2-14: resolver done) | `PhysicalFileSystem::resolve_real_path` | ops `resolve:*`, `resolve_real_path_junction_*` | Destination policy itself is W2-08 |
 | RV-S06 | Doing (W2-14: resolver fact) | `PhysicalFileSystem::resolve_real_path` | `resolve_real_path_reparse_loop_fails_and_a_path_beside_it_resolves` | Loop returns Err; the fail-closed policy test lands with W2-08 |
+| P-08 / INV-10 / D-08 | Done (W2-16) | `pr_core::diagnostics::file_log` | `diagnostics_file_log::*` (goldens `file-log-format`, `file-log-backup-name`, `file-log-bytes`) | `FileLog`: off by default and then no thread/dir/file, queue 10 000 (oldest dropped), rotate at `>=` max to `<stem>.1<ext>`, CRLF + no BOM. Accepted differences: error text is `Display` + source chain rendered on the caller's thread; `SystemLocalTime` reads UTC (D16: the app injects local time); handle-lifetime tests not ported |
 
 ---
 
