@@ -483,3 +483,65 @@ fn first_overflow_empty_slice_is_none() {
     let bin = PerVolumeBin::new(&[]);
     assert_eq!(first_overflow(&bin, &[]), None);
 }
+
+#[test]
+fn get_path_root_explicit_nt_device_prefix_requires_backslashes_at_0_and_3() {
+    // C# IsExtended: path[0] and path[3] must be backslashes (forward slashes do not make a NT device prefix).
+    assert_eq!(get_path_root(r"\??/").as_deref(), Some(r"\"));
+    assert_eq!(get_path_root(r"/??\").as_deref(), Some(r"\"));
+    assert_eq!(get_path_root("/??/").as_deref(), Some(r"\"));
+    assert_eq!(get_path_root(r"\??/a").as_deref(), Some(r"\"));
+    assert_eq!(get_path_root("/??/C:/a").as_deref(), Some(r"\"));
+    assert_eq!(get_path_root(r"\??\C:\a").as_deref(), Some(r"\??\C:\"));
+}
+
+/// Bin that records every size it is asked about and rejects totals above `limit`.
+struct RecordingBin {
+    limit: u64,
+    asked: std::sync::Mutex<Vec<u64>>,
+}
+
+impl RecordingBin {
+    fn asked(&self) -> Vec<u64> {
+        self.asked.lock().map(|a| a.clone()).unwrap_or_default()
+    }
+}
+
+impl RecycleBin for RecordingBin {
+    fn send_to_recycle_bin(&self, _path: &Path) -> io::Result<()> {
+        Err(io::Error::from(ErrorKind::Unsupported))
+    }
+
+    fn try_restore(&self, _original_path: &Path, _expected_size: u64, _expected_last_write_utc: DateTimeUtc) -> bool {
+        false
+    }
+
+    fn fits_in_recycle_bin(&self, _path: &Path, file_size: u64) -> bool {
+        if let Ok(mut asked) = self.asked.lock() {
+            asked.push(file_size);
+        }
+        file_size <= self.limit
+    }
+}
+
+#[test]
+fn first_overflow_size_sums_saturate_instead_of_wrapping() {
+    let bin = RecordingBin {
+        limit: 1000,
+        asked: std::sync::Mutex::new(Vec::new()),
+    };
+    let members = [member(r"C:\a", i64::MAX), member(r"C:\b", i64::MAX)];
+    assert_eq!(first_overflow(&bin, &members).map(|m| m.source.as_str()), Some(r"C:\a"));
+    assert_eq!(bin.asked(), vec![i64::MAX as u64]);
+}
+
+#[test]
+fn first_overflow_negative_size_sum_is_asked_as_zero() {
+    let bin = RecordingBin {
+        limit: u64::MAX,
+        asked: std::sync::Mutex::new(Vec::new()),
+    };
+    let members = [member(r"C:\a", -1)];
+    assert_eq!(first_overflow(&bin, &members), None);
+    assert_eq!(bin.asked(), vec![0]);
+}

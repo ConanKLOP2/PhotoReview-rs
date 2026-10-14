@@ -274,7 +274,9 @@ pub fn get_path_root(path: &str) -> Option<String> {
     let sep_at = |i: usize| chars.get(i).is_some_and(|&c| is_sep(c));
 
     // `\??\` (explicit) or `\\?\`, `\\.\` (two separators, '.' or '?', separator).
-    let explicit_device = sep_at(0) && chars.get(1) == Some(&'?') && chars.get(2) == Some(&'?') && sep_at(3);
+    let backslash_at = |i: usize| chars.get(i) == Some(&'\\');
+    let explicit_device =
+        backslash_at(0) && chars.get(1) == Some(&'?') && chars.get(2) == Some(&'?') && backslash_at(3);
     let general_device = sep_at(0) && sep_at(1) && chars.get(2).is_some_and(|&c| c == '.' || c == '?') && sep_at(3);
     let device = explicit_device || general_device;
     let device_unc = device && len >= 8 && chars[4..7].iter().copied().eq("UNC".chars()) && sep_at(7);
