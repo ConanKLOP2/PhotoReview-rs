@@ -329,3 +329,9 @@ Also relevant: AppThreadAffinityTests (ADR 0005 threading rule).
 Two settings are saved and repaired but nothing in the app reads them at runtime. Keep them in the schema for compatibility; whether to wire them up is a decision for the rewrite.
 - **S-12 `MemoryReserveBytes`**: preload uses the hard-coded `PreloadOptions.ReserveBytes` (2 GiB) instead.
 - **S-15 `PreviewDiskCacheCapacityBytes`**: `PreviewImageService` uses its own built-in 4 GiB quota instead.
+| Q-R10 | Done | `pr_core::instance::protocol` | `instance_forwarding::golden_forwarded_path` (golden `forwarded-path`) | Wire format and limits |
+| Q-R12 | Done | `pr_core::instance::handoff` | `instance_forwarding::handoff_exits_only_when_the_owner_took_or_likely_took_the_request` | `Unknown` exits like `Delivered` |
+| Q-R18 | Done | `pr_core::instance::ownership` | (data and trait only) | Decision enum; implementation is Wave 6 |
+| SEC-02 | Done | `pr_core::instance::protocol::encode` | `instance_forwarding::protocol_encode_rejects_what_decode_would_reject` | Encode shares is_acceptable_path |
+| RV-S05 | Done | `pr_core::instance::protocol::try_decode` | `instance_forwarding::try_decode_bytes_of_lone_surrogate_returns_false` | Strict UTF-8; lone surrogate unrepresentable in `&str` |
+| RV-P01 | Done | `pr_core::instance::coalescer` | `instance_forwarding::coalescer_submit_does_not_run_or_wait_for_the_open_callback` | Submit never runs the open callback |
