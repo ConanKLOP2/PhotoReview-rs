@@ -1,6 +1,7 @@
 {
   "paths": [
     "photo.jpg", "photo.JPEG", "IMAGE.PNG", "bitmap.bmp", "anim.gif", "x.tif", "x.TIFF", "document.pdf", "executable.exe",
+    "photo.webp", "photo.WEBP", "x.Webp", "photo.heic", "photo.HEIC", "photo.heif", "photo.HEIF", "x.webp.bak", "x.heic.jpg", "webp", "heic", ".webp", ".heif", "C:\\dir.webp\\file", "C:\\a\\b.heic", "photo.webp", "photo.Keic", "photo.İeic", "photo.heic\u0000",
     "photo.cr2", "photo.CR3", "photo.nef", "photo.arw", "photo.dng", "photo.raf", "photo.orf", "photo.rw2", "photo.nrw", "photo.pef",
     "", " ", "\t\n", null, "photo", "photo.", "photo..jpg", ".jpg", ".JPG", "..jpg", "a.b.jpg", "a.jpg.txt", "a.jpg ",
     "C:\\dir.jpg\\file", "C:\\dir.jpg\\file.png", "C:/dir.jpg/file", "C:\\dir\\file.", "C:file.jpg", "C:.jpg", "dir.jpg/",

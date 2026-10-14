@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs lenient-enum",
-  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
   "cases": [
     {
       "kind": "read",
@@ -16801,8 +16801,8 @@
       "kind": "read",
       "enum": "FitWidthAnchor",
       "token": "2",
-      "plain": "Centre",
-      "settings": "<undefined>"
+      "plain": "BottomThird",
+      "settings": "BottomThird"
     },
     {
       "kind": "read",
@@ -16997,9 +16997,9 @@
       "kind": "read",
       "enum": "FitWidthAnchor",
       "token": "\"2\"",
-      "plain": "Centre",
-      "settings": "<undefined>",
-      "key": "Centre"
+      "plain": "BottomThird",
+      "settings": "BottomThird",
+      "key": "BottomThird"
     },
     {
       "kind": "read",
@@ -17420,536 +17420,576 @@
       "key": "Centre"
     },
     {
+      "kind": "read",
+      "enum": "FitWidthAnchor",
+      "token": "\"BottomThird\"",
+      "plain": "BottomThird",
+      "settings": "BottomThird",
+      "key": "BottomThird"
+    },
+    {
+      "kind": "read",
+      "enum": "FitWidthAnchor",
+      "token": "\"bottomthird\"",
+      "plain": "BottomThird",
+      "settings": "BottomThird",
+      "key": "BottomThird"
+    },
+    {
+      "kind": "read",
+      "enum": "FitWidthAnchor",
+      "token": "\"BOTTOMTHIRD\"",
+      "plain": "BottomThird",
+      "settings": "BottomThird",
+      "key": "BottomThird"
+    },
+    {
+      "kind": "read",
+      "enum": "FitWidthAnchor",
+      "token": "\"  BottomThird\\t\"",
+      "plain": "BottomThird",
+      "settings": "BottomThird",
+      "key": "BottomThird"
+    },
+    {
+      "kind": "read",
+      "enum": "FitWidthAnchor",
+      "token": "\"BottomThirdx\"",
+      "plain": "Centre",
+      "settings": "<undefined>",
+      "key": "Centre"
+    },
+    {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "null",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "true",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "false",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "0",
       "plain": "Centre"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "1",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "2",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "3",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "4",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "5",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "6",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "7",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "99",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "-1",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "-2",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "2147483647",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "2147483648",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "-2147483648",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "-2147483649",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "9223372036854775807",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "18446744073709551616",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "1.5",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "1.0",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "1e0",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "0e0",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "1E2",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"   \"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\t\\n\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"garbage\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"Gibberish123!@#\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"0\"",
       "plain": "Centre"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"2\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"3\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"7\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\" 1 \"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\t1\\n\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"+1\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"-1\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"-0\"",
       "plain": "Centre"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"+0\"",
       "plain": "Centre"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"01\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"001\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1.0\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1e0\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"0x1\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1,0\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1 2\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"99999999999\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"2147483647\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"2147483648\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"-2147483648\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u0662\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\uff11\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1\\u0000\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1 \\u0000\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1\\u0000\\u0000\"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1\\u0000x\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"1\\u0000 \"",
       "plain": "TopThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u00001\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"+\\u0000\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u0000\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u00a0Fast\\u00a0\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u3000Fast\\u3000\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u200bFast\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u0130\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"Fa\\u017ft\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"Or\\u0131ginal\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\u212aast\"",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "\"\\ud800\"",
       "plain": "<error>"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "[]",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "{}",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "[1,[2]]",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "{\"a\":{\"b\":[1,2,{}]}}",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "[\"Fast\"]",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "custom-default",
       "enum": "FitWidthAnchor",
-      "default": "TopThird",
+      "default": "BottomThird",
       "token": "{\"Fast\":1}",
-      "plain": "TopThird"
+      "plain": "BottomThird"
     },
     {
       "kind": "write",
@@ -17964,6 +18004,13 @@
       "member": "TopThird",
       "value_text": "TopThird",
       "key_text": "TopThird"
+    },
+    {
+      "kind": "write",
+      "enum": "FitWidthAnchor",
+      "member": "BottomThird",
+      "value_text": "BottomThird",
+      "key_text": "BottomThird"
     },
     {
       "kind": "write-sentinel",
@@ -20384,6 +20431,1706 @@
     {
       "kind": "write-sentinel",
       "enum": "KineticGlideSmoothing",
+      "settings_text": "-2147483648"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "null",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "true",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "false",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "0",
+      "plain": "None",
+      "settings": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "1",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "2",
+      "plain": "ActualSize",
+      "settings": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "3",
+      "plain": "Fit",
+      "settings": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "4",
+      "plain": "FitWidth",
+      "settings": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "5",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "6",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "7",
+      "plain": "NextImage",
+      "settings": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "99",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "-1",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "-2",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "2147483647",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "2147483648",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "-2147483648",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "-2147483649",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "9223372036854775807",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "18446744073709551616",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "1.5",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "1.0",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "1e0",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "0e0",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "1E2",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"   \"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\t\\n\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"garbage\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Gibberish123!@#\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"0\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"2\"",
+      "plain": "ActualSize",
+      "settings": "ActualSize",
+      "key": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"3\"",
+      "plain": "Fit",
+      "settings": "Fit",
+      "key": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"7\"",
+      "plain": "NextImage",
+      "settings": "NextImage",
+      "key": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\" 1 \"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\t1\\n\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"+1\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"-1\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"-0\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"+0\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"01\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"001\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1.0\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1e0\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"0x1\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1,0\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1 2\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"99999999999\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"2147483647\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"2147483648\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"-2147483648\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u0662\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\uff11\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1\\u0000\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1 \\u0000\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1\\u0000\\u0000\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1\\u0000x\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"1\\u0000 \"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u00001\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"+\\u0000\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u0000\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u00a0Fast\\u00a0\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u3000Fast\\u3000\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u200bFast\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u0130\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Fa\\u017ft\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Or\\u0131ginal\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\u212aast\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"\\ud800\"",
+      "plain": "<error>",
+      "settings": "<error>",
+      "key": "<error>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "[]",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "{}",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "[1,[2]]",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "{\"a\":{\"b\":[1,2,{}]}}",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "[\"Fast\"]",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "{\"Fast\":1}",
+      "plain": "None",
+      "settings": "<undefined>"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"None\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"none\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NONE\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  None\\t\"",
+      "plain": "None",
+      "settings": "None",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Nonex\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"ClickZoom\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"clickzoom\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"CLICKZOOM\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  ClickZoom\\t\"",
+      "plain": "ClickZoom",
+      "settings": "ClickZoom",
+      "key": "ClickZoom"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"ClickZoomx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"ActualSize\"",
+      "plain": "ActualSize",
+      "settings": "ActualSize",
+      "key": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"actualsize\"",
+      "plain": "ActualSize",
+      "settings": "ActualSize",
+      "key": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"ACTUALSIZE\"",
+      "plain": "ActualSize",
+      "settings": "ActualSize",
+      "key": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  ActualSize\\t\"",
+      "plain": "ActualSize",
+      "settings": "ActualSize",
+      "key": "ActualSize"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"ActualSizex\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Fit\"",
+      "plain": "Fit",
+      "settings": "Fit",
+      "key": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"fit\"",
+      "plain": "Fit",
+      "settings": "Fit",
+      "key": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FIT\"",
+      "plain": "Fit",
+      "settings": "Fit",
+      "key": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  Fit\\t\"",
+      "plain": "Fit",
+      "settings": "Fit",
+      "key": "Fit"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"Fitx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FitWidth\"",
+      "plain": "FitWidth",
+      "settings": "FitWidth",
+      "key": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"fitwidth\"",
+      "plain": "FitWidth",
+      "settings": "FitWidth",
+      "key": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FITWIDTH\"",
+      "plain": "FitWidth",
+      "settings": "FitWidth",
+      "key": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  FitWidth\\t\"",
+      "plain": "FitWidth",
+      "settings": "FitWidth",
+      "key": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FitWidthx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"4\"",
+      "plain": "FitWidth",
+      "settings": "FitWidth",
+      "key": "FitWidth"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FitWidth2\"",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2",
+      "key": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"fitwidth2\"",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2",
+      "key": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FITWIDTH2\"",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2",
+      "key": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  FitWidth2\\t\"",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2",
+      "key": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"FitWidth2x\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"5\"",
+      "plain": "FitWidth2",
+      "settings": "FitWidth2",
+      "key": "FitWidth2"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PreviousImage\"",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage",
+      "key": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"previousimage\"",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage",
+      "key": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PREVIOUSIMAGE\"",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage",
+      "key": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  PreviousImage\\t\"",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage",
+      "key": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PreviousImagex\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"6\"",
+      "plain": "PreviousImage",
+      "settings": "PreviousImage",
+      "key": "PreviousImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NextImage\"",
+      "plain": "NextImage",
+      "settings": "NextImage",
+      "key": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"nextimage\"",
+      "plain": "NextImage",
+      "settings": "NextImage",
+      "key": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NEXTIMAGE\"",
+      "plain": "NextImage",
+      "settings": "NextImage",
+      "key": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  NextImage\\t\"",
+      "plain": "NextImage",
+      "settings": "NextImage",
+      "key": "NextImage"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NextImagex\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PreviousFolder\"",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder",
+      "key": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"previousfolder\"",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder",
+      "key": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PREVIOUSFOLDER\"",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder",
+      "key": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  PreviousFolder\\t\"",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder",
+      "key": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"PreviousFolderx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "8",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"8\"",
+      "plain": "PreviousFolder",
+      "settings": "PreviousFolder",
+      "key": "PreviousFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NextFolder\"",
+      "plain": "NextFolder",
+      "settings": "NextFolder",
+      "key": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"nextfolder\"",
+      "plain": "NextFolder",
+      "settings": "NextFolder",
+      "key": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NEXTFOLDER\"",
+      "plain": "NextFolder",
+      "settings": "NextFolder",
+      "key": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  NextFolder\\t\"",
+      "plain": "NextFolder",
+      "settings": "NextFolder",
+      "key": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"NextFolderx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "9",
+      "plain": "NextFolder",
+      "settings": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"9\"",
+      "plain": "NextFolder",
+      "settings": "NextFolder",
+      "key": "NextFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"OpenFolder\"",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder",
+      "key": "OpenFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"openfolder\"",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder",
+      "key": "OpenFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"OPENFOLDER\"",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder",
+      "key": "OpenFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"  OpenFolder\\t\"",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder",
+      "key": "OpenFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"OpenFolderx\"",
+      "plain": "None",
+      "settings": "<undefined>",
+      "key": "None"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "10",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder"
+    },
+    {
+      "kind": "read",
+      "enum": "MiddleClickAction",
+      "token": "\"10\"",
+      "plain": "OpenFolder",
+      "settings": "OpenFolder",
+      "key": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "null",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "true",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "false",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "0",
+      "plain": "None"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "1",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "2",
+      "plain": "ActualSize"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "3",
+      "plain": "Fit"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "4",
+      "plain": "FitWidth"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "5",
+      "plain": "FitWidth2"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "6",
+      "plain": "PreviousImage"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "7",
+      "plain": "NextImage"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "99",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "-1",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "-2",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "2147483647",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "2147483648",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "-2147483648",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "-2147483649",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "9223372036854775807",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "18446744073709551616",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "1.5",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "1.0",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "1e0",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "0e0",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "1E2",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"   \"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\t\\n\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"garbage\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"Gibberish123!@#\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"0\"",
+      "plain": "None"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"2\"",
+      "plain": "ActualSize"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"3\"",
+      "plain": "Fit"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"7\"",
+      "plain": "NextImage"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\" 1 \"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\t1\\n\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"+1\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"-1\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"-0\"",
+      "plain": "None"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"+0\"",
+      "plain": "None"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"01\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"001\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1.0\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1e0\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"0x1\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1,0\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1 2\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"99999999999\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"2147483647\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"2147483648\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"-2147483648\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u0662\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\uff11\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1\\u0000\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1 \\u0000\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1\\u0000\\u0000\"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1\\u0000x\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"1\\u0000 \"",
+      "plain": "ClickZoom"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u00001\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"+\\u0000\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u0000\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u00a0Fast\\u00a0\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u3000Fast\\u3000\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u200bFast\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u0130\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"Fa\\u017ft\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"Or\\u0131ginal\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\u212aast\"",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "\"\\ud800\"",
+      "plain": "<error>"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "[]",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "{}",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "[1,[2]]",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "{\"a\":{\"b\":[1,2,{}]}}",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "[\"Fast\"]",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "custom-default",
+      "enum": "MiddleClickAction",
+      "default": "OpenFolder",
+      "token": "{\"Fast\":1}",
+      "plain": "OpenFolder"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "None",
+      "value_text": "None",
+      "key_text": "None"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "ClickZoom",
+      "value_text": "ClickZoom",
+      "key_text": "ClickZoom"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "ActualSize",
+      "value_text": "ActualSize",
+      "key_text": "ActualSize"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "Fit",
+      "value_text": "Fit",
+      "key_text": "Fit"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "FitWidth",
+      "value_text": "FitWidth",
+      "key_text": "FitWidth"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "FitWidth2",
+      "value_text": "FitWidth2",
+      "key_text": "FitWidth2"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "PreviousImage",
+      "value_text": "PreviousImage",
+      "key_text": "PreviousImage"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "NextImage",
+      "value_text": "NextImage",
+      "key_text": "NextImage"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "PreviousFolder",
+      "value_text": "PreviousFolder",
+      "key_text": "PreviousFolder"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "NextFolder",
+      "value_text": "NextFolder",
+      "key_text": "NextFolder"
+    },
+    {
+      "kind": "write",
+      "enum": "MiddleClickAction",
+      "member": "OpenFolder",
+      "value_text": "OpenFolder",
+      "key_text": "OpenFolder"
+    },
+    {
+      "kind": "write-sentinel",
+      "enum": "MiddleClickAction",
       "settings_text": "-2147483648"
     }
   ]

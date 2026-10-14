@@ -2,7 +2,7 @@
 //!
 //! Port of `PhotoReview.Core/Model/{ImageSortMode,InitialViewMode,LoadingMode,DecoderBackend,RawPairMode,
 //! RawFullDecode,MouseWheelAction,ScalingQuality,ImageTransition,InstanceMode,JournalState,FileOperationType,
-//! JournalDurability,FitWidthAnchor,KeyboardZoomAnchor,KineticGlideSmoothing}.cs` (baseline e441d67a), including
+//! JournalDurability,FitWidthAnchor,KeyboardZoomAnchor,KineticGlideSmoothing,MiddleClickAction}.cs` (baseline d92d6aae), including
 //! `SortModePolicy` from `ImageSortMode.cs`. Contract: `contracts/W1-01/contract.md`.
 //!
 //! Every enum here carries `[JsonConverter(typeof(LenientEnumConverter<T>))]` in C#. The `model_enum!` macro below gives
@@ -258,7 +258,9 @@ model_enum! {
         /// Image point (0.5, 0.5) at the viewport centre. Default.
         Centre = 0,
         /// Image point (0.5, 1/3) at the viewport centre; portraits usually have the face there.
-        TopThird = 1
+        TopThird = 1,
+        /// Image point (0.5, 2/3) at the viewport centre; e.g. the lower body of a full-length portrait.
+        BottomThird = 2
     }
 }
 
@@ -282,6 +284,33 @@ model_enum! {
     }
 }
 
+model_enum! {
+    /// What clicking the middle mouse button (wheel press) over the main image does (`MiddleClickAction`).
+    MiddleClickAction {
+        /// The middle button does nothing.
+        None = 0,
+        /// The click-to-zoom toggle (Fit <-> ClickZoomPercent).
+        ClickZoom = 1,
+        /// Zoom to 100 % = one source pixel per device pixel. Default in settings.
+        ActualSize = 2,
+        /// Fit the whole image in the view.
+        Fit = 3,
+        /// Fit width with the "Fit width shows 1" anchor.
+        FitWidth = 4,
+        /// Fit width with the "Fit width shows 2" anchor.
+        FitWidth2 = 5,
+        /// Previous image.
+        PreviousImage = 6,
+        /// Next image.
+        NextImage = 7,
+        /// Previous sibling folder.
+        PreviousFolder = 8,
+        /// Next sibling folder.
+        NextFolder = 9,
+        /// The "Open folder..." picker.
+        OpenFolder = 10
+    }
+}
 /// `SortModePolicy.UsesExplorerOrder`: true for the modes where an open Explorer window's view order replaces the
 /// app's own sort (`Name`, `SizeDescending`, `SizeAscending`). `Default`, `NameAscending` and `NameDescending` are
 /// decided by the app: the Explorer query is not even started.

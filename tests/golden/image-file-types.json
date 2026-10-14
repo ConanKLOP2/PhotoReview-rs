@@ -1,356 +1,834 @@
 {
   "generator": "oracle-cs image-file-types",
-  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
   "cases": [
     {
       "path": "photo.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.JPEG",
       "extension": ".JPEG",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "IMAGE.PNG",
       "extension": ".PNG",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "bitmap.bmp",
       "extension": ".bmp",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "anim.gif",
       "extension": ".gif",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "x.tif",
       "extension": ".tif",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "x.TIFF",
       "extension": ".TIFF",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "document.pdf",
       "extension": ".pdf",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "executable.exe",
       "extension": ".exe",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "photo.webp",
+      "extension": ".webp",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "WebP"
+    },
+    {
+      "path": "photo.WEBP",
+      "extension": ".WEBP",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "WebP"
+    },
+    {
+      "path": "x.Webp",
+      "extension": ".Webp",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "WebP"
+    },
+    {
+      "path": "photo.heic",
+      "extension": ".heic",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "photo.HEIC",
+      "extension": ".HEIC",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "photo.heif",
+      "extension": ".heif",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "photo.HEIF",
+      "extension": ".HEIF",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "x.webp.bak",
+      "extension": ".bak",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "x.heic.jpg",
+      "extension": ".jpg",
+      "supported": true,
+      "supported_raw_enabled": true,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
+    },
+    {
+      "path": "webp",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "heic",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": ".webp",
+      "extension": ".webp",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "WebP"
+    },
+    {
+      "path": ".heif",
+      "extension": ".heif",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "C:\\dir.webp\\file",
+      "extension": "",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "C:\\a\\b.heic",
+      "extension": ".heic",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "Heif"
+    },
+    {
+      "path": "photo.webp",
+      "extension": ".webp",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "WebP"
+    },
+    {
+      "path": "photo.Keic",
+      "extension": ".Keic",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "photo.İeic",
+      "extension": ".İeic",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
+    },
+    {
+      "path": "photo.heic\u0000",
+      "extension": ".heic\u0000",
+      "supported": false,
+      "supported_raw_enabled": false,
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo.cr2",
       "extension": ".cr2",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.CR3",
       "extension": ".CR3",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.nef",
       "extension": ".nef",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.arw",
       "extension": ".arw",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.dng",
       "extension": ".dng",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.raf",
       "extension": ".raf",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.orf",
       "extension": ".orf",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.rw2",
       "extension": ".rw2",
       "supported": false,
       "supported_raw_enabled": true,
-      "is_raw": true
+      "is_raw": true,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.nrw",
       "extension": ".nrw",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo.pef",
       "extension": ".pef",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": " ",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "\t\n",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": null,
       "extension": null,
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo.",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo..jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": ".jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": ".JPG",
       "extension": ".JPG",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "..jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "a.b.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "a.jpg.txt",
       "extension": ".txt",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "a.jpg ",
       "extension": ".jpg ",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "C:\\dir.jpg\\file",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "C:\\dir.jpg\\file.png",
       "extension": ".png",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "C:/dir.jpg/file",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "C:\\dir\\file.",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "C:file.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "C:.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "dir.jpg/",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "\\\\server\\share.jpg\\f",
       "extension": "",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo\u00A0.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "\u3000photo.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": " photo.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "photo.Kpg",
       "extension": ".Kpg",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo.JPG",
       "extension": ".JPG",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "a.ımg",
       "extension": ".ımg",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "photo.jpg\u0000",
       "extension": ".jpg\u0000",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     },
     {
       "path": "pho\u0000to.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "C:\\a\\b.cr2.jpg",
       "extension": ".jpg",
       "supported": true,
       "supported_raw_enabled": true,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": true,
+      "supported_raw_webp_heic": true,
+      "supported_neither_3arg": true,
+      "supported_raw_only_3arg": true,
+      "wic_format": "None"
     },
     {
       "path": "x.İpg",
       "extension": ".İpg",
       "supported": false,
       "supported_raw_enabled": false,
-      "is_raw": false
+      "is_raw": false,
+      "supported_webp_heic": false,
+      "supported_raw_webp_heic": false,
+      "supported_neither_3arg": false,
+      "supported_raw_only_3arg": false,
+      "wic_format": "None"
     }
   ]
 }

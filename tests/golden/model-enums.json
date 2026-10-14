@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs model-enums",
-  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
   "cases": [
     {
       "enum": "ImageSortMode",
@@ -357,6 +357,12 @@
           "value": 1,
           "aliases": [],
           "json": "TopThird"
+        },
+        {
+          "name": "BottomThird",
+          "value": 2,
+          "aliases": [],
+          "json": "BottomThird"
         }
       ]
     },
@@ -391,6 +397,77 @@
           "value": 1,
           "aliases": [],
           "json": "Predict"
+        }
+      ]
+    },
+    {
+      "enum": "MiddleClickAction",
+      "members": [
+        {
+          "name": "None",
+          "value": 0,
+          "aliases": [],
+          "json": "None"
+        },
+        {
+          "name": "ClickZoom",
+          "value": 1,
+          "aliases": [],
+          "json": "ClickZoom"
+        },
+        {
+          "name": "ActualSize",
+          "value": 2,
+          "aliases": [],
+          "json": "ActualSize"
+        },
+        {
+          "name": "Fit",
+          "value": 3,
+          "aliases": [],
+          "json": "Fit"
+        },
+        {
+          "name": "FitWidth",
+          "value": 4,
+          "aliases": [],
+          "json": "FitWidth"
+        },
+        {
+          "name": "FitWidth2",
+          "value": 5,
+          "aliases": [],
+          "json": "FitWidth2"
+        },
+        {
+          "name": "PreviousImage",
+          "value": 6,
+          "aliases": [],
+          "json": "PreviousImage"
+        },
+        {
+          "name": "NextImage",
+          "value": 7,
+          "aliases": [],
+          "json": "NextImage"
+        },
+        {
+          "name": "PreviousFolder",
+          "value": 8,
+          "aliases": [],
+          "json": "PreviousFolder"
+        },
+        {
+          "name": "NextFolder",
+          "value": 9,
+          "aliases": [],
+          "json": "NextFolder"
+        },
+        {
+          "name": "OpenFolder",
+          "value": 10,
+          "aliases": [],
+          "json": "OpenFolder"
         }
       ]
     }

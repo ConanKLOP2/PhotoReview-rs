@@ -1,7 +1,7 @@
 //! Keyboard shortcut settings: the mappings, their canonical key spelling, and the review actions.
 //!
 //! Port of `PhotoReview.Core/Settings/ShortcutMappings.cs`, `ShortcutKeyCanonical.cs` and `ReviewAction.cs`
-//! (baseline e441d67a). Contract: `contracts/W1-04/contract.md`.
+//! (baseline d92d6aae). Contract: `contracts/W1-04/contract.md`.
 //!
 //! Core knows shortcuts only as strings (WPF `Key` names). Core never validates that a name is a real key (the App
 //! layer does that through `IKeyNameValidator`).
@@ -61,11 +61,19 @@ pub struct ShortcutMappings {
     pub custom_zoom: String,
     /// Switches between the JPEG and RAW member of the current capture group. Empty = disabled (the default).
     pub toggle_capture_member: String,
+    /// A SECOND Fit width command with its own vertical anchor (`AppSettings.FitWidthAnchor2`). Default `D4` (the "4"
+    /// key). Empty = disabled. Older configs that already bind `D4` elsewhere get this one disabled by
+    /// `SettingsNormalizer.DisableConflictingOptionalShortcuts`.
+    pub fit_width2: String,
+    /// Q-TOUCHPAD-REFRESH: re-renders the current view at the best quality without moving zoom or scroll. Default `R`
+    /// (not `F5`: that is the default key of the "Backup" action). Empty = disabled; a config whose own binding already
+    /// owns `R` gets this one disabled by `SettingsNormalizer.DisableConflictingOptionalShortcuts`.
+    pub refresh: String,
 }
 
 impl ShortcutMappings {
     /// The C# property names (the JSON names too), in declaration order: what `GetProperties()` returns.
-    pub const PROPERTY_NAMES: [&'static str; 26] = [
+    pub const PROPERTY_NAMES: [&'static str; 28] = [
         "Next",
         "Previous",
         "MoveToFolder2",
@@ -92,11 +100,13 @@ impl ShortcutMappings {
         "OpenFolder",
         "CustomZoom",
         "ToggleCaptureMember",
+        "FitWidth2",
+        "Refresh",
     ];
 
     /// `ShortcutMappings.OptionalNames`: the shortcuts that may be empty (= feature disabled). The older ones are
     /// mandatory: an empty value is invalid. NOT part of [`ShortcutMappings::PROPERTY_NAMES`] (in C# it is a field).
-    pub const OPTIONAL_NAMES: [&'static str; 12] = [
+    pub const OPTIONAL_NAMES: [&'static str; 14] = [
         "LastImage",
         "ZoomActualSize",
         "ToggleInfoOverlay",
@@ -109,6 +119,8 @@ impl ShortcutMappings {
         "OpenFolder",
         "CustomZoom",
         "ToggleCaptureMember",
+        "FitWidth2",
+        "Refresh",
     ];
 
     /// `ShortcutMappings.IsOptional`: true when `property_name` is one of [`ShortcutMappings::OPTIONAL_NAMES`].
@@ -147,6 +159,8 @@ impl ShortcutMappings {
             "OpenFolder" => &self.open_folder,
             "CustomZoom" => &self.custom_zoom,
             "ToggleCaptureMember" => &self.toggle_capture_member,
+            "FitWidth2" => &self.fit_width2,
+            "Refresh" => &self.refresh,
             _ => return None,
         };
         Some(value.as_str())
@@ -181,12 +195,14 @@ impl ShortcutMappings {
             "OpenFolder" => &mut self.open_folder,
             "CustomZoom" => &mut self.custom_zoom,
             "ToggleCaptureMember" => &mut self.toggle_capture_member,
+            "FitWidth2" => &mut self.fit_width2,
+            "Refresh" => &mut self.refresh,
             _ => return None,
         };
         Some(value)
     }
 
-    /// Every `(C# property name, value)` pair in declaration order; always 26 entries.
+    /// Every `(C# property name, value)` pair in declaration order; always 28 entries.
     pub fn entries(&self) -> Vec<(&'static str, &str)> {
         Self::PROPERTY_NAMES
             .iter()
@@ -225,6 +241,8 @@ impl Default for ShortcutMappings {
             open_folder: "O".to_owned(),
             custom_zoom: "D3".to_owned(),
             toggle_capture_member: String::new(),
+            fit_width2: "D4".to_owned(),
+            refresh: "R".to_owned(),
         }
     }
 }
@@ -291,7 +309,7 @@ pub fn canonicalize(name: Option<&str>) -> String {
 }
 
 /// `ShortcutKeyCanonical.CanonicalizeAll` for the parts of `AppSettings` that exist in this unit: canonicalises every
-/// one of the 26 shortcut strings of `shortcuts` and the `shortcut` of every action, in place. (The `AppSettings`
+/// one of the 28 shortcut strings of `shortcuts` and the `shortcut` of every action, in place. (The `AppSettings`
 /// wrapper that also handles a missing `Shortcuts`/`Actions` is owned by the settings unit.)
 pub fn canonicalize_all(shortcuts: &mut ShortcutMappings, actions: &mut [ReviewAction]) {
     for name in ShortcutMappings::PROPERTY_NAMES {

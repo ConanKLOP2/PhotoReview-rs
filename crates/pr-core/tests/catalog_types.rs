@@ -12,7 +12,8 @@ use pr_core::catalog::explorer_reason::{self, ALL_CODES};
 use pr_core::catalog::explorer_types::{ExplorerGroupState, ExplorerOrderStatus, ExplorerViewSnapshot};
 use pr_core::catalog::types::{
     ArgumentError, CaptureGroup, CatalogEntry, ExplorerQueryHandle, JPEG_EXTENSIONS, LatestExplorerSnapshot,
-    RAW_EXTENSIONS, SUPPORTED_EXTENSIONS, get_extension, is_raw_path, is_supported, is_supported_with_raw,
+    RAW_EXTENSIONS, SUPPORTED_EXTENSIONS, WEBP_HEIC_EXTENSIONS, WicImageFormat, get_extension, get_wic_format,
+    is_raw_path, is_supported, is_supported_with, is_supported_with_raw,
 };
 use pr_core::model::RawPairMode;
 use pr_core::time::DateTimeUtc;
@@ -137,8 +138,8 @@ fn get_extension_follows_dotnet_path_get_extension() {
 #[test]
 fn extensions_compare_ordinal_ignore_case_only() {
     assert!(is_supported("PHOTO.JpG"));
-    assert!(!is_supported("a.ımg"));
-    assert!(!is_supported("x.İpg"));
+    assert!(!is_supported("a.??mg"));
+    assert!(!is_supported("x.??pg"));
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -676,6 +677,9 @@ fn image_file_types_golden_matches_dotnet() {
             assert!(!none.is_some_and(is_supported));
             assert!(!none.is_some_and(|p| is_supported_with_raw(p, true)));
             assert!(!none.is_some_and(is_raw_path));
+            assert!(!none.is_some_and(|p| is_supported_with(p, true, true)));
+            assert_eq!(str_of(case, "wic_format"), "None");
+            assert!(!bool_of(case, "supported_webp_heic") && !bool_of(case, "supported_raw_webp_heic"));
             continue;
         }
         let path = str_of(case, "path");
@@ -687,7 +691,57 @@ fn image_file_types_golden_matches_dotnet() {
             "supported_raw_enabled {path:?}"
         );
         assert_eq!(is_raw_path(path), bool_of(case, "is_raw"), "is_raw {path:?}");
+        // Q-FMT-WEBP-HEIC: the 3-argument IsSupported, all four (raw, webpHeic) combinations, and GetWicFormat.
+        assert_eq!(
+            is_supported_with(path, false, false),
+            bool_of(case, "supported_neither_3arg"),
+            "(F,F) {path:?}"
+        );
+        assert_eq!(
+            is_supported_with(path, true, false),
+            bool_of(case, "supported_raw_only_3arg"),
+            "(T,F) {path:?}"
+        );
+        assert_eq!(
+            is_supported_with(path, false, true),
+            bool_of(case, "supported_webp_heic"),
+            "(F,T) {path:?}"
+        );
+        assert_eq!(
+            is_supported_with(path, true, true),
+            bool_of(case, "supported_raw_webp_heic"),
+            "(T,T) {path:?}"
+        );
+        let wic = match get_wic_format(path) {
+            WicImageFormat::None => "None",
+            WicImageFormat::WebP => "WebP",
+            WicImageFormat::Heif => "Heif",
+        };
+        assert_eq!(wic, str_of(case, "wic_format"), "wic_format {path:?}");
     }
+}
+
+// Every WebP/HEIC extension is supported only when WebP/HEIC is enabled (any case), and maps to a WIC format.
+#[test]
+fn every_webp_heic_extension_is_supported_only_when_enabled() {
+    for ext in WEBP_HEIC_EXTENSIONS {
+        for name in [format!("shot{ext}"), format!("shot{}", ext.to_uppercase())] {
+            assert!(is_supported_with(&name, false, true), "{name} with WebP/HEIC enabled");
+            assert!(is_supported_with(&name, true, true), "{name} with both enabled");
+            assert!(!is_supported_with(&name, false, false), "{name} must need the flag");
+            assert!(
+                !is_supported_with(&name, true, false),
+                "{name} is not a RAW flag format"
+            );
+            assert!(!is_supported(&name) && !is_supported_with_raw(&name, true));
+            assert!(!is_raw_path(&name));
+            assert_ne!(get_wic_format(&name), WicImageFormat::None, "{name}");
+        }
+    }
+    assert_eq!(get_wic_format("a.webp"), WicImageFormat::WebP);
+    assert_eq!(get_wic_format("a.HEIC"), WicImageFormat::Heif);
+    assert_eq!(get_wic_format("a.heif"), WicImageFormat::Heif);
+    assert_eq!(get_wic_format("a.jpg"), WicImageFormat::None);
 }
 
 // Every RAW extension is supported only when RAW is enabled, and is always a RAW path.
