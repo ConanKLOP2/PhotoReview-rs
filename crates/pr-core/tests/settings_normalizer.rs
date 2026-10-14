@@ -641,3 +641,36 @@ fn parse_result_repairs_lists_resets_then_prefixed_disabled_shortcuts() {
         ]
     );
 }
+
+// ---- repair round 1: mutation-killing probes ----
+
+#[test]
+fn validate_passes_the_trimmed_shortcut_text_to_the_key_validator() {
+    // C#: SettingsValidator trims the property text before IsValidKeyName (padded key must be accepted).
+    let mut s = defaults();
+    s.actions.clear();
+    set(&mut s, "Next", " Right ");
+    let v = validator(Arc::new(LettersDigits));
+    assert_eq!(v.validate_shortcuts(&s), None);
+}
+
+#[test]
+fn validate_passes_the_trimmed_action_shortcut_to_the_key_validator() {
+    let mut s = defaults();
+    s.actions.clear();
+    s.actions.push(action("Act", " Q "));
+    let v = validator(Arc::new(LettersDigits));
+    assert_eq!(v.validate_shortcuts(&s), None);
+}
+
+#[test]
+fn legacy_move_to_folder2_key_does_not_count_as_taken_for_optional_shortcuts() {
+    // C#: DisableConflictingOptionalShortcuts.Take() lists only the 13 mandatory names (not MoveToFolder2).
+    let mut s = defaults();
+    s.actions.clear();
+    set(&mut s, "MoveToFolder2", "Q");
+    set(&mut s, "LastImage", "Q");
+    let disabled = disable_conflicting_optional_shortcuts(&mut s);
+    assert!(disabled.is_empty());
+    assert_eq!(get(&s, "LastImage"), "Q");
+}
