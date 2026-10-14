@@ -5,14 +5,14 @@
 use pr_core::model::serde_ext::LenientEnum;
 use pr_core::model::{
     DecoderBackend, FileOperationType, FitWidthAnchor, ImageSortMode, ImageTransition, InitialViewMode, InstanceMode,
-    JournalDurability, JournalState, KeyboardZoomAnchor, KineticGlideSmoothing, LoadingMode, MouseWheelAction,
-    RawFullDecode, RawPairMode, ScalingQuality, uses_explorer_order,
+    JournalDurability, JournalState, KeyboardZoomAnchor, KineticGlideSmoothing, LoadingMode, MiddleClickAction,
+    MouseWheelAction, RawFullDecode, RawPairMode, ScalingQuality, uses_explorer_order,
 };
 use pr_test_support::golden;
 use serde_json::Value;
 
 /// The C# commit the golden file `model-enums.json` was generated from.
-const GOLDEN_COMMIT: &str = "e441d67ace060b6f725f6534904be1cb80e4aa3e";
+const GOLDEN_COMMIT: &str = "d92d6aae639a40eede232948f9bce97ecfd02c10";
 
 /// Asserts the member names (declaration order) and that the numeric values are `0..n-1`.
 fn assert_specification<T: LenientEnum>(expected_names: &[&str]) {
@@ -47,7 +47,20 @@ fn values_and_names_match_specification() {
         "FitHeight",
         "ClickZoomLevel",
     ]);
-    assert_specification::<FitWidthAnchor>(&["Centre", "TopThird"]);
+    assert_specification::<FitWidthAnchor>(&["Centre", "TopThird", "BottomThird"]);
+    assert_specification::<MiddleClickAction>(&[
+        "None",
+        "ClickZoom",
+        "ActualSize",
+        "Fit",
+        "FitWidth",
+        "FitWidth2",
+        "PreviousImage",
+        "NextImage",
+        "PreviousFolder",
+        "NextFolder",
+        "OpenFolder",
+    ]);
     assert_specification::<FileOperationType>(&["Move", "Copy", "Recycle"]);
     assert_specification::<JournalState>(&["Prepared", "Committed", "Failed", "Dismissed"]);
     assert_specification::<DecoderBackend>(&["Wpf", "WicDirect", "TurboJpeg", "LibRaw"]);
@@ -89,7 +102,7 @@ fn assert_default_is_zero_member<T: LenientEnum + Default>() {
     assert_eq!(default, T::zero(), "{} default equals LenientEnum::zero", T::TYPE_NAME);
 }
 
-/// No C# twin: `default(T)` is the zero member for all 16 persisted enums.
+/// No C# twin: `default(T)` is the zero member for all 17 persisted enums.
 #[test]
 fn default_is_the_zero_member() {
     assert_default_is_zero_member::<ImageSortMode>();
@@ -108,6 +121,7 @@ fn default_is_the_zero_member() {
     assert_default_is_zero_member::<FitWidthAnchor>();
     assert_default_is_zero_member::<KeyboardZoomAnchor>();
     assert_default_is_zero_member::<KineticGlideSmoothing>();
+    assert_default_is_zero_member::<MiddleClickAction>();
 }
 
 /// The `members` array of one golden case.
@@ -167,12 +181,12 @@ fn model_enums_match_golden() {
     let golden = golden::load("model-enums");
     assert_eq!(golden.generator, "oracle-cs model-enums");
     assert_eq!(golden.csharp_commit, GOLDEN_COMMIT);
-    assert_eq!(golden.cases.len(), 16, "golden must cover the 16 persisted enums");
+    assert_eq!(golden.cases.len(), 17, "golden must cover the 17 persisted enums");
 
     let mut names: Vec<&str> = golden.cases.iter().map(|case| golden::str_of(case, "enum")).collect();
     names.sort_unstable();
     names.dedup();
-    assert_eq!(names.len(), 16, "golden enum names must be 16 distinct enums");
+    assert_eq!(names.len(), 17, "golden enum names must be 17 distinct enums");
 
     for case in &golden.cases {
         match golden::str_of(case, "enum") {
@@ -231,6 +245,9 @@ fn model_enums_match_golden() {
             }
             "KineticGlideSmoothing" => {
                 check_members::<KineticGlideSmoothing>(case);
+            }
+            "MiddleClickAction" => {
+                check_members::<MiddleClickAction>(case);
             }
             other => panic!("golden case for an unknown enum: {other}"),
         }

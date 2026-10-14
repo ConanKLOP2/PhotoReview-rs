@@ -63,7 +63,10 @@ if ($Gate) {
         Invoke-Step 'clippy' { cargo clippy --workspace --all-targets --locked -- -D warnings }
         Invoke-Step 'test' { cargo test --workspace --locked }
         Invoke-Step 'synced assets' { powershell -NoProfile -File (Join-Path $root 'tools\sync-from-csharp.ps1') -Check }
-        $goldenChanges = & git diff --name-only origin/master -- tests/golden tests/golden-inputs
+        # git prints CRLF warnings on stderr; Windows PowerShell 5.1 turns them into errors under 'Stop'.
+        $ErrorActionPreference = 'Continue'
+        $goldenChanges = & git diff --name-only origin/master -- tests/golden tests/golden-inputs 2>$null
+        $ErrorActionPreference = 'Stop'
         if ($goldenChanges) {
             Write-Host "Golden files changed vs origin/master (only the Golden Generator may do this):"
             $goldenChanges | ForEach-Object { Write-Host "  $_" }

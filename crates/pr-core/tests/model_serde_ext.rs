@@ -13,7 +13,7 @@ use pr_core::model::serde_ext::{
 use pr_core::model::{
     DecoderBackend, ExifInfoFields, FileOperationType, FitWidthAnchor, ImageSortMode, ImageTransition, InitialViewMode,
     InstanceMode, JournalDurability, JournalState, KeyboardZoomAnchor, KineticGlideSmoothing, LoadingMode,
-    MouseWheelAction, RawFullDecode, RawPairMode, ScalingQuality, TitleBarFields,
+    MiddleClickAction, MouseWheelAction, RawFullDecode, RawPairMode, ScalingQuality, TitleBarFields,
 };
 use pr_test_support::golden::{self, str_of};
 use serde::{Deserialize, Serialize};
@@ -78,6 +78,7 @@ macro_rules! with_enum {
             "FitWidthAnchor" => $f::<FitWidthAnchor>($($arg),*),
             "KeyboardZoomAnchor" => $f::<KeyboardZoomAnchor>($($arg),*),
             "KineticGlideSmoothing" => $f::<KineticGlideSmoothing>($($arg),*),
+            "MiddleClickAction" => $f::<MiddleClickAction>($($arg),*),
             other => panic!("unknown enum {other}"),
         }
     };
@@ -108,10 +109,11 @@ macro_rules! for_each_enum {
         one!(FitWidthAnchor);
         one!(KeyboardZoomAnchor);
         one!(KineticGlideSmoothing);
+        one!(MiddleClickAction);
     }};
 }
 
-const ENUM_NAMES: [&str; 16] = [
+const ENUM_NAMES: [&str; 17] = [
     "ImageSortMode",
     "InitialViewMode",
     "LoadingMode",
@@ -128,6 +130,7 @@ const ENUM_NAMES: [&str; 16] = [
     "FitWidthAnchor",
     "KeyboardZoomAnchor",
     "KineticGlideSmoothing",
+    "MiddleClickAction",
 ];
 
 // ---------------------------------------------------------------- LenientEnumConverterTests
@@ -971,9 +974,11 @@ fn golden_sentinel<E: LenientEnum>(case: &Value) {
 fn lenient_enum_matches_golden() {
     let g = golden::load("lenient-enum");
     let mut counts = [0_usize; 4];
+    let mut seen: std::collections::BTreeSet<&str> = std::collections::BTreeSet::new();
     for case in &g.cases {
         let name = str_of(case, "enum");
         assert!(ENUM_NAMES.contains(&name), "unknown enum in {case}");
+        seen.insert(name);
         match str_of(case, "kind") {
             "read" => {
                 with_enum!(name, golden_read, case);
@@ -994,6 +999,11 @@ fn lenient_enum_matches_golden() {
             other => panic!("unknown kind {other}"),
         }
     }
+    assert_eq!(
+        seen.len(),
+        ENUM_NAMES.len(),
+        "the lenient-enum golden must exercise every model enum"
+    );
     assert!(
         counts.iter().all(|&c| c > 0),
         "every case kind must be present: {counts:?}"

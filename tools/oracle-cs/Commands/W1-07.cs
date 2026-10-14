@@ -30,6 +30,11 @@ static partial class Commands
                 ["supported"] = ImageFileTypes.IsSupported(path!),
                 ["supported_raw_enabled"] = ImageFileTypes.IsSupported(path!, rawEnabled: true),
                 ["is_raw"] = ImageFileTypes.IsRawPath(path),
+                ["supported_webp_heic"] = ImageFileTypes.IsSupported(path!, rawEnabled: false, webpHeicEnabled: true),
+                ["supported_raw_webp_heic"] = ImageFileTypes.IsSupported(path!, rawEnabled: true, webpHeicEnabled: true),
+                ["supported_neither_3arg"] = ImageFileTypes.IsSupported(path!, rawEnabled: false, webpHeicEnabled: false),
+                ["supported_raw_only_3arg"] = ImageFileTypes.IsSupported(path!, rawEnabled: true, webpHeicEnabled: false),
+                ["wic_format"] = ImageFileTypes.GetWicFormat(path).ToString(),
             });
         }
         return result;

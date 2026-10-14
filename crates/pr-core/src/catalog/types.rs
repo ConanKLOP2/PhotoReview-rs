@@ -1,5 +1,5 @@
 //! Port of `PhotoReview.Core/Catalog/{ImageFileTypes,CatalogEntry,CaptureGroup,LatestExplorerSnapshot}.cs`
-//! (C# baseline e441d67a). `ExplorerOrderTypes` is already ported in [`super::explorer_types`]; `ExplorerReason`
+//! (C# baseline d92d6aae). `ExplorerOrderTypes` is already ported in [`super::explorer_types`]; `ExplorerReason`
 //! lives in [`super::explorer_reason`].
 //!
 //! Paths in this module are `String`/`&str` exactly like the C# `string` paths (they are compared and stored as
@@ -52,6 +52,21 @@ pub const JPEG_EXTENSIONS: &[&str] = &[".jpg", ".jpeg"];
 /// `ImageFileTypes.RawExtensions`: exactly the eight approved RAW formats.
 pub const RAW_EXTENSIONS: &[&str] = &[".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".rw2"];
 
+/// `ImageFileTypes.WebpHeicExtensions` (Q-FMT-WEBP-HEIC): listed only when WebP/HEIC support is enabled; decoded through WIC.
+pub const WEBP_HEIC_EXTENSIONS: &[&str] = &[".webp", ".heic", ".heif"];
+
+/// C# `WicImageFormat`: an image format decoded only through an optional Windows (WIC) codec.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum WicImageFormat {
+    /// Not one of the optional-codec formats.
+    #[default]
+    None,
+    /// WebP (`.webp`).
+    WebP,
+    /// HEIC/HEIF (`.heic`, `.heif`).
+    Heif,
+}
+
 /// .NET `Path.GetExtension(path)` on Windows: scanning from the END of `path`, stop at the first `'\\'` or `'/'`
 /// (a directory separator; `':'` is NOT a stop) and return `""`; the first `'.'` found returns the text from that dot
 /// to the end, unless the dot is the last char (then `""`). No `'.'` at all gives `""`. The result keeps the original
@@ -84,6 +99,18 @@ pub fn is_raw_path(path: &str) -> bool {
     extension_in(RAW_EXTENSIONS, get_extension(path))
 }
 
+/// `ImageFileTypes.GetWicFormat`: which optional-codec format `path` is, by [`get_extension`] (OrdinalIgnoreCase).
+pub fn get_wic_format(path: &str) -> WicImageFormat {
+    let ext = get_extension(path);
+    if eq_ignore_case(ext, ".webp") {
+        WicImageFormat::WebP
+    } else if eq_ignore_case(ext, ".heic") || eq_ignore_case(ext, ".heif") {
+        WicImageFormat::Heif
+    } else {
+        WicImageFormat::None
+    }
+}
+
 /// `ImageFileTypes.IsSupported(path)` = `is_supported_with_raw(path, false)`.
 pub fn is_supported(path: &str) -> bool {
     is_supported_with_raw(path, false)
@@ -93,6 +120,12 @@ pub fn is_supported(path: &str) -> bool {
 /// (`char::is_whitespace` matches .NET `IsNullOrWhiteSpace`); false when the extension is empty; true when the
 /// extension is in [`SUPPORTED_EXTENSIONS`]; otherwise `raw_enabled && ` extension in [`RAW_EXTENSIONS`].
 pub fn is_supported_with_raw(path: &str, raw_enabled: bool) -> bool {
+    is_supported_with(path, raw_enabled, false)
+}
+
+/// `ImageFileTypes.IsSupported(path, rawEnabled, webpHeicEnabled)`: [`is_supported_with_raw`] plus, when
+/// `webp_heic_enabled`, the [`WEBP_HEIC_EXTENSIONS`] (Q-FMT-WEBP-HEIC).
+pub fn is_supported_with(path: &str, raw_enabled: bool, webp_heic_enabled: bool) -> bool {
     if path.trim().is_empty() {
         return false;
     }
@@ -103,7 +136,10 @@ pub fn is_supported_with_raw(path: &str, raw_enabled: bool) -> bool {
     if extension_in(SUPPORTED_EXTENSIONS, ext) {
         return true;
     }
-    raw_enabled && extension_in(RAW_EXTENSIONS, ext)
+    if raw_enabled && extension_in(RAW_EXTENSIONS, ext) {
+        return true;
+    }
+    webp_heic_enabled && extension_in(WEBP_HEIC_EXTENSIONS, ext)
 }
 
 // ---------------------------------------------------------------------------------------------------------------

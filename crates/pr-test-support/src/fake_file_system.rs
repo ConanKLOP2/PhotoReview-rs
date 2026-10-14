@@ -441,6 +441,30 @@ impl FileSystem for FakeFileSystem {
         add_dirs(&mut state, path);
         Ok(())
     }
+
+    /// Like `Directory.Delete(path, recursive: false)`: only an existing folder with no files and no sub-folders.
+    fn try_delete_empty_directory(&self, path: &Path) -> bool {
+        let Ok(mut state) = self.begin(FsOp::Delete, path) else {
+            return false;
+        };
+        let dir = key(path);
+        if !state.dirs.contains_key(&dir) {
+            return false;
+        }
+        let has_file = state
+            .files
+            .values()
+            .any(|e| parent_key(&e.path).as_deref() == Some(dir.as_str()));
+        let has_dir = state
+            .dirs
+            .values()
+            .any(|p| key(p) != dir && parent_key(p).as_deref() == Some(dir.as_str()));
+        if has_file || has_dir {
+            return false;
+        }
+        state.dirs.remove(&dir);
+        true
+    }
 }
 
 struct Appender {
@@ -553,6 +577,25 @@ mod tests {
         w.write_all(b"a\n").unwrap();
         w.write_all(b"b\n").unwrap();
         assert_eq!(fs.read_all_text(&p(r"C:\data\j.jsonl")).unwrap(), "a\nb\n");
+    }
+
+    #[test]
+    fn try_delete_empty_directory_removes_only_existing_empty_folders() {
+        let fs = FakeFileSystem::new();
+        fs.add_dir(r"C:\a\empty");
+        fs.add_file(r"C:\a\full\x.jpg", b"1");
+        fs.add_dir(r"C:\a\parent\child");
+        assert!(fs.try_delete_empty_directory(&p(r"C:\A\EMPTY")));
+        assert!(!fs.directory_exists(&p(r"C:\a\empty")));
+        assert!(!fs.try_delete_empty_directory(&p(r"C:\a\empty")), "already gone");
+        assert!(!fs.try_delete_empty_directory(&p(r"C:\a\full")), "has a file");
+        assert!(fs.file_exists(&p(r"C:\a\full\x.jpg")));
+        assert!(!fs.try_delete_empty_directory(&p(r"C:\a\parent")), "has a sub-folder");
+        fs.fail(FsOp::Delete, r"C:\a\parent\child", io::ErrorKind::PermissionDenied);
+        assert!(
+            !fs.try_delete_empty_directory(&p(r"C:\a\parent\child")),
+            "I/O error reported as false"
+        );
     }
 
     #[test]

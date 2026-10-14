@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs flag-enum-json",
-  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
   "cases": [
     {
       "kind": "read",

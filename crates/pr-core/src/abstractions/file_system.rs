@@ -166,6 +166,15 @@ pub trait FileSystem: Send + Sync {
     /// Creates the directory and any missing parents.
     fn create_directory(&self, path: &Path) -> io::Result<()>;
 
+    /// Deletes `path` ONLY when it exists and is empty (never recursive, never removes content): cleans up an empty
+    /// destination folder that a failed action itself created. `true` when deleted; `false` when missing, not empty
+    /// or not deletable (ordinary I/O errors are not surfaced). Default: `false` (unsupported, cleans nothing).
+    /// C# d92d6aae `TryDeleteEmptyDirectory`.
+    fn try_delete_empty_directory(&self, path: &Path) -> bool {
+        let _ = path;
+        false
+    }
+
     /// SEC-01: absolute path after resolving every existing reparse point (symlink/junction) along it, including the
     /// last segment. Segments that do not exist are kept as they are. Default (fakes without reparse points): the
     /// absolute path unchanged.

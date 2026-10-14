@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs shortcut-canonical",
-  "csharp_commit": "e441d67ace060b6f725f6534904be1cb80e4aa3e",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
   "cases": [
     {
       "kind": "alias-pair",
@@ -1034,6 +1034,16 @@
           "name": "ToggleCaptureMember",
           "default": "",
           "optional": true
+        },
+        {
+          "name": "FitWidth2",
+          "default": "D4",
+          "optional": true
+        },
+        {
+          "name": "Refresh",
+          "default": "R",
+          "optional": true
         }
       ],
       "optional_names": [
@@ -1048,7 +1058,9 @@
         "ToggleKeepZoom",
         "OpenFolder",
         "CustomZoom",
-        "ToggleCaptureMember"
+        "ToggleCaptureMember",
+        "FitWidth2",
+        "Refresh"
       ],
       "json": {
         "Next": "Right",
@@ -1076,7 +1088,9 @@
         "ToggleKeepZoom": "K",
         "OpenFolder": "O",
         "CustomZoom": "D3",
-        "ToggleCaptureMember": ""
+        "ToggleCaptureMember": "",
+        "FitWidth2": "D4",
+        "Refresh": "R"
       }
     },
     {
