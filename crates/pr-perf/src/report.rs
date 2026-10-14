@@ -14,114 +14,15 @@ use std::collections::HashMap;
 use std::fmt::Write as _;
 use std::path::Path;
 
-use crate::analyze::AnalysisResult;
+use crate::analyze::{AnalysisResult, nan_as_null_double_json};
 use crate::csv::PerfError;
 use crate::nav::FolderGenSummary;
-use crate::stats::GroupSummary;
+use crate::rules::fmt_fixed;
+use crate::stats::{GroupSummary, nearest_rank};
 
 /// `Environment.NewLine` on Windows: `StringBuilder.AppendLine` and `Utf8JsonWriter` (indented) both use it, so
 /// both output files contain CRLF line breaks.
 pub const NEW_LINE: &str = "\r\n";
-
-// TODO(swap): the helpers below are private copies, to be replaced by imports once those units are merged:
-// `fixed` -> rules::fmt_fixed, `double_text` -> rules::fmt_double, `nan_null` -> analyze::nan_as_null_double_json,
-// `key_text` -> stats::GroupKey::to_string, `percentile_or_nan` -> stats::nearest_rank (plus the empty check),
-// `cmp_dotnet` -> the .NET double comparer shared with stats/analyze.
-// ---------------------------------------------------------------------------------------------------------------
-// Private number/text helpers. They are local so this unit does not depend on the `todo!()` bodies of the other
-// perf units while those are ported in parallel; they follow the documented contracts of `rules::fmt_fixed`,
-// `rules::fmt_double`, `stats::nearest_rank`, `GroupKey::to_string`, `GroupSummary::low_sample_warning` and
-// `analyze::nan_as_null_double_json` exactly (the golden pins the bytes).
-// ---------------------------------------------------------------------------------------------------------------
-
-/// `value.ToString("F<decimals>", Invariant)`.
-fn fixed(value: f64, decimals: usize) -> String {
-    if value.is_nan() {
-        "NaN".to_owned()
-    } else if value == f64::INFINITY {
-        "Infinity".to_owned()
-    } else if value == f64::NEG_INFINITY {
-        "-Infinity".to_owned()
-    } else {
-        format!("{value:.decimals$}")
-    }
-}
-
-/// `double.ToString()` under the invariant culture (the number text System.Text.Json writes).
-fn double_text(value: f64) -> String {
-    if value.is_nan() {
-        return "NaN".to_owned();
-    }
-    if value.is_infinite() {
-        return if value > 0.0 { "Infinity" } else { "-Infinity" }.to_owned();
-    }
-    if value == 0.0 {
-        return if value.is_sign_negative() { "-0" } else { "0" }.to_owned();
-    }
-    let sci = format!("{:e}", value.abs());
-    let (mantissa, exp) = sci.split_once('e').unwrap_or((sci.as_str(), "0"));
-    let exp: i32 = exp.parse().unwrap_or(0);
-    let digits: String = mantissa.chars().filter(|c| *c != '.').collect();
-    let mut out = String::new();
-    if value < 0.0 {
-        out.push('-');
-    }
-    if -5 < exp && exp < 17 {
-        if exp >= 0 {
-            let int_len = exp as usize + 1;
-            if digits.len() <= int_len {
-                out.push_str(&digits);
-                out.extend(std::iter::repeat_n('0', int_len - digits.len()));
-            } else {
-                out.push_str(&digits[..int_len]);
-                out.push('.');
-                out.push_str(&digits[int_len..]);
-            }
-        } else {
-            out.push_str("0.");
-            out.extend(std::iter::repeat_n('0', (-exp - 1) as usize));
-            out.push_str(&digits);
-        }
-    } else {
-        out.push_str(&digits[..1]);
-        if digits.len() > 1 {
-            out.push('.');
-            out.push_str(&digits[1..]);
-        }
-        let _ = write!(out, "E{}{:02}", if exp < 0 { '-' } else { '+' }, exp.abs());
-    }
-    out
-}
-
-/// `NaNAsNullDoubleConverter.Write`.
-fn nan_null(value: f64) -> String {
-    if value.is_finite() {
-        double_text(value)
-    } else {
-        "null".to_owned()
-    }
-}
-
-/// `GroupKey.ToString()`.
-fn key_text(s: &GroupSummary) -> String {
-    let k = &s.key;
-    match k.preload_workers {
-        Some(n) => format!("{}/{}/{}/workers={}", k.scenario, k.mode, k.cond, n),
-        None => format!("{}/{}/{}/workers=?", k.scenario, k.mode, k.cond),
-    }
-}
-
-/// `PerfStats.NearestRank` applied to a possibly empty list (`PercentileOrNaN`).
-fn percentile_or_nan(sorted: &[f64], p: f64) -> f64 {
-    if sorted.is_empty() || p.is_nan() {
-        return f64::NAN;
-    }
-    let n = sorted.len();
-    let p = p.clamp(0.0, 100.0);
-    let rank = ((p * n as f64) / 100.0).ceil();
-    let rank = if rank < 1.0 { 1 } else { (rank as usize).min(n) };
-    sorted[rank - 1]
-}
 
 /// .NET `Comparer<double>.Default`: NaN is less than every number and equal to NaN.
 fn cmp_dotnet(a: f64, b: f64) -> Ordering {
@@ -137,7 +38,7 @@ fn ms(value: f64) -> String {
     if value.is_nan() {
         "N/A".to_owned()
     } else {
-        fixed(value, 1)
+        fmt_fixed(value, 1)
     }
 }
 
@@ -149,7 +50,7 @@ fn pct(value: f64) -> String {
     if value.is_nan() {
         "N/A".to_owned()
     } else {
-        format!("{}%", fixed(value * 100.0, 1))
+        format!("{}%", fmt_fixed(value * 100.0, 1))
     }
 }
 
@@ -177,7 +78,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
             &mut sb,
             &format!(
                 "- WARNING: {}: dropped {} events (listener queue overflow); percentiles and counts for this group are incomplete",
-                escape(&key_text(&g.summary)),
+                escape(&g.summary.key.to_string()),
                 g.summary.dropped_rows
             ),
         );
@@ -196,12 +97,12 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
     );
     for g in &result.groups {
         let s = &g.summary;
-        let low = s.count.wrapping_sub(s.incomplete) < 20;
+        let low = s.low_sample_warning();
         line(
             &mut sb,
             &format!(
                 "| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |",
-                escape(&key_text(s)),
+                escape(&s.key.to_string()),
                 s.count,
                 s.incomplete,
                 ms(s.first_p50),
@@ -230,7 +131,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
         for (kind, n) in kinds {
             line(
                 &mut sb,
-                &format!("| {} | {} | {} |", escape(&key_text(&g.summary)), escape(kind), n),
+                &format!("| {} | {} | {} |", escape(&g.summary.key.to_string()), escape(kind), n),
             );
         }
     }
@@ -251,7 +152,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
                 &mut sb,
                 &format!(
                     "| {} | {} | {} |",
-                    escape(&key_text(&g.summary)),
+                    escape(&g.summary.key.to_string()),
                     escape(phase),
                     pct(*v)
                 ),
@@ -282,15 +183,15 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
             &mut sb,
             &format!(
                 "| {} | {} | {} | {} | {} | {} | {} | {} | {} |",
-                escape(&key_text(s)),
+                escape(&s.key.to_string()),
                 s.preload_workers.map_or_else(|| "?".to_owned(), |w| w.to_string()),
                 s.preload_items.len(),
                 s.preload_paused_count,
                 s.preload_cancel_count,
-                ms(percentile_or_nan(&queue_waits, 50.0)),
-                ms(percentile_or_nan(&queue_waits, 95.0)),
-                ms(percentile_or_nan(&decode, 50.0)),
-                ms(percentile_or_nan(&decode, 95.0)),
+                ms(nearest_rank(&queue_waits, 50.0)),
+                ms(nearest_rank(&queue_waits, 95.0)),
+                ms(nearest_rank(&decode, 50.0)),
+                ms(nearest_rank(&decode, 95.0)),
             ),
         );
     }
@@ -325,17 +226,17 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
         let top5: Vec<String> = groups
             .iter()
             .take(5)
-            .map(|(name, count, total)| format!("{}\u{00D7}{} ({}ms)", escape(name), count, fixed(*total, 1)))
+            .map(|(name, count, total)| format!("{}\u{00D7}{} ({}ms)", escape(name), count, fmt_fixed(*total, 1)))
             .collect();
         let total = s.dispatcher_long_ops.iter().fold(0.0, |a, d| a + d.ms);
         line(
             &mut sb,
             &format!(
                 "| {} | {} | {} | {} | {} |",
-                escape(&key_text(s)),
+                escape(&s.key.to_string()),
                 s.dispatcher_long_ops.len(),
                 s.dispatcher_long_ops_before_start_count,
-                fixed(total, 1),
+                fmt_fixed(total, 1),
                 top5.join("; ")
             ),
         );
@@ -357,7 +258,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
                 &mut sb,
                 &format!(
                     "| {} | {} | {} | {} | {} | {} |",
-                    escape(&key_text(&g.summary)),
+                    escape(&g.summary.key.to_string()),
                     f.generation,
                     ms_opt(f.t1_catalog_ready_ms),
                     ms_opt(f.t2_ms),
@@ -379,11 +280,11 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
                 &mut sb,
                 &format!(
                     "| {} | {} | {} | {} | {} | {} |",
-                    escape(&key_text(&g.summary)),
+                    escape(&g.summary.key.to_string()),
                     escape(&p.phase),
-                    fixed(p.median, 1),
-                    fixed(p.min, 1),
-                    fixed(p.max, 1),
+                    fmt_fixed(p.median, 1),
+                    fmt_fixed(p.min, 1),
+                    fmt_fixed(p.max, 1),
                     p.count
                 ),
             );
@@ -406,7 +307,7 @@ pub fn render_markdown(result: &AnalysisResult) -> String {
                 &mut sb,
                 &format!(
                     "| {} | {} | {} | {} | {} |",
-                    escape(&key_text(&g.summary)),
+                    escape(&g.summary.key.to_string()),
                     escape(&r.rule),
                     triggered,
                     escape(&r.evidence),
@@ -435,7 +336,7 @@ impl Json {
     }
 
     fn dbl(v: f64) -> Json {
-        Json::Raw(nan_null(v))
+        Json::Raw(nan_as_null_double_json(v))
     }
 
     fn dbl_opt(v: Option<f64>) -> Json {
@@ -515,7 +416,7 @@ pub fn render_json(result: &AnalysisResult) -> String {
         .iter()
         .map(|g| {
             let s = &g.summary;
-            let low = s.count.wrapping_sub(s.incomplete) < 20;
+            let low = s.low_sample_warning();
             let folder = s
                 .folder_gens
                 .iter()
