@@ -58,6 +58,26 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - A squash-merged branch head is NOT an ancestor of master (merge-base check says no). Confirm the content is in master (`git diff <head> origin/master` shows only unrelated files), then delete branch and worktree.
 - Worktrees: every worktree builds in its own cargo target dir (`tools/wave.ps1` does it); a shared one hands one worktree another one's stale artifacts.
 
+## Pull requests: auto-fix and auto-merge (do this every time, without being asked)
+
+- Open ONE PR per wave/change (base `master`, never stacked) with `gh pr create`, then immediately call
+  `ccd_pr get_status` (bind with `bind_pr` if it is not bound). Auto-fix must be on (`set_monitor auto_fix=true`);
+  never poll CI yourself, the app sends `<ci-monitor-event>`; fix, verify, commit, push on each event.
+- Auto-merge: the user's standing request is "auto-fix + auto-merge" for PRs of this repo. Call `set_auto_merge
+  enabled=true merge_method=squash` as soon as the PR is bound. If GitHub answers "clean status" (all checks already
+  green, nothing to wait for), merge it with `gh pr merge <n> --squash`. If the permission classifier blocks either,
+  stop and tell the user the exact command and the settings rule needed (`Bash(gh pr merge:*)`); do not retry
+  variants.
+- A PR is not "done" until it is merged. After the merge: delete the remote and local branch, remove the worktrees
+  and the `target-*` dirs it used (check by diff, AGENTS.md "Git" above), update `task_on_progress.md`.
+- Before opening the PR: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`,
+  `cargo test --workspace --locked` on the final head; say in the PR body which of these were NOT run.
+- CI runs on `windows-latest`: temp paths can be 8.3 short names (`RUNNER~1`); never compare a path string built from
+  `TempRoot` with one the code under test printed, compare a stable tail.
+- Toolchain: Rust is pinned in `rust-toolchain.toml`; `cargo` lives in `%USERPROFILE%\.cargoin` and may not be on
+  PATH in the Bash tool. Run `tools/*.ps1` with `powershell -NoProfile -ExecutionPolicy Bypass -File`, from the
+  PowerShell tool (the Bash `tar` breaks `oracle.ps1`).
+
 ## Asking the user to decide
 
 Never ask a bare question: give the current state and why it matters, 2-4 options with detailed pros/cons, one
