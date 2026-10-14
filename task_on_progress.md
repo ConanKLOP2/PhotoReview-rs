@@ -16,6 +16,12 @@
   *SettingsTests (W2-02 vs W2-03), merge order W2-00 -> W2-01 -> W2-20 -> W2-02/03, io/mod.rs owner (W2-14/W2-15),
   local time source for W2-16, HTTP transport for W2-18, `sha2` dependency (W2-17), oracle nondeterminism (W2-14).
 
+## Update 2026-10-14 (wiring, UNVERIFIED)
+- Stubs copied into crates (pr-core text/settings/catalog/file_actions/diagnostics/updates + new io/session/instance
+  modules; pr-l10n catalog/loader/localizer/build.rs, lib.rs with keys/tr). mod lines added. NOT compiled: this machine
+  has no Rust toolchain (cargo/rustc/rustup not found), so fmt/clippy/test were not run. Oracle commands not yet merged
+  into tools/oracle-cs, contracts not yet moved to contracts/W2-xx.md, README roster/D12+ not written.
+
 ## Next (lead)
 1. Review each `contracts/drafts-w2/W2-xx/contract.md`: porter model, "Depends on", open questions; decide and add
    lead decisions D12+ and a Wave 2 roster (dependency order) to contracts/README.md.
