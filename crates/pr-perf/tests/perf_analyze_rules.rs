@@ -484,3 +484,32 @@ fn perf_rules_golden_checks_every_case() {
     }
     assert_eq!(kinds.values().sum::<usize>(), golden.cases.len());
 }
+
+// Mutation-gap tests (W1-18 fixer).
+#[test]
+fn r_cont_nan_low_decode_propagates_nan_like_math_max() {
+    let cfg = RulesConfig::default();
+    let r = evaluate_r_cont(&cfg, Some(f64::NAN), Some(50.0), Some(0), Some(8));
+    assert_eq!(r.triggered, Some(false));
+    assert_eq!(
+        r.evidence,
+        "t_decode(workers=8)=50.0ms vs t_decode(workers=0)=NaNms, ratio=NaN (threshold 1.3)"
+    );
+}
+
+#[test]
+fn rules_config_load_missing_file_is_io_error_not_invalid_data() {
+    let root = TempRoot::new("rules-missing-file");
+    let missing = root.join("does-not-exist.json");
+    match RulesConfig::load(&missing) {
+        Err(PerfError::Io(_)) => {}
+        other => panic!("expected PerfError::Io, got {other:?}"),
+    }
+}
+
+#[test]
+fn rules_config_parse_strips_a_leading_bom() {
+    let cfg = RulesConfig::parse("\u{feff}{\"R-Y\": {\"k\": 5}}", "p.json").expect("BOM-prefixed JSON parses");
+    assert_eq!(cfg.get("R-Y", "k", 7.0), 5.0);
+    assert!(RulesConfig::parse("\u{feff}{}", "p.json").is_ok());
+}
