@@ -16,6 +16,7 @@
 use std::error::Error;
 use std::fmt;
 use std::io;
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -184,22 +185,149 @@ impl LocArg {
 /// `Null` -> `""`; `Str` verbatim; `Int`/`UInt`/`F64`/`F32` as `ToString(null, culture)`; `Bool` -> `"True"`/`"False"`;
 /// `Char` -> the char; `Lazy` -> its closure's result (a panic inside it is caught and gives `None`).
 pub fn format_value(value: &LocValue, culture: &NumberCulture) -> Option<String> {
-    let _ = (value, culture);
-    todo!("port LocTemplate.FormatValue / TryFormatValue")
+    Some(match value {
+        LocValue::Null => String::new(),
+        LocValue::Str(s) => s.clone(),
+        LocValue::Int(v) => {
+            let mut out = String::new();
+            if *v < 0 {
+                out.push_str(&culture.negative_sign);
+            }
+            out.push_str(&v.unsigned_abs().to_string());
+            out
+        }
+        LocValue::UInt(v) => v.to_string(),
+        LocValue::F64(v) => format_f64(*v, culture),
+        LocValue::F32(v) => format_f32(*v, culture),
+        LocValue::Bool(b) => String::from(if *b { "True" } else { "False" }),
+        LocValue::Char(c) => c.to_string(),
+        LocValue::Lazy(formatter) => {
+            let call: &dyn Fn(&NumberCulture) -> Option<String> = &**formatter;
+            // R21: a formatter that panics counts as one that failed.
+            return catch_unwind(AssertUnwindSafe(|| call(culture))).ok().flatten();
+        }
+    })
 }
 
 /// .NET `double.ToString(null, culture)` (general format, shortest round-trip digits). See contract.md for the
 /// exact layout rules (scientific from decimal exponent >= 17 or <= -5, `E+17` / `E-05`, `-0`, NaN, infinities).
 pub fn format_f64(value: f64, culture: &NumberCulture) -> String {
-    let _ = (value, culture);
-    todo!("port double.ToString(null, culture)")
+    if value.is_nan() {
+        return culture.nan_symbol.clone();
+    }
+    if value.is_infinite() {
+        return if value > 0.0 {
+            culture.positive_infinity_symbol.clone()
+        } else {
+            culture.negative_infinity_symbol.clone()
+        };
+    }
+    let (digits, exponent) = shortest_digits(&format!("{:e}", value.abs()));
+    general_format(
+        value.is_sign_negative(),
+        &digits,
+        exponent,
+        F64_SCIENTIFIC_EXPONENT,
+        culture,
+    )
 }
 
 /// .NET `float.ToString(null, culture)`: same as [`format_f64`] but with single-precision shortest digits and
 /// scientific notation from decimal exponent >= 9 (or <= -5).
 pub fn format_f32(value: f32, culture: &NumberCulture) -> String {
-    let _ = (value, culture);
-    todo!("port float.ToString(null, culture)")
+    if value.is_nan() {
+        return culture.nan_symbol.clone();
+    }
+    if value.is_infinite() {
+        return if value > 0.0 {
+            culture.positive_infinity_symbol.clone()
+        } else {
+            culture.negative_infinity_symbol.clone()
+        };
+    }
+    // Format the f32 itself so the shortest digits are the single-precision ones.
+    let (digits, exponent) = shortest_digits(&format!("{:e}", value.abs()));
+    general_format(
+        value.is_sign_negative(),
+        &digits,
+        exponent,
+        F32_SCIENTIFIC_EXPONENT,
+        culture,
+    )
+}
+
+/// Decimal exponent from which `double` uses scientific notation (.NET "G" default for double).
+const F64_SCIENTIFIC_EXPONENT: i32 = 17;
+/// Decimal exponent from which `float` uses scientific notation (.NET "G" default for single).
+const F32_SCIENTIFIC_EXPONENT: i32 = 9;
+
+/// Splits Rust's `{:e}` output (`d.ddde<exp>`, shortest round-trip digits of a non-negative finite number) into the
+/// significant digits (no trailing zeros, at least one digit) and the decimal exponent.
+fn shortest_digits(exp_form: &str) -> (String, i32) {
+    let (mantissa, exponent) = exp_form.split_once('e').unwrap_or((exp_form, "0"));
+    let exponent: i32 = exponent.parse().unwrap_or(0);
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    let trimmed = digits.trim_end_matches('0');
+    if trimmed.is_empty() {
+        // Zero: `{:e}` gives "0e0", the digit string of zero is "0" with exponent 0.
+        return ("0".to_owned(), 0);
+    }
+    (trimmed.to_owned(), exponent)
+}
+
+/// Lays out shortest digits `digits` (value `d[0].d[1..] x 10^exponent`) like .NET "G": sign, then fixed notation
+/// unless `exponent >= scientific_from` or `exponent <= -5`.
+fn general_format(
+    negative: bool,
+    digits: &str,
+    exponent: i32,
+    scientific_from: i32,
+    culture: &NumberCulture,
+) -> String {
+    let mut out = String::new();
+    if negative {
+        out.push_str(&culture.negative_sign);
+    }
+    if exponent >= scientific_from || exponent <= -5 {
+        // Scientific: d[.ddd] E sign exponent (at least two digits).
+        if let Some(first) = digits.get(..1) {
+            out.push_str(first);
+        }
+        if digits.len() > 1 {
+            out.push_str(&culture.decimal_separator);
+            out.push_str(&digits[1..]);
+        }
+        out.push('E');
+        if exponent >= 0 {
+            out.push_str(&culture.positive_sign);
+        } else {
+            out.push_str(&culture.negative_sign);
+        }
+        out.push_str(&format!("{:02}", exponent.unsigned_abs()));
+    } else {
+        let scale = exponent + 1;
+        if scale <= 0 {
+            out.push('0');
+            out.push_str(&culture.decimal_separator);
+            for _ in 0..scale.unsigned_abs() {
+                out.push('0');
+            }
+            out.push_str(digits);
+        } else {
+            let scale = usize::try_from(scale).unwrap_or(0);
+            if digits.len() <= scale {
+                out.push_str(digits);
+                for _ in digits.len()..scale {
+                    out.push('0');
+                }
+            } else {
+                out.push_str(&digits[..scale]);
+                out.push_str(&culture.decimal_separator);
+                out.push_str(&digits[scale..]);
+            }
+        }
+    }
+    out
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -213,7 +341,6 @@ pub fn format_f32(value: f32, culture: &NumberCulture) -> String {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LocTemplate {
     text: String,
-    #[allow(dead_code)] // read by render/transform_literals once ported; remove this attribute then
     literals: Vec<String>,
     names: Vec<String>,
 }
@@ -222,15 +349,60 @@ impl LocTemplate {
     /// C# `LocTemplate.TryParse(string, out LocTemplate?)`. `None` for an unbalanced brace or an invalid
     /// placeholder name (the two causes are NOT distinguished, as in C#).
     pub fn try_parse(text: &str) -> Option<LocTemplate> {
-        let _ = text;
-        todo!("port LocTemplate.TryParse")
+        let mut literals: Vec<String> = Vec::new();
+        let mut names: Vec<String> = Vec::new();
+        let mut current = String::new();
+        let mut rest = 0_usize;
+        while rest < text.len() {
+            // Copy the run of plain text up to the next brace in one slice (braces are ASCII, so the cut is a char
+            // boundary and multi-byte text is copied intact).
+            let next = text[rest..].find(['{', '}']).map_or(text.len(), |p| rest + p);
+            current.push_str(&text[rest..next]);
+            rest = next;
+            let Some(brace) = text[rest..].chars().next() else {
+                break;
+            };
+            if brace == '{' {
+                if text[rest + 1..].starts_with('{') {
+                    current.push('{');
+                    rest += 2;
+                    continue;
+                }
+                // C# `text.IndexOf('}', i + 1)`: the FIRST closing brace after this one decides the name.
+                let close = text[rest + 1..].find('}').map(|p| rest + 1 + p)?;
+                let name = &text[rest + 1..close];
+                if !is_valid_placeholder_name(name) {
+                    return None;
+                }
+                literals.push(std::mem::take(&mut current));
+                names.push(name.to_owned());
+                rest = close + 1;
+            } else {
+                // A lone `}` (not followed by another `}`) is invalid.
+                if text[rest + 1..].starts_with('}') {
+                    current.push('}');
+                    rest += 2;
+                    continue;
+                }
+                return None;
+            }
+        }
+        literals.push(current);
+        Some(LocTemplate {
+            text: text.to_owned(),
+            literals,
+            names,
+        })
     }
 
     /// C# `LocTemplate.Literal`: text shown verbatim (no placeholders); `text()` returns `text` unchanged, even if it
     /// contains braces.
     pub fn literal(text: &str) -> LocTemplate {
-        let _ = text;
-        todo!("port LocTemplate.Literal")
+        LocTemplate {
+            text: text.to_owned(),
+            literals: vec![text.to_owned()],
+            names: Vec::new(),
+        }
     }
 
     /// C# `Text`: the original, unparsed translation text.
@@ -245,28 +417,84 @@ impl LocTemplate {
 
     /// C# `TransformLiterals`: same placeholders, each literal segment replaced by `literal(segment)`.
     /// `literal` is called once per segment, in order, first segment first (it may keep state: `FnMut`).
-    pub fn transform_literals(&self, literal: impl FnMut(&str) -> String) -> LocTemplate {
-        let _ = literal;
-        todo!("port LocTemplate.TransformLiterals")
+    pub fn transform_literals(&self, mut literal: impl FnMut(&str) -> String) -> LocTemplate {
+        let mut literals: Vec<String> = Vec::with_capacity(self.literals.len());
+        for segment in &self.literals {
+            literals.push(literal(segment));
+        }
+        let mut text = escape_braces(literals.first().map_or("", String::as_str));
+        for (index, name) in self.names.iter().enumerate() {
+            text.push('{');
+            text.push_str(name);
+            text.push('}');
+            if let Some(segment) = literals.get(index + 1) {
+                text.push_str(&escape_braces(segment));
+            }
+        }
+        LocTemplate {
+            text,
+            literals,
+            names: self.names.clone(),
+        }
     }
 
     /// C# `AppendLiteral`: same template with `suffix` appended to the last literal segment.
     pub fn append_literal(&self, suffix: &str) -> LocTemplate {
-        let _ = suffix;
-        todo!("port LocTemplate.AppendLiteral")
+        let mut literals = self.literals.clone();
+        match literals.last_mut() {
+            Some(last) => last.push_str(suffix),
+            None => literals.push(suffix.to_owned()),
+        }
+        LocTemplate {
+            text: format!("{}{}", self.text, escape_braces(suffix)),
+            literals,
+            names: self.names.clone(),
+        }
     }
 
     /// C# `Render(ReadOnlySpan<LocArg>)`, never fails. `culture` replaces C# `CultureInfo.CurrentCulture`.
     pub fn render(&self, args: &[LocArg], culture: &NumberCulture) -> String {
-        let _ = (args, culture);
-        todo!("port LocTemplate.Render")
+        let mut out = String::new();
+        for (index, name) in self.names.iter().enumerate() {
+            if let Some(segment) = self.literals.get(index) {
+                out.push_str(segment);
+            }
+            // The FIRST argument with this exact name decides. A failed formatter does not fall through to a later
+            // duplicate (C# `found = true; break;`).
+            match args.iter().find(|arg| arg.name == *name) {
+                Some(arg) => match format_value(&arg.value, culture) {
+                    Some(text) => out.push_str(&text),
+                    None => push_placeholder(&mut out, name),
+                },
+                None => push_placeholder(&mut out, name),
+            }
+        }
+        if let Some(last) = self.literals.get(self.names.len()) {
+            out.push_str(last);
+        }
+        out
     }
+}
+
+/// Doubles every brace (C# `Replace("{", "{{").Replace("}", "}}")`).
+fn escape_braces(text: &str) -> String {
+    text.replace('{', "{{").replace('}', "}}")
+}
+
+/// Writes `{name}` back (an unresolved placeholder).
+fn push_placeholder(out: &mut String, name: &str) {
+    out.push('{');
+    out.push_str(name);
+    out.push('}');
 }
 
 /// C# `LocTemplate.IsValidName`: non-empty, first char an ASCII letter, every char an ASCII letter or digit.
 pub fn is_valid_placeholder_name(name: &str) -> bool {
-    let _ = name;
-    todo!("port LocTemplate.IsValidName")
+    let mut chars = name.chars();
+    match chars.next() {
+        Some(first) if first.is_ascii_alphabetic() => chars.all(|c| c.is_ascii_alphanumeric()),
+        _ => false,
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -332,23 +560,41 @@ pub fn localized_io(
     english: impl Into<String>,
     text: impl Fn() -> String + Send + Sync + 'static,
 ) -> io::Error {
-    let _: String = english.into();
-    let _ = (kind, text);
-    todo!("port UserFacingError.Localized for a new error")
+    let payload = LocalizedError::new(english, Arc::new(text) as LocalizedText);
+    io::Error::new(kind, payload)
 }
 
 /// C# `UserFacingError.Localized(existingException, text)`: attach a sentence to an error that already exists.
 /// The result keeps `err.kind()` and `err.to_string()` (the original error becomes the `source` of the payload).
+/// Idempotent: an error that is already localized is returned unchanged (the C# call sites guard with
+/// `!IsLocalized(ex)`; this makes the guard unnecessary).
 pub fn localize_io(err: io::Error, text: impl Fn() -> String + Send + Sync + 'static) -> io::Error {
-    let _ = (err, text);
-    todo!("port UserFacingError.Localized for an existing error")
+    if is_localized(&err) {
+        return err;
+    }
+    let kind = err.kind();
+    let payload = LocalizedError {
+        message: err.to_string(),
+        source: Some(Box::new(err)),
+        text: Arc::new(text) as LocalizedText,
+    };
+    io::Error::new(kind, payload)
+}
+
+/// The [`LocalizedError`] payload of `err` itself: `err` is one, or an io::Error whose inner error is one.
+fn localized_payload<'a>(err: &'a (dyn Error + 'static)) -> Option<&'a LocalizedError> {
+    if let Some(payload) = err.downcast_ref::<LocalizedError>() {
+        return Some(payload);
+    }
+    err.downcast_ref::<io::Error>()
+        .and_then(io::Error::get_ref)
+        .and_then(|inner| inner.downcast_ref::<LocalizedError>())
 }
 
 /// C# `UserFacingError.IsLocalized`: true when `err` itself (an io::Error holding a [`LocalizedError`], or a
 /// [`LocalizedError`]) carries a sentence. The `source()` chain is NOT searched (C# only looks at the exception itself).
 pub fn is_localized(err: &(dyn Error + 'static)) -> bool {
-    let _ = err;
-    todo!("port UserFacingError.IsLocalized")
+    localized_payload(err).is_some()
 }
 
 /// C# `UserFacingError.Describe`: the localized sentence when attached, otherwise the error's own message
@@ -356,8 +602,55 @@ pub fn is_localized(err: &(dyn Error + 'static)) -> bool {
 /// `" (os error {code})"` that Rust appends, so it equals the .NET `Exception.Message`). When evaluating the
 /// sentence panics, the same message fallback is returned (C#: any exception except OutOfMemory is swallowed).
 pub fn describe(err: &(dyn Error + 'static)) -> String {
-    let _ = err;
-    todo!("port UserFacingError.Describe")
+    let Some(payload) = localized_payload(err) else {
+        return fallback_message(err);
+    };
+    let sentence: &(dyn Fn() -> String + Send + Sync) = &**payload.text();
+    match catch_unwind(AssertUnwindSafe(sentence)) {
+        Ok(text) => text,
+        Err(_) => fallback_message(err),
+    }
+}
+
+/// The English message of `err` as .NET `Exception.Message` would show it (see [`describe`]).
+fn fallback_message(err: &(dyn Error + 'static)) -> String {
+    if let Some(io_err) = err.downcast_ref::<io::Error>() {
+        if let Some(code) = io_err.raw_os_error() {
+            return strip_os_suffix(io_err.to_string(), code);
+        }
+        if let Some(payload) = io_err
+            .get_ref()
+            .and_then(|inner| inner.downcast_ref::<LocalizedError>())
+        {
+            return payload_message(payload);
+        }
+        return io_err.to_string();
+    }
+    if let Some(payload) = err.downcast_ref::<LocalizedError>() {
+        return payload_message(payload);
+    }
+    err.to_string()
+}
+
+/// The English message of a payload; an OS error stored as its source loses the Rust `(os error N)` suffix.
+fn payload_message(payload: &LocalizedError) -> String {
+    let os_code = payload
+        .source
+        .as_deref()
+        .and_then(|source| source.downcast_ref::<io::Error>())
+        .and_then(io::Error::raw_os_error);
+    match os_code {
+        Some(code) => strip_os_suffix(payload.message.clone(), code),
+        None => payload.message.clone(),
+    }
+}
+
+/// Removes the exact `" (os error {code})"` suffix Rust appends to OS error text.
+fn strip_os_suffix(message: String, code: i32) -> String {
+    match message.strip_suffix(&format!(" (os error {code})")) {
+        Some(stripped) => stripped.to_owned(),
+        None => message,
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -370,26 +663,60 @@ pub const PSEUDO_CODE: &str = "qps-ploc";
 /// C# `TranslatorModes.Accent`: maps each ASCII letter to its accented look-alike (table in contract.md), everything
 /// else unchanged. One output char per input char.
 pub fn accent(text: &str) -> String {
-    let _ = text;
-    todo!("port TranslatorModes.Accent")
+    text.chars()
+        .map(|c| match ascii_letter_index(c) {
+            Some(index) => char::from_u32(ACCENT_CODE_POINTS[index]).unwrap_or(c),
+            None => c,
+        })
+        .collect()
 }
+
+/// Index of an ASCII letter in `abc...zABC...Z` (the order of [`ACCENT_CODE_POINTS`]).
+fn ascii_letter_index(c: char) -> Option<usize> {
+    match c {
+        'a'..='z' => Some(usize::from(c as u8 - b'a')),
+        'A'..='Z' => Some(26 + usize::from(c as u8 - b'A')),
+        _ => None,
+    }
+}
+
+/// Accented look-alikes of `abc...zABC...Z`, as code points (the C# source has no accented letters; keep it so).
+const ACCENT_CODE_POINTS: [u32; 52] = [
+    0x00E1, 0x0180, 0x0107, 0x0111, 0x00E9, 0x0192, 0x011D, 0x0125, 0x00ED, 0x0135, 0x0137, 0x013A, 0x1E3F, //
+    0x0144, 0x00F3, 0x1E55, 0x02A0, 0x0155, 0x015B, 0x0165, 0x00FA, 0x1E7D, 0x0175, 0x1E8B, 0x00FD, 0x017A, //
+    0x00C1, 0x0181, 0x0106, 0x0110, 0x00C9, 0x0191, 0x011C, 0x0124, 0x00CD, 0x0134, 0x0136, 0x0139, 0x1E3E, //
+    0x0143, 0x00D3, 0x1E54, 0x024A, 0x0154, 0x015A, 0x0164, 0x00DA, 0x1E7C, 0x0174, 0x1E8A, 0x00DD, 0x0179,
+];
 
 /// C# `TranslatorModes.Padding(int length)`, where `length` is the UTF-16 length of the ORIGINAL template text
 /// (`t.Text.Length`): `""` for 0, otherwise `" "` followed by `max(1, ceil(length as f64 * 0.35))` tildes.
 pub fn pseudo_padding(utf16_length: usize) -> String {
-    let _ = utf16_length;
-    todo!("port TranslatorModes.Padding")
+    if utf16_length == 0 {
+        return String::new();
+    }
+    // Keep the f64 expression: integer arithmetic differs where `n * 0.35` is just above an integer.
+    let tildes = (utf16_length as f64 * 0.35).ceil() as usize;
+    format!(" {}", "~".repeat(tildes.max(1)))
 }
 
 /// The per-template transform of C# `TranslatorModes.CreatePseudo`: accent every literal segment, put `[` before the
 /// first segment, append `pseudo_padding(t.Text.Length) + "]"`; placeholders are kept.
 pub fn pseudo_template(t: &LocTemplate) -> LocTemplate {
-    let _ = t;
-    todo!("port the CreatePseudo transform")
+    let mut first = true;
+    let accented = t.transform_literals(|literal| {
+        let text = accent(literal);
+        if first {
+            first = false;
+            format!("[{text}")
+        } else {
+            text
+        }
+    });
+    let utf16_length = t.text().encode_utf16().count();
+    accented.append_literal(&format!("{}]", pseudo_padding(utf16_length)))
 }
 
 /// The per-template transform of C# `TranslatorModes.CreateShowKeys`: `LocTemplate.Literal("[" + key + "]")`.
 pub fn show_key_template(key: &str) -> LocTemplate {
-    let _ = key;
-    todo!("port the CreateShowKeys transform")
+    LocTemplate::literal(&format!("[{key}]"))
 }
