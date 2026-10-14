@@ -186,6 +186,39 @@ fn wait_timeout_returns_false_and_leaves_the_result_for_wait() {
     assert_eq!(gate.task.wait(), Ok(1));
 }
 
+#[test]
+fn second_item_waits_behind_the_busy_item_on_one_worker() {
+    // Guards against a thread-per-run implementation: with a busy item holding the single worker,
+    // a second item must not run until the gate is released.
+    let worker = NavigationStatWorker::new();
+    let gate = busy(&worker);
+    let (ran_tx, ran_rx) = mpsc::channel::<()>();
+    let second = worker.run(
+        move || {
+            let _ = ran_tx.send(());
+            2
+        },
+        &CancelToken::none(),
+    );
+    assert!(
+        ran_rx.recv_timeout(Duration::from_millis(300)).is_err(),
+        "second item ran while the worker was busy"
+    );
+    assert!(!second.is_completed());
+    assert!(!second.wait_timeout(Duration::from_millis(30)));
+    let _ = gate.release.send(());
+    assert_eq!(gate.task.wait(), Ok(1));
+    assert!(second.wait_timeout(TIMEOUT));
+    assert_eq!(second.wait(), Ok(2));
+}
+
+#[test]
+fn work_runs_on_the_named_navigation_stat_thread() {
+    let worker = NavigationStatWorker::new();
+    let task = worker.run(|| thread::current().name().map(str::to_owned), &CancelToken::none());
+    assert_eq!(task.wait(), Ok(Some("PhotoReview navigation stat".to_owned())));
+}
+
 // C#: NavigationStatWorker (golden oracle `oracle-cs navigation-stat-worker`).
 // DIVERGENCE: `exception_type`/`message` are C#-specific; `faulted` maps to `Panicked` whose text contains `boom-<id>`.
 #[test]
