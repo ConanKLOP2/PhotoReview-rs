@@ -1,15 +1,13 @@
 //! Port of `PhotoReview.Core/Instance/SecondInstanceHandoff.cs` (C# baseline d92d6aae, 31 lines): the second launch
 //! asks the running instance to take over its request and, when it did (or very likely did), simply exits.
 //!
-//! Unit W2-19. Stub: bodies are `todo!()`; data definitions are complete. Contract: `contracts/W2-19.md`.
+//! Unit W2-19. Contract: `contracts/W2-19.md`.
 
-// Stub-only (docs/MULTI-AGENT-PLAN D11): removed by the porter in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::time::Duration;
 
 use crate::abstractions::Log;
-use crate::instance::forwarding::InstanceForwardClient;
+use crate::instance::forwarding::{ForwardError, ForwardOutcome, InstanceForwardClient};
 use crate::sync::{CancelToken, Canceled};
 
 /// The wait for the owner to answer before a second launch gives up (covers the owner still starting up).
@@ -31,5 +29,28 @@ pub fn try_forward(
     log: Option<&dyn Log>,
     cancel: &CancelToken,
 ) -> Result<bool, Canceled> {
-    todo!()
+    // A panic inside `send` is the C# "client throws" case.
+    let result = catch_unwind(AssertUnwindSafe(|| client.send(existing_paths, timeout, cancel))).unwrap_or_else(|_| {
+        Err(ForwardError::Failed {
+            kind: "Panic".to_owned(),
+        })
+    });
+    match result {
+        Err(ForwardError::Canceled) => Err(Canceled),
+        Err(ForwardError::Failed { kind }) => {
+            if let Some(log) = log {
+                log.warn(&format!("Forwarding to the running instance failed: {kind}"));
+            }
+            Ok(false)
+        }
+        Ok(outcome) => {
+            if let Some(log) = log {
+                log.info(&format!(
+                    "Forward to running instance: {outcome} ({} path(s))",
+                    existing_paths.len()
+                ));
+            }
+            Ok(matches!(outcome, ForwardOutcome::Delivered | ForwardOutcome::Unknown))
+        }
+    }
 }
