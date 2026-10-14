@@ -484,3 +484,39 @@ fn validate_iri_char_range_edges_match_dotnet() {
         }
     }
 }
+
+// C#: (gap) AppVersion.TryParse cuts build metadata at the FIRST '+' (IndexOf), not the last.
+#[test]
+fn try_parse_cuts_at_first_plus() {
+    let p = v("1.2.3+a+b");
+    assert_eq!((p.major, p.minor, p.patch, p.is_prerelease), (1, 2, 3, false));
+    assert_eq!(p.to_string(), "1.2.3");
+    let p = v("1.2.3+a-b+c");
+    assert_eq!((p.major, p.minor, p.patch, p.is_prerelease), (1, 2, 3, false));
+    // A leading '+' (or '+' only) leaves an empty string: one part, not three.
+    for text in ["+1.2.3", "+", "v+1.2.3", "1.2+3.4"] {
+        assert_eq!(AppVersion::try_parse(Some(text)), None, "{text:?}");
+    }
+}
+
+// C#: (gap) UpdateUrlPolicy.Validate userinfo handling; every None here is Uri.TryCreate == false or UserInfo non-empty.
+#[test]
+fn validate_userinfo_cases_match_dotnet() {
+    assert_eq!(
+        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview")).as_deref(),
+        Some("https://github.com/ConanKLOP2/PhotoReview")
+    );
+    assert_eq!(
+        validate_update_url(Some("https://@github.com/ConanKLOP2/PhotoReview")).as_deref(),
+        Some("https://@github.com/ConanKLOP2/PhotoReview")
+    );
+    for url in [
+        "https://@github.com@/ConanKLOP2/PhotoReview",
+        "https://@@github.com/ConanKLOP2/PhotoReview",
+        "https://a@b@github.com/ConanKLOP2/PhotoReview",
+        "https://github.com@/ConanKLOP2/PhotoReview",
+        "https://@github.com@evil.com/ConanKLOP2/PhotoReview",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url}");
+    }
+}
