@@ -23,6 +23,10 @@ use crate::stats::GroupSummary;
 /// both output files contain CRLF line breaks.
 pub const NEW_LINE: &str = "\r\n";
 
+// TODO(swap): the helpers below are private copies, to be replaced by imports once those units are merged:
+// `fixed` -> rules::fmt_fixed, `double_text` -> rules::fmt_double, `nan_null` -> analyze::nan_as_null_double_json,
+// `key_text` -> stats::GroupKey::to_string, `percentile_or_nan` -> stats::nearest_rank (plus the empty check),
+// `cmp_dotnet` -> the .NET double comparer shared with stats/analyze.
 // ---------------------------------------------------------------------------------------------------------------
 // Private number/text helpers. They are local so this unit does not depend on the `todo!()` bodies of the other
 // perf units while those are ported in parallel; they follow the documented contracts of `rules::fmt_fixed`,
