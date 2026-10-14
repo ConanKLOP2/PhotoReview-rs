@@ -732,6 +732,114 @@ fn blank_and_nul_edge_cases() {
     assert_eq!(format_flags(ExifInfoFields::from_bits_truncate(0)), "None");
 }
 
+#[test]
+fn trailing_whitespace_then_nul_number_rule() {
+    // .NET int.TryParse: digits, then any run of ASCII white (0x20, 0x09..=0x0D), then only U+0000 to the end.
+    // Trim() does not remove the whitespace here because the NUL after it is not whitespace.
+    for text in [
+        "1\t\0",
+        "1\u{b}\0",
+        "1\u{c}\0",
+        "1\r\0",
+        "1\n\0",
+        "1 \0",
+        "1 \t\r\n\0\0",
+    ] {
+        assert_eq!(
+            parse_lenient_text::<LoadingMode>(Some(text)),
+            Some(LoadingMode::Preview),
+            "row {text:?}"
+        );
+        assert_eq!(
+            parse_flags_text::<ExifInfoFields>(Some(text)),
+            ExifInfoFields::FILE_NAME,
+            "flags row {text:?}"
+        );
+    }
+    // Only U+0000 may follow the whitespace run: white space after a NUL is not allowed.
+    for text in ["1\0 \0", "1\0\t\0", "1 \0 \0", "1\0\u{a0}\0"] {
+        assert_eq!(parse_lenient_text::<LoadingMode>(Some(text)), None, "row {text:?}");
+        assert_eq!(
+            parse_flags_text::<ExifInfoFields>(Some(text)),
+            ExifInfoFields::DEFAULT,
+            "flags row {text:?}"
+        );
+    }
+    // Non-ASCII white space between the digits and the NUL is not .NET trailing white.
+    for text in ["1\u{a0}\0", "1\u{3000}\0", "1\u{85}\0"] {
+        assert_eq!(parse_lenient_text::<LoadingMode>(Some(text)), None, "row {text:?}");
+    }
+}
+
+/// Test-local enum exercising lookup-table corners the shipped enums never hit: a name/alias collision, an alias
+/// with surrounding white space, a blank alias, a negative member and the `i32::MIN` member.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Odd {
+    First,
+    Second,
+    Zero,
+}
+
+impl LenientEnum for Odd {
+    const TYPE_NAME: &'static str = "Odd";
+    const MEMBERS: &'static [Self] = &[Self::First, Self::Second, Self::Zero];
+
+    fn name(self) -> &'static str {
+        match self {
+            Self::First => "First",
+            Self::Second => "Second",
+            Self::Zero => "Zero",
+        }
+    }
+
+    fn value(self) -> i32 {
+        match self {
+            Self::First => i32::MIN,
+            Self::Second => -1,
+            Self::Zero => 0,
+        }
+    }
+
+    fn aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::First => &[" Padded\t", "   "],
+            // Collides with the name of `First`; C# `dict[alias] = value` makes the later entry win.
+            Self::Second => &["first"],
+            Self::Zero => &[],
+        }
+    }
+
+    fn zero() -> Self {
+        Self::Zero
+    }
+}
+
+#[test]
+fn lookup_table_corners_follow_the_csharp_dictionary() {
+    // Later entry wins on a name/alias collision.
+    assert_eq!(parse_lenient_text::<Odd>(Some("First")), Some(Odd::Second));
+    assert_eq!(parse_lenient_text::<Odd>(Some("FIRST")), Some(Odd::Second));
+    // Aliases are trimmed before they enter the table.
+    assert_eq!(parse_lenient_text::<Odd>(Some("Padded")), Some(Odd::First));
+    assert_eq!(parse_lenient_text::<Odd>(Some("  padded ")), Some(Odd::First));
+    // Blank aliases are skipped (and blank input is unreadable anyway).
+    assert_eq!(parse_lenient_text::<Odd>(Some("   ")), None);
+    // i32 range edges in the text number path.
+    assert_eq!(parse_lenient_text::<Odd>(Some("-2147483648")), Some(Odd::First));
+    assert_eq!(parse_lenient_text::<Odd>(Some("-2147483649")), None);
+    assert_eq!(parse_lenient_text::<Odd>(Some("-1")), Some(Odd::Second));
+    assert_eq!(parse_lenient_text::<Odd>(Some("2147483648")), None);
+    // Integer tokens: i32::MIN is readable; anything outside i32 (including u64 values that would wrap to a
+    // negative member) is unreadable.
+    assert_eq!(read_settings::<Odd>("-2147483648").expect("read"), Some(Odd::First));
+    assert_eq!(read_settings::<Odd>("-1").expect("read"), Some(Odd::Second));
+    assert_eq!(read_settings::<Odd>("18446744073709551615").expect("read"), None);
+    assert_eq!(read_settings::<Odd>("18446744071562067968").expect("read"), None);
+    assert_eq!(read_settings::<Odd>("9223372036854775808").expect("read"), None);
+    assert_eq!(read_settings::<Odd>("-2147483649").expect("read"), None);
+    assert_eq!(read_settings::<Odd>("\"-2147483648\"").expect("read"), Some(Odd::First));
+}
+
 // ---------------------------------------------------------------- golden
 
 fn golden_read<E>(case: &Value)
