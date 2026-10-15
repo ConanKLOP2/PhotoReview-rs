@@ -265,7 +265,7 @@ pub fn parse_entry(bytes: &[u8]) -> Result<ParsedEntry, PreviewCacheError> {
 ///
 /// # Errors
 /// [`PreviewCacheError::ArgumentOutOfRange`] when `orientation` is outside 1..=8 (C# message
-/// `"EXIF orientation must be 1-8. (Parameter 'orientation')\nActual value was {orientation}."`).
+/// `"EXIF orientation must be 1-8. (Parameter 'orientation')\r\nActual value was {orientation}."`).
 pub fn build_entry_prefix(
     backend: DecoderBackend,
     orientation: i32,
@@ -277,7 +277,7 @@ pub fn build_entry_prefix(
 ) -> Result<Vec<u8>, PreviewCacheError> {
     if !(1..=8).contains(&orientation) {
         return Err(PreviewCacheError::ArgumentOutOfRange(format!(
-            "EXIF orientation must be 1-8. (Parameter 'orientation')\nActual value was {orientation}."
+            "EXIF orientation must be 1-8. (Parameter 'orientation')\r\nActual value was {orientation}."
         )));
     }
     let header_original_width = if original_width > 0 { original_width } else { width };
