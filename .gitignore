@@ -7,3 +7,8 @@
 /target-wave-*/
 tools/oracle-cs/bin/
 tools/oracle-cs/obj/
+
+# Claude Code local state (worktrees, scheduler lock, per-machine settings)
+.claude/worktrees/
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
