@@ -5,8 +5,6 @@
 //! scheduler queues image indices around the current one, and the scheduler's fallback options. Pure computation:
 //! no I/O, no clock, no globals. All index arithmetic is `i32` with wrapping operations, mirroring C# unchecked `int`.
 
-#![allow(unused_variables, dead_code)] // D11: remove with the last `todo!()`.
-
 use pr_core::settings::app_settings::AppSettings;
 
 /// Size of the window on the side the user is moving towards (C# `PreloadOrderService.ForwardLookahead`).
@@ -40,13 +38,13 @@ impl PreloadWindow {
 
     /// C# `ImageCount`: `forward + backward + 1` (unchecked `int` addition: wraps).
     pub fn image_count(&self) -> i32 {
-        todo!("W4-05b")
+        self.forward.wrapping_add(self.backward).wrapping_add(1)
     }
 
     /// C# `PreloadWindow.FromSettings(settings)`: `(settings.PreloadForwardCount, settings.PreloadBackwardCount)`,
     /// no clamping. The C# `ArgumentNullException` for a null argument has no Rust twin (a reference is never null).
     pub fn from_settings(settings: &AppSettings) -> PreloadWindow {
-        todo!("W4-05b")
+        PreloadWindow::new(settings.preload_forward_count, settings.preload_backward_count)
     }
 }
 
@@ -73,7 +71,53 @@ pub fn build_preload_order(
     lead: i32,
     window: PreloadWindow,
 ) -> Vec<i32> {
-    todo!("W4-05b")
+    let mut order = Vec::new();
+    if !(0..count).contains(&center) {
+        return order;
+    }
+    let dir: i32 = if direction < 0 { -1 } else { 1 };
+    let lead = lead.clamp(0, count);
+    let forward = window.forward;
+    let backward = window.backward;
+
+    // Group 1: travel window, starting `lead + 1` images ahead. Bounds wrap like C# unchecked `int`; a wrapped
+    // (negative) upper bound yields an empty range, as the C# `for` loop does.
+    let travel_end = lead.wrapping_add(forward);
+    for offset in lead.wrapping_add(1)..=travel_end {
+        push_in_range(&mut order, center.wrapping_add(dir.wrapping_mul(offset)), count);
+    }
+    // Group 2: the images skipped by a key-held burst, queued right after the shifted window.
+    for offset in 1..=lead {
+        push_in_range(&mut order, center.wrapping_add(dir.wrapping_mul(offset)), count);
+    }
+    // Group 3: the small window behind the user.
+    for offset in 1..=backward {
+        push_in_range(&mut order, center.wrapping_sub(dir.wrapping_mul(offset)), count);
+    }
+    if !full_folder {
+        return order;
+    }
+
+    // Group 4: the rest of the folder ahead, stopping at the first out-of-range index (C# `for` with `InRange` bound).
+    let mut index = center.wrapping_add(dir.wrapping_mul(lead.wrapping_add(forward).wrapping_add(1)));
+    while (0..count).contains(&index) {
+        order.push(index);
+        index = index.wrapping_add(dir);
+    }
+    // Group 5: the rest of the folder behind, stopping at the first out-of-range index.
+    let mut index = center.wrapping_sub(dir.wrapping_mul(backward.wrapping_add(1)));
+    while (0..count).contains(&index) {
+        order.push(index);
+        index = index.wrapping_sub(dir);
+    }
+    order
+}
+
+/// Appends `index` when it is inside `0..count` (C# `if (InRange(...)) yield return ...`).
+fn push_in_range(order: &mut Vec<i32>, index: i32, count: i32) {
+    if (0..count).contains(&index) {
+        order.push(index);
+    }
 }
 
 /// C# `Preload.PreloadOptions` record: fallback defaults only (production passes the user's `PerformanceOptions`).
@@ -94,6 +138,13 @@ pub struct PreloadOptions {
 impl Default for PreloadOptions {
     /// C# `new PreloadOptions()`.
     fn default() -> Self {
-        todo!("W4-05b")
+        const GIB: i64 = 1024 * 1024 * 1024;
+        PreloadOptions {
+            worker_count: 8,
+            memory_load_limit: 0.80,
+            reserve_bytes: 2 * GIB,
+            full_folder_threshold_bytes: 16 * GIB,
+            window: PreloadWindow::DEFAULT,
+        }
     }
 }
