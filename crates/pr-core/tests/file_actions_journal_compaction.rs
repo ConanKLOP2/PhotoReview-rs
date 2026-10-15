@@ -1733,3 +1733,165 @@ fn compare_compact_result(case: &Value, result: &JournalCompactionResult, paths:
         "case {name}: last_move_after"
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Kill tests: the deny-writers open error split (Busy vs Failed) and the `.compact.tmp` suffix filter of the sweep.
+// ---------------------------------------------------------------------------------------------------------------
+
+/// [`MemoryCompactionFiles`] whose `open_read_deny_writers` always fails with the raw OS error `code`.
+struct DenyWritersFails {
+    inner: MemoryCompactionFiles,
+    code: i32,
+}
+
+impl JournalCompactionFiles for DenyWritersFails {
+    fn open_read_deny_writers(&self, _path: &Path) -> io::Result<Box<dyn ReadSeek>> {
+        Err(io::Error::from_raw_os_error(self.code))
+    }
+
+    fn create_staged_replacement(&self, temp_path: &Path) -> io::Result<Box<dyn StagedReplacement>> {
+        self.inner.create_staged_replacement(temp_path)
+    }
+}
+
+fn deny_writers_result(code: i32) -> (JournalCompactionResult, Vec<u8>, Vec<u8>) {
+    let (fs, clock) = memory_fs();
+    let (bytes, _) = compactible_exact(ONE_MIB);
+    fs.add_file(fake_paths().journal_file, &bytes);
+    let journal = OperationJournal::with_options(
+        &fake_paths(),
+        fs.clone(),
+        clock.clone(),
+        OperationJournalOptions {
+            compaction_files: Some(Arc::new(DenyWritersFails {
+                inner: MemoryCompactionFiles { fs: fs.clone() },
+                code,
+            })),
+            ..OperationJournalOptions::default()
+        },
+    );
+    let result = journal.try_compact();
+    (result, bytes, journal_bytes(&fs))
+}
+
+// C# `catch (IOException ex) when IsSharingOrLockViolation(ex)` at the deny-writers open: only 32/33 mean Busy.
+#[test]
+fn try_compact_deny_writers_open_sharing_or_lock_violation_is_busy() {
+    for code in [32, 33] {
+        let (result, before, after) = deny_writers_result(code);
+        assert_eq!(result.outcome, JournalCompactionOutcome::Busy, "os error {code}");
+        assert_eq!(result.bytes_before, ONE_MIB as i64);
+        assert_eq!(result.bytes_after, ONE_MIB as i64);
+        assert!(result.error.is_none());
+        assert_eq!(after, before);
+    }
+}
+
+// Any other error at the deny-writers open (access denied, ...) is a Failed run with the error text, not Busy.
+#[test]
+fn try_compact_deny_writers_open_other_error_is_failed() {
+    let (result, before, after) = deny_writers_result(5);
+    assert_eq!(result.outcome, JournalCompactionOutcome::Failed);
+    assert_eq!(result.bytes_before, 0);
+    assert_eq!(result.bytes_after, 0);
+    assert_eq!(result.error, Some(io::Error::from_raw_os_error(5).to_string()));
+    assert_eq!(after, before);
+}
+
+/// A [`FakeFileSystem`] view whose `enumerate_files` also lists `extra` (the C# 8.3 short-name pattern quirk: Windows
+/// can match `*.compact.tmp` against a file whose long name does not end that way).
+struct ExtraListingFs {
+    inner: Arc<FakeFileSystem>,
+    extra: Vec<PathBuf>,
+}
+
+impl FileSystem for ExtraListingFs {
+    fn file_exists(&self, path: &Path) -> bool {
+        self.inner.file_exists(path)
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.inner.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<pr_core::abstractions::FileStat> {
+        self.inner.get_file_stat(path)
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.move_file(source, destination)
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.copy_file(source, destination)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        self.inner.delete(path)
+    }
+    fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
+        self.inner.open_read_shared(path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn pr_core::abstractions::AppendStream>> {
+        self.inner.open_append(path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        self.inner.write_all_text_atomic(path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        self.inner.read_all_text(path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
+        let mut found = self.inner.enumerate_files(directory, pattern)?;
+        found.extend(self.extra.iter().cloned());
+        Ok(found)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
+        self.inner.enumerate_directories(directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        self.inner.create_directory(path)
+    }
+}
+
+// C# `RemoveStaleCompactionFiles`: `if (!file.EndsWith(CompactionFileSuffix, OrdinalIgnoreCase)) continue;` - a listed
+// file whose name does not end in `.compact.tmp` is never deleted, however old; a matching one (any case) is.
+#[test]
+fn try_compact_stale_sweep_deletes_only_names_ending_in_the_compaction_suffix() {
+    let (fs, clock) = memory_fs();
+    let journal_file = fake_paths().journal_file;
+    let dir = journal_file.parent().expect("journal folder").to_path_buf();
+    let name = journal_file
+        .file_name()
+        .expect("journal name")
+        .to_string_lossy()
+        .into_owned();
+    let old = clock
+        .utc_now()
+        .checked_add_ticks(-2 * STALE_COMPACTION_FILE_AGE_TICKS)
+        .expect("in range");
+    let not_ours = dir.join(format!("{name}.abc{COMPACTION_FILE_SUFFIX}.bak"));
+    let short_name = dir.join("OPERAT~1.TMP");
+    let ours_upper = dir.join(format!("{name}.OLD{}", COMPACTION_FILE_SUFFIX.to_uppercase()));
+    fs.add_file_at(&not_ours, b"keep", old);
+    fs.add_file_at(&short_name, b"keep", old);
+    fs.add_file_at(&ours_upper, b"partial", old);
+    let view = Arc::new(ExtraListingFs {
+        inner: fs.clone(),
+        extra: vec![not_ours.clone(), short_name.clone()],
+    });
+    let journal = OperationJournal::with_options(
+        &fake_paths(),
+        view,
+        clock.clone(),
+        OperationJournalOptions {
+            compaction_files: Some(Arc::new(MemoryCompactionFiles { fs: fs.clone() })),
+            ..OperationJournalOptions::default()
+        },
+    );
+
+    let result = journal.try_compact();
+
+    assert_eq!(result.outcome, JournalCompactionOutcome::BelowThreshold);
+    assert!(
+        !fs.file_exists(&ours_upper),
+        "a stale leftover (suffix in any case) is removed"
+    );
+    assert_eq!(fs.file_content(&not_ours).as_deref(), Some(&b"keep"[..]));
+    assert_eq!(fs.file_content(&short_name).as_deref(), Some(&b"keep"[..]));
+}

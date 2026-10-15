@@ -3319,3 +3319,328 @@ fn check_committed_moves(case: &Value, journal: &OperationJournal, bytes: &[u8])
         "case {name}: last_line"
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// The per-instance gate (C# `lock (_gate)`): two threads on ONE journal. Kill tests for the reentrant monitor.
+// ---------------------------------------------------------------------------------------------------------------
+
+/// How long the gate holder waits for an intruder before it decides the gate kept it out.
+const GATE_PROBE_WAIT: Duration = Duration::from_millis(300);
+
+// C# `lock (_gate)` around read-compare-append: while `append_if` holds the gate (also after a reentrant append on the
+// same thread released its inner hold), an append from another thread on the SAME instance waits for the decision.
+#[test]
+fn append_if_holds_the_gate_against_another_thread_also_after_a_reentrant_append() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::mpsc;
+
+    let (clock, fs) = new_fake();
+    let journal = quiet_journal(&fs, &clock);
+    let own = entry(
+        "a",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    let own_outcome = JournalEntry {
+        state: JournalState::Committed,
+        ..own.clone()
+    };
+    let foreign = entry(
+        "b",
+        FileOperationType::Copy,
+        JournalState::Prepared,
+        r"C:\p\b.jpg",
+        Some(r"C:\s\b.jpg"),
+    );
+    let foreign_done = AtomicBool::new(false);
+    let (inside_tx, inside_rx) = mpsc::channel::<()>();
+    let mut intruded_while_held = None;
+
+    std::thread::scope(|scope| {
+        let (shared, foreign_ref, done_ref) = (&journal, &foreign, &foreign_done);
+        let intruder = scope.spawn(move || {
+            if inside_rx.recv_timeout(Duration::from_secs(10)).is_err() {
+                return; // `decide` never ran: the assertions below report it
+            }
+            shared.append(foreign_ref).expect("foreign append");
+            done_ref.store(true, Ordering::SeqCst);
+        });
+        let appended = journal
+            .append_if("a", &mut |lines| {
+                assert!(lines.is_empty());
+                // Reentrant: takes and releases the gate again on this thread; the outer hold must survive it.
+                journal.append(&own).expect("reentrant append");
+                inside_tx.send(()).expect("intruder listens");
+                std::thread::sleep(GATE_PROBE_WAIT);
+                intruded_while_held = Some(foreign_done.load(Ordering::SeqCst));
+                Some(own_outcome.clone())
+            })
+            .expect("append_if");
+        assert!(appended);
+        intruder.join().expect("intruder thread");
+    });
+
+    assert_eq!(intruded_while_held, Some(false), "another thread entered the held gate");
+    assert_eq!(
+        fake_lines(&fs, &fake_journal_path()),
+        vec![own.to_line(), own_outcome.to_line(), foreign.to_line()]
+    );
+}
+
+// The gate is released when the call returns: another thread can use the same journal afterwards (a gate that stays
+// owned would hang it; the test fails on a timeout instead of hanging).
+#[test]
+fn gate_is_released_for_another_thread_after_each_call() {
+    use std::sync::mpsc;
+
+    let (clock, fs) = new_fake();
+    let journal = Arc::new(quiet_journal(&fs, &clock));
+    let first = entry(
+        "a",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    let second = entry(
+        "b",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\b.jpg",
+        Some(r"C:\s\b.jpg"),
+    );
+    journal.append(&first).expect("first append");
+    assert_eq!(read_pending(&journal).len(), 1);
+
+    let (done_tx, done_rx) = mpsc::channel();
+    let worker = journal.clone();
+    let worker_entry = second.clone();
+    // Detached on purpose: a gate that is never released blocks this thread forever.
+    std::thread::spawn(move || {
+        let appended = worker.append(&worker_entry).is_ok();
+        let pending = worker.read_pending_and_failed_operations().map(|v| v.len()).ok();
+        let _ = done_tx.send((appended, pending));
+    });
+
+    let result = done_rx
+        .recv_timeout(Duration::from_secs(10))
+        .expect("the gate was not released after the first thread's calls");
+    assert_eq!(result, (true, Some(2)));
+    // And back on this thread after the other thread's calls.
+    assert_eq!(read_pending(&journal).len(), 2);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// append_if (W3-03's compare-and-append primitive) and the ReconcileJournal delegations
+// ---------------------------------------------------------------------------------------------------------------
+
+// `append_if`: `decide` sees the raw lines of the Id (ordinal, file order, FA-01 NOT applied); `Some` appends it.
+#[test]
+fn append_if_decide_sees_the_raw_lines_of_the_id_and_some_appends() {
+    let (clock, fs) = new_fake();
+    let journal = quiet_journal(&fs, &clock);
+    let committed = entry(
+        "a",
+        FileOperationType::Move,
+        JournalState::Committed,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    let stale = JournalEntry {
+        state: JournalState::Failed,
+        error: Some("x".into()),
+        error_code: Some(pr_core::file_actions::errors::PENDING_UNCONFIRMED.to_owned()),
+        timestamp_utc: stamp(1),
+        ..committed.clone()
+    };
+    let other_case = entry(
+        "A",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\A.jpg",
+        Some(r"C:\s\A.jpg"),
+    );
+    for e in [&committed, &other_case, &stale] {
+        journal.append(e).expect("seed");
+    }
+    let decision = JournalEntry {
+        state: JournalState::Dismissed,
+        timestamp_utc: stamp(2),
+        ..committed.clone()
+    };
+    let mut seen = Vec::new();
+
+    let appended = journal
+        .append_if("a", &mut |lines| {
+            seen = lines.to_vec();
+            Some(decision.clone())
+        })
+        .expect("append_if");
+
+    assert!(appended);
+    assert_eq!(seen, vec![committed.clone(), stale.clone()]);
+    assert_eq!(
+        fake_lines(&fs, &fake_journal_path()),
+        vec![
+            committed.to_line(),
+            other_case.to_line(),
+            stale.to_line(),
+            decision.to_line()
+        ]
+    );
+}
+
+// `append_if`: `None` -> `Ok(false)`, nothing opened for append, no folder created, bytes unchanged.
+#[test]
+fn append_if_none_appends_nothing_and_opens_nothing() {
+    let (clock, fs) = new_fake();
+    let journal = quiet_journal(&fs, &clock);
+    let line = entry(
+        "a",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    journal.append(&line).expect("seed");
+    let before = fs.file_content(fake_journal_path());
+    fs.reset_counts();
+    let mut calls = 0;
+
+    let appended = journal
+        .append_if("a", &mut |lines| {
+            calls += 1;
+            assert_eq!(lines, std::slice::from_ref(&line));
+            None
+        })
+        .expect("append_if");
+
+    assert!(!appended);
+    assert_eq!(calls, 1);
+    assert_eq!(fs.count(FsOp::OpenAppend), 0);
+    assert_eq!(fs.count(FsOp::CreateDirectory), 0);
+    assert_eq!(fs.file_content(fake_journal_path()), before);
+}
+
+// `append_if` on a missing journal: `decide` gets no line; `Some` creates the journal.
+#[test]
+fn append_if_on_a_missing_journal_decides_on_no_lines_and_appends() {
+    let (clock, fs) = new_fake();
+    let journal = quiet_journal(&fs, &clock);
+    let line = entry(
+        "a",
+        FileOperationType::Copy,
+        JournalState::Prepared,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    let mut seen = None;
+
+    let appended = journal
+        .append_if("a", &mut |lines| {
+            seen = Some(lines.len());
+            Some(line.clone())
+        })
+        .expect("append_if");
+
+    assert!(appended);
+    assert_eq!(seen, Some(0));
+    assert_eq!(fake_lines(&fs, &fake_journal_path()), vec![line.to_line()]);
+}
+
+// The `ReconcileJournal` impl (W3-03's trait) delegates to the inherent methods and the English catalog.
+#[test]
+fn reconcile_journal_impl_delegates_to_the_journal() {
+    use pr_core::file_actions::errors;
+    use pr_core::file_actions::reconcile::ReconcileJournal;
+
+    let (clock, fs) = new_fake();
+    let journal = quiet_journal(&fs, &clock);
+    let line = entry(
+        "a",
+        FileOperationType::Move,
+        JournalState::Prepared,
+        r"C:\p\a.jpg",
+        Some(r"C:\s\a.jpg"),
+    );
+    journal.append(&line).expect("seed");
+
+    let english = ReconcileJournal::english_text(&journal, errors::PENDING_UNCONFIRMED);
+    assert_eq!(
+        english,
+        "Could not confirm the pending operation; it will not be replayed automatically."
+    );
+    assert_eq!(english, journal.texts().english("core.journal.pendingUnconfirmed"));
+    assert_eq!(ReconcileJournal::english_text(&journal, "NoSuchCode"), "");
+
+    let mut read = Vec::new();
+    ReconcileJournal::read_entries(&journal, &mut |e| read.push(e)).expect("read_entries");
+    assert_eq!(read, vec![line.clone()]);
+
+    let outcome = JournalEntry {
+        state: JournalState::Committed,
+        ..line.clone()
+    };
+    let mut seen = Vec::new();
+    let appended = ReconcileJournal::append_if(&journal, "a", &mut |lines| {
+        seen = lines.to_vec();
+        Some(outcome.clone())
+    })
+    .expect("append_if");
+    assert!(appended);
+    assert_eq!(seen, vec![line.clone()]);
+    assert!(!ReconcileJournal::append_if(&journal, "a", &mut |_| None).expect("append_if none"));
+    assert_eq!(
+        fake_lines(&fs, &fake_journal_path()),
+        vec![line.to_line(), outcome.to_line()]
+    );
+}
+
+// C# `Durability`: the provider's CURRENT answer (read on every call, a Settings change applies to the next write).
+#[test]
+fn durability_returns_the_providers_current_mode() {
+    use std::sync::atomic::AtomicBool;
+
+    let (clock, fs) = new_fake();
+    let safe = Arc::new(AtomicBool::new(true));
+    let journal = OperationJournal::with_options(
+        &fake_paths(),
+        fs.clone(),
+        clock.clone(),
+        OperationJournalOptions {
+            durability: Some(Arc::new({
+                let safe = safe.clone();
+                move || {
+                    if safe.load(Ordering::SeqCst) {
+                        JournalDurability::PowerLossSafe
+                    } else {
+                        JournalDurability::Fast
+                    }
+                }
+            })),
+            ..OperationJournalOptions::default()
+        },
+    );
+
+    assert_eq!(journal.durability(), JournalDurability::PowerLossSafe);
+    safe.store(false, Ordering::SeqCst);
+    assert_eq!(journal.durability(), JournalDurability::Fast);
+}
+
+// The built-in catalog: `localized` is the English text (the UI message of a coded error); an unknown key is itself.
+#[test]
+fn english_journal_texts_localized_is_the_english_text() {
+    use pr_core::file_actions::journal::{EnglishJournalTexts, JournalTexts};
+
+    assert_eq!(
+        EnglishJournalTexts.localized("core.journal.cancelledByUser"),
+        "The operation was cancelled before it finished."
+    );
+    assert_eq!(
+        EnglishJournalTexts.localized("core.fileAction.verifyFailedSizeChanged"),
+        "Post-operation check failed: the destination size changed."
+    );
+    assert_eq!(EnglishJournalTexts.localized("no.such.key"), "no.such.key");
+}

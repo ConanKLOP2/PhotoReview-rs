@@ -6,6 +6,7 @@
 use std::error::Error;
 use std::io;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use pr_core::abstractions::{FileStat, InProcessLiveOperationRegistry, LiveOperationRegistry};
 use pr_core::app_paths::AppPaths;
@@ -17,7 +18,7 @@ use pr_core::model::{FileOperationType, JournalState};
 use pr_core::sync::Canceled;
 use pr_core::time::{DateTimeUtc, TICKS_PER_SECOND};
 use pr_test_support::golden::{self, str_of};
-use pr_test_support::{FakeClock, FakeFileSystem, FsOp};
+use pr_test_support::{FakeClock, FakeFileSystem, FsOp, HookFileSystem};
 use serde_json::{Value, json};
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -614,4 +615,160 @@ fn replay_transaction_case(case: &Value) {
         case["final_hex"].as_str().map(str::to_owned),
         "case {name}: final_hex"
     );
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// verify_destination / verify_moved (the FileSystem-taking overloads; INV-6: a wrong verdict would journal Committed)
+// ---------------------------------------------------------------------------------------------------------------
+
+/// The code and message of a coded error returned by a verify call, `None` for any other error.
+fn coded_parts(err: &io::Error) -> Option<(String, String)> {
+    err.get_ref()
+        .and_then(|inner| inner.downcast_ref::<errors::JournalCodedError>())
+        .map(|coded| (coded.code.clone(), coded.message.clone()))
+}
+
+/// The UI (localized) text the transaction puts into a coded error: the default English catalog.
+fn localized_text(code: &str) -> String {
+    errors::text(code, &|k| EnglishJournalTexts.localized(k)).expect("known code")
+}
+
+// C#: JournalTransaction.VerifyMoved (source removed, destination of the prepared size => mutation completed)
+#[test]
+fn verify_moved_source_gone_and_destination_of_the_prepared_size_marks_the_mutation_completed() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (fs, journal) = fake_journal(&clock);
+    fs.add_file(r"C:\sel\op.jpg", &[7u8; 10]);
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    tx.verify_moved(
+        fs.as_ref(),
+        r"C:\photos\op.jpg",
+        r"C:\sel\op.jpg",
+        errors::VERIFY_SIZE_CHANGED,
+    )
+    .expect("verified");
+
+    assert!(tx.mutation_completed());
+}
+
+// C#: JournalTransaction.VerifyMoved (the source still exists: MoveSourceNotRemoved, checked before the destination)
+#[test]
+fn verify_moved_source_still_present_is_move_source_not_removed_without_a_stat_of_the_destination() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (disk, journal) = fake_journal(&clock);
+    disk.add_file(r"C:\photos\op.jpg", &[7u8; 10]);
+    disk.add_file(r"C:\sel\op.jpg", &[7u8; 10]);
+    let hooked = HookFileSystem::new(disk.clone());
+    let stats = Arc::new(AtomicUsize::new(0));
+    hooked.set_stat_hook(Some(Arc::new({
+        let stats = stats.clone();
+        move |_| {
+            stats.fetch_add(1, Ordering::SeqCst);
+            None
+        }
+    })));
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    let err = tx
+        .verify_moved(
+            &hooked,
+            r"C:\photos\op.jpg",
+            r"C:\sel\op.jpg",
+            errors::VERIFY_SIZE_CHANGED,
+        )
+        .expect_err("source still present");
+
+    assert_eq!(
+        coded_parts(&err),
+        Some((
+            errors::MOVE_SOURCE_NOT_REMOVED.to_owned(),
+            localized_text(errors::MOVE_SOURCE_NOT_REMOVED)
+        ))
+    );
+    assert_eq!(stats.load(Ordering::SeqCst), 0, "the destination is not stat'ed");
+    assert!(!tx.mutation_completed());
+}
+
+// C#: JournalTransaction.VerifyMoved (source gone, destination size differs: the size code)
+#[test]
+fn verify_moved_destination_of_another_size_is_the_size_code() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (fs, journal) = fake_journal(&clock);
+    fs.add_file(r"C:\sel\op.jpg", &[7u8; 11]);
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    let err = tx
+        .verify_moved(
+            fs.as_ref(),
+            r"C:\photos\op.jpg",
+            r"C:\sel\op.jpg",
+            errors::RETRY_VERIFY_FAILED,
+        )
+        .expect_err("size changed");
+
+    assert_eq!(
+        coded_parts(&err),
+        Some((
+            errors::RETRY_VERIFY_FAILED.to_owned(),
+            localized_text(errors::RETRY_VERIFY_FAILED)
+        ))
+    );
+    assert!(!tx.mutation_completed());
+}
+
+// C#: JournalTransaction.VerifyDestination(IFileSystem, ...) (missing destination: the size code)
+#[test]
+fn verify_destination_missing_destination_is_the_size_code() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (fs, journal) = fake_journal(&clock);
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    let err = tx
+        .verify_destination(fs.as_ref(), r"C:\sel\op.jpg", errors::VERIFY_SIZE_CHANGED)
+        .expect_err("missing");
+
+    assert_eq!(
+        coded_parts(&err),
+        Some((
+            errors::VERIFY_SIZE_CHANGED.to_owned(),
+            localized_text(errors::VERIFY_SIZE_CHANGED)
+        ))
+    );
+    assert!(!tx.mutation_completed());
+}
+
+// C#: JournalTransaction.VerifyDestination(IFileSystem, ...) (size match => mutation completed)
+#[test]
+fn verify_destination_of_the_prepared_size_marks_the_mutation_completed() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (fs, journal) = fake_journal(&clock);
+    fs.add_file(r"C:\sel\op.jpg", &[1u8; 10]);
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    tx.verify_destination(fs.as_ref(), r"C:\sel\op.jpg", errors::VERIFY_SIZE_CHANGED)
+        .expect("verified");
+
+    assert!(tx.mutation_completed());
+}
+
+// P-12: a destination whose stat cannot be inspected returns that error (C# `GetFileStat` throws), not a size verdict.
+#[test]
+fn verify_destination_stat_failure_is_returned_unchanged() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (disk, journal) = fake_journal(&clock);
+    disk.add_file(r"C:\sel\op.jpg", &[1u8; 10]);
+    let hooked = HookFileSystem::new(disk.clone());
+    hooked.set_stat_hook(Some(Arc::new(|_| {
+        Some(io::Error::new(io::ErrorKind::PermissionDenied, "stat denied"))
+    })));
+    let mut tx = JournalTransaction::new(&journal, clock.as_ref(), move_op(JournalState::Prepared), None);
+
+    let err = tx
+        .verify_destination(&hooked, r"C:\sel\op.jpg", errors::VERIFY_SIZE_CHANGED)
+        .expect_err("stat failed");
+
+    assert_eq!(coded_parts(&err), None);
+    assert_eq!(err.kind(), io::ErrorKind::PermissionDenied);
+    assert!(!tx.mutation_completed());
 }
