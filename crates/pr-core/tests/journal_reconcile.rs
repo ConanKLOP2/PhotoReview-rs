@@ -2256,3 +2256,159 @@ fn golden_journal_reconcile_cases_match_csharp() {
         drop(markers);
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Parity guards (W3-03 verifier, repair round 1): the C# rules the existing cases left unpinned.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// A journal over `world` whose diagnostics go to `diagnostics` (C# `FileLog` warnings of `TryReconcileAppend` & co).
+fn journal_logging_to(
+    fs: Arc<dyn FileSystem>,
+    diagnostics: &Arc<RecordingLog>,
+    live: Option<Arc<dyn LiveOperationRegistry>>,
+) -> OperationJournal {
+    let log: Arc<dyn Log> = diagnostics.clone();
+    OperationJournal::with_options(
+        &paths_at(JOURNAL),
+        fs,
+        Arc::new(FakeClock::at(at(0))),
+        OperationJournalOptions {
+            log: Some(log),
+            live_operations: live,
+            ..quiet()
+        },
+    )
+}
+
+fn unconfirmed_single_move(id: &str) -> JournalEntry {
+    JournalEntry {
+        timestamp_utc: jdt(at(-300)),
+        ..entry(
+            id,
+            FileOperationType::Move,
+            JournalState::Prepared,
+            r"C:\photos\a.jpg",
+            Some(r"C:\sel\a.jpg"),
+            5,
+            at(-86_400),
+        )
+    }
+}
+
+#[test]
+fn reconcile_group_move_member_copied_but_source_still_present_is_not_completed() {
+    // C#: OperationJournal.IsGroupMemberCompleted, Move => !sourceExists && destinationMatches.
+    let world = World::new();
+    let stamp = at(-86_400);
+    let members = [
+        member(r"C:\p\a.jpg", Some(r"C:\s\a.jpg"), 10, stamp),
+        member(r"C:\p\a.cr2", Some(r"C:\s\a.cr2"), 20, stamp),
+    ];
+    world.put(r"C:\s\a.jpg", 10, stamp);
+    world.put(r"C:\s\a.cr2", 20, stamp);
+    world.put(r"C:\p\a.cr2", 20, stamp); // copied, but the source was never removed
+    let journal = world.journal(at(0));
+    journal
+        .append(&group(
+            "g1",
+            FileOperationType::Move,
+            JournalState::Prepared,
+            "g",
+            &members,
+        ))
+        .expect("append");
+
+    let out = single(reconcile(&journal));
+
+    assert_eq!(out.state, JournalState::Failed);
+    assert_eq!(out.error_code.as_deref(), Some(PENDING_UNCONFIRMED));
+}
+
+#[test]
+fn reconcile_recycle_group_with_undo_false_is_judged_as_a_plain_recycle() {
+    // C#: `group.Undo != true` -> a Recycle group with Undo = false whose sources are gone is Committed.
+    let world = World::new();
+    let stamp = at(-86_400);
+    let members = [
+        member(r"C:\p\a.jpg", None, 10, stamp),
+        member(r"C:\p\a.cr2", None, 20, stamp),
+    ];
+    let journal = world.journal(at(0));
+    let mut line = group("g1", FileOperationType::Recycle, JournalState::Prepared, "g", &members);
+    line.undo = Some(false);
+    journal.append(&line).expect("append");
+
+    let out = single(reconcile(&journal));
+
+    assert_eq!(out.state, JournalState::Committed);
+}
+
+#[test]
+fn reconcile_members_of_a_stale_reconcile_line_still_feed_the_downgrade_guard() {
+    // C#: ComputeLatestEntries records the members of EVERY line (before the FA-01 stale check), so a stale reconcile
+    // Failed that carries the members still lets the guard repair an older build's member-less Committed.
+    let world = World::new();
+    let stamp = at(-86_400);
+    let members = [
+        member(r"C:\p\a.jpg", Some(r"C:\s\a.jpg"), 10, stamp),
+        member(r"C:\p\a.cr2", Some(r"C:\s\a.cr2"), 20, stamp),
+    ];
+    let journal = world.journal(at(0));
+    let mut committed_by_older_build = group("g1", FileOperationType::Move, JournalState::Committed, "g", &members);
+    committed_by_older_build.group_id = None;
+    committed_by_older_build.group_members = None;
+    let mut stale = group("g1", FileOperationType::Move, JournalState::Failed, "g", &members);
+    stale.error = Some("x".to_owned());
+    stale.error_code = Some(PENDING_UNCONFIRMED.to_owned());
+    journal.append(&committed_by_older_build).expect("append");
+    journal.append(&stale).expect("append");
+
+    let out = single(reconcile(&journal));
+
+    assert_eq!(out.state, JournalState::Failed);
+    assert_eq!(out.error.as_deref(), Some(SETTLED_BY_OLDER_BUILD_TEXT));
+}
+
+#[test]
+fn reconcile_outcome_append_that_fails_is_logged_to_the_diagnostics_log() {
+    // C#: TryReconcileAppend warns "Journal reconcile: could not append outcome for {id}: {message}".
+    let world = World::new();
+    let diagnostics = Arc::new(RecordingLog::new());
+    let journal = journal_logging_to(world.fs(), &diagnostics, None);
+    journal.append(&unconfirmed_single_move("a")).expect("append");
+    world
+        .disk
+        .fail(FsOp::OpenAppend, JOURNAL, io::ErrorKind::PermissionDenied);
+
+    let out = reconcile(&journal);
+
+    assert!(out.is_empty());
+    let warns: Vec<String> = diagnostics
+        .entries()
+        .into_iter()
+        .filter(|(level, _)| *level == pr_test_support::LogLevel::Warn)
+        .map(|(_, message)| message)
+        .collect();
+    assert_eq!(warns.len(), 1, "{warns:?}");
+    assert!(
+        warns[0].starts_with("Journal reconcile: could not append outcome for a: "),
+        "{warns:?}"
+    );
+}
+
+#[test]
+fn reconcile_live_entry_is_skipped_before_any_file_check() {
+    // C# (Q-R27): ReconcileOne checks IsLive before any (possibly slow) file check; a live entry's files are untouched.
+    let world = World::new();
+    let fs: Arc<dyn FileSystem> = Arc::new(CheckFs::new(world.fs(), &[r"C:\photos\a.jpg", r"C:\sel\a.jpg"]));
+    let registry: Arc<dyn LiveOperationRegistry> = Arc::new(InProcessLiveOperationRegistry::new());
+    let diagnostics = Arc::new(RecordingLog::new());
+    let journal = journal_logging_to(fs, &diagnostics, Some(Arc::clone(&registry)));
+    journal.append(&unconfirmed_single_move("a")).expect("append");
+    let _marker = registry.begin("a");
+
+    let out = reconcile(&journal);
+
+    assert!(out.is_empty());
+    assert!(diagnostics.entries().is_empty(), "{:?}", diagnostics.entries());
+}

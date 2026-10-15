@@ -1201,3 +1201,223 @@ fn spawn_reads_the_clock_on_the_calling_thread_and_names_the_worker() {
 
     assert!(handle.wait().is_empty());
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Parity guards (W3-03 verifier, repair round 1): C# RunAsync's try covers the summary warning, compaction runs after a
+// successful reconcile only, and the spawned handle reports its result and completion.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// A `Log` whose `warn` panics (C#: an `ILog` whose `Warn` throws); `error` records the message.
+#[derive(Default)]
+struct WarnPanicsLog {
+    errors: Mutex<Vec<String>>,
+}
+
+impl Log for WarnPanicsLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+
+    fn info(&self, _message: &str) {}
+
+    fn warn(&self, _message: &str) {
+        panic!("warn sink failed");
+    }
+
+    fn error(&self, message: &str, _error: Option<&(dyn std::error::Error + 'static)>) {
+        self.errors
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .push(message.to_owned());
+    }
+}
+
+/// One pending Move whose source is still on disk and whose destination is missing: reconciled as Failed.
+fn unconfirmed_move(disk: &FakeFileSystem, id: &str) -> JournalEntry {
+    put(disk, r"C:\photos\a.jpg", 5, at(-86_400));
+    pending(
+        id,
+        FileOperationType::Move,
+        r"C:\photos\a.jpg",
+        Some(r"C:\sel\a.jpg"),
+        5,
+        at(-300),
+    )
+}
+
+#[test]
+fn run_async_summary_warning_that_panics_is_caught_like_the_csharp_try() {
+    // C#: JournalStartupRecovery.RunAsync, `log?.Warn(...)` sits inside `try { } catch (Exception)`: "Never throws".
+    let disk = Arc::new(FakeFileSystem::new());
+    let journal = journal_with(disk.clone(), &paths_at(JOURNAL), at(0), None);
+    journal.append(&unconfirmed_move(&disk, "a")).expect("append");
+    let log = WarnPanicsLog::default();
+
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        startup_recovery::run(&journal, &startup_clock(), Some(&log))
+    }));
+
+    let failed = result.expect("run never panics: the throwing Warn is caught");
+    assert!(failed.is_empty(), "C# returns [] from the catch");
+    assert_eq!(
+        *log.errors.lock().unwrap_or_else(PoisonError::into_inner),
+        ["Startup journal reconcile failed"]
+    );
+}
+
+#[test]
+fn spawn_wait_returns_the_failed_entries() {
+    // C#: `await JournalStartupRecovery.RunAsync(...)` yields the entries reconcile marked Failed.
+    let disk = Arc::new(FakeFileSystem::new());
+    let journal = Arc::new(journal_with(disk.clone(), &paths_at(JOURNAL), at(0), None));
+    journal.append(&unconfirmed_move(&disk, "a")).expect("append");
+
+    let failed = startup_recovery::spawn(journal, &startup_clock(), None).wait();
+
+    assert_eq!(failed.iter().map(|e| e.id.as_str()).collect::<Vec<_>>(), ["a"]);
+    assert_eq!(failed[0].state, JournalState::Failed);
+}
+
+/// A `Log` whose `warn` reports that it was reached, then blocks until the test releases it.
+struct GateLog {
+    reached: Mutex<mpsc::Sender<()>>,
+    release: Mutex<mpsc::Receiver<()>>,
+}
+
+impl Log for GateLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+
+    fn info(&self, _message: &str) {}
+
+    fn warn(&self, _message: &str) {
+        let _ = self.reached.lock().unwrap_or_else(PoisonError::into_inner).send(());
+        let _ = self.release.lock().unwrap_or_else(PoisonError::into_inner).recv();
+    }
+
+    fn error(&self, _message: &str, _error: Option<&(dyn std::error::Error + 'static)>) {}
+}
+
+#[test]
+fn spawn_handle_is_finished_only_once_the_work_is_done() {
+    // C#: Task.IsCompleted is false while the worker runs and true once it returned.
+    let disk = Arc::new(FakeFileSystem::new());
+    let journal = Arc::new(journal_with(disk.clone(), &paths_at(JOURNAL), at(0), None));
+    journal.append(&unconfirmed_move(&disk, "a")).expect("append");
+    let (reached_tx, reached_rx) = mpsc::channel();
+    let (release_tx, release_rx) = mpsc::channel();
+    let log: Arc<dyn Log> = Arc::new(GateLog {
+        reached: Mutex::new(reached_tx),
+        release: Mutex::new(release_rx),
+    });
+
+    let handle = startup_recovery::spawn(journal, &startup_clock(), Some(log));
+    reached_rx
+        .recv_timeout(Duration::from_secs(30))
+        .expect("the worker reaches the summary warning");
+    assert!(!handle.is_finished(), "the worker is still inside the summary warning");
+    release_tx.send(()).expect("release the worker");
+
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
+    while !handle.is_finished() {
+        assert!(std::time::Instant::now() < deadline, "is_finished never became true");
+        std::thread::yield_now();
+    }
+    assert_eq!(handle.wait().len(), 1);
+}
+
+#[test]
+fn run_async_reconcile_panic_is_logged_with_the_panic_text() {
+    // C#: the catch logs the exception object, message included ("{message}: {error}" in RecordingLog).
+    let disk = Arc::new(FakeFileSystem::new());
+    let hooked = Arc::new(HookFileSystem::new(Arc::clone(&disk)));
+    let journal = journal_with(hooked.clone(), &paths_at(JOURNAL), at(0), None);
+    journal.append(&unconfirmed_move(&disk, "a")).expect("append");
+    let boom: PathHook = Arc::new(|_path: &Path| panic!("journal read exploded"));
+    hooked.set_open_read_hook(Some(boom));
+    let log = RecordingLog::new();
+
+    let failed = startup_recovery::run(&journal, &startup_clock(), Some(&log));
+
+    assert!(failed.is_empty());
+    let errors = errors(&log);
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    assert!(errors[0].starts_with("Startup journal reconcile failed"), "{errors:?}");
+    assert!(errors[0].contains("journal read exploded"), "{errors:?}");
+}
+
+#[test]
+fn run_async_compaction_runs_after_reconcile_so_the_settled_prepared_line_is_dropped() {
+    // C#: RunAsync "the quiet moment: after reconcile appended its outcomes": the outcome is part of the compacted file.
+    let disk = Arc::new(FakeFileSystem::new());
+    let mut bytes = compactible_journal(COMPACTIBLE_COUNT);
+    // A pending Recycle whose source is gone: reconcile appends its Committed outcome.
+    bytes.extend(line_bytes(&pending(
+        "rp",
+        FileOperationType::Recycle,
+        r"C:\photos\gone.jpg",
+        None,
+        5,
+        at(-300),
+    )));
+    disk.add_file_at(JOURNAL, &bytes, at(0));
+    let journal = journal_with(
+        disk.clone(),
+        &paths_at(JOURNAL),
+        at(0),
+        compaction(MemCompaction { fs: Arc::clone(&disk) }),
+    );
+
+    let failed = startup_recovery::run(&journal, &startup_clock(), None);
+
+    assert!(failed.is_empty());
+    let after = disk.file_content(JOURNAL).expect("journal");
+    assert!(after.len() < bytes.len(), "compacted");
+    let text = String::from_utf8_lossy(&after);
+    assert_eq!(
+        text.matches("\"Id\":\"rp\"").count(),
+        1,
+        "only the Committed outcome of rp survives the compaction"
+    );
+}
+
+#[test]
+fn run_async_failed_reconcile_skips_the_compaction() {
+    // C#: the exception leaves Task.Run before Compact runs.
+    let disk = Arc::new(FakeFileSystem::new());
+    let bytes = compactible_journal(COMPACTIBLE_COUNT);
+    disk.add_file_at(JOURNAL, &bytes, at(0));
+    let hooked = Arc::new(HookFileSystem::new(Arc::clone(&disk)));
+    let journal = journal_with(
+        hooked.clone(),
+        &paths_at(JOURNAL),
+        at(0),
+        compaction(MemCompaction { fs: Arc::clone(&disk) }),
+    );
+    // Only the first read fails (the reconcile's); a compaction would read the journal again afterwards.
+    let calls = Arc::new(Mutex::new(0usize));
+    let counter = Arc::clone(&calls);
+    let first_fails: PathHook = Arc::new(move |_path: &Path| {
+        let mut n = counter.lock().unwrap_or_else(PoisonError::into_inner);
+        *n += 1;
+        (*n == 1).then(|| io::Error::other("locked"))
+    });
+    hooked.set_open_read_hook(Some(first_fails));
+    let log = RecordingLog::new();
+
+    let failed = startup_recovery::run(&journal, &startup_clock(), Some(&log));
+
+    assert!(failed.is_empty());
+    assert_eq!(
+        disk.file_content(JOURNAL).expect("journal"),
+        bytes,
+        "journal must be untouched"
+    );
+    let entries = log.entries();
+    assert_eq!(entries.len(), 1, "{entries:?}");
+    assert!(
+        entries[0].1.starts_with("Startup journal reconcile failed"),
+        "{entries:?}"
+    );
+}

@@ -44,32 +44,36 @@ pub fn run_with_cutoff(
     started_utc: DateTimeUtc,
     log: Option<&dyn Log>,
 ) -> Vec<JournalEntry> {
+    // Everything C# `RunAsync` has inside its `try`, the summary warning included: a `Log` whose `warn` panics is
+    // caught here like C#'s `catch (Exception)` (logged as a reconcile failure, empty result), never escaping.
     let attempt = catch_unwind(AssertUnwindSafe(|| {
-        let reconciled = journal.reconcile_pending_operations(Some(started_utc));
-        if reconciled.is_ok() {
-            // The quiet moment: after reconcile appended its outcomes, still on this worker thread.
-            compact(journal, log);
-        }
-        reconciled
+        let reconciled = journal.reconcile_pending_operations(Some(started_utc))?;
+        // The quiet moment: after reconcile appended its outcomes, still on this worker thread.
+        compact(journal, log);
+        Ok::<_, std::io::Error>(summarize(reconciled, log))
     }));
-    let reconciled = match attempt {
-        Ok(Ok(reconciled)) => reconciled,
+    match attempt {
+        Ok(Ok(failed)) => failed,
         Ok(Err(err)) => {
             // A locked/unreadable journal must not take the viewer down; the Recovery window can still be opened.
             if let Some(log) = log {
                 log.error("Startup journal reconcile failed", Some(&err));
             }
-            return Vec::new();
+            Vec::new()
         }
         Err(payload) => {
             if let Some(log) = log {
                 let err = PanicError(panic_message(payload.as_ref()));
                 log.error("Startup journal reconcile failed", Some(&err));
             }
-            return Vec::new();
+            Vec::new()
         }
-    };
+    }
+}
 
+/// The tail of C# `RunAsync`'s `try`: keep the Failed entries (in order) and, when anything was reconciled, warn
+/// `"Startup journal reconcile: {total} pending operation(s), {failed} failed."`.
+fn summarize(reconciled: Vec<JournalEntry>, log: Option<&dyn Log>) -> Vec<JournalEntry> {
     let total = reconciled.len();
     let failed: Vec<JournalEntry> = reconciled
         .into_iter()
