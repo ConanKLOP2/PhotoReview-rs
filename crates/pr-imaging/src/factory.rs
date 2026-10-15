@@ -5,19 +5,17 @@
 //! still decodes (warning + Wpf slot). Each backend's decoder is built ONCE (providers and decorator run once, even under
 //! 16 racing threads).
 //!
-//! Stub: the bodies are `todo!()`, signatures and data types are final. Remove the `#![allow(...)]` line when implemented.
 //! The interface trait (`ImageDecoderFactory`) is W4-01c; the concrete C# class `ImageDecoderFactory` is
 //! [`DefaultImageDecoderFactory`] here (the trait took the unprefixed name).
 
-#![allow(unused_imports, unused_variables, dead_code, clippy::unused_self)]
-
 use std::collections::HashMap;
 use std::fmt;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 
-use pr_core::abstractions::Log;
+use pr_core::abstractions::{Log, NullLog};
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::model::enums::DecoderBackend;
+use pr_core::model::serde_ext::LenientEnum;
 
 use crate::decoder_traits::{ImageDecoder, ImageDecoderFactory};
 use crate::fallback::FallbackImageDecoder; // W4-12b
@@ -105,7 +103,37 @@ impl DefaultImageDecoderFactory {
         providers: Vec<(DecoderBackend, DecoderProvider)>,
         options: DecoderFactoryOptions,
     ) -> Result<Self, DecoderFactoryError> {
-        todo!()
+        let mut registry: HashMap<DecoderBackend, DecoderProvider> = HashMap::new();
+        for (backend, provider) in providers {
+            registry.insert(backend, provider);
+        }
+
+        let mut wpf_mapped_to_wic_direct = false;
+        if !registry.contains_key(&DecoderBackend::Wpf) {
+            if let Some(wpf) = options.wpf_decoder_factory.clone() {
+                registry.insert(DecoderBackend::Wpf, wpf);
+            } else if let Some(wic) = registry.get(&DecoderBackend::WicDirect).cloned() {
+                registry.insert(DecoderBackend::Wpf, wic);
+                wpf_mapped_to_wic_direct = true;
+            } else {
+                return Err(DecoderFactoryError::NoWpfDecoder);
+            }
+        }
+
+        let log: Arc<dyn Log> = options.log.unwrap_or_else(|| Arc::new(NullLog));
+        Ok(Self {
+            registry,
+            created: Mutex::new(HashMap::new()),
+            log,
+            metrics: options.metrics,
+            decoder_decorator: options.decoder_decorator,
+            wpf_mapped_to_wic_direct,
+        })
+    }
+
+    /// The Wpf provider; the slot is always filled by the constructor.
+    fn wpf_decoder(&self) -> Option<Arc<dyn ImageDecoder>> {
+        self.registry.get(&DecoderBackend::Wpf).map(|provider| provider())
     }
 
     /// Builds (provider + fallback wrapping + decorator) the decoder for `backend`; called once per backend through the
@@ -114,23 +142,59 @@ impl DefaultImageDecoderFactory {
     /// and `backend == WicDirect`: `decorate(backend, provider())` unwrapped. Otherwise
     /// `decorate(backend, Arc::new(FallbackImageDecoder::new(provider(), backend, registry[Wpf](), log, metrics)))`.
     fn build_decoder(&self, backend: DecoderBackend) -> Arc<dyn ImageDecoder> {
-        todo!()
+        // The Wpf slot is guaranteed by the constructor, so the lookups below cannot miss.
+        let decoder = if backend == DecoderBackend::Wpf {
+            self.wpf_decoder()
+        } else if let Some(provider) = self.registry.get(&backend) {
+            if backend == DecoderBackend::WicDirect && self.wpf_mapped_to_wic_direct {
+                Some(provider())
+            } else {
+                let primary = provider();
+                self.wpf_decoder().map(|fallback| {
+                    Arc::new(FallbackImageDecoder::new(
+                        primary,
+                        backend,
+                        fallback,
+                        Arc::clone(&self.log),
+                        self.metrics.clone(),
+                    )) as Arc<dyn ImageDecoder>
+                })
+            }
+        } else {
+            self.log.warn(&format!(
+                "Decoder backend {} is not registered, falling back to Wpf.",
+                backend.name()
+            ));
+            self.wpf_decoder()
+        };
+        match decoder {
+            Some(decoder) => self.decorate(backend, decoder),
+            None => unreachable!("the constructor always fills the Wpf slot"),
+        }
     }
 
     /// `_decoderDecorator?.Invoke(backend, decoder) ?? decoder`.
     fn decorate(&self, backend: DecoderBackend, decoder: Arc<dyn ImageDecoder>) -> Arc<dyn ImageDecoder> {
-        todo!()
+        match &self.decoder_decorator {
+            Some(decorator) => decorator(backend, decoder),
+            None => decoder,
+        }
     }
 }
 
 impl ImageDecoderFactory for DefaultImageDecoderFactory {
     /// `Create`: the shared instance for `backend`; the first call builds it, concurrent first calls build it once.
     fn create(&self, backend: DecoderBackend) -> Arc<dyn ImageDecoder> {
-        todo!()
+        // Hold the map lock only to fetch-or-insert the cell; the build runs outside it.
+        let cell: DecoderCell = {
+            let mut created = self.created.lock().unwrap_or_else(PoisonError::into_inner);
+            Arc::clone(created.entry(backend).or_default())
+        };
+        Arc::clone(cell.get_or_init(|| self.build_decoder(backend)))
     }
 
     /// `IsRegistered`: `registry.contains_key(backend)`. `Wpf` is always true (the slot is always served).
     fn is_registered(&self, backend: DecoderBackend) -> bool {
-        todo!()
+        self.registry.contains_key(&backend)
     }
 }
