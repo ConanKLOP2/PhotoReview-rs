@@ -85,3 +85,20 @@ Rules (docs/MULTI-AGENT-PLAN.md §4):
 | `update-checker` | W2-18 `UpdateChecker` | HTTP exchange scenarios |
 | `forwarded-path` | W2-19 `instance::protocol` | wire format |
 | `context-menu` | W2-20 `settings::context_menu` | item ids, hidden set parsing, migration |
+| `journal-stream-lines` | W3-01 `decode_stream_reader_lines` | StreamReader line decoding of journal bytes |
+| `journal-ops` | W3-01 `OperationJournal` | append / dismiss / read scenarios, journal bytes |
+| `journal-committed-moves` | W3-01 `read_committed_moves` | committed move read (LAST MOVE READ serialized) |
+| `journal-transaction` | W3-01 `JournalTransaction` | 25 transaction cases incl. the T10 quirk |
+| `journal-compaction-plan` | W3-02 `compaction::build` | compaction plan and line rules |
+| `journal-tail-committed-move` | W3-02 tail reader | newest committed move from the tail window |
+| `journal-compact` | W3-01 `try_compact` | compaction outcomes |
+| `journal-reconcile` | W3-03 `reconcile_pending_operations` | 71 reconcile cases |
+| `journal-startup-recovery` | W3-03 `startup_recovery` | 11 startup recovery cases |
+| `file-action-scenarios` | W3-04 `FileActionService` | 111 single/group action scenarios, every field |
+| `undo-scenarios` | W3-05 `UndoService` | 100 undo scenarios incl. journal text |
+| `recovery-retry` | W3-06 `RecoveryRetryService` | 106 retry cases (6 need the stat seam) |
+| `recovery-decide` | W3-07 `RecoveryFileCheck` decision | 720 verdict cases |
+| `recovery-check` | W3-07 `RecoveryFileCheck` | virtual 715 cases + 20 native physical `p-*` cases |
+| `partial-cleanup` | W3-08 `remove_if_partial` / `is_same_file` | 26 cases: 17 cleanup, 9 same-file |
+
+Fixtures synced by `tools/sync-from-csharp.ps1` at `d92d6aae` (never hand-edited, P-15): `operations-legacy.jsonl`, `journal-older-build/*.jsonl`, `config-v1.json`, `config-v2.json`.

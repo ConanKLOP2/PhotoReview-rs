@@ -55,3 +55,13 @@
 - NOT done: `CrashPointFileSystem`, `FaultableFileSystem`, `FaultInjectionMatrix`/`Rig`/`SecondOrder`/`FaultInvariants` (W3-09,
   P-16); cargo-mutants on the new seams; no PR opened from this step.
 - Next: Haiku red-test pass per unit against the landed seams, then porters in D23/D24 order.
+
+## Wave 3 integration (branch `integration/wave-3`, 2026-10-16)
+- Merged: W3-02, W3-07, W3-08 (i1); W3-01 (verdict FAIL), W3-03 (i2); W3-04 (i3); W3-05 (verdict FAIL), W3-06 (i4); W3-09 tests (02640a5).
+  Only conflicts were in `docs/PARITY.md`; resolved by keeping the Done/Ported rows. Not pushed before this step.
+- Run in the integration steps (fmt, clippy `-D warnings`, `cargo test --workspace --locked --no-fail-fast` after each batch):
+  all clean; one flake in `diagnostics_file_log::flush_drained_set_while_entry_queued_waits_until_written` (W2 test) under load, green on rerun.
+- Open: W3-01 mutation testing not done (228/231 untested); W3-05 verifier mutation re-run unfinished (porter round 3: 198 mutants, 178 caught, 2 missed and killed);
+  `#[ignore]`d tests (journal 19, compaction 15, reconcile 2, startup_recovery 6, INV-6 equivalence 5) not run with `--include-ignored`.
+- C# moved past `d92d6aae` (external editors): NOT ported; P-17, patch WU W2-S1 after Wave 3.
+
