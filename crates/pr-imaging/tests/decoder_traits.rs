@@ -14,10 +14,13 @@
 //!   only their object safety and `Send + Sync` bounds are checked here.
 
 use std::io;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
+use pr_imaging::decode_types::DecodeFailureSourceBytes;
 use pr_imaging::decoder_traits::{
     CancellableImageDecoder, DECODER_BUSY_MESSAGE, DECODER_MEMORY_ADMISSION_MESSAGE, DecodeError, ImageDecoder,
-    ImageDecoderFactory, MISSING_IMAGE_CODEC_MESSAGE, PlatformImageCodec,
+    ImageDecoderFactory, MISSING_IMAGE_CODEC_MESSAGE, PlatformImageCodec, UserText,
 };
 use pr_test_support::golden::{self, bool_of, str_of};
 use serde_json::Value;
@@ -244,4 +247,119 @@ fn decoder_seams_are_object_safe_and_send_sync() {
     assert_send_sync::<dyn ImageDecoderFactory>();
     assert_send_sync::<dyn PlatformImageCodec>();
     assert_send_sync::<DecodeError>();
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Amendment A1 (localized sentence, UI text at display time) and the WithSourceBytes wrapper of A2. Rust-only.
+// The source-bytes round trip (`attach_source_bytes` -> `source_bytes`) needs the W4-01b bodies of
+// `DecodeFailureSourceBytes::attach/try_get` and is tested with W4-01b / W4-12b, not here.
+// ---------------------------------------------------------------------------------------------------------------
+
+#[test]
+fn localized_not_supported_describes_with_the_closure_and_keeps_the_english_message() {
+    let text: UserText = Arc::new(|| "Bản địa hóa".to_owned());
+    let error = DecodeError::not_supported_localized("english", text);
+    assert_eq!(error.message(), "english");
+    assert_eq!(error.describe(), "Bản địa hóa");
+    assert!(error.is_localized());
+    assert!(error.is_not_supported());
+    assert!(!error.is_io_exception());
+}
+
+#[test]
+fn localized_missing_codec_describes_with_the_closure() {
+    let text: UserText = Arc::new(|| "Thiếu codec".to_owned());
+    let error = DecodeError::missing_codec_localized("english", text);
+    assert_eq!(error.message(), "english");
+    assert_eq!(error.describe(), "Thiếu codec");
+    assert!(error.is_localized());
+    assert!(error.is_not_supported(), "MissingCodec stays a NotSupportedException");
+}
+
+#[test]
+fn text_is_evaluated_at_display_time_not_at_construction() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&calls);
+    let text: UserText = Arc::new(move || {
+        counter.fetch_add(1, Ordering::SeqCst);
+        "t".to_owned()
+    });
+    let error = DecodeError::missing_codec_localized("m", text);
+    assert_eq!(
+        calls.load(Ordering::SeqCst),
+        0,
+        "the closure must not run while the error is built"
+    );
+    assert_eq!(error.describe(), "t");
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn describe_without_text_is_the_message_and_not_localized() {
+    let plain = DecodeError::NotSupported {
+        message: "m".to_owned(),
+        user_text: None,
+    };
+    assert!(!plain.is_localized());
+    assert_eq!(plain.describe(), "m");
+    assert_eq!(DecodeError::missing_codec().describe(), MISSING_IMAGE_CODEC_MESSAGE);
+}
+
+#[test]
+fn describe_falls_back_to_the_message_when_the_closure_panics() {
+    let text: UserText = Arc::new(|| panic!("closure failed"));
+    let error = DecodeError::missing_codec_localized("english", text);
+    assert_eq!(
+        error.describe(),
+        "english",
+        "a panicking sentence must not unwind the caller"
+    );
+}
+
+#[test]
+fn only_codec_refusals_can_be_localized() {
+    assert!(!DecodeError::busy().is_localized());
+    assert!(!DecodeError::memory_admission().is_localized());
+    assert!(!DecodeError::Canceled.is_localized());
+    assert_eq!(DecodeError::busy().describe(), DECODER_BUSY_MESSAGE);
+}
+
+#[test]
+fn with_source_bytes_wrapper_is_transparent_for_message_and_predicates() {
+    let inner = DecodeError::missing_codec_localized("english", Arc::new(|| "local".to_owned()));
+    let wrapped = DecodeError::WithSourceBytes {
+        error: Box::new(inner),
+        bytes: DecodeFailureSourceBytes::none(),
+    };
+    assert_eq!(wrapped.message(), "english");
+    assert_eq!(wrapped.to_string(), "english");
+    assert!(wrapped.is_not_supported());
+    assert!(!wrapped.is_io_exception());
+    assert!(wrapped.is_localized());
+    assert_eq!(wrapped.describe(), "local");
+    assert!(matches!(wrapped.kind(), DecodeError::MissingCodec { .. }));
+}
+
+#[test]
+fn kind_peels_the_wrapper_for_io_and_memory_admission() {
+    let admission = DecodeError::WithSourceBytes {
+        error: Box::new(DecodeError::memory_admission_with("no room")),
+        bytes: DecodeFailureSourceBytes::none(),
+    };
+    assert!(
+        admission.is_io_exception(),
+        "MemoryAdmission stays an IOException under the wrapper"
+    );
+    assert!(matches!(admission.kind(), DecodeError::MemoryAdmission { .. }));
+    assert!(matches!(DecodeError::busy().kind(), DecodeError::Busy { .. }));
+}
+
+#[test]
+fn debug_names_the_variant_and_the_message_without_the_closure() {
+    let text = format!(
+        "{:?}",
+        DecodeError::missing_codec_localized("english", Arc::new(|| "local".to_owned()))
+    );
+    assert!(text.contains("MissingCodec"), "got {text}");
+    assert!(text.contains("english"), "got {text}");
 }
