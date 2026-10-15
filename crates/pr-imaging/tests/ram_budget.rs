@@ -21,9 +21,9 @@ use pr_core::settings::perf_options::{
 use pr_imaging::decode_types::DecodeBox;
 use pr_imaging::preload_order::PreloadWindow;
 use pr_imaging::ram_budget::{
-    ArgumentOutOfRange, bytes_for_percent, clamp_cache_percent, clamp_preview_to_physical_memory,
+    ArgumentOutOfRange, PhysicalMemorySource, bytes_for_percent, clamp_cache_percent, clamp_preview_to_physical_memory,
     clamp_source_bytes_to_physical_memory, clamp_to_physical_memory, estimate_folder_preview_bytes,
-    minimum_cache_percent, minimum_preview_window_bytes, preview_bytes_for_percent,
+    get_physical_memory_bytes, minimum_cache_percent, minimum_preview_window_bytes, preview_bytes_for_percent,
     should_preload_whole_folder_estimate, source_bytes_for_percent,
 };
 use pr_test_support::golden;
@@ -544,7 +544,8 @@ fn measured_mean_still_overrides_the_geometry_estimate_for_raw() {
 // C#: RamCachePercentTests.MinimumPreviewWindowBytes_Is41UhdPreviewsAt4BytesPerPixel
 #[test]
 fn minimum_preview_window_bytes_is_41_uhd_previews_at_4_bytes_per_pixel() {
-    assert_eq!(41, PreloadWindow::DEFAULT.image_count());
+    // PreloadWindow::image_count is the W4-05b stub; compute the same sum from the public fields.
+    assert_eq!(41, PreloadWindow::DEFAULT.forward + PreloadWindow::DEFAULT.backward + 1);
     assert_eq!(
         41 * UHD_PREVIEW_BYTES,
         minimum_preview_window_bytes(PreloadWindow::DEFAULT)
@@ -1162,4 +1163,28 @@ fn golden_ram_budget_scalar_matches_the_csharp_oracle() {
 #[test]
 fn golden_ram_budget_estimate_matches_the_csharp_oracle() {
     assert_golden_matches("ram-budget-estimate", 53, run_estimate);
+}
+
+struct FakeMemory(i64);
+
+impl PhysicalMemorySource for FakeMemory {
+    fn total_available_memory_bytes(&self) -> i64 {
+        self.0
+    }
+}
+
+#[test]
+fn get_physical_memory_bytes_returns_the_source_value_unchanged() {
+    for value in [0_i64, 1, -1, 17_179_869_184, i64::MAX] {
+        assert_eq!(value, get_physical_memory_bytes(&FakeMemory(value)));
+    }
+}
+
+#[test]
+fn argument_out_of_range_display_names_the_parameter() {
+    let text = ArgumentOutOfRange {
+        param_name: "physicalBytes",
+    }
+    .to_string();
+    assert!(text.contains("physicalBytes"), "{text}");
 }
