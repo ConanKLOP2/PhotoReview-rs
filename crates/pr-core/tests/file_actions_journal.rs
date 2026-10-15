@@ -2826,12 +2826,13 @@ fn fresh_record(
         Some(format!(r"C:\photos\sel\{id}.jpg"))
     };
     if rng.chance(2) {
-        fs.add_file(&source, b"xxxxxxxxxx");
+        // C#: disk.AddFile(source, ..., T0): the stamp is fixed, not clock-now.
+        fs.add_file_at(&source, b"xxxxxxxxxx", at(0));
     }
     if let Some(dest) = &destination {
         if rng.chance(2) {
             let len = if rng.chance(4) { 11 } else { 10 };
-            fs.add_file(dest, &vec![b'x'; len]);
+            fs.add_file_at(dest, &vec![b'x'; len], at(0));
         }
     }
     let error = if pad_bytes > 0 {
