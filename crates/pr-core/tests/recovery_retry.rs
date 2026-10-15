@@ -2135,7 +2135,8 @@ fn retry_group_recycle_undo_foreign_file_appears_at_pending_member_after_the_pre
         fs.seed_text(IDENT_JPEG, "fff", ts(STAMP_OTHER))
     });
 
-    let result = retry(&rig.service(), &failed);
+    // C# `NewRetry()` passes `_bin`: without a bin the Delete-undo retry is refused before the Prepared append.
+    let result = retry(&mutation_service(&rig), &failed);
 
     assert!(!result.succeeded);
     assert_ne!(result.entry.as_ref().map(|e| e.state), Some(JournalState::Committed));
