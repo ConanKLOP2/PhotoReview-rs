@@ -955,10 +955,13 @@ impl UndoService {
                 self.file_system.create_directory(Path::new(&folder))?;
             }
             self.reverse_move(&member.source, &original)?;
-            let size_matches = self
-                .stat(&original)
-                .is_some_and(|stat| i64::try_from(stat.length) == Ok(member.size));
-            if self.file_system.file_exists(Path::new(&member.source)) || !size_matches {
+            // C# `FileExists(member.Source) || GetFileStat(original)?.Length != member.Size`: the existence probe runs
+            // first and short-circuits, so a file still at its move destination costs no stat of the original path.
+            if self.file_system.file_exists(Path::new(&member.source))
+                || !self
+                    .stat(&original)
+                    .is_some_and(|stat| i64::try_from(stat.length) == Ok(member.size))
+            {
                 return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED));
             }
             restored.push(original);

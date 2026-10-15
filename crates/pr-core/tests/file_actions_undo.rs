@@ -3368,3 +3368,289 @@ fn repair_group_move_undo_recreates_the_removed_original_folder() {
     assert!(result.succeeded, "{:?}", result.error_message);
     assert!(f.exists(r"C:\gone\a.jpg"));
 }
+
+// ---- W3-05 repair round 2: post-move check order and settle replacement fields ----
+
+/// A file system over the fixture's scripted fs that records every `file_exists` / `get_file_stat` /
+/// `try_get_file_stat` call made after the first `move_file` (the reverse move of the undo).
+struct ProbeRecordingFs {
+    inner: Arc<ScriptedFs>,
+    moved: AtomicBool,
+    calls: Mutex<Vec<String>>,
+}
+
+impl ProbeRecordingFs {
+    fn new(inner: Arc<ScriptedFs>) -> Self {
+        Self {
+            inner,
+            moved: AtomicBool::new(false),
+            calls: Mutex::new(Vec::new()),
+        }
+    }
+
+    fn record(&self, kind: &str, path: &Path) {
+        if self.moved.load(Ordering::SeqCst) {
+            self.calls
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .push(format!("{kind} {}", path.to_string_lossy()));
+        }
+    }
+
+    /// The recorded probes whose path is one of `paths` (journal I/O is left out).
+    fn probes_of(&self, paths: &[&str]) -> Vec<String> {
+        self.calls
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .iter()
+            .filter(|call| {
+                paths
+                    .iter()
+                    .any(|path| call.split_once(' ').is_some_and(|(_, p)| p == *path))
+            })
+            .cloned()
+            .collect()
+    }
+}
+
+impl FileSystem for ProbeRecordingFs {
+    fn file_exists(&self, path: &Path) -> bool {
+        self.record("exists", path);
+        self.inner.file_exists(path)
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.inner.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<pr_core::abstractions::FileStat> {
+        self.record("stat", path);
+        self.inner.get_file_stat(path)
+    }
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<pr_core::abstractions::FileStat>> {
+        self.record("stat", path);
+        self.inner.try_get_file_stat(path)
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        let result = FileSystem::move_file(&*self.inner, source, destination);
+        self.moved.store(true, Ordering::SeqCst);
+        result
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        FileSystem::copy_file(&*self.inner, source, destination)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        FileSystem::delete(&*self.inner, path)
+    }
+    fn open_read_shared(
+        &self,
+        path: &Path,
+        buffer_size: usize,
+    ) -> io::Result<Box<dyn pr_core::abstractions::ReadSeek>> {
+        FileSystem::open_read_shared(&*self.inner, path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn pr_core::abstractions::AppendStream>> {
+        FileSystem::open_append(&*self.inner, path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        FileSystem::write_all_text_atomic(&*self.inner, path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        FileSystem::read_all_text(&*self.inner, path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<std::path::PathBuf>> {
+        FileSystem::enumerate_files(&*self.inner, directory, pattern)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<std::path::PathBuf>> {
+        FileSystem::enumerate_directories(&*self.inner, directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        FileSystem::create_directory(&*self.inner, path)
+    }
+}
+
+/// Kills the reversed post-move check of try_undo_group_move: C# `FileExists(member.Source) || GetFileStat(original)?.Length
+/// != member.Size` (UndoService.cs line 465) probes the move destination FIRST and stops there when the file is still at
+/// it, so the original path is never stat'ed.
+#[test]
+fn repair_group_move_post_move_check_probes_file_exists_first_and_short_circuits() {
+    let s = group_stamp();
+    let f = Fixture::at(s);
+    let recording = Arc::new(ProbeRecordingFs::new(f.fs.clone()));
+    let mut undo = UndoService::new(
+        f.journal.clone(),
+        recording.clone(),
+        f.bin.clone(),
+        Arc::new(EnglishUndoTexts),
+    )
+    .with_clock(f.clock.clone());
+    f.add_bytes(MOVED_JPEG, b"jpeg", s);
+    // The reverse move copies: the file is still at its move destination afterwards.
+    f.fs.set_move_leaves_source(true);
+    let members = [member(JPEG, Some(MOVED_JPEG), 4, s, false)];
+    undo.register_group(&group_result_of(FileOperationType::Move, &members));
+
+    let result = undo.undo_last();
+
+    assert!(!result.succeeded);
+    assert_eq!(
+        recording.probes_of(&[JPEG, MOVED_JPEG]),
+        vec![format!("exists {MOVED_JPEG}")]
+    );
+}
+
+/// Like `register_failed_delete`, with the Failed line carrying `error_code`, `all[0]` giving the anchor's
+/// source/size/write time, and `anchor_destination` as the anchor's destination.
+fn register_failed_delete_line(
+    f: &Fixture,
+    undo: &mut UndoService,
+    all: &[JournalGroupMember],
+    completed: &[JournalGroupMember],
+    error_code: Option<&str>,
+    anchor_destination: Option<&str>,
+) -> JournalEntry {
+    let line = JournalEntry {
+        error: Some("boom".to_owned()),
+        error_code: error_code.map(str::to_owned),
+        group_id: Some("g".to_owned()),
+        group_members: Some(all.to_vec()),
+        ..entry(
+            "delete-group",
+            FileOperationType::Recycle,
+            JournalState::Failed,
+            &all[0].source,
+            anchor_destination,
+            all[0].size,
+            all[0].last_write_utc.value,
+        )
+    };
+    f.append(&line);
+    let members = all
+        .iter()
+        .map(|m| {
+            let done = completed.contains(m);
+            let mut result = CaptureGroupMemberResult::new(m.clone(), done, false);
+            result.error = (!done).then(|| "boom".to_owned());
+            result.source_exists = !done;
+            result
+        })
+        .collect();
+    undo.register_group(&CaptureGroupActionResult::new(
+        false,
+        false,
+        FileOperationType::Recycle,
+        "g",
+        Some(Box::new(line.clone())),
+        members,
+        Some("boom".to_owned()),
+    ));
+    line
+}
+
+/// Kills try_settle_from `delete field error_code` (Dismissed replacement): C# TrySettleFrom (line 560) sets
+/// `ErrorCode = null` on the Dismissed line that closes a part-way group Delete whose every member was restored.
+#[test]
+fn repair_settle_dismissed_line_clears_the_error_code_of_the_failed_delete_line() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = undo_for(&f);
+    let (jpeg, raw) = jpeg_and_raw();
+    register_failed_delete_line(
+        &f,
+        &mut undo,
+        &[jpeg.clone(), raw.clone()],
+        &[jpeg, raw],
+        Some("RecycleFailed"),
+        None,
+    );
+
+    assert_succeeded(&undo.undo_last());
+
+    let latest = f
+        .journal
+        .read_latest_entry("delete-group")
+        .expect("read")
+        .expect("line");
+    assert_eq!(latest.state, JournalState::Dismissed);
+    assert_eq!(latest.error, None);
+    assert_eq!(latest.error_code, None);
+}
+
+/// Kills try_settle_from `delete field destination` / `delete field last_write_utc` (narrowed Failed replacement): the
+/// replacement takes Source, Destination, Size and LastWriteUtc from the FIRST REMAINING member (C# lines 563-567), not
+/// from the anchor, and keeps the anchor's error code.
+#[test]
+fn repair_settle_narrowed_failed_line_takes_destination_and_write_time_of_the_first_remaining_member() {
+    let s = group_stamp();
+    let f = Fixture::at(s);
+    let mut undo = undo_for(&f);
+    let raw_stamp = plus_secs(s, 7);
+    let jpeg = member(JPEG, None, 4, s, false);
+    let raw = member(RAW, Some(r"C:\photos\elsewhere\a.cr2"), 8, raw_stamp, false);
+    register_failed_delete_line(
+        &f,
+        &mut undo,
+        &[jpeg.clone(), raw.clone()],
+        &[jpeg],
+        Some("RecycleFailed"),
+        Some(r"C:\anchor\destination.jpg"),
+    );
+    f.add(RAW, 8, raw_stamp);
+
+    assert_succeeded(&undo.undo_last());
+
+    let still_failed = read_failed_operations(&f.journal);
+    assert_eq!(still_failed.len(), 1);
+    let narrowed = &still_failed[0];
+    assert_eq!(members_of(narrowed), vec![raw.clone()]);
+    assert_eq!(narrowed.source, RAW);
+    assert_eq!(narrowed.destination.as_deref(), Some(r"C:\photos\elsewhere\a.cr2"));
+    assert_eq!(narrowed.size, 8);
+    assert_eq!(narrowed.last_write_utc.value, raw_stamp);
+    assert_eq!(narrowed.error_code.as_deref(), Some("RecycleFailed"));
+}
+
+/// Kills register_group `!result.succeeded && ...` -> `||` (the FailedEntry guard): a SUCCEEDED group Recycle never
+/// settles its entry line, even when that line is a Failed group line (C# line 147 requires `!Succeeded`).
+#[test]
+fn repair_succeeded_group_recycle_never_settles_its_entry_line() {
+    let s = group_stamp();
+    let f = Fixture::at(s);
+    let mut undo = undo_for(&f);
+    let (jpeg, raw) = jpeg_and_raw();
+    let line = JournalEntry {
+        error: Some("boom".to_owned()),
+        group_id: Some("g".to_owned()),
+        group_members: Some(vec![jpeg.clone(), raw.clone()]),
+        ..entry(
+            "delete-group",
+            FileOperationType::Recycle,
+            JournalState::Failed,
+            JPEG,
+            None,
+            4,
+            s,
+        )
+    };
+    f.append(&line);
+    let members = vec![
+        CaptureGroupMemberResult::new(jpeg, true, false),
+        CaptureGroupMemberResult::new(raw, true, false),
+    ];
+    undo.register_group(&CaptureGroupActionResult::new(
+        true,
+        false,
+        FileOperationType::Recycle,
+        "g",
+        Some(Box::new(line.clone())),
+        members,
+        None,
+    ));
+
+    assert_succeeded(&undo.undo_last());
+
+    let latest = f
+        .journal
+        .read_latest_entry("delete-group")
+        .expect("read")
+        .expect("line");
+    assert_eq!(latest, line, "a succeeded group Recycle must not settle its entry line");
+    assert_eq!(failed_with_id(&f.journal, "delete-group").len(), 1);
+}
