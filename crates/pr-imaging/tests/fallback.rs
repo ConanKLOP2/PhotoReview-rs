@@ -1391,3 +1391,69 @@ fn source_bytes_are_not_used_for_non_fallbackable_failures() {
     assert_eq!(variant_name(&error), "Busy");
     assert_eq!(fallback.decode_calls(), 0);
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Relabel forwarding of boolean properties with BOTH values (kills "always true" wrapper mutants).
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Image whose `downscaled` / `is_degraded_fallback` are configurable, so a wrapper that hard-codes `true` is caught.
+struct FlagImage {
+    downscaled: bool,
+    degraded: bool,
+    platform: PlatformImage,
+}
+
+impl DecodedImageView for FlagImage {
+    fn pixel_width(&self) -> i32 {
+        10
+    }
+    fn pixel_height(&self) -> i32 {
+        10
+    }
+    fn downscaled(&self) -> bool {
+        self.downscaled
+    }
+    fn orientation(&self) -> i32 {
+        1
+    }
+    fn estimated_bytes(&self) -> i64 {
+        400
+    }
+    fn platform_image(&self) -> &PlatformImage {
+        &self.platform
+    }
+    fn actual_backend(&self) -> DecoderBackend {
+        DecoderBackend::Wpf
+    }
+    fn original_width(&self) -> i32 {
+        10
+    }
+    fn original_height(&self) -> i32 {
+        10
+    }
+    fn exif(&self) -> Option<&ExifSummary> {
+        None
+    }
+    fn is_degraded_fallback(&self) -> bool {
+        self.degraded
+    }
+}
+
+#[test]
+fn relabel_forwards_false_and_true_boolean_properties() {
+    for (downscaled, degraded) in [(false, false), (true, false), (false, true), (true, true)] {
+        let inner: Arc<dyn DecodedImageView> = Arc::new(FlagImage {
+            downscaled,
+            degraded,
+            platform: PlatformImage::Opaque(Arc::new(())),
+        });
+        let relabeled = pr_imaging::fallback::BackendRelabeledImage::new(inner, DecoderBackend::TurboJpeg);
+        assert_eq!(relabeled.downscaled(), downscaled, "downscaled forwarded");
+        assert_eq!(
+            relabeled.is_degraded_fallback(),
+            degraded,
+            "is_degraded_fallback forwarded"
+        );
+        assert_eq!(relabeled.actual_backend(), DecoderBackend::TurboJpeg);
+    }
+}
