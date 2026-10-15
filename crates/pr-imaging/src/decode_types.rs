@@ -432,12 +432,12 @@ impl DecodeFailureSourceBytes {
 
     /// `Attach`: replaces any earlier bytes.
     pub fn attach(&mut self, bytes: SourceBytes) {
-        todo!()
+        self.bytes = Some(bytes);
     }
 
     /// `TryGet`: the attached bytes, if any (an attached EMPTY buffer is still `Some`).
     #[must_use]
     pub fn try_get(&self) -> Option<&SourceBytes> {
-        todo!()
+        self.bytes.as_ref()
     }
 }
