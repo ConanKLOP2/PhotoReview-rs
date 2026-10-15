@@ -1,0 +1,4792 @@
+{
+  "generator": "oracle-cs wic-direct-decode",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "environment",
+      "os_version": "10.0.26300.0",
+      "windowscodecs_version": "10.0.26100.9711 (WinBuild.160101.0800)"
+    },
+    {
+      "name": "size-plain-64x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 48,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-64x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-0x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 48,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-65x49",
+      "file": "plain-64x48.jpg",
+      "box_w": 65,
+      "box_h": 49,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-640x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 480,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-640x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-0x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 480,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-63x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 47,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 11844,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "5b8926bf4c1cacc97b4e58bd6ee2bc6dfc7e81a3aabe3c0468e7bbb91176159b",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "128,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-0x47",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 47,
+      "ok": {
+        "pixel_width": 62,
+        "pixel_height": 47,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 11656,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 248,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "5d0035f548368adae263644bb44994d4d2faa917aee7be28f8d17ed6410d2b5e",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "127,127,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-640x47",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 47,
+      "ok": {
+        "pixel_width": 62,
+        "pixel_height": 47,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 11656,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 248,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "5d0035f548368adae263644bb44994d4d2faa917aee7be28f8d17ed6410d2b5e",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "127,127,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-63x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 480,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 47,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 11844,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "5b8926bf4c1cacc97b4e58bd6ee2bc6dfc7e81a3aabe3c0468e7bbb91176159b",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "128,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-32x24",
+      "file": "plain-64x48.jpg",
+      "box_w": 32,
+      "box_h": 24,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "3747c9a0e38144be2228ba03d5c2b392b5eb54537946efb51573b24c73ec2789",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "39,132,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-40x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 40,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 4800,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 160,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "cb79b5bce3bd78930030cd4f2239ced7575e73d1d102637937e4e9ef8d333406",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "251,255,1,255",
+          "bl": "252,0,255,255",
+          "br": "255,255,250,255",
+          "center": "67,130,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-plain-10x10",
+      "file": "plain-64x48.jpg",
+      "box_w": 10,
+      "box_h": 10,
+      "ok": {
+        "pixel_width": 10,
+        "pixel_height": 7,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 280,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 40,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "a45984c3a45266764ded463c50062399bf2af2263b7bbc358604b44651fce569",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "127,127,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flatwide-63x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 1,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f657a9d176cd61b4c52cbbb9190aee6b165208b13e0a3c393cad2ab871fb54e",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,1,255",
+          "bl": "1,254,255,255",
+          "br": "255,255,1,255",
+          "center": "127,3,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flatwide-63x480",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 480,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 1,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f657a9d176cd61b4c52cbbb9190aee6b165208b13e0a3c393cad2ab871fb54e",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,1,255",
+          "bl": "1,254,255,255",
+          "br": "255,255,1,255",
+          "center": "127,3,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flatwide-64x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 64,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 1,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 1,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8c6177a00184faeaaf4dc3e0e9527b7b3a224e46684bbbed5018049e2e77c1d9",
+        "samples": {
+          "tl": "0,254,255,255",
+          "tr": "255,255,0,255",
+          "bl": "0,254,255,255",
+          "br": "255,255,0,255",
+          "center": "173,5,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flatwide-640x1",
+      "file": "flat-64x1.jpg",
+      "box_w": 640,
+      "box_h": 1,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 1,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 1,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8c6177a00184faeaaf4dc3e0e9527b7b3a224e46684bbbed5018049e2e77c1d9",
+        "samples": {
+          "tl": "0,254,255,255",
+          "tr": "255,255,0,255",
+          "bl": "0,254,255,255",
+          "br": "255,255,0,255",
+          "center": "173,5,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flattall-0x63",
+      "file": "flat-1x64.jpg",
+      "box_w": 0,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "b3f9311d494e52aaa8795822c1f515ba891c5c03414cf650c6c8348635b22136",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "0,255,255,255",
+          "bl": "251,0,255,255",
+          "br": "251,0,255,255",
+          "center": "128,128,1,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-1x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flattall-480x63",
+      "file": "flat-1x64.jpg",
+      "box_w": 480,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "b3f9311d494e52aaa8795822c1f515ba891c5c03414cf650c6c8348635b22136",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "0,255,255,255",
+          "bl": "251,0,255,255",
+          "br": "251,0,255,255",
+          "center": "128,128,1,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-1x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flattall-0x64",
+      "file": "flat-1x64.jpg",
+      "box_w": 0,
+      "box_h": 64,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "400d9eb51d6fff09bfc0301838d3ab49c95860f4c4c6b63f48b8444770357eea",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "0,255,255,255",
+          "bl": "251,0,255,255",
+          "br": "251,0,255,255",
+          "center": "212,130,0,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-1x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-flattall-1x640",
+      "file": "flat-1x64.jpg",
+      "box_w": 1,
+      "box_h": 640,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "400d9eb51d6fff09bfc0301838d3ab49c95860f4c4c6b63f48b8444770357eea",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "0,255,255,255",
+          "bl": "251,0,255,255",
+          "br": "251,0,255,255",
+          "center": "212,130,0,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "flat-1x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-short-32x0",
+      "file": "short-64x3.jpg",
+      "box_w": 32,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 3,
+        "estimated_bytes": 128,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "d06bb9f30ad66abe9af6cd9772e291776c615b9a27aae040e79a36a3e28d11b1",
+        "samples": {
+          "tl": "129,127,253,255",
+          "tr": "251,254,129,255",
+          "bl": "129,127,253,255",
+          "br": "251,254,129,255",
+          "center": "207,160,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "short-64x3.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-short-0x1",
+      "file": "short-64x3.jpg",
+      "box_w": 0,
+      "box_h": 1,
+      "ok": {
+        "pixel_width": 21,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 3,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 84,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1c50b085a7cfc851134a0d5d0f59d2c2cd2ff44b318c166b19ccd077e0fa7e75",
+        "samples": {
+          "tl": "164,139,168,255",
+          "tr": "171,222,166,255",
+          "bl": "164,139,168,255",
+          "br": "171,222,166,255",
+          "center": "126,159,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "short-64x3.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-short-640x1",
+      "file": "short-64x3.jpg",
+      "box_w": 640,
+      "box_h": 1,
+      "ok": {
+        "pixel_width": 21,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 3,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 84,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1c50b085a7cfc851134a0d5d0f59d2c2cd2ff44b318c166b19ccd077e0fa7e75",
+        "samples": {
+          "tl": "164,139,168,255",
+          "tr": "171,222,166,255",
+          "bl": "164,139,168,255",
+          "br": "171,222,166,255",
+          "center": "126,159,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "short-64x3.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-narrow-0x32",
+      "file": "narrow-3x64.jpg",
+      "box_w": 0,
+      "box_h": 32,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 32,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 3,
+        "original_height": 64,
+        "estimated_bytes": 128,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "7b4337e2925120099e862f2988e752cc6bc5bc85312c2af7781e0172216c1ed6",
+        "samples": {
+          "tl": "128,255,128,255",
+          "tr": "128,255,128,255",
+          "bl": "238,128,251,255",
+          "br": "238,128,251,255",
+          "center": "211,131,158,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "narrow-3x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-narrow-1x0",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 21,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 3,
+        "original_height": 64,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "fb818fae5df4baed04b53e8ed2035cfb8bc61eae0104b2d041f93a137b4d599d",
+        "samples": {
+          "tl": "160,173,137,255",
+          "tr": "160,173,137,255",
+          "bl": "168,166,221,255",
+          "br": "168,166,221,255",
+          "center": "127,126,158,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "narrow-3x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "size-narrow-1x640",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 640,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 21,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 3,
+        "original_height": 64,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "fb818fae5df4baed04b53e8ed2035cfb8bc61eae0104b2d041f93a137b4d599d",
+        "samples": {
+          "tl": "160,173,137,255",
+          "tr": "160,173,137,255",
+          "bl": "168,166,221,255",
+          "br": "168,166,221,255",
+          "center": "127,126,158,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "narrow-3x64.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "bytes-plain-63x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 47,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 11844,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "5b8926bf4c1cacc97b4e58bd6ee2bc6dfc7e81a3aabe3c0468e7bbb91176159b",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "128,127,127,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-plain-64x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 48,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-flatwide-63x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 63,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 1,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 252,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f657a9d176cd61b4c52cbbb9190aee6b165208b13e0a3c393cad2ab871fb54e",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,1,255",
+          "bl": "1,254,255,255",
+          "br": "255,255,1,255",
+          "center": "127,3,128,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-short-0x1",
+      "file": "short-64x3.jpg",
+      "box_w": 0,
+      "box_h": 1,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 21,
+        "pixel_height": 1,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 3,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 84,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1c50b085a7cfc851134a0d5d0f59d2c2cd2ff44b318c166b19ccd077e0fa7e75",
+        "samples": {
+          "tl": "164,139,168,255",
+          "tr": "171,222,166,255",
+          "bl": "164,139,168,255",
+          "br": "171,222,166,255",
+          "center": "126,159,127,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-narrow-1x0",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 0,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 21,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 3,
+        "original_height": 64,
+        "estimated_bytes": 84,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "fb818fae5df4baed04b53e8ed2035cfb8bc61eae0104b2d041f93a137b4d599d",
+        "samples": {
+          "tl": "160,173,137,255",
+          "tr": "160,173,137,255",
+          "bl": "168,166,221,255",
+          "br": "168,166,221,255",
+          "center": "127,126,158,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-plain-10x10",
+      "file": "plain-64x48.jpg",
+      "box_w": 10,
+      "box_h": 10,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 10,
+        "pixel_height": 7,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 280,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 40,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "a45984c3a45266764ded463c50062399bf2af2263b7bbc358604b44651fce569",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "127,127,139,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "rotated-rot6-48x64",
+      "file": "rot6-64x48.jpg",
+      "box_w": 48,
+      "box_h": 64,
+      "ok": {
+        "pixel_width": 48,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 192,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "66ab508630d68187ab8949dae166b222440298acb74ff99e9dae66390d2e4e97",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "175,128,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-480x640",
+      "file": "rot6-64x48.jpg",
+      "box_w": 480,
+      "box_h": 640,
+      "ok": {
+        "pixel_width": 48,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 192,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "66ab508630d68187ab8949dae166b222440298acb74ff99e9dae66390d2e4e97",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "175,128,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-0x64",
+      "file": "rot6-64x48.jpg",
+      "box_w": 0,
+      "box_h": 64,
+      "ok": {
+        "pixel_width": 48,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 192,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "66ab508630d68187ab8949dae166b222440298acb74ff99e9dae66390d2e4e97",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "175,128,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-48x0",
+      "file": "rot6-64x48.jpg",
+      "box_w": 48,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 48,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 192,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "66ab508630d68187ab8949dae166b222440298acb74ff99e9dae66390d2e4e97",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "175,128,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-47x0",
+      "file": "rot6-64x48.jpg",
+      "box_w": 47,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 47,
+        "pixel_height": 62,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 11656,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 188,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "dce2fb5227c507ce5de6cbd8b9097fba978858a3765839a22f0517d9b10ea8be",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "127,127,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-0x63",
+      "file": "rot6-64x48.jpg",
+      "box_w": 0,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 47,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 11844,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 188,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "bf87254dff8fd61c51ab90a0a7f538abb665bc2cbadc1aa07de777ca625a1f0b",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "128,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-480x63",
+      "file": "rot6-64x48.jpg",
+      "box_w": 480,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 47,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 11844,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 188,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "bf87254dff8fd61c51ab90a0a7f538abb665bc2cbadc1aa07de777ca625a1f0b",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "128,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6-24x32",
+      "file": "rot6-64x48.jpg",
+      "box_w": 24,
+      "box_h": 32,
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 32,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 96,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "57143d8ae3cac966746095d18d58b1677d31f29c5f26ce69ce76e7a01337c7ee",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "214,122,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6flat-0x63",
+      "file": "rot6-64x1.jpg",
+      "box_w": 0,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f657a9d176cd61b4c52cbbb9190aee6b165208b13e0a3c393cad2ab871fb54e",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "1,254,255,255",
+          "bl": "255,255,1,255",
+          "br": "255,255,1,255",
+          "center": "127,3,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6flat-480x63",
+      "file": "rot6-64x1.jpg",
+      "box_w": 480,
+      "box_h": 63,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 63,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 252,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f657a9d176cd61b4c52cbbb9190aee6b165208b13e0a3c393cad2ab871fb54e",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "1,254,255,255",
+          "bl": "255,255,1,255",
+          "br": "255,255,1,255",
+          "center": "127,3,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6flat-0x64",
+      "file": "rot6-64x1.jpg",
+      "box_w": 0,
+      "box_h": 64,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8c6177a00184faeaaf4dc3e0e9527b7b3a224e46684bbbed5018049e2e77c1d9",
+        "samples": {
+          "tl": "0,254,255,255",
+          "tr": "0,254,255,255",
+          "bl": "255,255,0,255",
+          "br": "255,255,0,255",
+          "center": "173,5,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rotated-rot6flat-1x640",
+      "file": "rot6-64x1.jpg",
+      "box_w": 1,
+      "box_h": 640,
+      "ok": {
+        "pixel_width": 1,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 1,
+        "original_height": 64,
+        "estimated_bytes": 256,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 4,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8c6177a00184faeaaf4dc3e0e9527b7b3a224e46684bbbed5018049e2e77c1d9",
+        "samples": {
+          "tl": "0,254,255,255",
+          "tr": "0,254,255,255",
+          "bl": "255,255,0,255",
+          "br": "255,255,0,255",
+          "center": "173,5,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rot6-no-apply-keeps-stored",
+      "file": "rot6-64x48.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rot6-no-apply-box-fits-stored-grid",
+      "file": "rot6-64x48.jpg",
+      "box_w": 32,
+      "box_h": 1000,
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "3747c9a0e38144be2228ba03d5c2b392b5eb54537946efb51573b24c73ec2789",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "39,132,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source6-no-apply-ignored",
+      "file": "plain-64x48.jpg",
+      "apply_orientation": false,
+      "source_orientation": 6,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source6-apply-rotates",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 6,
+      "ok": {
+        "pixel_width": 48,
+        "pixel_height": 64,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 192,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "66ab508630d68187ab8949dae166b222440298acb74ff99e9dae66390d2e4e97",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "175,128,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source6-apply-box",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 6,
+      "box_w": 24,
+      "box_h": 0,
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 32,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 48,
+        "original_height": 64,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 96,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "57143d8ae3cac966746095d18d58b1677d31f29c5f26ce69ce76e7a01337c7ee",
+        "samples": {
+          "tl": "250,0,255,255",
+          "tr": "0,252,255,255",
+          "bl": "255,255,249,255",
+          "br": "248,255,1,255",
+          "center": "214,122,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rot6-source1-overrides-exif",
+      "file": "rot6-64x48.jpg",
+      "source_orientation": 1,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "rot6-source3-overrides-exif",
+      "file": "rot6-64x48.jpg",
+      "source_orientation": 3,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 3,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "2c5367ccb16d5b6f7456902ff5eb0e5f860e0cdd7bdd4ab031da165568f4f7b4",
+        "samples": {
+          "tl": "255,255,249,255",
+          "tr": "250,0,255,255",
+          "bl": "248,255,1,255",
+          "br": "0,252,255,255",
+          "center": "176,128,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source9-reported-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 9,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 9,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source0-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 0,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 0,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "plain-source-minus1-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": -1,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": -1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-0-apply",
+      "file": "orient-0-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-0-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-0-no-apply",
+      "file": "orient-0-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-0-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-0-box-50x50",
+      "file": "orient-0-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "11dfe65fa7a144041e6718cee14b19a4724aa712484612dd3c35bb858ce6b7a1",
+        "samples": {
+          "tl": "2,254,250,255",
+          "tr": "255,254,2,255",
+          "bl": "252,1,254,255",
+          "br": "253,255,254,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-0-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-1-apply",
+      "file": "orient-1-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-1-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-1-no-apply",
+      "file": "orient-1-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-1-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-1-box-50x50",
+      "file": "orient-1-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "11dfe65fa7a144041e6718cee14b19a4724aa712484612dd3c35bb858ce6b7a1",
+        "samples": {
+          "tl": "2,254,250,255",
+          "tr": "255,254,2,255",
+          "bl": "252,1,254,255",
+          "br": "253,255,254,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-1-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-2-apply",
+      "file": "orient-2-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 2,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "b3168e40a5aa3d690ca9b60c616c06bc9c27cd8037a0b8f19121574cbaed437b",
+        "samples": {
+          "tl": "255,254,2,255",
+          "tr": "0,255,248,255",
+          "bl": "253,255,254,255",
+          "br": "255,0,255,255",
+          "center": "96,123,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-2-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-2-no-apply",
+      "file": "orient-2-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-2-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-2-box-50x50",
+      "file": "orient-2-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 2,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "ed3ae69c41407ca11d3562b406a802863723f4f99e1c53368a7d91a155e6d88c",
+        "samples": {
+          "tl": "255,254,2,255",
+          "tr": "2,254,250,255",
+          "bl": "253,255,254,255",
+          "br": "252,1,254,255",
+          "center": "127,126,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-2-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-3-apply",
+      "file": "orient-3-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 3,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1063b3d560f136603347d707c6683d9bd1a3a70906f0fe3ce869b7c814b5619a",
+        "samples": {
+          "tl": "253,255,254,255",
+          "tr": "255,0,255,255",
+          "bl": "255,254,2,255",
+          "br": "0,255,248,255",
+          "center": "158,131,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-3-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-3-no-apply",
+      "file": "orient-3-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-3-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-3-box-50x50",
+      "file": "orient-3-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 3,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "e6125c6e1503afa59c9845083f21a93e8bb09b3febc96f42d39020a074b6b97f",
+        "samples": {
+          "tl": "253,255,254,255",
+          "tr": "252,1,254,255",
+          "bl": "255,254,2,255",
+          "br": "2,254,250,255",
+          "center": "127,126,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-3-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-4-apply",
+      "file": "orient-4-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 4,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "4e5ae19660c3bf12c264ec7d7ab89a2d166a13fd1d73f31b6cfcfb0202a79c25",
+        "samples": {
+          "tl": "255,0,255,255",
+          "tr": "253,255,254,255",
+          "bl": "0,255,248,255",
+          "br": "255,254,2,255",
+          "center": "103,118,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-4-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-4-no-apply",
+      "file": "orient-4-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-4-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-4-box-50x50",
+      "file": "orient-4-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 4,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "fed86aa967ad7fdde4817ed84405a77d2ad227036f310bea807f448e483711f8",
+        "samples": {
+          "tl": "252,1,254,255",
+          "tr": "253,255,254,255",
+          "bl": "2,254,250,255",
+          "br": "255,254,2,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-4-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-5-apply",
+      "file": "orient-5-120x80.jpg",
+      "ok": {
+        "pixel_width": 80,
+        "pixel_height": 120,
+        "downscaled": false,
+        "orientation": 5,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 320,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "13ac5e8b914476e5a0fb3ee4728f433bb1717954b58fc90c34430b4aace427ee",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,0,255,255",
+          "bl": "255,254,2,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-5-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-5-no-apply",
+      "file": "orient-5-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-5-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-5-box-50x50",
+      "file": "orient-5-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 33,
+        "pixel_height": 50,
+        "downscaled": true,
+        "orientation": 5,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 132,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "3e7c134a95ceb687365d5cbd27be097addac8990b360fe308dbfe1fe97b2c998",
+        "samples": {
+          "tl": "2,254,250,255",
+          "tr": "252,1,254,255",
+          "bl": "255,254,2,255",
+          "br": "253,255,254,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-5-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-6-apply",
+      "file": "orient-6-120x80.jpg",
+      "ok": {
+        "pixel_width": 80,
+        "pixel_height": 120,
+        "downscaled": false,
+        "orientation": 6,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 320,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "4f47d33217f1f44e50b513d28befb324e196022398d18788fafab60ea3082a98",
+        "samples": {
+          "tl": "255,0,255,255",
+          "tr": "0,255,248,255",
+          "bl": "253,255,254,255",
+          "br": "255,254,2,255",
+          "center": "103,118,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-6-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-6-no-apply",
+      "file": "orient-6-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-6-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-6-box-50x50",
+      "file": "orient-6-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 33,
+        "pixel_height": 50,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 132,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "f96a72523b93fb1884e6a01a52312318ffae640d2e3b594e74297053bedeafa2",
+        "samples": {
+          "tl": "252,1,254,255",
+          "tr": "2,254,250,255",
+          "bl": "253,255,254,255",
+          "br": "255,254,2,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-6-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-7-apply",
+      "file": "orient-7-120x80.jpg",
+      "ok": {
+        "pixel_width": 80,
+        "pixel_height": 120,
+        "downscaled": false,
+        "orientation": 7,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 320,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "9751892d98c79cfec9441bee87b8af89207b3140eb15987e56e8a5e9a559219b",
+        "samples": {
+          "tl": "253,255,254,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "0,255,248,255",
+          "center": "158,131,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-7-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-7-no-apply",
+      "file": "orient-7-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-7-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-7-box-50x50",
+      "file": "orient-7-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 33,
+        "pixel_height": 50,
+        "downscaled": true,
+        "orientation": 7,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 132,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "614dde0965e34d212708fb80f7d831b87b2c2702db9e471284ce026c1f31c0d9",
+        "samples": {
+          "tl": "253,255,254,255",
+          "tr": "255,254,2,255",
+          "bl": "252,1,254,255",
+          "br": "2,254,250,255",
+          "center": "127,126,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-7-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-8-apply",
+      "file": "orient-8-120x80.jpg",
+      "ok": {
+        "pixel_width": 80,
+        "pixel_height": 120,
+        "downscaled": false,
+        "orientation": 8,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 320,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "219cd0cb9486a1858c380fadf8449c2e95bee223699962121df5ae5ac0ba834d",
+        "samples": {
+          "tl": "255,254,2,255",
+          "tr": "253,255,254,255",
+          "bl": "0,255,248,255",
+          "br": "255,0,255,255",
+          "center": "96,123,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-8-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-8-no-apply",
+      "file": "orient-8-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-8-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-8-box-50x50",
+      "file": "orient-8-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 33,
+        "pixel_height": 50,
+        "downscaled": true,
+        "orientation": 8,
+        "original_width": 80,
+        "original_height": 120,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 132,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "b84571e335340ae845e15e2a5bd5fe80172313e66ecc24528ca123816a83c451",
+        "samples": {
+          "tl": "255,254,2,255",
+          "tr": "253,255,254,255",
+          "bl": "2,254,250,255",
+          "br": "252,1,254,255",
+          "center": "127,126,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-8-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-9-apply",
+      "file": "orient-9-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-9-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-9-no-apply",
+      "file": "orient-9-120x80.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 38400,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 480,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0410f1ef15dff880bcc6e02b667687b5281c0851651bf650051632a79df7ef29",
+        "samples": {
+          "tl": "0,255,248,255",
+          "tr": "255,254,2,255",
+          "bl": "255,0,255,255",
+          "br": "253,255,254,255",
+          "center": "152,135,139,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-9-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "orient-9-box-50x50",
+      "file": "orient-9-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50,
+      "ok": {
+        "pixel_width": 50,
+        "pixel_height": 33,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 120,
+        "original_height": 80,
+        "estimated_bytes": 6600,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 200,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "11dfe65fa7a144041e6718cee14b19a4724aa712484612dd3c35bb858ce6b7a1",
+        "samples": {
+          "tl": "2,254,250,255",
+          "tr": "255,254,2,255",
+          "bl": "252,1,254,255",
+          "br": "253,255,254,255",
+          "center": "127,126,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orient-9-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-400x300-to-100",
+      "file": "gradient-400x300.jpg",
+      "box_w": 100,
+      "ok": {
+        "pixel_width": 100,
+        "pixel_height": 75,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 30000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 400,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0aa8f4f5bdf9f7a2655bb60dbab8c6db56751021c4a8f3caf9dd38d2cf4f5cdd",
+        "samples": {
+          "tl": "0,255,254,255",
+          "tr": "255,255,0,255",
+          "bl": "252,1,252,255",
+          "br": "255,254,255,255",
+          "center": "47,127,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-400x300.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-400x300-to-150",
+      "file": "gradient-400x300.jpg",
+      "box_w": 150,
+      "ok": {
+        "pixel_width": 150,
+        "pixel_height": 112,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 67200,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 600,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "3143c2496aa653b9cb8aa060b8e91db2e74caedea55e3924c0a4a8dc1a98702d",
+        "samples": {
+          "tl": "3,255,254,255",
+          "tr": "255,253,3,255",
+          "bl": "253,1,252,255",
+          "br": "254,253,255,255",
+          "center": "39,127,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-400x300.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-400x300-to-399",
+      "file": "gradient-400x300.jpg",
+      "box_w": 399,
+      "ok": {
+        "pixel_width": 399,
+        "pixel_height": 299,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 477204,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 1596,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "62f8bd72149afd96cb6b872a9ae513b2835a096e84037264e0e781192fc6abe4",
+        "samples": {
+          "tl": "6,255,253,255",
+          "tr": "255,252,5,255",
+          "bl": "255,0,254,255",
+          "br": "255,253,255,255",
+          "center": "44,129,125,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-400x300.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-800x600-to-100",
+      "file": "gradient-800x600.jpg",
+      "box_w": 100,
+      "ok": {
+        "pixel_width": 100,
+        "pixel_height": 75,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 800,
+        "original_height": 600,
+        "estimated_bytes": 30000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 400,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8d959da5e6fdf14be63e4fd4e693b33abccab987ae8f49745a9644e00073095a",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,0,255",
+          "bl": "254,0,255,255",
+          "br": "255,255,255,255",
+          "center": "127,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-800x600.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-800x600-to-333",
+      "file": "gradient-800x600.jpg",
+      "box_w": 333,
+      "ok": {
+        "pixel_width": 333,
+        "pixel_height": 249,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 800,
+        "original_height": 600,
+        "estimated_bytes": 331668,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 1332,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "60bd4d3ec953ec072ccd2f69fa39175ca46cc28b314e56e3fd773c2ef23dfe68",
+        "samples": {
+          "tl": "2,255,253,255",
+          "tr": "255,253,2,255",
+          "bl": "252,1,254,255",
+          "br": "253,255,255,255",
+          "center": "129,126,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-800x600.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-800x600-box-0x75",
+      "file": "gradient-800x600.jpg",
+      "box_h": 75,
+      "ok": {
+        "pixel_width": 100,
+        "pixel_height": 75,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 800,
+        "original_height": 600,
+        "estimated_bytes": 30000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 400,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8d959da5e6fdf14be63e4fd4e693b33abccab987ae8f49745a9644e00073095a",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,0,255",
+          "bl": "254,0,255,255",
+          "br": "255,255,255,255",
+          "center": "127,127,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-800x600.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "dct-800x600-to-100-bytes",
+      "file": "gradient-800x600.jpg",
+      "box_w": 100,
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 100,
+        "pixel_height": 75,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 800,
+        "original_height": 600,
+        "estimated_bytes": 30000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 400,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8d959da5e6fdf14be63e4fd4e693b33abccab987ae8f49745a9644e00073095a",
+        "samples": {
+          "tl": "1,254,255,255",
+          "tr": "255,255,0,255",
+          "bl": "254,0,255,255",
+          "br": "255,255,255,255",
+          "center": "127,127,127,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "full-400x300",
+      "file": "gradient-400x300.jpg",
+      "ok": {
+        "pixel_width": 400,
+        "pixel_height": 300,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 480000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 1600,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "7dbe47de94054be97a45e8be8fcf713e94ddcad5f73e4d788dd03d7aaef4ba06",
+        "samples": {
+          "tl": "6,255,253,255",
+          "tr": "255,252,5,255",
+          "bl": "255,0,254,255",
+          "br": "255,253,255,255",
+          "center": "45,128,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-400x300.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bgra32",
+      "file": "gradient-64x48-bgra32.png",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "de0917f501d375b1518d915f07b0d36c167a86b3b652e5af31e517e5fd4878a0",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,130,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgra32.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bgra32-box-16",
+      "file": "gradient-64x48-bgra32.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "7096197c37cbee5bdec2a9b139b4acaf7c129886f2d9a24ad430908cc9f975ce",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "56,138,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgra32.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bgr24",
+      "file": "gradient-64x48-bgr24.png",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "de0917f501d375b1518d915f07b0d36c167a86b3b652e5af31e517e5fd4878a0",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,130,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgr24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bgr24-box-16",
+      "file": "gradient-64x48-bgr24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "7096197c37cbee5bdec2a9b139b4acaf7c129886f2d9a24ad430908cc9f975ce",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "56,138,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgr24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-gray8",
+      "file": "gray8-32x24.png",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "d8c1f3aee1d45edf7859f79a79b12987f93b901d5848e16595520ad5a0d9f1c9",
+        "samples": {
+          "tl": "247,247,247,255",
+          "tr": "230,230,230,255",
+          "bl": "145,145,145,255",
+          "br": "255,255,255,255",
+          "center": "129,129,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gray8-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-gray8-box-16",
+      "file": "gray8-32x24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "b5b0e03340923c6c812fbdeecb9ad2b220ca599472bf0ce561b6a8a6281c3854",
+        "samples": {
+          "tl": "247,247,247,255",
+          "tr": "230,230,230,255",
+          "bl": "145,145,145,255",
+          "br": "255,255,255,255",
+          "center": "135,135,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gray8-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-gray16",
+      "file": "gray16-32x24.png",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "9a647f1664f80f4df4f92e916972e0819d46f04b0bb893980e417f265da40cd9",
+        "samples": {
+          "tl": "247,247,247,255",
+          "tr": "230,230,230,255",
+          "bl": "145,145,145,255",
+          "br": "255,255,255,255",
+          "center": "129,129,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gray16-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-gray16-box-16",
+      "file": "gray16-32x24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "2ffe1d08645188da726fd957cdb5d2e7069fe707cc5f2ab4a2049a6925d648eb",
+        "samples": {
+          "tl": "247,247,247,255",
+          "tr": "230,230,230,255",
+          "bl": "145,145,145,255",
+          "br": "255,255,255,255",
+          "center": "135,135,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gray16-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bw",
+      "file": "bw-32x24.png",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "782aeceacff6039729a09a17cd1d9a6524ab9ae674e2a1173838e69ef4b860d6",
+        "samples": {
+          "tl": "255,255,255,255",
+          "tr": "255,255,255,255",
+          "bl": "255,255,255,255",
+          "br": "255,255,255,255",
+          "center": "255,255,255,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "bw-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-bw-box-16",
+      "file": "bw-32x24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "fface8ae3d9897697856596a5cabeb78b04df733bd9486e7a603441813434d25",
+        "samples": {
+          "tl": "255,255,255,255",
+          "tr": "255,255,255,255",
+          "bl": "153,153,153,255",
+          "br": "255,255,255,255",
+          "center": "129,129,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "bw-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-indexed8",
+      "file": "indexed8-32x24.png",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "22348706d27ac76f97176163a3e35dd1265346e4250d5980f2cac6b6f4be138a",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "85,146,109,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "indexed8-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-indexed8-box-16",
+      "file": "indexed8-32x24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "3acd5168e9369ee51bca90ab4da994a800f915eec725b3484bca708ef9eb92c2",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "55,137,138,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "indexed8-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-rgb48",
+      "file": "rgb48-32x24.png",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "ca5c97632ccac790726bc41e550a1fdee64262d708668e552e517819996b92f6",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,133,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rgb48-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-png-rgb48-box-16",
+      "file": "rgb48-32x24.png",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "ca2bc7a01071517f931b679b432b30544df881b396ca6ba3497a3de37e940275",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "62,138,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "rgb48-32x24.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-bmp-bgr24",
+      "file": "bgr24-32x24.bmp",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "ca5c97632ccac790726bc41e550a1fdee64262d708668e552e517819996b92f6",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,133,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "bgr24-32x24.bmp",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-bmp-bgr24-box-16",
+      "file": "bgr24-32x24.bmp",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "8f2bfd1f80f583015fadf3ce04d4e2075ad7f10ee575fcca8860be432d078020",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "62,138,135,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "bgr24-32x24.bmp",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-tiff-cmyk32",
+      "file": "cmyk32-32x24.tif",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1225d3b800c0d7f59a2ddd246bcc258d6de990820be9da53bc4ae9c6848d7d67",
+        "samples": {
+          "tl": "36,234,246,255",
+          "tr": "216,170,0,255",
+          "bl": "129,41,204,255",
+          "br": "253,254,255,255",
+          "center": "62,139,143,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "cmyk32-32x24.tif",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "format-tiff-cmyk32-box-16",
+      "file": "cmyk32-32x24.tif",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0f96f4a209fdbf1e2665ec936f64c8efaaceef7e1706b436a41c63f28a96529f",
+        "samples": {
+          "tl": "36,234,246,255",
+          "tr": "216,170,0,255",
+          "bl": "129,41,204,255",
+          "br": "253,254,255,255",
+          "center": "75,144,144,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "cmyk32-32x24.tif",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "exif-tiff-make",
+      "file": "tiff-make-32x24.tif",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 128,
+        "exif_encoded": "010209546966664d616b6572",
+        "camera_make": "TiffMaker",
+        "pixels_sha256": "ca5c97632ccac790726bc41e550a1fdee64262d708668e552e517819996b92f6",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,133,131,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "tiff-make-32x24.tif",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "exif-jpeg-make",
+      "file": "jpeg-make-32x24.jpg",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": "01178092e3489b6ddc08094a7065674d616b6572064d6f64656c58c8000000",
+        "camera_make": "JpegMaker",
+        "pixels_sha256": "29c1e2dab62f12c7710d2a4f681e98bc6e9df2b8cb8bd32f31f033794226ebb9",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,249,6,255",
+          "bl": "255,0,255,255",
+          "br": "246,250,255,255",
+          "center": "102,123,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "jpeg-make-32x24.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "exif-jpeg-make-no-apply",
+      "file": "jpeg-make-32x24.jpg",
+      "apply_orientation": false,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": "01178092e3489b6ddc08094a7065674d616b6572064d6f64656c58c8000000",
+        "camera_make": "JpegMaker",
+        "pixels_sha256": "29c1e2dab62f12c7710d2a4f681e98bc6e9df2b8cb8bd32f31f033794226ebb9",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,249,6,255",
+          "bl": "255,0,255,255",
+          "br": "246,250,255,255",
+          "center": "102,123,120,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "jpeg-make-32x24.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "exif-jpeg-make-source-orientation",
+      "file": "jpeg-make-32x24.jpg",
+      "source_orientation": 3,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 3,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": "01178092e3489b6ddc08094a7065674d616b6572064d6f64656c58c8000000",
+        "camera_make": "JpegMaker",
+        "pixels_sha256": "da3aadaab7d6d86e05b79b497406cab76edb8d19754903fe133d0f1fb7f84b19",
+        "samples": {
+          "tl": "246,250,255,255",
+          "tr": "255,0,255,255",
+          "bl": "255,249,6,255",
+          "br": "0,255,255,255",
+          "center": "101,112,109,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "jpeg-make-32x24.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "exif-png-none",
+      "file": "gradient-64x48-bgra32.png",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "de0917f501d375b1518d915f07b0d36c167a86b3b652e5af31e517e5fd4878a0",
+        "samples": {
+          "tl": "0,255,255,255",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "45,130,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgra32.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "colorspace-none",
+      "file": "orange-cs-none.jpg",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1f74dbc8891aa1ab71d2f92e2d4ad539672d1d8ad13704cd75ef649b6718ff96",
+        "samples": {
+          "tl": "19,120,229,255",
+          "tr": "19,120,229,255",
+          "bl": "19,120,229,255",
+          "br": "19,120,229,255",
+          "center": "19,120,229,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orange-cs-none.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "colorspace-srgb",
+      "file": "orange-cs-1.jpg",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1f74dbc8891aa1ab71d2f92e2d4ad539672d1d8ad13704cd75ef649b6718ff96",
+        "samples": {
+          "tl": "19,120,229,255",
+          "tr": "19,120,229,255",
+          "bl": "19,120,229,255",
+          "br": "19,120,229,255",
+          "center": "19,120,229,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orange-cs-1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "colorspace-adobe",
+      "file": "orange-cs-2.jpg",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "2f1f3c2ecc813b023a135b75327468597086764b0deddcb7a6bacc9035cd2d2a",
+        "samples": {
+          "tl": "6,121,255,255",
+          "tr": "6,121,255,255",
+          "bl": "6,121,255,255",
+          "br": "6,121,255,255",
+          "center": "6,121,255,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orange-cs-2.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "colorspace-adobe-box",
+      "file": "orange-cs-2.jpg",
+      "box_w": 16,
+      "ok": {
+        "pixel_width": 16,
+        "pixel_height": 12,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 32,
+        "original_height": 24,
+        "estimated_bytes": 768,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 64,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "d4881271b9d0d9a7cd82906556a90cb95798c1443fcf3fcd6b5b75139d0e4d09",
+        "samples": {
+          "tl": "6,121,255,255",
+          "tr": "6,121,255,255",
+          "bl": "6,121,255,255",
+          "br": "6,121,255,255",
+          "center": "6,121,255,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "orange-cs-2.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "icc-p3-jpeg",
+      "file": "icc-p3-64x48.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "10e7ee90eb5dc27b8246538d215b848e06ac84e0970c68d6552cff394269ef84",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "250,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,248,255",
+          "center": "72,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "icc-p3-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "icc-p3-jpeg-bytes",
+      "file": "icc-p3-64x48.jpg",
+      "from_bytes": true,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "10e7ee90eb5dc27b8246538d215b848e06ac84e0970c68d6552cff394269ef84",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "250,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,248,255",
+          "center": "72,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "icc-p3-jpeg-box",
+      "file": "icc-p3-64x48.jpg",
+      "box_w": 32,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "9d91ffe91df821861229d2432f3f6aa65e9e3163c14670eb5282464519b080cf",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "250,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,248,255",
+          "center": "19,132,136,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "icc-p3-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "icc-p3-png-alpha",
+      "file": "icc-p3-alpha-64x48.png",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "9b9e7f680d460b924f4df2d156db4da743926551b6706ca129d424bff76566a6",
+        "samples": {
+          "tl": "0,64,64,64",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "26,130,129,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "icc-p3-alpha-64x48.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "icc-p3-png-alpha-box",
+      "file": "icc-p3-alpha-64x48.png",
+      "box_w": 32,
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 3072,
+        "backend": "WicDirect",
+        "layout": "Pbgra32",
+        "stride": 128,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "c0480f33ae252572b6bfe1cd9f75282d69afac4efed0df054d10b33bbc589c87",
+        "samples": {
+          "tl": "0,168,168,207",
+          "tr": "255,255,0,255",
+          "bl": "255,0,255,255",
+          "br": "255,255,255,255",
+          "center": "33,133,130,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "icc-p3-alpha-64x48.png",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "seam-preload-priority",
+      "file": "plain-64x48.jpg",
+      "priority": "Preload",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Preload",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "seam-viewer-priority",
+      "file": "plain-64x48.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "bytes-with-empty-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-with-blank-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "   ",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-with-missing-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "C:\\nowhere\\label.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "bytes-win-over-path-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "text.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 64,
+        "original_height": 48,
+        "estimated_bytes": 12288,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 256,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "1eca298e2efa8ac5660588564d5d1c29e1db73133af6657e2c37e5965c64f780",
+        "samples": {
+          "tl": "0,252,255,255",
+          "tr": "248,255,1,255",
+          "bl": "250,0,255,255",
+          "br": "255,255,249,255",
+          "center": "79,125,126,255"
+        }
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-missing-file",
+      "missing": "missing.jpg",
+      "error": {
+        "type": "System.IO.FileNotFoundException",
+        "hresult": -2147024894,
+        "message": "Could not find file '<fixtures>\\missing.jpg'.",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "missing.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-missing-directory",
+      "missing_dir": "x.jpg",
+      "error": {
+        "type": "System.IO.DirectoryNotFoundException",
+        "hresult": -2147024893,
+        "message": "Could not find a part of the path '<fixtures>\\no-such-dir\\x.jpg'.",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "x.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-empty-path",
+      "path": "",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'request.Path')",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-blank-path",
+      "path": "   ",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'request.Path')",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-tab-path",
+      "path": "\t",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'request.Path')",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-text",
+      "file": "text.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "text.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-text-bytes",
+      "file": "text.jpg",
+      "from_bytes": true,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-empty-file",
+      "file": "empty.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "empty.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-empty-bytes",
+      "file": "empty.jpg",
+      "from_bytes": true,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-header-garbage",
+      "file": "header-garbage.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292319,
+        "message": "The image header is unrecognized. (0x88982F61)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "header-garbage.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-truncated-30",
+      "file": "truncated-400x300-30.jpg",
+      "ok": {
+        "pixel_width": 400,
+        "pixel_height": 300,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 480000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 1600,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "9ee9eb5b6583c9943b28ef601afc114f7920446c369b84c794b664718c33bc72",
+        "samples": {
+          "tl": "6,255,253,255",
+          "tr": "255,252,5,255",
+          "bl": "128,128,128,255",
+          "br": "128,128,128,255",
+          "center": "128,128,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "truncated-400x300-30.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-truncated-30-box",
+      "file": "truncated-400x300-30.jpg",
+      "box_w": 100,
+      "ok": {
+        "pixel_width": 100,
+        "pixel_height": 75,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 400,
+        "original_height": 300,
+        "estimated_bytes": 30000,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 400,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "2ed883e0f3c79bcc077c9b9407007510f72794b10bcf949c07fc665c586c5d91",
+        "samples": {
+          "tl": "0,255,254,255",
+          "tr": "255,255,0,255",
+          "bl": "128,128,128,255",
+          "br": "128,128,128,255",
+          "center": "128,128,128,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "truncated-400x300-30.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-truncated-60",
+      "file": "truncated-128x96-60.jpg",
+      "ok": {
+        "pixel_width": 128,
+        "pixel_height": 96,
+        "downscaled": false,
+        "orientation": 1,
+        "original_width": 128,
+        "original_height": 96,
+        "estimated_bytes": 49152,
+        "backend": "WicDirect",
+        "layout": "Bgr32",
+        "stride": 512,
+        "exif_encoded": null,
+        "camera_make": null,
+        "pixels_sha256": "0cb5f6eadc659357ad8b949a6fe37551289e78ba63b2e42b4e881c4e3c08aef0",
+        "samples": {
+          "tl": "3,255,254,255",
+          "tr": "255,255,0,255",
+          "bl": "128,128,128,255",
+          "br": "128,128,128,255",
+          "center": "146,125,127,255"
+        }
+      },
+      "reader_calls": [
+        {
+          "file": "truncated-128x96-60.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-huge-65500-admission",
+      "file": "huge-65500.jpg",
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 65500x65500 (17161000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "huge-65500.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-huge-65500-admission-no-apply",
+      "file": "huge-65500.jpg",
+      "apply_orientation": false,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 65500x65500 (17161000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "huge-65500.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    },
+    {
+      "name": "fail-huge-65500-box",
+      "file": "huge-65500.jpg",
+      "box_w": 1000,
+      "box_h": 1000,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292320,
+        "message": "The image is unrecognized. (0x88982F60)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "huge-65500.jpg",
+          "priority": "Viewer",
+          "buffer_size": 1048576
+        }
+      ]
+    }
+  ]
+}

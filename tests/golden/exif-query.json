@@ -1,0 +1,1663 @@
+{
+  "generator": "oracle-cs exif-query",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "every-tag-jpeg",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "every-tag-tiff",
+      "root": "/ifd",
+      "queried": [
+        "/ifd/exif/{ushort=36867}",
+        "/ifd/{ushort=271}",
+        "/ifd/{ushort=272}",
+        "/ifd/exif/{ushort=42036}",
+        "/ifd/exif/{ushort=34855}",
+        "/ifd/exif/{ushort=37386}",
+        "/ifd/exif/{ushort=33437}",
+        "/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "nothing-present",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": null
+    },
+    {
+      "name": "only-ifd0-datetime",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2022-03-03T12:01:20",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-digitized-beats-datetime",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2023-04-02T13:02:21",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-original-beats-all",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-empty-string-stops-chain",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-garbage-stops-chain",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-wrong-type-falls-through",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2023-04-02T13:02:21",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-as-chars",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "date-zero-placeholder",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "X",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "string-wrong-types",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": null
+    },
+    {
+      "name": "wrong-root-tiff-paths-ignored",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": null
+    },
+    {
+      "name": "custom-root",
+      "root": "/x/ifd",
+      "queried": [
+        "/x/ifd/exif/{ushort=36867}",
+        "/x/ifd/exif/{ushort=36868}",
+        "/x/ifd/{ushort=306}",
+        "/x/ifd/{ushort=271}",
+        "/x/ifd/{ushort=272}",
+        "/x/ifd/exif/{ushort=42036}",
+        "/x/ifd/exif/{ushort=34855}",
+        "/x/ifd/exif/{ushort=37386}",
+        "/x/ifd/exif/{ushort=33437}",
+        "/x/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u8",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 144,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u16",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-i16",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u32",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-i32",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u16-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u32-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-i16-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-i32-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-empty-u16-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-empty-u32-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-empty-i16-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-empty-i32-array",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-negative-i16",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-negative-i32",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-negative-i16-array-clr-reinterpretation",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 65535,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-negative-i32-array-clr-reinterpretation",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-zero",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u32-max",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-10-million-boundary",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 10000000,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-10-million-plus-one",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-string-not-parsed",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "iso-u64-not-integer",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-packed-unsigned",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-array-first-only",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-max-numerator",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": {
+          "numerator": 4294967295,
+          "denominator": 5
+        },
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-unsigned-zero-numerator",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-unsigned-zero-denominator",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-1m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-1m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      }
+    },
+    {
+      "name": "rational-signed-0m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-0m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-1m0",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-1m0",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-m1m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-m1m250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-1mm250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-1mm250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-m1mm250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-m1mm250",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-2147483647m2147483647",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 2147483647,
+          "denominator": 2147483647
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-2147483647m2147483647",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": {
+          "numerator": 2147483647,
+          "denominator": 2147483647
+        }
+      }
+    },
+    {
+      "name": "rational-signed-0m1",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-signed-array-0m1",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-empty-arrays",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-other-types",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "rational-arrays-both-signs",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "text-passes-through-cleaning",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "all-nothing-usable",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": null
+    },
+    {
+      "name": "chars-with-nul-and-control",
+      "root": "/app1/ifd",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Ca non",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    }
+  ]
+}

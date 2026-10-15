@@ -1,0 +1,1215 @@
+{
+  "generator": "oracle-cs image-cache-key",
+  "cases": [
+    {
+      "name": "spelling-0",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-1",
+      "kind": "entry",
+      "path": "c:\\pics\\a.JPG",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-2",
+      "kind": "entry",
+      "path": "C:\\Pics\\.\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-3",
+      "kind": "entry",
+      "path": "C:/Pics/A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-4",
+      "kind": "entry",
+      "path": "C:\\Pics\\Sub\\..\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-5",
+      "kind": "entry",
+      "path": "C:\\Pics\\\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "spelling-6",
+      "kind": "entry",
+      "path": "C:\\PICS\\A.JPG",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2400,
+      "h": 900
+    },
+    {
+      "name": "unicode-long-s",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c5\u00bf.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-dotless-i",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c4\u00b1.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-sharp-s",
+      "kind": "entry",
+      "path": "C:\\Pics\\stra\u00c3\u0178e.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-e-acute",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c3\u00a9.JPG",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-dz-lower",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c7\u2020.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-dz-title",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c7\u2026.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-greek-final-sigma",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00cf\u201a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-turkish-dotted-I",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00c4\u00b0.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-cjk",
+      "kind": "entry",
+      "path": "C:\\Pics\\\u00e5\u2020\u2122\u00e7\u0153\u0178\\\u00e6\u2014\u00a5\u00e6\u0153\u00ac.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "unicode-astral",
+      "kind": "entry",
+      "path": "C:\\Pics\\U0001F600.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-unc",
+      "kind": "entry",
+      "path": "\\\\server\\share\\Dir\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-extended",
+      "kind": "entry",
+      "path": "\\\\?\\C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-drive-root-file",
+      "kind": "entry",
+      "path": "C:\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-trailing-dot",
+      "kind": "entry",
+      "path": "C:\\Pics\\a.jpg.",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-trailing-space",
+      "kind": "entry",
+      "path": "C:\\Pics\\a.jpg ",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-dot-dot-above-root",
+      "kind": "entry",
+      "path": "C:\\..\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "path-spaces-inside",
+      "kind": "entry",
+      "path": "C:\\My Pics\\a b.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "box-preview",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2304,
+      "h": 1280
+    },
+    {
+      "name": "box-width-only",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 2304,
+      "h": 0
+    },
+    {
+      "name": "box-height-only",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 1280
+    },
+    {
+      "name": "box-unbounded-preview",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "box-negative-preview-kept",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": -1,
+      "h": -2
+    },
+    {
+      "name": "original-ignores-box",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": true,
+      "w": 2304,
+      "h": 1280
+    },
+    {
+      "name": "original-ignores-negative-box",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": true,
+      "w": -7,
+      "h": -9
+    },
+    {
+      "name": "original-zero-box",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": true,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "orientation-not-applied",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "orient": false
+    },
+    {
+      "name": "backend-wpf",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "backend": "Wpf"
+    },
+    {
+      "name": "backend-wicdirect",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "backend": "WicDirect"
+    },
+    {
+      "name": "backend-turbojpeg",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "backend": "TurboJpeg"
+    },
+    {
+      "name": "backend-libraw",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "backend": "LibRaw"
+    },
+    {
+      "name": "source-kind-0",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "source_kind": 0,
+      "kind": "entry"
+    },
+    {
+      "name": "source-kind-1",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "source_kind": 1,
+      "kind": "entry"
+    },
+    {
+      "name": "source-kind-2",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "source_kind": 2,
+      "kind": "entry"
+    },
+    {
+      "name": "source-kind-3",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "source_kind": 3,
+      "kind": "entry"
+    },
+    {
+      "name": "source-kind-255",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 1600,
+      "h": 0,
+      "source_kind": 255,
+      "kind": "entry"
+    },
+    {
+      "name": "length-zero",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 0,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "length-max",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 9223372036854775807,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "length-negative-kept",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": -1,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "ticks-zero",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 0,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "ticks-max",
+      "kind": "entry",
+      "path": "C:\\Pics\\A.jpg",
+      "length": 1234,
+      "ticks": 3155378975999999999,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "throws-nul-in-path",
+      "kind": "entry",
+      "path": "C:\\Pics\u0007\u0000.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "throws-whitespace-path",
+      "kind": "entry",
+      "path": "   ",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original": false,
+      "w": 0,
+      "h": 0
+    },
+    {
+      "name": "pair-same",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-spelling-0",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "c:\\pics\\a.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-spelling-1",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\.\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-spelling-2",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:/Pics/A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-spelling-3",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\Sub\\..\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-file",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\B.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-length",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1235,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-ticks",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000001,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-width",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 3200,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-height",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1408
+      }
+    },
+    {
+      "name": "pair-width-only-vs-box",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2304,
+        "h": 1280
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2304,
+        "h": 0
+      }
+    },
+    {
+      "name": "pair-original-vs-preview-same-dims",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 0,
+        "h": 0
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "name": "pair-original-boxes-ignored",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 2304,
+        "h": 1280
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 1,
+        "h": 2
+      }
+    },
+    {
+      "name": "pair-original-vs-original-other-length",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-other-orientation",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900,
+        "orient": false
+      }
+    },
+    {
+      "name": "pair-other-backend",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900,
+        "backend": "WicDirect"
+      }
+    },
+    {
+      "name": "pair-other-kind",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900,
+        "source_kind": 1
+      }
+    },
+    {
+      "name": "pair-long-s-equals-s",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\\u00c5\u00bf.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\S.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-dotless-i-differs-from-I",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\\u00c4\u00b1.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\I.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-sharp-s-differs-from-SS",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\Pics\\stra\u00c3\u0178e.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "C:\\Pics\\STRASSE.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "pair-unc-case",
+      "kind": "pair",
+      "a": {
+        "path": "\\\\SERVER\\Share\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "b": {
+        "path": "\\\\server\\share\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "original-of-preview-box",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2304,
+        "h": 1280,
+        "backend": "WicDirect",
+        "orient": false,
+        "source_kind": 1
+      }
+    },
+    {
+      "name": "original-of-preview-default-kind-2",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      }
+    },
+    {
+      "name": "original-of-preview-kind-0",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 800,
+        "h": 0,
+        "backend": "TurboJpeg"
+      },
+      "kind_arg": 0
+    },
+    {
+      "name": "original-of-already-original",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 5,
+        "h": 5,
+        "source_kind": 2
+      },
+      "kind_arg": 1
+    },
+    {
+      "name": "file-path-unchanged",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-path-mixed-case-name-upper-cased",
+      "kind": "file",
+      "file": {
+        "name": "mixed Case.JPG",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-width-overload",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "width",
+      "original": false,
+      "w": 3200,
+      "h": 0
+    },
+    {
+      "name": "file-fileinfo-overload",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "fileinfo",
+      "original": false,
+      "w": 2304,
+      "h": 1280
+    },
+    {
+      "name": "file-entry-no-stat-falls-back-to-disk",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "entry-no-stat",
+      "original": false,
+      "w": 2304,
+      "h": 1280
+    },
+    {
+      "name": "file-original-box-ignored",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": true,
+      "w": 2304,
+      "h": 1280
+    },
+    {
+      "name": "file-empty-file",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 0,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-replacement-different-length",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0,
+      "then": "rewrite",
+      "then_length": 7
+    },
+    {
+      "name": "file-replacement-same-length-other-ticks",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0,
+      "then": "touch",
+      "then_ticks": 638000000000012345
+    },
+    {
+      "name": "file-grow-by-one-same-ticks",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0,
+      "then": "grow"
+    },
+    {
+      "name": "file-removed-after-key",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0,
+      "then": "delete"
+    },
+    {
+      "name": "file-unicode-name",
+      "kind": "file",
+      "file": {
+        "name": "\u00c5\u00bftra\u00c3\u0178e \u00c4\u00b1.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-missing-fileinfo",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000,
+        "create": false
+      },
+      "overload": "fileinfo",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-missing-path",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000,
+        "create": false
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-missing-width",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000,
+        "create": false
+      },
+      "overload": "width",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-missing-entry-no-stat",
+      "kind": "file",
+      "file": {
+        "name": "photo.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000,
+        "create": false
+      },
+      "overload": "entry-no-stat",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    },
+    {
+      "name": "file-directory-is-not-a-source",
+      "kind": "file",
+      "file": {
+        "name": "folder.jpg",
+        "length": 4,
+        "write_ticks": 638000000000000000,
+        "directory": true
+      },
+      "overload": "path",
+      "original": false,
+      "w": 2400,
+      "h": 0
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "output_dir": "../fixtures/embedded-thumbnail",
+  "note": "Run once; commit the written files; embedded-thumbnail-read is pinned to their bytes."
+}

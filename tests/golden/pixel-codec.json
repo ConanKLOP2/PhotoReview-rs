@@ -1,0 +1,54 @@
+{
+  "generator": "oracle-cs pixel-codec",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "codec-name",
+      "op": "name",
+      "codec_name": "pixels",
+      "exception": null
+    },
+    {
+      "name": "from-live-returns-same-buffer",
+      "op": "from_live",
+      "same_ref": true,
+      "is_disposed_after": false,
+      "exception": null
+    },
+    {
+      "name": "from-disposed-throws",
+      "op": "from_disposed",
+      "exception": "ObjectDisposedException"
+    },
+    {
+      "name": "to-live-lends-buffer",
+      "op": "to_live",
+      "same_ref": true,
+      "owned": false,
+      "is_disposed_after_lease_dispose": false,
+      "exception": null
+    },
+    {
+      "name": "to-disposed-throws",
+      "op": "to_disposed",
+      "exception": "ObjectDisposedException"
+    },
+    {
+      "name": "to-foreign-string-throws",
+      "op": "to_foreign_string",
+      "exception": "ArgumentException"
+    },
+    {
+      "name": "to-foreign-object-throws",
+      "op": "to_foreign_object",
+      "exception": "ArgumentException"
+    },
+    {
+      "name": "roundtrip-same-buffer",
+      "op": "roundtrip",
+      "same_ref": true,
+      "owned": false,
+      "exception": null
+    }
+  ]
+}

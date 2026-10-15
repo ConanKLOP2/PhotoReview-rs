@@ -1,0 +1,2252 @@
+{
+  "generator": "oracle-cs source-bytes-scenarios",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "read-once-reuses-the-same-array",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 4,
+            "fnv": "be7a5e775165785d",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 4,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 4,
+            "fnv": "be7a5e775165785d",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 4,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "ranges-are-cached-separately-not-the-whole-file",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 64,
+            "fnv": "77f2d923ec0af065",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 192,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "range-larger-than-capacity-is-read-uncached-and-keeps-entries",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "356c6cc8137514a5",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "can_cache_range",
+          "value": false,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 2048,
+            "fnv": "054ef3465354fa85",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 2048,
+            "fnv": "054ef3465354fa85",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "356c6cc8137514a5",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "range-exactly-capacity-is-cached",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 1024,
+            "fnv": "eb187650d845966d",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1024,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 1024,
+            "fnv": "eb187650d845966d",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 1024,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63bd4c8601b7df",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "count-int-max-above-array-limit-rejected-before-open",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "count",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "count",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "count-at-array-max-passes-validation-one-more-is-rejected",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "error": {
+            "type": "IOException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "count",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "prefetch-skips-a-file-bigger-than-the-cache",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "prefetch",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "prefetch",
+          "value": true,
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Preload"
+          ]
+        },
+        {
+          "op": "prefetch",
+          "value": true,
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "prefetch-of-exact-capacity-file-reads-with-preload-priority",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "prefetch",
+          "value": true,
+          "count": 1,
+          "current_size": 1024,
+          "opens": 1,
+          "priorities": [
+            "Preload"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1024,
+            "fnv": "2233e5feed8da91d",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1024,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "prefetch-missing-file-throws",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "prefetch",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "priorities-are-passed-to-the-reader",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 64,
+            "fnv": "8368214f77995ee5",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 64,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_priority",
+          "bytes": {
+            "len": 64,
+            "fnv": "8368214f77995ee5",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Preload"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 16,
+            "fnv": "7c84dc9477851775",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 144,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 16,
+            "fnv": "f091c81ae28d2c75",
+            "same_as": null
+          },
+          "count": 4,
+          "current_size": 160,
+          "opens": 1,
+          "priorities": [
+            "Preload"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "clear-and-evict-remove-entries",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63c44c8601c3c4",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63c44c8601c3c4",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "clear",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63c44c8601c3c4",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "evict-only-affects-that-path",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63bc4c8601b62c",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63bf4c8601bb45",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 2,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "evict",
+          "count": 1,
+          "current_size": 1,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63bf4c8601bb45",
+            "same_as": 1
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 1,
+            "fnv": "af63bc4c8601b62c",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 2,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keys-are-ordinal-but-evict-is-ignore-case",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 20,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": 0
+          },
+          "count": 2,
+          "current_size": 20,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "evict-drops-every-range-of-the-path",
+      "capacity_bytes": 4096,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "416aec0e26a24ca0",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 200,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "evict",
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": 2
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "evict-of-a-path-never-read-is-harmless",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "evict",
+          "count": 1,
+          "current_size": 10,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "whole-file-key-equals-the-full-range-key",
+      "capacity_bytes": 8192,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 300,
+            "fnv": "1ef35c16ad872ca8",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 300,
+            "fnv": "1ef35c16ad872ca8",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 300,
+            "fnv": "1ef35c16ad872ca8",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 299,
+            "fnv": "13454668ce603c88",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 599,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-hit-after-read-range",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-offset-zero-hit",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "356c6cc8137514a5",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 128,
+            "fnv": "356c6cc8137514a5",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-misses-without-reading",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 128,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-invalid-ranges-are-misses",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 4096,
+            "fnv": "b067bcd54bc3aac5",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 4096,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 4096,
+            "fnv": "b067bcd54bc3aac5",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 4096,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-after-evict-is-a-miss",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 128,
+            "fnv": "a02a1fd0dbd25b25",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 128,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "injected-reader-serves-its-own-bytes",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 64,
+            "fnv": "f525c31c74d2c425",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 64,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "short-reads-are-assembled-in-order",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 50,
+            "fnv": "7f7a0643a16b0bd2",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 150,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "early-eof-is-a-localized-end-of-stream-and-not-cached",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "error": {
+            "type": "EndOfStreamException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "error": {
+            "type": "EndOfStreamException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 10,
+            "fnv": "a8d903e0849927b2",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "EndOfStreamException",
+            "localized": true
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stream-length-differing-from-the-key-is-file-changed",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "error": {
+            "type": "IOException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "IOException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "range-with-stale-identity-is-file-changed-after-read",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "error": {
+            "type": "IOException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "IOException",
+            "localized": true
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "empty-range-returns-empty-without-opening",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 0,
+            "fnv": "cbf29ce484222325",
+            "same_as": null
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 0,
+            "fnv": "cbf29ce484222325",
+            "same_as": null
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 0,
+            "fnv": "cbf29ce484222325",
+            "same_as": null
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "range-ending-exactly-at-end-is-valid",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 16,
+            "fnv": "a38ca15a8ccfe9f5",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 16,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "invalid-ranges-throw-offset-before-opening",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "argument-check-order",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "length",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentOutOfRangeException",
+            "param": "offset",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "bad-paths-on-whole-file-api",
+      "capacity_bytes": 1048576,
+      "steps": [
+        {
+          "op": "read",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "prefetch",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "evict",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "evict",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "error": {
+            "type": "ArgumentException",
+            "param": "path",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "can-cache-boundaries",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "can_cache",
+          "value": true,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache",
+          "value": true,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache",
+          "value": true,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache_range",
+          "value": true,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache_range",
+          "value": true,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache_range",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache_range",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "can_cache_range",
+          "value": false,
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "zero-byte-file-is-empty-and-cached-with-size-one",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 0,
+            "fnv": "cbf29ce484222325",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 0,
+            "fnv": "cbf29ce484222325",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 1,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "prefetch",
+          "value": true,
+          "count": 1,
+          "current_size": 1,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "failed-read-of-missing-file-is-not-cached",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "write",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 3,
+            "fnv": "bf6bca185d6e4119",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 3,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 3,
+            "fnv": "bf6bca185d6e4119",
+            "same_as": 2
+          },
+          "count": 1,
+          "current_size": 3,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "deleted-file-fails-reads-and-keeps-entries-until-evicted",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 10,
+            "fnv": "9800d3c0ce314572",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 10,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 5,
+            "fnv": "3378e3d0c52edfaf",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 15,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "delete",
+          "count": 2,
+          "current_size": 15,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 2,
+          "current_size": 15,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 2,
+          "current_size": 15,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "prefetch",
+          "error": {
+            "type": "FileNotFoundException",
+            "localized": false
+          },
+          "count": 2,
+          "current_size": 15,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "oversized-file-is-returned-but-not-cached",
+      "capacity_bytes": 1000,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 5000,
+            "fnv": "90c8a516b17c108d",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 5000,
+            "fnv": "90c8a516b17c108d",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": 0
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "replaced-file-same-length-new-time-is-re-read",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 3,
+            "fnv": "d0aa6218672cf5ab",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 3,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "write",
+          "count": 1,
+          "current_size": 3,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 3,
+            "fnv": "161162188e83f6b3",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 6,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 3,
+            "fnv": "161162188e83f6b3",
+            "same_as": 2
+          },
+          "count": 2,
+          "current_size": 6,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "lru-drops-the-least-recently-used",
+      "capacity_bytes": 300,
+      "steps": [
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "73fdb0feee7cb8bd",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "7a9806cb7bef4e25",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 200,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "dae1877ac3c57ef9",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "73fdb0feee7cb8bd",
+            "same_as": 0
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "a69e28f343534471",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "73fdb0feee7cb8bd",
+            "same_as": 0
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "7a9806cb7bef4e25",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 100,
+            "fnv": "dae1877ac3c57ef9",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "try-get-range-hit-refreshes-lru",
+      "capacity_bytes": 300,
+      "steps": [
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 100,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "0bb76006dd89d231",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 200,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "416aec0e26a24ca0",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": 0
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read_range",
+          "bytes": {
+            "len": 100,
+            "fnv": "6f221c3345069efd",
+            "same_as": null
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "try_get_range",
+          "value": true,
+          "hit": {
+            "len": 100,
+            "fnv": "fb5c8cec60d83ab1",
+            "same_as": 0
+          },
+          "count": 3,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "try_get_range",
+          "value": false,
+          "hit": null,
+          "miss_len": 0,
+          "count": 3,
+          "current_size": 300,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    },
+    {
+      "name": "clear-then-everything-is-cacheable-again",
+      "capacity_bytes": 1024,
+      "steps": [
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "evict",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 16,
+            "fnv": "7c84dc9477851775",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 16,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "clear",
+          "count": 0,
+          "current_size": 0,
+          "opens": 0,
+          "priorities": []
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 16,
+            "fnv": "7c84dc9477851775",
+            "same_as": null
+          },
+          "count": 1,
+          "current_size": 16,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 16,
+            "fnv": "7c84dc9477851775",
+            "same_as": null
+          },
+          "count": 2,
+          "current_size": 32,
+          "opens": 1,
+          "priorities": [
+            "Viewer"
+          ]
+        },
+        {
+          "op": "read",
+          "bytes": {
+            "len": 16,
+            "fnv": "7c84dc9477851775",
+            "same_as": 4
+          },
+          "count": 2,
+          "current_size": 32,
+          "opens": 0,
+          "priorities": []
+        }
+      ]
+    }
+  ]
+}

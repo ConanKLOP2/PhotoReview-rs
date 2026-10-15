@@ -1,0 +1,1705 @@
+{
+  "generator": "oracle-cs preview-service-sequence",
+  "cases": [
+    {
+      "name": "preview-miss-then-ram-hit",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        },
+        {
+          "op": "try_cached_path",
+          "file": "a.jpg"
+        },
+        {
+          "op": "has_inflight",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "preview-path-overload-builds-current-key",
+      "config": {
+        "original_mode": false,
+        "w": 1920,
+        "h": 1080,
+        "backend": "TurboJpeg"
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 1440,
+          "pixel_h": 1080,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "preview",
+          "file": "a.jpg"
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "viewer-uses-viewer-priority",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "viewer",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "original-dims-seeded-by-downscaled-decode",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000,
+          "info_w": 1,
+          "info_h": 1
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "dims",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "original-dims-unknown-original-not-seeded",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "downscaled": true,
+          "info_w": 6000,
+          "info_h": 4000,
+          "info_orientation": 6
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "dims",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "dims",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "full-size-decode-seeds-its-own-size",
+      "config": {
+        "original_mode": false,
+        "w": 0,
+        "h": 0,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 640,
+          "pixel_h": 480,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "degraded-fallback-returned-not-cached-but-seeds-dims",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "degraded": true,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "source-changed-during-decode-is-localized-io-and-not-cached",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "rewrite",
+          "file": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638100000000000000
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k2"
+        }
+      ]
+    },
+    {
+      "name": "source-length-changed-same-ticks",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "rewrite",
+          "file": "a.jpg",
+          "length": 999,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "source-deleted-before-decode",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "delete",
+          "file": "a.jpg"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "try_cached_path",
+          "file": "a.jpg"
+        }
+      ]
+    },
+    {
+      "name": "evict-unnormalized-lower-case-path",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "b.jpg",
+          "length": 1001,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        },
+        "b.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "ka"
+        },
+        {
+          "op": "key",
+          "file": "b.jpg",
+          "as": "kb"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "b.jpg",
+          "key": "kb"
+        },
+        {
+          "op": "evict",
+          "path_spelling": "sub\\..\\A.JPG"
+        },
+        {
+          "op": "try_cached",
+          "key": "ka"
+        },
+        {
+          "op": "try_cached",
+          "key": "kb"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        }
+      ]
+    },
+    {
+      "name": "evict-keeps-original-dims",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "evict",
+          "path_spelling": "a.jpg"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "clear-drops-ram-and-original-dims",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "clear"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "original-mode-key-and-unbounded-request",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 4000,
+          "pixel_h": 3000,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "set_mode",
+          "original": true
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "set_mode",
+          "original": false
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "try_cached",
+          "key": "k2"
+        }
+      ]
+    },
+    {
+      "name": "box-change-is-a-new-key",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "set_box",
+          "w": 1920,
+          "h": 1080
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "try_cached",
+          "key": "k2"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k2"
+        },
+        {
+          "op": "known_dims",
+          "key": "k2"
+        }
+      ]
+    },
+    {
+      "name": "backend-change-is-a-new-key",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "backend": "Wpf"
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "set_backend",
+          "backend": "TurboJpeg"
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "try_cached",
+          "key": "k2"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k2"
+        }
+      ]
+    },
+    {
+      "name": "decode-original-is-never-cached",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 4000,
+          "pixel_h": 3000,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "original",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "original",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "decode-original-reuses-ram-original-entry",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 4000,
+          "pixel_h": 3000,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "set_mode",
+          "original": true
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "set_mode",
+          "original": false
+        },
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k2"
+        },
+        {
+          "op": "original",
+          "file": "a.jpg",
+          "key": "k2"
+        }
+      ]
+    },
+    {
+      "name": "decode-original-source-changed",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 4000,
+          "pixel_h": 3000,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "rewrite",
+          "file": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638100000000000000
+        },
+        {
+          "op": "original",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "decode-original-raw-full-decoder",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "raw_full_enabled": true
+      },
+      "files": [
+        {
+          "name": "b.nef",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "b.nef": {
+          "pixel_w": 1620,
+          "pixel_h": 1080,
+          "original_w": 6000,
+          "original_h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "b.nef",
+          "as": "k"
+        },
+        {
+          "op": "original",
+          "file": "b.nef",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "set_raw_full",
+          "enabled": false
+        },
+        {
+          "op": "original",
+          "file": "b.nef",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ],
+      "raw_decoder": {
+        "b.nef": {
+          "pixel_w": 6000,
+          "pixel_h": 4000,
+          "downscaled": false,
+          "backend": "LibRaw"
+        }
+      }
+    },
+    {
+      "name": "decode-original-raw-full-ignores-standard-files",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "raw_full_enabled": true
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 4000,
+          "pixel_h": 3000,
+          "downscaled": false
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "original",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ],
+      "raw_decoder": {
+        "a.jpg": {
+          "pixel_w": 1,
+          "pixel_h": 1
+        }
+      }
+    },
+    {
+      "name": "decoder-busy-surfaces-to-the-creator-and-leaves-nothing",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "fails": "Busy"
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "has_inflight",
+          "key": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "decoder-not-supported-is-not-cached",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "fails": "NotSupported"
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "decoder-internal-cancel-reaches-the-creator",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "fails": "Canceled"
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "decoder-io-error-on-viewer",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "fails": "IO"
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "viewer",
+          "file": "a.jpg",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "source-bytes-cache-pre-reads-small-standard-files-only",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "source_bytes_capacity": 1048576
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "b.dng",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "big.jpg",
+          "length": 1048577,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        },
+        "b.dng": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        },
+        "big.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "ka"
+        },
+        {
+          "op": "key",
+          "file": "b.dng",
+          "as": "kb"
+        },
+        {
+          "op": "key",
+          "file": "big.jpg",
+          "as": "kc"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "b.dng",
+          "key": "kb"
+        },
+        {
+          "op": "preview",
+          "file": "big.jpg",
+          "key": "kc"
+        },
+        {
+          "op": "clear"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "clear_source_bytes"
+        },
+        {
+          "op": "clear"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        }
+      ]
+    },
+    {
+      "name": "source-bytes-read-metric-prefers-the-image-report",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 5000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "b.jpg",
+          "length": 7000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "source_bytes_read": 77
+        },
+        "b.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "ka"
+        },
+        {
+          "op": "key",
+          "file": "b.jpg",
+          "as": "kb"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "b.jpg",
+          "key": "kb"
+        }
+      ]
+    },
+    {
+      "name": "ram-lru-evicts-least-recently-used",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "capacity_bytes": 1000
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "b.jpg",
+          "length": 1001,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "c.jpg",
+          "length": 1002,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 10,
+          "pixel_h": 10
+        },
+        "b.jpg": {
+          "pixel_w": 10,
+          "pixel_h": 10
+        },
+        "c.jpg": {
+          "pixel_w": 10,
+          "pixel_h": 10
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "ka"
+        },
+        {
+          "op": "key",
+          "file": "b.jpg",
+          "as": "kb"
+        },
+        {
+          "op": "key",
+          "file": "c.jpg",
+          "as": "kc"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "b.jpg",
+          "key": "kb"
+        },
+        {
+          "op": "try_cached",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "c.jpg",
+          "key": "kc"
+        },
+        {
+          "op": "try_cached",
+          "key": "ka"
+        },
+        {
+          "op": "try_cached",
+          "key": "kb"
+        },
+        {
+          "op": "try_cached",
+          "key": "kc"
+        }
+      ]
+    },
+    {
+      "name": "too-large-image-is-not-cached",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "capacity_bytes": 1000
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 20,
+          "pixel_h": 20
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "try_cached",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "original-dimensions-lru-capacity-2",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null,
+        "original_dimensions_capacity": 2
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "b.jpg",
+          "length": 1001,
+          "write_ticks": 638000000000000000
+        },
+        {
+          "name": "c.jpg",
+          "length": 1002,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4000,
+          "original_h": 3000
+        },
+        "b.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4001,
+          "original_h": 3000
+        },
+        "c.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "original_w": 4002,
+          "original_h": 3000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "ka"
+        },
+        {
+          "op": "key",
+          "file": "b.jpg",
+          "as": "kb"
+        },
+        {
+          "op": "key",
+          "file": "c.jpg",
+          "as": "kc"
+        },
+        {
+          "op": "preview",
+          "file": "a.jpg",
+          "key": "ka"
+        },
+        {
+          "op": "preview",
+          "file": "b.jpg",
+          "key": "kb"
+        },
+        {
+          "op": "preview",
+          "file": "c.jpg",
+          "key": "kc"
+        },
+        {
+          "op": "known_dims",
+          "key": "ka"
+        },
+        {
+          "op": "known_dims",
+          "key": "kb"
+        },
+        {
+          "op": "known_dims",
+          "key": "kc"
+        }
+      ]
+    },
+    {
+      "name": "dims-source-changed-is-localized",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "info_w": 10,
+          "info_h": 20
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "rewrite",
+          "file": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638100000000000000
+        },
+        {
+          "op": "dims",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "dims-read-info-failure-is-not-stored",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "a.jpg",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "a.jpg": {
+          "pixel_w": 800,
+          "pixel_h": 600,
+          "info_fails": true
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "a.jpg",
+          "as": "k"
+        },
+        {
+          "op": "dims",
+          "file": "a.jpg",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        }
+      ]
+    },
+    {
+      "name": "raw-preview-key-kind-and-preview-decode",
+      "config": {
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "files": [
+        {
+          "name": "b.dng",
+          "length": 1000,
+          "write_ticks": 638000000000000000
+        }
+      ],
+      "decoder": {
+        "b.dng": {
+          "pixel_w": 1620,
+          "pixel_h": 1080,
+          "original_w": 6000,
+          "original_h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "key",
+          "file": "b.dng",
+          "as": "k"
+        },
+        {
+          "op": "preview",
+          "file": "b.dng",
+          "key": "k"
+        },
+        {
+          "op": "known_dims",
+          "key": "k"
+        },
+        {
+          "op": "dims",
+          "file": "b.dng",
+          "key": "k"
+        }
+      ]
+    }
+  ]
+}

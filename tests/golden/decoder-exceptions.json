@@ -1,0 +1,291 @@
+{
+  "generator": "oracle-cs decoder-exceptions",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "busy-default",
+      "type": "busy",
+      "ctor": "default",
+      "message_in": null,
+      "message": "The decoder is busy; this background decode was skipped.",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "busy-message",
+      "type": "busy",
+      "ctor": "message",
+      "message_in": "custom text",
+      "message": "custom text",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "busy-message-empty",
+      "type": "busy",
+      "ctor": "message",
+      "message_in": "",
+      "message": "",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "busy-message-unicode",
+      "type": "busy",
+      "ctor": "message",
+      "message_in": "Không đủ bộ nhớ: é中",
+      "message": "Không đủ bộ nhớ: é中",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "busy-inner",
+      "type": "busy",
+      "ctor": "inner",
+      "message_in": "queue full",
+      "message": "queue full",
+      "has_inner": true,
+      "inner_message": "inner-cause",
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "memory-admission-default",
+      "type": "memory-admission",
+      "ctor": "default",
+      "message_in": null,
+      "message": "The decode was refused: not enough memory for the output.",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": true,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "memory-admission-message",
+      "type": "memory-admission",
+      "ctor": "message",
+      "message_in": "custom text",
+      "message": "custom text",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": true,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "memory-admission-message-empty",
+      "type": "memory-admission",
+      "ctor": "message",
+      "message_in": "",
+      "message": "",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": true,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "memory-admission-message-unicode",
+      "type": "memory-admission",
+      "ctor": "message",
+      "message_in": "Không đủ bộ nhớ: é中",
+      "message": "Không đủ bộ nhớ: é中",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": true,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "memory-admission-inner",
+      "type": "memory-admission",
+      "ctor": "inner",
+      "message_in": "no room",
+      "message": "no room",
+      "has_inner": true,
+      "inner_message": "inner-cause",
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": true,
+        "NotSupportedException": false,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "missing-codec-default",
+      "type": "missing-codec",
+      "ctor": "default",
+      "message_in": null,
+      "message": "The Windows codec for this image format is not installed.",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": true,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "missing-codec-message",
+      "type": "missing-codec",
+      "ctor": "message",
+      "message_in": "custom text",
+      "message": "custom text",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": true,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "missing-codec-message-empty",
+      "type": "missing-codec",
+      "ctor": "message",
+      "message_in": "",
+      "message": "",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": true,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "missing-codec-message-unicode",
+      "type": "missing-codec",
+      "ctor": "message",
+      "message_in": "Thiếu codec: é中",
+      "message": "Thiếu codec: é中",
+      "has_inner": false,
+      "inner_message": null,
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": true,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    },
+    {
+      "name": "missing-codec-inner",
+      "type": "missing-codec",
+      "ctor": "inner",
+      "message_in": "no HEIF extension",
+      "message": "no HEIF extension",
+      "has_inner": true,
+      "inner_message": "inner-cause",
+      "is_sealed": true,
+      "assignable_to": {
+        "IOException": false,
+        "NotSupportedException": true,
+        "InvalidDataException": false,
+        "COMException": false,
+        "InvalidCastException": false,
+        "OverflowException": false,
+        "FormatException": false
+      }
+    }
+  ]
+}

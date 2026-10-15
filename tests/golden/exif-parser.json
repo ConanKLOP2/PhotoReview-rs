@@ -1,0 +1,1607 @@
+{
+  "generator": "oracle-cs exif-parser",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "jpeg-full-camera-little",
+      "op": "jpeg",
+      "hex": "FFD8FFE000094A464946000101FFE1010045786966000049492A000800000004000F010200060000008C000000100102000D000000920000003201020014000000A000000069870400010000003E0000000000000006009A82050001000000B40000009D82050001000000BC0000002788030001000000900100000390020014000000C40000000A92050001000000D800000034A4020018000000E00000000000000043616E6F6E0043616E6F6E20454F532052350000323032343A30363A33302030393A30303A30300001000000FA0000001C0000000A000000323032343A30353A30312031343A30333A3232003200000001000000524632342D37306D6D2046322E38204C2049532055534D00FFDA0002FFD9",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-full-camera-little",
+      "op": "tiff",
+      "hex": "49492A000800000004000F010200060000008C000000100102000D000000920000003201020014000000A000000069870400010000003E0000000000000006009A82050001000000B40000009D82050001000000BC0000002788030001000000900100000390020014000000C40000000A92050001000000D800000034A4020018000000E00000000000000043616E6F6E0043616E6F6E20454F532052350000323032343A30363A33302030393A30303A30300001000000FA0000001C0000000A000000323032343A30353A30312031343A30333A3232003200000001000000524632342D37306D6D2046322E38204C2049532055534D00",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-full-camera-big",
+      "op": "jpeg",
+      "hex": "FFD8FFE000094A464946000101FFE101004578696600004D4D002A000000080004010F0002000000060000008C011000020000000D000000920132000200000014000000A087690004000000010000003E000000000006829A000500000001000000B4829D000500000001000000BC8827000300000001019000009003000200000014000000C4920A000500000001000000D8A434000200000018000000E00000000043616E6F6E0043616E6F6E20454F532052350000323032343A30363A33302030393A30303A30300000000001000000FA0000001C0000000A323032343A30353A30312031343A30333A3232000000003200000001524632342D37306D6D2046322E38204C2049532055534D00FFDA0002FFD9",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-full-camera-big",
+      "op": "tiff",
+      "hex": "4D4D002A000000080004010F0002000000060000008C011000020000000D000000920132000200000014000000A087690004000000010000003E000000000006829A000500000001000000B4829D000500000001000000BC8827000300000001019000009003000200000014000000C4920A000500000001000000D8A434000200000018000000E00000000043616E6F6E0043616E6F6E20454F532052350000323032343A30363A33302030393A30303A30300000000001000000FA0000001C0000000A323032343A30353A30312031343A30333A3232000000003200000001524632342D37306D6D2046322E38204C2049532055534D00",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-missing-tags",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004A45786966000049492A0008000000020010010200090000003800000069870400010000002600000000000000010027880300010000006400000000000000494C43452D374D330000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": "ILCE-7M3",
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-date-falls-back-to-ifd0-datetime",
+      "op": "jpeg",
+      "hex": "FFD8FFE1003645786966000049492A0008000000010032010200140000001A00000000000000323032333A31323A32342031383A33303A303000FFDA0002FFD9",
+      "summary": {
+        "date_taken": "2023-12-24T18:30:00",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-empty-input",
+      "op": "jpeg",
+      "hex": "",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-png-signature",
+      "op": "jpeg",
+      "hex": "89504E470D0A1A0A",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-soi-then-sos",
+      "op": "jpeg",
+      "hex": "FFD8FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-empty-tiff-block",
+      "op": "jpeg",
+      "hex": "FFD8FFE1001645786966000049492A0008000000000000000000FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-placeholder-values-only",
+      "op": "jpeg",
+      "hex": "FFD8FFE1007C45786966000049492A000800000003000F01020004000000202020003201020014000000500000006987040001000000320000000000000002009D82050001000000640000009A820500010000006C00000000000000303030303A30303A30302030303A30303A30300000000000000000000100000000000000FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-after-sos-not-searched",
+      "op": "jpeg",
+      "hex": "FFD8FFDA0002FFE1010045786966000049492A000800000004000F010200060000008C000000100102000D000000920000003201020014000000A000000069870400010000003E0000000000000006009A82050001000000B40000009D82050001000000BC0000002788030001000000900100000390020014000000C40000000A92050001000000D800000034A4020018000000E00000000000000043616E6F6E0043616E6F6E20454F532052350000323032343A30363A33302030393A30303A30300001000000FA0000001C0000000A000000323032343A30353A30312031343A30333A3232003200000001000000524632342D37306D6D2046322E38204C2049532055534D00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-huge-ifd0-count-capped-to-block",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002845786966000049492A0008000000FFFF0F010200060000001A000000000000004E696B6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-half-present-last-entry",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002645786966000049492A000800000002001001020003000000475200000F01020002000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": "GR",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-value-runs-past-end",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004445786966000049492A00080000000200100102000F000000390000000F010200060000003600000000000000454F53205236204D61726B204949000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-value-offset-and-count-out-of-range",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004445786966000049492A0008000000020010010200FFFFFFFFF0FFFF7F0F010200060000003600000000000000454F53205236204D61726B204949000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-pointer-0x8-not-followed",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F01020006000000380000006987040001000000080000000000000001002788030001000000200300000000000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-pointer-0x0-not-followed",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F01020006000000380000006987040001000000000000000000000001002788030001000000200300000000000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-pointer-0xfffffff0-not-followed",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F01020006000000380000006987040001000000F0FFFFFF0000000001002788030001000000200300000000000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-pointer-0x7-not-followed",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F01020006000000380000006987040001000000070000000000000001002788030001000000200300000000000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-pointer-to-ifd0-terminates",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F0102000600000038000000698704000100000008000000000000000100278803000100000064000000000000004E696B6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-exif-pointer-to-ifd0",
+      "op": "tiff",
+      "hex": "49492A000800000002000F0102000600000038000000698704000100000008000000000000000100278803000100000064000000000000004E696B6F6E00",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-subifd-pointer-to-itself",
+      "op": "jpeg",
+      "hex": "FFD8FFE1005245786966000049492A000800000002000F010200050000004400000069870400010000002600000000000000020069870400010000002600000027880300010000008002000000000000536F6E790000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Sony",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 640,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-ifd-count-65535-capped",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000002000F010200060000003800000069870400010000002600000000000000FFFF278803000100000020030000000000004C6569636100FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Leica",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 800,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-text-sanitised",
+      "op": "jpeg",
+      "hex": "FFD8FFE1016845786966000049492A000800000002000F0102000C00000026000000100102002D0100003200000000000000202043616E6F6E09012020005858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858580000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-text-nul-inside",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002E45786966000049492A000800000001000F0102000C0000001A00000000000000536F6E790068696464656E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Sony",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-srational-positive",
+      "op": "jpeg",
+      "hex": "FFD8FFE1003C45786966000049492A0008000000010069870400010000001A0000000000000001000A920A00010000002C000000000000002300000001000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": {
+          "numerator": 35,
+          "denominator": 1
+        },
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-srational-negative",
+      "op": "jpeg",
+      "hex": "FFD8FFE1005045786966000049492A0008000000010069870400010000001A0000000000000002000A920A0001000000380000009D820A00010000004000000000000000FFFFFFFF0100000001000000FEFFFFFFFFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-rational-zero-numerator",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004845786966000049492A000800000002000F01020002000000410000006987040001000000260000000000000001009A8205000100000038000000000000000000000005000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "A",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-duplicate-make-empty-first-then-value",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004645786966000049492A000800000003000F01020001000000000000000F01020006000000320000000F0102000600000038000000000000004E696B6F6E004F7468657200FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-duplicate-iso-first-wins",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004045786966000049492A0008000000010069870400010000001A0000000000000002002788030001000000C800000027880300010000009001000000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 200,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-duplicate-iso-zero-first-wins-then-dropped",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004C45786966000049492A000800000002000F010200020000004100000069870400010000002600000000000000020027880300010000000000000027880300010000009001000000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "A",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-iso-long",
+      "op": "jpeg",
+      "hex": "FFD8FFE1003445786966000049492A0008000000010069870400010000001A0000000000000001002788040001000000400D030000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 200000,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-iso-above-cap",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004045786966000049492A000800000002000F010200020000004100000069870400010000002600000000000000010027880400010000008196980000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "A",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-iso-at-cap",
+      "op": "jpeg",
+      "hex": "FFD8FFE1003445786966000049492A0008000000010069870400010000001A00000000000000010027880400010000008096980000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 10000000,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-iso-sshort-negative",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004045786966000049492A000800000002000F01020002000000410000006987040001000000260000000000000001002788080001000000FFFF000000000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "A",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-iso-rational-type-ignored",
+      "op": "jpeg",
+      "hex": "FFD8FFE1004845786966000049492A000800000002000F0102000200000041000000698704000100000026000000000000000100278805000100000038000000000000006400000001000000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "A",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-make-undefined-type-7",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002845786966000049492A000800000001000F010700050000001A000000000000004C6569636100FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Leica",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-make-utf8",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A45786966000049492A000800000001000F010200070000001A0000000000000043616EC3B66E0000FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canön",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-make-invalid-utf8",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002845786966000049492A000800000001000F010200060000001A000000000000004361FFFE6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Ca��n",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-make-byte-type-not-text",
+      "op": "jpeg",
+      "hex": "FFD8FFE1003445786966000049492A000800000002000F010100050000002600000010010200020000004D0000000000000043616E6F6E00FFDA0002FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": "M",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-original-digitized-datetime",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000004400000069870400010000002600000000000000020003900200140000005800000004900200140000006C00000000000000323032323A30333A30332031323A30313A323000323032343A30353A30312031343A30333A323200323032333A30343A30322031333A30323A323100",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-original-and-datetime",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000003800000069870400010000002600000000000000010003900200140000004C00000000000000323032323A30333A30332031323A30313A323000323032343A30353A30312031343A30333A323200",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-digitized-and-datetime",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000003800000069870400010000002600000000000000010004900200140000004C00000000000000323032323A30333A30332031323A30313A323000323032333A30343A30322031333A30323A323100",
+      "summary": {
+        "date_taken": "2023-04-02T13:02:21",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-digitized-only",
+      "op": "tiff",
+      "hex": "49492A0008000000010069870400010000001A00000000000000010004900200140000002C00000000000000323032333A30343A30322031333A30323A323100",
+      "summary": {
+        "date_taken": "2023-04-02T13:02:21",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-datetime-only",
+      "op": "tiff",
+      "hex": "49492A0008000000010032010200140000001A00000000000000323032323A30333A30332031323A30313A323000",
+      "summary": {
+        "date_taken": "2022-03-03T12:01:20",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-garbage-original-hides-valid-datetime",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000003800000069870400010000002600000000000000010003900200140000004C00000000000000323032323A30333A30332031323A30313A323000303030303A30303A30302030303A30303A303000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "date-blank-original-hides-valid-datetime",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000004400000069870400010000002600000000000000020003900200040000002020200004900200140000005800000000000000323032323A30333A30332031323A30313A323000323032333A30343A30322031333A30323A323100",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "date-empty-original-falls-through",
+      "op": "tiff",
+      "hex": "49492A0008000000020032010200140000003800000069870400010000002600000000000000010003900200010000000000000000000000323032323A30333A30332031323A30313A323000",
+      "summary": {
+        "date_taken": "2022-03-03T12:01:20",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-without-seconds",
+      "op": "tiff",
+      "hex": "49492A0008000000010032010200110000001A00000000000000323032333A31323A32342031383A33300000",
+      "summary": {
+        "date_taken": "2023-12-24T18:30:00",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-date-only",
+      "op": "tiff",
+      "hex": "49492A00080000000100320102000B0000001A00000000000000323032333A31323A32340000",
+      "summary": {
+        "date_taken": "2023-12-24T00:00:00",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-dash-format",
+      "op": "tiff",
+      "hex": "49492A0008000000010032010200140000001A00000000000000323032332D31322D32342031383A33303A303000",
+      "summary": {
+        "date_taken": "2023-12-24T18:30:00",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "date-invalid-day",
+      "op": "tiff",
+      "hex": "49492A0008000000010032010200140000001A00000000000000323032333A30323A33302031383A33303A303000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "date-trailing-text",
+      "op": "tiff",
+      "hex": "49492A00080000000100320102001B0000001A00000000000000323032333A31323A32342031383A33303A3030202B30313A30300000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-xmp-app1-before-exif-skipped",
+      "op": "jpeg",
+      "hex": "FFD8FFE10023687474703A2F2F6E732E61646F62652E636F6D2F7861702F312E302F003C782F3EFFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-first-exif-app1-wins-even-if-garbage",
+      "op": "jpeg",
+      "hex": "FFD8FFE100144578696600006A756E6B6A756E6B6A756E6BFFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-fill-bytes-before-marker",
+      "op": "jpeg",
+      "hex": "FFD8FFFFFFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-rst-and-tem-markers-skipped",
+      "op": "jpeg",
+      "hex": "FFD8FF01FFD0FFD7FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-stuffed-ff00-is-corrupt",
+      "op": "jpeg",
+      "hex": "FFD8FF000000FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-non-ff-where-marker-expected",
+      "op": "jpeg",
+      "hex": "FFD80000FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-segment-length-below-two",
+      "op": "jpeg",
+      "hex": "FFD8FFE00001FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-segment-runs-past-end",
+      "op": "jpeg",
+      "hex": "FFD8FFE000FF00FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-segment-truncated",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-header-only",
+      "op": "jpeg",
+      "hex": "FFD8FFE10008457869660000FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-app1-shorter-than-exif-header",
+      "op": "jpeg",
+      "hex": "FFD8FFE100074578696600FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-eoi-before-exif",
+      "op": "jpeg",
+      "hex": "FFD8FFD9FFE1002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-exif-in-app2-not-read",
+      "op": "jpeg",
+      "hex": "FFD8FFE2002845786966000049492A000800000001000F010200060000001A0000000000000043616E6F6E00FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-byte-order-IM",
+      "op": "tiff",
+      "hex": "494D2A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-byte-order-MI",
+      "op": "tiff",
+      "hex": "4D492A000800000001000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x4f52-little",
+      "op": "tiff",
+      "hex": "4949524F0800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Olympus",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0x4f52-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A4578696600004949524F0800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x5352-little",
+      "op": "tiff",
+      "hex": "494952530800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Olympus",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0x5352-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A457869660000494952530800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x4f53-little",
+      "op": "tiff",
+      "hex": "4949534F0800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0x4f53-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A4578696600004949534F0800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x002b-little",
+      "op": "tiff",
+      "hex": "49492B000800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0x002b-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A45786966000049492B000800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x0000-little",
+      "op": "tiff",
+      "hex": "494900000800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0x0000-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A457869660000494900000800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0xffff-little",
+      "op": "tiff",
+      "hex": "4949FFFF0800000001000F010200080000001A000000000000004F6C796D70757300",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "jpeg-magic-0xffff-little-strict",
+      "op": "jpeg",
+      "hex": "FFD8FFE1002A4578696600004949FFFF0800000001000F010200080000001A000000000000004F6C796D70757300FFDA0002FFD9",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-magic-0x4f52-big",
+      "op": "tiff",
+      "hex": "4D4D4F52000000080001010F0002000000080000001A000000004F6C796D70757300",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Olympus",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-far-outside",
+      "op": "tiff",
+      "hex": "49492A00FFFFFF7F01000F010200060000001A0000000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-0-inside-header",
+      "op": "tiff",
+      "hex": "49492A000000000000000000000000000F0102000400000041424300000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-2-inside-header",
+      "op": "tiff",
+      "hex": "49492A000200000000000000000000000F0102000400000041424300000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-4-inside-header",
+      "op": "tiff",
+      "hex": "49492A000400000000000000000000000F0102000400000041424300000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-7-inside-header",
+      "op": "tiff",
+      "hex": "49492A000700000000000000000000000F0102000400000041424300000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-at-offset-16",
+      "op": "tiff",
+      "hex": "49492A0010000000000000000000000001000F010200040000004142430000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "ABC",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-bytes-after-counted-entries-not-read",
+      "op": "tiff",
+      "hex": "49492A000800000001000001030001000000050000000F0102000400000041424300000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-ifd0-offset-len-minus-2-empty",
+      "op": "tiff",
+      "hex": "49492A00080000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-too-short",
+      "op": "tiff",
+      "hex": "49492A00080000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-empty",
+      "op": "tiff",
+      "hex": "",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-make-at-index-255-read",
+      "op": "tiff",
+      "hex": "49492A000800000000010001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000F010200060000000E0C00000000000043616E6F6E00",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "tiff-make-at-index-256-capped",
+      "op": "tiff",
+      "hex": "49492A000800000001010001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000001030001000000010000000F010200060000001A0C00000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "tiff-exif-pointer-at-index-256-capped",
+      "op": "tiff",
+      "hex": "49492A0008000000010100010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000000010300010000000100000069870400010000001A0C000000000000010027880300010000006400000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "exif-mode-reads-ifd0-as-exif",
+      "op": "tiff-exif",
+      "hex": "49492A000800000006009A82050001000000560000009D820500010000005E0000002788030001000000200300000390020014000000660000000A920500010000007A00000034A402000C0000008200000000000000010000003C0000000400000001000000323032343A30353A30312031343A30333A3232000F0000000100000045462D4D31352D34356D6D00",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": "EF-M15-45mm",
+        "iso": 800,
+        "focal_length": {
+          "numerator": 15,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 4,
+          "denominator": 1
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 60
+        }
+      },
+      "threw": false
+    },
+    {
+      "name": "exif-mode-same-block-normal-mode",
+      "op": "tiff",
+      "hex": "49492A000800000006009A82050001000000560000009D820500010000005E0000002788030001000000200300000390020014000000660000000A920500010000007A00000034A402000C0000008200000000000000010000003C0000000400000001000000323032343A30353A30312031343A30333A3232000F0000000100000045462D4D31352D34356D6D00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "exif-mode-ignores-make-model-datetime",
+      "op": "tiff-exif",
+      "hex": "49492A000800000004000F010200060000003E00000010010200040000004D3530003201020014000000440000002788030001000000640000000000000043616E6F6E00323032323A30333A30332031323A30313A323000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "exif-mode-ignores-exif-pointer",
+      "op": "tiff-exif",
+      "hex": "49492A000800000002000F01020006000000380000006987040001000000260000000000000001002788030001000000800200000000000043616E6F6E00",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "exif-mode-orf-magic",
+      "op": "tiff-exif",
+      "hex": "4949524F08000000010027880300010000008002000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 640,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-0-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000000000000000000FFDA0002FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-1-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000100000000000000FFDA0002FFD9",
+      "orientation": 1,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-2-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000200000000000000FFDA0002FFD9",
+      "orientation": 2,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-3-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000300000000000000FFDA0002FFD9",
+      "orientation": 3,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-4-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000400000000000000FFDA0002FFD9",
+      "orientation": 4,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-5-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000500000000000000FFDA0002FFD9",
+      "orientation": 5,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-6-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000600000000000000FFDA0002FFD9",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-7-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000700000000000000FFDA0002FFD9",
+      "orientation": 7,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-8-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000800000000000000FFDA0002FFD9",
+      "orientation": 8,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-9-little",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010012010300010000000900000000000000FFDA0002FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-6-little",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000010012010300010000000600000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-0-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010000000000000000FFDA0002FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-1-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010001000000000000FFDA0002FFD9",
+      "orientation": 1,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-2-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010002000000000000FFDA0002FFD9",
+      "orientation": 2,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-3-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010003000000000000FFDA0002FFD9",
+      "orientation": 3,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-4-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010004000000000000FFDA0002FFD9",
+      "orientation": 4,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-5-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010005000000000000FFDA0002FFD9",
+      "orientation": 5,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-6-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010006000000000000FFDA0002FFD9",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-7-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010007000000000000FFDA0002FFD9",
+      "orientation": 7,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-8-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010008000000000000FFDA0002FFD9",
+      "orientation": 8,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-9-big",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100224578696600004D4D002A00000008000101120003000000010009000000000000FFDA0002FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-6-big",
+      "op": "orientation-tiff",
+      "hex": "4D4D002A00000008000101120003000000010006000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-missing",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE1002245786966000049492A0008000000010010010200020000005800000000000000FFDA0002FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-not-a-jpeg",
+      "op": "orientation-jpeg",
+      "hex": "0001020304",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-empty",
+      "op": "orientation-jpeg",
+      "hex": "",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-empty",
+      "op": "orientation-tiff",
+      "hex": "",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-duplicate-0-then-6-first-wins",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000020012010300010000000000000012010300010000000600000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-duplicate-6-then-8-first-wins",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000020012010300010000000600000012010300010000000800000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-byte-type",
+      "op": "orientation-tiff",
+      "hex": "4D4D002A00000008000101120001000000010600000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-long-type",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000010012010400010000000300000000000000",
+      "orientation": 3,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-sshort-negative",
+      "op": "orientation-tiff",
+      "hex": "49492A000800000001001201080001000000FFFF000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-rational-type",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000010012010500010000001A000000000000000600000001000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-count-zero",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000010012010300000000000600000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-in-exif-ifd-not-read",
+      "op": "orientation-tiff",
+      "hex": "49492A000800000002000F010200020000004100000069870400010000002600000000000000010012010300010000000600000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-count-65535-capped",
+      "op": "orientation-tiff",
+      "hex": "49492A0008000000FFFF12010300010000000600000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-ifd0-at-16",
+      "op": "orientation-tiff",
+      "hex": "49492A00100000000000000000000000010012010300010000000600000000000000000000000000000000000000000000000000000000000000000000000000",
+      "orientation": 6,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-ifd0-offset-2-inside-header",
+      "op": "orientation-tiff",
+      "hex": "49492A00020000000000000000000000120103000100000006000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-orf-magic-strict",
+      "op": "orientation-tiff",
+      "hex": "4949524F08000000010012010300010000000600000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-byte-order-IM",
+      "op": "orientation-tiff",
+      "hex": "494D2A0008000000010012010300010000000600000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-tiff-bytes-after-counted-entries-not-read",
+      "op": "orientation-tiff",
+      "hex": "49492A00080000000100000103000100000005000000120103000100000006000000000000000000",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "orientation-jpeg-first-exif-garbage-wins",
+      "op": "orientation-jpeg",
+      "hex": "FFD8FFE100144578696600006A756E6B6A756E6B6A756E6BFFE1002245786966000049492A0008000000010012010300010000000600000000000000FFD9",
+      "orientation": null,
+      "threw": false
+    },
+    {
+      "name": "exif-pointer-too-small-first-then-valid",
+      "op": "tiff",
+      "hex": "49492A0008000000020069870400010000000400000069870400010000002600000000000000010027880300010000009001000000000000000000000000000000000000000000000000000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "exif-pointer-max-first-wins-and-fails",
+      "op": "tiff",
+      "hex": "49492A000800000002006987040001000000FFFFFFFF69870400010000002600000000000000010027880300010000009001000000000000000000000000000000000000000000000000000000000000",
+      "summary": null,
+      "threw": false
+    },
+    {
+      "name": "exif-pointer-valid-first-wins",
+      "op": "tiff",
+      "hex": "49492A0008000000020069870400010000002600000069870400010000000400000000000000010027880300010000009001000000000000000000000000000000000000000000000000000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "exif-pointer-eight-followed-once",
+      "op": "tiff",
+      "hex": "49492A000800000003000F010200040000004142430069870400010000000800000027880300010000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "ABC",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    },
+    {
+      "name": "exif-pointer-seven-not-followed",
+      "op": "tiff",
+      "hex": "49492A000800000003000F010200040000004142430069870400010000000700000027880300010000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "ABC",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "threw": false
+    }
+  ]
+}

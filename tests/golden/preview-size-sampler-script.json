@@ -1,0 +1,86 @@
+{
+  "generator": "oracle-cs preview-size-sampler-script",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "no-samples-is-null",
+      "results": [
+        null
+      ]
+    },
+    {
+      "name": "seven-samples-null-eighth-gives-mean",
+      "results": [
+        null,
+        null,
+        null,
+        200
+      ]
+    },
+    {
+      "name": "box-change-restarts-mean",
+      "results": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        50
+      ]
+    },
+    {
+      "name": "non-positive-bytes-ignored-and-do-not-change-box",
+      "results": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        100
+      ]
+    },
+    {
+      "name": "mean-keeps-fraction",
+      "results": [
+        null,
+        null,
+        1.125,
+        null,
+        1.2222222222222223
+      ]
+    },
+    {
+      "name": "initial-box-is-unbounded-so-unbounded-samples-accumulate",
+      "results": [
+        null,
+        10,
+        null
+      ]
+    },
+    {
+      "name": "mean-for-other-box-is-null-and-does-not-reset",
+      "results": [
+        null,
+        null,
+        100
+      ]
+    },
+    {
+      "name": "large-total-beyond-int32",
+      "results": [
+        null,
+        4000000000
+      ]
+    },
+    {
+      "name": "swapped-width-height-is-a-different-box",
+      "results": [
+        null,
+        null,
+        5
+      ]
+    }
+  ]
+}

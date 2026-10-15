@@ -1,0 +1,33 @@
+{
+  "generator": "oracle-cs preload-options",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "defaults",
+      "worker_count": 8,
+      "memory_load_limit": 0.8,
+      "reserve_bytes": 2147483648,
+      "full_folder_threshold_bytes": 17179869184,
+      "window_forward": 32,
+      "window_backward": 8
+    },
+    {
+      "name": "with-window-5-2",
+      "worker_count": 8,
+      "memory_load_limit": 0.8,
+      "reserve_bytes": 2147483648,
+      "full_folder_threshold_bytes": 17179869184,
+      "window_forward": 5,
+      "window_backward": 2
+    },
+    {
+      "name": "with-window-0-0",
+      "worker_count": 8,
+      "memory_load_limit": 0.8,
+      "reserve_bytes": 2147483648,
+      "full_folder_threshold_bytes": 17179869184,
+      "window_forward": 0,
+      "window_backward": 0
+    }
+  ]
+}

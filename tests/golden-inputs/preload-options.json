@@ -1,0 +1,17 @@
+{
+  "cases": [
+    {
+      "name": "defaults"
+    },
+    {
+      "name": "with-window-5-2",
+      "forward": 5,
+      "backward": 2
+    },
+    {
+      "name": "with-window-0-0",
+      "forward": 0,
+      "backward": 0
+    }
+  ]
+}

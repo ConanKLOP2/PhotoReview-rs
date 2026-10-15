@@ -1,0 +1,6 @@
+{
+  "generator": "oracle-cs wic-direct-fixtures (W4-11c)",
+  "output_dir": "../fixtures/wic-direct",
+  "icc_profile": "../fixtures/ColorProfiles/DisplayP3-v4.icc",
+  "note": "Run once; commit the written files; wic-direct-decode and wic-direct-read-info are pinned to their bytes."
+}

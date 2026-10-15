@@ -1,0 +1,20 @@
+{
+  "generator": "oracle-cs wic-scale-resize",
+  "cases": [
+    {"name": "bgr32-shrink-4x", "layout": "bgr32", "srcWidth": 64, "srcHeight": 48, "width": 16, "height": 12, "seed": 4},
+    {"name": "pbgra32-odd-target", "layout": "pbgra32", "srcWidth": 64, "srcHeight": 48, "width": 33, "height": 7, "seed": 4, "alpha": true},
+    {"name": "bgr32-to-one-pixel", "layout": "bgr32", "srcWidth": 5, "srcHeight": 3, "width": 1, "height": 1, "seed": 4},
+    {"name": "bgr32-shrink-3x-exact-ratio", "layout": "bgr32", "srcWidth": 120, "srcHeight": 90, "width": 40, "height": 30, "seed": 8},
+    {"name": "bgr32-non-uniform-axes", "layout": "bgr32", "srcWidth": 100, "srcHeight": 100, "width": 10, "height": 60, "seed": 2},
+    {"name": "bgr32-enlargement-allowed", "layout": "bgr32", "srcWidth": 8, "srcHeight": 6, "width": 24, "height": 18, "seed": 6},
+    {"name": "bgr32-one-pixel-strip", "layout": "bgr32", "srcWidth": 1000, "srcHeight": 1, "width": 100, "height": 1, "seed": 1},
+    {"name": "bgr32-same-size-is-a-copy", "layout": "bgr32", "srcWidth": 17, "srcHeight": 9, "width": 17, "height": 9, "seed": 2},
+    {"name": "pbgra32-same-size-is-a-copy", "layout": "pbgra32", "srcWidth": 17, "srcHeight": 9, "width": 17, "height": 9, "seed": 2, "alpha": true},
+    {"name": "same-width-different-height-goes-through-wic", "layout": "bgr32", "srcWidth": 17, "srcHeight": 9, "width": 17, "height": 5, "seed": 2},
+    {"name": "width-zero-throws", "layout": "bgr32", "srcWidth": 4, "srcHeight": 4, "width": 0, "height": 2, "seed": 0},
+    {"name": "height-zero-throws", "layout": "bgr32", "srcWidth": 4, "srcHeight": 4, "width": 2, "height": 0, "seed": 0},
+    {"name": "negative-width-throws", "layout": "bgr32", "srcWidth": 4, "srcHeight": 4, "width": -3, "height": 2, "seed": 0},
+    {"name": "disposed-source-throws", "layout": "bgr32", "srcWidth": 4, "srcHeight": 4, "width": 2, "height": 2, "seed": 0, "disposeFirst": true},
+    {"name": "disposed-source-same-size-throws-before-copy", "layout": "bgr32", "srcWidth": 4, "srcHeight": 4, "width": 4, "height": 4, "seed": 0, "disposeFirst": true}
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "cases": [
+    {
+      "name": "read-once-reuses-the-same-array",
+      "capacity": 1024,
+      "files": [{ "name": "image.bin", "size": 4, "seed": 1 }],
+      "steps": [
+        { "op": "read", "file": "image.bin" },
+        { "op": "read", "file": "image.bin" }
+      ]
+    },
+    {
+      "name": "ranges-are-cached-separately-not-the-whole-file",
+      "capacity": 1024,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 128 },
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 128 },
+        { "op": "read_range", "file": "raw.dng", "offset": 1024, "count": 64 }
+      ]
+    },
+    {
+      "name": "range-larger-than-capacity-is-read-uncached-and-keeps-entries",
+      "capacity": 1024,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 0, "count": 128 },
+        { "op": "can_cache_range", "value": 2048 },
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 2048 },
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 2048 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 2048 },
+        { "op": "read_range", "file": "raw.dng", "offset": 0, "count": 128 }
+      ]
+    },
+    {
+      "name": "range-exactly-capacity-is-cached",
+      "capacity": 1024,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 100, "count": 1024 },
+        { "op": "read_range", "file": "raw.dng", "offset": 100, "count": 1024 },
+        { "op": "read_range", "file": "raw.dng", "offset": 0, "count": 1 }
+      ]
+    },
+    {
+      "name": "count-int-max-above-array-limit-rejected-before-open",
+      "capacity": 1024,
+      "steps": [
+        { "op": "read_range", "file": "never-opened.bin", "length": 3000000000, "ticks": 1, "offset": 0, "count": 2147483647 },
+        { "op": "read_range", "file": "never-opened.bin", "length": 3000000000, "ticks": 1, "offset": 0, "count": 2147483646 }
+      ]
+    },
+    {
+      "name": "count-at-array-max-passes-validation-one-more-is-rejected",
+      "capacity": 1048576,
+      "reader": { "serve": "bytes", "bytes": [1], "chunk": 1 },
+      "steps": [
+        { "op": "read_range", "file": "never-read.bin", "length": 2147483591, "ticks": 1, "offset": 0, "count": 2147483591 },
+        { "op": "read_range", "file": "never-read.bin", "length": 2147483592, "ticks": 1, "offset": 0, "count": 2147483592 }
+      ]
+    },
+    {
+      "name": "prefetch-skips-a-file-bigger-than-the-cache",
+      "capacity": 1024,
+      "files": [{ "name": "small.bin", "size": 100 }, { "name": "big.bin", "size": 5000 }],
+      "steps": [
+        { "op": "prefetch", "file": "big.bin" },
+        { "op": "prefetch", "file": "small.bin" },
+        { "op": "prefetch", "file": "small.bin" },
+        { "op": "read", "file": "small.bin" }
+      ]
+    },
+    {
+      "name": "prefetch-of-exact-capacity-file-reads-with-preload-priority",
+      "capacity": 1024,
+      "files": [{ "name": "fit.bin", "size": 1024 }],
+      "steps": [
+        { "op": "prefetch", "file": "fit.bin" },
+        { "op": "read", "file": "fit.bin" }
+      ]
+    },
+    {
+      "name": "prefetch-missing-file-throws",
+      "capacity": 1024,
+      "steps": [{ "op": "prefetch", "file": "missing.bin" }]
+    },
+    {
+      "name": "priorities-are-passed-to-the-reader",
+      "capacity": 1048576,
+      "files": [{ "name": "a.bin", "size": 64 }, { "name": "b.bin", "size": 64 }, { "name": "c.bin", "size": 4096 }],
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "read_priority", "file": "b.bin", "priority": "Preload" },
+        { "op": "read_range", "file": "c.bin", "offset": 0, "count": 16 },
+        { "op": "read_range", "file": "c.bin", "offset": 16, "count": 16, "priority": "Preload" }
+      ]
+    },
+    {
+      "name": "clear-and-evict-remove-entries",
+      "capacity": 1024,
+      "files": [{ "name": "image.bin", "size": 1, "fill": 9 }],
+      "steps": [
+        { "op": "read", "file": "image.bin" },
+        { "op": "evict", "file": "image.bin" },
+        { "op": "read", "file": "image.bin" },
+        { "op": "clear" },
+        { "op": "read", "file": "image.bin" }
+      ]
+    },
+    {
+      "name": "evict-only-affects-that-path",
+      "capacity": 1024,
+      "files": [{ "name": "gone.bin", "size": 1, "fill": 1 }, { "name": "kept.bin", "size": 1, "fill": 2 }],
+      "steps": [
+        { "op": "read", "file": "gone.bin" },
+        { "op": "read", "file": "kept.bin" },
+        { "op": "evict", "file": "gone.bin" },
+        { "op": "read", "file": "kept.bin" },
+        { "op": "read", "file": "gone.bin" }
+      ]
+    },
+    {
+      "name": "keys-are-ordinal-but-evict-is-ignore-case",
+      "capacity": 1024,
+      "files": [{ "name": "Case.bin", "size": 10 }],
+      "steps": [
+        { "op": "read", "file": "Case.bin" },
+        { "op": "read", "file": "CASE.BIN" },
+        { "op": "read", "file": "Case.bin" },
+        { "op": "evict", "file": "case.bin" },
+        { "op": "read", "file": "case.bin" }
+      ]
+    },
+    {
+      "name": "evict-drops-every-range-of-the-path",
+      "capacity": 4096,
+      "files": [{ "name": "raw.dng", "size": 4096 }, { "name": "other.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 0, "count": 100 },
+        { "op": "read_range", "file": "raw.dng", "offset": 200, "count": 100 },
+        { "op": "read_range", "file": "other.dng", "offset": 0, "count": 100 },
+        { "op": "evict", "file": "RAW.DNG" },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 100 },
+        { "op": "try_get_range", "file": "other.dng", "offset": 0, "count": 100 }
+      ]
+    },
+    {
+      "name": "evict-of-a-path-never-read-is-harmless",
+      "capacity": 1024,
+      "files": [{ "name": "a.bin", "size": 10 }],
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "evict", "file": "nothing-here.bin" },
+        { "op": "read", "file": "a.bin" }
+      ]
+    },
+    {
+      "name": "whole-file-key-equals-the-full-range-key",
+      "capacity": 8192,
+      "files": [{ "name": "a.bin", "size": 300 }],
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 300 },
+        { "op": "try_get_range", "file": "a.bin", "offset": 0, "count": 300 },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 299 }
+      ]
+    },
+    {
+      "name": "try-get-range-hit-after-read-range",
+      "capacity": 1048576,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 128 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 128 }
+      ]
+    },
+    {
+      "name": "try-get-range-offset-zero-hit",
+      "capacity": 1048576,
+      "files": [{ "name": "zero.bin", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "zero.bin", "offset": 0, "count": 128 },
+        { "op": "try_get_range", "file": "zero.bin", "offset": 0, "count": 128 }
+      ]
+    },
+    {
+      "name": "try-get-range-misses-without-reading",
+      "capacity": 1048576,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 128 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 128 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 64 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 128, "ticks_delta": 1 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 128, "length": 4097 },
+        { "op": "try_get_range", "file": "RAW.DNG", "offset": 512, "count": 128 }
+      ]
+    },
+    {
+      "name": "try-get-range-invalid-ranges-are-misses",
+      "capacity": 1048576,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read", "file": "raw.dng" },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 0 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": -1 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": -1, "count": 16 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 5000, "count": 16 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 4090, "count": 16 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 4096 }
+      ]
+    },
+    {
+      "name": "try-get-range-after-evict-is-a-miss",
+      "capacity": 1048576,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 512, "count": 128 },
+        { "op": "evict", "file": "raw.dng" },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 512, "count": 128 }
+      ]
+    },
+    {
+      "name": "injected-reader-serves-its-own-bytes",
+      "capacity": 1048576,
+      "files": [{ "name": "a.bin", "size": 64 }],
+      "reader": { "serve": "fill", "fill": 238, "chunk": 1024 },
+      "steps": [{ "op": "read", "file": "a.bin" }]
+    },
+    {
+      "name": "short-reads-are-assembled-in-order",
+      "capacity": 1048576,
+      "files": [{ "name": "short.bin", "size": 100 }],
+      "reader": { "serve": "file", "chunk": 7 },
+      "steps": [
+        { "op": "read", "file": "short.bin" },
+        { "op": "read_range", "file": "short.bin", "offset": 3, "count": 50 }
+      ]
+    },
+    {
+      "name": "early-eof-is-a-localized-end-of-stream-and-not-cached",
+      "capacity": 1048576,
+      "files": [{ "name": "eof.bin", "size": 100 }],
+      "reader": { "serve": "file", "chunk": 10, "eof_after": 40 },
+      "steps": [
+        { "op": "read", "file": "eof.bin" },
+        { "op": "read", "file": "eof.bin" },
+        { "op": "read_range", "file": "eof.bin", "offset": 30, "count": 10 },
+        { "op": "read_range", "file": "eof.bin", "offset": 30, "count": 11 }
+      ]
+    },
+    {
+      "name": "stream-length-differing-from-the-key-is-file-changed",
+      "capacity": 1048576,
+      "files": [{ "name": "a.bin", "size": 100 }],
+      "reader": { "serve": "file", "chunk": 100, "length_override": 99 },
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 10 }
+      ]
+    },
+    {
+      "name": "range-with-stale-identity-is-file-changed-after-read",
+      "capacity": 1048576,
+      "files": [{ "name": "a.bin", "size": 100 }],
+      "steps": [
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 10, "ticks_delta": -1 },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 10, "length": 101 },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 10 }
+      ]
+    },
+    {
+      "name": "empty-range-returns-empty-without-opening",
+      "capacity": 1048576,
+      "files": [{ "name": "end.bin", "size": 4096 }],
+      "reader": { "throw_on_open": true },
+      "steps": [
+        { "op": "read_range", "file": "end.bin", "offset": 4096, "count": 0 },
+        { "op": "read_range", "file": "end.bin", "offset": 0, "count": 0 },
+        { "op": "read_range", "file": "missing.bin", "length": 10, "ticks": 5, "offset": 3, "count": 0 }
+      ]
+    },
+    {
+      "name": "range-ending-exactly-at-end-is-valid",
+      "capacity": 1048576,
+      "files": [{ "name": "tail.bin", "size": 4096 }],
+      "steps": [{ "op": "read_range", "file": "tail.bin", "offset": 4080, "count": 16 }]
+    },
+    {
+      "name": "invalid-ranges-throw-offset-before-opening",
+      "capacity": 1048576,
+      "files": [{ "name": "bad.bin", "size": 4096 }],
+      "reader": { "throw_on_open": true },
+      "steps": [
+        { "op": "read_range", "file": "bad.bin", "offset": -1, "count": 5 },
+        { "op": "read_range", "file": "bad.bin", "offset": 0, "count": -1 },
+        { "op": "read_range", "file": "bad.bin", "offset": 4097, "count": 0 },
+        { "op": "read_range", "file": "bad.bin", "offset": 0, "count": 4097 },
+        { "op": "read_range", "file": "bad.bin", "offset": 4090, "count": 16 },
+        { "op": "read_range", "file": "bad.bin", "offset": 4096, "count": 1 },
+        { "op": "read_range", "file": "bad.bin", "offset": 9223372036854775807, "count": 1, "length": 9223372036854775807 }
+      ]
+    },
+    {
+      "name": "argument-check-order",
+      "capacity": 1048576,
+      "reader": { "throw_on_open": true },
+      "steps": [
+        { "op": "read_range", "raw_path": "   ", "length": -1, "ticks": 0, "offset": -1, "count": -1 },
+        { "op": "read_range", "file": "x.bin", "length": -1, "ticks": 0, "offset": -1, "count": -1 },
+        { "op": "read_range", "file": "x.bin", "length": 10, "ticks": 0, "offset": 11, "count": 2147483647 },
+        { "op": "read_range", "raw_path": "", "length": 10, "ticks": 0, "offset": 0, "count": 1 },
+        { "op": "read_range", "raw_path": "\t", "length": 10, "ticks": 0, "offset": 0, "count": 1 },
+        { "op": "read_range", "raw_path": "a\u0000b.bin", "length": 10, "ticks": 0, "offset": 0, "count": 0 }
+      ]
+    },
+    {
+      "name": "bad-paths-on-whole-file-api",
+      "capacity": 1048576,
+      "dirs": ["sub"],
+      "steps": [
+        { "op": "read", "raw_path": "" },
+        { "op": "read", "raw_path": "   " },
+        { "op": "read", "raw_path": "a\u0000b.bin" },
+        { "op": "read", "file": "sub" },
+        { "op": "prefetch", "file": "sub" },
+        { "op": "evict", "raw_path": "" },
+        { "op": "evict", "raw_path": "a\u0000b.bin" },
+        { "op": "try_get_range", "raw_path": "", "length": 10, "ticks": 0, "offset": 0, "count": 1 },
+        { "op": "try_get_range", "raw_path": "", "length": 10, "ticks": 0, "offset": 0, "count": 0 }
+      ]
+    },
+    {
+      "name": "can-cache-boundaries",
+      "capacity": 1024,
+      "steps": [
+        { "op": "can_cache", "value": 1024 },
+        { "op": "can_cache", "value": 1025 },
+        { "op": "can_cache", "value": 0 },
+        { "op": "can_cache", "value": -5 },
+        { "op": "can_cache", "value": 9223372036854775807 },
+        { "op": "can_cache", "value": 2147483591 },
+        { "op": "can_cache_range", "value": 0 },
+        { "op": "can_cache_range", "value": 1024 },
+        { "op": "can_cache_range", "value": 1025 },
+        { "op": "can_cache_range", "value": -1 },
+        { "op": "can_cache_range", "value": 2147483592 }
+      ]
+    },
+    {
+      "name": "zero-byte-file-is-empty-and-cached-with-size-one",
+      "capacity": 1024,
+      "files": [{ "name": "empty.jpg", "size": 0 }],
+      "steps": [
+        { "op": "read", "file": "empty.jpg" },
+        { "op": "read", "file": "empty.jpg" },
+        { "op": "prefetch", "file": "empty.jpg" }
+      ]
+    },
+    {
+      "name": "failed-read-of-missing-file-is-not-cached",
+      "capacity": 1024,
+      "steps": [
+        { "op": "read", "file": "late.jpg" },
+        { "op": "write", "file": "late.jpg", "size": 3, "seed": 7 },
+        { "op": "read", "file": "late.jpg" },
+        { "op": "read", "file": "late.jpg" }
+      ]
+    },
+    {
+      "name": "deleted-file-fails-reads-and-keeps-entries-until-evicted",
+      "capacity": 1024,
+      "files": [{ "name": "a.bin", "size": 10 }],
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "read_range", "file": "a.bin", "offset": 0, "count": 5 },
+        { "op": "delete", "file": "a.bin" },
+        { "op": "read_range", "file": "a.bin", "length": 10, "ticks": 0, "offset": 0, "count": 5 },
+        { "op": "read", "file": "a.bin" },
+        { "op": "prefetch", "file": "a.bin" },
+        { "op": "evict", "file": "a.bin" }
+      ]
+    },
+    {
+      "name": "oversized-file-is-returned-but-not-cached",
+      "capacity": 1000,
+      "files": [{ "name": "small.bin", "size": 100 }, { "name": "big.bin", "size": 5000 }],
+      "steps": [
+        { "op": "read", "file": "small.bin" },
+        { "op": "read", "file": "big.bin" },
+        { "op": "read", "file": "big.bin" },
+        { "op": "read", "file": "small.bin" }
+      ]
+    },
+    {
+      "name": "replaced-file-same-length-new-time-is-re-read",
+      "capacity": 1024,
+      "files": [{ "name": "changing.bin", "size": 3, "seed": 1 }],
+      "steps": [
+        { "op": "read", "file": "changing.bin" },
+        { "op": "write", "file": "changing.bin", "size": 3, "seed": 9, "add_minutes": 5 },
+        { "op": "read", "file": "changing.bin" },
+        { "op": "read", "file": "changing.bin" }
+      ]
+    },
+    {
+      "name": "lru-drops-the-least-recently-used",
+      "capacity": 300,
+      "files": [
+        { "name": "a.bin", "size": 100, "seed": 1 },
+        { "name": "b.bin", "size": 100, "seed": 2 },
+        { "name": "c.bin", "size": 100, "seed": 3 },
+        { "name": "d.bin", "size": 100, "seed": 4 }
+      ],
+      "steps": [
+        { "op": "read", "file": "a.bin" },
+        { "op": "read", "file": "b.bin" },
+        { "op": "read", "file": "c.bin" },
+        { "op": "read", "file": "a.bin" },
+        { "op": "read", "file": "d.bin" },
+        { "op": "read", "file": "a.bin" },
+        { "op": "read", "file": "b.bin" },
+        { "op": "read", "file": "c.bin" }
+      ]
+    },
+    {
+      "name": "try-get-range-hit-refreshes-lru",
+      "capacity": 300,
+      "files": [{ "name": "raw.dng", "size": 4096 }],
+      "steps": [
+        { "op": "read_range", "file": "raw.dng", "offset": 0, "count": 100 },
+        { "op": "read_range", "file": "raw.dng", "offset": 100, "count": 100 },
+        { "op": "read_range", "file": "raw.dng", "offset": 200, "count": 100 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 100 },
+        { "op": "read_range", "file": "raw.dng", "offset": 300, "count": 100 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 0, "count": 100 },
+        { "op": "try_get_range", "file": "raw.dng", "offset": 100, "count": 100 }
+      ]
+    },
+    {
+      "name": "clear-then-everything-is-cacheable-again",
+      "capacity": 1024,
+      "files": [{ "name": "a.bin", "size": 16 }, { "name": "b.bin", "size": 16 }],
+      "steps": [
+        { "op": "evict", "file": "a.bin" },
+        { "op": "evict", "file": "b.bin" },
+        { "op": "read", "file": "a.bin" },
+        { "op": "clear" },
+        { "op": "read", "file": "a.bin" },
+        { "op": "read", "file": "b.bin" },
+        { "op": "read", "file": "a.bin" }
+      ]
+    }
+  ]
+}

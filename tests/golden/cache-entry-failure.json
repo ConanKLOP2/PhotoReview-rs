@@ -1,0 +1,166 @@
+{
+  "generator": "oracle-cs cache-entry-failure",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "exception",
+      "type": "Exception",
+      "is_failure": false
+    },
+    {
+      "name": "ioexception",
+      "type": "IOException",
+      "is_failure": true
+    },
+    {
+      "name": "filenotfoundexception",
+      "type": "FileNotFoundException",
+      "is_failure": true
+    },
+    {
+      "name": "directorynotfoundexception",
+      "type": "DirectoryNotFoundException",
+      "is_failure": true
+    },
+    {
+      "name": "endofstreamexception",
+      "type": "EndOfStreamException",
+      "is_failure": true
+    },
+    {
+      "name": "pathtoolongexception",
+      "type": "PathTooLongException",
+      "is_failure": true
+    },
+    {
+      "name": "decodermemoryadmissionexception",
+      "type": "DecoderMemoryAdmissionException",
+      "is_failure": true
+    },
+    {
+      "name": "unauthorizedaccessexception",
+      "type": "UnauthorizedAccessException",
+      "is_failure": true
+    },
+    {
+      "name": "notsupportedexception",
+      "type": "NotSupportedException",
+      "is_failure": true
+    },
+    {
+      "name": "missingimagecodecexception",
+      "type": "MissingImageCodecException",
+      "is_failure": true
+    },
+    {
+      "name": "platformnotsupportedexception",
+      "type": "PlatformNotSupportedException",
+      "is_failure": true
+    },
+    {
+      "name": "formatexception",
+      "type": "FormatException",
+      "is_failure": true
+    },
+    {
+      "name": "invaliddataexception",
+      "type": "InvalidDataException",
+      "is_failure": true
+    },
+    {
+      "name": "argumentexception",
+      "type": "ArgumentException",
+      "is_failure": true
+    },
+    {
+      "name": "argumentnullexception",
+      "type": "ArgumentNullException",
+      "is_failure": true
+    },
+    {
+      "name": "argumentoutofrangeexception",
+      "type": "ArgumentOutOfRangeException",
+      "is_failure": true
+    },
+    {
+      "name": "invalidoperationexception",
+      "type": "InvalidOperationException",
+      "is_failure": true
+    },
+    {
+      "name": "objectdisposedexception",
+      "type": "ObjectDisposedException",
+      "is_failure": true
+    },
+    {
+      "name": "overflowexception",
+      "type": "OverflowException",
+      "is_failure": true
+    },
+    {
+      "name": "invalidcastexception",
+      "type": "InvalidCastException",
+      "is_failure": true
+    },
+    {
+      "name": "comexception",
+      "type": "COMException",
+      "is_failure": true
+    },
+    {
+      "name": "comexception-e_outofmemory",
+      "type": "COMException-E_OUTOFMEMORY",
+      "is_failure": true
+    },
+    {
+      "name": "operationcanceledexception",
+      "type": "OperationCanceledException",
+      "is_failure": false
+    },
+    {
+      "name": "taskcanceledexception",
+      "type": "TaskCanceledException",
+      "is_failure": false
+    },
+    {
+      "name": "outofmemoryexception",
+      "type": "OutOfMemoryException",
+      "is_failure": false
+    },
+    {
+      "name": "insufficientmemoryexception",
+      "type": "InsufficientMemoryException",
+      "is_failure": false
+    },
+    {
+      "name": "decoderbusyexception",
+      "type": "DecoderBusyException",
+      "is_failure": false
+    },
+    {
+      "name": "dllnotfoundexception",
+      "type": "DllNotFoundException",
+      "is_failure": false
+    },
+    {
+      "name": "badimageformatexception",
+      "type": "BadImageFormatException",
+      "is_failure": false
+    },
+    {
+      "name": "entrypointnotfoundexception",
+      "type": "EntryPointNotFoundException",
+      "is_failure": false
+    },
+    {
+      "name": "nullreferenceexception",
+      "type": "NullReferenceException",
+      "is_failure": false
+    },
+    {
+      "name": "timeoutexception",
+      "type": "TimeoutException",
+      "is_failure": false
+    }
+  ]
+}

@@ -1,0 +1,2017 @@
+{
+  "generator": "oracle-cs webp-heic-routing",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "ext-0-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-0-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-0-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.webp'.",
+          "describe": "a.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.webp'.",
+          "describe": "a.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-1-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-1-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.WEBP'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.WEBP cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.WEBP'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.WEBP cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-1-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.WEBP'.",
+          "describe": "a.WEBP is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.WEBP'.",
+          "describe": "a.WEBP is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-2-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-2-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'IMG_0001.HEIC'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so IMG_0001.HEIC cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'IMG_0001.HEIC'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so IMG_0001.HEIC cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-2-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_0001.HEIC'.",
+          "describe": "IMG_0001.HEIC is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_0001.HEIC'.",
+          "describe": "IMG_0001.HEIC is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-3-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-3-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.heif'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.heif cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.heif'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.heif cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-3-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heif'.",
+          "describe": "a.heif is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heif'.",
+          "describe": "a.heif is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-4-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-4-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.HeIf'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.HeIf cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.HeIf'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.HeIf cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-4-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.HeIf'.",
+          "describe": "a.HeIf is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.HeIf'.",
+          "describe": "a.HeIf is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-5-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-5-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-5-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-6-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-6-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-6-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-7-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-7-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-7-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-8-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-8-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-8-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-9-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-9-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-9-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-10-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp ",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-10-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp ",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-10-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp ",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp ",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-11-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-11-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-11-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-12-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-12-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode '.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so .webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode '.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so .webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-12-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode '.webp'.",
+          "describe": ".webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode '.webp'.",
+          "describe": ".webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-13-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-13-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a..webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a..webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a..webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a..webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-13-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a..webp'.",
+          "describe": "a..webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a..webp'.",
+          "describe": "a..webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-14-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic.",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-14-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic.",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-14-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic.",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic.",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-15-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-15-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-15-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-16-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-16-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-16-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.webp'.",
+          "describe": "a.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.webp'.",
+          "describe": "a.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-17-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-17-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'ảnh đẹp.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so ảnh đẹp.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'ảnh đẹp.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so ảnh đẹp.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-17-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'ảnh đẹp.webp'.",
+          "describe": "ảnh đẹp.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'ảnh đẹp.webp'.",
+          "describe": "ảnh đẹp.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\ảnh đẹp.webp",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-18-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-18-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'relative.heic'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so relative.heic cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'relative.heic'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so relative.heic cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-18-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'relative.heic'.",
+          "describe": "relative.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'relative.heic'.",
+          "describe": "relative.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "ext-19-enabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-19-disabled-all",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.heic'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.heic cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.heic'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.heic cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "ext-19-enabled-none",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic",
+          "value": true,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "heif-without-hevc-logs-once",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_1.HEIC",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_1.HEIC'.",
+          "describe": "IMG_1.HEIC is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_2.HEIC",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_2.HEIC'.",
+          "describe": "IMG_2.HEIC is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_3.HEIC",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_3.HEIC'.",
+          "describe": "IMG_3.HEIC is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 3
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_9.heif",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'IMG_9.heif'.",
+          "describe": "IMG_9.heif is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 4
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\still.webp",
+          "routed": "wic",
+          "probe_calls": 5
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: probe-detail"
+      ]
+    },
+    {
+      "name": "webp-missing-logs-separately",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'a.webp'.",
+          "describe": "a.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\b.webp",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); cannot decode 'b.webp'.",
+          "describe": "b.webp is a WebP image, but Windows on this PC has no WebP decoder. Install \"WebP Image Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\c.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'c.heic'.",
+          "describe": "c.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 3
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\d.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'd.heic'.",
+          "describe": "d.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 4
+        }
+      ],
+      "warnings": [
+        "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing",
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: nothing"
+      ]
+    },
+    {
+      "name": "heif-container-without-hevc",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic",
+          "value": true,
+          "probe_calls": 3
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 4
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 5
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": false,
+          "probe_calls": 6
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: probe-detail"
+      ]
+    },
+    {
+      "name": "webp-only-codec",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic",
+          "throws": "MissingImageCodecException",
+          "is_missing_codec": true,
+          "is_localized": true,
+          "message": "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); cannot decode 'a.heic'.",
+          "describe": "a.heic is a HEIC/HEIF photo (for example from an iPhone), but Windows on this PC cannot decode it. Install \"HEIF Image Extensions\" and \"HEVC Video Extensions\" from the Microsoft Store, then restart PhotoReview.",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic",
+          "value": true,
+          "probe_calls": 3
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 4
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 5
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": false,
+          "probe_calls": 6
+        }
+      ],
+      "warnings": [
+        "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store); files of this format are skipped until the codec is installed and the app restarted. Probe: t"
+      ]
+    },
+    {
+      "name": "switch-toggled-between-calls",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": false,
+          "probe_calls": 1
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 1
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp",
+          "value": true,
+          "probe_calls": 1
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": true,
+          "probe_calls": 1
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "probe-not-run-for-other-formats",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png",
+          "routed": "inner",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "probe-once-per-webp-call",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "routed": "wic",
+          "probe_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\b.webp",
+          "routed": "wic",
+          "probe_calls": 2
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\c.heic",
+          "value": false,
+          "probe_calls": 3
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "disabled-short-circuits-probe",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp",
+          "throws": "NotSupportedException",
+          "is_missing_codec": false,
+          "is_localized": true,
+          "message": "WebP/HEIC support is disabled; cannot decode 'a.webp'.",
+          "describe": "WebP/HEIC support is turned off in Settings, so a.webp cannot be shown.",
+          "probe_calls": 0
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\b.heic",
+          "value": true,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "will-refuse-null-path",
+      "ops": [
+        {
+          "op": "will_refuse",
+          "path": null,
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "will-refuse-empty-path",
+      "ops": [
+        {
+          "op": "will_refuse",
+          "path": "",
+          "value": false,
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "read-info-blank-path",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "",
+          "throws": "ArgumentException",
+          "is_missing_codec": false,
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "probe_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "   ",
+          "throws": "ArgumentException",
+          "is_missing_codec": false,
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "probe_calls": 0
+        }
+      ],
+      "warnings": []
+    }
+  ]
+}

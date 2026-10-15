@@ -1,0 +1,4673 @@
+{
+  "generator": "oracle-cs preload-scheduler-script",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "window-forward",
+      "count": 20,
+      "workers": 2,
+      "forward": 3,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            11,
+            12,
+            13,
+            9
+          ],
+          "preloads": [
+            11,
+            12,
+            13,
+            9
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=10 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-forward-one-worker",
+      "count": 20,
+      "workers": 1,
+      "forward": 3,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            11,
+            12,
+            13,
+            9
+          ],
+          "preloads": [
+            11,
+            12,
+            13,
+            9
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=10 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-default-size",
+      "count": 60,
+      "workers": 8,
+      "forward": 32,
+      "backward": 8,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 40
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            39,
+            38,
+            37,
+            36,
+            35,
+            34,
+            33,
+            32
+          ],
+          "preloads": [
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            39,
+            38,
+            37,
+            36,
+            35,
+            34,
+            33,
+            32
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=60 box=100x100 measuredMeanBytes=none estimatedBytes=2400000 capacityBytes=-1 wholeFolder=False center=40 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 27,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-backward-after-prev",
+      "count": 20,
+      "workers": 2,
+      "forward": 3,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 11
+        },
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            11,
+            12,
+            13,
+            14,
+            10
+          ],
+          "preloads": [
+            12,
+            13,
+            14,
+            10
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=11 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            9,
+            8,
+            7,
+            11
+          ],
+          "preloads": [
+            9,
+            8,
+            7,
+            11
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=10 direction=-1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 8,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-at-folder-start",
+      "count": 20,
+      "workers": 2,
+      "forward": 4,
+      "backward": 2,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-at-folder-end",
+      "count": 20,
+      "workers": 2,
+      "forward": 4,
+      "backward": 2,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 19
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            19,
+            18,
+            17
+          ],
+          "preloads": [
+            18,
+            17
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=19 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "whole-folder",
+      "count": 12,
+      "workers": 3,
+      "forward": 2,
+      "backward": 1,
+      "threshold": 1000000000000,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "preloads": [
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000000 wholeFolder=True center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 11,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "whole-folder-backward",
+      "count": 12,
+      "workers": 3,
+      "forward": 2,
+      "backward": 1,
+      "threshold": 1000000000000,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 6
+        },
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            6,
+            7,
+            8,
+            5,
+            9,
+            10,
+            11,
+            4,
+            3,
+            2,
+            1,
+            0
+          ],
+          "preloads": [
+            7,
+            8,
+            5,
+            9,
+            10,
+            11,
+            4,
+            3,
+            2,
+            1,
+            0
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000000 wholeFolder=True center=6 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 11,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            4,
+            3,
+            6,
+            2,
+            1,
+            0,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "preloads": [
+            6
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000000 wholeFolder=True center=5 direction=-1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 12,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "whole-folder-fill-limit-reached",
+      "count": 12,
+      "workers": 3,
+      "forward": 2,
+      "backward": 1,
+      "threshold": 1000000000,
+      "cache_bytes": 900000000,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4
+          ],
+          "preloads": [
+            6,
+            7,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000 wholeFolder=True center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "whole-folder-fill-limit-just-below",
+      "count": 12,
+      "workers": 3,
+      "forward": 2,
+      "backward": 1,
+      "threshold": 1000000000,
+      "cache_bytes": 899999999,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "preloads": [
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000 wholeFolder=True center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 11,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "whole-folder-no-headroom-for-estimate",
+      "count": 12,
+      "workers": 3,
+      "forward": 2,
+      "backward": 1,
+      "threshold": 1000000000000,
+      "load": 0.79,
+      "memory_load_limit": 0.8,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "preloads": [
+            6,
+            7,
+            4,
+            8,
+            9,
+            10,
+            11,
+            3,
+            2,
+            1,
+            0
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=1000000000000 wholeFolder=True center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 11,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cached-neighbours-skipped",
+      "count": 20,
+      "workers": 2,
+      "forward": 3,
+      "backward": 1,
+      "threshold": -1,
+      "cached": [
+        11,
+        13,
+        9
+      ],
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            11,
+            12,
+            13,
+            9
+          ],
+          "preloads": [
+            12
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=10 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "everything-cached",
+      "count": 20,
+      "workers": 2,
+      "forward": 3,
+      "backward": 1,
+      "threshold": 1000000000000,
+      "cached": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            11,
+            12,
+            13,
+            9,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            8,
+            7,
+            6,
+            5,
+            4,
+            3,
+            2,
+            1,
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=1000000000000 wholeFolder=True center=10 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "failure-kinds",
+      "count": 10,
+      "workers": 2,
+      "forward": 8,
+      "backward": 0,
+      "threshold": -1,
+      "failures": {
+        "1": "io",
+        "2": "access",
+        "3": "busy",
+        "4": "missing_codec",
+        "5": "invalid_data",
+        "6": "foreign_cancel",
+        "7": "not_cached"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "error: Preload failed: C:\\w415b\\img-01.jpg",
+            "error: Preload failed: C:\\w415b\\img-02.jpg",
+            "info: Preload deferred, decoder busy: C:\\w415b\\img-03.jpg",
+            "error: Preload failed: C:\\w415b\\img-05.jpg",
+            "warn: Preload cancelled by another source: C:\\w415b\\img-06.jpg (The operation was canceled.)"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "failure-kinds-then-same-centre-again",
+      "count": 10,
+      "workers": 1,
+      "forward": 8,
+      "backward": 0,
+      "threshold": -1,
+      "failures": {
+        "1": "io",
+        "3": "busy",
+        "7": "not_cached"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "error: Preload failed: C:\\w415b\\img-01.jpg",
+            "info: Preload deferred, decoder busy: C:\\w415b\\img-03.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "preloads": [
+            1,
+            7
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "error: Preload failed: C:\\w415b\\img-01.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "key-failures-io-and-access",
+      "count": 8,
+      "workers": 2,
+      "forward": 6,
+      "backward": 0,
+      "threshold": -1,
+      "key_failures": {
+        "2": "io",
+        "4": "access"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "preloads": [
+            1,
+            3,
+            5,
+            6
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=100x100 measuredMeanBytes=none estimatedBytes=320000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "warn: Preload skipped, cannot stat: C:\\w415b\\img-02.jpg",
+            "warn: Preload skipped, cannot stat: C:\\w415b\\img-04.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "key-failure-argument-ends-run",
+      "count": 8,
+      "workers": 2,
+      "forward": 6,
+      "backward": 0,
+      "threshold": -1,
+      "key_failures": {
+        "3": "argument"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=100x100 measuredMeanBytes=none estimatedBytes=320000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "error: Preload scheduler failed"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=100x100 measuredMeanBytes=none estimatedBytes=320000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "error: Preload scheduler failed"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "centre-key-failure-io-unbounded-box",
+      "count": 8,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "key_failures": {
+        "4": "io"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            4,
+            5,
+            6,
+            3
+          ],
+          "preloads": [
+            5,
+            6,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=0x0 measuredMeanBytes=none estimatedBytes=80280 capacityBytes=-1 wholeFolder=False center=4 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "centre-key-failure-argument",
+      "count": 8,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "key_failures": {
+        "4": "argument"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            4
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "error: Preload scheduler failed"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "centre-out-of-range",
+      "count": 8,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": -1
+        },
+        {
+          "op": "preload_around",
+          "center": 8
+        },
+        {
+          "op": "preload_around",
+          "center": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=0x0 measuredMeanBytes=none estimatedBytes=80280 capacityBytes=-1 wholeFolder=False center=-1 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=0x0 measuredMeanBytes=none estimatedBytes=80280 capacityBytes=-1 wholeFolder=False center=8 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=0x0 measuredMeanBytes=none estimatedBytes=80280 capacityBytes=-1 wholeFolder=False center=100 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "empty-folder",
+      "count": 0,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=0 box=0x0 measuredMeanBytes=none estimatedBytes=0 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "zero-workers-is-a-no-op",
+      "count": 8,
+      "workers": 0,
+      "forward": 3,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "notify_navigation",
+          "index": 3
+        },
+        {
+          "op": "preload_around",
+          "center": 3
+        }
+      ],
+      "results": [
+        {
+          "op": "notify_navigation",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            0
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "busy-backoff-across-passes",
+      "count": 4,
+      "workers": 1,
+      "forward": 3,
+      "backward": 0,
+      "threshold": -1,
+      "failures": {
+        "1": "busy"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1,
+            2,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload deferred, decoder busy: C:\\w415b\\img-01.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "busy-backoff-retry-cap",
+      "count": 3,
+      "workers": 1,
+      "forward": 2,
+      "backward": 0,
+      "threshold": -1,
+      "failures": {
+        "1": "busy"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload deferred, decoder busy: C:\\w415b\\img-01.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "busy-path-forgotten-when-cached",
+      "count": 3,
+      "workers": 1,
+      "forward": 2,
+      "backward": 0,
+      "threshold": -1,
+      "failures": {
+        "1": "busy"
+      },
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "set_failure",
+          "index": 1,
+          "kind": null
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload deferred, decoder busy: C:\\w415b\\img-01.jpg"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_failure",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=3 box=100x100 measuredMeanBytes=none estimatedBytes=120000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "prefetch-skips-disk-cached-and-raw",
+      "count": 8,
+      "workers": 2,
+      "forward": 7,
+      "backward": 0,
+      "threshold": -1,
+      "prefetch": true,
+      "disk_cached": [
+        2,
+        5
+      ],
+      "raw_indices": [
+        3,
+        6
+      ],
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "prefetches": [
+            1,
+            4,
+            7
+          ],
+          "log": [
+            "info: Preload policy: images=8 box=100x100 measuredMeanBytes=none estimatedBytes=320000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 7,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "no-prefetch-without-delegate",
+      "count": 4,
+      "workers": 2,
+      "forward": 3,
+      "backward": 0,
+      "threshold": -1,
+      "disk_cached": [
+        2
+      ],
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1,
+            2,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=4 box=100x100 measuredMeanBytes=none estimatedBytes=160000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "preloaded-keys-consume-remove-clear",
+      "count": 6,
+      "workers": 2,
+      "forward": 3,
+      "backward": 0,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "consume_key",
+          "index": 1
+        },
+        {
+          "op": "consume_key",
+          "index": 1
+        },
+        {
+          "op": "remove_keys_for_path",
+          "index": 2
+        },
+        {
+          "op": "consume_key",
+          "index": 2
+        },
+        {
+          "op": "consume_key",
+          "index": 3
+        },
+        {
+          "op": "evict",
+          "index": 3
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "clear_preloaded_keys"
+        },
+        {
+          "op": "consume_key",
+          "index": 3
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1,
+            2,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=6 box=100x100 measuredMeanBytes=none estimatedBytes=240000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "remove_keys_for_path",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "evict",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=6 box=100x100 measuredMeanBytes=none estimatedBytes=240000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 1,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "clear_preloaded_keys",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "evicted-preview-requeued-by-next-kick",
+      "count": 6,
+      "workers": 2,
+      "forward": 3,
+      "backward": 0,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "evict",
+          "index": 2
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            1,
+            2,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=6 box=100x100 measuredMeanBytes=none estimatedBytes=240000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "evict",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "preloads": [
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=6 box=100x100 measuredMeanBytes=none estimatedBytes=240000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "notify-navigation-moves-centre-without-run",
+      "count": 12,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "notify_navigation",
+          "index": 5
+        },
+        {
+          "op": "preload_around",
+          "center": 5
+        },
+        {
+          "op": "notify_navigation",
+          "index": 6
+        },
+        {
+          "op": "preload_around",
+          "center": 6
+        }
+      ],
+      "results": [
+        {
+          "op": "notify_navigation",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            0
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4
+          ],
+          "preloads": [
+            6,
+            7,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "notify_navigation",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            6,
+            7,
+            8,
+            5
+          ],
+          "preloads": [
+            8,
+            5
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=6 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cancel-then-restart-new-lifetime",
+      "count": 12,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 3
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 4
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 5
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 6
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            3,
+            4,
+            5,
+            2
+          ],
+          "preloads": [
+            4,
+            5,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=3 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            4,
+            5,
+            6,
+            3
+          ],
+          "preloads": [
+            6,
+            3
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=4 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4
+          ],
+          "preloads": [
+            7
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 6,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 6,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            6,
+            7,
+            8,
+            5
+          ],
+          "preloads": [
+            8
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=6 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 7,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "dispose-then-everything-is-a-no-op",
+      "count": 8,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 3
+        },
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "preload_around",
+          "center": 4
+        },
+        {
+          "op": "notify_navigation",
+          "index": 5
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "consume_key",
+          "index": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            3,
+            4,
+            5,
+            2
+          ],
+          "preloads": [
+            4,
+            5,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=8 box=100x100 measuredMeanBytes=none estimatedBytes=320000 capacityBytes=-1 wholeFolder=False center=3 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "dispose",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "notify_navigation",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 3,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "consume_key",
+          "consumed": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-then-resume",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "set_load",
+          "value": 0.77
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            4
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            8
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload resumed after memory pause: center=0",
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-backoff-budget",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "preload_around",
+          "center": 5
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            4
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            8
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            16
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            30
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            30
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            30
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            30
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            5
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=5 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-cache-full-stays-paused",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": 1000000000,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "set_cache_bytes",
+          "value": 900000000
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "fire_timer"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=1000000000 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_cache_bytes",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload stays paused: cache at its fill limit (cacheBytes=900000000)"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-viewer-decoding-waits",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "set_viewer",
+          "value": 1
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "set_viewer",
+          "value": 0
+        },
+        {
+          "op": "fire_timer"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_viewer",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            4
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_viewer",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload resumed after memory pause: center=0",
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-cancel-retires-recheck",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-navigation-retires-recheck",
+      "count": 10,
+      "workers": 2,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "notify_navigation",
+          "index": 1
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "preload_around",
+          "center": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "notify_navigation",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": false,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "preloads": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=1 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-pause-resumed-run-pauses-again",
+      "count": 10,
+      "workers": 1,
+      "forward": 4,
+      "backward": 0,
+      "threshold": -1,
+      "load": 0.95,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "set_load",
+          "value": 0.5
+        },
+        {
+          "op": "fire_timer"
+        },
+        {
+          "op": "set_load",
+          "value": 0.95
+        },
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "fire_timer"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=0 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 0,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "preloads": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload resumed after memory pause: center=0",
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "set_load",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            0
+          ],
+          "preloads": [],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=10 box=100x100 measuredMeanBytes=none estimatedBytes=400000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0",
+            "info: Preload paused for memory: queued=0 cacheCount=4 cacheBytes=0 availableBytes=17179869184 loadPercent=95"
+          ],
+          "timers": [
+            2
+          ],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "fire_timer",
+          "fired": true,
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [
+            4
+          ],
+          "resumes": 1,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "viewer-decoding-limits-but-completes",
+      "count": 20,
+      "workers": 4,
+      "forward": 6,
+      "backward": 2,
+      "threshold": -1,
+      "viewer": 1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 10
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            9,
+            8
+          ],
+          "preloads": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            9,
+            8
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=20 box=100x100 measuredMeanBytes=none estimatedBytes=800000 capacityBytes=-1 wholeFolder=False center=10 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 8,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lifetimes-stay-bounded",
+      "count": 12,
+      "workers": 2,
+      "forward": 2,
+      "backward": 1,
+      "threshold": -1,
+      "ops": [
+        {
+          "op": "preload_around",
+          "center": 0
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 1
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 2
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 3
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 4
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 5
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 6
+        },
+        {
+          "op": "cancel"
+        },
+        {
+          "op": "preload_around",
+          "center": 7
+        },
+        {
+          "op": "cancel"
+        }
+      ],
+      "results": [
+        {
+          "op": "preload_around",
+          "examined": [
+            0,
+            1,
+            2
+          ],
+          "preloads": [
+            1,
+            2
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=0 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 2,
+          "idle": true,
+          "tracked": [
+            1,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            1,
+            2,
+            3,
+            0
+          ],
+          "preloads": [
+            3,
+            0
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=1 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 4,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            2,
+            3,
+            4,
+            1
+          ],
+          "preloads": [
+            4
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=2 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 5,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            3,
+            4,
+            5,
+            2
+          ],
+          "preloads": [
+            5
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=3 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 6,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 6,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            4,
+            5,
+            6,
+            3
+          ],
+          "preloads": [
+            6
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=4 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 7,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 7,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            5,
+            6,
+            7,
+            4
+          ],
+          "preloads": [
+            7
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=5 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 8,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 8,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            6,
+            7,
+            8,
+            5
+          ],
+          "preloads": [
+            8
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=6 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 9,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 9,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "preload_around",
+          "examined": [
+            7,
+            8,
+            9,
+            6
+          ],
+          "preloads": [
+            9
+          ],
+          "prefetches": [],
+          "log": [
+            "info: Preload policy: images=12 box=100x100 measuredMeanBytes=none estimatedBytes=480000 capacityBytes=-1 wholeFolder=False center=7 direction=1 lead=0"
+          ],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 10,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        },
+        {
+          "op": "cancel",
+          "examined": [],
+          "preloads": [],
+          "prefetches": [],
+          "log": [],
+          "timers": [],
+          "resumes": 0,
+          "preloaded_keys": 10,
+          "idle": true,
+          "tracked": [
+            2,
+            1
+          ]
+        }
+      ]
+    }
+  ]
+}

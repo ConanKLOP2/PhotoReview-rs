@@ -1,0 +1,214 @@
+{
+  "cases": [
+    {
+      "name": "plain",
+      "text": "Canon"
+    },
+    {
+      "name": "empty",
+      "text": ""
+    },
+    {
+      "name": "null-text",
+      "text": null
+    },
+    {
+      "name": "spaces-trimmed",
+      "text": "  Canon EOS R5  "
+    },
+    {
+      "name": "interior-spaces-kept",
+      "text": "Canon   EOS"
+    },
+    {
+      "name": "whitespace-only",
+      "text": "     "
+    },
+    {
+      "name": "nul-cuts",
+      "text": "Canon\u0000EOS"
+    },
+    {
+      "name": "leading-nul",
+      "text": "\u0000abc"
+    },
+    {
+      "name": "trailing-nul-padding",
+      "text": "Canon\u0000\u0000\u0000"
+    },
+    {
+      "name": "tab-becomes-space",
+      "text": "a\tb"
+    },
+    {
+      "name": "newline-becomes-space",
+      "text": "a\nb"
+    },
+    {
+      "name": "crlf-two-spaces",
+      "text": "a\r\nb"
+    },
+    {
+      "name": "del-0x7f-becomes-space",
+      "text": "a\u007fb"
+    },
+    {
+      "name": "c1-0x85-becomes-space",
+      "text": "a\u0085b"
+    },
+    {
+      "name": "c1-0x9f-becomes-space",
+      "text": "a\u009fb"
+    },
+    {
+      "name": "control-only",
+      "text": "\u0001\u0002\u0003"
+    },
+    {
+      "name": "control-edges-trimmed",
+      "text": "\u0001Canon\u0002"
+    },
+    {
+      "name": "nbsp-interior-kept",
+      "text": "a\u00a0b"
+    },
+    {
+      "name": "nbsp-edges-trimmed",
+      "text": "\u00a0Canon\u00a0"
+    },
+    {
+      "name": "ideographic-space-trimmed",
+      "text": "\u3000Canon\u3000"
+    },
+    {
+      "name": "line-separator-trimmed",
+      "text": "\u2028Canon\u2029"
+    },
+    {
+      "name": "zero-width-space-kept",
+      "text": "\u200bCanon\u200b"
+    },
+    {
+      "name": "bom-kept",
+      "text": "\ufeffCanon"
+    },
+    {
+      "name": "replacement-char-kept",
+      "text": "a\ufffdb"
+    },
+    {
+      "name": "private-use-kept",
+      "text": "a\ue000b"
+    },
+    {
+      "name": "exactly-64",
+      "text_repeat": {
+        "text": "a",
+        "count": 64
+      }
+    },
+    {
+      "name": "65-capped-to-64",
+      "text_repeat": {
+        "text": "a",
+        "count": 65
+      }
+    },
+    {
+      "name": "100-capped-to-64",
+      "text_repeat": {
+        "text": "b",
+        "count": 100
+      }
+    },
+    {
+      "name": "63-then-space-then-b-trims-to-63",
+      "text_repeat": {
+        "text": "a",
+        "count": 63
+      },
+      "suffix": " b"
+    },
+    {
+      "name": "a-then-70-spaces-then-b",
+      "prefix": "a",
+      "text_repeat": {
+        "text": " ",
+        "count": 70
+      },
+      "suffix": "b"
+    },
+    {
+      "name": "e-acute-70-capped",
+      "text_repeat": {
+        "text": "\u00e9",
+        "count": 70
+      }
+    },
+    {
+      "name": "cjk-70-capped",
+      "text_repeat": {
+        "text": "\u65e5",
+        "count": 70
+      }
+    },
+    {
+      "name": "emoji-40-is-80-units-capped-to-32-emoji",
+      "text_repeat": {
+        "text": "\ud83d\ude00",
+        "count": 40
+      }
+    },
+    {
+      "name": "63-a-then-emoji-drops-half-pair",
+      "text_repeat": {
+        "text": "a",
+        "count": 63
+      },
+      "suffix": "\ud83d\ude00"
+    },
+    {
+      "name": "62-a-then-emoji-fits-exactly",
+      "text_repeat": {
+        "text": "a",
+        "count": 62
+      },
+      "suffix": "\ud83d\ude00"
+    },
+    {
+      "name": "64-a-then-emoji",
+      "text_repeat": {
+        "text": "a",
+        "count": 64
+      },
+      "suffix": "\ud83d\ude00"
+    },
+    {
+      "name": "62-a-space-emoji-cut-after-space",
+      "text_repeat": {
+        "text": "a",
+        "count": 62
+      },
+      "suffix": " \ud83d\ude00"
+    },
+    {
+      "name": "combining-marks-40",
+      "text_repeat": {
+        "text": "e\u0301",
+        "count": 40
+      }
+    },
+    {
+      "name": "vietnamese-lens",
+      "text": "\u1ed0ng k\u00ednh 50mm \u0192/1.8 \ud83d\ude00"
+    },
+    {
+      "name": "mixed-nul-after-cap-region",
+      "text_repeat": {
+        "text": "x",
+        "count": 10
+      },
+      "suffix": "\u0000zzz"
+    }
+  ]
+}

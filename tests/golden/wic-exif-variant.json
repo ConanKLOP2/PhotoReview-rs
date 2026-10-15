@@ -1,0 +1,374 @@
+{
+  "generator": "oracle-cs wic-exif-variant",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "wide-string",
+      "vt": 31,
+      "type": "string",
+      "value": "Canon"
+    },
+    {
+      "name": "wide-string-null-pointer",
+      "vt": 31,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "wide-string-empty",
+      "vt": 31,
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "wide-string-non-ascii",
+      "vt": 31,
+      "type": "string",
+      "value": "Thiết bị é"
+    },
+    {
+      "name": "wide-string-supplementary-plane",
+      "vt": 31,
+      "type": "string",
+      "value": "cam \uD83D\uDCF7"
+    },
+    {
+      "name": "ansi-string",
+      "vt": 30,
+      "type": "string",
+      "value": "Nikon"
+    },
+    {
+      "name": "ansi-string-null-pointer",
+      "vt": 30,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "ansi-string-empty",
+      "vt": 30,
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "ansi-string-utf8-multibyte",
+      "vt": 30,
+      "type": "string",
+      "value": "Ảnh é"
+    },
+    {
+      "name": "ansi-string-invalid-byte-is-replacement",
+      "vt": 30,
+      "type": "string",
+      "value": "A�B"
+    },
+    {
+      "name": "ansi-string-truncated-sequence-is-one-replacement",
+      "vt": 30,
+      "type": "string",
+      "value": "�"
+    },
+    {
+      "name": "ansi-string-latin1-high-bytes-are-invalid-utf8",
+      "vt": 30,
+      "type": "string",
+      "value": "Ca�on"
+    },
+    {
+      "name": "i2",
+      "vt": 2,
+      "type": "i16",
+      "value": "-5"
+    },
+    {
+      "name": "i2-max",
+      "vt": 2,
+      "type": "i16",
+      "value": "32767"
+    },
+    {
+      "name": "i4",
+      "vt": 3,
+      "type": "i32",
+      "value": "70000"
+    },
+    {
+      "name": "i4-negative",
+      "vt": 3,
+      "type": "i32",
+      "value": "-1"
+    },
+    {
+      "name": "ui1",
+      "vt": 17,
+      "type": "u8",
+      "value": "200"
+    },
+    {
+      "name": "ui2",
+      "vt": 18,
+      "type": "u16",
+      "value": "6"
+    },
+    {
+      "name": "ui2-max",
+      "vt": 18,
+      "type": "u16",
+      "value": "65535"
+    },
+    {
+      "name": "ui4",
+      "vt": 19,
+      "type": "u32",
+      "value": "4000000000"
+    },
+    {
+      "name": "i8-srational",
+      "vt": 20,
+      "type": "i64",
+      "value": "-9"
+    },
+    {
+      "name": "ui8-rational",
+      "vt": 21,
+      "type": "u64",
+      "value": "8589934593"
+    },
+    {
+      "name": "ui8-max",
+      "vt": 21,
+      "type": "u64",
+      "value": "18446744073709551615"
+    },
+    {
+      "name": "ui2-upper-bits-ignored",
+      "vt": 18,
+      "type": "u16",
+      "value": "6"
+    },
+    {
+      "name": "i4-upper-bits-ignored",
+      "vt": 3,
+      "type": "i32",
+      "value": "6"
+    },
+    {
+      "name": "ui1-upper-bits-ignored",
+      "vt": 17,
+      "type": "u8",
+      "value": "8"
+    },
+    {
+      "name": "reserved-bytes-ignored",
+      "vt": 18,
+      "type": "u16",
+      "value": "6"
+    },
+    {
+      "name": "unsupported-vt-empty",
+      "vt": 0,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-null",
+      "vt": 1,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-r4",
+      "vt": 4,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-r8",
+      "vt": 5,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-cy",
+      "vt": 6,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-date",
+      "vt": 7,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-bstr",
+      "vt": 8,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-bool",
+      "vt": 11,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-i1",
+      "vt": 16,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-int",
+      "vt": 22,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-uint",
+      "vt": 23,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-filetime",
+      "vt": 64,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-blob",
+      "vt": 65,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "unsupported-vt-clsid",
+      "vt": 72,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-ui2-first-only",
+      "vt": 4114,
+      "type": "u16[]",
+      "value": [
+        "6"
+      ]
+    },
+    {
+      "name": "vector-ui2-single",
+      "vt": 4114,
+      "type": "u16[]",
+      "value": [
+        "400"
+      ]
+    },
+    {
+      "name": "vector-ui4-first-only",
+      "vt": 4115,
+      "type": "u32[]",
+      "value": [
+        "4000000000"
+      ]
+    },
+    {
+      "name": "vector-i8-first-only",
+      "vt": 4116,
+      "type": "i64[]",
+      "value": [
+        "-7"
+      ]
+    },
+    {
+      "name": "vector-ui8-first-only",
+      "vt": 4117,
+      "type": "i64[]",
+      "value": [
+        "8589934593"
+      ]
+    },
+    {
+      "name": "vector-ui8-max-element",
+      "vt": 4117,
+      "type": "i64[]",
+      "value": [
+        "18446744073709551615"
+      ]
+    },
+    {
+      "name": "vector-huge-count-still-first-element",
+      "vt": 4114,
+      "type": "u16[]",
+      "value": [
+        "7"
+      ]
+    },
+    {
+      "name": "vector-count-zero-with-pointer",
+      "vt": 4114,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-count-negative-with-pointer",
+      "vt": 4114,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-count-without-pointer",
+      "vt": 4114,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-ui1-unsupported",
+      "vt": 4113,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-i2-unsupported",
+      "vt": 4098,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-i4-unsupported",
+      "vt": 4099,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-lpstr-unsupported",
+      "vt": 4126,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-r8-unsupported",
+      "vt": 4101,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "array-flag-vector-ui2-unsupported",
+      "vt": 12306,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "array-flag-ui2-unsupported",
+      "vt": 8210,
+      "type": null,
+      "value": null
+    },
+    {
+      "name": "vector-flag-alone",
+      "vt": 4096,
+      "type": null,
+      "value": null
+    }
+  ]
+}

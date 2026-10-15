@@ -1,0 +1,263 @@
+{
+  "generator": "oracle-cs atomic-cache-file",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "write-new-file-creates-directory",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "sub/": "<dir>",
+        "sub/deep/": "<dir>",
+        "sub/deep/entry.bin": "010203"
+      }
+    },
+    {
+      "name": "replaces-existing-entry-no-temp-left",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        },
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "c/": "<dir>",
+        "c/entry.pv4": "0908"
+      }
+    },
+    {
+      "name": "empty-payload-publishes-empty-file",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "entry.bin": ""
+      }
+    },
+    {
+      "name": "large-payload-over-buffer-size",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "entry.bin": "<200000 bytes>"
+      }
+    },
+    {
+      "name": "cancelled-before-write-creates-nothing",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "OperationCanceledException"
+        }
+      ],
+      "tree": {}
+    },
+    {
+      "name": "cancelled-before-write-keeps-old-entry",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "OperationCanceledException"
+        }
+      ],
+      "tree": {
+        "c/": "<dir>",
+        "c/entry.pv4": "0102"
+      }
+    },
+    {
+      "name": "cancelled-during-payload-not-published",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "OperationCanceledException"
+        }
+      ],
+      "tree": {
+        "c/": "<dir>"
+      }
+    },
+    {
+      "name": "cancelled-during-payload-keeps-old-entry",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "OperationCanceledException"
+        }
+      ],
+      "tree": {
+        "c/": "<dir>",
+        "c/entry.pv4": "0102"
+      }
+    },
+    {
+      "name": "payload-throws-cleans-temp-override",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "InvalidOperationException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>"
+      }
+    },
+    {
+      "name": "payload-throws-after-partial-write-cleans-temp",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "InvalidOperationException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>"
+      }
+    },
+    {
+      "name": "payload-throws-keeps-old-entry",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "InvalidOperationException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/entry.bin": "0102"
+      }
+    },
+    {
+      "name": "preexisting-temp-is-refused-and-untouched",
+      "steps": [
+        {
+          "op": "precreate"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "IOException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/entry.bin.fixed.tmp": "090909"
+      }
+    },
+    {
+      "name": "preexisting-temp-survives-precancelled-call",
+      "steps": [
+        {
+          "op": "precreate"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "OperationCanceledException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/entry.bin.fixed.tmp": "0a"
+      }
+    },
+    {
+      "name": "temp-override-used-then-renamed-away",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/entry.bin": "01"
+      }
+    },
+    {
+      "name": "target-is-an-existing-directory",
+      "steps": [
+        {
+          "op": "mkdir"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "IOException"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/entry.bin/": "<dir>"
+      }
+    },
+    {
+      "name": "parent-path-is-a-file",
+      "steps": [
+        {
+          "op": "precreate"
+        },
+        {
+          "op": "write",
+          "outcome": "throws",
+          "type": "IOException"
+        }
+      ],
+      "tree": {
+        "blocker": "01"
+      }
+    },
+    {
+      "name": "two-writes-different-targets-same-dir",
+      "steps": [
+        {
+          "op": "write",
+          "outcome": "ok"
+        },
+        {
+          "op": "write",
+          "outcome": "ok"
+        }
+      ],
+      "tree": {
+        "d/": "<dir>",
+        "d/a.bin": "0a",
+        "d/b.bin": "0b"
+      }
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "generator": "oracle-cs ram-budget-estimate",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty-unbounded",
+      "result": 0
+    },
+    {
+      "name": "empty-bounded",
+      "result": 0
+    },
+    {
+      "name": "empty-measured",
+      "result": 0
+    },
+    {
+      "name": "empty-measured-infinity",
+      "result": 0
+    },
+    {
+      "name": "jpeg-dims-bounded-downscale",
+      "result": 6998400
+    },
+    {
+      "name": "jpeg-dims-bounded-smaller-than-box",
+      "result": 1920000
+    },
+    {
+      "name": "jpeg-dims-bounded-odd-ceil",
+      "result": 2670668
+    },
+    {
+      "name": "jpeg-no-dims-bounded-uses-box",
+      "result": 8294400
+    },
+    {
+      "name": "jpeg-no-dims-unbounded-length-times-10",
+      "result": 50000000
+    },
+    {
+      "name": "jpeg-no-dims-unbounded-no-length-zero",
+      "result": 0
+    },
+    {
+      "name": "jpeg-negative-length-unbounded-zero",
+      "result": 0
+    },
+    {
+      "name": "jpeg-dims-unbounded-keeps-length-times-10",
+      "result": 20000000
+    },
+    {
+      "name": "jpeg-width-only-box",
+      "result": 20000000
+    },
+    {
+      "name": "jpeg-height-only-box",
+      "result": 20000000
+    },
+    {
+      "name": "jpeg-width-only-box-no-dims",
+      "result": 20000000
+    },
+    {
+      "name": "jpeg-zero-width-with-height",
+      "result": 8294400
+    },
+    {
+      "name": "jpeg-negative-dims",
+      "result": 8294400
+    },
+    {
+      "name": "png-unbounded-length-times-10",
+      "result": 3000000
+    },
+    {
+      "name": "raw-dims-bounded-sensor-doubled",
+      "result": 6998400
+    },
+    {
+      "name": "raw-dims-bounded-box-larger-than-sensor",
+      "result": 71663616
+    },
+    {
+      "name": "raw-dims-unbounded-original-mode",
+      "result": 71663616
+    },
+    {
+      "name": "raw-dims-bounded-smaller-than-box",
+      "result": 6220800
+    },
+    {
+      "name": "raw-dims-width-only-box",
+      "result": 2668000
+    },
+    {
+      "name": "raw-no-dims-unbounded-length-times-6",
+      "result": 150000000
+    },
+    {
+      "name": "raw-no-dims-unbounded-no-length-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "raw-no-dims-unbounded-zero-length-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "raw-no-length-after-other-entries-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "raw-no-dims-bounded-box-bound",
+      "result": 8294400
+    },
+    {
+      "name": "raw-upper-case-extension",
+      "result": 150000000
+    },
+    {
+      "name": "raw-arw-dng-mixed-unbounded",
+      "result": 230000000
+    },
+    {
+      "name": "mixed-folder-bounded",
+      "result": 30585600
+    },
+    {
+      "name": "measured-basic",
+      "result": 62500000
+    },
+    {
+      "name": "measured-capped-at-box-bound",
+      "result": 82944000
+    },
+    {
+      "name": "measured-exactly-box-bound",
+      "result": 82944000
+    },
+    {
+      "name": "measured-above-box-bound-16bit",
+      "result": 207360000
+    },
+    {
+      "name": "measured-times-margin-below-bound",
+      "result": 12500000
+    },
+    {
+      "name": "measured-zero-is-ignored",
+      "result": 50000000
+    },
+    {
+      "name": "measured-negative-is-ignored",
+      "result": 50000000
+    },
+    {
+      "name": "measured-nan-is-ignored",
+      "result": 50000000
+    },
+    {
+      "name": "measured-infinity-saturates",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "measured-infinity-zero-entries-nan-cast",
+      "result": 0
+    },
+    {
+      "name": "measured-fractional-ceiling",
+      "result": 1250
+    },
+    {
+      "name": "measured-ignores-entry-contents",
+      "result": 1250
+    },
+    {
+      "name": "sum-reaches-long-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "sum-just-below-long-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "single-length-over-long-max-after-factor",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "raw-sum-reaches-long-max",
+      "result": 9223372036854775807
+    },
+    {
+      "name": "raw-width-times-two-overflows",
+      "error": "OverflowException"
+    },
+    {
+      "name": "raw-height-times-two-overflows",
+      "error": "OverflowException"
+    },
+    {
+      "name": "raw-width-max-int-overflows",
+      "error": "OverflowException"
+    },
+    {
+      "name": "raw-width-just-fits-doubled",
+      "result": 7680
+    },
+    {
+      "name": "jpeg-huge-dims-no-overflow",
+      "result": 4665600
+    },
+    {
+      "name": "jpeg-huge-dims-unbounded",
+      "result": 10000
+    }
+  ]
+}

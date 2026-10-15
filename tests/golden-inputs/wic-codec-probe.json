@@ -1,0 +1,24 @@
+{
+  "generator": "oracle-cs wic-codec-probe",
+  "cases": [
+    {"name": "no-decoders-no-hevc", "decoders": [], "hevc": "missing"},
+    {"name": "no-decoders-hevc-alone-is-not-heif", "decoders": [], "hevc": "found"},
+    {"name": "jpeg-only", "decoders": [{"guid": "19e4a5aa-5662-4fc5-a0c0-1758028e1057", "name": "JPEG", "ext": ".jpg,.jpeg"}], "hevc": "found"},
+    {"name": "webp-registered-reports-webp-only", "decoders": [
+      {"guid": "19e4a5aa-5662-4fc5-a0c0-1758028e1057"}, {"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}], "hevc": "found"},
+    {"name": "heif-without-hevc-not-enough", "decoders": [{"guid": "e1e62521-6787-405b-a339-500715b5763f"}], "hevc": "missing"},
+    {"name": "heif-and-hevc-supports-heic", "decoders": [{"guid": "e1e62521-6787-405b-a339-500715b5763f"}], "hevc": "found"},
+    {"name": "webp-and-heif-and-hevc-everything", "decoders": [
+      {"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}, {"guid": "e1e62521-6787-405b-a339-500715b5763f"}], "hevc": "found"},
+    {"name": "duplicate-webp-entries-count-in-detail", "decoders": [
+      {"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}, {"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}], "hevc": "missing"},
+    {"name": "guid-compare-is-exact-not-prefix", "decoders": [{"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf4"}], "hevc": "found"},
+    {"name": "enumeration-throws-means-none", "decoders": [], "enumerate": "throws:no factory", "hevc": "found"},
+    {"name": "enumeration-throws-hevc-seam-not-called", "decoders": [], "enumerate": "throws:", "hevc": "found"},
+    {"name": "hevc-probe-throws-keeps-webp-and-container", "decoders": [
+      {"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}, {"guid": "e1e62521-6787-405b-a339-500715b5763f"}], "hevc": "throws:mfplat"},
+    {"name": "hevc-probe-asked-even-without-heif", "decoders": [{"guid": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3"}], "hevc": "missing"},
+    {"name": "hevc-throws-empty-message", "decoders": [], "hevc": "throws:"},
+    {"name": "detail-with-non-ascii-message", "decoders": [], "enumerate": "throws:thi\u1EBFu codec", "hevc": "missing"}
+  ]
+}

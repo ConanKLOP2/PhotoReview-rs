@@ -1,0 +1,492 @@
+{
+  "generator": "oracle-cs pixel-buffer",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "alloc-1x1-l0",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 4
+          },
+          {
+            "y": 0,
+            "length": 4
+          },
+          {
+            "y": 1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 4,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 1,
+          "height": 1,
+          "byte_count": 4,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-1x9-l1",
+      "result": {
+        "width": 1,
+        "height": 9,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 36,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 4
+          },
+          {
+            "y": 8,
+            "length": 4
+          },
+          {
+            "y": 9,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 36,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 1,
+          "height": 9,
+          "byte_count": 36,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-9x1-l0",
+      "result": {
+        "width": 9,
+        "height": 1,
+        "layout": 0,
+        "stride": 36,
+        "byte_count": 36,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 36
+          },
+          {
+            "y": 0,
+            "length": 36
+          },
+          {
+            "y": 1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 36,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 9,
+          "height": 1,
+          "byte_count": 36,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-37x23-l1",
+      "result": {
+        "width": 37,
+        "height": 23,
+        "layout": 1,
+        "stride": 148,
+        "byte_count": 3404,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 148
+          },
+          {
+            "y": 22,
+            "length": 148
+          },
+          {
+            "y": 23,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 3404,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 37,
+          "height": 23,
+          "byte_count": 3404,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-64x64-l1",
+      "result": {
+        "width": 64,
+        "height": 64,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16384,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 256
+          },
+          {
+            "y": 63,
+            "length": 256
+          },
+          {
+            "y": 64,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 16384,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 64,
+          "height": 64,
+          "byte_count": 16384,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-1000x3-l0",
+      "result": {
+        "width": 1000,
+        "height": 3,
+        "layout": 0,
+        "stride": 4000,
+        "byte_count": 12000,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 4000
+          },
+          {
+            "y": 2,
+            "length": 4000
+          },
+          {
+            "y": 3,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 12000,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 1000,
+          "height": 3,
+          "byte_count": 12000,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-5x4-l1",
+      "result": {
+        "width": 5,
+        "height": 4,
+        "layout": 1,
+        "stride": 20,
+        "byte_count": 80,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 20
+          },
+          {
+            "y": 3,
+            "length": 20
+          },
+          {
+            "y": 4,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 80,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 5,
+          "height": 4,
+          "byte_count": 80,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-3x3-l0",
+      "result": {
+        "width": 3,
+        "height": 3,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 36,
+        "is_disposed": false,
+        "address_aligned_64": true,
+        "id_positive": true,
+        "rows": [
+          {
+            "y": -1,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 0,
+            "length": 12
+          },
+          {
+            "y": 2,
+            "length": 12
+          },
+          {
+            "y": 3,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": -2147483648,
+            "throws": "ArgumentOutOfRangeException"
+          },
+          {
+            "y": 2147483647,
+            "throws": "ArgumentOutOfRangeException"
+          }
+        ],
+        "span_ok": true,
+        "span_length": 36,
+        "after_dispose": {
+          "is_disposed": true,
+          "width": 3,
+          "height": 3,
+          "byte_count": 36,
+          "address": "ObjectDisposedException",
+          "get_row": "ObjectDisposedException",
+          "try_get_span": "ObjectDisposedException",
+          "second_dispose_ok": true
+        }
+      }
+    },
+    {
+      "name": "alloc-invalid-0x1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-1x0",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid--1x5",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-5x-1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid--2147483648x1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-1x-2147483648",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-536870912x1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-2147483647x1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-0x0",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-layout--1",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-layout-2",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-layout-255",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "alloc-invalid-layout--2147483648",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    }
+  ]
+}

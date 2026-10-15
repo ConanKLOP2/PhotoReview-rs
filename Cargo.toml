@@ -36,6 +36,9 @@ serde = { version = "1", features = ["derive"] }
 # raw_value: W1-14 reads journal numbers token-by-token, since serde_json parses `-0` as a float where
 # System.Text.Json accepts it as integer 0.
 serde_json = { version = "1", features = ["raw_value"] }
+# P-22: WIC COM in pr-platform-win only (W4-11a..e).
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Graphics_Imaging", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Variant", "Win32_System_Ole", "Win32_Media_MediaFoundation"] }
+windows-core = "0.62"
 
 [profile.release]
 lto = "thin"

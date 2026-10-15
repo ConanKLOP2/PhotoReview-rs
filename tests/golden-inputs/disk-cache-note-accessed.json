@@ -1,0 +1,402 @@
+{
+ "cases": [
+  {
+   "name": "first-hit-stamps-the-injected-clock",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10,
+     "access": "2015-01-01T00:00:00Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "throttle-boundaries-inside-skipped-at-interval-touched",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10,
+     "access": "2015-01-01T00:00:00Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:14:04Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:14:05Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "throttle-one-tick-before-interval-is-skipped",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:14:04.9999999Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "key-is-ordinal-ignore-case",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:04:06Z"
+    },
+    {
+     "op": "access",
+     "name": "A.PNG"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "clock-going-back-is-throttled",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2019-01-01T00:00:00Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "touch-restarts-the-interval-from-the-new-stamp",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:15:45Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:24:05Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:25:45Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "missing-file-is-still-tracked",
+   "steps": [
+    {
+     "op": "access",
+     "name": "m.png"
+    },
+    {
+     "op": "file",
+     "name": "m.png",
+     "size": 10,
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "clock",
+     "now": "2020-01-02T03:05:05Z"
+    },
+    {
+     "op": "access",
+     "name": "m.png"
+    },
+    {
+     "op": "read",
+     "name": "m.png"
+    }
+   ]
+  },
+  {
+   "name": "directory-path-does-not-throw",
+   "steps": [
+    {
+     "op": "dir",
+     "name": "d.png"
+    },
+    {
+     "op": "access",
+     "name": "d.png"
+    }
+   ]
+  },
+  {
+   "name": "table-not-cleared-below-the-cap",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "access",
+     "name": "other.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "table-cleared-when-it-holds-exactly-the-cap",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "access_many",
+     "prefix": "f",
+     "count": 8191
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    },
+    {
+     "op": "access",
+     "name": "overflow.png"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "table-one-below-the-cap-is-not-cleared",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "access_many",
+     "prefix": "f",
+     "count": 8190
+    },
+    {
+     "op": "access",
+     "name": "overflow.png"
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  },
+  {
+   "name": "throttled-repeat-at-the-cap-does-not-clear",
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "access_many",
+     "prefix": "f",
+     "count": 8191
+    },
+    {
+     "op": "stamp",
+     "name": "a.png",
+     "access": "2010-06-07T08:09:10Z"
+    },
+    {
+     "op": "access",
+     "name": "f5.png"
+    },
+    {
+     "op": "access",
+     "name": "a.png"
+    },
+    {
+     "op": "read",
+     "name": "a.png"
+    }
+   ]
+  }
+ ]
+}

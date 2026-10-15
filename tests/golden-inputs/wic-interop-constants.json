@@ -1,0 +1,48 @@
+{
+  "generator": "oracle-cs wic-interop-constants",
+  "cases": [
+    {
+      "name": "guids",
+      "section": "guids"
+    },
+    {
+      "name": "enums",
+      "section": "enums",
+      "enums": [
+        "WICColorContextType",
+        "WICDecodeOptions",
+        "WICBitmapDitherType",
+        "WICBitmapPaletteType",
+        "WICBitmapInterpolationMode",
+        "WICBitmapTransformOptions"
+      ]
+    },
+    {
+      "name": "interfaces",
+      "section": "interfaces",
+      "interfaces": [
+        "IWICBitmapSource",
+        "IWICBitmapSourceTransform",
+        "IWICBitmapFrameDecode",
+        "IWICColorContext",
+        "IWICColorTransform",
+        "IWICBitmapDecoder",
+        "IWICFormatConverter",
+        "IWICBitmapScaler",
+        "IWICBitmapFlipRotator",
+        "IWICMetadataQueryReader",
+        "IComStream",
+        "IWICStream",
+        "IWICImagingFactory"
+      ]
+    },
+    {
+      "name": "statstg-layout",
+      "section": "statstg"
+    },
+    {
+      "name": "sdk",
+      "section": "sdk"
+    }
+  ]
+}

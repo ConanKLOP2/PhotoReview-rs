@@ -1,0 +1,491 @@
+{
+  "generator": "oracle-cs navigation-pace",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "initial-state",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": 1
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "direction-follows-last-move-and-repeat-is-noop",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": 1
+        },
+        {
+          "op": "direction",
+          "value": -1
+        },
+        {
+          "op": "direction",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "jump-after-home-keeps-forward",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": 1
+        },
+        {
+          "op": "direction",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "jump-after-prev-keeps-backward",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": -1
+        },
+        {
+          "op": "direction",
+          "value": -1
+        }
+      ]
+    },
+    {
+      "name": "negative-index-ignored",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "name": "lead-is-rate-times-decode",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 11
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "name": "lead-expires-when-burst-stops",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 11
+        },
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "jump-resets-estimate",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "pause-resets-estimate",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "viewer-delay-burst-fast",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "delay",
+          "ms": 49.5,
+          "ticks": 495000
+        }
+      ]
+    },
+    {
+      "name": "viewer-delay-capped-slow-burst",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "delay",
+          "ms": 100,
+          "ticks": 1000000
+        }
+      ]
+    },
+    {
+      "name": "step-exactly-500ms-is-still-burst",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "step-501ms-restarts",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "one-interval-is-not-a-burst",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "ewma-steady-100",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "name": "ewma-100-then-200",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "ewma-100-200-50-400",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 6
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "decode-equals-interval-needs-no-lead",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 2
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "name": "decode-nan-and-infinity",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 24
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "delay",
+          "ms": 100,
+          "ticks": 1000000
+        },
+        {
+          "op": "delay",
+          "ms": 100,
+          "ticks": 1000000
+        }
+      ]
+    },
+    {
+      "name": "viewer-delay-boundaries",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "delay",
+          "ms": 60,
+          "ticks": 600000
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        },
+        {
+          "op": "delay",
+          "ms": 60,
+          "ticks": 600000
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "viewer-delay-1.5x-odd-interval",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "delay",
+          "ms": 49.5,
+          "ticks": 495000
+        },
+        {
+          "op": "delay",
+          "ms": 49.5,
+          "ticks": 495000
+        }
+      ]
+    },
+    {
+      "name": "viewer-delay-cap-edge-67",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "delay",
+          "ms": 100,
+          "ticks": 1000000
+        }
+      ]
+    },
+    {
+      "name": "active-window-twice-interval-inclusive",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "delay",
+          "ms": 100,
+          "ticks": 1000000
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "active-window-floor-150-inclusive",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "jump-then-fresh-burst",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 3
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "lead",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "name": "backward-burst-direction-and-lead",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": -1
+        },
+        {
+          "op": "lead",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "name": "zero-interval-same-tick-steps",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": 1
+        },
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "clock-goes-backwards",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        },
+        {
+          "op": "delay",
+          "ms": 0,
+          "ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "repeat-index-does-not-extend-window",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "lead",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "max-index-jump",
+      "frequency": 10000000,
+      "results": [
+        {
+          "op": "direction",
+          "value": 1
+        },
+        {
+          "op": "direction",
+          "value": -1
+        }
+      ]
+    }
+  ]
+}

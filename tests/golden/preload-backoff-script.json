@@ -1,0 +1,227 @@
+{
+  "generator": "oracle-cs preload-backoff-script",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "never-busy-path-not-skipped",
+      "results": [
+        false
+      ],
+      "pass": 0
+    },
+    {
+      "name": "cooldown-is-exactly-three-passes-then-retry",
+      "results": [
+        null,
+        1,
+        null,
+        true,
+        null,
+        true,
+        null,
+        true,
+        null,
+        false
+      ],
+      "pass": 5
+    },
+    {
+      "name": "same-pass-as-busy-is-skipped",
+      "results": [
+        1,
+        true
+      ],
+      "pass": 0
+    },
+    {
+      "name": "retry-cap-six-busy-outcomes-skipped-forever",
+      "results": [
+        null,
+        1,
+        null,
+        2,
+        null,
+        3,
+        null,
+        4,
+        null,
+        5,
+        null,
+        6,
+        null,
+        true
+      ],
+      "pass": 56
+    },
+    {
+      "name": "five-busy-outcomes-only-cooldown-then-retry",
+      "results": [
+        null,
+        1,
+        null,
+        2,
+        null,
+        3,
+        null,
+        4,
+        null,
+        5,
+        null,
+        false
+      ],
+      "pass": 55
+    },
+    {
+      "name": "file-changed-after-cap-starts-fresh",
+      "results": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        true,
+        false,
+        1
+      ],
+      "pass": 0
+    },
+    {
+      "name": "changed-key-should-skip-removes-state-so-old-key-restarts",
+      "results": [
+        1,
+        false,
+        false,
+        1
+      ],
+      "pass": 0
+    },
+    {
+      "name": "note-busy-key-change-restarts-count",
+      "results": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "pass": 0
+    },
+    {
+      "name": "write-time-difference-is-a-different-key",
+      "results": [
+        1,
+        1,
+        2
+      ],
+      "pass": 0
+    },
+    {
+      "name": "box-difference-is-a-different-key",
+      "results": [
+        1,
+        1,
+        2
+      ],
+      "pass": 0
+    },
+    {
+      "name": "per-path-counts-independent",
+      "results": [
+        1,
+        2,
+        3,
+        1
+      ],
+      "pass": 0
+    },
+    {
+      "name": "path-compare-ignores-case",
+      "results": [
+        1,
+        2,
+        true
+      ],
+      "pass": 0
+    },
+    {
+      "name": "record-success-clears-cap",
+      "results": [
+        null,
+        1,
+        null,
+        2,
+        null,
+        3,
+        null,
+        4,
+        null,
+        5,
+        null,
+        6,
+        null,
+        true,
+        null,
+        false,
+        1
+      ],
+      "pass": 56
+    },
+    {
+      "name": "record-success-unknown-path-is-noop",
+      "results": [
+        null,
+        false
+      ],
+      "pass": 0
+    },
+    {
+      "name": "clear-mid-cooldown-forgets-path",
+      "results": [
+        null,
+        1,
+        null,
+        true,
+        null,
+        false,
+        1
+      ],
+      "pass": 2
+    },
+    {
+      "name": "clear-does-not-reset-pass-counter",
+      "results": [
+        null,
+        null,
+        1,
+        null,
+        true,
+        null,
+        false
+      ],
+      "pass": 11
+    },
+    {
+      "name": "cooldown-restarts-from-latest-busy-pass",
+      "results": [
+        null,
+        1,
+        null,
+        false,
+        2,
+        null,
+        true,
+        null,
+        false
+      ],
+      "pass": 9
+    },
+    {
+      "name": "busy-path-does-not-affect-other-path",
+      "results": [
+        1,
+        false
+      ],
+      "pass": 0
+    }
+  ]
+}
