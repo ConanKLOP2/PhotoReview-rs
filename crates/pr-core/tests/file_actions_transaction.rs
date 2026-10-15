@@ -13,7 +13,7 @@ use pr_core::app_paths::AppPaths;
 use pr_core::file_actions::errors;
 use pr_core::file_actions::journal::{EnglishJournalTexts, JournalTexts, OperationJournal, OperationJournalOptions};
 use pr_core::file_actions::journal_line::{self, JournalDateTime, JournalEntry};
-use pr_core::file_actions::transaction::JournalTransaction;
+use pr_core::file_actions::transaction::{JournalTransaction, SUPERSEDED_MESSAGE, TransactionSuperseded};
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::sync::Canceled;
 use pr_core::time::{DateTimeUtc, TICKS_PER_SECOND};
@@ -178,6 +178,50 @@ fn fail_retry_superseded_by_another_writer_returns_null_and_appends_nothing() {
     assert!(journal_error.is_none());
     assert!(tx.superseded());
     assert!(read_failed(&journal).is_empty());
+}
+
+// C#: JournalTransaction.Begin throws InvalidOperationException("The retried journal entry was superseded by another
+// writer.") when TryBegin returns false (a retry whose Id was resolved by another writer before its Prepared).
+#[test]
+fn begin_retry_superseded_before_prepared_returns_the_csharp_superseded_message() {
+    let clock = Arc::new(FakeClock::at(base()));
+    let (_fs, journal) = fake_journal(&clock);
+    let failed = failed_retry_record();
+    journal.append(&failed).expect("append failed");
+    // Another process resolves the Id after the retry snapshot, before this retry's Prepared.
+    journal
+        .append(&JournalEntry {
+            state: JournalState::Committed,
+            error: None,
+            error_code: None,
+            ..failed.clone()
+        })
+        .expect("other process commits");
+    let tx_clock = FakeClock::at(base());
+    let mut tx = JournalTransaction::new(
+        &journal,
+        &tx_clock,
+        JournalEntry {
+            state: JournalState::Prepared,
+            ..failed.clone()
+        },
+        Some(failed.clone()),
+    );
+
+    let err = tx.begin().expect_err("superseded retry must not begin");
+
+    assert_eq!(err.kind(), io::ErrorKind::Other);
+    assert_eq!(err.to_string(), SUPERSEDED_MESSAGE);
+    assert_eq!(
+        SUPERSEDED_MESSAGE,
+        "The retried journal entry was superseded by another writer."
+    );
+    let inner = err.get_ref().expect("inner error");
+    assert!(inner.is::<TransactionSuperseded>());
+    assert_eq!(inner.to_string(), SUPERSEDED_MESSAGE);
+    assert!(tx.superseded());
+    assert!(!tx.is_prepared());
+    assert!(read_pending(&journal).is_empty());
 }
 
 // C#: JournalTransactionTests.Fail_RetryWhosePreparedAppendThrew_StillJournalsTheFailure
