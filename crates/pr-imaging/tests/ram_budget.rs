@@ -962,7 +962,7 @@ fn minimum_cache_percent_is_monotonic() {
             "bigger window lowered the floor"
         );
         assert!(
-            minimum_cache_percent(physical + rng.range_i64(0, physical), window) <= at,
+            minimum_cache_percent(physical.saturating_add(rng.range_i64(0, physical)), window) <= at,
             "more RAM raised the floor"
         );
     }
