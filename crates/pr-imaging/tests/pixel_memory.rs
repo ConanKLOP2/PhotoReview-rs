@@ -607,3 +607,64 @@ fn create_shares_source_bytes_without_copying() {
     assert!(Arc::ptr_eq(stream.get_ref(), &bytes));
     assert_eq!(stream.get_ref().len(), 3);
 }
+
+// Rust-only: pins the exact .NET message texts (contract) so Display cannot silently change or go empty.
+#[test]
+fn error_messages_match_dotnet_text() {
+    let invalid = PixelMemoryError::InvalidSize { byte_count: -1 };
+    assert_eq!(
+        invalid.to_string(),
+        "byteCount ('-1') must be a non-negative and non-zero value. (Parameter 'byteCount')\r\nActual value was -1."
+    );
+    let cannot = PixelMemoryError::CannotAddress { byte_count: 5 };
+    assert_eq!(cannot.to_string(), "Cannot address 5 bytes in this process.");
+    let oom = PixelMemoryError::OutOfMemory { byte_count: 5 };
+    assert_eq!(
+        oom.to_string(),
+        "Insufficient memory to continue the execution of the program."
+    );
+
+    let mapped: DecodeError = invalid.into();
+    assert_eq!(mapped.message(), invalid.to_string());
+    let mapped: DecodeError = oom.into();
+    assert_eq!(
+        mapped.message(),
+        "Insufficient memory to continue the execution of the program."
+    );
+}
+
+// Rust-only: the disposed-buffer message names the .NET object.
+#[test]
+fn disposed_messages_match_dotnet_text() {
+    let _guard = guard();
+    let codec = PixelBufferImageCodec::INSTANCE;
+    let expected = "Cannot access a disposed object.\r\nObject name: 'PhotoReview.Imaging.Pixels.PixelBuffer'.";
+
+    let mut buffer = small_buffer();
+    buffer.dispose();
+    match codec.image_from_pixels(buffer) {
+        Err(error @ DecodeError::Disposed { .. }) => assert_eq!(error.message(), expected),
+        other => panic!("expected Disposed, got {other:?}"),
+    }
+
+    let mut buffer = small_buffer();
+    buffer.dispose();
+    let image = PlatformImage::Pixels(Arc::new(buffer));
+    match codec.to_pixels(&image) {
+        Err(error @ DecodeError::Disposed { .. }) => assert_eq!(error.message(), expected),
+        other => panic!("expected Disposed, got {other:?}"),
+    }
+}
+
+// Rust-only: contract note 2, the block is zero-initialised (readers hold `&[u8]` over it).
+#[test]
+fn allocated_block_is_zeroed() {
+    let _guard = guard();
+    let size = 1usize << 20;
+    let memory = NativePixelMemory::allocate(i64::try_from(size).expect("fits")).expect("1 MiB allocates");
+    let address = memory.address();
+    assert_ne!(address, 0);
+    // SAFETY: `address` is the start of a live, 1 MiB block owned by `memory`, which outlives this slice.
+    let bytes = unsafe { std::slice::from_raw_parts(address as *const u8, size) };
+    assert!(bytes.iter().all(|&b| b == 0));
+}
