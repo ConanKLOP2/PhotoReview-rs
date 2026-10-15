@@ -106,7 +106,8 @@ impl NavigationPace {
                     // C# form `i + a * (e - i)`: the two forms differ in the last bit, the golden is whole-value.
                     state.interval_ms + INTERVAL_ALPHA * (elapsed_ms - state.interval_ms)
                 };
-                state.samples = state.samples.saturating_add(1);
+                // Unchecked `_samples++` in C#: wraps to int.MinValue after 2^31 qualifying steps (then inactive).
+                state.samples = state.samples.wrapping_add(1);
             } else {
                 state.interval_ms = 0.0;
                 state.samples = 0;
@@ -142,8 +143,8 @@ impl NavigationPace {
         }
         let ms = MAX_VIEWER_START_DELAY_MS.min(interval * 1.5);
         // Open question 1 (contract): the golden keeps sub-millisecond ticks (49.5 ms = 495 000 ticks), so no
-        // round-to-ms. Round to the nearest 100 ns tick, as .NET `TimeSpan.FromMilliseconds` does for positive values.
-        let ticks = (ms * 10_000.0).round() as u64;
+        // round-to-ms. Truncate toward zero to a 100 ns tick, as .NET 10 `TimeSpan.FromMilliseconds(double)` does.
+        let ticks = (ms * 10_000.0) as u64;
         Duration::from_nanos(ticks * 100)
     }
 
