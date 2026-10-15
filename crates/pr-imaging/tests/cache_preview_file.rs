@@ -1328,7 +1328,27 @@ fn read_as_decoded_image_platform_image_follows_codec() {
     // the WPF branch is WPF-only)
     let path = fixture_path("v7-exif-bgr32-96x64.pv4");
 
-    let image = read_as_decoded_image(&path, &FakePlatformCodec, &FakePayloadCodec::default())
+    // The committed fixture carries a REAL JPEG, which the fake frame codec cannot parse: this payload codec accepts any
+    // payload and allocates the header's size (the real decode is the native twin's job, W4-11e).
+    struct AcceptAnyPayload;
+    impl PreviewPayloadCodec for AcceptAnyPayload {
+        fn encode_jpeg(&self, _pixels: &PixelBuffer, _quality: i32, _out: &mut dyn Write) -> std::io::Result<()> {
+            Ok(())
+        }
+
+        fn decode_jpeg(
+            &self,
+            _payload: &[u8],
+            layout: PixelLayout,
+            expected_width: i32,
+            expected_height: i32,
+        ) -> Result<PixelBuffer, PreviewCacheError> {
+            PixelBuffer::allocate(expected_width, expected_height, layout)
+                .map_err(|e| PreviewCacheError::InvalidData(e.to_string()))
+        }
+    }
+
+    let image = read_as_decoded_image(&path, &FakePlatformCodec, &AcceptAnyPayload)
         .expect("committed fixture reads as a decoded image");
 
     assert!(image.downscaled());
