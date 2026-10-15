@@ -1527,3 +1527,61 @@ fn run_prune_pass_creation_time_past_datetime_max_fails_and_the_loop_logs_it() {
     );
     assert_eq!(survivors(&dir), vec!["a.png", "b.png"]);
 }
+
+// ---- A single matching file with a bad time (repair round 2; oracle: LINQ never computes keys for one element) ------
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_single_file_with_access_time_past_datetime_max_is_pruned() {
+    // Oracle: PruneDirectory(d, "*.png", 0) returns 0 and deletes the only file (no sort key computed).
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "single-access");
+    write_with_filetimes(&dir, "a.png", 10, y2020(), FAR_FILETIME, y2020());
+
+    assert_eq!(prune_directory(&dir, "*.png", 0, None).expect("C# does not throw"), 0);
+    assert!(survivors(&dir).is_empty());
+}
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_single_file_with_creation_time_past_datetime_max_is_pruned() {
+    // The non-matching file with bad times is never a sort element either.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "single-creation");
+    write_with_filetimes(&dir, "a.png", 10, MAX_DATETIME_FILETIME + 1, y2020(), y2020());
+    write_with_filetimes(&dir, "b.pv4", 10, FAR_FILETIME, FAR_FILETIME, FAR_FILETIME);
+
+    assert_eq!(prune_directory(&dir, "*.png", 0, None).expect("C# does not throw"), 0);
+    assert_eq!(survivors(&dir), vec!["b.pv4"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_single_file_with_bad_times_under_quota_returns_its_size() {
+    // Oracle: quota 100 returns 10, nothing deleted, no throw.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "single-quota");
+    write_with_filetimes(&dir, "a.png", 10, FAR_FILETIME, FAR_FILETIME, y2020());
+
+    assert_eq!(
+        prune_directory(&dir, "*.png", 100, None).expect("C# does not throw"),
+        10
+    );
+    assert_eq!(survivors(&dir), vec!["a.png"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn run_prune_pass_single_file_with_access_time_past_datetime_max_succeeds() {
+    // Oracle: RunPrunePass succeeds and deletes the file; the loop logs nothing.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "single-pass");
+    write_with_filetimes(&dir, "a.png", 10, y2020(), FAR_FILETIME, y2020());
+    let log = Arc::new(KindLog::default());
+    let store = DiskCacheStore::new(&dir, "*.png", 0, Some(Arc::clone(&log) as Arc<dyn Log>), None).expect("store");
+
+    store.run_prune_pass().expect("C# RunPrunePass succeeds");
+    assert_eq!(store.full_scan_count(), 1);
+    assert!(survivors(&dir).is_empty());
+    assert!(log.entries().is_empty());
+}

@@ -446,8 +446,10 @@ fn run_prune_loop(inner: &Arc<StoreInner>) {
 /// stat). Only files: directories (including directory links/junctions) never match. Each file is addressed (and a
 /// failed delete logged) by its C# `FileInfo.FullName`: `dotnet_path::get_full_path(directory)` joined with the name.
 /// `Err` = the listing failed or the pattern is invalid (C# `ArgumentException` for a NUL: `InvalidInput`), or a
-/// matching file has a last-access or creation FILETIME past `DateTime.MaxValue` (C# `FileInfo.LastAccessTimeUtc` /
-/// `CreationTimeUtc` throws `ArgumentOutOfRangeException` from the `OrderBy`/`ThenBy` key: `InvalidData`, nothing deleted).
+/// matching file has a last-access or creation FILETIME past `DateTime.MaxValue` while 2 or more files match (C#
+/// `FileInfo.LastAccessTimeUtc` / `CreationTimeUtc` throws `ArgumentOutOfRangeException` from the `OrderBy`/`ThenBy`
+/// key: `InvalidData`, nothing deleted). With a single matching file LINQ never computes the keys, so it is pruned
+/// normally.
 pub fn prune_directory(
     directory: &Path,
     search_pattern: &str,
@@ -468,6 +470,9 @@ pub fn prune_directory(
         key: (u64, u64),
     }
     let mut files = Vec::new();
+    // First invalid FILETIME seen: C# LINQ computes the `OrderBy`/`ThenBy` keys only when sorting 2 or more elements
+    // (a single buffered element is yielded as is), so it only fails the call when more than one file matched.
+    let mut key_error: Option<io::Error> = None;
     for entry in fs::read_dir(&root)? {
         let entry = entry?;
         let metadata = entry.metadata()?;
@@ -481,8 +486,17 @@ pub fn prune_directory(
         files.push(Candidate {
             full_name: join_full(&root, &name),
             length: i64::try_from(metadata.len()).unwrap_or(i64::MAX),
-            key: lru_key(&metadata)?,
+            key: match lru_key(&metadata) {
+                Ok(key) => key,
+                Err(error) => {
+                    key_error.get_or_insert(error);
+                    (0, 0)
+                }
+            },
         });
+    }
+    if let Some(error) = key_error.filter(|_| files.len() > 1) {
+        return Err(error);
     }
     // DIVERGENCE: .NET converts each FILETIME to LOCAL time (`DateTimeOffset.FromFileTime`) before taking `.UtcDateTime`,
     // so on a machine east of UTC a time in the last hours before `DateTime.MaxValue` also throws (ArgumentException);
@@ -800,7 +814,8 @@ fn checked_filetime(filetime: u64) -> io::Result<DateTimeUtc> {
 }
 
 /// Sort key of the LRU order: raw FILETIMEs of (last access, creation), the same order as the C# `DateTime`s. `Err`
-/// when either is not a valid .NET `DateTime` (C# computes every key before sorting, so any such file fails the call).
+/// when either is not a valid .NET `DateTime` (C# computes every key before sorting 2 or more files, so any such file
+/// then fails the call; [`prune_directory`] ignores it for a single file).
 #[cfg(windows)]
 fn lru_key(metadata: &Metadata) -> io::Result<(u64, u64)> {
     use std::os::windows::fs::MetadataExt;
