@@ -445,7 +445,9 @@ fn run_prune_loop(inner: &Arc<StoreInner>) {
 /// is not an existing directory (nothing is created). Lengths and times come from the listing itself (no per-file
 /// stat). Only files: directories (including directory links/junctions) never match. Each file is addressed (and a
 /// failed delete logged) by its C# `FileInfo.FullName`: `dotnet_path::get_full_path(directory)` joined with the name.
-/// `Err` = the listing failed or the pattern is invalid (C# `ArgumentException` for a NUL: `InvalidInput`).
+/// `Err` = the listing failed or the pattern is invalid (C# `ArgumentException` for a NUL: `InvalidInput`), or a
+/// matching file has a last-access or creation FILETIME past `DateTime.MaxValue` (C# `FileInfo.LastAccessTimeUtc` /
+/// `CreationTimeUtc` throws `ArgumentOutOfRangeException` from the `OrderBy`/`ThenBy` key: `InvalidData`, nothing deleted).
 pub fn prune_directory(
     directory: &Path,
     search_pattern: &str,
@@ -479,9 +481,13 @@ pub fn prune_directory(
         files.push(Candidate {
             full_name: join_full(&root, &name),
             length: i64::try_from(metadata.len()).unwrap_or(i64::MAX),
-            key: lru_key(&metadata),
+            key: lru_key(&metadata)?,
         });
     }
+    // DIVERGENCE: .NET converts each FILETIME to LOCAL time (`DateTimeOffset.FromFileTime`) before taking `.UtcDateTime`,
+    // so on a machine east of UTC a time in the last hours before `DateTime.MaxValue` also throws (ArgumentException);
+    // only a time past `DateTime.MaxValue` itself fails here (machine-independent). Only a foreign process setting bogus
+    // times in the cache folder reaches either.
     // Stable: equal keys keep the listing order (C# `OrderBy(...).ThenBy(...)` is a stable sort).
     files.sort_by_key(|candidate| candidate.key);
 
@@ -519,8 +525,8 @@ pub fn clear_directory_matching(directory: &Path, search_pattern: &str, log: Opt
 /// C# static `DeleteStaleTempFiles(directory, utcNow, maxFiles, log)`: looks at the first `max_files` (in listing
 /// order; `<= 0` looks at none) [`TEMP_FILE_PATTERN`] files and deletes those last written strictly more than
 /// [`STALE_TEMP_FILE_AGE`] before `utc_now`. Returns how many were deleted. Never fails: a file whose write time cannot
-/// be read is skipped; a listing failure is logged as `Stale temp file cleanup failed: {directory}` and the count so
-/// far is returned.
+/// be read is skipped; a listing failure, or a write time past `DateTime.MaxValue` (C# `ArgumentOutOfRangeException`),
+/// stops the sweep, is logged as `Stale temp file cleanup failed: {directory}` and the count so far is returned.
 pub fn delete_stale_temp_files(directory: &Path, utc_now: DateTimeUtc, max_files: i32, log: Option<&dyn Log>) -> i32 {
     if !PhysicalFileSystem.directory_exists(directory) {
         return 0;
@@ -565,7 +571,9 @@ fn sweep_stale_temp_files(
         // C# `Take` counts the entries looked at, fresh ones included.
         remaining -= 1;
         let path = join_as_spelled(directory, &name);
-        let Some(written) = last_write_time_utc(&path) else {
+        // C# catches only IOException/UnauthorizedAccessException around `File.GetLastWriteTimeUtc`; the
+        // ArgumentOutOfRangeException of a time past `DateTime.MaxValue` reaches the outer catch: the sweep stops.
+        let Some(written) = last_write_time_utc(&path)? else {
             continue;
         };
         if utc_now.ticks() - written.ticks() > STALE_TEMP_FILE_AGE_TICKS && try_delete(&path, log) {
@@ -576,12 +584,16 @@ fn sweep_stale_temp_files(
 }
 
 /// C# `File.GetLastWriteTimeUtc(path)` (the entry itself, links not followed): a missing file is 1601-01-01 (.NET
-/// `FromFileTimeUtc(0)`); any other failure is `None` (the sweep skips the file).
-fn last_write_time_utc(path: &Path) -> Option<DateTimeUtc> {
+/// `FromFileTimeUtc(0)`); any other stat failure is `Ok(None)` (the sweep skips the file). A write time past
+/// `DateTime.MaxValue` is `Err(InvalidData)` (.NET `ArgumentOutOfRangeException`, which the sweep does not catch per
+/// file).
+// DIVERGENCE: .NET converts through LOCAL time (`DateTimeOffset.FromFileTime`), so east of UTC a write time in the last
+// hours before `DateTime.MaxValue` also throws (ArgumentException); here only a time past `DateTime.MaxValue` does.
+fn last_write_time_utc(path: &Path) -> io::Result<Option<DateTimeUtc>> {
     match fs::symlink_metadata(path) {
-        Ok(metadata) => Some(last_write_of(&metadata)),
-        Err(error) if error.kind() == io::ErrorKind::NotFound => DateTimeUtc::from_filetime(0),
-        Err(_) => None,
+        Ok(metadata) => last_write_of(&metadata).map(Some),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(DateTimeUtc::from_filetime(0)),
+        Err(_) => Ok(None),
     }
 }
 
@@ -779,36 +791,49 @@ fn is_directory(metadata: &Metadata) -> bool {
     metadata.is_dir()
 }
 
-/// Sort key of the LRU order: raw FILETIMEs of (last access, creation), the same order as the C# `DateTime`s.
+/// .NET `DateTime.FromFileTimeUtc` range check: a FILETIME past `DateTime.MaxValue` (or negative as a `long`) throws
+/// `ArgumentOutOfRangeException("Not a valid Win32 FileTime.")`, here `InvalidData`.
 #[cfg(windows)]
-fn lru_key(metadata: &Metadata) -> (u64, u64) {
+fn checked_filetime(filetime: u64) -> io::Result<DateTimeUtc> {
+    DateTimeUtc::from_filetime(filetime)
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Not a valid Win32 FileTime."))
+}
+
+/// Sort key of the LRU order: raw FILETIMEs of (last access, creation), the same order as the C# `DateTime`s. `Err`
+/// when either is not a valid .NET `DateTime` (C# computes every key before sorting, so any such file fails the call).
+#[cfg(windows)]
+fn lru_key(metadata: &Metadata) -> io::Result<(u64, u64)> {
     use std::os::windows::fs::MetadataExt;
-    (metadata.last_access_time(), metadata.creation_time())
+    let accessed = metadata.last_access_time();
+    let created = metadata.creation_time();
+    checked_filetime(accessed)?;
+    checked_filetime(created)?;
+    Ok((accessed, created))
 }
 
 #[cfg(not(windows))]
-fn lru_key(metadata: &Metadata) -> (u64, u64) {
+fn lru_key(metadata: &Metadata) -> io::Result<(u64, u64)> {
     let ticks = |t: io::Result<SystemTime>| {
         t.ok()
             .and_then(DateTimeUtc::from_system_time)
             .map_or(0, |d| u64::try_from(d.ticks()).unwrap_or(0))
     };
-    (ticks(metadata.accessed()), ticks(metadata.created()))
+    Ok((ticks(metadata.accessed()), ticks(metadata.created())))
 }
 
 #[cfg(windows)]
-fn last_write_of(metadata: &Metadata) -> DateTimeUtc {
+fn last_write_of(metadata: &Metadata) -> io::Result<DateTimeUtc> {
     use std::os::windows::fs::MetadataExt;
-    DateTimeUtc::from_filetime(metadata.last_write_time()).unwrap_or(DateTimeUtc::MIN)
+    checked_filetime(metadata.last_write_time())
 }
 
 #[cfg(not(windows))]
-fn last_write_of(metadata: &Metadata) -> DateTimeUtc {
-    metadata
+fn last_write_of(metadata: &Metadata) -> io::Result<DateTimeUtc> {
+    Ok(metadata
         .modified()
         .ok()
         .and_then(DateTimeUtc::from_system_time)
-        .unwrap_or(DateTimeUtc::MIN)
+        .unwrap_or(DateTimeUtc::MIN))
 }
 
 /// `DateTimeUtc` as a `SystemTime` (`UNIX_EPOCH` +/- the tick difference); `None` when not representable.

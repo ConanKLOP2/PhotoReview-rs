@@ -1340,3 +1340,190 @@ fn new_rejects_blank_directory_and_pattern() {
         })
     );
 }
+
+// ---- FILETIMEs past DateTime.MaxValue (repair round 1; oracle: .NET 10 PhotoReview.Imaging.dll at d92d6aae) ---------
+
+/// FILETIME of `DateTime.MaxValue` (9999-12-31T23:59:59.9999999Z): one more is past it, and .NET
+/// `DateTime.FromFileTimeUtc` throws `ArgumentOutOfRangeException("Not a valid Win32 FileTime.")`.
+const MAX_DATETIME_FILETIME: u64 = 2_650_467_743_999_999_999;
+
+/// About year 11107, far past `DateTime.MaxValue`.
+const FAR_FILETIME: u64 = 3_000_000_000_000_000_000;
+
+/// A raw FILETIME (100 ns since 1601-01-01) as a `SystemTime`, also past `DateTime.MaxValue`.
+#[cfg(windows)]
+fn filetime_to_system_time(filetime: u64) -> SystemTime {
+    const UNIX_FILETIME: u64 = 116_444_736_000_000_000;
+    let since = filetime - UNIX_FILETIME;
+    UNIX_EPOCH
+        + Duration::new(
+            since / 10_000_000,
+            u32::try_from(since % 10_000_000).expect("< 1e7") * 100,
+        )
+}
+
+/// FILETIME of a valid `DateTimeUtc`.
+fn filetime_of(t: DateTimeUtc) -> u64 {
+    u64::try_from(t.ticks() - 504_911_232_000_000_000).expect("after 1601")
+}
+
+/// Writes `len` bytes to `dir\name` and sets its (creation, last access, last write) to raw FILETIMEs.
+#[cfg(windows)]
+fn write_with_filetimes(dir: &Path, name: &str, len: usize, created: u64, accessed: u64, written: u64) -> PathBuf {
+    let path = dir.join(name);
+    fs::write(&path, vec![0u8; len]).unwrap_or_else(|e| panic!("write {}: {e}", path.display()));
+    let file = OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap_or_else(|e| panic!("open {} for times: {e}", path.display()));
+    file.set_times(
+        FileTimes::new()
+            .set_created(filetime_to_system_time(created))
+            .set_accessed(filetime_to_system_time(accessed))
+            .set_modified(filetime_to_system_time(written)),
+    )
+    .unwrap_or_else(|e| panic!("set times on {}: {e}", path.display()));
+    path
+}
+
+fn y2020() -> u64 {
+    filetime_of(utc("2020-01-01T00:00:00Z"))
+}
+
+fn y2019() -> u64 {
+    filetime_of(utc("2019-01-01T00:00:00Z"))
+}
+
+#[cfg(windows)]
+#[test]
+fn stale_sweep_write_time_past_datetime_max_stops_the_sweep_and_logs() {
+    // Oracle: File.GetLastWriteTimeUtc throws ArgumentOutOfRangeException for the first listed file; the outer catch
+    // logs and returns 0, so the old temp file listed after it stays.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "stale-first");
+    write_with_filetimes(&dir, "a_future.tmp", 1, y2020(), y2020(), FAR_FILETIME);
+    write_with_filetimes(&dir, "b_old.tmp", 1, y2020(), y2020(), y2020());
+    let log = KindLog::default();
+
+    let removed = delete_stale_temp_files(&dir, utc("2021-01-01T00:00:00Z"), 10, Some(&log));
+
+    assert_eq!(removed, 0);
+    assert_eq!(survivors(&dir), vec!["a_future.tmp", "b_old.tmp"]);
+    assert_eq!(
+        log.entries(),
+        vec![(
+            format!("Stale temp file cleanup failed: {}", dir.display()),
+            Some(io::ErrorKind::InvalidData)
+        )]
+    );
+}
+
+#[cfg(windows)]
+#[test]
+fn stale_sweep_keeps_the_count_so_far_when_a_later_write_time_is_past_datetime_max() {
+    // Oracle shape: the old file listed first is deleted, then the bad one stops the sweep: 1 and one log line.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "stale-later");
+    write_with_filetimes(&dir, "a_old.tmp", 1, y2020(), y2020(), y2020());
+    write_with_filetimes(&dir, "m_future.tmp", 1, y2020(), y2020(), MAX_DATETIME_FILETIME + 1);
+    write_with_filetimes(&dir, "z_old.tmp", 1, y2020(), y2020(), y2020());
+    let log = KindLog::default();
+
+    let removed = delete_stale_temp_files(&dir, utc("2021-01-01T00:00:00Z"), 10, Some(&log));
+
+    assert_eq!(removed, 1);
+    assert_eq!(survivors(&dir), vec!["m_future.tmp", "z_old.tmp"]);
+    assert_eq!(
+        log.messages(),
+        vec![format!("Stale temp file cleanup failed: {}", dir.display())]
+    );
+}
+
+#[cfg(windows)]
+#[test]
+fn stale_sweep_ignores_bad_times_on_files_it_does_not_look_at() {
+    // A non-temp file is never looked at; neither is a temp file beyond `max_files`.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "stale-ignored");
+    write_with_filetimes(&dir, "a_old.tmp", 1, y2020(), y2020(), y2020());
+    write_with_filetimes(&dir, "b_future.pv4", 1, y2020(), y2020(), FAR_FILETIME);
+    write_with_filetimes(&dir, "c_future.tmp", 1, y2020(), y2020(), FAR_FILETIME);
+    let log = KindLog::default();
+
+    let removed = delete_stale_temp_files(&dir, utc("2021-01-01T00:00:00Z"), 1, Some(&log));
+
+    assert_eq!(removed, 1);
+    assert_eq!(survivors(&dir), vec!["b_future.pv4", "c_future.tmp"]);
+    assert!(log.entries().is_empty());
+}
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_access_time_past_datetime_max_fails_and_deletes_nothing() {
+    // Oracle: FileInfo.LastAccessTimeUtc throws from the OrderBy key; PruneDirectory throws, nothing is deleted.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "prune-access");
+    write_with_filetimes(&dir, "a.png", 10, y2020(), FAR_FILETIME, y2020());
+    write_with_filetimes(&dir, "b.png", 10, y2020(), y2019(), y2020());
+
+    let error = prune_directory(&dir, "*.png", 10, None).expect_err("C# throws");
+
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    assert_eq!(survivors(&dir), vec!["a.png", "b.png"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_creation_time_past_datetime_max_fails_even_under_quota() {
+    // C# computes every OrderBy/ThenBy key before the quota loop, so the throw does not depend on the quota.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "prune-creation");
+    write_with_filetimes(&dir, "a.png", 10, y2020(), y2019(), y2020());
+    write_with_filetimes(&dir, "b.png", 10, MAX_DATETIME_FILETIME + 1, y2020(), y2020());
+
+    let error = prune_directory(&dir, "*.png", 1_000, None).expect_err("C# throws");
+
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    assert_eq!(survivors(&dir), vec!["a.png", "b.png"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn prune_directory_ignores_bad_times_on_files_the_pattern_does_not_match() {
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "prune-other");
+    write_with_filetimes(&dir, "a.png", 10, y2020(), y2019(), y2020());
+    write_with_filetimes(&dir, "b.png", 10, y2020(), y2020(), y2020());
+    write_with_filetimes(&dir, "c.pv4", 10, FAR_FILETIME, FAR_FILETIME, FAR_FILETIME);
+
+    assert_eq!(prune_directory(&dir, "*.png", 10, None).expect("prunes"), 10);
+    assert_eq!(survivors(&dir), vec!["b.png", "c.pv4"]);
+}
+
+#[cfg(windows)]
+#[test]
+fn run_prune_pass_creation_time_past_datetime_max_fails_and_the_loop_logs_it() {
+    // Oracle: RunPrunePass throws (nothing deleted); through SchedulePrune the loop logs `Prune failed: {dir}`.
+    let root = TempRoot::new("DiskCacheMaxTime");
+    let dir = dir_of(&root, "pass");
+    write_with_filetimes(&dir, "a.png", 10, FAR_FILETIME, y2019(), y2020());
+    write_with_filetimes(&dir, "b.png", 10, y2020(), y2019(), y2020());
+    let log = Arc::new(KindLog::default());
+    let store = DiskCacheStore::new(&dir, "*.png", 0, Some(Arc::clone(&log) as Arc<dyn Log>), None).expect("store");
+
+    let error = store.run_prune_pass().expect_err("C# RunPrunePass throws");
+    assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+    assert_eq!(store.full_scan_count(), 1);
+    assert_eq!(survivors(&dir), vec!["a.png", "b.png"]);
+
+    store.schedule_prune();
+    assert!(store.wait_for_prune(WAIT));
+    assert_eq!(
+        log.entries(),
+        vec![(
+            format!("Prune failed: {}", dir.display()),
+            Some(io::ErrorKind::InvalidData)
+        )]
+    );
+    assert_eq!(survivors(&dir), vec!["a.png", "b.png"]);
+}
