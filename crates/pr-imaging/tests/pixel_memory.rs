@@ -668,3 +668,41 @@ fn allocated_block_is_zeroed() {
     let bytes = unsafe { std::slice::from_raw_parts(address as *const u8, size) };
     assert!(bytes.iter().all(|&b| b == 0));
 }
+
+// Rust-only: kills the `alloc_zeroed` -> `alloc` mutant. Small blocks come back from the allocator's free lists, so
+// a dirtied-and-freed block is reused with its old bytes unless the allocation zeroes it.
+#[test]
+fn reused_small_block_is_zeroed() {
+    let _guard = guard();
+    for round in 0..64 {
+        let first = NativePixelMemory::allocate(256).expect("256 bytes allocate");
+        // SAFETY: the pointer is the start of a live 256 byte block owned by `first`; no other reference exists.
+        unsafe { ptr::write_bytes(first.as_mut_ptr(), 0xAB, 256) };
+        first.dispose();
+
+        let second = NativePixelMemory::allocate(256).expect("256 bytes allocate");
+        // SAFETY: `second` owns a live 256 byte block that outlives this slice.
+        let bytes = unsafe { std::slice::from_raw_parts(second.as_mut_ptr().cast_const(), 256) };
+        assert!(
+            bytes.iter().all(|&b| b == 0),
+            "round {round}: reused block must be zeroed"
+        );
+    }
+}
+
+// Accepted difference from C#: after `Dispose`, .NET `SafeHandle` keeps `IsInvalid == false` and a non-zero
+// `DangerousGetHandle()` (the dangling value). Contract note 7 pins the safer Rust behaviour: a released block reads
+// as invalid with a null pointer, so no consumer can be handed a dangling address. `byte_count` is kept, as in C#.
+#[test]
+fn after_dispose_block_is_invalid_with_null_pointer_by_contract() {
+    let _guard = guard();
+    let memory = NativePixelMemory::allocate(4096).expect("4096 bytes allocate");
+    assert!(!memory.is_invalid());
+    assert!(!memory.is_closed());
+    memory.dispose();
+    assert!(memory.is_closed());
+    assert!(memory.is_invalid());
+    assert_eq!(memory.address(), 0);
+    assert!(memory.as_mut_ptr().is_null());
+    assert_eq!(memory.byte_count(), 4096);
+}
