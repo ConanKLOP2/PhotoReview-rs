@@ -2,21 +2,20 @@
 //! [`PixelBuffer`] (4 bytes per pixel, native, 64-byte aligned, uninitialised after allocation, unique `id`) and the
 //! managed pixel operations in this module ([`apply_orientation`], [`has_alpha`], [`is_fully_opaque`]).
 //!
-//! Target path: `crates/pr-imaging/src/pixels.rs` (lead adds `pub mod pixels;` to `lib.rs`).
-//!
 //! Ownership model (replaces `IDisposable`): a `PixelBuffer` has exactly one owner and frees its memory on `Drop`.
 //! Sharing is `Arc<PixelBuffer>` (read-only), which is how W4-01b/W4-01c carry it. The C# `Dispose()` stays as
 //! [`PixelBuffer::dispose`] (early release, idempotent) because C# callers and tests observe `IsDisposed` and
 //! `ObjectDisposedException`; every accessor of a disposed buffer returns [`PixelBufferError::Disposed`].
 //!
-//! No `unsafe` in this file: all raw memory handling lives in `NativePixelMemory` (W4-16b, `pr_imaging::pixel_memory`).
+//! Allocation and freeing live in `NativePixelMemory` (W4-16b, `pr_imaging::pixel_memory`), which hands out only a raw
+//! pointer. The only `unsafe` of this file are the two slice views over that block (`block_slice`, `block_slice_mut`),
+//! each with one SAFETY comment; they are the single place where a `&[u8]` is made from the block.
 //!
 //! PARITY: I-18 (orientation baked into pixels; this is the pixel loop), D-06 (the alpha flag of the preview cache
 //! header is `has_alpha`), INV-1 (the `id` is part of the GPU cache key).
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 use std::fmt;
-use std::sync::atomic::AtomicI64;
+use std::sync::atomic::{AtomicI64, Ordering};
 
 /// Bytes per pixel of every layout (C# `BytesPerPixel`).
 pub const BYTES_PER_PIXEL: i32 = 4;
@@ -38,12 +37,16 @@ pub enum PixelLayout {
 impl PixelLayout {
     /// C# `(PixelLayout)n`: 0 and 1 only; anything else is [`PixelBufferError::UnknownLayout`].
     pub fn from_i32(value: i32) -> Result<Self, PixelBufferError> {
-        todo!("0 => Bgr32, 1 => Pbgra32, else UnknownLayout(value)")
+        match value {
+            0 => Ok(Self::Bgr32),
+            1 => Ok(Self::Pbgra32),
+            other => Err(PixelBufferError::UnknownLayout(other)),
+        }
     }
 
     /// The C# enum value (0 or 1).
     pub fn as_i32(self) -> i32 {
-        todo!("self as i32")
+        self as i32
     }
 }
 
@@ -67,7 +70,24 @@ pub enum PixelBufferError {
 
 impl fmt::Display for PixelBufferError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("English texts of the C# exceptions")
+        match self {
+            Self::WidthOutOfRange { width } => {
+                write!(
+                    f,
+                    "Width must be between 1 and {} (was {width}).",
+                    i32::MAX / BYTES_PER_PIXEL
+                )
+            }
+            Self::HeightOutOfRange { height } => write!(f, "Height must be at least 1 (was {height})."),
+            Self::UnknownLayout(value) => write!(f, "Unknown pixel layout {value}."),
+            Self::OutOfMemory { byte_count } => write!(f, "Insufficient memory for {byte_count} bytes of pixels."),
+            Self::Disposed => f.write_str(
+                "Cannot access a disposed object.\r\nObject name: 'PhotoReview.Imaging.Pixels.PixelBuffer'.",
+            ),
+            Self::RowOutOfRange { y, height } => {
+                write!(f, "Row {y} is outside the buffer (height {height}).")
+            }
+        }
     }
 }
 
@@ -76,7 +96,14 @@ impl std::error::Error for PixelBufferError {}
 impl PixelBufferError {
     /// The .NET exception type name: `ArgumentOutOfRangeException`, `OutOfMemoryException` or `ObjectDisposedException`.
     pub fn dotnet_type_name(&self) -> &'static str {
-        todo!("see the variant docs")
+        match self {
+            Self::WidthOutOfRange { .. }
+            | Self::HeightOutOfRange { .. }
+            | Self::UnknownLayout(_)
+            | Self::RowOutOfRange { .. } => "ArgumentOutOfRangeException",
+            Self::OutOfMemory { .. } => "OutOfMemoryException",
+            Self::Disposed => "ObjectDisposedException",
+        }
     }
 }
 
@@ -85,7 +112,7 @@ static LAST_ID: AtomicI64 = AtomicI64::new(0);
 /// `false` exactly when `byte_count > i32::MAX` (C# `TryGetSpan`). Public so the 2 GiB boundary is testable without
 /// allocating 2 GiB.
 pub fn fits_in_span(byte_count: i64) -> bool {
-    todo!("byte_count <= i32::MAX as i64")
+    byte_count <= i64::from(i32::MAX)
 }
 
 /// Native BGRA/BGRX pixel store. Contents are NOT initialised by [`PixelBuffer::allocate`] (the decoder overwrites all).
@@ -107,92 +134,183 @@ const _: fn() = || {
     assert_send_sync::<PixelBuffer>();
 };
 
+/// Shared view of the first `byte_count` bytes of `memory`; empty for an unallocated block.
+fn block_slice(memory: &NativePixelMemory, byte_count: i64) -> &[u8] {
+    let ptr = memory.as_mut_ptr();
+    if ptr.is_null() || byte_count <= 0 {
+        return &[];
+    }
+    // SAFETY: `ptr` is the non-null start of a live block of at least `byte_count` bytes (`PixelBuffer` allocates exactly
+    // `byte_count` and only keeps `memory` while it is not disposed); the block is freed only by `memory`'s drop or
+    // dispose, both of which need `&mut`/ownership of the `PixelBuffer` and so cannot overlap this borrow; writes go
+    // through `block_slice_mut`, which needs `&mut PixelBuffer`, so no `&mut` alias exists while this `&` lives.
+    unsafe { std::slice::from_raw_parts(ptr, byte_count as usize) }
+}
+
+/// Exclusive view of the first `byte_count` bytes of `memory`; empty for an unallocated block.
+fn block_slice_mut(memory: &mut NativePixelMemory, byte_count: i64) -> &mut [u8] {
+    let ptr = memory.as_mut_ptr();
+    if ptr.is_null() || byte_count <= 0 {
+        return &mut [];
+    }
+    // SAFETY: as in `block_slice`; additionally the caller holds `&mut` to the owning `PixelBuffer` (through
+    // `memory: &mut`), so no other reference into the block exists for the lifetime of the returned slice.
+    unsafe { std::slice::from_raw_parts_mut(ptr, byte_count as usize) }
+}
+
 impl PixelBuffer {
     /// C# `Allocate(width, height, layout)`. Checks in this order: width, height; then one allocation of
     /// `width * 4 * height` bytes; the `id` is taken only after the allocation succeeded (ids need only be unique and
     /// increasing). The C# unknown-layout check is [`PixelLayout::from_i32`] in Rust.
     pub fn allocate(width: i32, height: i32, layout: PixelLayout) -> Result<Self, PixelBufferError> {
-        todo!("range checks, NativePixelMemory::allocate, LAST_ID.fetch_add(1) + 1")
+        if !(1..=i32::MAX / BYTES_PER_PIXEL).contains(&width) {
+            return Err(PixelBufferError::WidthOutOfRange { width });
+        }
+        if height < 1 {
+            return Err(PixelBufferError::HeightOutOfRange { height });
+        }
+        let stride = width * BYTES_PER_PIXEL;
+        let byte_count = i64::from(stride) * i64::from(height);
+        let memory =
+            NativePixelMemory::allocate(byte_count).map_err(|_| PixelBufferError::OutOfMemory { byte_count })?;
+        Ok(Self {
+            width,
+            height,
+            layout,
+            stride,
+            byte_count,
+            id: LAST_ID.fetch_add(1, Ordering::Relaxed) + 1,
+            memory: Some(memory),
+        })
     }
 
     pub fn width(&self) -> i32 {
-        todo!("self.width")
+        self.width
     }
 
     pub fn height(&self) -> i32 {
-        todo!("self.height")
+        self.height
     }
 
     /// `width * 4`, no padding.
     pub fn stride(&self) -> i32 {
-        todo!("self.stride")
+        self.stride
     }
 
     pub fn layout(&self) -> PixelLayout {
-        todo!("self.layout")
+        self.layout
     }
 
     /// `stride as i64 * height as i64`. Still readable after dispose.
     pub fn byte_count(&self) -> i64 {
-        todo!("self.byte_count")
+        self.byte_count
     }
 
     /// Unique in the process, increasing from 1 (the GPU image cache key).
     pub fn id(&self) -> i64 {
-        todo!("self.id")
+        self.id
     }
 
     pub fn is_disposed(&self) -> bool {
-        todo!("self.memory.is_none()")
+        self.memory.is_none()
     }
 
     /// First byte, aligned to 64. `Err(Disposed)` after dispose. The pointer is valid while the buffer is alive and
     /// not disposed; dereferencing it is the caller's `unsafe` (D2D / WIC upload code in `pr-platform-win`).
     pub fn address(&self) -> Result<*const u8, PixelBufferError> {
-        todo!("memory.as_ptr()")
+        match &self.memory {
+            Some(memory) => Ok(memory.as_mut_ptr().cast_const()),
+            None => Err(PixelBufferError::Disposed),
+        }
+    }
+
+    fn row_range(&self, y: i32) -> Result<std::ops::Range<usize>, PixelBufferError> {
+        if self.memory.is_none() {
+            return Err(PixelBufferError::Disposed);
+        }
+        if y < 0 || y >= self.height {
+            return Err(PixelBufferError::RowOutOfRange { y, height: self.height });
+        }
+        let stride = self.stride as usize;
+        let start = y as usize * stride;
+        Ok(start..start + stride)
     }
 
     /// Row `y` (`stride` bytes). `Err(Disposed)` is reported before `Err(RowOutOfRange)` (C# order).
     pub fn get_row(&self, y: i32) -> Result<&[u8], PixelBufferError> {
-        todo!("slice [y*stride .. (y+1)*stride]")
+        let range = self.row_range(y)?;
+        let all = self.bytes()?;
+        // An unallocated test block is empty: its rows are empty too.
+        Ok(all.get(range).unwrap_or(&[]))
     }
 
     /// Writable row; same checks. Replaces the writable `Span<byte>` of C# `GetRow`.
     pub fn get_row_mut(&mut self, y: i32) -> Result<&mut [u8], PixelBufferError> {
-        todo!("slice [y*stride .. (y+1)*stride]")
+        let range = self.row_range(y)?;
+        let all = self.bytes_mut()?;
+        Ok(all.get_mut(range).unwrap_or(&mut []))
     }
 
     /// The whole buffer (`byte_count` bytes), whatever its size (Rust slices are not limited to 2 GiB).
     pub fn bytes(&self) -> Result<&[u8], PixelBufferError> {
-        todo!("memory.as_slice()")
+        match &self.memory {
+            Some(memory) => Ok(block_slice(memory, self.byte_count)),
+            None => Err(PixelBufferError::Disposed),
+        }
     }
 
     pub fn bytes_mut(&mut self) -> Result<&mut [u8], PixelBufferError> {
-        todo!("memory.as_mut_slice()")
+        let byte_count = self.byte_count;
+        match &mut self.memory {
+            Some(memory) => Ok(block_slice_mut(memory, byte_count)),
+            None => Err(PixelBufferError::Disposed),
+        }
     }
 
     /// C# `TryGetSpan`: `Ok(None)` when `byte_count > i32::MAX` (parity for callers that feed 32-bit length APIs such
     /// as WIC `CopyPixels`), `Ok(Some(all bytes))` otherwise, `Err(Disposed)` after dispose.
     pub fn try_get_span(&self) -> Result<Option<&[u8]>, PixelBufferError> {
-        todo!("disposed check, fits_in_span, bytes")
+        if self.is_disposed() {
+            return Err(PixelBufferError::Disposed);
+        }
+        if !fits_in_span(self.byte_count) {
+            return Ok(None);
+        }
+        self.bytes().map(Some)
     }
 
     /// Mutable twin of [`PixelBuffer::try_get_span`].
     pub fn try_get_span_mut(&mut self) -> Result<Option<&mut [u8]>, PixelBufferError> {
-        todo!("disposed check, fits_in_span, bytes_mut")
+        if self.is_disposed() {
+            return Err(PixelBufferError::Disposed);
+        }
+        if !fits_in_span(self.byte_count) {
+            return Ok(None);
+        }
+        self.bytes_mut().map(Some)
     }
 
     /// Frees the memory now; calling it again is a no-op. Geometry, `layout`, `byte_count` and `id` stay readable.
     pub fn dispose(&mut self) {
-        todo!("self.memory = None")
+        self.memory = None;
     }
 
     /// Test hook for the C# `UnsafeAccessor` constructor: a buffer of any valid geometry over an unallocated block, to
     /// test the 2 GiB branches without allocating. Every slice accessor of such a buffer is empty and it is not
-    /// disposed. Not for production code.
+    /// disposed. Not for production code. Hidden from the docs because it is public only so the integration tests
+    /// (a separate crate) can reach it.
     #[doc(hidden)]
     pub fn unallocated_for_tests(width: i32, height: i32, layout: PixelLayout) -> Self {
-        todo!("same fields as allocate, NativePixelMemory::unallocated()")
+        let stride = width.saturating_mul(BYTES_PER_PIXEL);
+        Self {
+            width,
+            height,
+            layout,
+            stride,
+            byte_count: i64::from(width) * i64::from(BYTES_PER_PIXEL) * i64::from(height),
+            id: LAST_ID.fetch_add(1, Ordering::Relaxed) + 1,
+            memory: Some(NativePixelMemory::unallocated()),
+        }
     }
 }
 
@@ -211,24 +329,82 @@ pub struct ApplyOrientationError {
 ///   after the copy. The result has a NEW `id`.
 /// * destination allocation failure: `Err` carrying `src` back, untouched.
 pub fn apply_orientation(src: PixelBuffer, exif_orientation: i32) -> Result<PixelBuffer, ApplyOrientationError> {
-    todo!("see the contract, semantics 4 to 7")
+    if src.is_disposed() {
+        return Err(ApplyOrientationError {
+            error: PixelBufferError::Disposed,
+            source: src,
+        });
+    }
+    if !(2..=8).contains(&exif_orientation) {
+        return Ok(src);
+    }
+    let (dst_width, dst_height) = if exif_orientation >= 5 {
+        (src.height, src.width)
+    } else {
+        (src.width, src.height)
+    };
+    let mut dst = match PixelBuffer::allocate(dst_width, dst_height, src.layout) {
+        Ok(dst) => dst,
+        Err(error) => return Err(ApplyOrientationError { error, source: src }),
+    };
+    if exif_orientation >= 5 {
+        copy_transposed(&src, &mut dst, exif_orientation);
+    } else {
+        copy_rows(&src, &mut dst, exif_orientation);
+    }
+    drop(src);
+    Ok(dst)
 }
 
 /// `layout == Pbgra32 && !is_fully_opaque(px)`; `Err(Disposed)` for a disposed buffer (checked first).
 pub fn has_alpha(px: &PixelBuffer) -> Result<bool, PixelBufferError> {
-    todo!("disposed check, layout check, is_fully_opaque")
+    if px.is_disposed() {
+        return Err(PixelBufferError::Disposed);
+    }
+    if px.layout != PixelLayout::Pbgra32 {
+        return Ok(false);
+    }
+    Ok(!is_fully_opaque(px)?)
 }
 
 /// Every alpha byte is 255; always `true` for `Bgr32` (its fourth byte is ignored). Row by row, stops at the first
 /// pixel whose byte 3 is below 255. `Err(Disposed)` for a disposed buffer (checked first, also for `Bgr32`).
 pub fn is_fully_opaque(px: &PixelBuffer) -> Result<bool, PixelBufferError> {
-    todo!("per-row scan of byte 3 of every pixel")
+    let bytes = px.bytes()?;
+    if px.layout != PixelLayout::Pbgra32 {
+        return Ok(true);
+    }
+    let stride = px.stride as usize;
+    if stride == 0 {
+        return Ok(true);
+    }
+    Ok(bytes
+        .chunks_exact(stride)
+        .all(|row| row.chunks_exact(4).all(|pixel| pixel[3] == 255)))
 }
 
 /// Orientations 2..=4: destination row `y` is source row `y` (2) or `height-1-y` (3, 4), mirrored per PIXEL (not per
 /// byte) for 2 and 3.
 fn copy_rows(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
-    todo!("row copy, reverse the 4-byte pixels of the row when mirrored")
+    let stride = src.stride as usize;
+    let height = src.height as usize;
+    let (Ok(source), Ok(target)) = (src.bytes(), dst.bytes_mut()) else {
+        return;
+    };
+    let mirror_columns = orientation == 2 || orientation == 3;
+    let flip_rows = orientation == 3 || orientation == 4;
+    for y in 0..height {
+        let src_y = if flip_rows { height - 1 - y } else { y };
+        let from = &source[src_y * stride..(src_y + 1) * stride];
+        let to = &mut target[y * stride..(y + 1) * stride];
+        if mirror_columns {
+            for (dst_pixel, src_pixel) in to.chunks_exact_mut(4).zip(from.chunks_exact(4).rev()) {
+                dst_pixel.copy_from_slice(src_pixel);
+            }
+        } else {
+            to.copy_from_slice(from);
+        }
+    }
 }
 
 /// Orientations 5..=8, tiled by [`TRANSPOSE_TILE`]. Destination `(x, y)` takes source pixel index
@@ -236,5 +412,36 @@ fn copy_rows(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
 /// 5 transpose `src(y, x)`; 6 rotate 90 CW `src(y, H-1-x)`; 7 transverse `src(W-1-y, H-1-x)`; 8 rotate 270 CW
 /// `src(W-1-y, x)`.
 fn copy_transposed(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
-    todo!("origin/step table, tile loops, 4-byte pixel copies")
+    let w = i64::from(src.width);
+    let h = i64::from(src.height);
+    let (origin, step_x, step_y): (i64, i64, i64) = match orientation {
+        5 => (0, w, 1),
+        6 => ((h - 1) * w, -w, 1),
+        7 => ((h - 1) * w + w - 1, -w, -1),
+        8 => (w - 1, w, -1),
+        _ => return,
+    };
+    let (Ok(source), Ok(target)) = (src.bytes(), dst.bytes_mut()) else {
+        return;
+    };
+    let dst_width = src.height as usize; // H
+    let dst_height = src.width as usize; // W
+    let mut tile_y = 0;
+    while tile_y < dst_height {
+        let end_y = (tile_y + TRANSPOSE_TILE).min(dst_height);
+        let mut tile_x = 0;
+        while tile_x < dst_width {
+            let end_x = (tile_x + TRANSPOSE_TILE).min(dst_width);
+            for y in tile_y..end_y {
+                for x in tile_x..end_x {
+                    let src_index = origin + x as i64 * step_x + y as i64 * step_y;
+                    let from = src_index as usize * 4;
+                    let to = (y * dst_width + x) * 4;
+                    target[to..to + 4].copy_from_slice(&source[from..from + 4]);
+                }
+            }
+            tile_x = end_x;
+        }
+        tile_y = end_y;
+    }
 }
