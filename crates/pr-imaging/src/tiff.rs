@@ -937,4 +937,16 @@ mod tests {
             failures.join(", ")
         );
     }
+
+    #[test]
+    fn exif_rational_value_divides_and_guards_zero_denominator() {
+        assert_eq!(ExifRational::new(1, 250).value(), 0.004);
+        assert_eq!(ExifRational::new(7, 2).value(), 3.5);
+        assert_eq!(ExifRational::new(50, 1).value(), 50.0);
+        assert_eq!(ExifRational::new(0, 5).value(), 0.0);
+        assert_eq!(ExifRational::new(5, 0).value(), 0.0);
+        assert_eq!(ExifRational::new(0, 0).value(), 0.0);
+        assert_eq!(ExifRational::new(u32::MAX, 1).value(), f64::from(u32::MAX));
+        assert!((ExifRational::new(1, 3).value() - 1.0 / 3.0).abs() < 1e-12);
+    }
 }
