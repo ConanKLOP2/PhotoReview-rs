@@ -3076,3 +3076,295 @@ fn undo_after_normal_recycle_still_restores() {
     assert!(undo_result.succeeded, "{:?}", undo_result.error_message);
     assert_eq!(f.bin.restore_calls(), 1);
 }
+
+// ---- W3-05 repair round 1: tests that kill mutants surviving the first verification ----
+
+/// Kills M26 (resolve_partial_undo appends Committed unconditionally): C# `AppendIfUnchangedSince(failed, [], committed)`
+/// must SKIP when another writer already put a newer line on the Failed undo line's Id (e.g. Recovery dismissed it).
+#[test]
+fn repair_resolve_partial_undo_skips_when_failed_undo_line_was_touched_by_another_writer() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = undo_for(&f);
+    let s = group_stamp();
+    f.add_bytes(MOVED_JPEG, b"jpeg", s);
+    f.add_bytes(MOVED_RAW, b"raw data", s);
+    f.fs.fail_move_of(MOVED_RAW, "simulated undo failure");
+    let members = [
+        member(JPEG, Some(MOVED_JPEG), 4, s, false),
+        member(RAW, Some(MOVED_RAW), 8, s, false),
+    ];
+    undo.register_group(&group_result_of(FileOperationType::Move, &members));
+    assert!(!undo.undo_last().succeeded);
+    let failed = read_failed_operations(&f.journal);
+    assert_eq!(failed.len(), 1);
+    let failed = failed[0].clone();
+    // Another window dismissed the Failed undo line meanwhile.
+    let dismissed = JournalEntry {
+        state: JournalState::Dismissed,
+        error: None,
+        error_code: None,
+        ..failed.clone()
+    };
+    f.append(&dismissed);
+    f.fs.reset_step();
+
+    let retry = undo.undo_last();
+
+    assert_succeeded(&retry);
+    let latest = f.journal.read_latest_entry(&failed.id).expect("read").expect("line");
+    assert_eq!(
+        latest.state,
+        JournalState::Dismissed,
+        "resolve must not overwrite a line another writer touched"
+    );
+}
+
+/// Kills set_current_failed_entry -> () and "anchor on failed_entry" (I/O only): a second settle of the same action
+/// anchors on the line the first settle wrote, so it needs no extra journal read for re-anchoring.
+#[test]
+fn repair_second_settle_anchors_on_own_previous_line_without_reanchor_read() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = undo_for(&f);
+    let s = group_stamp();
+    let (jpeg, raw) = jpeg_and_raw();
+    let xmp = member(XMP, None, 3, s, false);
+    register_failed_delete(
+        &f,
+        &mut undo,
+        &[jpeg.clone(), raw.clone(), xmp.clone()],
+        &[jpeg.clone(), raw.clone(), xmp.clone()],
+    );
+    f.bin.set_mode_for(RAW, BinMode::Fail);
+    assert!(!undo.undo_last().succeeded);
+    f.bin.clear_modes();
+    f.disk.reset_counts();
+    let second = undo.undo_last();
+    assert_succeeded(&second);
+    let reads = f.disk.count(pr_test_support::FsOp::OpenRead);
+    assert_eq!(reads, RETRY_SETTLE_EXPECTED_OPEN_READS);
+}
+const RETRY_SETTLE_EXPECTED_OPEN_READS: usize = 6;
+
+/// Kills resolve_partial_undo `delete field timestamp_utc` / `delete field error_code`: the Committed line that closes an
+/// earlier Failed undo line is stamped with the clock NOW and carries no error/error code (C# `failed with {State, TimestampUtc
+/// = clock, Error = null, ErrorCode = null}`).
+#[test]
+fn repair_resolve_partial_undo_committed_line_has_clock_now_and_no_error_code() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = undo_for(&f);
+    let s = group_stamp();
+    f.add_bytes(MOVED_JPEG, b"jpeg", s);
+    f.add_bytes(MOVED_RAW, b"raw data", s);
+    f.fs.on_move(|from, _| {
+        from.to_string_lossy().ends_with("a.cr2").then(|| {
+            pr_core::file_actions::errors::JournalCodedError::new("VerifySizeChanged", "coded failure").into_io_error()
+        })
+    });
+    let members = [
+        member(JPEG, Some(MOVED_JPEG), 4, s, false),
+        member(RAW, Some(MOVED_RAW), 8, s, false),
+    ];
+    undo.register_group(&group_result_of(FileOperationType::Move, &members));
+    assert!(!undo.undo_last().succeeded);
+    let failed = read_failed_operations(&f.journal);
+    assert_eq!(failed.len(), 1, "{:?}", failed);
+    let failed = failed[0].clone();
+    f.fs.reset_step();
+    f.clock.advance_seconds(60);
+
+    assert_succeeded(&undo.undo_last());
+
+    let closed = f.journal.read_latest_entry(&failed.id).expect("read").expect("line");
+    assert_eq!(closed.state, JournalState::Committed);
+    assert_eq!(
+        closed.timestamp_utc.value,
+        plus_secs(s, 60),
+        "Committed line stamped now"
+    );
+    assert_eq!(closed.error, None);
+    assert_eq!(closed.error_code, None);
+}
+
+/// Kills try_settle_failed_delete_line `&&` -> `||` (l.1256): a newer NON-Failed line (a Recovery retry in flight, Prepared)
+/// over a subset of the members is not ours to overwrite; the settle must append nothing.
+#[test]
+fn repair_settle_does_not_reanchor_on_a_newer_prepared_line() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = undo_for(&f);
+    let s = group_stamp();
+    let (jpeg, raw) = jpeg_and_raw();
+    let xmp = member(XMP, None, 3, s, false);
+    register_failed_delete(
+        &f,
+        &mut undo,
+        &[jpeg.clone(), raw.clone(), xmp.clone()],
+        &[jpeg.clone(), raw.clone(), xmp.clone()],
+    );
+    f.bin.set_mode_for(RAW, BinMode::Fail);
+    assert!(!undo.undo_last().succeeded);
+    let newer = JournalEntry {
+        group_id: Some("g".to_owned()),
+        group_members: Some(vec![raw.clone(), xmp.clone()]),
+        ..entry(
+            "delete-group",
+            FileOperationType::Recycle,
+            JournalState::Prepared,
+            &raw.source,
+            None,
+            8,
+            s,
+        )
+    };
+    f.append(&newer);
+    f.bin.clear_modes();
+
+    assert_succeeded(&undo.undo_last());
+
+    let latest = f
+        .journal
+        .read_latest_entry("delete-group")
+        .expect("read")
+        .expect("line");
+    assert_eq!(
+        latest.state,
+        JournalState::Prepared,
+        "settle overwrote a retry in flight: {latest:?}"
+    );
+}
+
+/// Kills undo_single_move l.612 `&&` -> `||`: a broken entry only clears the last action when that action is a Move TO
+/// the broken destination; another Move stays undoable.
+#[test]
+fn repair_broken_history_entry_keeps_an_unrelated_last_move() {
+    let f = Fixture::new();
+    let mut undo = undo_for(&f);
+    let t = write_time();
+    f.add(r"C:\b\dst.jpg", 4, t);
+    undo.register(&single_result(
+        true,
+        FileOperationType::Move,
+        r"C:\a\src.jpg",
+        Some(r"C:\b\dst.jpg"),
+        4,
+        t,
+    ));
+    undo.move_history_mut()
+        .push((r"C:\x\gone.jpg".to_owned(), r"C:\y\gone.jpg".to_owned()));
+
+    let result = undo.undo_move();
+
+    assert!(!result.succeeded);
+    assert!(undo.has_last_undo_action(), "unrelated last Move was dropped");
+}
+
+/// Kills undo_single_move l.587 `&&` -> `||` (RV-C06): a direct undo of a Move that is not the last action keeps it.
+#[test]
+fn repair_direct_undo_of_older_move_keeps_the_newer_last_move() {
+    let f = Fixture::new();
+    let mut undo = undo_for(&f);
+    let t = write_time();
+    f.add(r"C:\b\a.jpg", 4, t);
+    f.add(r"C:\b\b.jpg", 5, t);
+    f.disk.add_dir(Path::new(r"C:\a"));
+    undo.register(&single_result(
+        true,
+        FileOperationType::Move,
+        r"C:\a\a.jpg",
+        Some(r"C:\b\a.jpg"),
+        4,
+        t,
+    ));
+    undo.register(&single_result(
+        true,
+        FileOperationType::Move,
+        r"C:\a\b.jpg",
+        Some(r"C:\b\b.jpg"),
+        5,
+        t,
+    ));
+    undo.move_history_mut().swap(0, 1); // the older Move A is now on top
+
+    let result = undo.undo_move();
+
+    assert!(result.succeeded, "{:?}", result.error_message);
+    assert!(undo.has_last_undo_action(), "last action (Move B) must stay");
+}
+
+/// Kills undo_single_move l.588 `&&` -> `||`: a direct undo whose destination equals a group Move's destination keeps the group.
+#[test]
+fn repair_direct_undo_keeps_a_group_move_last_action_with_the_same_destination() {
+    let f = Fixture::new();
+    let mut undo = undo_for(&f);
+    let t = write_time();
+    f.add(r"C:\b\a.jpg", 4, t);
+    f.disk.add_dir(Path::new(r"C:\a"));
+    undo.register(&single_result(
+        true,
+        FileOperationType::Move,
+        r"C:\a\a.jpg",
+        Some(r"C:\b\a.jpg"),
+        4,
+        t,
+    ));
+    let members = [member(r"C:\g\a.jpg", Some(r"C:\b\a.jpg"), 4, t, false)];
+    undo.register_group(&group_result_of(FileOperationType::Move, &members));
+
+    let result = undo.undo_move();
+
+    assert!(result.succeeded, "{:?}", result.error_message);
+    assert!(undo.has_last_undo_action(), "group Move last action must stay");
+}
+
+/// A gate that is not busy for the cheap `is_busy` probe but refuses `try_begin` (lost the race to another action).
+struct RacingGate;
+impl FileActionGate for RacingGate {
+    fn try_begin(&self) -> bool {
+        false
+    }
+    fn end(&self) {}
+    fn is_busy(&self) -> bool {
+        false
+    }
+}
+
+/// Kills `delete field rejected` in undo_single_recycle / undo_group_move / undo_group_recycle (INV-4 gate path): losing
+/// the gate after the `is_busy` probe is a REJECTED result, as in C#.
+#[test]
+fn repair_lost_gate_race_is_rejected_for_every_undo_kind() {
+    let s = group_stamp();
+    let f = Fixture::at(s);
+    let mk = || f.undo_with_clock(f.clock.clone()).with_gate(Arc::new(RacingGate));
+    let mut single_recycle = mk();
+    single_recycle.register(&recycled(JPEG, 4, s));
+    assert!(single_recycle.undo_last().rejected, "single recycle");
+    let mut group_move = mk();
+    group_move.register_group(&group_result_of(
+        FileOperationType::Move,
+        &[member(JPEG, Some(MOVED_JPEG), 4, s, false)],
+    ));
+    assert!(group_move.undo_last().rejected, "group move");
+    let mut group_recycle = mk();
+    group_recycle.register_group(&group_result_of(
+        FileOperationType::Recycle,
+        &[member(JPEG, None, 4, s, false)],
+    ));
+    assert!(group_recycle.undo_last().rejected, "group recycle");
+}
+
+/// Kills try_undo_group_move l.954 `delete !` (RV-C07 for groups): the original folder removed after the group Move is
+/// recreated by the undo.
+#[test]
+fn repair_group_move_undo_recreates_the_removed_original_folder() {
+    let s = group_stamp();
+    let f = Fixture::at(s);
+    let mut undo = undo_for(&f);
+    f.add_bytes(MOVED_JPEG, b"jpeg", s);
+    let members = [member(r"C:\gone\a.jpg", Some(MOVED_JPEG), 4, s, false)];
+    undo.register_group(&group_result_of(FileOperationType::Move, &members));
+    assert!(!f.disk.directory_exists(Path::new(r"C:\gone")));
+
+    let result = undo.undo_last();
+
+    assert!(result.succeeded, "{:?}", result.error_message);
+    assert!(f.exists(r"C:\gone\a.jpg"));
+}
