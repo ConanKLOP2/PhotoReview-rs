@@ -251,7 +251,10 @@ fn make_error(kind: &str, message: &str, hresult: i32) -> DecodeError {
         "Busy" => DecodeError::busy_with(message),
         "InvalidOperation" => DecodeError::InvalidOperation { message },
         "Argument" => DecodeError::InvalidArgument { message },
-        "ObjectDisposed" => DecodeError::Disposed { message },
+        // C# `new ObjectDisposedException(objectName)`: the argument is the object name, the .NET message wraps it.
+        "ObjectDisposed" => DecodeError::Disposed {
+            message: format!("Cannot access a disposed object.{}Object name: '{message}'.", "\r\n"),
+        },
         "IO" | "FileLoad" | "UnauthorizedAccess" => DecodeError::Io(io::Error::other(message)),
         other => panic!("unknown exception kind {other}"),
     }
