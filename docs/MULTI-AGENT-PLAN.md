@@ -389,7 +389,18 @@ Sau mỗi lượt merge vào `integration/wave-N` và trước khi mở PR vào 
 - **Xung đột chỉ ở `docs/PARITY.md`:** mọi nhánh cùng sửa file này. Giữ cả hai phía là đủ; lead nên sở hữu file và porter chỉ báo dòng cần thêm.
 - **Thứ tự phụ thuộc:** W2-00 -> W2-01/W2-20 -> W2-02/03 vẫn đúng; W2-03 cần normalizer của W2-02 và W2-14 resolve cần W2-00 để test không ignored.
 
-## 12. Granularity rule (P-18, 2026-10-15)
+## 12. Bài học từ Wave 3 (2026-10-16)
+
+- **Kết quả:** 9 WU (W3-01..W3-09) merge trên `integration/wave-3` theo 4 đợt (i1: W3-02/07/08; i2: W3-01/03; i3: W3-04; i4: W3-05/06) cộng W3-09 (chỉ test). Verdict PASS: W3-03, W3-04, W3-06. FAIL: W3-01 (mutation chưa chạy, 228/231 mutant chưa kiểm) và W3-05 (verifier chưa chạy xong cargo-mutants, 0/195). Hai unit này ghi `Partial` trong PARITY.md.
+- **Seam do lead làm trước (P-11..P-15) cứu cả wave:** `AppendStream`, `try_get_file_stat`, `try_restore -> io::Result<bool>`, `FaultInjectionFileSystem`, fixture đồng bộ. Không unit nào phải tự bịa seam; nhưng W3-07 phải thu hẹp P-12 trên `PhysicalFileSystem` (file do lead sở hữu), nên seam cần có test golden vật lý ngay từ đầu.
+- **Phụ thuộc vòng giữa các unit:** W3-01 cần W3-03 (reconcile), W3-04 cần W3-05 (undo). Test đỏ chỉ xanh sau khi cả cặp merge; thứ tự tích hợp đúng là 02/07/08 -> 01/03 -> 04 -> 05/06 -> 09. Hợp đồng nên ghi rõ "test X đỏ cho đến khi unit Y merge" thay vì để porter tự phát hiện.
+- **Xung đột chỉ ở `docs/PARITY.md`** (lại như Wave 2): mọi merge đều giữ hàng Done mới, bỏ hàng Todo cũ. Lead nên sở hữu file này.
+- **Mutation gate là nút thắt:** `cargo-mutants` trên `undo.rs` chạy khoảng 3 giờ (198 mutant); verifier không kịp. Cần ngân sách thời gian cho verifier hoặc chạy mutation theo file, song song, ngay trong vòng port.
+- **Test `#[ignore]` vẫn nhiều:** journal 19, compaction 15, journal_reconcile 2, startup_recovery 6, 5 test INV-6 chờ D24; chưa chạy `--include-ignored` toàn bộ. Gate Wave 3 phải chạy thêm các binary native.
+- **Flake dưới tải:** `diagnostics_file_log::flush_drained_set_while_entry_queued_waits_until_written` (W2) rớt ở một lần chạy workspace đầy đủ, xanh khi chạy riêng; đã có bản sửa giới hạn 10 s (e689f26 trên nhánh fix/w4-flaky).
+- **Đồng bộ C# trôi:** `origin/master` của C# đi tiếp `d92d6aae` (trình sửa ngoài). Ghi vào SYNC-LEDGER và P-17; patch W2-S1 sau khi Wave 3 merge.
+
+## 13. Granularity rule (P-18, 2026-10-15)
 
 Split a unit when it has independent concerns: pure logic vs I/O, separate C# classes, separate files. Name sub-units
 `W<wave>-<n>a`, `b`, ... in the contract; each has its own Owned files, goldens and verifier. Chores (docs, ignore

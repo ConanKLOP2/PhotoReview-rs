@@ -2,11 +2,11 @@
 //! The loader always merges over the embedded English catalog, so these tests rely on its `app.title` key.
 //! Each test names its C# twin in a comment. The "real file" variants are covered by the `l10n-loader` golden.
 
-use std::io::{self, Write};
+use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use pr_core::abstractions::{FileStat, FileSystem, ReadSeek};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, ReadSeek};
 use pr_l10n::catalog::{MAX_FILE_BYTES, PluralRule};
 use pr_l10n::loader::{AUTO_CODE, LanguageLoader, UiCulture, current_ui_culture, set_current_ui_culture};
 use pr_l10n::localizer::built_in_english;
@@ -494,7 +494,7 @@ impl FileSystem for NoStatFileSystem {
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
         self.0.open_read_shared(path, buffer_size)
     }
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.0.open_append(path, durable)
     }
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
@@ -577,7 +577,7 @@ impl FileSystem for ReverseListFileSystem {
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
         self.0.open_read_shared(path, buffer_size)
     }
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.0.open_append(path, durable)
     }
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {

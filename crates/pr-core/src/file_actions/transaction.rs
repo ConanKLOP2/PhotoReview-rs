@@ -12,15 +12,17 @@
 //!
 //! C# `BeginAsync` (PowerLossSafe: `Task.Run(Begin)`) has no twin: Rust calls are blocking (R0003) and every caller
 //! already runs the whole operation off the UI thread; W3-04 decides which thread calls [`JournalTransaction::begin`].
-#![allow(unused_variables, dead_code)] // D11: removed by the porter together with the last todo!()
 
 use std::error::Error;
 use std::fmt;
 use std::io;
+use std::path::Path;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, LiveMarker};
+use crate::file_actions::errors::{self, JournalCodedError};
 use crate::file_actions::journal::OperationJournal;
-use crate::file_actions::journal_line::JournalEntry;
+use crate::file_actions::journal_line::{JournalDateTime, JournalEntry};
+use crate::model::JournalState;
 
 /// Message of the error [`JournalTransaction::begin`] returns for a superseded retry (C# `InvalidOperationException`).
 pub const SUPERSEDED_MESSAGE: &str = "The retried journal entry was superseded by another writer.";
@@ -116,7 +118,11 @@ impl<'a> JournalTransaction<'a> {
     /// C# `Begin()`: [`try_begin`](Self::try_begin); `Ok(false)` becomes `Err(io::Error::other(TransactionSuperseded))`.
     /// An append error is returned unchanged.
     pub fn begin(&mut self) -> io::Result<()> {
-        todo!()
+        if self.try_begin()? {
+            Ok(())
+        } else {
+            Err(io::Error::other(TransactionSuperseded))
+        }
     }
 
     /// C# `TryBegin()`, in this order:
@@ -129,13 +135,36 @@ impl<'a> JournalTransaction<'a> {
     /// 4. `!appended` -> `superseded = true`, release the marker, `Ok(false)`;
     /// 5. otherwise `is_prepared = true`, `Ok(true)` (the marker stays until the outcome).
     pub fn try_begin(&mut self) -> io::Result<bool> {
-        todo!()
+        // Before the Prepared line exists anywhere: a reconcile that can read it can also see the marker.
+        if self.live_marker.is_none() {
+            self.live_marker = Some(self.journal.live_operations().begin(&self.prepared.id));
+        }
+        let appended = match &self.retry_of {
+            Some(retry_of) => self.journal.append_if_unchanged_since(retry_of, &[], &self.prepared),
+            None => self.journal.append(&self.prepared).map(|()| true),
+        };
+        let appended = match appended {
+            Ok(appended) => appended,
+            Err(err) => {
+                self.release_live_marker(); // nothing pending was written (or a retry's Failed follows)
+                return Err(err);
+            }
+        };
+        if !appended {
+            self.superseded = true;
+            self.release_live_marker();
+            return Ok(false);
+        }
+        self.is_prepared = true;
+        Ok(true)
     }
 
     /// C# `VerifyDestination(IFileSystem, string destination, string errorCode)`:
-    /// `self.verify_destination_stat(fs.get_file_stat(Path::new(destination)), error_code)` (ONE stat).
+    /// `self.verify_destination_stat(fs.try_get_file_stat(Path::new(destination))?, error_code)` (ONE stat; P-12: a stat
+    /// that cannot be inspected is returned as the error, like the C# `GetFileStat` throw).
     pub fn verify_destination(&mut self, fs: &dyn FileSystem, destination: &str, error_code: &str) -> io::Result<()> {
-        todo!()
+        let stat = fs.try_get_file_stat(Path::new(destination))?;
+        self.verify_destination_stat(stat, error_code)
     }
 
     /// C# `VerifyDestination(FileStat?, string errorCode)`: `stat` is `None`, or its length differs from
@@ -146,7 +175,13 @@ impl<'a> JournalTransaction<'a> {
     /// Rust uses the code itself as the message (`// DIVERGENCE:` comment, no test, no golden case). Otherwise `mutation_completed = true`. The write time is NOT
     /// compared here.
     pub fn verify_destination_stat(&mut self, stat: Option<FileStat>, error_code: &str) -> io::Result<()> {
-        todo!()
+        let size_matches =
+            stat.is_some_and(|s| i64::try_from(s.length).is_ok_and(|length| length == self.prepared.size));
+        if !size_matches {
+            return Err(self.coded_error(error_code));
+        }
+        self.mutation_completed = true;
+        Ok(())
     }
 
     /// C# `VerifyMoved`: `fs.file_exists(source)` -> coded error `MOVE_SOURCE_NOT_REMOVED` (checked FIRST; the destination
@@ -158,7 +193,10 @@ impl<'a> JournalTransaction<'a> {
         destination: &str,
         size_error_code: &str,
     ) -> io::Result<()> {
-        todo!()
+        if fs.file_exists(Path::new(source)) {
+            return Err(self.coded_error(errors::MOVE_SOURCE_NOT_REMOVED));
+        }
+        self.verify_destination(fs, destination, size_error_code)
     }
 
     /// C# `MarkMutationCompleted()`: for operations with nothing to verify (Recycle).
@@ -172,20 +210,31 @@ impl<'a> JournalTransaction<'a> {
     /// returned as `Some(err.to_string())`. The marker is released AFTER the append attempt, on both paths. Returns the
     /// committed record even when its append failed.
     pub fn commit(&mut self) -> (JournalEntry, Option<String>) {
-        todo!()
+        // DIVERGENCE: C# also catches a THROWING clock here (JournalCommitClockFailureTests); `Clock::utc_now` cannot
+        // fail (T20), so there is no such path.
+        let committed = JournalEntry {
+            state: JournalState::Committed,
+            timestamp_utc: JournalDateTime::utc(self.clock.utc_now()),
+            ..self.prepared.clone()
+        };
+        let journal_error = self.journal.append(&committed).err().map(|err| err.to_string());
+        self.release_live_marker(); // only after the outcome line: until then the entry is Prepared and must look live
+        (committed, journal_error)
     }
 
     /// C# `Fail(Exception failure, out string? journalError)`: `(code, text) = errors::for_journal(failure, &|k|
     /// journal.texts().english(k))`, then the shared failure-outcome step with `state = Failed`, `error = Some(text)`,
     /// `error_code = code`.
     pub fn fail(&mut self, failure: &(dyn Error + 'static)) -> (Option<JournalEntry>, Option<String>) {
-        todo!()
+        let texts = self.journal.texts();
+        let (code, text) = errors::for_journal(failure, &|key| texts.english(key));
+        self.append_failure_outcome(JournalState::Failed, Some(text), code.map(str::to_owned))
     }
 
     /// C# `DismissRolledBack(out string? journalError)`: the failure-outcome step with `state = Dismissed`, `error = None`,
     /// `error_code = None` (a fully rolled-back group: nothing left to retry).
     pub fn dismiss_rolled_back(&mut self) -> (Option<JournalEntry>, Option<String>) {
-        todo!()
+        self.append_failure_outcome(JournalState::Dismissed, None, None)
     }
 
     /// C# `AppendFailureOutcome(state, errorText, errorCode, out journalError)`, in this order:
@@ -203,7 +252,53 @@ impl<'a> JournalTransaction<'a> {
         error_text: Option<String>,
         error_code: Option<String>,
     ) -> (Option<JournalEntry>, Option<String>) {
-        todo!()
+        if !self.is_prepared && self.retry_of.is_none() {
+            self.release_live_marker();
+            return (None, None);
+        }
+        let outcome = JournalEntry {
+            state,
+            timestamp_utc: JournalDateTime::utc(self.clock.utc_now()),
+            error: error_text,
+            error_code,
+            ..self.prepared.clone()
+        };
+        let appended = match &self.retry_of {
+            Some(retry_of) => {
+                let own: &[JournalEntry] = if self.is_prepared {
+                    std::slice::from_ref(&self.prepared)
+                } else {
+                    &[]
+                };
+                self.journal.append_if_unchanged_since(retry_of, own, &outcome)
+            }
+            None => self.journal.append(&outcome).map(|()| true),
+        };
+        let journal_error = match appended {
+            Ok(true) => None,
+            Ok(false) => {
+                self.superseded = true;
+                None
+            }
+            Err(err) => Some(err.to_string()),
+        };
+        self.release_live_marker(); // only after the outcome line (see commit)
+        // A record is returned only when its line really reached the journal (T10: also `None` when `try_begin` already
+        // marked this retry superseded, even if this append went through).
+        if self.superseded || journal_error.is_some() {
+            (None, journal_error)
+        } else {
+            (Some(outcome), None)
+        }
+    }
+
+    /// C# `new JournalCodedException(code)`: the coded error with the localized text of `code` as its message.
+    fn coded_error(&self, code: &str) -> io::Error {
+        // DIVERGENCE: C# throws `ArgumentException` for an unknown code while building the exception (a caller bug:
+        // callers pass `errors::*` constants only); Rust uses the code itself as the message (T21).
+        let texts = self.journal.texts();
+        let message = errors::text(code, &|key| texts.localized(key)).unwrap_or_else(|_| code.to_owned());
+        JournalCodedError::new(code, message).into_io_error()
     }
 
     /// C# `ReleaseLiveMarker()`: drops the marker (idempotent).

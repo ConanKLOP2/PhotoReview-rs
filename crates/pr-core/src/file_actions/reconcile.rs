@@ -23,16 +23,17 @@
 //!   `Dismissed` is left alone. Idempotent: the repaired line carries the members, so the next run finds nothing.
 //! * One entry that cannot be judged or appended never stops the others: it stays as it is and the next start retries.
 
-// TEMPORARY (D11): bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::collections::HashMap;
 use std::io;
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::path::Path;
 
-use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log};
-use crate::file_actions::journal_line::{JournalEntry, JournalGroupMember};
+use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log, panic_message};
+use crate::file_actions::errors::{PENDING_UNCONFIRMED, SOURCE_STILL_EXISTS_AFTER_RECOVERY};
+use crate::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use crate::file_actions::journal_rules::is_stale_reconcile_after_committed;
-use crate::model::JournalState;
+use crate::file_actions::types::matches_moved_destination;
+use crate::model::{FileOperationType, JournalState};
 use crate::time::DateTimeUtc;
 
 /// C# `OperationJournal.SettledByOlderBuildText` (internal const): the English `Error` of a group line an older build
@@ -100,7 +101,33 @@ pub fn reconcile_pending_operations(
     prepared_before_utc: Option<DateTimeUtc>,
     diagnostics: &dyn Log,
 ) -> io::Result<Vec<JournalEntry>> {
-    todo!()
+    let (mut latest, history) = compute_latest_entries(journal)?;
+    let mut reconciled = repair_group_lines_settled_by_older_build(journal, &mut latest, &history, diagnostics);
+
+    // C# `latestEntries.Values.Where(Prepared).ToList()`: a snapshot after the repair pass, in first-appearance order.
+    let prepared: Vec<JournalEntry> = latest
+        .values()
+        .filter(|entry| entry.state == JournalState::Prepared)
+        .cloned()
+        .collect();
+    for pending in &prepared {
+        if let Some(cutoff) = prepared_before_utc {
+            // C# `DateTime >= DateTime` compares ticks and ignores the Kind (an Unspecified stamp compares raw).
+            if pending.timestamp_utc.value.ticks() >= cutoff.ticks() {
+                continue;
+            }
+        }
+        match catch_unwind(AssertUnwindSafe(|| reconcile_one(journal, pending, diagnostics))) {
+            Ok(Some(outcome)) => reconciled.push(outcome),
+            Ok(None) => {}
+            Err(payload) => diagnostics.warn(&format!(
+                "Journal reconcile: skipped {}: {}",
+                pending.id,
+                panic_message(payload.as_ref())
+            )),
+        }
+    }
+    Ok(reconciled)
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -134,7 +161,9 @@ impl<T> OrderedById<T> {
 
     /// Inserts or replaces; a new key goes to the end, an existing one keeps its position.
     fn set(&mut self, id: &str, value: T) {
-        todo!()
+        if self.by_id.insert(id.to_owned(), value).is_none() {
+            self.order.push(id.to_owned());
+        }
     }
 
     /// Values in first-insertion order of their keys.
@@ -154,7 +183,18 @@ impl<T> OrderedById<T> {
 fn compute_latest_entries(
     journal: &dyn ReconcileJournal,
 ) -> io::Result<(OrderedById<JournalEntry>, OrderedById<GroupHistory>)> {
-    todo!()
+    let mut latest = OrderedById::<JournalEntry>::default();
+    let mut history = OrderedById::<GroupHistory>::default();
+    journal.read_entries(&mut |entry: JournalEntry| {
+        if let Some(members) = entry.group_members.as_ref().filter(|members| !members.is_empty()) {
+            history.set(&entry.id, (entry.group_id.clone(), members.clone()));
+        }
+        if !is_stale_reconcile_after_committed(&entry, latest.get(&entry.id)) {
+            let id = entry.id.clone();
+            latest.set(&id, entry);
+        }
+    })?;
+    Ok((latest, history))
 }
 
 /// C# `RepairGroupLinesSettledByOlderBuild` + its local `RepairOne`, for every Id of `history` in order. Each Id runs
@@ -174,7 +214,65 @@ fn repair_group_lines_settled_by_older_build(
     history: &OrderedById<GroupHistory>,
     diagnostics: &dyn Log,
 ) -> Vec<JournalEntry> {
-    todo!()
+    let mut changed = Vec::new();
+    for (id, (group_id, members)) in history.keys().zip(history.values()) {
+        let repaired = catch_unwind(AssertUnwindSafe(|| {
+            repair_one(journal, latest, id, group_id, members, diagnostics)
+        }));
+        match repaired {
+            Ok(Some(outcome)) => changed.push(outcome),
+            Ok(None) => {}
+            Err(payload) => diagnostics.warn(&format!(
+                "Journal reconcile: skipped group repair of {id}: {}",
+                panic_message(payload.as_ref())
+            )),
+        }
+    }
+    changed
+}
+
+/// C# local `RepairOne(id)`. Returns the appended outcome when its state differs from the restored line's.
+fn repair_one(
+    journal: &dyn ReconcileJournal,
+    latest: &mut OrderedById<JournalEntry>,
+    id: &str,
+    group_id: &Option<String>,
+    members: &[JournalGroupMember],
+    diagnostics: &dyn Log,
+) -> Option<JournalEntry> {
+    let current = latest.get(id)?;
+    if current.group_members.as_ref().is_some_and(|m| !m.is_empty()) || current.state == JournalState::Dismissed {
+        return None;
+    }
+    let current = current.clone();
+    let mut restored = current.clone();
+    restored.group_id = group_id.clone();
+    restored.group_members = Some(members.to_vec());
+    if restored.state == JournalState::Prepared {
+        // Judged by the main loop like any group line; its outcome line carries the members.
+        latest.set(id, restored);
+        return None;
+    }
+    if journal.live_operations().is_live(id) {
+        return None;
+    }
+    let mut outcome = restored.clone();
+    if restored.state == JournalState::Committed
+        && !members
+            .iter()
+            .all(|member| is_group_member_completed(journal, &restored, member))
+    {
+        outcome.state = JournalState::Failed;
+        outcome.timestamp_utc = JournalDateTime::utc(journal.clock().utc_now());
+        outcome.error = Some(SETTLED_BY_OLDER_BUILD_TEXT.to_owned());
+        outcome.error_code = None;
+    }
+    if !try_reconcile_append(|| append_if_latest_is(journal, &current, &outcome), id, diagnostics) {
+        return None;
+    }
+    let state_changed = outcome.state != restored.state;
+    latest.set(id, outcome.clone());
+    state_changed.then_some(outcome)
 }
 
 /// C# `ReconcileOne`. Runs inside `catch_unwind` (caller); a panic logs `"Journal reconcile: skipped {id}: {message}"`.
@@ -190,19 +288,89 @@ fn reconcile_one(
     pending: &JournalEntry,
     diagnostics: &dyn Log,
 ) -> Option<JournalEntry> {
-    todo!()
+    // Q-R27: skip before any (possibly slow) file check.
+    if journal.live_operations().is_live(&pending.id) {
+        return None;
+    }
+    let fs = journal.file_system();
+    let outcome = match pending.group_members.as_deref() {
+        Some(members) if !members.is_empty() => {
+            let all_completed = members
+                .iter()
+                .all(|member| is_group_member_completed(journal, pending, member));
+            let code = if pending.op_type == FileOperationType::Recycle {
+                SOURCE_STILL_EXISTS_AFTER_RECOVERY
+            } else {
+                PENDING_UNCONFIRMED
+            };
+            with_outcome(journal, pending, verdict(all_completed), code)
+        }
+        _ => match pending.op_type {
+            FileOperationType::Recycle => {
+                let source_exists = fs.file_exists(Path::new(&pending.source));
+                with_outcome(
+                    journal,
+                    pending,
+                    verdict(!source_exists),
+                    SOURCE_STILL_EXISTS_AFTER_RECOVERY,
+                )
+            }
+            FileOperationType::Move | FileOperationType::Copy => {
+                let source_exists = fs.file_exists(Path::new(&pending.source));
+                let destination_stat = pending
+                    .destination
+                    .as_deref()
+                    .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+                let destination_matches =
+                    is_recorded_destination(destination_stat, pending.size, pending.last_write_utc.value);
+                // Move must have removed the source to count as done; Copy is expected to leave it in place.
+                let done = if pending.op_type == FileOperationType::Move {
+                    !source_exists && destination_matches
+                } else {
+                    destination_matches
+                };
+                with_outcome(journal, pending, verdict(done), PENDING_UNCONFIRMED)
+            }
+        },
+    };
+    try_reconcile_append(|| append_if_still_pending(journal, &outcome), &outcome.id, diagnostics).then_some(outcome)
+}
+
+/// `Committed` when the operation is complete, else `Failed`.
+fn verdict(done: bool) -> JournalState {
+    if done {
+        JournalState::Committed
+    } else {
+        JournalState::Failed
+    }
 }
 
 /// C# `TryReconcileAppend`: `Ok(b)` -> `b`; `Err(e)` -> warn `"Journal reconcile: could not append outcome for {id}: {e}"`
 /// and `false`.
 fn try_reconcile_append(append: impl FnOnce() -> io::Result<bool>, id: &str, diagnostics: &dyn Log) -> bool {
-    todo!()
+    match append() {
+        Ok(appended) => appended,
+        Err(err) => {
+            diagnostics.warn(&format!("Journal reconcile: could not append outcome for {id}: {err}"));
+            false
+        }
+    }
 }
 
 /// C# `AppendIfStillPending` (FA-01 + Q-R27): through [`ReconcileJournal::append_if`], append `outcome` only when the RAW
 /// last line of its Id (no FA-01 skipping here) is `Prepared` and, checked after that read, the Id is not live.
 fn append_if_still_pending(journal: &dyn ReconcileJournal, outcome: &JournalEntry) -> io::Result<bool> {
-    todo!()
+    journal.append_if(&outcome.id, &mut |lines: &[JournalEntry]| {
+        let last = lines.last()?;
+        if last.state != JournalState::Prepared {
+            return None;
+        }
+        // Q-R27: re-checked after the re-read (a retry that re-prepared this Id meanwhile is live already).
+        if journal.live_operations().is_live(&outcome.id) {
+            return None;
+        }
+        Some(outcome.clone())
+    })
 }
 
 /// The effective latest line of ONE Id's lines (file order) under FA-01: the same fold as [`compute_latest_entries`]
@@ -225,13 +393,15 @@ fn append_if_latest_is(
     expected: &JournalEntry,
     outcome: &JournalEntry,
 ) -> io::Result<bool> {
-    todo!()
+    journal.append_if(&expected.id, &mut |lines: &[JournalEntry]| {
+        (effective_latest(lines) == Some(expected)).then(|| outcome.clone())
+    })
 }
 
 /// C# `IsRecordedDestination` (R01c): `destination` is `Some` and `types::matches_moved_destination(stat, size,
 /// last_write_utc)` (exact size, write time within the 2 s FAT tolerance, inclusive).
 fn is_recorded_destination(destination: Option<FileStat>, size: i64, last_write_utc: DateTimeUtc) -> bool {
-    todo!()
+    destination.is_some_and(|stat| matches_moved_destination(&stat, size, last_write_utc))
 }
 
 /// C# `IsGroupMemberCompleted`. Recycle: not undo (`group.undo != Some(true)`) -> `!file_exists(member.source)`; undo ->
@@ -243,7 +413,31 @@ fn is_group_member_completed(
     group: &JournalEntry,
     member: &JournalGroupMember,
 ) -> bool {
-    todo!()
+    let fs = journal.file_system();
+    let source = Path::new(&member.source);
+    if group.op_type == FileOperationType::Recycle {
+        if group.undo != Some(true) {
+            return !fs.file_exists(source);
+        }
+        // R15: the recycled file ITSELF is back (exact size and write time), not merely some file at that path.
+        return fs.get_file_stat(source).is_some_and(|back| {
+            matches!(i64::try_from(back.length), Ok(length) if length == member.size)
+                && back.last_write_utc == member.last_write_utc.value
+        });
+    }
+    // An undo group is journaled already in undo direction: no swap here.
+    let destination = member
+        .destination
+        .as_deref()
+        .filter(|destination| !destination.chars().all(char::is_whitespace))
+        .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+    let destination_matches = is_recorded_destination(destination, member.size, member.last_write_utc.value);
+    let source_exists = fs.file_exists(source);
+    match group.op_type {
+        FileOperationType::Move => !source_exists && destination_matches,
+        FileOperationType::Copy => destination_matches,
+        FileOperationType::Recycle => false,
+    }
 }
 
 /// C# `WithOutcome`: a copy of `pending` with `state`, `timestamp_utc = JournalDateTime::utc(journal.clock().utc_now())`,
@@ -255,5 +449,11 @@ fn with_outcome(
     state: JournalState,
     failure_code: &str,
 ) -> JournalEntry {
-    todo!()
+    let failed = state == JournalState::Failed;
+    let mut outcome = pending.clone();
+    outcome.state = state;
+    outcome.timestamp_utc = JournalDateTime::utc(journal.clock().utc_now());
+    outcome.error = failed.then(|| journal.english_text(failure_code));
+    outcome.error_code = failed.then(|| failure_code.to_owned());
+    outcome
 }

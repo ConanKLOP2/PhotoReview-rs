@@ -11,7 +11,7 @@
 //! - `SessionWriterShutdownAndVersionTests.Constructor_InvalidDebounce_Throws` rows `-1` and `-5000`: a `Duration`
 //!   cannot be negative (the golden row `ctor-negative-debounce` is skipped for the same reason).
 
-use std::io::{self, Write};
+use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering::SeqCst};
 use std::sync::mpsc;
@@ -19,7 +19,7 @@ use std::sync::{Arc, Condvar, Mutex, PoisonError};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use pr_core::abstractions::{FileStat, FileSystem, ReadSeek};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, ReadSeek};
 use pr_core::app_paths::AppPaths;
 use pr_core::session::store::{SessionState, SessionStore};
 use pr_core::session::writer::{
@@ -183,7 +183,7 @@ impl FileSystem for GateFs {
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
         self.inner.open_read_shared(path, buffer_size)
     }
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.inner.open_append(path, durable)
     }
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {

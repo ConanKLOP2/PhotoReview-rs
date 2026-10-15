@@ -27,7 +27,16 @@ pub trait RecycleBin: Send + Sync {
     }
 
     /// Tries to restore `original_path` from the bin, matching the recorded size and last write time.
-    fn try_restore(&self, original_path: &Path, expected_size: u64, expected_last_write_utc: DateTimeUtc) -> bool;
+    /// `Ok(true)` = restored; `Ok(false)` = no matching item (not in the bin, other size/time, the original path is
+    /// occupied again); `Err` = the bin could not be asked or the restore itself failed (C# `TryRestore` throwing a
+    /// COM/shell error). Decision P-13 (D26(c)): undo/recovery report the error's message instead of "could not
+    /// restore", and a failure is never mistaken for "item not found" (INV-5).
+    fn try_restore(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool>;
 
     /// F-WIN-2: true only when the bin of `path`'s volume is known to accept `file_size` bytes. False when that bin
     /// is off, too small, or unreadable: the shell would then delete PERMANENTLY without asking, so the caller must

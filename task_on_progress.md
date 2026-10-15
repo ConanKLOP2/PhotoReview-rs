@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-16 (branch `wave4/contracts`)
+**Updated:** 2026-10-15 (branch `integration/wave-3`)
 
 ## State
 - master: Wave 0 + Wave 1 + sync to C# baseline d92d6aae.
@@ -44,25 +44,24 @@
   contracts/README.md are undecided; fixtures `operations-legacy.jsonl` and `journal-older-build/*.jsonl` are not synced.
 - Next: lead decides D26, Haiku ports tests per unit (red), then Opus porters in D23/D24 order.
 
-## Wave 4 contracts (branch `wave4/contracts`)
-- Wired: 35 contracts (`contracts/W4-01a..W4-16b.md`, W4-14 split into a/b/c, W4-15 into a/b), 37 stub files in
-  `pr-imaging` (`cache_key`, `decode_types`, `decoder_traits`, `orientation`, `embedded_thumbnail`, `tiff`, `exif_parser`,
-  `exif_summary`, `exif_query`, `adaptive_preview`, `preload_order`, `navigation_pace`, `preload_backoff`, `ram_budget`,
-  `memory_headroom`, `pixels`, `pixel_memory`, `factory`, `fallback`, `webp_heic`, `cache/*` x5, `service/*` x5,
-  `preload/*` x7) and 6 in `pr-platform-win::wic`; 35 oracle files plus 70 dispatch lines; 70 inputs; 70 goldens; 2 fixture
-  folders (235 KB). Cargo: `windows` 0.62 and `windows-core` (workspace, `pr-platform-win` only), `pr-imaging` dev-dependencies
-  `pr-test-support` and `serde_json`, `pr-platform-win` depends on `pr-imaging`.
-- Run (this machine, C# `d92d6aae`): `tools/oracle.ps1 -Commit d92d6aae -Command <name>` once per command, 70 commands, all
-  built and ran. Every golden and fixture produced a second time and compared byte for byte: identical (after fixing two
-  nondeterministic outputs, D40). No pre-existing golden changed.
+## Wave 3 lead foundation (branch `integration/wave-3`, CARGO_TARGET_DIR=target-wave-3/integ)
+- Done (one commit each): P-11 `AppendStream` + `open_append -> Box<dyn AppendStream>`; P-12 `FileSystem::try_get_file_stat`
+  (physical, counting, fake overrides; `io::physical::is_stat_missing`); P-13 `RecycleBin::try_restore -> io::Result<bool>`
+  (+ `FakeRecycleBin` send/delete/restore hooks); P-14 `pr_test_support::{HookFileSystem, FaultInjectionFileSystem}`;
+  P-15 fixtures synced at d92d6aae (sync script also maps the two W2-03 config fixtures, which a sync run used to delete).
 - Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
-  `cargo test --workspace --locked`: 1407 passed, 0 failed (no new tests: stubs are `todo!()`).
-- Wiring fixes found by compiling the drafts together: W4-01c used the trait name `DecodedImage` and elided the
-  `PixelLease` lifetime (D29); `ExifRational` was declared twice (D30); 10 placeholder blocks and 3 stand-in modules replaced
-  by real types (D31); 6 public types lacked `Debug`; `ram_budget` stub test used a placeholder `image_count`.
-- NOT run: `cargo-mutants`; Rust tests against the new goldens (none written yet); any native WIC test (nothing
-  implemented); the oracle on another machine or Windows build (pixel-hash goldens of real WIC output may differ, D39).
-  The oracle for `wic-direct-*` and `embedded-thumbnail-*` needs WPF (`UseWPF`) and so runs only on Windows.
-- Open for the lead: amendments A1..A7 and the D32 seam merge in contracts/README.md; proposals P-24..P-27.
-- Next: Haiku/Sonnet port tests per unit (red), then porters in the merge order of contracts/README.md (Wave 4 roster).
-- Flake seen once in the gate: `diagnostics_file_log::failed_rotation_keeps_the_old_log_content` failed in one full run (known timing-sensitive suite, see Wave 2 notes) and passed twice alone and in the next full run (1407 passed, 0 failed).
+  `cargo test --workspace --locked`: 1442 passed, 0 failed, 61 ignored; `--ignored` on `io_physical_seams` (2) and
+  `io_physical` (47): all passed.
+- NOT done: `CrashPointFileSystem`, `FaultableFileSystem`, `FaultInjectionMatrix`/`Rig`/`SecondOrder`/`FaultInvariants` (W3-09,
+  P-16); cargo-mutants on the new seams; no PR opened from this step.
+- Next: Haiku red-test pass per unit against the landed seams, then porters in D23/D24 order.
+
+## Wave 3 integration (branch `integration/wave-3`, 2026-10-16)
+- Merged: W3-02, W3-07, W3-08 (i1); W3-01 (verdict FAIL), W3-03 (i2); W3-04 (i3); W3-05 (verdict FAIL), W3-06 (i4); W3-09 tests (02640a5).
+  Only conflicts were in `docs/PARITY.md`; resolved by keeping the Done/Ported rows. Not pushed before this step.
+- Run in the integration steps (fmt, clippy `-D warnings`, `cargo test --workspace --locked --no-fail-fast` after each batch):
+  all clean; one flake in `diagnostics_file_log::flush_drained_set_while_entry_queued_waits_until_written` (W2 test) under load, green on rerun.
+- Open: W3-01 mutation testing not done (228/231 untested); W3-05 verifier mutation re-run unfinished (porter round 3: 198 mutants, 178 caught, 2 missed and killed);
+  `#[ignore]`d tests (journal 19, compaction 15, reconcile 2, startup_recovery 6, INV-6 equivalence 5) not run with `--include-ignored`.
+- C# moved past `d92d6aae` (external editors): NOT ported; P-17, patch WU W2-S1 after Wave 3.
+

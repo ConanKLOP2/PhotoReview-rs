@@ -23,7 +23,7 @@ use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use crate::abstractions::{CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
+use crate::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
 use crate::file_actions::errors;
 use crate::text::dotnet_path::{self, PathError};
 use crate::text::ordinal_upper;
@@ -1068,6 +1068,25 @@ fn is_path_unreachable(err: &io::Error) -> bool {
     )
 }
 
+/// P-12 classification of a failed metadata query: `true` = "nothing there" (`Ok(None)`), `false` = "cannot be
+/// inspected" (`Err`). Missing = not found, every .NET "path unreachable" code ([`is_path_unreachable`]: missing
+/// file/folder, bad name, missing network host or share, drive not ready, too long), ERROR_INVALID_FUNCTION (1, a
+/// device such as `CON` that has no file information) and ERROR_DIRECTORY (267, a file used as a folder).
+/// Access denied (5), sharing (32) and lock (33) violations and anything else are NOT missing.
+pub fn is_stat_missing(err: &io::Error) -> bool {
+    const ERROR_INVALID_FUNCTION: i32 = 1;
+    const ERROR_DIRECTORY: i32 = 267;
+    match err.raw_os_error() {
+        Some(ERROR_INVALID_FUNCTION | ERROR_DIRECTORY) => true,
+        Some(ERROR_NETWORK_ACCESS_DENIED) => false,
+        Some(_) => is_path_unreachable(err),
+        None => err.kind() == io::ErrorKind::NotFound,
+    }
+}
+
+/// ERROR_NETWORK_ACCESS_DENIED: in .NET's "unreachable" list, but for a stat it is a denial, not an absence.
+const ERROR_NETWORK_ACCESS_DENIED: i32 = 65;
+
 // ---------------------------------------------------------------------------------------------------------------
 // FileSystem
 // ---------------------------------------------------------------------------------------------------------------
@@ -1106,6 +1125,34 @@ impl FileSystem for PhysicalFileSystem {
             return None;
         }
         Some(stat_of(&metadata))
+    }
+
+    /// P-12: the same lookup as [`get_file_stat`](Self::get_file_stat), but a path that cannot be inspected is an `Err`.
+    /// C# `GetFileStat` throws `ArgumentException` for a blank path and (from `Path.GetFullPath`) for a NUL: both are
+    /// `Err(InvalidInput)` here. A name that cannot exist (wildcards, `|`, a stream, a device such as `CON`, a missing
+    /// folder, drive or UNC host, a component too long) is `Ok(None)`, as in C# (`FileInfo.Exists` false; goldens
+    /// `recovery-check` `p-*`). A whole path longer than the OS limit makes `Path.GetFullPath` throw
+    /// `PathTooLongException` (an `IOException`), so it is an `Err` with raw OS error 206 (golden
+    /// `p-path-40000-chars`: source Unreadable). Every failure of the metadata query itself (access denied, sharing/lock
+    /// violations, other I/O) is `Ok(None)`, exactly like C#: `FileInfo.Exists` swallows the error and `GetFileStat`
+    /// returns `null` (confirmed with a .NET probe on the d92d6aae `PhotoReview.Core.dll`: a file whose folder listing
+    /// and read-attributes rights are denied is `Missing`, verdict `Lost`). [`is_stat_missing`] still classifies the
+    /// error for callers that want to tell "absent" from "denied", but it no longer decides the result here.
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
+        if is_blank(path) {
+            return Err(blank_path_error());
+        }
+        // `new FileInfo(path)` runs Path.GetFullPath, which throws `ArgumentException` (blank/NUL) and
+        // `PathTooLongException` (an `IOException`) when the resolved path is longer than the OS limit (golden
+        // `recovery-check` `p-path-40000-chars`: source Unreadable). Both are `Err` here, never "not there".
+        let full = full_path(path)?;
+        let trimmed = dotnet_path::trim_ending_directory_separator(&full);
+        match fs::symlink_metadata(ensure_extended_prefix_if_needed(trimmed)) {
+            Ok(metadata) if attributes_of(&metadata) & FILE_ATTRIBUTE_DIRECTORY != 0 => Ok(None),
+            Ok(metadata) => Ok(Some(stat_of(&metadata))),
+            // C# `info.Exists ? ... : null`: `FileSystemInfo.Exists` is false for ANY attribute-query failure.
+            Err(_) => Ok(None),
+        }
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
@@ -1184,13 +1231,15 @@ impl FileSystem for PhysicalFileSystem {
         }
     }
 
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         if is_blank(path) {
             return Err(blank_path_error());
         }
         // FileMode.Append, FileAccess.Write, FileShare.Read.
         // DIVERGENCE: the C# FileStream buffers 4096 bytes (data and some errors surface at Flush/Dispose); the raw File
         // writes through to the OS at every call. Callers write whole lines, so the file content is the same.
+        // P-11: the boxed `File` answers `as_file_mut()` with itself (C# `stream is FileStream`), so the journal can
+        // flush it to disk in PowerLossSafe mode.
         let mut append = options(FILE_SHARE_READ, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 });
         append.append(true).create(true);
         let file = open_like_file_stream(&append, path)?;

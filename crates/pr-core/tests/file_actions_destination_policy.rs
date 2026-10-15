@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::io;
 use std::path::{Path, PathBuf};
 
-use pr_core::abstractions::{FileStat, FileSystem, ReadSeek};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, ReadSeek};
 use pr_core::catalog::types::ArgumentError;
 use pr_core::file_actions::destination_policy::{
     ActionDestinationCheck, PickedFolderCheck, validate, validate_no_escape_via_reparse_point, validate_picked_folder,
@@ -61,7 +61,7 @@ impl FileSystem for ReparseFs {
     fn open_read_shared(&self, _: &Path, _: usize) -> io::Result<Box<dyn ReadSeek>> {
         unimplemented!()
     }
-    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn io::Write + Send>> {
+    fn open_append(&self, _: &Path, _: bool) -> io::Result<Box<dyn AppendStream>> {
         unimplemented!()
     }
     fn write_all_text_atomic(&self, _: &Path, _: &str, _: bool) -> io::Result<()> {

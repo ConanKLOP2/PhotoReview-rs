@@ -24,7 +24,7 @@ pub use clock::{Clock, SystemClock};
 pub use dialog::{BatchReviewItem, DialogService, SettingsTarget};
 pub use display::{DisplayClock, DisplayTiming};
 pub use explorer::ExplorerOrderProvider;
-pub use file_system::{CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
+pub use file_system::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
 pub use journal_files::{JournalCompactionFiles, StagedReplacement};
 pub use live_operations::{InProcessLiveOperationRegistry, LiveMarker, LiveOperationRegistry};
 pub use log::{Log, NullLog};

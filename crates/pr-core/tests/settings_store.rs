@@ -23,7 +23,7 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
-use pr_core::abstractions::{Clock, FileStat, FileSystem, KeyNameValidator, ReadSeek};
+use pr_core::abstractions::{AppendStream, Clock, FileStat, FileSystem, KeyNameValidator, ReadSeek};
 use pr_core::app_paths::AppPaths;
 use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::{FileOperationType, ImageSortMode, InitialViewMode, LoadingMode};
@@ -200,7 +200,7 @@ impl FileSystem for ProxyFs {
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
         self.inner.open_read_shared(path, buffer_size)
     }
-    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn io::Write + Send>> {
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
         self.inner.open_append(path, durable)
     }
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
