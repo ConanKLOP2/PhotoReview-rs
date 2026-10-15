@@ -78,6 +78,13 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
   PATH in the Bash tool. Run `tools/*.ps1` with `powershell -NoProfile -ExecutionPolicy Bypass -File`, from the
   PowerShell tool (the Bash `tar` breaks `oracle.ps1`).
 
+## Disk hygiene (C: filled up once: 33 GB of per-worktree debug builds)
+
+- Build with `CARGO_PROFILE_DEV_DEBUG=line-tables-only` and `CARGO_INCREMENTAL=0` in agent worktrees; one
+  `CARGO_TARGET_DIR` per worktree, deleted as soon as that unit's verdict is in. At most 8 live target dirs.
+- After a PR merges: remove its worktrees, branches and `target-wave-*` dirs. Check free space (`Get-PSDrive C`) at
+  every loop tick; below 20 GB, delete target dirs idle for 2 hours (never one a cargo process is writing).
+
 ## Asking the user to decide
 
 Never ask a bare question: give the current state and why it matters, 2-4 options with detailed pros/cons, one
