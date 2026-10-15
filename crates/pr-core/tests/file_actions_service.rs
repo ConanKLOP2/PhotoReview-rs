@@ -1209,6 +1209,46 @@ fn execute_async_photo_at_root_with_parent_traversal_is_rejected_and_nothing_mov
     assert!(fx.file_exists(r"C:\a.jpg"));
 }
 
+// C#: FileActionService.ExecuteAsync lines 539-541 (lexical containment, no direct C# test; mutation gap).
+// A source folder whose name ends with a space: `GetFullPath` strips the trailing space of the LAST component only, so
+// the source folder becomes `C:\photos\a` while the destination folder stays `C:\photos\a \sub`. The lexical check
+// refuses before `destinationPath` is assigned (C# line 543), so the result carries no destination path.
+#[test]
+fn relative_destination_under_trailing_space_folder_is_refused_before_destination_path() {
+    for op in [Move, Copy] {
+        let fx = Fixture::new();
+        let source = r"C:\photos\a \x.jpg";
+        fx.add_file_bytes(source, b"hello photo", last_write_plus(0));
+        let result = fx.run(&single(source, op, Some("sub")));
+        assert!(!result.succeeded, "{op:?}");
+        assert_eq!(result.error.as_deref(), Some(outside_text().as_str()), "{op:?}");
+        assert_eq!(
+            result.destination_path, None,
+            "{op:?}: C# throws before destinationPath is assigned"
+        );
+        assert!(fx.file_exists(source), "{op:?}");
+        assert!(!fx.file_exists(r"C:\photos\a \sub\x.jpg"), "{op:?}");
+    }
+}
+
+// C#: FileActionService.ExecuteAsync lines 539-541 (lexical containment, no direct C# test; mutation gap).
+// Same folder, but the reparse seam reports the source folder's real path WITH the space, so the SEC-01 check alone
+// would accept the destination: the lexical check is the only guard, and nothing may move.
+#[test]
+fn relative_destination_under_trailing_space_folder_lexical_check_is_the_only_guard() {
+    for op in [Move, Copy] {
+        let fx = Fixture::new();
+        let source = r"C:\photos\a \x.jpg";
+        fx.add_file_bytes(source, b"hello photo", last_write_plus(0));
+        fx.hooks.add_reparse_point(r"C:\photos\a", r"C:\photos\a ");
+        let result = fx.run(&single(source, op, Some("sub")));
+        assert!(!result.succeeded, "{op:?}: {result:?}");
+        assert_eq!(result.error.as_deref(), Some(outside_text().as_str()), "{op:?}");
+        assert!(fx.file_exists(source), "{op:?}");
+        assert!(!fx.file_exists(r"C:\photos\a \sub\x.jpg"), "{op:?}");
+    }
+}
+
 // C#: DestinationEscapeTests.HostileRelativeDestination_NeverLeavesPhotoFolder
 // Every hostile spelling is refused before anything moves, and the file never leaves the photo folder.
 #[test]

@@ -2092,3 +2092,34 @@ fn group_copy_failure_with_member_source_edited_is_journaled_failed_not_dismisse
     );
     assert_eq!(last_state(&fx), Some(JournalState::Failed));
 }
+
+// C#: FileActionService.ExecuteGroupAsync lines 102-112 (no direct C# test; group twin of the single
+// `relative_destination_under_trailing_space_folder_*` tests in `file_actions_service.rs`).
+// Unlike the single path, the group combines the destination with the FULL first source folder (trap T7): the folder
+// `C:\photos\a ` normalizes to `C:\photos\a` first, so `sub` resolves to `C:\photos\a\sub`, which IS inside it. The
+// group's lexical check therefore cannot refuse here (an exhaustive search over relative destinations that pass
+// `destination_policy::validate` found none it refuses once the base folder is already full); C# accepts and acts.
+#[test]
+fn group_relative_destination_under_trailing_space_folder_combines_with_the_full_first_folder() {
+    for op in [Move, Copy] {
+        let fx = Fixture::new();
+        let jpeg = r"C:\photos\a \IMG_0001.JPG";
+        let raw = r"C:\photos\a \IMG_0001.CR3";
+        fx.add_file(jpeg, 40);
+        fx.add_file(raw, 60);
+        let result = fx.run_group(&group(jpeg, raw, None, op, Some("sub")));
+        assert!(result.succeeded, "{op:?}: {result:?}");
+        let destinations: Vec<Option<&str>> = result.members.iter().map(|m| m.member.destination.as_deref()).collect();
+        assert_eq!(
+            destinations,
+            vec![
+                Some(r"C:\photos\a\sub\IMG_0001.JPG"),
+                Some(r"C:\photos\a\sub\IMG_0001.CR3")
+            ],
+            "{op:?}"
+        );
+        assert!(fx.file_exists(r"C:\photos\a\sub\IMG_0001.JPG"), "{op:?}");
+        assert!(!fx.file_exists(r"C:\photos\a \sub\IMG_0001.JPG"), "{op:?}");
+        assert_eq!(fx.file_exists(jpeg), op == Copy, "{op:?}");
+    }
+}
