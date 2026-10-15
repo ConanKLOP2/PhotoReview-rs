@@ -7,7 +7,6 @@
 //!
 //! Pure arithmetic only. The OS query (C# `GC.GetGCMemoryInfo`) is the [`MemoryInfoSource`] seam; the Windows
 //! implementation (GlobalMemoryStatusEx) lives in `pr-platform-win` and is NOT part of this unit.
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 /// Output buffers below this never consult the memory guard (C# `GuardThresholdBytes`, 128 MiB).
 pub const GUARD_THRESHOLD_BYTES: i64 = 128 * 1024 * 1024;
@@ -48,22 +47,37 @@ where
 /// A negative (already wrapped) length, or one whose doubled peak would overflow an `i64`, never wraps into "fits":
 /// the answer is `total_available_bytes <= 0` (refused unless the total is unknown).
 pub fn output_has_headroom(buffer_length: i64, total_available_bytes: i64, memory_load_bytes: i64) -> bool {
-    todo!("buffer_length < 0 || buffer_length > i64::MAX / 2 => total <= 0, else has_headroom(buffer_length * 2, ..)")
+    // The check runs before the multiplication: `buffer * 2` would overflow for buffers above `i64::MAX / 2`.
+    if !(0..=i64::MAX / OUTPUT_PEAK_FACTOR).contains(&buffer_length) {
+        return total_available_bytes <= 0;
+    }
+    has_headroom(
+        buffer_length * OUTPUT_PEAK_FACTOR,
+        total_available_bytes,
+        memory_load_bytes,
+    )
 }
 
 /// C# `HasHeadroom`: true when `estimated_bytes` fits into `total_available_bytes - max(0, memory_load_bytes)`.
 /// An unknown total (`<= 0`) never refuses. The comparison is `<=` (an exact fit passes); a load above the total makes
 /// the budget negative and refuses every non-negative estimate.
 pub fn has_headroom(estimated_bytes: i64, total_available_bytes: i64, memory_load_bytes: i64) -> bool {
-    todo!("total <= 0 => true; estimated <= total - max(0, load)")
+    if total_available_bytes <= 0 {
+        return true;
+    }
+    // total > 0 and max(0, load) >= 0, so the subtraction cannot overflow an i64.
+    let budget = total_available_bytes - memory_load_bytes.max(0);
+    estimated_bytes <= budget
 }
 
 /// Convenience over [`has_headroom`] that reads the source once (the shape of the decoders' `EnsureMemoryHeadroom`).
 pub fn has_headroom_from(source: &dyn MemoryInfoSource, estimated_bytes: i64) -> bool {
-    todo!("let m = source.read(); has_headroom(estimated_bytes, m.total_available, m.load)")
+    let info = source.read();
+    has_headroom(estimated_bytes, info.total_available, info.load)
 }
 
 /// Convenience over [`output_has_headroom`] that reads the source once.
 pub fn output_has_headroom_from(source: &dyn MemoryInfoSource, buffer_length: i64) -> bool {
-    todo!("let m = source.read(); output_has_headroom(buffer_length, m.total_available, m.load)")
+    let info = source.read();
+    output_has_headroom(buffer_length, info.total_available, info.load)
 }
