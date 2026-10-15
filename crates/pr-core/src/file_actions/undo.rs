@@ -411,9 +411,10 @@ impl UndoService {
         }
         let entry = result.entry.as_deref();
         let members: Vec<JournalGroupMember> = if result.succeeded {
+            // An empty member list is rejected by the `members.first()` check below (no separate guard needed).
             match entry.and_then(|entry| entry.group_members.as_ref()) {
-                Some(members) if !members.is_empty() => members.clone(),
-                _ => return,
+                Some(members) => members.clone(),
+                None => return,
             }
         } else if result.operation == FileOperationType::Recycle {
             // A group Delete that failed part-way: the members that already reached the bin still deserve a Ctrl+Z.

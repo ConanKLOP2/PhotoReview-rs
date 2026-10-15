@@ -3654,3 +3654,55 @@ fn repair_succeeded_group_recycle_never_settles_its_entry_line() {
     assert_eq!(latest, line, "a succeeded group Recycle must not settle its entry line");
     assert_eq!(failed_with_id(&f.journal, "delete-group").len(), 1);
 }
+
+// Rust-only (repair round 3): the `Debug` impl reports the undo state (kills the `fmt -> Ok(..)` mutant).
+#[test]
+fn undo_service_debug_reports_the_undo_state() {
+    let f = Fixture::new();
+    let mut undo = f.undo();
+    let empty = format!("{undo:?}");
+    assert!(empty.starts_with("UndoService {"), "{empty}");
+    assert!(empty.contains("move_history: []"), "{empty}");
+    assert!(empty.contains("move_fingerprints: 0"), "{empty}");
+    assert!(empty.contains("last_undo_action: None"), "{empty}");
+
+    let source = r"C:\photos\photo1.jpg";
+    let destination = r"C:\photos\sorted\photo1.jpg";
+    f.add_bytes(destination, b"image-content", write_time());
+    undo.register(&single_result(
+        true,
+        FileOperationType::Move,
+        source,
+        Some(destination),
+        13,
+        write_time(),
+    ));
+    let filled = format!("{undo:?}");
+    assert!(filled.contains("photo1.jpg"), "{filled}");
+    assert!(filled.contains("move_fingerprints: 1"), "{filled}");
+}
+
+// Rust-only (repair round 3): a succeeded group whose entry lists NO members, or has no entry, registers nothing.
+#[test]
+fn register_group_with_empty_or_missing_members_registers_nothing() {
+    let f = Fixture::new();
+    let mut undo = f.undo();
+    let (jpeg, raw) = jpeg_and_raw();
+    let mut empty = group_result(FileOperationType::Move, "g", &[jpeg, raw]);
+    if let Some(line) = empty.entry.as_mut() {
+        line.group_members = Some(Vec::new());
+    }
+    undo.register_group(&empty);
+    assert!(
+        !undo.has_last_undo_action(),
+        "an empty member list must not become undoable"
+    );
+
+    let mut no_entry = empty.clone();
+    no_entry.entry = None;
+    undo.register_group(&no_entry);
+    assert!(
+        !undo.has_last_undo_action(),
+        "a succeeded group without an entry must not become undoable"
+    );
+}
