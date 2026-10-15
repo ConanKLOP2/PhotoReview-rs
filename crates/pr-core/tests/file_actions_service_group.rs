@@ -2056,3 +2056,39 @@ fn compensation_throws_unexpected_exception_type_does_not_escape_and_leaves_prep
         "the Prepared line stays for startup reconcile"
     );
 }
+
+/// G8.5 "fully rolled back" needs every member to be back in its original state. A Copy member whose SOURCE was
+/// edited during the failed copy (conflict: source present, no destination) is not: C# journals Failed so the
+/// Recovery item stays, never Dismissed. Kills the `&&` -> `||` mutants on `source_exists`/`!destination_exists`
+/// in `rolled_back` (`!conflict` is false here, so those two clauses alone must not make it Dismissed).
+#[test]
+fn group_copy_failure_with_member_source_edited_is_journaled_failed_not_dismissed() {
+    let fx = Fixture::new();
+    add_pair(&fx);
+    let disk = fx.disk.clone();
+    fx.hooks.set_copy_hook(Some(Arc::new(move |source: &Path, _: &Path| {
+        if source.to_string_lossy().ends_with("IMG_0001.JPG") {
+            // Same stamp, different length: the member is no longer the file the Prepared line describes.
+            disk.add_file_at(source, &[0u8; 41], stamp(LAST_WRITE_TICKS));
+            return Some(io::Error::other("boom"));
+        }
+        None
+    })));
+
+    let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
+
+    assert!(!result.succeeded);
+    let jpeg = &result.members[0];
+    assert!(jpeg.state_known, "the edited source is still inspectable");
+    assert!(!jpeg.completed);
+    assert!(jpeg.conflict, "the source changed under the copy");
+    assert!(jpeg.source_exists);
+    assert!(!jpeg.destination_exists, "nothing was copied");
+    let entry = result.entry.as_ref().expect("an outcome line was written");
+    assert_eq!(
+        entry.state,
+        JournalState::Failed,
+        "a conflicting member must stay a Failed recovery item"
+    );
+    assert_eq!(last_state(&fx), Some(JournalState::Failed));
+}
