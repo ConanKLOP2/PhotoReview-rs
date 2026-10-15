@@ -1526,3 +1526,63 @@ fn english_file_action_texts_match_en_json_catalog() {
         assert_eq!(text(key), english, "{key}");
     }
 }
+
+/// Makes every stat of `target` (case-insensitive) FAIL with `io::Error::other("fault")` (C# `InMemoryFileSystem.StatHook`).
+fn fail_stat_of(fx: &Fixture, target: &'static str) {
+    fx.hooks.set_stat_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(target) {
+            Some(io::Error::other("fault"))
+        } else {
+            None
+        }
+    })));
+}
+
+// C# FileActionService.cs:556 (S3.9): `GetFileStat(source)` THROWS => the action fails with that exception's message
+// (not "The source does not exist"), before any journal line or folder creation (P-12).
+#[test]
+fn single_move_and_copy_source_stat_failure_reports_the_stat_error() {
+    for operation in [FileOperationType::Move, FileOperationType::Copy] {
+        let fx = Fixture::new();
+        fx.add_file(SOURCE, 11);
+        fail_stat_of(&fx, SOURCE);
+        let result = fx.run(&single(SOURCE, operation, Some("sel")));
+        assert!(!result.succeeded, "{operation:?}");
+        assert_eq!(result.error.as_deref(), Some("fault"), "{operation:?}");
+        assert!(fx.journal_lines().is_empty(), "{operation:?}: nothing journaled");
+        assert!(fx.file_exists(SOURCE), "{operation:?}");
+        assert!(
+            !fx.dir_exists(r"C:\photos\sel"),
+            "{operation:?}: no destination folder created"
+        );
+    }
+}
+
+// C# FileActionService.cs:624 (S5): the Recycle source stat THROWS => that error, nothing journaled, nothing recycled.
+#[test]
+fn single_recycle_source_stat_failure_reports_the_stat_error() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    fail_stat_of(&fx, SOURCE);
+    let result = fx.run(&single(SOURCE, FileOperationType::Recycle, None));
+    assert!(!result.succeeded);
+    assert_eq!(result.error.as_deref(), Some("fault"));
+    assert!(fx.journal_lines().is_empty());
+    assert!(fx.file_exists(SOURCE));
+}
+
+// C# FileActionService.cs:584: `copiedStat = GetFileStat(destination)` THROWS => the action fails with that exception;
+// the Failed line has NO error code and the raw message (not VerifySizeChanged).
+#[test]
+fn single_copy_destination_stat_failure_is_journaled_as_the_stat_error() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    fail_stat_of(&fx, r"C:\photos\sel\a.jpg");
+    let result = fx.run(&single(SOURCE, FileOperationType::Copy, Some("sel")));
+    assert!(!result.succeeded);
+    assert_eq!(result.error.as_deref(), Some("fault"));
+    let last = fx.journal_entries().pop().expect("an outcome line");
+    assert_eq!(last.state, JournalState::Failed);
+    assert_eq!(last.error_code, None);
+    assert_eq!(last.error.as_deref(), Some("fault"));
+}

@@ -2123,3 +2123,77 @@ fn group_relative_destination_under_trailing_space_folder_combines_with_the_full
         assert_eq!(fx.file_exists(jpeg), op == Copy, "{op:?}");
     }
 }
+
+/// Makes every stat of `target` (case-insensitive) FAIL with `io::Error::other("fault")` (C# `InMemoryFileSystem.StatHook`).
+fn fail_stat_of(fx: &Fixture, target: &'static str) {
+    fx.hooks.set_stat_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(target) {
+            Some(io::Error::other("fault"))
+        } else {
+            None
+        }
+    })));
+}
+
+// C# FileActionService.cs:121 (G3): a member's preflight `GetFileStat` THROWS => the whole group fails with that error
+// before any journal line or mutation. Only a `null` stat is a "missing partner"; a failed stat never splits the pair.
+#[test]
+fn group_preflight_stat_failure_fails_the_group_without_touching_the_partner() {
+    for operation in [
+        FileOperationType::Move,
+        FileOperationType::Copy,
+        FileOperationType::Recycle,
+    ] {
+        let fx = Fixture::new();
+        fx.add_file(r"C:\photos\a.jpg", 11);
+        fx.add_file(r"C:\photos\a.cr2", 13);
+        fail_stat_of(&fx, r"C:\photos\a.cr2");
+        let destination = (operation != FileOperationType::Recycle).then_some("sel");
+        let result = fx.run_group(&group(
+            r"C:\photos\a.jpg",
+            r"C:\photos\a.cr2",
+            None,
+            operation,
+            destination,
+        ));
+        assert!(!result.succeeded, "{operation:?}");
+        assert_eq!(result.error.as_deref(), Some("fault"), "{operation:?}");
+        assert!(result.skipped_missing.is_none(), "{operation:?}: not a missing partner");
+        assert!(
+            fx.file_exists(r"C:\photos\a.jpg"),
+            "{operation:?}: the JPEG is never acted on alone"
+        );
+        assert!(!fx.file_exists(r"C:\photos\sel\a.jpg"), "{operation:?}");
+        assert!(fx.journal_lines().is_empty(), "{operation:?}: nothing journaled");
+    }
+}
+
+// C# FileActionService.cs:444 (`VerifyGroupMove`) and :194 (group Copy `copied = GetFileStat(destination)`): the
+// destination stat THROWS => the Failed line keeps the raw stat error with NO code (not VerifySizeChanged).
+#[test]
+fn group_destination_stat_failure_is_journaled_as_the_stat_error() {
+    for operation in [FileOperationType::Move, FileOperationType::Copy] {
+        let fx = Fixture::new();
+        fx.add_file(r"C:\photos\a.jpg", 11);
+        fx.add_file(r"C:\photos\a.cr2", 13);
+        fail_stat_of(&fx, r"C:\photos\sel\a.cr2");
+        let result = fx.run_group(&group(
+            r"C:\photos\a.jpg",
+            r"C:\photos\a.cr2",
+            None,
+            operation,
+            Some("sel"),
+        ));
+        assert!(!result.succeeded, "{operation:?}");
+        // The raw stat error leads (a Move then also reports the member whose put-back stat fails the same way).
+        assert!(
+            result.error.as_deref().is_some_and(|e| e.starts_with("fault")),
+            "{operation:?}: {:?}",
+            result.error
+        );
+        let last = fx.journal_entries().pop().expect("an outcome line");
+        assert_eq!(last.state, JournalState::Failed, "{operation:?}");
+        assert_eq!(last.error_code, None, "{operation:?}");
+        assert_eq!(last.error.as_deref(), Some("fault"), "{operation:?}");
+    }
+}

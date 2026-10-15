@@ -369,7 +369,7 @@ impl FileActionService {
                     );
                 }
                 // S3.9
-                let Some(source_stat) = self.fs.get_file_stat(Path::new(source)) else {
+                let Some(source_stat) = self.fs.try_get_file_stat(Path::new(source))? else {
                     return Err(self.source_missing(source).into());
                 };
                 run.source_size = size_of(&source_stat);
@@ -403,7 +403,7 @@ impl FileActionService {
                         )
                         .into());
                     }
-                    run.copied_stat = self.fs.get_file_stat(target);
+                    run.copied_stat = self.fs.try_get_file_stat(target)?;
                     tx.verify_destination_stat(run.copied_stat, errors::VERIFY_SIZE_CHANGED)?;
                 } else {
                     match &self.move_override {
@@ -434,7 +434,7 @@ impl FileActionService {
             }
             FileOperationType::Recycle => {
                 // S5
-                let Some(source_stat) = self.fs.get_file_stat(Path::new(source)) else {
+                let Some(source_stat) = self.fs.try_get_file_stat(Path::new(source))? else {
                     return Err(self.source_missing(source).into());
                 };
                 run.source_size = size_of(&source_stat);
@@ -616,8 +616,9 @@ impl FileActionService {
         let mut members: Vec<JournalGroupMember> = Vec::with_capacity(paths.len());
         for source in paths {
             cancel.check()?;
-            // A stale group: a partner vanished outside the app. Skipped and reported.
-            let Some(stat) = self.fs.get_file_stat(Path::new(source)) else {
+            // A stale group: a partner vanished outside the app. Skipped and reported. A stat that FAILS is not a missing
+            // partner: it fails the whole group before any journal line (C# `GetFileStat` throws; P-12).
+            let Some(stat) = self.fs.try_get_file_stat(Path::new(source))? else {
                 run.missing.push(source.clone());
                 continue;
             };
@@ -733,7 +734,7 @@ impl FileActionService {
                             io::Error::other(self.texts.core_file_action_destination_exists(destination)).into(),
                         );
                     }
-                    let copied = self.fs.get_file_stat(Path::new(destination));
+                    let copied = self.fs.try_get_file_stat(Path::new(destination))?;
                     if let Some(copied) = copied {
                         run.created_copies.insert(ignore_case_key(destination), copied);
                     }
@@ -1053,7 +1054,8 @@ impl FileActionService {
     }
 
     /// C# `VerifyGroupMove` (lines 441-445): `file_exists(source)` => coded `MOVE_SOURCE_NOT_REMOVED`; else
-    /// [`Self::verify_group_destination`] on a fresh `get_file_stat(destination)`.
+    /// [`Self::verify_group_destination`] on a fresh `try_get_file_stat(destination)`;
+    /// a stat that fails is the action's failure as-is (C# `GetFileStat` throws: no code, raw message; P-12).
     fn verify_group_move(&self, member: &JournalGroupMember) -> io::Result<()> {
         if self.fs.file_exists(Path::new(&member.source)) {
             return Err(self.coded_error(errors::MOVE_SOURCE_NOT_REMOVED));
@@ -1061,7 +1063,9 @@ impl FileActionService {
         let destination = member
             .destination
             .as_deref()
-            .and_then(|destination| self.fs.get_file_stat(Path::new(destination)));
+            .map(|destination| self.fs.try_get_file_stat(Path::new(destination)))
+            .transpose()?
+            .flatten();
         self.verify_group_destination(member, destination.as_ref())
     }
 
