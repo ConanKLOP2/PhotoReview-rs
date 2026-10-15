@@ -1,0 +1,1072 @@
+{
+  "generator": "oracle-cs disk-cache-passes",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "under-quota-noted-writes-skip-full-scans",
+      "input": {
+        "name": "under-quota-noted-writes-skip-full-scans",
+        "pattern": "*.png",
+        "max_bytes": 1000,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:30:00Z"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "n0.png",
+            "size": 100,
+            "access": "2020-01-01T00:40:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "n0.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "n1.png",
+            "size": 100,
+            "access": "2020-01-01T00:41:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "n1.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "n2.png",
+            "size": 100,
+            "access": "2020-01-01T00:42:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "n2.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "n3.png",
+            "size": 100,
+            "access": "2020-01-01T00:43:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "n3.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "n4.png",
+            "size": 100,
+            "access": "2020-01-01T00:44:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "n4.png"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 4,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "n0.png"
+          ]
+        },
+        {
+          "step": 7,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "n0.png",
+            "n1.png"
+          ]
+        },
+        {
+          "step": 10,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "n0.png",
+            "n1.png",
+            "n2.png"
+          ]
+        },
+        {
+          "step": 13,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "n0.png",
+            "n1.png",
+            "n2.png",
+            "n3.png"
+          ]
+        },
+        {
+          "step": 16,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "n0.png",
+            "n1.png",
+            "n2.png",
+            "n3.png",
+            "n4.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "noted-writes-over-quota-scan-and-evict-oldest",
+      "input": {
+        "name": "noted-writes-over-quota-scan-and-evict-oldest",
+        "pattern": "*.png",
+        "max_bytes": 250,
+        "steps": [
+          {
+            "op": "file",
+            "name": "oldest.png",
+            "size": 100,
+            "access": "2020-01-01T00:00:00Z"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "mid.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "mid.png"
+          },
+          {
+            "op": "file",
+            "name": "newest.png",
+            "size": 100,
+            "access": "2020-01-01T00:20:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "newest.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "oldest.png"
+          ]
+        },
+        {
+          "step": 6,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "mid.png",
+            "newest.png"
+          ]
+        },
+        {
+          "step": 7,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "mid.png",
+            "newest.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "write-noted-after-empty-scan-is-tracked",
+      "input": {
+        "name": "write-noted-after-empty-scan-is-tracked",
+        "pattern": "*.png",
+        "max_bytes": 50,
+        "steps": [
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "big.png",
+            "size": 100
+          },
+          {
+            "op": "note_written",
+            "name": "big.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 0,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 3,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": []
+        },
+        {
+          "step": 4,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": []
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "note-while-size-unknown-still-forces-a-scan",
+      "input": {
+        "name": "note-while-size-unknown-still-forces-a-scan",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "op": "file",
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "op": "file",
+            "name": "c.png",
+            "size": 100,
+            "access": "2020-01-01T00:03:00Z"
+          },
+          {
+            "op": "file",
+            "name": "d.png",
+            "size": 10,
+            "access": "2020-01-01T00:04:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "d.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "c.png",
+            "d.png"
+          ]
+        },
+        {
+          "step": 6,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "c.png",
+            "d.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "empty-directory-next-pass-skipped",
+      "input": {
+        "name": "empty-directory-next-pass-skipped",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "steps": [
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 0,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "exactly-at-quota-next-pass-skipped",
+      "input": {
+        "name": "exactly-at-quota-next-pass-skipped",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "missing-directory-every-pass-scans",
+      "input": {
+        "name": "missing-directory-every-pass-scans",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "dir_missing": true,
+        "steps": [
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 0,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": []
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 3,
+          "survivors": []
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "full-scan-forced-every-256th-pass",
+      "input": {
+        "name": "full-scan-forced-every-256th-pass",
+        "pattern": "*.png",
+        "max_bytes": 1000,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 10
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass_n",
+            "count": 255
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass_n",
+            "count": 255
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass_n",
+            "count": 254
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 2,
+          "op": "pass_n",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 3,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 4,
+          "op": "pass_n",
+          "full_scan_count": 2,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 3,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 6,
+          "op": "pass_n",
+          "full_scan_count": 3,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 7,
+          "op": "pass",
+          "full_scan_count": 3,
+          "survivors": [
+            "a.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "forced-scan-sees-unnoted-growth",
+      "input": {
+        "name": "forced-scan-sees-unnoted-growth",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "op": "pass_n",
+            "count": 254
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 3,
+          "op": "pass_n",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "b.png"
+          ]
+        },
+        {
+          "step": 4,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png",
+            "b.png"
+          ]
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "b.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "clear-forgets-tracked-size",
+      "input": {
+        "name": "clear-forgets-tracked-size",
+        "pattern": "*.png",
+        "max_bytes": 1000,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 3,
+          "op": "clear",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 4,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": []
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": []
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "clear-also-removes-temp-files-not-other-patterns",
+      "input": {
+        "name": "clear-also-removes-temp-files-not-other-patterns",
+        "pattern": "*.png",
+        "max_bytes": 1000,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 10
+          },
+          {
+            "op": "file",
+            "name": "a.png.1.tmp",
+            "size": 10
+          },
+          {
+            "op": "file",
+            "name": "b.pv4",
+            "size": 10
+          },
+          {
+            "op": "file",
+            "name": "c.pv4.2.tmp",
+            "size": 10
+          },
+          {
+            "op": "clear"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 4,
+          "op": "clear",
+          "full_scan_count": 0,
+          "survivors": [
+            "b.pv4"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "note-written-of-missing-file-is-ignored",
+      "input": {
+        "name": "note-written-of-missing-file-is-ignored",
+        "pattern": "*.png",
+        "max_bytes": 50,
+        "steps": [
+          {
+            "op": "pass"
+          },
+          {
+            "op": "note_written",
+            "name": "ghost.png"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 0,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "overwrite-noted-counts-as-growth",
+      "input": {
+        "name": "overwrite-noted-counts-as-growth",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100
+          },
+          {
+            "op": "note_written",
+            "name": "a.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 4,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "a.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "negative-quota-is-clamped-to-zero",
+      "input": {
+        "name": "negative-quota-is-clamped-to-zero",
+        "pattern": "*.png",
+        "max_bytes": -10,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 10
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "file",
+            "name": "z.png",
+            "size": 0
+          },
+          {
+            "op": "note_written",
+            "name": "z.png"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": []
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "z.png"
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "locked-file-keeps-cache-over-quota-so-every-pass-scans",
+      "input": {
+        "name": "locked-file-keeps-cache-over-quota-so-every-pass-scans",
+        "pattern": "*.png",
+        "max_bytes": 50,
+        "steps": [
+          {
+            "op": "file",
+            "name": "locked.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "op": "lock",
+            "name": "locked.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "unlock",
+            "name": "locked.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "locked.png"
+          ]
+        },
+        {
+          "step": 3,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "locked.png"
+          ]
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 3,
+          "survivors": []
+        },
+        {
+          "step": 6,
+          "op": "pass",
+          "full_scan_count": 3,
+          "survivors": []
+        }
+      ],
+      "log": [
+        {
+          "message": "Delete failed: <ROOT>\\locked.png",
+          "exception": "IOException"
+        },
+        {
+          "message": "Delete failed: <ROOT>\\locked.png",
+          "exception": "IOException"
+        }
+      ]
+    },
+    {
+      "name": "failing-listing-counts-a-scan-and-keeps-size-unknown",
+      "input": {
+        "name": "failing-listing-counts-a-scan-and-keeps-size-unknown",
+        "pattern": "a\u0000b",
+        "max_bytes": 1,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 10
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ],
+          "throws": "ArgumentException"
+        },
+        {
+          "step": 2,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "a.png"
+          ],
+          "throws": "ArgumentException"
+        }
+      ],
+      "log": []
+    },
+    {
+      "name": "external-delete-goes-unnoticed-until-a-scan",
+      "input": {
+        "name": "external-delete-goes-unnoticed-until-a-scan",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "steps": [
+          {
+            "op": "file",
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "delete",
+            "name": "a.png"
+          },
+          {
+            "op": "file",
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "op": "note_written",
+            "name": "b.png"
+          },
+          {
+            "op": "pass"
+          },
+          {
+            "op": "pass"
+          }
+        ]
+      },
+      "trace": [
+        {
+          "step": 1,
+          "op": "pass",
+          "full_scan_count": 1,
+          "survivors": [
+            "a.png"
+          ]
+        },
+        {
+          "step": 5,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "b.png"
+          ]
+        },
+        {
+          "step": 6,
+          "op": "pass",
+          "full_scan_count": 2,
+          "survivors": [
+            "b.png"
+          ]
+        }
+      ],
+      "log": []
+    }
+  ]
+}

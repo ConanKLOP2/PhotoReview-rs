@@ -36,8 +36,9 @@ if ($LASTEXITCODE -ne 0) { throw "Cannot resolve $Commit in $CSharpRepo" }
 
 $work = Join-Path $env:TEMP "pr-oracle\$sha"
 $coreDir = Join-Path $work 'core'
-# PhotoReview.PerfAnalysis.dll (separate project, no references) is built into the same folder; rebuild if either DLL is missing.
-if (-not (Test-Path (Join-Path $coreDir 'PhotoReview.Core.dll')) -or -not (Test-Path (Join-Path $coreDir 'PhotoReview.PerfAnalysis.dll'))) {
+# PhotoReview.PerfAnalysis.dll (separate project, no references) and PhotoReview.Imaging.dll (W4: references Core only) are built
+# into the same folder; rebuild if any of the DLLs is missing.
+if (-not (Test-Path (Join-Path $coreDir 'PhotoReview.Core.dll')) -or -not (Test-Path (Join-Path $coreDir 'PhotoReview.PerfAnalysis.dll')) -or -not (Test-Path (Join-Path $coreDir 'PhotoReview.Imaging.dll'))) {
     $src = Join-Path $work 'src'
     if (Test-Path $src) { Remove-Item -Recurse -Force -Confirm:$false $src }
     New-Item -ItemType Directory -Force $src | Out-Null
@@ -50,6 +51,8 @@ if (-not (Test-Path (Join-Path $coreDir 'PhotoReview.Core.dll')) -or -not (Test-
     if ($LASTEXITCODE -ne 0) { throw 'C# Core build failed' }
     & dotnet build (Join-Path $src 'src\PhotoReview.PerfAnalysis\PhotoReview.PerfAnalysis.csproj') -c Release -o $coreDir -nologo -v quiet
     if ($LASTEXITCODE -ne 0) { throw 'C# PerfAnalysis build failed' }
+    & dotnet build (Join-Path $src 'src\PhotoReview.Imaging\PhotoReview.Imaging.csproj') -c Release -o $coreDir -nologo -v quiet
+    if ($LASTEXITCODE -ne 0) { throw 'C# Imaging build failed' }
 }
 
 $oracleOut = Join-Path $work 'oracle'

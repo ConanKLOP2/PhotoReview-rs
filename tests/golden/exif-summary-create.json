@@ -1,0 +1,817 @@
+{
+  "generator": "oracle-cs exif-summary-create",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "nothing",
+      "input": {
+        "name": "nothing",
+        "date": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "make-only",
+      "input": {
+        "name": "make-only",
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "model-only",
+      "input": {
+        "name": "model-only",
+        "model": "Canon EOS R5"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": "Canon EOS R5",
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01040C43616E6F6E20454F53205235"
+      }
+    },
+    {
+      "name": "lens-only",
+      "input": {
+        "name": "lens-only",
+        "lens": "RF24-70mm F2.8 L IS USM"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010817524632342D37306D6D2046322E38204C2049532055534D"
+      }
+    },
+    {
+      "name": "date-only",
+      "input": {
+        "name": "date-only",
+        "date": "2024:05:01 14:03:22"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 638501690020000000,
+        "date_text": "2024-05-01T14:03:22.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010100F12076E769DC08"
+      }
+    },
+    {
+      "name": "date-only-day",
+      "input": {
+        "name": "date-only-day",
+        "date": "2024:05:01"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 638501184000000000,
+        "date_text": "2024-05-01T00:00:00.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01010080FCA47169DC08"
+      }
+    },
+    {
+      "name": "date-garbage-only-is-null",
+      "input": {
+        "name": "date-garbage-only-is-null",
+        "date": "not a date"
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "date-placeholder-only-is-null",
+      "input": {
+        "name": "date-placeholder-only-is-null",
+        "date": "0000:00:00 00:00:00"
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "date-placeholder-keeps-make",
+      "input": {
+        "name": "date-placeholder-keeps-make",
+        "date": "0000:00:00 00:00:00",
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "empty-texts-are-null",
+      "input": {
+        "name": "empty-texts-are-null",
+        "make": "",
+        "model": "",
+        "lens": ""
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "whitespace-texts-are-null",
+      "input": {
+        "name": "whitespace-texts-are-null",
+        "make": "   ",
+        "model": "\t",
+        "lens": "\u0001"
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "nul-first-text-is-null",
+      "input": {
+        "name": "nul-first-text-is-null",
+        "make": "\u0000Canon"
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "dirty-texts-cleaned",
+      "input": {
+        "name": "dirty-texts-cleaned",
+        "make": "  Canon\u0000junk",
+        "model": "EOS\tR5 ",
+        "lens": "\u0007RF50"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": "EOS R5",
+        "lens": "RF50",
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010E0543616E6F6E06454F532052350452463530"
+      }
+    },
+    {
+      "name": "long-text-capped-64",
+      "input": {
+        "name": "long-text-capped-64",
+        "make": "",
+        "make_repeat": {
+          "text": "m",
+          "count": 80
+        }
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "0102406D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D6D"
+      }
+    },
+    {
+      "name": "iso-only-400",
+      "input": {
+        "name": "iso-only-400",
+        "iso": 400
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 400,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011090010000"
+      }
+    },
+    {
+      "name": "iso-zero-is-null",
+      "input": {
+        "name": "iso-zero-is-null",
+        "iso": 0
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-negative-is-null",
+      "input": {
+        "name": "iso-negative-is-null",
+        "iso": -1
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-one-kept",
+      "input": {
+        "name": "iso-one-kept",
+        "iso": 1
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 1,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011001000000"
+      }
+    },
+    {
+      "name": "iso-ten-million-kept",
+      "input": {
+        "name": "iso-ten-million-kept",
+        "iso": 10000000
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 10000000,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011080969800"
+      }
+    },
+    {
+      "name": "iso-ten-million-plus-one-dropped",
+      "input": {
+        "name": "iso-ten-million-plus-one-dropped",
+        "iso": 10000001,
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "iso-int-max-dropped",
+      "input": {
+        "name": "iso-int-max-dropped",
+        "iso": 2147483647,
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "iso-above-int-dropped",
+      "input": {
+        "name": "iso-above-int-dropped",
+        "iso": 2147483648,
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "iso-long-max-dropped",
+      "input": {
+        "name": "iso-long-max-dropped",
+        "iso": 9223372036854775807,
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "iso-long-min-dropped",
+      "input": {
+        "name": "iso-long-min-dropped",
+        "iso": -9223372036854775808,
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "focal-50-over-1",
+      "input": {
+        "name": "focal-50-over-1",
+        "focal": [
+          50,
+          1
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": [
+          50,
+          1
+        ],
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01203200000001000000"
+      }
+    },
+    {
+      "name": "focal-zero-numerator-dropped",
+      "input": {
+        "name": "focal-zero-numerator-dropped",
+        "focal": [
+          0,
+          5
+        ],
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "focal-zero-denominator-dropped",
+      "input": {
+        "name": "focal-zero-denominator-dropped",
+        "focal": [
+          5,
+          0
+        ],
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "focal-zero-zero-dropped",
+      "input": {
+        "name": "focal-zero-zero-dropped",
+        "focal": [
+          0,
+          0
+        ],
+        "make": "Canon"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "focal-max-max-kept",
+      "input": {
+        "name": "focal-max-max-kept",
+        "focal": [
+          4294967295,
+          4294967295
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": [
+          4294967295,
+          4294967295
+        ],
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "0120FFFFFFFFFFFFFFFF"
+      }
+    },
+    {
+      "name": "f-number-28-over-10",
+      "input": {
+        "name": "f-number-28-over-10",
+        "f_number": [
+          28,
+          10
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": [
+          28,
+          10
+        ],
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01401C0000000A000000"
+      }
+    },
+    {
+      "name": "exposure-1-over-250",
+      "input": {
+        "name": "exposure-1-over-250",
+        "exposure": [
+          1,
+          250
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": [
+          1,
+          250
+        ],
+        "is_empty": false,
+        "encoded_hex": "018001000000FA000000"
+      }
+    },
+    {
+      "name": "exposure-only-zero-is-null",
+      "input": {
+        "name": "exposure-only-zero-is-null",
+        "exposure": [
+          0,
+          1
+        ]
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "all-rationals-invalid-is-null",
+      "input": {
+        "name": "all-rationals-invalid-is-null",
+        "focal": [
+          0,
+          1
+        ],
+        "f_number": [
+          1,
+          0
+        ],
+        "exposure": [
+          0,
+          0
+        ]
+      },
+      "summary": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "full",
+      "input": {
+        "name": "full",
+        "date": "2024:05:01 14:03:22",
+        "make": "Canon",
+        "model": "Canon EOS R5",
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal": [
+          50,
+          1
+        ],
+        "f_number": [
+          28,
+          10
+        ],
+        "exposure": [
+          1,
+          250
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 638501690020000000,
+        "date_text": "2024-05-01T14:03:22.0000000",
+        "make": "Canon",
+        "model": "Canon EOS R5",
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal": [
+          50,
+          1
+        ],
+        "f_number": [
+          28,
+          10
+        ],
+        "exposure": [
+          1,
+          250
+        ],
+        "is_empty": false,
+        "encoded_hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000"
+      }
+    },
+    {
+      "name": "full-dash-date",
+      "input": {
+        "name": "full-dash-date",
+        "date": "2024-05-01 14:03:22",
+        "make": "Canon",
+        "model": "Canon EOS R5",
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": 12800,
+        "focal": [
+          700,
+          10
+        ],
+        "f_number": [
+          4,
+          1
+        ],
+        "exposure": [
+          30,
+          1
+        ]
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 638501690020000000,
+        "date_text": "2024-05-01T14:03:22.0000000",
+        "make": "Canon",
+        "model": "Canon EOS R5",
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": 12800,
+        "focal": [
+          700,
+          10
+        ],
+        "f_number": [
+          4,
+          1
+        ],
+        "exposure": [
+          30,
+          1
+        ],
+        "is_empty": false,
+        "encoded_hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D00320000BC0200000A00000004000000010000001E00000001000000"
+      }
+    },
+    {
+      "name": "unicode-lens",
+      "input": {
+        "name": "unicode-lens",
+        "lens": "Ống kính 50mm ƒ/1.8 \uD83D\uDE00"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": "Ống kính 50mm ƒ/1.8 \uD83D\uDE00",
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01081CE1BB906E67206BC3AD6E682035306D6D20C6922F312E3820F09F9880"
+      }
+    },
+    {
+      "name": "date-year-one",
+      "input": {
+        "name": "date-year-one",
+        "date": "0001:01:01 00:00:00"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 0,
+        "date_text": "0001-01-01T00:00:00.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01010000000000000000"
+      }
+    },
+    {
+      "name": "date-year-9999",
+      "input": {
+        "name": "date-year-9999",
+        "date": "9999:12:31 23:59:59"
+      },
+      "summary": {
+        "is_null": false,
+        "date_ticks": 3155378975990000000,
+        "date_text": "9999-12-31T23:59:59.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010180A99EF37528CA2B"
+      }
+    }
+  ]
+}

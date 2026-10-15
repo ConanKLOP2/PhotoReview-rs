@@ -400,3 +400,9 @@ Sau mỗi lượt merge vào `integration/wave-N` và trước khi mở PR vào 
 - **Flake dưới tải:** `diagnostics_file_log::flush_drained_set_while_entry_queued_waits_until_written` (W2) rớt ở một lần chạy workspace đầy đủ, xanh khi chạy riêng; đã có bản sửa giới hạn 10 s (e689f26 trên nhánh fix/w4-flaky).
 - **Đồng bộ C# trôi:** `origin/master` của C# đi tiếp `d92d6aae` (trình sửa ngoài). Ghi vào SYNC-LEDGER và P-17; patch W2-S1 sau khi Wave 3 merge.
 
+## 13. Granularity rule (P-18, 2026-10-15)
+
+Split a unit when it has independent concerns: pure logic vs I/O, separate C# classes, separate files. Name sub-units
+`W<wave>-<n>a`, `b`, ... in the contract; each has its own Owned files, goldens and verifier. Chores (docs, ignore
+files, cleanup, PR bookkeeping) are Haiku sub-agents in the background. Never more than 8 concurrent cargo builds,
+each with its own `CARGO_TARGET_DIR`.

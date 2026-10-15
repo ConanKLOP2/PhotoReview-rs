@@ -1,0 +1,252 @@
+{
+  "generator": "oracle-cs wic-direct-fixtures",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "file": "plain-64x48.jpg",
+      "length": 2051,
+      "sha256": "935b4b912239df10ba43ad8b2a8d6f5bdfc497d9da320190ed1755d02d11a873",
+      "what": "GenerateGradientJpeg(64,48) q90"
+    },
+    {
+      "file": "flat-64x1.jpg",
+      "length": 810,
+      "sha256": "806a3adf14b280578bbbb5d32b0a47233c80a81128e7fc300767949fa7783477",
+      "what": "GenerateGradientJpeg(64,1) q90"
+    },
+    {
+      "file": "flat-1x64.jpg",
+      "length": 837,
+      "sha256": "9c528c5d2eec12df4fab90be50e310e9613f15feede367acc711c5218eaa0a92",
+      "what": "GenerateGradientJpeg(1,64) q90"
+    },
+    {
+      "file": "short-64x3.jpg",
+      "length": 999,
+      "sha256": "94560a8e39d97c6e38726546cfc2b1681626d6aff76602c040923624bf1ad652",
+      "what": "GenerateGradientJpeg(64,3) q90"
+    },
+    {
+      "file": "narrow-3x64.jpg",
+      "length": 993,
+      "sha256": "17c99a7afa1f9f2b044bb59b9b620518e28589372ae10e55dac521c396277bfa",
+      "what": "GenerateGradientJpeg(3,64) q90"
+    },
+    {
+      "file": "rot6-64x48.jpg",
+      "length": 2087,
+      "sha256": "7ca5abf995d826fb50a5085a0fde9ac41e76edbe476a16013b79a1d8b3d4364a",
+      "what": "GenerateJpegWithOrientation(64,48,6)"
+    },
+    {
+      "file": "rot6-64x1.jpg",
+      "length": 846,
+      "sha256": "0f2ac33f88960cfc9f037b5879cdaf07c2ca5f78496111f378de31f4c23e6d93",
+      "what": "GenerateJpegWithOrientation(64,1,6)"
+    },
+    {
+      "file": "orient-0-120x80.jpg",
+      "length": 4174,
+      "sha256": "8e08b78ef0347f4bc9733a96de1a16ad6a34d65941284cc049833b6403b7d329",
+      "what": "EXIF orientation 0 (out of range: read as 1)"
+    },
+    {
+      "file": "orient-1-120x80.jpg",
+      "length": 4174,
+      "sha256": "8ba7951dace5682dff233e9d258a7ed1652aade83bad2ce222e126b3e17f1b05",
+      "what": "EXIF orientation 1"
+    },
+    {
+      "file": "orient-2-120x80.jpg",
+      "length": 4174,
+      "sha256": "204f100e94babe53095740d50ddc05303b8298af4192246a0c9f591935213ac5",
+      "what": "EXIF orientation 2"
+    },
+    {
+      "file": "orient-3-120x80.jpg",
+      "length": 4174,
+      "sha256": "d48556f606fd57a7464f8e6d54fbc05b98a1006c1ea2f94ccda0f561682dc27a",
+      "what": "EXIF orientation 3"
+    },
+    {
+      "file": "orient-4-120x80.jpg",
+      "length": 4174,
+      "sha256": "522c72b2d07a5afe20d97e55344fe8abab4fcf464b4ecffc033c7a0098853024",
+      "what": "EXIF orientation 4"
+    },
+    {
+      "file": "orient-5-120x80.jpg",
+      "length": 4174,
+      "sha256": "f2dca5e468b9263f99251c3103919a17fc67606d6b25d4742309d859eea154b4",
+      "what": "EXIF orientation 5"
+    },
+    {
+      "file": "orient-6-120x80.jpg",
+      "length": 4174,
+      "sha256": "8488d6536bca6208630885f044e89f9643f116f100486a1b3cf62e424ef4e3fb",
+      "what": "EXIF orientation 6"
+    },
+    {
+      "file": "orient-7-120x80.jpg",
+      "length": 4174,
+      "sha256": "0cf9bebcd52f5ad624bf31e960454dee9cf7307555441c9e40851e0285b6006f",
+      "what": "EXIF orientation 7"
+    },
+    {
+      "file": "orient-8-120x80.jpg",
+      "length": 4174,
+      "sha256": "6e883b756a33fe007f0b11d53e70a03d5aa9cafc57edad7b56ac0395c09c01c8",
+      "what": "EXIF orientation 8"
+    },
+    {
+      "file": "orient-9-120x80.jpg",
+      "length": 4174,
+      "sha256": "cacfff95c3a1e7460fcdddd8154758436ea5c8b7cf8868fd3ecef133649d87bd",
+      "what": "EXIF orientation 9 (out of range: read as 1)"
+    },
+    {
+      "file": "gradient-400x300.jpg",
+      "length": 19221,
+      "sha256": "9e395526681ebabe86d965a302f4a67d2c878edf279fccb0269bfdf47ef577bc",
+      "what": "WicDirectTests.DownscaleProducesTargetWidth"
+    },
+    {
+      "file": "gradient-800x600.jpg",
+      "length": 45921,
+      "sha256": "2ed0215e0ad55fe4e3e687921f51c46b524c88bcd86da9efb0de682069536d2f",
+      "what": "1/8 DCT reduction available"
+    },
+    {
+      "file": "gradient-64x48-bgra32.png",
+      "length": 468,
+      "sha256": "d7233095bf2bf6bfc60afaf1ad5143404757cfd24af560ff5b84c88d63268047",
+      "what": "GeneratePng is32Bit: Bgra32 -> Pbgra32 output"
+    },
+    {
+      "file": "gradient-64x48-bgr24.png",
+      "length": 433,
+      "sha256": "27213a6c2f11b73f9cd2dad571c48f2e8ac7e2e02db50022fb2506fddcf4fd3a",
+      "what": "GeneratePng 24-bit -> Bgr32 output"
+    },
+    {
+      "file": "gray8-32x24.png",
+      "length": 527,
+      "sha256": "aeaaee6a26d7c4eed3e0f63bf62591f59f7c54522908e8f07714758330f0d757",
+      "what": "8bpp gray (opaque)"
+    },
+    {
+      "file": "gray16-32x24.png",
+      "length": 1300,
+      "sha256": "fba1ccc3ec5a7ac86e2fc271533aafe092072c8464be5f43143d9a96f6c068fa",
+      "what": "16bpp gray (opaque)"
+    },
+    {
+      "file": "bw-32x24.png",
+      "length": 232,
+      "sha256": "e1c212e31845d90022397941e4612ad0e8f1b6ed40e05b5fceee8e1b4b97afa3",
+      "what": "1bpp black/white (opaque)"
+    },
+    {
+      "file": "indexed8-32x24.png",
+      "length": 1586,
+      "sha256": "15f72988b355ad39fdda0576c7a8b84830cace692956ad7c7b1005a9b892b6c6",
+      "what": "8bpp indexed (treated as alpha-capable)"
+    },
+    {
+      "file": "rgb48-32x24.png",
+      "length": 350,
+      "sha256": "01fb120bed0f25adf088ec485f7db4792174b64e995520784b771366b69f8ece",
+      "what": "48bpp RGB (opaque)"
+    },
+    {
+      "file": "bgr24-32x24.bmp",
+      "length": 2358,
+      "sha256": "bd7cdd18c5715b623c817c2c19eb091f2513003da8c79d941419a55e0549dc1f",
+      "what": "BMP 24bpp"
+    },
+    {
+      "file": "cmyk32-32x24.tif",
+      "length": 2370,
+      "sha256": "f7f93502de19bc98cf1485606f8308b2094703fe680d22b1c75ece2264c5b5ad",
+      "what": "TIFF 32bpp CMYK (opaque, no profile)"
+    },
+    {
+      "file": "tiff-make-32x24.tif",
+      "length": 828,
+      "sha256": "76be2d48545efc62b2e89d8b1c18945595a1d742dbcbc6dc75c5618106f18bd5",
+      "what": "TIFF with Make=TiffMaker"
+    },
+    {
+      "file": "jpeg-make-32x24.jpg",
+      "length": 1259,
+      "sha256": "4288077b244f81a4ae3218d4493a83bbb9d6f0a3838c5ae1fd1f79a2c2f75242",
+      "what": "JPEG with Make/Model/ISO/DateTimeOriginal"
+    },
+    {
+      "file": "orange-cs-none.jpg",
+      "length": 648,
+      "sha256": "cd1bdc3c4241d0a37364193d36e17b26846d95685848244f69552d23fffa85d0",
+      "what": "orange, no ColorSpace tag"
+    },
+    {
+      "file": "orange-cs-1.jpg",
+      "length": 704,
+      "sha256": "45fc40057bc870b42efa4d58aedf1fd636fe64bce15fa5898728295326aacd73",
+      "what": "orange, ColorSpace 1 (sRGB)"
+    },
+    {
+      "file": "orange-cs-2.jpg",
+      "length": 704,
+      "sha256": "011923ef21f01f6e372371b681f0bdbc9f9a459ce03af684ea4b7e284f9b83f0",
+      "what": "orange, ColorSpace 2 (Adobe RGB)"
+    },
+    {
+      "file": "icc-p3-64x48.jpg",
+      "length": 2549,
+      "sha256": "5fad50645832eae5aa69585ef125b68a0f24f9997b49d81f1b35c2f41b49c8e0",
+      "what": "GenerateJpegWithIcc (Display P3 v4)"
+    },
+    {
+      "file": "icc-p3-alpha-64x48.png",
+      "length": 798,
+      "sha256": "7d8058b3972e032764f696185cc282987d4fa97ad5225f5ce5fcd1236cfd6e80",
+      "what": "GeneratePngWithIcc (semi-transparent top-left pixel)"
+    },
+    {
+      "file": "truncated-400x300-30.jpg",
+      "length": 5766,
+      "sha256": "3aa072809318c6707725bb8747529ac61dbd79b4375e26e5703e8b047a385c5a",
+      "what": "GenerateTruncatedJpeg(ratio 0.3)"
+    },
+    {
+      "file": "truncated-128x96-60.jpg",
+      "length": 2503,
+      "sha256": "a6fc1c6b9a594f50ae109023fa1fba9c2490e800a3cc91e91ea13447c87106dc",
+      "what": "TruncatedJpeg_WrapsNativeDetail (6/10)"
+    },
+    {
+      "file": "text.jpg",
+      "length": 53,
+      "sha256": "24ae5abf488a439f21716232dab0f7698e571c9ed531310e36433f59f8cbecf2",
+      "what": "GenerateTextFile"
+    },
+    {
+      "file": "empty.jpg",
+      "length": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "what": "GenerateZeroByteFile"
+    },
+    {
+      "file": "header-garbage.jpg",
+      "length": 64,
+      "sha256": "24ee28919f9ec6db2dfb0b13012b991b1d118e7881d0cc93dbe7e5afeb3ec22d",
+      "what": "CorruptHeader_WrapsNativeDetail (SOI + APP0 then zeros)"
+    },
+    {
+      "file": "huge-65500.jpg",
+      "length": 27,
+      "sha256": "6f043d7c1192c6e4f54ae690690325373352cb61be44c7d02be34d9b62d6d988",
+      "what": "HugeDeclaredDimensions_AreRejectedWithLocalizedText (SOF0 65500x65500, no entropy data)"
+    }
+  ]
+}

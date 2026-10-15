@@ -1,0 +1,1644 @@
+{
+  "generator": "oracle-cs fallback-decoder",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "primary-ok-same-backend-returned-as-is",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "TurboJpeg",
+        "same_as_primary_image": true,
+        "same_as_fallback_image": false,
+        "pixel_width": 641,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "primary-ok-other-backend-relabelled-keeps-every-property",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "TurboJpeg",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": false,
+        "pixel_width": 642,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "primary-ok-wicdirect-image-for-turbo-primary-relabelled",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "TurboJpeg",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": false,
+        "pixel_width": 643,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "primary-ok-libraw-primary-same-backend",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "LibRaw",
+        "same_as_primary_image": true,
+        "same_as_fallback_image": false,
+        "pixel_width": 644,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "primary-ok-wpf-primary-wpf-image",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": true,
+        "same_as_fallback_image": false,
+        "pixel_width": 645,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "falls-back-on-notsupported",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: NotSupported"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-missingcodec",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: MissingCodec"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-invalidcast",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: InvalidCast"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-overflow",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: Overflow"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-format",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: Format"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-invaliddata",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: InvalidData"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-com",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: COM"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-dllnotfound",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: DllNotFound"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-badimageformat",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: BadImageFormat"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-entrypointnotfound",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: EntryPointNotFound"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "falls-back-on-platformnotsupported",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 650,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot: PlatformNotSupported"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "fallback-image-on-other-backend-relabelled-wpf",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": false,
+        "pixel_width": 651,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "fallback-image-on-wicdirect-relabelled-wpf",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": false,
+        "pixel_width": 652,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder WicDirect failed for 'C:\\photos\\a.jpg', falling back to Wpf: Native COM failure"
+      ],
+      "decoder_fallbacks": {
+        "WicDirect": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "wpf-primary-failure-still-falls-back-to-wpf-slot",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 653,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder Wpf failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "Wpf": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "com-message-text-in-warning",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\café中.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder WicDirect failed for 'C:\\photos\\café中.jpg', falling back to Wpf: The component cannot be found. (0x88982F50)"
+      ],
+      "decoder_fallbacks": {
+        "WicDirect": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "path-with-quote-in-warning",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\it's.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\it's.jpg', falling back to Wpf: bad"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "no-fallback-on-filenotfound",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "FileNotFoundException",
+        "message": "primary refuses: FileNotFound",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-directorynotfound",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DirectoryNotFoundException",
+        "message": "primary refuses: DirectoryNotFound",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-operationcanceled",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "OperationCanceledException",
+        "message": "primary refuses: OperationCanceled",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-taskcanceled",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "TaskCanceledException",
+        "message": "primary refuses: TaskCanceled",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-outofmemory",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "OutOfMemoryException",
+        "message": "primary refuses: OutOfMemory",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-memoryadmission",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderMemoryAdmissionException",
+        "message": "primary refuses: MemoryAdmission",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-busy",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderBusyException",
+        "message": "primary refuses: Busy",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-invalidoperation",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "InvalidOperationException",
+        "message": "primary refuses: InvalidOperation",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-argument",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "ArgumentException",
+        "message": "primary refuses: Argument",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-objectdisposed",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "ObjectDisposedException",
+        "message": "Cannot access a disposed object.\r\nObject name: 'primary refuses: ObjectDisposed'.",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-io",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "IOException",
+        "message": "primary refuses: IO",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-fileload",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "FileLoadException",
+        "message": "primary refuses: FileLoad",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-unauthorizedaccess",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "UnauthorizedAccessException",
+        "message": "primary refuses: UnauthorizedAccess",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-generic",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "Exception",
+        "message": "primary refuses: Generic",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-arithmetic",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "ArithmeticException",
+        "message": "primary refuses: Arithmetic",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "no-fallback-on-admission-refusal-wic",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderMemoryAdmissionException",
+        "message": "The image is too large for the available memory.",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "fallback-also-throws-its-own-exception-propagates",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "FormatException",
+        "message": "fallback sentinel",
+        "same_as_primary_exception": false,
+        "same_as_fallback_exception": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary scan data"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "fallback-throws-file-not-found",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "FileNotFoundException",
+        "message": "gone",
+        "same_as_primary_exception": false,
+        "same_as_fallback_exception": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "fallback-throws-busy",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderBusyException",
+        "message": "queue full",
+        "same_as_primary_exception": false,
+        "same_as_fallback_exception": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "source-bytes-handed-to-fallback-when-request-has-none",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad scan"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "source-bytes-ignored-when-request-already-has-bytes",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 5,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad scan"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "source-bytes-empty-buffer-is-still-handed-over",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad scan"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "source-bytes-not-attached-nothing-handed-over",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad scan"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "request-bytes-empty-buffer-counts-as-given",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 0,
+        "target_height": 0,
+        "apply_orientation": true,
+        "bytes_len": 0,
+        "source_orientation": null
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad scan"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "fallback-request-keeps-box-orientation-and-source-orientation",
+      "op": "decode",
+      "outcome": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "same_as_primary_image": false,
+        "same_as_fallback_image": true,
+        "pixel_width": 640,
+        "pixel_height": 480,
+        "downscaled": true,
+        "orientation": 6,
+        "estimated_bytes": 1234567,
+        "original_width": 6000,
+        "original_height": 4000,
+        "is_degraded_fallback": true,
+        "exif_is_same_object": true,
+        "platform_image_same": true
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 1,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 800,
+        "target_height": 600,
+        "apply_orientation": false,
+        "bytes_len": 0,
+        "source_orientation": 6
+      },
+      "warnings": [
+        "Decoder TurboJpeg failed for 'C:\\photos\\a.jpg', falling back to Wpf: x"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "source-bytes-not-used-for-non-fallbackable",
+      "op": "decode",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderBusyException",
+        "message": "queue full",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 1,
+      "primary_read_info_calls": 0,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "read-info-primary-ok-no-fallback",
+      "op": "read-info",
+      "outcome": {
+        "kind": "ok",
+        "info": [
+          322,
+          123,
+          3
+        ]
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "read-info-falls-back-on-not-supported",
+      "op": "read-info",
+      "outcome": {
+        "kind": "ok",
+        "info": [
+          323,
+          123,
+          3
+        ]
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 1,
+      "fallback_info_path": "C:\\photos\\a.jpg",
+      "fallback_request": null,
+      "warnings": [
+        "Decoder TurboJpeg.ReadInfo failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "read-info-falls-back-on-com",
+      "op": "read-info",
+      "outcome": {
+        "kind": "ok",
+        "info": [
+          324,
+          123,
+          3
+        ]
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 1,
+      "fallback_info_path": "C:\\photos\\b.jpg",
+      "fallback_request": null,
+      "warnings": [
+        "Decoder WicDirect.ReadInfo failed for 'C:\\photos\\b.jpg', falling back to Wpf: com failure"
+      ],
+      "decoder_fallbacks": {
+        "WicDirect": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "read-info-no-fallback-on-file-not-found",
+      "op": "read-info",
+      "outcome": {
+        "kind": "throw",
+        "type": "FileNotFoundException",
+        "message": "gone",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "read-info-no-fallback-on-busy",
+      "op": "read-info",
+      "outcome": {
+        "kind": "throw",
+        "type": "DecoderBusyException",
+        "message": "queue full",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "read-info-no-fallback-on-invalid-operation",
+      "op": "read-info",
+      "outcome": {
+        "kind": "throw",
+        "type": "InvalidOperationException",
+        "message": "bug",
+        "same_as_primary_exception": true,
+        "same_as_fallback_exception": false
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 0,
+      "fallback_info_path": null,
+      "fallback_request": null,
+      "warnings": [],
+      "decoder_fallbacks": {},
+      "decoder_fallback_count": 0
+    },
+    {
+      "name": "read-info-fallback-also-throws",
+      "op": "read-info",
+      "outcome": {
+        "kind": "throw",
+        "type": "FormatException",
+        "message": "fallback sentinel",
+        "same_as_primary_exception": false,
+        "same_as_fallback_exception": true
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 1,
+      "fallback_info_path": "C:\\photos\\a.jpg",
+      "fallback_request": null,
+      "warnings": [
+        "Decoder TurboJpeg.ReadInfo failed for 'C:\\photos\\a.jpg', falling back to Wpf: primary cannot"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    },
+    {
+      "name": "read-info-source-bytes-do-not-matter",
+      "op": "read-info",
+      "outcome": {
+        "kind": "ok",
+        "info": [
+          325,
+          123,
+          3
+        ]
+      },
+      "primary_decode_calls": 0,
+      "primary_read_info_calls": 1,
+      "fallback_decode_calls": 0,
+      "fallback_read_info_calls": 1,
+      "fallback_info_path": "C:\\photos\\a.jpg",
+      "fallback_request": null,
+      "warnings": [
+        "Decoder TurboJpeg.ReadInfo failed for 'C:\\photos\\a.jpg', falling back to Wpf: bad"
+      ],
+      "decoder_fallbacks": {
+        "TurboJpeg": 1
+      },
+      "decoder_fallback_count": 1
+    }
+  ]
+}

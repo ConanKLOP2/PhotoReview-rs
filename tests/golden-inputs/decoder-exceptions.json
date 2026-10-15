@@ -1,0 +1,19 @@
+{
+  "cases": [
+    { "name": "busy-default", "type": "busy", "ctor": "default" },
+    { "name": "busy-message", "type": "busy", "ctor": "message", "message": "custom text" },
+    { "name": "busy-message-empty", "type": "busy", "ctor": "message", "message": "" },
+    { "name": "busy-message-unicode", "type": "busy", "ctor": "message", "message": "Không đủ bộ nhớ: é中" },
+    { "name": "busy-inner", "type": "busy", "ctor": "inner", "message": "queue full" },
+    { "name": "memory-admission-default", "type": "memory-admission", "ctor": "default" },
+    { "name": "memory-admission-message", "type": "memory-admission", "ctor": "message", "message": "custom text" },
+    { "name": "memory-admission-message-empty", "type": "memory-admission", "ctor": "message", "message": "" },
+    { "name": "memory-admission-message-unicode", "type": "memory-admission", "ctor": "message", "message": "Không đủ bộ nhớ: é中" },
+    { "name": "memory-admission-inner", "type": "memory-admission", "ctor": "inner", "message": "no room" },
+    { "name": "missing-codec-default", "type": "missing-codec", "ctor": "default" },
+    { "name": "missing-codec-message", "type": "missing-codec", "ctor": "message", "message": "custom text" },
+    { "name": "missing-codec-message-empty", "type": "missing-codec", "ctor": "message", "message": "" },
+    { "name": "missing-codec-message-unicode", "type": "missing-codec", "ctor": "message", "message": "Thiếu codec: é中" },
+    { "name": "missing-codec-inner", "type": "missing-codec", "ctor": "inner", "message": "no HEIF extension" }
+  ]
+}

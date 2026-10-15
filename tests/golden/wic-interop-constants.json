@@ -1,0 +1,834 @@
+{
+  "generator": "oracle-cs wic-interop-constants",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "guids",
+      "section": "guids",
+      "guids": [
+        {
+          "field": "GUID_WICPixelFormat32bppBGRA",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90f"
+        },
+        {
+          "field": "GUID_WICPixelFormat32bppBGR",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90e"
+        },
+        {
+          "field": "GUID_WICPixelFormat32bppPBGRA",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc910"
+        },
+        {
+          "field": "GUID_ContainerFormatJpeg",
+          "value": "19e4a5aa-5662-4fc5-a0c0-1758028e1057"
+        },
+        {
+          "field": "GUID_ContainerFormatTiff",
+          "value": "163bcc30-e2e9-4f0b-961d-a3e9fdb788a3"
+        },
+        {
+          "field": "GUID_WICPixelFormatBlackWhite",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc905"
+        },
+        {
+          "field": "GUID_WICPixelFormat2bppGray",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc906"
+        },
+        {
+          "field": "GUID_WICPixelFormat4bppGray",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc907"
+        },
+        {
+          "field": "GUID_WICPixelFormat8bppGray",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc908"
+        },
+        {
+          "field": "GUID_WICPixelFormat16bppGray",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90b"
+        },
+        {
+          "field": "GUID_WICPixelFormat16bppBGR555",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc909"
+        },
+        {
+          "field": "GUID_WICPixelFormat16bppBGR565",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90a"
+        },
+        {
+          "field": "GUID_WICPixelFormat24bppBGR",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90c"
+        },
+        {
+          "field": "GUID_WICPixelFormat24bppRGB",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc90d"
+        },
+        {
+          "field": "GUID_WICPixelFormat48bppRGB",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc915"
+        },
+        {
+          "field": "GUID_WICPixelFormat48bppBGR",
+          "value": "e605a384-b468-46ce-bb2e-36f180e64313"
+        },
+        {
+          "field": "GUID_WICPixelFormat32bppCMYK",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc91c"
+        },
+        {
+          "field": "GUID_WICPixelFormat64bppCMYK",
+          "value": "6fddc324-4e03-4bfe-b185-3d77768dc91f"
+        }
+      ]
+    },
+    {
+      "name": "enums",
+      "section": "enums",
+      "enums": [
+        {
+          "enum": "WICColorContextType",
+          "flags": false,
+          "members": [
+            {
+              "member": "Uninitialized",
+              "value": 0
+            },
+            {
+              "member": "Profile",
+              "value": 1
+            },
+            {
+              "member": "ExifColorSpace",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "enum": "WICDecodeOptions",
+          "flags": false,
+          "members": [
+            {
+              "member": "WICDecodeMetadataCacheOnDemand",
+              "value": 0
+            },
+            {
+              "member": "WICDecodeMetadataCacheOnLoad",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "enum": "WICBitmapDitherType",
+          "flags": false,
+          "members": [
+            {
+              "member": "None",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "enum": "WICBitmapPaletteType",
+          "flags": false,
+          "members": [
+            {
+              "member": "Custom",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "enum": "WICBitmapInterpolationMode",
+          "flags": false,
+          "members": [
+            {
+              "member": "NearestNeighbor",
+              "value": 0
+            },
+            {
+              "member": "Linear",
+              "value": 1
+            },
+            {
+              "member": "Cubic",
+              "value": 2
+            },
+            {
+              "member": "Fant",
+              "value": 3
+            },
+            {
+              "member": "HighQualityCubic",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "enum": "WICBitmapTransformOptions",
+          "flags": true,
+          "members": [
+            {
+              "member": "Rotate0",
+              "value": 0
+            },
+            {
+              "member": "Rotate90",
+              "value": 1
+            },
+            {
+              "member": "Rotate180",
+              "value": 2
+            },
+            {
+              "member": "Rotate270",
+              "value": 3
+            },
+            {
+              "member": "FlipHorizontal",
+              "value": 8
+            },
+            {
+              "member": "FlipVertical",
+              "value": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interfaces",
+      "section": "interfaces",
+      "interfaces": [
+        {
+          "interface": "IWICBitmapSource",
+          "iid": "00000120-a8f2-4877-ba0a-fd2b6645fb94",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICBitmapSourceTransform",
+          "iid": "3b16811b-6a43-4ec9-b713-3d5a0c13b940",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetClosestSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetClosestPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "DoesSupportTransform",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICBitmapFrameDecode",
+          "iid": "3b16811b-6a43-4ec9-a813-3d930c13b940",
+          "bases": [
+            "IWICBitmapSource"
+          ],
+          "first_slot": 8,
+          "methods": [
+            {
+              "method": "GetMetadataQueryReader",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetColorContexts",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetThumbnail",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICColorContext",
+          "iid": "3c613a02-34b2-44ea-9a7c-45aea9c6fd6d",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "InitializeFromFilename",
+              "preserve_sig": false
+            },
+            {
+              "method": "InitializeFromMemory",
+              "preserve_sig": false
+            },
+            {
+              "method": "InitializeFromExifColorSpace",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetContextType",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetProfileBytes",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetExifColorSpace",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICColorTransform",
+          "iid": "b66f034f-d0e2-40ab-b436-6de39e321a94",
+          "bases": [
+            "IWICBitmapSource"
+          ],
+          "first_slot": 8,
+          "methods": [
+            {
+              "method": "Initialize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICBitmapDecoder",
+          "iid": "9edde9e7-8dee-47ea-99df-e6faf2ed44bf",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "QueryCapability",
+              "preserve_sig": false
+            },
+            {
+              "method": "Initialize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetContainerFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetDecoderInfo",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetMetadataQueryReader",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPreview",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetColorContexts",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetThumbnail",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetFrameCount",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetFrame",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICFormatConverter",
+          "iid": "00000301-a8f2-4877-ba0a-fd2b6645fb94",
+          "bases": [
+            "IWICBitmapSource"
+          ],
+          "first_slot": 8,
+          "methods": [
+            {
+              "method": "Initialize",
+              "preserve_sig": false
+            },
+            {
+              "method": "CanConvert",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICBitmapScaler",
+          "iid": "00000302-a8f2-4877-ba0a-fd2b6645fb94",
+          "bases": [
+            "IWICBitmapSource"
+          ],
+          "first_slot": 8,
+          "methods": [
+            {
+              "method": "Initialize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICBitmapFlipRotator",
+          "iid": "5009834f-2d6a-41ce-9e1b-17c5aff7a782",
+          "bases": [
+            "IWICBitmapSource"
+          ],
+          "first_slot": 8,
+          "methods": [
+            {
+              "method": "Initialize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetPixelFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetResolution",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyPixels",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICMetadataQueryReader",
+          "iid": "30989668-e1c9-4597-b395-458eedb808df",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "GetContainerFormat",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetLocation",
+              "preserve_sig": false
+            },
+            {
+              "method": "GetMetadataByName",
+              "preserve_sig": true
+            },
+            {
+              "method": "GetEnumerator",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IComStream",
+          "iid": "0000000c-0000-0000-c000-000000000046",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "Read",
+              "preserve_sig": false
+            },
+            {
+              "method": "Write",
+              "preserve_sig": false
+            },
+            {
+              "method": "Seek",
+              "preserve_sig": false
+            },
+            {
+              "method": "SetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyTo",
+              "preserve_sig": false
+            },
+            {
+              "method": "Commit",
+              "preserve_sig": false
+            },
+            {
+              "method": "Revert",
+              "preserve_sig": false
+            },
+            {
+              "method": "LockRegion",
+              "preserve_sig": false
+            },
+            {
+              "method": "UnlockRegion",
+              "preserve_sig": false
+            },
+            {
+              "method": "Stat",
+              "preserve_sig": false
+            },
+            {
+              "method": "Clone",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICStream",
+          "iid": "135ff860-22b7-4ddf-b0f6-218f4f299a43",
+          "bases": [
+            "IComStream"
+          ],
+          "first_slot": 14,
+          "methods": [
+            {
+              "method": "InitializeFromIStream",
+              "preserve_sig": false
+            },
+            {
+              "method": "InitializeFromFilename",
+              "preserve_sig": false
+            },
+            {
+              "method": "InitializeFromMemory",
+              "preserve_sig": false
+            },
+            {
+              "method": "InitializeFromIStreamRegion",
+              "preserve_sig": false
+            },
+            {
+              "method": "Read",
+              "preserve_sig": false
+            },
+            {
+              "method": "Write",
+              "preserve_sig": false
+            },
+            {
+              "method": "Seek",
+              "preserve_sig": false
+            },
+            {
+              "method": "SetSize",
+              "preserve_sig": false
+            },
+            {
+              "method": "CopyTo",
+              "preserve_sig": false
+            },
+            {
+              "method": "Commit",
+              "preserve_sig": false
+            },
+            {
+              "method": "Revert",
+              "preserve_sig": false
+            },
+            {
+              "method": "LockRegion",
+              "preserve_sig": false
+            },
+            {
+              "method": "UnlockRegion",
+              "preserve_sig": false
+            },
+            {
+              "method": "Stat",
+              "preserve_sig": false
+            },
+            {
+              "method": "Clone",
+              "preserve_sig": false
+            }
+          ]
+        },
+        {
+          "interface": "IWICImagingFactory",
+          "iid": "ec5ec8a9-c395-4314-9c77-54d7a935ff70",
+          "bases": [],
+          "first_slot": 3,
+          "methods": [
+            {
+              "method": "CreateDecoderFromFilename",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateDecoderFromStream",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateDecoderFromFileHandle",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateComponentInfo",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateDecoder",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateEncoder",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreatePalette",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateFormatConverter",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapScaler",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapClipper",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFlipRotator",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateStream",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateColorContext",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateColorTransformer",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmap",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFromSource",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFromSourceRect",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFromMemory",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFromHBITMAP",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateBitmapFromHICON",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateComponentEnumerator",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateFastMetadataEncoderFromDecoder",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateFastMetadataEncoderFromFrameDecode",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateQueryWriter",
+              "preserve_sig": false
+            },
+            {
+              "method": "CreateQueryWriterFromReader",
+              "preserve_sig": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "statstg-layout",
+      "section": "statstg",
+      "pointer_size": 8,
+      "size": 80,
+      "fields": [
+        {
+          "field": "pwcsName",
+          "offset": 0
+        },
+        {
+          "field": "type",
+          "offset": 8
+        },
+        {
+          "field": "cbSize",
+          "offset": 16
+        },
+        {
+          "field": "mtime",
+          "offset": 24
+        },
+        {
+          "field": "ctime",
+          "offset": 32
+        },
+        {
+          "field": "atime",
+          "offset": 40
+        },
+        {
+          "field": "grfMode",
+          "offset": 48
+        },
+        {
+          "field": "grfLocksSupported",
+          "offset": 52
+        },
+        {
+          "field": "clsid",
+          "offset": 56
+        },
+        {
+          "field": "grfStateBits",
+          "offset": 72
+        },
+        {
+          "field": "reserved",
+          "offset": 76
+        }
+      ]
+    },
+    {
+      "name": "sdk",
+      "section": "sdk",
+      "WINCODEC_SDK_VERSION1": 566,
+      "factory_entry_point": "WICCreateImagingFactory_Proxy"
+    }
+  ]
+}

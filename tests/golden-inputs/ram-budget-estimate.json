@@ -1,0 +1,1055 @@
+{
+ "cases": [
+  {
+   "name": "empty-unbounded",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": []
+  },
+  {
+   "name": "empty-bounded",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": []
+  },
+  {
+   "name": "empty-measured",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [],
+   "measured": 1000000
+  },
+  {
+   "name": "empty-measured-infinity",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [],
+   "measured": "Infinity"
+  },
+  {
+   "name": "jpeg-dims-bounded-downscale",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000,
+     "width": 6000,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-dims-bounded-smaller-than-box",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000,
+     "width": 800,
+     "height": 600
+    }
+   ]
+  },
+  {
+   "name": "jpeg-dims-bounded-odd-ceil",
+   "box": {
+    "width": 1000,
+    "height": 1000
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 1,
+     "width": 1999,
+     "height": 1333
+    }
+   ]
+  },
+  {
+   "name": "jpeg-no-dims-bounded-uses-box",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-no-dims-unbounded-length-times-10",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-no-dims-unbounded-no-length-zero",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg"
+    }
+   ]
+  },
+  {
+   "name": "jpeg-negative-length-unbounded-zero",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": -5
+    }
+   ]
+  },
+  {
+   "name": "jpeg-dims-unbounded-keeps-length-times-10",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000,
+     "width": 6000,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-width-only-box",
+   "box": {
+    "width": 1000,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000,
+     "width": 6000,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-height-only-box",
+   "box": {
+    "width": 0,
+    "height": 1000
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000,
+     "width": 6000,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-width-only-box-no-dims",
+   "box": {
+    "width": 1000,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-zero-width-with-height",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000,
+     "width": 0,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "jpeg-negative-dims",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 2000000,
+     "width": -5,
+     "height": -5
+    }
+   ]
+  },
+  {
+   "name": "png-unbounded-length-times-10",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "a/b.PNG",
+     "length": 300000
+    }
+   ]
+  },
+  {
+   "name": "raw-dims-bounded-sensor-doubled",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000,
+     "width": 2592,
+     "height": 1728
+    }
+   ]
+  },
+  {
+   "name": "raw-dims-bounded-box-larger-than-sensor",
+   "box": {
+    "width": 8000,
+    "height": 6000
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000,
+     "width": 2592,
+     "height": 1728
+    }
+   ]
+  },
+  {
+   "name": "raw-dims-unbounded-original-mode",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000,
+     "width": 2592,
+     "height": 1728
+    }
+   ]
+  },
+  {
+   "name": "raw-dims-bounded-smaller-than-box",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000,
+     "width": 800,
+     "height": 600
+    }
+   ]
+  },
+  {
+   "name": "raw-dims-width-only-box",
+   "box": {
+    "width": 1000,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000,
+     "width": 6000,
+     "height": 4000
+    }
+   ]
+  },
+  {
+   "name": "raw-no-dims-unbounded-length-times-6",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000
+    }
+   ]
+  },
+  {
+   "name": "raw-no-dims-unbounded-no-length-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2"
+    }
+   ]
+  },
+  {
+   "name": "raw-no-dims-unbounded-zero-length-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 0
+    }
+   ]
+  },
+  {
+   "name": "raw-no-length-after-other-entries-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 1000
+    },
+    {
+     "path": "folder/IMG_0002.jpg",
+     "length": 1000
+    },
+    {
+     "path": "folder/IMG_0003.cr2"
+    }
+   ]
+  },
+  {
+   "name": "raw-no-dims-bounded-box-bound",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000
+    }
+   ]
+  },
+  {
+   "name": "raw-upper-case-extension",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.NEF",
+     "length": 25000000
+    }
+   ]
+  },
+  {
+   "name": "raw-arw-dng-mixed-unbounded",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.arw",
+     "length": 10000000
+    },
+    {
+     "path": "folder/IMG_0002.DNG",
+     "length": 20000000
+    },
+    {
+     "path": "folder/IMG_0003.jpg",
+     "length": 5000000
+    }
+   ]
+  },
+  {
+   "name": "mixed-folder-bounded",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000,
+     "width": 6000,
+     "height": 4000
+    },
+    {
+     "path": "folder/IMG_0002.cr2",
+     "length": 25000000,
+     "width": 6000,
+     "height": 4000
+    },
+    {
+     "path": "folder/IMG_0003.jpg"
+    },
+    {
+     "path": "folder/IMG_0004.cr2"
+    }
+   ]
+  },
+  {
+   "name": "measured-basic",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0002.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0003.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0004.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0005.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0006.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0007.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0008.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0009.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0010.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0011.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0012.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0013.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0014.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0015.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0016.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0017.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0018.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0019.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0020.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0021.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0022.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0023.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0024.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0025.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0026.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0027.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0028.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0029.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0030.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0031.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0032.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0033.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0034.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0035.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0036.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0037.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0038.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0039.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0040.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0041.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0042.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0043.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0044.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0045.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0046.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0047.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0048.cr2",
+     "length": 25000000
+    },
+    {
+     "path": "folder/IMG_0049.cr2",
+     "length": 25000000
+    }
+   ],
+   "measured": 1000000
+  },
+  {
+   "name": "measured-capped-at-box-bound",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg"
+    },
+    {
+     "path": "folder/IMG_0001.jpg"
+    },
+    {
+     "path": "folder/IMG_0002.jpg"
+    },
+    {
+     "path": "folder/IMG_0003.jpg"
+    },
+    {
+     "path": "folder/IMG_0004.jpg"
+    },
+    {
+     "path": "folder/IMG_0005.jpg"
+    },
+    {
+     "path": "folder/IMG_0006.jpg"
+    },
+    {
+     "path": "folder/IMG_0007.jpg"
+    },
+    {
+     "path": "folder/IMG_0008.jpg"
+    },
+    {
+     "path": "folder/IMG_0009.jpg"
+    }
+   ],
+   "measured": 8000000
+  },
+  {
+   "name": "measured-exactly-box-bound",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg"
+    },
+    {
+     "path": "folder/IMG_0001.jpg"
+    },
+    {
+     "path": "folder/IMG_0002.jpg"
+    },
+    {
+     "path": "folder/IMG_0003.jpg"
+    },
+    {
+     "path": "folder/IMG_0004.jpg"
+    },
+    {
+     "path": "folder/IMG_0005.jpg"
+    },
+    {
+     "path": "folder/IMG_0006.jpg"
+    },
+    {
+     "path": "folder/IMG_0007.jpg"
+    },
+    {
+     "path": "folder/IMG_0008.jpg"
+    },
+    {
+     "path": "folder/IMG_0009.jpg"
+    }
+   ],
+   "measured": 8294400
+  },
+  {
+   "name": "measured-above-box-bound-16bit",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg"
+    },
+    {
+     "path": "folder/IMG_0001.jpg"
+    },
+    {
+     "path": "folder/IMG_0002.jpg"
+    },
+    {
+     "path": "folder/IMG_0003.jpg"
+    },
+    {
+     "path": "folder/IMG_0004.jpg"
+    },
+    {
+     "path": "folder/IMG_0005.jpg"
+    },
+    {
+     "path": "folder/IMG_0006.jpg"
+    },
+    {
+     "path": "folder/IMG_0007.jpg"
+    },
+    {
+     "path": "folder/IMG_0008.jpg"
+    },
+    {
+     "path": "folder/IMG_0009.jpg"
+    }
+   ],
+   "measured": 16588800
+  },
+  {
+   "name": "measured-times-margin-below-bound",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg"
+    },
+    {
+     "path": "folder/IMG_0001.jpg"
+    },
+    {
+     "path": "folder/IMG_0002.jpg"
+    },
+    {
+     "path": "folder/IMG_0003.jpg"
+    },
+    {
+     "path": "folder/IMG_0004.jpg"
+    },
+    {
+     "path": "folder/IMG_0005.jpg"
+    },
+    {
+     "path": "folder/IMG_0006.jpg"
+    },
+    {
+     "path": "folder/IMG_0007.jpg"
+    },
+    {
+     "path": "folder/IMG_0008.jpg"
+    },
+    {
+     "path": "folder/IMG_0009.jpg"
+    }
+   ],
+   "measured": 1000000
+  },
+  {
+   "name": "measured-zero-is-ignored",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ],
+   "measured": 0
+  },
+  {
+   "name": "measured-negative-is-ignored",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ],
+   "measured": -1
+  },
+  {
+   "name": "measured-nan-is-ignored",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ],
+   "measured": "NaN"
+  },
+  {
+   "name": "measured-infinity-saturates",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 5000000
+    }
+   ],
+   "measured": "Infinity"
+  },
+  {
+   "name": "measured-infinity-zero-entries-nan-cast",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [],
+   "measured": "Infinity"
+  },
+  {
+   "name": "measured-fractional-ceiling",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg"
+    },
+    {
+     "path": "folder/IMG_0001.jpg"
+    },
+    {
+     "path": "folder/IMG_0002.jpg"
+    }
+   ],
+   "measured": 333.3
+  },
+  {
+   "name": "measured-ignores-entry-contents",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2"
+    }
+   ],
+   "measured": 1000
+  },
+  {
+   "name": "sum-reaches-long-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0000.jpg",
+     "length": 4611686018427387904
+    },
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 4611686018427387904
+    }
+   ]
+  },
+  {
+   "name": "sum-just-below-long-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 922337203685477580
+    }
+   ]
+  },
+  {
+   "name": "single-length-over-long-max-after-factor",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 4611686018427387904
+    }
+   ]
+  },
+  {
+   "name": "raw-sum-reaches-long-max",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 4611686018427387904
+    }
+   ]
+  },
+  {
+   "name": "raw-width-times-two-overflows",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 1000,
+     "width": 1073741824,
+     "height": 10
+    }
+   ]
+  },
+  {
+   "name": "raw-height-times-two-overflows",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 1000,
+     "width": 10,
+     "height": 1073741824
+    }
+   ]
+  },
+  {
+   "name": "raw-width-max-int-overflows",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 1000,
+     "width": 2147483647,
+     "height": 10
+    }
+   ]
+  },
+  {
+   "name": "raw-width-just-fits-doubled",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.cr2",
+     "length": 1000,
+     "width": 1073741823,
+     "height": 1
+    }
+   ]
+  },
+  {
+   "name": "jpeg-huge-dims-no-overflow",
+   "box": {
+    "width": 1920,
+    "height": 1080
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 1000,
+     "width": 2147483647,
+     "height": 2147483647
+    }
+   ]
+  },
+  {
+   "name": "jpeg-huge-dims-unbounded",
+   "box": {
+    "width": 0,
+    "height": 0
+   },
+   "entries": [
+    {
+     "path": "folder/IMG_0001.jpg",
+     "length": 1000,
+     "width": 2147483647,
+     "height": 2147483647
+    }
+   ]
+  }
+ ]
+}

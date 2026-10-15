@@ -1,0 +1,110 @@
+{
+  "cases": [
+    { "name": "never-busy-path-not-skipped", "ops": [
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "cooldown-is-exactly-three-passes-then-retry", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "same-pass-as-busy-is-skipped", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "retry-cap-six-busy-outcomes-skipped-forever", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 50 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "five-busy-outcomes-only-cooldown-then-retry", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 50 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "file-changed-after-cap-starts-fresh", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 2 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 2 } ] },
+    { "name": "changed-key-should-skip-removes-state-so-old-key-restarts", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 2 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "note-busy-key-change-restarts-count", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 2 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 2 } ] },
+    { "name": "write-time-difference-is-a-different-key", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1, "written": "2026-01-02T00:00:00Z" },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1, "written": "2026-01-02T00:00:00Z" } ] },
+    { "name": "box-difference-is-a-different-key", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1, "box_width": 200, "box_height": 100 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1, "box_width": 200, "box_height": 100 } ] },
+    { "name": "per-path-counts-independent", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\b.cr2", "length": 1 } ] },
+    { "name": "path-compare-ignores-case", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "c:\\BUSY\\A.CR2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\Busy\\a.Cr2", "length": 1 } ] },
+    { "name": "record-success-clears-cap", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 50 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "record_success", "path": "C:\\busy\\a.cr2" },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "record-success-unknown-path-is-noop", "ops": [
+      { "op": "record_success", "path": "C:\\busy\\never.cr2" },
+      { "op": "should_skip", "path": "C:\\busy\\never.cr2", "length": 1 } ] },
+    { "name": "clear-mid-cooldown-forgets-path", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" }, { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "clear" },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "clear-does-not-reset-pass-counter", "ops": [
+      { "op": "begin_pass", "times": 7 },
+      { "op": "clear" },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 3 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "cooldown-restarts-from-latest-busy-pass", "ops": [
+      { "op": "begin_pass" }, { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 4 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass", "times": 3 },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "begin_pass" },
+      { "op": "should_skip", "path": "C:\\busy\\a.cr2", "length": 1 } ] },
+    { "name": "busy-path-does-not-affect-other-path", "ops": [
+      { "op": "note_busy", "path": "C:\\busy\\a.cr2", "length": 1 },
+      { "op": "should_skip", "path": "C:\\busy\\b.cr2", "length": 1 } ] }
+  ]
+}

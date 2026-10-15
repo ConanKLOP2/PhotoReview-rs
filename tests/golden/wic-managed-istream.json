@@ -1,0 +1,1535 @@
+{
+  "generator": "oracle-cs wic-managed-istream",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "read-short-read-at-eof-reports-count",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 6
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 4
+        },
+        {
+          "op": "read",
+          "cb": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "read",
+          "buffer": [
+            16,
+            17,
+            238,
+            238
+          ],
+          "out_u32": 2,
+          "hr": "0x00000000",
+          "position": 8,
+          "length": 8
+        },
+        {
+          "op": "read",
+          "buffer": [
+            238,
+            238,
+            238,
+            238
+          ],
+          "out_u32": 0,
+          "hr": "0x00000000",
+          "position": 8,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "read-zero-bytes",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "read",
+          "buffer": [],
+          "out_u32": 0,
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "read-whole-stream",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 8
+        },
+        {
+          "op": "read",
+          "cb": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "read",
+          "buffer": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "out_u32": 8,
+          "hr": "0x00000000",
+          "position": 8,
+          "length": 8
+        },
+        {
+          "op": "read",
+          "buffer": [
+            238
+          ],
+          "out_u32": 0,
+          "hr": "0x00000000",
+          "position": 8,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "read-and-seek-null-out-pointers",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 3,
+          "null_out": true
+        },
+        {
+          "op": "seek",
+          "move": 1,
+          "origin": 0,
+          "null_out": true
+        }
+      ],
+      "results": [
+        {
+          "op": "read",
+          "buffer": [
+            10,
+            11,
+            12
+          ],
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 8
+        },
+        {
+          "op": "seek",
+          "hr": "0x00000000",
+          "position": 1,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-begin-5",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 5,
+          "origin": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "5",
+          "hr": "0x00000000",
+          "position": 5,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-current-plus-2",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 2,
+          "origin": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "6",
+          "hr": "0x00000000",
+          "position": 6,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-current-minus-3",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -3,
+          "origin": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "1",
+          "hr": "0x00000000",
+          "position": 1,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-end-minus-2",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -2,
+          "origin": 2
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "6",
+          "hr": "0x00000000",
+          "position": 6,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-end-0",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 2
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "8",
+          "hr": "0x00000000",
+          "position": 8,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-current-fails-position-kept",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -3,
+          "origin": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80131620",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-begin-fails",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -1,
+          "origin": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80131620",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-end-fails",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -9,
+          "origin": 2
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80131620",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-invalid-origin-3",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 3
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80070057",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-invalid-origin-minus-1",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": -1
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80070057",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "seek-past-end-then-read-gets-nothing",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 20,
+          "origin": 0
+        },
+        {
+          "op": "read",
+          "cb": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "20",
+          "hr": "0x00000000",
+          "position": 20,
+          "length": 8
+        },
+        {
+          "op": "read",
+          "buffer": [
+            238,
+            238,
+            238,
+            238
+          ],
+          "out_u32": 0,
+          "hr": "0x00000000",
+          "position": 20,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "stat-readonly-reports-length",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "stat",
+          "flag": 0
+        },
+        {
+          "op": "stat",
+          "flag": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "stat",
+          "stat_bytes": "0000000000000000020000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 8
+        },
+        {
+          "op": "stat",
+          "stat_bytes": "0000000000000000020000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "stat-growable-after-write",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 8
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1,
+            2
+          ]
+        },
+        {
+          "op": "stat",
+          "flag": 1
+        }
+      ],
+      "results": [
+        {
+          "op": "write",
+          "out_u32": 2,
+          "hr": "0x00000000",
+          "position": 10,
+          "length": 10,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            1,
+            2
+          ]
+        },
+        {
+          "op": "stat",
+          "stat_bytes": "000000000000000002000000000000000A000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "hr": "0x00000000",
+          "position": 10,
+          "length": 10
+        }
+      ]
+    },
+    {
+      "name": "stat-empty",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "stat",
+          "flag": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "stat",
+          "stat_bytes": "0000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 0
+        }
+      ]
+    },
+    {
+      "name": "write-reports-cb-through-pointer",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "cb": 3
+        },
+        {
+          "op": "write",
+          "data": [
+            9
+          ],
+          "null_out": true
+        }
+      ],
+      "results": [
+        {
+          "op": "write",
+          "out_u32": 3,
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 3,
+          "content": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "op": "write",
+          "hr": "0x00000000",
+          "position": 4,
+          "length": 4,
+          "content": [
+            1,
+            2,
+            3,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-overwrites-in-the-middle",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 1,
+          "origin": 0
+        },
+        {
+          "op": "write",
+          "data": [
+            7,
+            7
+          ]
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "1",
+          "hr": "0x00000000",
+          "position": 1,
+          "length": 8
+        },
+        {
+          "op": "write",
+          "out_u32": 2,
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 8,
+          "content": [
+            10,
+            7,
+            7,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-after-seek-past-end-zero-fills",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 6,
+          "origin": 0
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        }
+      ],
+      "results": [
+        {
+          "op": "seek",
+          "out_u64": "6",
+          "hr": "0x00000000",
+          "position": 6,
+          "length": 0
+        },
+        {
+          "op": "write",
+          "out_u32": 1,
+          "hr": "0x00000000",
+          "position": 7,
+          "length": 7,
+          "content": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-zero-bytes",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": []
+        }
+      ],
+      "results": [
+        {
+          "op": "write",
+          "out_u32": 0,
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-readonly-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        }
+      ],
+      "results": [
+        {
+          "op": "write",
+          "out_u32": 3452816845,
+          "hr": "0x80131515",
+          "position": 3,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-grows-with-zeros",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 7
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7,
+          "content": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-shrink-clamps-position-then-grow-zeroes",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 6
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 3
+        },
+        {
+          "op": "set_size",
+          "size": 6
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 3,
+          "content": [
+            10,
+            11,
+            12
+          ]
+        },
+        {
+          "op": "set_size",
+          "hr": "0x00000000",
+          "position": 3,
+          "length": 6,
+          "content": [
+            10,
+            11,
+            12,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-same-length",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 8
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-readonly-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x80131515",
+          "position": 0,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-above-i64-max-out-of-range",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": -1
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x80131502",
+          "position": 0,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "name": "noops-and-commit",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 7
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "op": "revert"
+        },
+        {
+          "op": "lock"
+        },
+        {
+          "op": "unlock"
+        }
+      ],
+      "results": [
+        {
+          "op": "set_size",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7,
+          "content": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "op": "commit",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7
+        },
+        {
+          "op": "revert",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7
+        },
+        {
+          "op": "lock",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7
+        },
+        {
+          "op": "unlock",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "name": "clone-and-copy-to-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "clone"
+        },
+        {
+          "op": "copy_to"
+        }
+      ],
+      "results": [
+        {
+          "op": "clone",
+          "hr": "0x80131515",
+          "position": 0,
+          "length": 8
+        },
+        {
+          "op": "copy_to",
+          "hr": "0x80131515",
+          "position": 0,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "after-dispose-every-op",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "read",
+          "cb": 1
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        },
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 0
+        },
+        {
+          "op": "set_size",
+          "size": 1
+        },
+        {
+          "op": "stat",
+          "flag": 0
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "op": "revert"
+        },
+        {
+          "op": "lock"
+        },
+        {
+          "op": "unlock"
+        },
+        {
+          "op": "clone"
+        },
+        {
+          "op": "copy_to"
+        },
+        {
+          "op": "dispose"
+        }
+      ],
+      "results": [
+        {
+          "op": "dispose",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "read",
+          "buffer": [
+            238
+          ],
+          "out_u32": 3452816845,
+          "hr": "0x80131622",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "write",
+          "out_u32": 3452816845,
+          "hr": "0x80131622",
+          "position": 2,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "op": "seek",
+          "out_u64": "14829735431805717965",
+          "hr": "0x80131622",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "set_size",
+          "hr": "0x80131622",
+          "position": 2,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "op": "stat",
+          "hr": "0x80131622",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "commit",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "revert",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "lock",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "unlock",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "clone",
+          "hr": "0x80131515",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "copy_to",
+          "hr": "0x80131515",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "dispose",
+          "hr": "0x00000000",
+          "position": 2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "name": "after-dispose-growable-write-and-set-size",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        },
+        {
+          "op": "set_size",
+          "size": 4
+        }
+      ],
+      "results": [
+        {
+          "op": "dispose",
+          "hr": "0x00000000",
+          "position": 0,
+          "length": 0
+        },
+        {
+          "op": "write",
+          "out_u32": 3452816845,
+          "hr": "0x80131622",
+          "position": 0,
+          "length": 0,
+          "content": []
+        },
+        {
+          "op": "set_size",
+          "hr": "0x80131622",
+          "position": 0,
+          "length": 0,
+          "content": []
+        }
+      ]
+    },
+    {
+      "name": "read-and-write-negative-cb-out-of-range",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": -1
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ],
+          "cb": -1
+        }
+      ],
+      "results": [
+        {
+          "op": "read",
+          "buffer": [],
+          "out_u32": 3452816845,
+          "hr": "0x80131502",
+          "position": 2,
+          "length": 8
+        },
+        {
+          "op": "write",
+          "out_u32": 3452816845,
+          "hr": "0x80131502",
+          "position": 2,
+          "length": 8,
+          "content": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        }
+      ]
+    }
+  ]
+}

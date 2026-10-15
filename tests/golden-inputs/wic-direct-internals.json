@@ -1,0 +1,597 @@
+{
+  "generator": "oracle-cs wic-direct-internals (W4-11c)",
+  "cases": [
+    {
+      "name": "to-int-size-1x1",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 1
+    },
+    {
+      "name": "to-int-size-2147483647x1",
+      "fn": "to-int-size",
+      "width": 2147483647,
+      "height": 1
+    },
+    {
+      "name": "to-int-size-1x2147483647",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 2147483647
+    },
+    {
+      "name": "to-int-size-2147483647x2147483647",
+      "fn": "to-int-size",
+      "width": 2147483647,
+      "height": 2147483647
+    },
+    {
+      "name": "to-int-size-0x0",
+      "fn": "to-int-size",
+      "width": 0,
+      "height": 0
+    },
+    {
+      "name": "to-int-size-64x48",
+      "fn": "to-int-size",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "to-int-size-refused-2147483648x1",
+      "fn": "to-int-size",
+      "width": 2147483648,
+      "height": 1
+    },
+    {
+      "name": "to-int-size-refused-1x2147483648",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 2147483648
+    },
+    {
+      "name": "to-int-size-refused-2147483648x2147483648",
+      "fn": "to-int-size",
+      "width": 2147483648,
+      "height": 2147483648
+    },
+    {
+      "name": "to-int-size-refused-4294967295x5",
+      "fn": "to-int-size",
+      "width": 4294967295,
+      "height": 5
+    },
+    {
+      "name": "to-int-size-refused-5x4294967295",
+      "fn": "to-int-size",
+      "width": 5,
+      "height": 4294967295
+    },
+    {
+      "name": "output-byte-length-1x1",
+      "fn": "output-byte-length",
+      "width": 1,
+      "height": 1
+    },
+    {
+      "name": "output-byte-length-6000x6000",
+      "fn": "output-byte-length",
+      "width": 6000,
+      "height": 6000
+    },
+    {
+      "name": "output-byte-length-2147483647x2147483647",
+      "fn": "output-byte-length",
+      "width": 2147483647,
+      "height": 2147483647
+    },
+    {
+      "name": "output-byte-length-0x5",
+      "fn": "output-byte-length",
+      "width": 0,
+      "height": 5
+    },
+    {
+      "name": "output-byte-length-65500x65500",
+      "fn": "output-byte-length",
+      "width": 65500,
+      "height": 65500
+    },
+    {
+      "name": "output-byte-length-46341x46341",
+      "fn": "output-byte-length",
+      "width": 46341,
+      "height": 46341
+    },
+    {
+      "name": "output-byte-length-32768x16384",
+      "fn": "output-byte-length",
+      "width": 32768,
+      "height": 16384
+    },
+    {
+      "name": "output-byte-length-2147483647x1",
+      "fn": "output-byte-length",
+      "width": 2147483647,
+      "height": 1
+    },
+    {
+      "name": "ensure-output-fits-below-threshold-never-consulted",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4095,
+      "buffer_length": 134217727,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-zero-length-never-consulted",
+      "fn": "ensure-output-fits",
+      "width": 0,
+      "height": 0,
+      "buffer_length": 0,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-exactly-threshold-consults-and-refuses",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4096,
+      "buffer_length": 134217728,
+      "total": 67108864,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-exactly-threshold-consults-and-fits",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4096,
+      "buffer_length": 134217728,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-negative-wrapped-refused-without-consulting",
+      "fn": "ensure-output-fits",
+      "width": 2147483647,
+      "height": 2147483647,
+      "buffer_length": -17179869180,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-minus-one-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": -1,
+      "total": 4611686018427387903,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-int-max-plus-one-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 2147483648,
+      "total": 4611686018427387903,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-four-gib-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 4294967296,
+      "total": 4611686018427387903,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-long-max-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 9223372036854775807,
+      "total": 4611686018427387903,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-exactly-int-max-fits",
+      "fn": "ensure-output-fits",
+      "width": 32768,
+      "height": 16384,
+      "buffer_length": 2147483647,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-huge-on-small-machine-refused",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 1073741824,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-huge-on-big-machine-fits",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-unknown-total-fits",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-load-eats-budget-refused",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 2147483648,
+      "load": 1610612736
+    },
+    {
+      "name": "ensure-output-fits-exact-peak-fits",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 800000000,
+      "load": 0
+    },
+    {
+      "name": "ensure-output-fits-one-over-peak-refused",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 799999999,
+      "load": 0
+    },
+    {
+      "name": "is-opaque-BlackWhite",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc905"
+    },
+    {
+      "name": "is-opaque-2bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc906"
+    },
+    {
+      "name": "is-opaque-4bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc907"
+    },
+    {
+      "name": "is-opaque-8bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc908"
+    },
+    {
+      "name": "is-opaque-16bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90b"
+    },
+    {
+      "name": "is-opaque-16bppBGR555",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc909"
+    },
+    {
+      "name": "is-opaque-16bppBGR565",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90a"
+    },
+    {
+      "name": "is-opaque-24bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90c"
+    },
+    {
+      "name": "is-opaque-24bppRGB",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90d"
+    },
+    {
+      "name": "is-opaque-32bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90e"
+    },
+    {
+      "name": "is-opaque-48bppRGB",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc915"
+    },
+    {
+      "name": "is-opaque-48bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "e605a384-b468-46ce-bb2e-36f180e64313"
+    },
+    {
+      "name": "is-opaque-32bppCMYK",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91c"
+    },
+    {
+      "name": "is-opaque-64bppCMYK",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91f"
+    },
+    {
+      "name": "is-opaque-32bppBGRA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90f"
+    },
+    {
+      "name": "is-opaque-32bppPBGRA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc910"
+    },
+    {
+      "name": "is-opaque-32bppRGBA",
+      "fn": "is-opaque-format",
+      "guid": "f5c7ad2d-6a8d-43dd-a7a8-a29935261ae9"
+    },
+    {
+      "name": "is-opaque-64bppRGBA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc916"
+    },
+    {
+      "name": "is-opaque-8bppIndexed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc904"
+    },
+    {
+      "name": "is-opaque-1bppIndexed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc901"
+    },
+    {
+      "name": "is-opaque-8bppAlpha",
+      "fn": "is-opaque-format",
+      "guid": "e6cd0116-eeba-4161-aa85-27dd9fb3a895"
+    },
+    {
+      "name": "is-opaque-32bppGrayFloat",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc911"
+    },
+    {
+      "name": "is-opaque-DontCare",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc900"
+    },
+    {
+      "name": "is-opaque-zero",
+      "fn": "is-opaque-format",
+      "guid": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "is-opaque-random",
+      "fn": "is-opaque-format",
+      "guid": "0123abcd-0000-4000-8000-00000000beef"
+    },
+    {
+      "name": "is-opaque-32bppBGR-last-byte-changed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc9ff"
+    },
+    {
+      "name": "transform-options--1",
+      "fn": "map-transform-options",
+      "orientation": -1
+    },
+    {
+      "name": "transform-options-0",
+      "fn": "map-transform-options",
+      "orientation": 0
+    },
+    {
+      "name": "transform-options-1",
+      "fn": "map-transform-options",
+      "orientation": 1
+    },
+    {
+      "name": "transform-options-2",
+      "fn": "map-transform-options",
+      "orientation": 2
+    },
+    {
+      "name": "transform-options-3",
+      "fn": "map-transform-options",
+      "orientation": 3
+    },
+    {
+      "name": "transform-options-4",
+      "fn": "map-transform-options",
+      "orientation": 4
+    },
+    {
+      "name": "transform-options-5",
+      "fn": "map-transform-options",
+      "orientation": 5
+    },
+    {
+      "name": "transform-options-6",
+      "fn": "map-transform-options",
+      "orientation": 6
+    },
+    {
+      "name": "transform-options-7",
+      "fn": "map-transform-options",
+      "orientation": 7
+    },
+    {
+      "name": "transform-options-8",
+      "fn": "map-transform-options",
+      "orientation": 8
+    },
+    {
+      "name": "transform-options-9",
+      "fn": "map-transform-options",
+      "orientation": 9
+    },
+    {
+      "name": "transform-options-65535",
+      "fn": "map-transform-options",
+      "orientation": 65535
+    },
+    {
+      "name": "transform-options-2147483647",
+      "fn": "map-transform-options",
+      "orientation": 2147483647
+    },
+    {
+      "name": "transform-options--2147483648",
+      "fn": "map-transform-options",
+      "orientation": -2147483648
+    },
+    {
+      "name": "as-invalid-data-default-label",
+      "fn": "as-invalid-data",
+      "detail": "E_INVALIDARG",
+      "decoder": null
+    },
+    {
+      "name": "as-invalid-data-wpf-label",
+      "fn": "as-invalid-data",
+      "detail": "bad header",
+      "decoder": "WPF"
+    },
+    {
+      "name": "as-invalid-data-empty-detail",
+      "fn": "as-invalid-data",
+      "detail": "",
+      "decoder": null
+    },
+    {
+      "name": "as-invalid-data-unicode-detail",
+      "fn": "as-invalid-data",
+      "detail": "Ảnh hỏng: ü ß 漢字",
+      "decoder": null
+    },
+    {
+      "name": "copy-pixels-guarded-com-active-is-icc",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": true,
+      "hresult": -2003292336,
+      "message": "converter exploded"
+    },
+    {
+      "name": "copy-pixels-guarded-com-inactive-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": false,
+      "hresult": -2003292336,
+      "message": "converter exploded"
+    },
+    {
+      "name": "copy-pixels-guarded-com-active-windows-says-no",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": true,
+      "hresult": -2147467259,
+      "message": "Windows says no"
+    },
+    {
+      "name": "copy-pixels-guarded-invalid-op-active-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "invalid-op",
+      "active": true,
+      "hresult": 0,
+      "message": "not a COM failure"
+    },
+    {
+      "name": "copy-pixels-guarded-argument-active-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "argument",
+      "active": true,
+      "hresult": 0,
+      "message": "E_INVALIDARG"
+    },
+    {
+      "name": "copy-pixels-guarded-success-active",
+      "fn": "copy-pixels-guarded",
+      "throw": "none",
+      "active": true,
+      "hresult": 0,
+      "message": ""
+    },
+    {
+      "name": "copy-pixels-guarded-success-inactive",
+      "fn": "copy-pixels-guarded",
+      "throw": "none",
+      "active": false,
+      "hresult": 0,
+      "message": ""
+    },
+    {
+      "name": "factory-not-initialized-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2003292404,
+      "created": false
+    },
+    {
+      "name": "factory-e-fail-with-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147467259,
+      "created": true
+    },
+    {
+      "name": "factory-success-with-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 0,
+      "created": true
+    },
+    {
+      "name": "factory-success-without-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 0,
+      "created": false
+    },
+    {
+      "name": "factory-s-false-without-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 1,
+      "created": false
+    },
+    {
+      "name": "factory-e-invalidarg-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024809,
+      "created": false
+    },
+    {
+      "name": "factory-e-outofmemory-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024882,
+      "created": false
+    },
+    {
+      "name": "factory-e-nointerface-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147467262,
+      "created": false
+    },
+    {
+      "name": "factory-file-not-found-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024894,
+      "created": false
+    }
+  ]
+}

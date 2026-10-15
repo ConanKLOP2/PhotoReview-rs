@@ -1,0 +1,102 @@
+{
+  "generator": "oracle-cs adaptive-preview-quantize",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "one-pixel",
+      "result": 128
+    },
+    {
+      "name": "exactly-one-quantum",
+      "result": 128
+    },
+    {
+      "name": "just-over-one-quantum",
+      "result": 256
+    },
+    {
+      "name": "1242-to-1280",
+      "result": 1280
+    },
+    {
+      "name": "float-noise-1e-10-above-multiple-stays",
+      "result": 1280
+    },
+    {
+      "name": "float-noise-1e-7-above-multiple-stays",
+      "result": 1280
+    },
+    {
+      "name": "one-thousandth-above-multiple-steps",
+      "result": 1408
+    },
+    {
+      "name": "just-below-multiple",
+      "result": 1280
+    },
+    {
+      "name": "3968-exact-31-quanta",
+      "result": 3968
+    },
+    {
+      "name": "3968.5-would-be-4096-capped",
+      "result": 4000
+    },
+    {
+      "name": "3999-capped-4000",
+      "result": 4000
+    },
+    {
+      "name": "exactly-cap",
+      "result": 4000
+    },
+    {
+      "name": "above-cap",
+      "result": 4000
+    },
+    {
+      "name": "int-max-as-double",
+      "result": 4000
+    },
+    {
+      "name": "1e300",
+      "result": 4000
+    },
+    {
+      "name": "positive-infinity",
+      "result": 4000
+    },
+    {
+      "name": "zero-gives-one-quantum",
+      "result": 128
+    },
+    {
+      "name": "negative-zero",
+      "result": 128
+    },
+    {
+      "name": "negative-gives-one-quantum",
+      "result": 128
+    },
+    {
+      "name": "negative-infinity-gives-one-quantum",
+      "result": 128
+    },
+    {
+      "name": "smallest-positive-subnormal",
+      "result": 128
+    },
+    {
+      "name": "nan-saturating-cast",
+      "result": 0
+    },
+    {
+      "name": "epsilon-boundary-just-inside",
+      "result": 1280
+    },
+    {
+      "name": "epsilon-boundary-just-outside",
+      "result": 1408
+    }
+  ]
+}

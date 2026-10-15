@@ -11,6 +11,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>oracle-cs</AssemblyName>
     <RootNamespace>OracleCs</RootNamespace>
+    <!-- W4-02b/W4-11c: fixture generation uses System.Windows.Media.Imaging (the WPF JPEG/PNG encoders). -->
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Set by tools/oracle.ps1: folder holding the baseline build of PhotoReview.Core.dll. -->
     <CSharpCoreDir Condition="'$(CSharpCoreDir)' == ''">..\..\work\oracle\core</CSharpCoreDir>
   </PropertyGroup>
@@ -19,12 +22,22 @@
     <Reference Include="PhotoReview.Core">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Core.dll</HintPath>
     </Reference>
+    <Reference Include="PhotoReview.Imaging">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.dll</HintPath>
+    </Reference>
     <Reference Include="PhotoReview.PerfAnalysis">
       <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="PhotoReview.Localization.Generator">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Localization.Generator.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- UseWPF removes these from the SDK implicit usings; the earlier commands rely on them. -->
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
+    <Using Include="System.Threading" />
   </ItemGroup>
 
   <ItemGroup>

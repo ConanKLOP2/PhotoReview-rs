@@ -155,3 +155,138 @@ Order: W3-01 -> W3-02 / W3-03 -> W3-04 -> W3-05 / W3-06 -> W3-07 / W3-08. W3-02 
   virtual (`C:\Users\test\...`); `recovery-check` has two physical cases that name a missing file / missing UNC host.
 - **D28 Stubs outrank draft prose:** where a contract still names a helper the wired stubs lack, the stub wins and the
   contract is fixed in the porter's PR.
+
+## Wave 4 roster (imaging, tiers run in order, units inside a tier in parallel)
+
+Source of truth for scope and order: `docs/WAVE-4-PLAN.md`. Every unit below has its contract (`contracts/W4-*.md`),
+a stub with `todo!()` bodies in its crate path, an oracle file in `tools/oracle-cs/Commands/`, inputs in
+`tests/golden-inputs/` and goldens in `tests/golden/`. Counts are golden cases.
+
+### Tier A: pure leaves
+| WU | Unit | Rust (`pr_imaging::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W4-01a | ImageCacheKey | `cache_key` | Haiku | `image-cache-key` (91) |
+| W4-01b | DecodeBox + decode types | `decode_types` | Haiku | `decode-box` (152), `decode-types` (72) |
+| W4-01c | Decoder traits + error enum | `decoder_traits` | Haiku | `decoder-exceptions` (15) |
+| W4-02a | ExifOrientation + transform table | `orientation` | Haiku | `orientation-values` (2), `orientation-read-wic` (21), `orientation-pixels` (47) |
+| W4-02b | EmbeddedThumbnailReader | `embedded_thumbnail` | Haiku | `embedded-thumbnail-size` (21), `-fixtures` (36), `-read` (38) |
+| W4-03a | TiffStructure | `tiff` | Haiku | `tiff-structure` (212) |
+| W4-03b | ExifParser | `exif_parser` | Haiku | `exif-parser` (146) |
+| W4-04a | ExifSummary + codec | `exif_summary` | Haiku | `exif-summary-{create,text,date,encode,decode}` (38/40/49/22/46) |
+| W4-04b | ExifQueryInterpreter | `exif_query` | Haiku | `exif-query` (64) |
+| W4-05a | AdaptivePreviewPolicy | `adaptive_preview` | Haiku | `adaptive-preview-box` (38), `-quantize` (24) |
+| W4-05b | PreloadWindow, order, options | `preload_order` | Haiku | `preload-order` (37), `-window` (13), `-options` (3) |
+| W4-06a | NavigationPace | `navigation_pace` | Haiku | `navigation-pace` (30) |
+| W4-06b | PreloadBusyBackoff, PreviewSizeSampler | `preload_backoff` | Haiku | `preload-backoff-script` (18), `preview-size-sampler-script` (9) |
+| W4-07a | RamBudgetPolicy | `ram_budget` | **Sonnet** | `ram-budget-scalar` (92), `-estimate` (53) |
+| W4-07b | MemoryHeadroom | `memory_headroom` | Haiku | `memory-headroom` (59) |
+| W4-16a | PixelBuffer, PixelOps | `pixels` | **Sonnet** | `pixel-buffer` (21), `pixel-ops` (476) |
+| W4-16b | NativePixelMemory, pixel codec, read-only stream | `pixel_memory` | **Sonnet** (Opus verifier: `unsafe`) | `native-memory` (14), `pixel-codec` (8), `readonly-memory-stream` (11) |
+
+### Tier B: caches and routing
+| WU | Unit | Rust | Porter | Goldens |
+|---|---|---|---|---|
+| W4-08a | AtomicCacheFile | `cache::atomic_file` | Sonnet | `atomic-cache-file` (17) |
+| W4-08b | PreviewCacheFile (on-disk format) | `cache::preview_file` | Sonnet | `preview-entry-read` (71), `-write` (30) |
+| W4-09 | DiskCacheStore | `cache::disk_store` | **Opus** (INV-2, mutation gate) | `disk-cache-{prune,passes,note-accessed,stale-temp,delete}` (27/17/12/15/15), `cache-entry-failure` (32) |
+| W4-10a | SourceBytesCache + policy | `cache::source_bytes` | **Opus** (INV-2, INV-8) | `source-bytes-scenarios` (40) |
+| W4-10b | ThumbnailCache | `cache::thumbnails` | **Opus** | `thumbnail-cache-key` (22), `thumbnail-disk-decode` (15) |
+| W4-12a | ImageDecoderFactory | `factory` | Sonnet | `decoder-factory` (21) |
+| W4-12b | FallbackImageDecoder | `fallback` | Sonnet (INV-12) | `fallback-is-fallbackable` (26), `fallback-decoder` (55) |
+| W4-12c | WebpHeicRoutingDecoder | `webp_heic` | Sonnet | `webp-heic-routing` (71) |
+
+### Tier C: Windows imaging (`pr_platform_win::wic`, `unsafe` with SAFETY per block)
+| WU | Unit | Rust | Porter | Goldens |
+|---|---|---|---|---|
+| W4-11a | WicInterop (COM boundary, IStream) | `wic::interop` | **Opus** | `wic-interop-constants` (5), `wic-hresult-exception` (7), `wic-managed-istream` (33) |
+| W4-11b | WicCodecAvailability | `wic::availability` | Sonnet | `wic-codec-probe` (16) |
+| W4-11c | WicDirectDecoder | `wic::decoder` | **Opus** | `wic-direct-{internals,fixtures,decode,read-info}` (96/41/149/26) |
+| W4-11d | WicExifReader | `wic::exif_reader` | Sonnet | `wic-exif-values` (63), `wic-exif-variant` (59) |
+| W4-11e | WicPixelScaler, WicImageEncoder, WicCacheImageReader | `wic::{scaler, cache_image}` | Sonnet | `wic-scale-resize` (15), `wic-bgrx-to-bgr` (13), `wic-cache-classify` (24), `wic-cache-codec` (31) |
+
+### Tier D: orchestration (split by the contract writer)
+| WU | Unit | Rust | Porter | Goldens |
+|---|---|---|---|---|
+| W4-14a | PreviewImageService state, keys, RAM cache, epoch | `service::{mod, deps}` | **Opus** (INV-1, INV-2) | `preview-budget-line` (49), `preview-current-key` (32) |
+| W4-14b | In-flight dedup, viewer slots, decode, original decode | `service::{handle, decode}` | **Opus** | `preview-service-sequence` (33) |
+| W4-14c | Disk-cache path, persist workers, cleanup, clear disk | `service::disk` | **Opus** | `preview-disk-cache-path` (36) |
+| W4-14d | `impl PreloadTarget for PreviewImageService` + 8 `PreloadSchedulerTests` (NEW, D43) | `service::mod`, `tests/preview_service_preload.rs` | Sonnet, Opus verifier | - |
+| W4-15a | Preload policy, queue, target trait | `preload::{mod, policy, queue, target}` | **Opus** | `preload-policy` (213) |
+| W4-15b | Scheduler, worker pool, timer | `preload::{scheduler, worker, timer}` | **Opus** | `preload-scheduler-script` (41) |
+
+Merge order (bodies; the stubs already compile together): 16b -> 16a; 02a, 03a -> 03b; 04a -> 04b; 01a/01b/01c; 05a, 05b,
+06a, 06b, 07a, 07b; then Tier B with 08a -> 08b -> 09 -> 10a -> 10b and 12a/12b/12c; Tier C with 11a -> 11b, 11d -> 11c ->
+11e; Tier D with 14a -> 14b -> 14c -> 14d and 15a -> 15b. The Wave 4 contracts still mention
+`contracts/drafts-w4/<unit>/...`: that folder is gone; the stub is at its crate path, the oracle at
+`tools/oracle-cs/Commands/<unit>.cs`, the inputs under `tests/golden-inputs/`.
+
+## Lead decisions (Wave 4)
+
+Decided and wired in this PR (the stubs show the result; D28 applies):
+
+- **D29 Decoded image names:** W4-01b wins. `PlatformImage` is the W4-01b enum (`Pixels(Arc<PixelBuffer>)` | `Opaque`),
+  the trait is `DecodedImageView`, `DecodedImage` is the struct. W4-01c is edited to match: `Arc<dyn DecodedImageView>`
+  and `PlatformImageCodec::to_pixels<'a>(&self, &'a PlatformImage) -> Result<PixelLease<'a>, _>`.
+- **D30 `ExifRational`** is defined once, in `tiff` (W4-03a returns it); `exif_summary` re-exports it. `ExifSummary::create`
+  takes `RawExifTags` (no 8 positional parameters). W4-03b builds that struct.
+- **D31 No placeholders:** every sibling-unit stand-in (`DecodeBox`, `ImageCacheKey`, `PixelBuffer`, `NativePixelMemory`,
+  `ExifSummary`, `DecodedImage`, `PlatformImageCodec`, `WicCodecSupport`) was replaced by the real type.
+  `service/deps.rs` is re-exports only.
+- **D32 Cache seams:** `CacheImageReader`/`CacheImageInfo` (C# `WicCacheImageReader.Decode`) live in `cache::thumbnails`
+  for now; `PngEncoder` (`disk_store`) and `PreviewPayloadCodec` (`preview_file`) stay two traits. Decide at W4-11e kick-off
+  whether to merge them into one `cache::CacheImageEncoder` (W4-09 OQ1, W4-11e OQ6).
+- **D33 SHA-256:** `pr_core::session::store::sha256` is now `pub` and is THE helper (W4-10b OQ1, W4-14c OQ1); no `sha2`.
+- **D34 Key normalisation:** `cache_key::normalize_key_path` (full path + upper-invariant) is added as a stub fn;
+  W4-14a uses it for eviction (W4-14a OQ2).
+- **D35 `WicCodecSupport`** has one home, `pr_imaging::webp_heic`; `wic::availability` re-exports it
+  (`pr-platform-win` depends on `pr-imaging`).
+- **D36 `windows` crate** 0.62 (+ `windows-core`) is a workspace dependency used only by `pr-platform-win`
+  (`#[cfg(windows)] pub mod wic`); features: Foundation, Graphics_Imaging, System_Com, System_Com_StructuredStorage,
+  System_Variant, System_Ole, Media_MediaFoundation (P-22).
+- **D37 `unsafe` in pr-imaging:** only `pixel_memory` (`std::alloc`, 64-byte aligned, one SAFETY comment per block), as the
+  plan row says. Everything else in `pr-imaging` stays safe; the WIC FFI is in `pr-platform-win`.
+- **D38 Oracle wiring:** `tools/oracle.ps1` also builds `PhotoReview.Imaging` from the archive; `OracleCs.csproj` references
+  it and sets `UseWPF` (fixture encoders), `AllowUnsafeBlocks` and the three implicit usings WPF removes. Internals are
+  reached by reflection; the C# repo is not touched. In golden inputs the source kind key is `source_kind` (`kind` is the
+  case discriminator of `image-cache-key`).
+- **D39 Fixtures:** `tests/fixtures/embedded-thumbnail/` and `tests/fixtures/wic-direct/` (235 KB) are generated by the
+  oracle (`embedded-thumbnail-fixtures`, `wic-direct-fixtures`) and committed; they were byte-identical across two runs.
+  Pixel hashes of real WIC output depend on the Windows build: the native Rust tests compare them only when
+  `windowscodecs_version` matches the golden, otherwise per sample with tolerance 3 (W4-11c T11).
+- **D40 Determinism:** all 70 goldens were produced twice and compared byte for byte. The two that differed
+  (`thumbnail-disk-decode`: temp path in an error message; `preview-disk-cache-path`: source-kind key) were fixed in the
+  oracle/inputs and re-checked. No pre-existing golden changed.
+- **D41 No `pr-l10n` dependency in `pr-imaging`:** localized sentences are injected (the D13 pattern: `UserText` closure or
+  texts trait supplied by the composition root). Applies to W4-10a, W4-12c, W4-14.
+- **D42 Test ownership that no draft claimed:** `EmbeddedThumbnailMutationTests.MutatedApp1_NeverThrows` -> W4-02b;
+  `WicPixelScalerTests` -> W4-11e (the W4-16a/16b/08b drafts also listed it); `WicDirectFactoryFailureTests` (5) -> W4-11a
+  (`create_factory`/`check_factory_result` are owned there); `FallbackExceptionCoverageTests` -> W4-12b;
+  `PreviewCacheCrossVersionTests.NewPngWrite_MatchesOldPngWrite` -> a native W4-11e test on bytes captured by the oracle;
+  `ThumbnailCacheUnobservedFaultTests` (3) have no Rust twin (no unobserved task exceptions), replaced by a Rust-only test;
+  the `ReadGcMemoryInfo_*` twin lives in `pr-platform-win` next to `WindowsMemoryProbe` (W4-07b).
+- **D43 New unit W4-14d:** `impl PreloadTarget for PreviewImageService` and the 8 `PreloadSchedulerTests` (after W4-14b and
+  W4-15b). The `PreviewError -> DecodeError` mapping for `PreloadTarget::preload` is rebuilt per variant (`DecodeError` is
+  not `Clone`). `PreviewError::DiskEntry(Arc<PreviewCacheError>)` replaces `DiskEntryCanceled` so the `OutOfMemory` of
+  W4-08b reaches the caller as in C#.
+- **D44 Scheduler thread model (W4-15b):** the first steps of a run execute on the caller thread, then one
+  `pr-preload-run` thread per run plus a fixed pool of `max(1, workers)`; the snapshot callback runs under the gate and must
+  not call back into the scheduler. `build_preload_order` returns an eager `Vec<i32>` (measure in Wave 8).
+
+To apply at porter kick-off (not wired here because they change a unit's behaviour; the porter of the named unit owns it):
+
+- **A1 (W4-01c, needed by W4-11c and W4-12c):** `DecodeError` gets `user_text: Option<UserText>` on `NotSupported` and
+  `MissingCodec` plus `not_supported_localized`/`missing_codec_localized`/`describe`/`is_localized`.
+- **A2 (W4-01c, needed by W4-12b):** `DecodeError::WithSourceBytes { error: Box<DecodeError>, bytes }` with
+  `attach_source_bytes`/`source_bytes`/`kind`, so `DecodeFailureSourceBytes` (C# `Exception.Data`) survives the fallback.
+- **A3 (W4-04b):** `exif_query::as_integer` becomes `pub` (W4-11d needs it from `pr-platform-win`).
+- **A4 (W4-15a):** `pr_core::diagnostics::diag_options::parse_preload_workers` becomes `pub`; `policy::parse_diag_workers`
+  calls it.
+- **A5 (W4-09):** `validate_search_pattern`, the UTF-16 pattern matcher and a lazy lister become `pub` in
+  `pr_core::io::physical` (additive, W2-14); otherwise W4-09 records a DIVERGENCE at the stale sweep.
+- **A6 (W4-11a):** `ensure_com_initialized()` (MTA) is called by `create_factory`, so every WIC chain runs in an MTA as on
+  CLR threads; W4-11b/c/e do not initialise COM themselves.
+- **A7 (W4-14b):** `pr_core::sync::CancelToken::wait_timeout` (condvar) replaces the 10 ms polling; until then polling.
+- **Parity choices kept (INV-1, no behaviour change in this wave):** `FallbackImageDecoder` and the WebP/HEIC router do
+  not forward `as_cancellable` (C# parity); the relabel wrapper drops `source_bytes_read` and `embedded_preview_size`;
+  the 0x0 underflow quirk of `AdaptivePreviewPolicy` and the negative-window quirks of `PreloadWindow` stay (QUIRK-*
+  goldens); `SourceBytesCache` buffers are zeroed and an allocation failure aborts (record in PARITY I-10).

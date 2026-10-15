@@ -1,0 +1,591 @@
+{
+  "generator": "oracle-cs exif-summary-decode",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty",
+      "hex": "",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "version-only",
+      "hex": "01",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "version-and-empty-mask",
+      "hex": "0100",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "unknown-version-2",
+      "hex": "02FF",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "unknown-version-0",
+      "hex": "0002",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "make-bit-zero-length-keeps-iso",
+      "hex": "01120090010000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 400,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011090010000"
+      }
+    },
+    {
+      "name": "only-zero-length-text",
+      "hex": "010200",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-400",
+      "hex": "011090010000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 400,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011090010000"
+      }
+    },
+    {
+      "name": "iso-zero-dropped",
+      "hex": "011000000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-minus-one-dropped",
+      "hex": "0110FFFFFFFF",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-10000000-kept",
+      "hex": "011080969800",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": 10000000,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "011080969800"
+      }
+    },
+    {
+      "name": "iso-10000001-dropped",
+      "hex": "011081969800",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-int-min-dropped",
+      "hex": "011000000080",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "iso-truncated",
+      "hex": "0110900100",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "focal-50-over-1",
+      "hex": "01203200000001000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": [
+          50,
+          1
+        ],
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01203200000001000000"
+      }
+    },
+    {
+      "name": "focal-zero-numerator-dropped",
+      "hex": "01200000000005000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "focal-zero-denominator-dropped",
+      "hex": "01200500000000000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "focal-max-over-max",
+      "hex": "0120FFFFFFFFFFFFFFFF",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": [
+          4294967295,
+          4294967295
+        ],
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "0120FFFFFFFFFFFFFFFF"
+      }
+    },
+    {
+      "name": "focal-truncated",
+      "hex": "012032000000010000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "exposure-1-over-250",
+      "hex": "018001000000FA000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": [
+          1,
+          250
+        ],
+        "is_empty": false,
+        "encoded_hex": "018001000000FA000000"
+      }
+    },
+    {
+      "name": "f-number-28-over-10",
+      "hex": "01401C0000000A000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": [
+          28,
+          10
+        ],
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01401C0000000A000000"
+      }
+    },
+    {
+      "name": "make-canon",
+      "hex": "01020543616E6F6E",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "Canon",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020543616E6F6E"
+      }
+    },
+    {
+      "name": "make-trailing-byte",
+      "hex": "01020543616E6F6E00",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "make-length-exceeds-data",
+      "hex": "01020543616E",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "make-invalid-utf8",
+      "hex": "01020241FF",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "A�",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020441EFBFBD"
+      }
+    },
+    {
+      "name": "make-embedded-nul",
+      "hex": "01020441004243",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "A",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01020141"
+      }
+    },
+    {
+      "name": "make-control-chars",
+      "hex": "010203410942",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "A B",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010203412042"
+      }
+    },
+    {
+      "name": "make-whitespace-only",
+      "hex": "0102022020",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "make-70-chars-capped",
+      "hex": "01024661616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01024061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161"
+      }
+    },
+    {
+      "name": "make-255-bytes",
+      "hex": "0102FF616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01024061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161"
+      }
+    },
+    {
+      "name": "make-surrogate-pair-cut",
+      "hex": "010243616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161F09F9880",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01023F616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161"
+      }
+    },
+    {
+      "name": "make-surrogate-pair-fits",
+      "hex": "0102426161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161F09F9880",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\uD83D\uDE00",
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "0102426161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161F09F9880"
+      }
+    },
+    {
+      "name": "lens-multibyte",
+      "hex": "010805E1BB906E67",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": null,
+        "model": null,
+        "lens": "Ống",
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010805E1BB906E67"
+      }
+    },
+    {
+      "name": "make-and-model-order",
+      "hex": "010602415903424344",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": null,
+        "date_text": null,
+        "make": "AY",
+        "model": "BCD",
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010602415903424344"
+      }
+    },
+    {
+      "name": "date-min-value",
+      "hex": "01010000000000000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": 0,
+        "date_text": "0001-01-01T00:00:00.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01010000000000000000"
+      }
+    },
+    {
+      "name": "date-max-value",
+      "hex": "0101FF3F37F47528CA2B",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": 3155378975999999999,
+        "date_text": "9999-12-31T23:59:59.9999999",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "0101FF3F37F47528CA2B"
+      }
+    },
+    {
+      "name": "date-max-plus-one",
+      "hex": "0101004037F47528CA2B",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "date-minus-one",
+      "hex": "0101FFFFFFFFFFFFFFFF",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "date-truncated",
+      "hex": "01010000000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "date-with-zero-length-make",
+      "hex": "0103000000000000000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": 0,
+        "date_text": "0001-01-01T00:00:00.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "01010000000000000000"
+      }
+    },
+    {
+      "name": "date-2024-05-01",
+      "hex": "010100F12076E769DC08",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": 638501690020000000,
+        "date_text": "2024-05-01T14:03:22.0000000",
+        "make": null,
+        "model": null,
+        "lens": null,
+        "iso": null,
+        "focal": null,
+        "f_number": null,
+        "exposure": null,
+        "is_empty": false,
+        "encoded_hex": "010100F12076E769DC08"
+      }
+    },
+    {
+      "name": "full",
+      "hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000",
+      "decoded": {
+        "is_null": false,
+        "date_ticks": 638501690020000000,
+        "date_text": "2024-05-01T14:03:22.0000000",
+        "make": "Canon",
+        "model": "Canon EOS R5",
+        "lens": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal": [
+          50,
+          1
+        ],
+        "f_number": [
+          28,
+          10
+        ],
+        "exposure": [
+          1,
+          250
+        ],
+        "is_empty": false,
+        "encoded_hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000"
+      }
+    },
+    {
+      "name": "full-minus-last-byte",
+      "hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA0000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "full-plus-trailing-byte",
+      "hex": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA00000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "full-version-99",
+      "hex": "63FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000",
+      "decoded": {
+        "is_null": true
+      }
+    },
+    {
+      "name": "full-mask-minus-exposure-bit",
+      "hex": "017F00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000",
+      "decoded": {
+        "is_null": true
+      }
+    }
+  ]
+}

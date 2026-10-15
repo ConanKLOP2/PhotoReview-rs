@@ -1,0 +1,222 @@
+{
+  "generator": "oracle-cs wic-codec-probe",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "no-decoders-no-hevc",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 0; WebP decoder: not found; HEIF decoder: not found; HEVC video decoder: not found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "no-decoders-hevc-alone-is-not-heif",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": true,
+      "heif": false,
+      "detail": "WIC decoders: 0; WebP decoder: not found; HEIF decoder: not found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "jpeg-only",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": true,
+      "heif": false,
+      "detail": "WIC decoders: 1; WebP decoder: not found; HEIF decoder: not found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "webp-registered-reports-webp-only",
+      "webp": true,
+      "heifContainer": false,
+      "hevcDecoder": true,
+      "heif": false,
+      "detail": "WIC decoders: 2; WebP decoder: found; HEIF decoder: not found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": true,
+        "heif": false
+      }
+    },
+    {
+      "name": "heif-without-hevc-not-enough",
+      "webp": false,
+      "heifContainer": true,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 1; WebP decoder: not found; HEIF decoder: found; HEVC video decoder: not found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "heif-and-hevc-supports-heic",
+      "webp": false,
+      "heifContainer": true,
+      "hevcDecoder": true,
+      "heif": true,
+      "detail": "WIC decoders: 1; WebP decoder: not found; HEIF decoder: found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": true
+      }
+    },
+    {
+      "name": "webp-and-heif-and-hevc-everything",
+      "webp": true,
+      "heifContainer": true,
+      "hevcDecoder": true,
+      "heif": true,
+      "detail": "WIC decoders: 2; WebP decoder: found; HEIF decoder: found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": true,
+        "heif": true
+      }
+    },
+    {
+      "name": "duplicate-webp-entries-count-in-detail",
+      "webp": true,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 2; WebP decoder: found; HEIF decoder: not found; HEVC video decoder: not found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": true,
+        "heif": false
+      }
+    },
+    {
+      "name": "guid-compare-is-exact-not-prefix",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": true,
+      "heif": false,
+      "detail": "WIC decoders: 1; WebP decoder: not found; HEIF decoder: not found; HEVC video decoder: found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "enumeration-throws-means-none",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoder enumeration failed: no factory",
+      "hevcAskedFor": null,
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "enumeration-throws-hevc-seam-not-called",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoder enumeration failed: ",
+      "hevcAskedFor": null,
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "hevc-probe-throws-keeps-webp-and-container",
+      "webp": true,
+      "heifContainer": true,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 2; WebP decoder: found; HEIF decoder: found; HEVC video decoder: probe failed: mfplat",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": true,
+        "heif": false
+      }
+    },
+    {
+      "name": "hevc-probe-asked-even-without-heif",
+      "webp": true,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 1; WebP decoder: found; HEIF decoder: not found; HEVC video decoder: not found",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": true,
+        "heif": false
+      }
+    },
+    {
+      "name": "hevc-throws-empty-message",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoders: 0; WebP decoder: not found; HEIF decoder: not found; HEVC video decoder: probe failed: ",
+      "hevcAskedFor": "43564548-0000-0010-8000-00aa00389b71",
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "detail-with-non-ascii-message",
+      "webp": false,
+      "heifContainer": false,
+      "hevcDecoder": false,
+      "heif": false,
+      "detail": "WIC decoder enumeration failed: thiếu codec",
+      "hevcAskedFor": null,
+      "supports": {
+        "none": true,
+        "webp": false,
+        "heif": false
+      }
+    },
+    {
+      "name": "constants",
+      "webp": "e094b0e2-67f2-45b3-b0ea-115337ca7cf3",
+      "heif": "e1e62521-6787-405b-a339-500715b5763f",
+      "hevc": "43564548-0000-0010-8000-00aa00389b71"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "cases": [
+    { "name": "wpf-only-creates-all-backends", "providers": [ { "backend": "Wpf", "name": "wpf" } ], "create": [ "Wpf", "WicDirect", "TurboJpeg", "LibRaw" ] },
+    { "name": "wic-and-wpf-both-ok", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic" } ], "create": [ "WicDirect", "Wpf" ] },
+    { "name": "wic-fails-falls-back-to-wpf", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic", "fails": true } ], "create": [ "WicDirect", "Wpf" ] },
+    { "name": "turbo-fails-wic-and-wpf-present", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic" }, { "backend": "TurboJpeg", "name": "turbo", "fails": true } ], "create": [ "TurboJpeg", "WicDirect" ] },
+    { "name": "no-wpf-maps-wpf-slot-to-wic-direct", "providers": [ { "backend": "WicDirect", "name": "wic" } ], "create": [ "Wpf", "WicDirect", "TurboJpeg" ] },
+    { "name": "no-wpf-wic-direct-fails-is-not-retried", "providers": [ { "backend": "WicDirect", "name": "wic", "fails": true } ], "create": [ "WicDirect", "Wpf" ] },
+    { "name": "no-wpf-other-backend-falls-back-to-wic", "providers": [ { "backend": "WicDirect", "name": "wic" }, { "backend": "TurboJpeg", "name": "turbo", "fails": true } ], "create": [ "TurboJpeg" ] },
+    { "name": "wpf-factory-fills-slot", "providers": [ { "backend": "WicDirect", "name": "wic" } ], "wpf_factory": { "name": "factory-wpf" }, "create": [ "Wpf", "WicDirect", "TurboJpeg" ] },
+    { "name": "wpf-factory-only", "providers": [], "wpf_factory": { "name": "factory-wpf" }, "create": [ "Wpf", "WicDirect", "LibRaw" ] },
+    { "name": "explicit-wpf-wins-over-wpf-factory", "providers": [ { "backend": "Wpf", "name": "explicit" } ], "wpf_factory": { "name": "factory-wpf" }, "create": [ "Wpf", "TurboJpeg" ] },
+    { "name": "no-wpf-no-wic-direct-is-composition-error", "providers": [ { "backend": "TurboJpeg", "name": "turbo" } ], "create": [] },
+    { "name": "empty-providers-no-factory-is-composition-error", "providers": [], "create": [] },
+    { "name": "duplicate-provider-last-wins", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic-first" }, { "backend": "WicDirect", "name": "wic-second" } ], "create": [ "WicDirect" ] },
+    { "name": "unregistered-backend-warns-and-serves-wpf", "providers": [ { "backend": "Wpf", "name": "wpf" } ], "create": [ "TurboJpeg", "TurboJpeg" ] },
+    { "name": "unregistered-backend-wpf-fails-is-an-error", "providers": [ { "backend": "Wpf", "name": "wpf", "fails": true } ], "create": [ "LibRaw" ] },
+    { "name": "both-primary-and-wpf-fail", "providers": [ { "backend": "Wpf", "name": "wpf", "fails": true }, { "backend": "WicDirect", "name": "wic", "fails": true } ], "create": [ "WicDirect" ] },
+    { "name": "create-twice-builds-once", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic" } ], "create": [ "WicDirect", "WicDirect", "Wpf", "Wpf" ] },
+    { "name": "decorator-sees-requested-backend", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "WicDirect", "name": "wic" } ], "decorator": true, "create": [ "WicDirect", "Wpf", "TurboJpeg", "WicDirect" ] },
+    { "name": "decorator-with-mapped-wpf-slot", "providers": [ { "backend": "WicDirect", "name": "wic" } ], "decorator": true, "create": [ "Wpf", "WicDirect", "Wpf" ] },
+    { "name": "decorator-wraps-fallback-wrapper", "providers": [ { "backend": "Wpf", "name": "wpf" }, { "backend": "TurboJpeg", "name": "turbo", "fails": true } ], "decorator": true, "create": [ "TurboJpeg" ] },
+    { "name": "persisted-wpf-setting-with-only-wic", "providers": [ { "backend": "WicDirect", "name": "wic" }, { "backend": "TurboJpeg", "name": "turbo" } ], "create": [ "Wpf", "TurboJpeg", "LibRaw" ] }
+  ]
+}

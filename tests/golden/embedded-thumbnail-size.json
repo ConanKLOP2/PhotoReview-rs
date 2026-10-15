@@ -1,0 +1,153 @@
+{
+  "generator": "oracle-cs embedded-thumbnail-size",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "typical-160x120",
+      "width": 160,
+      "height": 120,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "one-pixel",
+      "width": 1,
+      "height": 1,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "exactly-4mp-2048x2048",
+      "width": 2048,
+      "height": 2048,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "one-row-over-2048x2049",
+      "width": 2048,
+      "height": 2049,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "extreme-aspect-4194304x1",
+      "width": 4194304,
+      "height": 1,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "extreme-aspect-over-4194305x1",
+      "width": 4194305,
+      "height": 1,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "zero-width",
+      "width": 0,
+      "height": 100,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "zero-height",
+      "width": 100,
+      "height": 0,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "negative-width",
+      "width": -1,
+      "height": 100,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "negative-height",
+      "width": 100,
+      "height": -1,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "both-negative",
+      "width": -5,
+      "height": -5,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "both-zero",
+      "width": 0,
+      "height": 0,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "product-above-int-range-100000x100000",
+      "width": 100000,
+      "height": 100000,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "int-max-by-one",
+      "width": 2147483647,
+      "height": 1,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "int-max-both",
+      "width": 2147483647,
+      "height": 2147483647,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "int-min-width",
+      "width": -2147483648,
+      "height": 1,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "ushort-max-square-65535",
+      "width": 65535,
+      "height": 65535,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "max-product-1024x4096",
+      "width": 1024,
+      "height": 4096,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "max-product-plus-1-1024x4097",
+      "width": 1024,
+      "height": 4097,
+      "acceptable": false,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "thin-1x4194304",
+      "width": 1,
+      "height": 4194304,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    },
+    {
+      "name": "wic-limit-class-512x512",
+      "width": 512,
+      "height": 512,
+      "acceptable": true,
+      "max_thumbnail_pixels": 4194304
+    }
+  ]
+}

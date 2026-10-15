@@ -1,0 +1,409 @@
+{
+  "generator": "oracle-cs preview-budget-line",
+  "cases": [
+    {
+      "name": "percent-60-of-32g-source-2g",
+      "requested": 1,
+      "percent": 60,
+      "physical": 34359738368,
+      "source": 2147483648,
+      "window": null
+    },
+    {
+      "name": "percent-60-of-32g-default-request",
+      "requested": 17179869184,
+      "percent": 60,
+      "physical": 34359738368,
+      "source": 2147483648,
+      "window": null
+    },
+    {
+      "name": "percent-60-source-off",
+      "requested": 17179869184,
+      "percent": 60,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-60-source-zero-is-not-off",
+      "requested": 17179869184,
+      "percent": 60,
+      "physical": 34359738368,
+      "source": 0,
+      "window": null
+    },
+    {
+      "name": "percent-150-clamped-to-90",
+      "requested": 1,
+      "percent": 150,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-90-exact-no-clamp-text",
+      "requested": 1,
+      "percent": 90,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-91-clamped-to-90",
+      "requested": 1,
+      "percent": 91,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-4-is-default-window-floor-at-32g",
+      "requested": 1,
+      "percent": 4,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-3-clamped-up-to-floor",
+      "requested": 1,
+      "percent": 3,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-1-clamped-up-to-floor",
+      "requested": 1,
+      "percent": 1,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-0-clamped-up",
+      "requested": 1,
+      "percent": 0,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-negative-clamped-up",
+      "requested": 1,
+      "percent": -5,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-int-min",
+      "requested": 1,
+      "percent": -2147483648,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-int-max",
+      "requested": 1,
+      "percent": 2147483647,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-large-window-floor-25",
+      "requested": 1,
+      "percent": 5,
+      "physical": 34359738368,
+      "source": null,
+      "window": {
+        "forward": 200,
+        "backward": 50
+      }
+    },
+    {
+      "name": "percent-large-window-at-floor",
+      "requested": 1,
+      "percent": 25,
+      "physical": 34359738368,
+      "source": null,
+      "window": {
+        "forward": 200,
+        "backward": 50
+      }
+    },
+    {
+      "name": "percent-zero-window",
+      "requested": 1,
+      "percent": 1,
+      "physical": 34359738368,
+      "source": null,
+      "window": {
+        "forward": 0,
+        "backward": 0
+      }
+    },
+    {
+      "name": "percent-negative-window",
+      "requested": 1,
+      "percent": 1,
+      "physical": 34359738368,
+      "source": null,
+      "window": {
+        "forward": -1,
+        "backward": -1
+      }
+    },
+    {
+      "name": "percent-8g-default-window-floor",
+      "requested": 1,
+      "percent": 5,
+      "physical": 8589934592,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-1g-floor-above-90",
+      "requested": 1,
+      "percent": 50,
+      "physical": 1073741824,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-source-larger-than-share",
+      "requested": 1,
+      "percent": 10,
+      "physical": 34359738368,
+      "source": 4294967296,
+      "window": null
+    },
+    {
+      "name": "percent-source-equals-share",
+      "requested": 1,
+      "percent": 10,
+      "physical": 34359738368,
+      "source": 3435973836,
+      "window": null
+    },
+    {
+      "name": "percent-odd-physical-bytes",
+      "requested": 1,
+      "percent": 37,
+      "physical": 17179869183,
+      "source": 123456789,
+      "window": null
+    },
+    {
+      "name": "percent-physical-not-mib-multiple",
+      "requested": 7,
+      "percent": 60,
+      "physical": 34359738367,
+      "source": 1,
+      "window": null
+    },
+    {
+      "name": "percent-physical-1-byte",
+      "requested": 1,
+      "percent": 60,
+      "physical": 1,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-physical-long-max",
+      "requested": 1,
+      "percent": 60,
+      "physical": 9223372036854775807,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-physical-long-max-source-big",
+      "requested": 1,
+      "percent": 60,
+      "physical": 9223372036854775807,
+      "source": 4611686018427387904,
+      "window": null
+    },
+    {
+      "name": "percent-physical-zero-uses-bytes",
+      "requested": 3221225472,
+      "percent": 50,
+      "physical": 0,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-physical-negative-uses-bytes",
+      "requested": 3221225472,
+      "percent": 50,
+      "physical": -1,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "percent-physical-zero-source-2g",
+      "requested": 3221225472,
+      "percent": 50,
+      "physical": 0,
+      "source": 2147483648,
+      "window": null
+    },
+    {
+      "name": "bytes-64g-of-32g-clamped-to-half",
+      "requested": 68719476736,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-16g-of-32g-exactly-half",
+      "requested": 17179869184,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-3g-of-32g-unclamped",
+      "requested": 3221225472,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-16g-of-32g-source-2g",
+      "requested": 17179869184,
+      "percent": null,
+      "physical": 34359738368,
+      "source": 2147483648,
+      "window": null
+    },
+    {
+      "name": "bytes-16g-of-32g-source-20g",
+      "requested": 17179869184,
+      "percent": null,
+      "physical": 34359738368,
+      "source": 21474836480,
+      "window": null
+    },
+    {
+      "name": "bytes-16g-of-32g-source-16g",
+      "requested": 17179869184,
+      "percent": null,
+      "physical": 34359738368,
+      "source": 17179869184,
+      "window": null
+    },
+    {
+      "name": "bytes-1-byte-shows-0-mib",
+      "requested": 1,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-zero-becomes-1",
+      "requested": 0,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-negative-becomes-1",
+      "requested": -5,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-negative-mib-truncates-toward-zero",
+      "requested": -1572864,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-long-max",
+      "requested": 9223372036854775807,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-long-min",
+      "requested": -9223372036854775808,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-not-mib-multiple",
+      "requested": 1572865,
+      "percent": null,
+      "physical": 34359738368,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-unknown",
+      "requested": 3221225472,
+      "percent": null,
+      "physical": 0,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-unknown-zero-request",
+      "requested": 0,
+      "percent": null,
+      "physical": 0,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-unknown-source",
+      "requested": 3221225472,
+      "percent": null,
+      "physical": -7,
+      "source": 2147483648,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-odd",
+      "requested": 68719476736,
+      "percent": null,
+      "physical": 17179869183,
+      "source": 1048577,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-1-byte",
+      "requested": 68719476736,
+      "percent": null,
+      "physical": 1,
+      "source": null,
+      "window": null
+    },
+    {
+      "name": "bytes-physical-long-max",
+      "requested": 68719476736,
+      "percent": null,
+      "physical": 9223372036854775807,
+      "source": null,
+      "window": null
+    }
+  ]
+}

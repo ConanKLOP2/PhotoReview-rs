@@ -1,0 +1,12 @@
+{
+  "cases": [
+    { "name": "codec-name", "op": "name" },
+    { "name": "from-live-returns-same-buffer", "op": "from_live" },
+    { "name": "from-disposed-throws", "op": "from_disposed" },
+    { "name": "to-live-lends-buffer", "op": "to_live" },
+    { "name": "to-disposed-throws", "op": "to_disposed" },
+    { "name": "to-foreign-string-throws", "op": "to_foreign_string" },
+    { "name": "to-foreign-object-throws", "op": "to_foreign_object" },
+    { "name": "roundtrip-same-buffer", "op": "roundtrip" }
+  ]
+}

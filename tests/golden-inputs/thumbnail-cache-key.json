@@ -1,0 +1,180 @@
+{
+  "cases": [
+    {
+      "name": "typical-jpeg",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "baseline"
+    },
+    {
+      "name": "lowercase-spelling-is-another-key",
+      "path": "c:\\photos\\img_0001.jpg",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "stamp keeps case: a different key than typical-jpeg"
+    },
+    {
+      "name": "forward-slashes-normalized",
+      "path": "C:/Photos/IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "GetFullPath turns / into \\: same key as typical-jpeg"
+    },
+    {
+      "name": "forward-slashes-raw-build-key",
+      "path": "C:/Photos/IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": false,
+      "note": "BuildKey alone hashes the text as given"
+    },
+    {
+      "name": "dot-segments-normalized",
+      "path": "C:\\Photos\\.\\sub\\..\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "same key as typical-jpeg"
+    },
+    {
+      "name": "doubled-separators-collapsed",
+      "path": "C:\\\\Photos\\\\\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "GetFullPath collapses repeated separators"
+    },
+    {
+      "name": "trailing-dot-segment-trimmed",
+      "path": "C:\\Photos.\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "trailing dot of a middle segment: whatever GetFullPath does (the golden decides; W2-00 get_full_path must agree)"
+    },
+    {
+      "name": "trailing-space-file-trimmed",
+      "path": "C:\\Photos\\IMG_0001.JPG ",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "trailing space of the file name: whatever GetFullPath does (the golden decides)"
+    },
+    {
+      "name": "unc",
+      "path": "\\\\server\\share\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "UNC kept"
+    },
+    {
+      "name": "extended-prefix-kept",
+      "path": "\\\\?\\C:\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "\\\\?\\ is not normalized: another key than the plain spelling"
+    },
+    {
+      "name": "extended-prefix-plain-twin",
+      "path": "C:\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "twin of extended-prefix-kept"
+    },
+    {
+      "name": "vietnamese-nfc",
+      "path": "C:\\Ảnh\\ảnh 1.jpg",
+      "length": 2048,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "UTF-8 of the NFC text"
+    },
+    {
+      "name": "vietnamese-nfd",
+      "path": "C:\\Ảnh\\ảnh 1.jpg",
+      "length": 2048,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "NFD is another key (no normalization)"
+    },
+    {
+      "name": "emoji-and-cjk",
+      "path": "D:\\写真\\📷 cam\\photo.jpeg",
+      "length": 99,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "astral char: UTF-8 4 bytes, UTF-16 surrogate pair"
+    },
+    {
+      "name": "zero-length-zero-ticks",
+      "path": "C:\\a.jpg",
+      "length": 0,
+      "last_write_ticks": 0,
+      "get_full_path": true,
+      "note": "lower bounds"
+    },
+    {
+      "name": "max-ticks",
+      "path": "C:\\a.jpg",
+      "length": 1,
+      "last_write_ticks": 3155378975999999999,
+      "get_full_path": true,
+      "note": "DateTime.MaxValue.Ticks"
+    },
+    {
+      "name": "max-length",
+      "path": "C:\\a.jpg",
+      "length": 9223372036854775807,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "long.MaxValue length (Rust u64 formats the same)"
+    },
+    {
+      "name": "ticks-plus-one-is-another-key",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000001,
+      "get_full_path": true,
+      "note": "mtime change"
+    },
+    {
+      "name": "length-plus-one-is-another-key",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234568,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "size change"
+    },
+    {
+      "name": "raw-extension",
+      "path": "C:\\Photos\\IMG_0001.CR2",
+      "length": 25000000,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "note": "key is built for RAW too (GetAsync keys before the RAW check)"
+    },
+    {
+      "name": "pipe-in-name-raw",
+      "path": "C:\\a|1|2.jpg",
+      "length": 3,
+      "last_write_ticks": 4,
+      "get_full_path": false,
+      "note": "stamp separator inside the path: no escaping"
+    },
+    {
+      "name": "drive-root-file",
+      "path": "Z:\\x",
+      "length": 7,
+      "last_write_ticks": 8,
+      "get_full_path": true,
+      "note": "short path"
+    }
+  ]
+}

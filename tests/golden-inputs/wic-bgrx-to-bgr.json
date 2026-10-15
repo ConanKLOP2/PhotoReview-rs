@@ -1,0 +1,18 @@
+{
+  "generator": "oracle-cs wic-bgrx-to-bgr",
+  "cases": [
+    {"name": "zero-pixels", "sourceLen": 0, "destLen": 0},
+    {"name": "one-pixel-scalar-only", "sourceLen": 4, "destLen": 19},
+    {"name": "three-pixels-tail-only", "sourceLen": 12, "destLen": 25},
+    {"name": "four-pixels-one-vector-step", "sourceLen": 16, "destLen": 28},
+    {"name": "five-pixels-vector-plus-tail", "sourceLen": 20, "destLen": 31},
+    {"name": "seventeen-pixels", "sourceLen": 68, "destLen": 67},
+    {"name": "sixty-four-pixels", "sourceLen": 256, "destLen": 208},
+    {"name": "two-hundred-fifty-seven-pixels", "sourceLen": 1028, "destLen": 1087},
+    {"name": "destination-exactly-3n-no-room-for-vector-tail", "sourceLen": 16, "destLen": 12},
+    {"name": "destination-exactly-3n-eight-pixels", "sourceLen": 32, "destLen": 24},
+    {"name": "partial-trailing-pixel-ignored", "sourceLen": 10, "destLen": 6},
+    {"name": "too-short-destination-throws", "sourceLen": 16, "destLen": 11},
+    {"name": "too-short-by-one-throws", "sourceLen": 8, "destLen": 5}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "cases": [
+    { "name": "one-pixel", "side": 1.0 },
+    { "name": "exactly-one-quantum", "side": 128.0 },
+    { "name": "just-over-one-quantum", "side": 128.5 },
+    { "name": "1242-to-1280", "side": 1242.0 },
+    { "name": "float-noise-1e-10-above-multiple-stays", "side": 1280.0000000001 },
+    { "name": "float-noise-1e-7-above-multiple-stays", "side": 1280.0000001 },
+    { "name": "one-thousandth-above-multiple-steps", "side": 1280.001 },
+    { "name": "just-below-multiple", "side": 1279.9999999 },
+    { "name": "3968-exact-31-quanta", "side": 3968.0 },
+    { "name": "3968.5-would-be-4096-capped", "side": 3968.5 },
+    { "name": "3999-capped-4000", "side": 3999.0 },
+    { "name": "exactly-cap", "side": 4000.0 },
+    { "name": "above-cap", "side": 99999.0 },
+    { "name": "int-max-as-double", "side": 2147483647.0 },
+    { "name": "1e300", "side": 1e300 },
+    { "name": "positive-infinity", "side": "Infinity" },
+    { "name": "zero-gives-one-quantum", "side": 0.0 },
+    { "name": "negative-zero", "side": "-0" },
+    { "name": "negative-gives-one-quantum", "side": -5.0 },
+    { "name": "negative-infinity-gives-one-quantum", "side": "-Infinity" },
+    { "name": "smallest-positive-subnormal", "side": 5e-324 },
+    { "name": "nan-saturating-cast", "side": "NaN" },
+    { "name": "epsilon-boundary-just-inside", "side": 1280.0000001279 },
+    { "name": "epsilon-boundary-just-outside", "side": 1280.0000001281 }
+  ]
+}

@@ -1,0 +1,805 @@
+{
+  "generator": "oracle-cs disk-cache-prune",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "lru-evicts-oldest-until-under-quota",
+      "input": {
+        "name": "lru-evicts-oldest-until-under-quota",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "files": [
+          {
+            "name": "oldest.png",
+            "size": 100,
+            "access": "2020-01-01T00:00:00Z",
+            "creation": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "middle.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          },
+          {
+            "name": "newest.png",
+            "size": 100,
+            "access": "2020-01-01T00:20:00Z",
+            "creation": "2020-01-01T00:20:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "newest.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "within-quota-deletes-nothing",
+      "input": {
+        "name": "within-quota-deletes-nothing",
+        "pattern": "*.png",
+        "max_bytes": 1000,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 50,
+            "access": "2020-01-01T00:05:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 50,
+            "access": "2020-01-01T00:09:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png",
+        "b.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "total-exactly-at-quota-deletes-nothing",
+      "input": {
+        "name": "total-exactly-at-quota-deletes-nothing",
+        "pattern": "*.png",
+        "max_bytes": 200,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 200,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png",
+        "b.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "one-byte-over-quota-deletes-the-oldest",
+      "input": {
+        "name": "one-byte-over-quota-deletes-the-oldest",
+        "pattern": "*.png",
+        "max_bytes": 199,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "b.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "zero-quota-deletes-everything",
+      "input": {
+        "name": "zero-quota-deletes-everything",
+        "pattern": "*.png",
+        "max_bytes": 0,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 1,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 2,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "c.png",
+            "size": 3,
+            "access": "2020-01-01T00:03:00Z"
+          }
+        ]
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "negative-quota-static-is-not-clamped-deletes-everything",
+      "input": {
+        "name": "negative-quota-static-is-not-clamped-deletes-everything",
+        "pattern": "*.png",
+        "max_bytes": -5,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 0,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 10,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "zero-length-files-at-zero-quota-stay",
+      "input": {
+        "name": "zero-length-files-at-zero-quota-stay",
+        "pattern": "*.png",
+        "max_bytes": 0,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 0,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 0,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png",
+        "b.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "missing-directory-returns-minus-one-and-creates-nothing",
+      "input": {
+        "name": "missing-directory-returns-minus-one-and-creates-nothing",
+        "pattern": "*.png",
+        "max_bytes": 10,
+        "files": [],
+        "target": "missing"
+      },
+      "remaining": -1,
+      "target_exists_after": false,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "path-is-a-file-returns-minus-one",
+      "input": {
+        "name": "path-is-a-file-returns-minus-one",
+        "pattern": "*.png",
+        "max_bytes": 0,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 10
+          }
+        ],
+        "target": "file"
+      },
+      "remaining": -1,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "empty-directory-returns-zero",
+      "input": {
+        "name": "empty-directory-returns-zero",
+        "pattern": "*.png",
+        "max_bytes": 10,
+        "files": []
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "access-time-decides-before-creation-time",
+      "input": {
+        "name": "access-time-decides-before-creation-time",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:30:00Z",
+            "creation": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:20:00Z",
+            "creation": "2020-01-01T00:50:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "equal-access-creation-time-breaks-the-tie",
+      "input": {
+        "name": "equal-access-creation-time-breaks-the-tie",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:09:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:03:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "a.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "full-tie-keeps-listing-order",
+      "input": {
+        "name": "full-tie-keeps-listing-order",
+        "pattern": "*.png",
+        "max_bytes": 200,
+        "files": [
+          {
+            "name": "c.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          },
+          {
+            "name": "B.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          },
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          }
+        ]
+      },
+      "remaining": 200,
+      "target_exists_after": true,
+      "survivors": [
+        "B.png",
+        "c.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "full-tie-different-sizes-listing-order",
+      "input": {
+        "name": "full-tie-different-sizes-listing-order",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "files": [
+          {
+            "name": "x2.png",
+            "size": 100,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          },
+          {
+            "name": "x1.png",
+            "size": 60,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          },
+          {
+            "name": "x3.png",
+            "size": 40,
+            "access": "2020-01-01T00:10:00Z",
+            "creation": "2020-01-01T00:10:00Z"
+          }
+        ]
+      },
+      "remaining": 140,
+      "target_exists_after": true,
+      "survivors": [
+        "x2.png",
+        "x3.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "stops-as-soon-as-under-quota",
+      "input": {
+        "name": "stops-as-soon-as-under-quota",
+        "pattern": "*.png",
+        "max_bytes": 250,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "c.png",
+            "size": 100,
+            "access": "2020-01-01T00:03:00Z"
+          },
+          {
+            "name": "d.png",
+            "size": 10,
+            "access": "2020-01-01T00:04:00Z"
+          }
+        ]
+      },
+      "remaining": 210,
+      "target_exists_after": true,
+      "survivors": [
+        "b.png",
+        "c.png",
+        "d.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "pattern-png-ignores-other-extensions-temp-files-and-directories",
+      "input": {
+        "name": "pattern-png-ignores-other-extensions-temp-files-and-directories",
+        "pattern": "*.png",
+        "max_bytes": 0,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 10,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.PNG",
+            "size": 10,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "c.png.0123456789abcdef.tmp",
+            "size": 10,
+            "access": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "d.pv4",
+            "size": 10,
+            "access": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "e.png.meta",
+            "size": 10,
+            "access": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "f.png",
+            "dir": true
+          },
+          {
+            "name": "g.pngx",
+            "size": 10,
+            "access": "2020-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [
+        "c.png.0123456789abcdef.tmp",
+        "d.pv4",
+        "e.png.meta",
+        "g.pngx"
+      ],
+      "log": []
+    },
+    {
+      "name": "pattern-pv4",
+      "input": {
+        "name": "pattern-pv4",
+        "pattern": "*.pv4",
+        "max_bytes": 10,
+        "files": [
+          {
+            "name": "a.pv4",
+            "size": 10,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.pv4",
+            "size": 10,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "c.png",
+            "size": 100,
+            "access": "2020-01-01T00:00:00Z"
+          },
+          {
+            "name": "d.pv4.1.tmp",
+            "size": 100,
+            "access": "2020-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "remaining": 10,
+      "target_exists_after": true,
+      "survivors": [
+        "b.pv4",
+        "c.png",
+        "d.pv4.1.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "pattern-star-matches-every-file",
+      "input": {
+        "name": "pattern-star-matches-every-file",
+        "pattern": "*",
+        "max_bytes": 15,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 10,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.tmp",
+            "size": 10,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "noext",
+            "size": 10,
+            "access": "2020-01-01T00:03:00Z"
+          },
+          {
+            "name": "sub",
+            "dir": true
+          }
+        ]
+      },
+      "remaining": 10,
+      "target_exists_after": true,
+      "survivors": [
+        "noext"
+      ],
+      "log": []
+    },
+    {
+      "name": "pattern-dos-question-mark",
+      "input": {
+        "name": "pattern-dos-question-mark",
+        "pattern": "?.png",
+        "max_bytes": 0,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 10,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "ab.png",
+            "size": 10,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": ".png",
+            "size": 10,
+            "access": "2020-01-01T00:03:00Z"
+          }
+        ]
+      },
+      "remaining": 0,
+      "target_exists_after": true,
+      "survivors": [
+        "ab.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "future-access-time-is-newest",
+      "input": {
+        "name": "future-access-time-is-newest",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "files": [
+          {
+            "name": "future.png",
+            "size": 100,
+            "access": "2099-01-01T00:00:00Z",
+            "creation": "2099-01-01T00:00:00Z"
+          },
+          {
+            "name": "past.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z",
+            "creation": "2020-01-01T00:01:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "future.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "old-years-sort-before-new",
+      "input": {
+        "name": "old-years-sort-before-new",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "files": [
+          {
+            "name": "y2019.png",
+            "size": 100,
+            "access": "2019-06-01T00:00:00Z"
+          },
+          {
+            "name": "y1999.png",
+            "size": 100,
+            "access": "1999-06-01T00:00:00Z"
+          },
+          {
+            "name": "y2001.png",
+            "size": 100,
+            "access": "2001-06-01T00:00:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "y2019.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "locked-oldest-file-stays-counted-and-is-logged",
+      "input": {
+        "name": "locked-oldest-file-stays-counted-and-is-logged",
+        "pattern": "*.png",
+        "max_bytes": 150,
+        "files": [
+          {
+            "name": "locked.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z",
+            "locked": true
+          },
+          {
+            "name": "other.png",
+            "size": 100,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "locked.png"
+      ],
+      "log": [
+        {
+          "message": "Delete failed: <ROOT>\\locked.png",
+          "exception": "IOException"
+        }
+      ]
+    },
+    {
+      "name": "locked-file-at-tiny-quota-everything-else-goes",
+      "input": {
+        "name": "locked-file-at-tiny-quota-everything-else-goes",
+        "pattern": "*.png",
+        "max_bytes": 10,
+        "files": [
+          {
+            "name": "locked.png",
+            "size": 100,
+            "access": "2020-01-01T00:05:00Z",
+            "locked": true
+          },
+          {
+            "name": "a.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 100,
+            "access": "2020-01-01T00:09:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "locked.png"
+      ],
+      "log": [
+        {
+          "message": "Delete failed: <ROOT>\\locked.png",
+          "exception": "IOException"
+        }
+      ]
+    },
+    {
+      "name": "locked-file-without-log-logs-nothing",
+      "input": {
+        "name": "locked-file-without-log-logs-nothing",
+        "pattern": "*.png",
+        "max_bytes": 0,
+        "log": false,
+        "files": [
+          {
+            "name": "locked.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z",
+            "locked": true
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "locked.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "read-only-file-is-an-access-error-and-stays-counted",
+      "input": {
+        "name": "read-only-file-is-an-access-error-and-stays-counted",
+        "pattern": "*.png",
+        "max_bytes": 50,
+        "files": [
+          {
+            "name": "ro.png",
+            "size": 100,
+            "access": "2020-01-01T00:01:00Z",
+            "readonly": true
+          },
+          {
+            "name": "rw.png",
+            "size": 40,
+            "access": "2020-01-01T00:02:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "ro.png"
+      ],
+      "log": [
+        {
+          "message": "Delete failed: <ROOT>\\ro.png",
+          "exception": "UnauthorizedAccessException"
+        }
+      ]
+    },
+    {
+      "name": "nul-in-pattern-throws-argument-exception",
+      "input": {
+        "name": "nul-in-pattern-throws-argument-exception",
+        "pattern": "a\u0000b",
+        "max_bytes": 1,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 10
+          }
+        ]
+      },
+      "remaining": {
+        "throws": "ArgumentException"
+      },
+      "target_exists_after": true,
+      "survivors": [
+        "a.png"
+      ],
+      "log": []
+    },
+    {
+      "name": "exact-fit-after-two-deletes",
+      "input": {
+        "name": "exact-fit-after-two-deletes",
+        "pattern": "*.png",
+        "max_bytes": 100,
+        "files": [
+          {
+            "name": "a.png",
+            "size": 60,
+            "access": "2020-01-01T00:01:00Z"
+          },
+          {
+            "name": "b.png",
+            "size": 40,
+            "access": "2020-01-01T00:02:00Z"
+          },
+          {
+            "name": "c.png",
+            "size": 100,
+            "access": "2020-01-01T00:03:00Z"
+          }
+        ]
+      },
+      "remaining": 100,
+      "target_exists_after": true,
+      "survivors": [
+        "c.png"
+      ],
+      "log": []
+    }
+  ]
+}

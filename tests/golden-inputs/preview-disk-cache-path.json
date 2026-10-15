@@ -1,0 +1,448 @@
+{
+  "generator": "oracle-cs preview-disk-cache-path",
+  "cases": [
+    {
+      "name": "standard-default",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "standard-same-key-other-spelling",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "c:\\pics\\a.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "standard-dot-segments",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\Sub\\..\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "original-mode",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "original-mode-box-forced-zero",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "name": "width-only-box",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 0
+      }
+    },
+    {
+      "name": "height-only-box",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 1350
+      }
+    },
+    {
+      "name": "unbounded-box",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "name": "negative-box-values",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": -5,
+        "h": -1
+      }
+    },
+    {
+      "name": "int-max-box",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2147483647,
+        "h": 2147483647
+      }
+    },
+    {
+      "name": "orientation-not-applied",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "orient": false
+      }
+    },
+    {
+      "name": "backend-Wpf",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "Wpf"
+      }
+    },
+    {
+      "name": "backend-WicDirect",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "WicDirect"
+      }
+    },
+    {
+      "name": "backend-TurboJpeg",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "TurboJpeg"
+      }
+    },
+    {
+      "name": "backend-LibRaw",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "LibRaw"
+      }
+    },
+    {
+      "name": "kind-standard-0-no-suffix",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "kind-raw-preview-1",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\B.dng",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "source_kind": 1
+      }
+    },
+    {
+      "name": "kind-raw-full-2",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\B.dng",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 0,
+        "h": 0,
+        "source_kind": 2
+      }
+    },
+    {
+      "name": "kind-7-unnamed",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "source_kind": 7
+      }
+    },
+    {
+      "name": "kind-255",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "source_kind": 255
+      }
+    },
+    {
+      "name": "raw-path-standard-kind-same-hash-as-jpg-rule",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\B.dng",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350,
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "length-zero",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "length-negative",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": -1,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "length-long-max",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 9223372036854775807,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "ticks-zero",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 0,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "ticks-max-datetime",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 3155378975999999999,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "unc-source",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "\\\\server\\share\\Photos\\x.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "non-ascii-source-utf8",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Ảnh\\ảnh đẹp 😀.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "long-path-source",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\segment00\\segment01\\segment02\\segment03\\segment04\\segment05\\segment06\\segment07\\segment08\\segment09\\segment10\\segment11\\segment12\\segment13\\segment14\\segment15\\segment16\\segment17\\segment18\\segment19\\segment20\\segment21\\segment22\\segment23\\segment24\\segment25\\segment26\\segment27\\segment28\\segment29\\x.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "source-with-pipe-like-chars",
+      "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+      "key": {
+        "path": "C:\\Pics\\a x;y,z#1.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-trailing-separator",
+      "directory": "C:\\cache\\",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-forward-slashes",
+      "directory": "C:/cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-unc",
+      "directory": "\\\\server\\share\\cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-drive-root",
+      "directory": "D:\\",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-drive-relative",
+      "directory": "D:",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    },
+    {
+      "name": "dir-relative",
+      "directory": "cache",
+      "key": {
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 1350
+      }
+    }
+  ]
+}

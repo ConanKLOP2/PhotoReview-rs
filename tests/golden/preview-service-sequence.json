@@ -1,0 +1,6816 @@
+{
+  "generator": "oracle-cs preview-service-sequence",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "preview-miss-then-ram-hit",
+      "input": {
+        "name": "preview-miss-then-ram-hit",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          },
+          {
+            "op": "try_cached_path",
+            "file": "a.jpg"
+          },
+          {
+            "op": "has_inflight",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 1,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 1,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached_path",
+            "file": "a.jpg"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 1,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "has_inflight",
+            "key": "k"
+          },
+          "result": {
+            "inflight": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 1,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "preview-path-overload-builds-current-key",
+      "input": {
+        "name": "preview-path-overload-builds-current-key",
+        "config": {
+          "original_mode": false,
+          "w": 1920,
+          "h": 1080,
+          "backend": "TurboJpeg"
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 1440,
+            "pixel_h": 1080,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "preview",
+            "file": "a.jpg"
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 1440,
+            "pixel_h": 1080,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 6220800
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 1920,
+              "h": 1080,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6220800
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 1920,
+              "height": 1080,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "TurboJpeg",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6220800
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 1440,
+            "pixel_h": 1080,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 6220800
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6220800
+        }
+      ]
+    },
+    {
+      "name": "viewer-uses-viewer-priority",
+      "input": {
+        "name": "viewer-uses-viewer-priority",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "viewer",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "viewer",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 1,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "original-dims-seeded-by-downscaled-decode",
+      "input": {
+        "name": "original-dims-seeded-by-downscaled-decode",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000,
+            "info_w": 1,
+            "info_h": 1
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "original-dims-unknown-original-not-seeded",
+      "input": {
+        "name": "original-dims-unknown-original-not-seeded",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "info_w": 6000,
+            "info_h": 4000,
+            "info_orientation": 6
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 6000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "read_info",
+              "path": "<ROOT>\\a.jpg"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 6000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 6000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "full-size-decode-seeds-its-own-size",
+      "input": {
+        "name": "full-size-decode-seeds-its-own-size",
+        "config": {
+          "original_mode": false,
+          "w": 0,
+          "h": 0,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 640,
+            "pixel_h": 480,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 0,
+              "height": 0,
+              "box_unbounded": true,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 640,
+            "pixel_h": 480,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1228800
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1228800
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 640,
+            "h": 480
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1228800
+        }
+      ]
+    },
+    {
+      "name": "degraded-fallback-returned-not-cached-but-seeds-dims",
+      "input": {
+        "name": "degraded-fallback-returned-not-cached-but-seeds-dims",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "degraded": true,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "source-changed-during-decode-is-localized-io-and-not-cached",
+      "input": {
+        "name": "source-changed-during-decode-is-localized-io-and-not-cached",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "Image source changed during decode: <ROOT>\\a.jpg",
+            "localized": true
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638100000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "source-length-changed-same-ticks",
+      "input": {
+        "name": "source-length-changed-same-ticks",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 999,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 999,
+            "write_ticks": 638000000000000000
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "Image source changed during decode: <ROOT>\\a.jpg",
+            "localized": true
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "source-deleted-before-decode",
+      "input": {
+        "name": "source-deleted-before-decode",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "delete",
+            "file": "a.jpg"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "try_cached_path",
+            "file": "a.jpg"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "delete",
+            "file": "a.jpg"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "Image source changed during decode: <ROOT>\\a.jpg",
+            "localized": true
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "throws": "FileNotFoundException",
+            "message": "Image source no longer exists",
+            "localized": true
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached_path",
+            "file": "a.jpg"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "evict-unnormalized-lower-case-path",
+      "input": {
+        "name": "evict-unnormalized-lower-case-path",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "b.jpg",
+            "length": 1001,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          },
+          "b.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          {
+            "op": "evict",
+            "path_spelling": "sub\\..\\A.JPG"
+          },
+          {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          {
+            "op": "try_cached",
+            "key": "kb"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.JPG",
+              "length": 1001,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        },
+        {
+          "op": {
+            "op": "evict",
+            "path_spelling": "sub\\..\\A.JPG"
+          },
+          "result": {
+            "also_invalidate": [
+              "<ROOT>\\A.JPG"
+            ]
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 3,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3001,
+            "source_open_count": 3
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        }
+      ]
+    },
+    {
+      "name": "evict-keeps-original-dims",
+      "input": {
+        "name": "evict-keeps-original-dims",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "evict",
+            "path_spelling": "a.jpg"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "evict",
+            "path_spelling": "a.jpg"
+          },
+          "result": {
+            "also_invalidate": [
+              "<ROOT>\\A.JPG"
+            ]
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "clear-drops-ram-and-original-dims",
+      "input": {
+        "name": "clear-drops-ram-and-original-dims",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "clear"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "original-mode-key-and-unbounded-request",
+      "input": {
+        "name": "original-mode-key-and-unbounded-request",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "set_mode",
+            "original": true
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "set_mode",
+            "original": false
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "try_cached",
+            "key": "k2"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "set_mode",
+            "original": true
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": true,
+              "width": 0,
+              "height": 0,
+              "box_unbounded": true,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "set_mode",
+            "original": false
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k2"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        }
+      ]
+    },
+    {
+      "name": "box-change-is-a-new-key",
+      "input": {
+        "name": "box-change-is-a-new-key",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "set_box",
+            "w": 1920,
+            "h": 1080
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "try_cached",
+            "key": "k2"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          },
+          {
+            "op": "known_dims",
+            "key": "k2"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "set_box",
+            "w": 1920,
+            "h": 1080
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 1920,
+              "height": 1080,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k2"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 1920,
+              "h": 1080,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k2"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        }
+      ]
+    },
+    {
+      "name": "backend-change-is-a-new-key",
+      "input": {
+        "name": "backend-change-is-a-new-key",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "backend": "Wpf"
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "set_backend",
+            "backend": "TurboJpeg"
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "try_cached",
+            "key": "k2"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "Wpf",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "set_backend",
+            "backend": "TurboJpeg"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "TurboJpeg",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k2"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k2"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "Wpf",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        }
+      ]
+    },
+    {
+      "name": "decode-original-is-never-cached",
+      "input": {
+        "name": "decode-original-is-never-cached",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 4000,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decode-original-reuses-ram-original-entry",
+      "input": {
+        "name": "decode-original-reuses-ram-original-entry",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "set_mode",
+            "original": true
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "set_mode",
+            "original": false
+          },
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k2"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "set_mode",
+            "original": true
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": true,
+              "width": 0,
+              "height": 0,
+              "box_unbounded": true,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "set_mode",
+            "original": false
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k2"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k2"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 48000000
+        }
+      ]
+    },
+    {
+      "name": "decode-original-source-changed",
+      "input": {
+        "name": "decode-original-source-changed",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "Image source changed during decode: <ROOT>\\a.jpg",
+            "localized": true
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decode-original-raw-full-decoder",
+      "input": {
+        "name": "decode-original-raw-full-decoder",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "raw_full_enabled": true
+        },
+        "files": [
+          {
+            "name": "b.nef",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "b.nef": {
+            "pixel_w": 1620,
+            "pixel_h": 1080,
+            "original_w": 6000,
+            "original_h": 4000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "b.nef",
+            "as": "k"
+          },
+          {
+            "op": "original",
+            "file": "b.nef",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "set_raw_full",
+            "enabled": false
+          },
+          {
+            "op": "original",
+            "file": "b.nef",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ],
+        "raw_decoder": {
+          "b.nef": {
+            "pixel_w": 6000,
+            "pixel_h": 4000,
+            "downscaled": false,
+            "backend": "LibRaw"
+          }
+        }
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "b.nef",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.NEF",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 1
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "b.nef",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "raw",
+            "pixel_w": 6000,
+            "pixel_h": 4000,
+            "downscaled": false,
+            "actual_backend": "LibRaw",
+            "estimated_bytes": 96000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "raw",
+              "call": "decode",
+              "path": "<ROOT>\\b.nef",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "set_raw_full",
+            "enabled": false
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "b.nef",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 1620,
+            "pixel_h": 1080,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 6998400
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.nef",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 6000,
+            "h": 4000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decode-original-raw-full-ignores-standard-files",
+      "input": {
+        "name": "decode-original-raw-full-ignores-standard-files",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "raw_full_enabled": true
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ],
+        "raw_decoder": {
+          "a.jpg": {
+            "pixel_w": 1,
+            "pixel_h": 1
+          }
+        }
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "original",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 4000,
+            "pixel_h": 3000,
+            "downscaled": false,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 48000000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 0,
+              "h": 0,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decoder-busy-surfaces-to-the-creator-and-leaves-nothing",
+      "input": {
+        "name": "decoder-busy-surfaces-to-the-creator-and-leaves-nothing",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "fails": "Busy"
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "has_inflight",
+            "key": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "DecoderBusyException",
+            "message": "test: busy",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "has_inflight",
+            "key": "k"
+          },
+          "result": {
+            "inflight": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "DecoderBusyException",
+            "message": "test: busy",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 2
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decoder-not-supported-is-not-cached",
+      "input": {
+        "name": "decoder-not-supported-is-not-cached",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "fails": "NotSupported"
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "NotSupportedException",
+            "message": "test: not supported",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decoder-internal-cancel-reaches-the-creator",
+      "input": {
+        "name": "decoder-internal-cancel-reaches-the-creator",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "fails": "Canceled"
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "OperationCanceledException",
+            "message": "test: decoder-internal cancel",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "decoder-io-error-on-viewer",
+      "input": {
+        "name": "decoder-io-error-on-viewer",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "fails": "IO"
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "viewer",
+            "file": "a.jpg",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "viewer",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "test: io",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Viewer"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "source-bytes-cache-pre-reads-small-standard-files-only",
+      "input": {
+        "name": "source-bytes-cache-pre-reads-small-standard-files-only",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "source_bytes_capacity": 1048576
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "b.dng",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "big.jpg",
+            "length": 1048577,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          },
+          "b.dng": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          },
+          "big.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          {
+            "op": "key",
+            "file": "b.dng",
+            "as": "kb"
+          },
+          {
+            "op": "key",
+            "file": "big.jpg",
+            "as": "kc"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "b.dng",
+            "key": "kb"
+          },
+          {
+            "op": "preview",
+            "file": "big.jpg",
+            "key": "kc"
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "clear_source_bytes"
+          },
+          {
+            "op": "clear"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "b.dng",
+            "as": "kb"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.DNG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 1
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "big.jpg",
+            "as": "kc"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\BIG.JPG",
+              "length": 1048577,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": 1000,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.dng",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.dng",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2000,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "big.jpg",
+            "key": "kc"
+          },
+          "result": {
+            "serial": 3,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\big.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 1050577,
+            "source_open_count": 3
+          },
+          "cache_count": 3,
+          "cache_bytes": 5760000
+        },
+        {
+          "op": {
+            "op": "clear"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 1050577,
+            "source_open_count": 3
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 4,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": 1000,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 4,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 4,
+            "source_bytes_read": 1051577,
+            "source_open_count": 4
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "clear_source_bytes"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 4,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 4,
+            "source_bytes_read": 1051577,
+            "source_open_count": 4
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "clear"
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 4,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 4,
+            "source_bytes_read": 1051577,
+            "source_open_count": 4
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 5,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": 1000,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 5,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 5,
+            "source_bytes_read": 1052577,
+            "source_open_count": 5
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        }
+      ]
+    },
+    {
+      "name": "source-bytes-read-metric-prefers-the-image-report",
+      "input": {
+        "name": "source-bytes-read-metric-prefers-the-image-report",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 5000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "b.jpg",
+            "length": 7000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "source_bytes_read": 77
+          },
+          "b.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 5000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.JPG",
+              "length": 7000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 77,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 7077,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        }
+      ]
+    },
+    {
+      "name": "ram-lru-evicts-least-recently-used",
+      "input": {
+        "name": "ram-lru-evicts-least-recently-used",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "capacity_bytes": 1000
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "b.jpg",
+            "length": 1001,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "c.jpg",
+            "length": 1002,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 10,
+            "pixel_h": 10
+          },
+          "b.jpg": {
+            "pixel_w": 10,
+            "pixel_h": 10
+          },
+          "c.jpg": {
+            "pixel_w": 10,
+            "pixel_h": 10
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          {
+            "op": "key",
+            "file": "c.jpg",
+            "as": "kc"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "c.jpg",
+            "key": "kc"
+          },
+          {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          {
+            "op": "try_cached",
+            "key": "kb"
+          },
+          {
+            "op": "try_cached",
+            "key": "kc"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.JPG",
+              "length": 1001,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "c.jpg",
+            "as": "kc"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\C.JPG",
+              "length": 1002,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 400
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "c.jpg",
+            "key": "kc"
+          },
+          "result": {
+            "serial": 3,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\c.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "kb"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "kc"
+          },
+          "result": {
+            "serial": 3,
+            "decoder": "main",
+            "pixel_w": 10,
+            "pixel_h": 10,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 400
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 2,
+          "cache_bytes": 800
+        }
+      ]
+    },
+    {
+      "name": "too-large-image-is-not-cached",
+      "input": {
+        "name": "too-large-image-is-not-cached",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "capacity_bytes": 1000
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 20,
+            "pixel_h": 20
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "try_cached",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 20,
+            "pixel_h": 20,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1600
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "try_cached",
+            "key": "k"
+          },
+          "result": {
+            "cached": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "original-dimensions-lru-capacity-2",
+      "input": {
+        "name": "original-dimensions-lru-capacity-2",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null,
+          "original_dimensions_capacity": 2
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "b.jpg",
+            "length": 1001,
+            "write_ticks": 638000000000000000
+          },
+          {
+            "name": "c.jpg",
+            "length": 1002,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4000,
+            "original_h": 3000
+          },
+          "b.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4001,
+            "original_h": 3000
+          },
+          "c.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "original_w": 4002,
+            "original_h": 3000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          {
+            "op": "key",
+            "file": "c.jpg",
+            "as": "kc"
+          },
+          {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          {
+            "op": "preview",
+            "file": "c.jpg",
+            "key": "kc"
+          },
+          {
+            "op": "known_dims",
+            "key": "ka"
+          },
+          {
+            "op": "known_dims",
+            "key": "kb"
+          },
+          {
+            "op": "known_dims",
+            "key": "kc"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "ka"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "b.jpg",
+            "as": "kb"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.JPG",
+              "length": 1001,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "key",
+            "file": "c.jpg",
+            "as": "kc"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\C.JPG",
+              "length": 1002,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "a.jpg",
+            "key": "ka"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\a.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 1920000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.jpg",
+            "key": "kb"
+          },
+          "result": {
+            "serial": 2,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 2,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 2,
+            "source_bytes_read": 2001,
+            "source_open_count": 2
+          },
+          "cache_count": 2,
+          "cache_bytes": 3840000
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "c.jpg",
+            "key": "kc"
+          },
+          "result": {
+            "serial": 3,
+            "decoder": "main",
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 1920000
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\c.jpg",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 3,
+          "cache_bytes": 5760000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "ka"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 3,
+          "cache_bytes": 5760000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "kb"
+          },
+          "result": {
+            "w": 4001,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 3,
+          "cache_bytes": 5760000
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "kc"
+          },
+          "result": {
+            "w": 4002,
+            "h": 3000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 3,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 3,
+            "source_bytes_read": 3003,
+            "source_open_count": 3
+          },
+          "cache_count": 3,
+          "cache_bytes": 5760000
+        }
+      ]
+    },
+    {
+      "name": "dims-source-changed-is-localized",
+      "input": {
+        "name": "dims-source-changed-is-localized",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "info_w": 10,
+            "info_h": 20
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "rewrite",
+            "file": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638100000000000000
+          },
+          "result": {},
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "Image source changed while reading dimensions: <ROOT>\\a.jpg",
+            "localized": true
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "read_info",
+              "path": "<ROOT>\\a.jpg"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "dims-read-info-failure-is-not-stored",
+      "input": {
+        "name": "dims-read-info-failure-is-not-stored",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "a.jpg",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "a.jpg": {
+            "pixel_w": 800,
+            "pixel_h": 600,
+            "info_fails": true
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "a.jpg",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\A.JPG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 0
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "a.jpg",
+            "key": "k"
+          },
+          "result": {
+            "throws": "IOException",
+            "message": "test: read info",
+            "localized": false
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "read_info",
+              "path": "<ROOT>\\a.jpg"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "known": false
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 1
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        }
+      ]
+    },
+    {
+      "name": "raw-preview-key-kind-and-preview-decode",
+      "input": {
+        "name": "raw-preview-key-kind-and-preview-decode",
+        "config": {
+          "original_mode": false,
+          "w": 800,
+          "h": 600,
+          "backend": null
+        },
+        "files": [
+          {
+            "name": "b.dng",
+            "length": 1000,
+            "write_ticks": 638000000000000000
+          }
+        ],
+        "decoder": {
+          "b.dng": {
+            "pixel_w": 1620,
+            "pixel_h": 1080,
+            "original_w": 6000,
+            "original_h": 4000
+          }
+        },
+        "ops": [
+          {
+            "op": "key",
+            "file": "b.dng",
+            "as": "k"
+          },
+          {
+            "op": "preview",
+            "file": "b.dng",
+            "key": "k"
+          },
+          {
+            "op": "known_dims",
+            "key": "k"
+          },
+          {
+            "op": "dims",
+            "file": "b.dng",
+            "key": "k"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "op": {
+            "op": "key",
+            "file": "b.dng",
+            "as": "k"
+          },
+          "result": {
+            "key": {
+              "path": "<ROOT>\\B.DNG",
+              "length": 1000,
+              "ticks": 638000000000000000,
+              "is_original": false,
+              "width": 800,
+              "height": 600,
+              "box_unbounded": false,
+              "orientation_applied": true,
+              "backend": "Wpf",
+              "source_kind": 1
+            }
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 0,
+            "source_bytes_read": 0,
+            "source_open_count": 0
+          },
+          "cache_count": 0,
+          "cache_bytes": 0
+        },
+        {
+          "op": {
+            "op": "preview",
+            "file": "b.dng",
+            "key": "k"
+          },
+          "result": {
+            "serial": 1,
+            "decoder": "main",
+            "pixel_w": 1620,
+            "pixel_h": 1080,
+            "downscaled": true,
+            "actual_backend": "WicDirect",
+            "estimated_bytes": 6998400
+          },
+          "decoder_calls": [
+            {
+              "decoder": "main",
+              "call": "decode",
+              "path": "<ROOT>\\b.dng",
+              "w": 800,
+              "h": 600,
+              "apply_orientation": true,
+              "bytes": null,
+              "priority": "Preload"
+            }
+          ],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6998400
+        },
+        {
+          "op": {
+            "op": "known_dims",
+            "key": "k"
+          },
+          "result": {
+            "w": 6000,
+            "h": 4000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6998400
+        },
+        {
+          "op": {
+            "op": "dims",
+            "file": "b.dng",
+            "key": "k"
+          },
+          "result": {
+            "w": 6000,
+            "h": 4000
+          },
+          "decoder_calls": [],
+          "metrics": {
+            "cache_hits": 0,
+            "cache_misses": 1,
+            "inflight_joins": 0,
+            "disk_cache_hits": 0,
+            "source_reads": 1,
+            "source_bytes_read": 1000,
+            "source_open_count": 1
+          },
+          "cache_count": 1,
+          "cache_bytes": 6998400
+        }
+      ]
+    }
+  ]
+}

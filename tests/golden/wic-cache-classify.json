@@ -1,0 +1,126 @@
+{
+  "generator": "oracle-cs wic-cache-classify",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "e-outofmemory",
+      "isOutOfMemory": true,
+      "isOpaque": false
+    },
+    {
+      "name": "wincodec-err-componentnotfound-is-not-oom",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "e-fail-is-not-oom",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "e-invalidarg-is-not-oom",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "zero-hresult-is-not-oom",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "fmt-blackwhite",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-2bpp-gray",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-4bpp-gray",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-8bpp-gray",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-16bpp-gray",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-16bpp-bgr555",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-16bpp-bgr565",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-24bpp-bgr",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-24bpp-rgb",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-32bpp-bgr",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-48bpp-rgb",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-48bpp-bgr",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-32bpp-cmyk",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-64bpp-cmyk",
+      "isOutOfMemory": false,
+      "isOpaque": true
+    },
+    {
+      "name": "fmt-32bpp-bgra-has-alpha",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "fmt-32bpp-pbgra-has-alpha",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "fmt-8bpp-indexed-may-have-palette-alpha",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "fmt-unlisted-guid-same-prefix-is-not-opaque",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    },
+    {
+      "name": "fmt-empty-guid",
+      "isOutOfMemory": false,
+      "isOpaque": false
+    }
+  ]
+}

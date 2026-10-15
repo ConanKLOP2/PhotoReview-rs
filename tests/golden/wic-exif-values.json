@@ -1,0 +1,697 @@
+{
+  "generator": "oracle-cs wic-exif-values",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "exif-tag-0",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-1",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-2",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 2,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-3",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 3,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-4",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 4,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-5",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 5,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-7",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 7,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-8",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-9",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-255",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-65535",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-i32-minus-1",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-i32-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-u8-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-i16-8",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-u32-3",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 3,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-u16-array-first-wins",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-u16-array-invalid-first-falls-back",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 3,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-empty-array-falls-back",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 5,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-i16-array-negative-clr-unsigned-falls-back",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 2,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-string-is-not-an-integer",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 4,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-u64-is-not-an-integer",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 4,
+      "summary": null
+    },
+    {
+      "name": "exif-tag-double-is-not-an-integer",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 4,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-absent-0",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-0-0",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-9-0",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-absent-1",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-0-1",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-9-1",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-absent-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-0-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-9-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-absent-8",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-0-8",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-9-8",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-absent-9",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-0-9",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-exif-9-9",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "windows-fallback-both-absent",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-3-wins-over-windows-6",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 3,
+      "summary": null
+    },
+    {
+      "name": "exif-1-never-falls-through",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-8-never-falls-through",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 8,
+      "summary": null
+    },
+    {
+      "name": "exif-2-never-falls-through",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 2,
+      "summary": null
+    },
+    {
+      "name": "windows-value-i32",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation"
+      ],
+      "orientation": 7,
+      "summary": null
+    },
+    {
+      "name": "orientation-not-requested-is-never-queried",
+      "queried": [],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "orientation-not-requested-throwing-query-not-asked",
+      "queried": [],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "orientation-not-requested-exif-still-read",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "exif-failure-keeps-orientation",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/app1/ifd/exif/{ushort=36867}"
+      ],
+      "orientation": 6,
+      "summary": null
+    },
+    {
+      "name": "orientation-failure-keeps-exif",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "orientation-fails-on-fallback-only-keeps-exif",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation",
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "both-halves-fail",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/app1/ifd/exif/{ushort=36867}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-aborts-at-first-throw-no-later-queries",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-throw-on-last-query-discards-the-rest",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "exif-throw-on-date-chain-second-step",
+      "queried": [
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "jpeg-root-both-halves",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 6,
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "tiff-root-reads-ifd-paths",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/ifd/exif/{ushort=36867}",
+        "/ifd/exif/{ushort=36868}",
+        "/ifd/{ushort=306}",
+        "/ifd/{ushort=271}",
+        "/ifd/{ushort=272}",
+        "/ifd/exif/{ushort=42036}",
+        "/ifd/exif/{ushort=34855}",
+        "/ifd/exif/{ushort=37386}",
+        "/ifd/exif/{ushort=33437}",
+        "/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 8,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "TiffMaker",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "tiff-root-orientation-through-windows-policy",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation",
+        "/ifd/exif/{ushort=36867}",
+        "/ifd/exif/{ushort=36868}",
+        "/ifd/{ushort=306}",
+        "/ifd/{ushort=271}",
+        "/ifd/{ushort=272}",
+        "/ifd/exif/{ushort=42036}",
+        "/ifd/exif/{ushort=34855}",
+        "/ifd/exif/{ushort=37386}",
+        "/ifd/exif/{ushort=33437}",
+        "/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 6,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "T",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "root-null-no-exif-even-with-tags",
+      "queried": [
+        "/app1/ifd/{ushort=274}"
+      ],
+      "orientation": 3,
+      "summary": null
+    },
+    {
+      "name": "jpeg-root-nothing-usable-is-null-summary",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 2,
+      "summary": null
+    },
+    {
+      "name": "jpeg-root-orientation-1-and-exif-null",
+      "queried": [
+        "/app1/ifd/{ushort=274}",
+        "System.Photo.Orientation",
+        "/app1/ifd/exif/{ushort=36867}",
+        "/app1/ifd/exif/{ushort=36868}",
+        "/app1/ifd/{ushort=306}",
+        "/app1/ifd/{ushort=271}",
+        "/app1/ifd/{ushort=272}",
+        "/app1/ifd/exif/{ushort=42036}",
+        "/app1/ifd/exif/{ushort=34855}",
+        "/app1/ifd/exif/{ushort=37386}",
+        "/app1/ifd/exif/{ushort=33437}",
+        "/app1/ifd/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": null
+    },
+    {
+      "name": "empty-root-string-is-used-verbatim",
+      "queried": [
+        "/exif/{ushort=36867}",
+        "/exif/{ushort=36868}",
+        "/{ushort=306}",
+        "/{ushort=271}",
+        "/{ushort=272}",
+        "/exif/{ushort=42036}",
+        "/exif/{ushort=34855}",
+        "/exif/{ushort=37386}",
+        "/exif/{ushort=33437}",
+        "/exif/{ushort=33434}"
+      ],
+      "orientation": 1,
+      "summary": {
+        "date_taken": null,
+        "camera_make": "NoRoot",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      }
+    },
+    {
+      "name": "constants",
+      "jpeg": "19e4a5aa-5662-4fc5-a0c0-1758028e1057",
+      "tiff": "163bcc30-e2e9-4f0b-961d-a3e9fdb788a3"
+    }
+  ]
+}

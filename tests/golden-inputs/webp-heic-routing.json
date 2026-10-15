@@ -1,0 +1,1733 @@
+{
+  "generator": "oracle-cs webp-heic-routing",
+  "cases": [
+    {
+      "name": "ext-0-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-0-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-0-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-1-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP"
+        }
+      ]
+    },
+    {
+      "name": "ext-1-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP"
+        }
+      ]
+    },
+    {
+      "name": "ext-1-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.WEBP"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.WEBP"
+        }
+      ]
+    },
+    {
+      "name": "ext-2-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        }
+      ]
+    },
+    {
+      "name": "ext-2-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        }
+      ]
+    },
+    {
+      "name": "ext-2-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\IMG_0001.HEIC"
+        }
+      ]
+    },
+    {
+      "name": "ext-3-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif"
+        }
+      ]
+    },
+    {
+      "name": "ext-3-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif"
+        }
+      ]
+    },
+    {
+      "name": "ext-3-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heif"
+        }
+      ]
+    },
+    {
+      "name": "ext-4-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf"
+        }
+      ]
+    },
+    {
+      "name": "ext-4-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf"
+        }
+      ]
+    },
+    {
+      "name": "ext-4-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.HeIf"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.HeIf"
+        }
+      ]
+    },
+    {
+      "name": "ext-5-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-5-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-5-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-6-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png"
+        }
+      ]
+    },
+    {
+      "name": "ext-6-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png"
+        }
+      ]
+    },
+    {
+      "name": "ext-6-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.png"
+        }
+      ]
+    },
+    {
+      "name": "ext-7-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "ext-7-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "ext-7-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.cr2"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "ext-8-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif"
+        }
+      ]
+    },
+    {
+      "name": "ext-8-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif"
+        }
+      ]
+    },
+    {
+      "name": "ext-8-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.avif"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.avif"
+        }
+      ]
+    },
+    {
+      "name": "ext-9-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-9-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-9-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp.jpg"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp.jpg"
+        }
+      ]
+    },
+    {
+      "name": "ext-10-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp "
+        }
+      ]
+    },
+    {
+      "name": "ext-10-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp "
+        }
+      ]
+    },
+    {
+      "name": "ext-10-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp "
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp "
+        }
+      ]
+    },
+    {
+      "name": "ext-11-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file"
+        }
+      ]
+    },
+    {
+      "name": "ext-11-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file"
+        }
+      ]
+    },
+    {
+      "name": "ext-11-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p.webp\\file"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p.webp\\file"
+        }
+      ]
+    },
+    {
+      "name": "ext-12-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-12-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-12-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-13-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-13-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-13-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a..webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a..webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-14-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic."
+        }
+      ]
+    },
+    {
+      "name": "ext-14-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic."
+        }
+      ]
+    },
+    {
+      "name": "ext-14-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic."
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic."
+        }
+      ]
+    },
+    {
+      "name": "ext-15-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext"
+        }
+      ]
+    },
+    {
+      "name": "ext-15-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext"
+        }
+      ]
+    },
+    {
+      "name": "ext-15-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\noext"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\noext"
+        }
+      ]
+    },
+    {
+      "name": "ext-16-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-16-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-16-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/p/a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:/p/a.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-17-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-17-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-17-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\\u1ea3nh \u0111\u1eb9p.webp"
+        }
+      ]
+    },
+    {
+      "name": "ext-18-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic"
+        }
+      ]
+    },
+    {
+      "name": "ext-18-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic"
+        }
+      ]
+    },
+    {
+      "name": "ext-18-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "relative.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "relative.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "relative.heic"
+        }
+      ]
+    },
+    {
+      "name": "ext-19-enabled-all",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic"
+        }
+      ]
+    },
+    {
+      "name": "ext-19-disabled-all",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic"
+        }
+      ]
+    },
+    {
+      "name": "ext-19-enabled-none",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\srv\\share\\a.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "\\\\srv\\share\\a.heic"
+        }
+      ]
+    },
+    {
+      "name": "heif-without-hevc-logs-once",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": false,
+        "detail": "probe-detail"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_1.HEIC"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_2.HEIC"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\IMG_3.HEIC"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\IMG_9.heif"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\still.webp"
+        }
+      ]
+    },
+    {
+      "name": "webp-missing-logs-separately",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\b.webp"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\c.heic"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\d.heic"
+        }
+      ]
+    },
+    {
+      "name": "heif-container-without-hevc",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": false,
+        "detail": "probe-detail"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "webp-only-codec",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "t"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.heic"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "switch-toggled-between-calls",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "set_enabled",
+          "value": false
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "set_enabled",
+          "value": true
+        },
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        }
+      ]
+    },
+    {
+      "name": "probe-not-run-for-other-formats",
+      "enabled": false,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\a.png"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "probe-once-per-webp-call",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\p\\b.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\c.heic"
+        }
+      ]
+    },
+    {
+      "name": "disabled-short-circuits-probe",
+      "enabled": false,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\p\\a.webp"
+        },
+        {
+          "op": "will_refuse",
+          "path": "C:\\p\\b.heic"
+        }
+      ]
+    },
+    {
+      "name": "will-refuse-null-path",
+      "enabled": false,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "will_refuse",
+          "path": null
+        }
+      ]
+    },
+    {
+      "name": "will-refuse-empty-path",
+      "enabled": true,
+      "codecs": {
+        "webp": false,
+        "heif_container": false,
+        "hevc": false,
+        "detail": "nothing"
+      },
+      "ops": [
+        {
+          "op": "will_refuse",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "read-info-blank-path",
+      "enabled": true,
+      "codecs": {
+        "webp": true,
+        "heif_container": true,
+        "hevc": true,
+        "detail": "test"
+      },
+      "ops": [
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "read_info",
+          "path": "   "
+        }
+      ]
+    }
+  ]
+}

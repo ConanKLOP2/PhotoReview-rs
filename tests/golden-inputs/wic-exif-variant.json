@@ -1,0 +1,432 @@
+{
+ "generator": "oracle-cs wic-exif-variant",
+ "cases": [
+  {
+   "name": "wide-string",
+   "vt": 31,
+   "payload": {
+    "kind": "wide",
+    "text": "Canon"
+   }
+  },
+  {
+   "name": "wide-string-null-pointer",
+   "vt": 31,
+   "pointer": false
+  },
+  {
+   "name": "wide-string-empty",
+   "vt": 31,
+   "payload": {
+    "kind": "wide",
+    "text": ""
+   }
+  },
+  {
+   "name": "wide-string-non-ascii",
+   "vt": 31,
+   "payload": {
+    "kind": "wide",
+    "text": "Thiết bị é"
+   }
+  },
+  {
+   "name": "wide-string-supplementary-plane",
+   "vt": 31,
+   "payload": {
+    "kind": "wide",
+    "text": "cam 📷"
+   }
+  },
+  {
+   "name": "ansi-string",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "text": "Nikon"
+   }
+  },
+  {
+   "name": "ansi-string-null-pointer",
+   "vt": 30,
+   "pointer": false
+  },
+  {
+   "name": "ansi-string-empty",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "text": ""
+   }
+  },
+  {
+   "name": "ansi-string-utf8-multibyte",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "text": "Ảnh é"
+   }
+  },
+  {
+   "name": "ansi-string-invalid-byte-is-replacement",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "bytes_hex": "41ff42"
+   }
+  },
+  {
+   "name": "ansi-string-truncated-sequence-is-one-replacement",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "bytes_hex": "e282"
+   }
+  },
+  {
+   "name": "ansi-string-latin1-high-bytes-are-invalid-utf8",
+   "vt": 30,
+   "payload": {
+    "kind": "utf8",
+    "bytes_hex": "4361f16f6e"
+   }
+  },
+  {
+   "name": "i2",
+   "vt": 2,
+   "scalar": "-5"
+  },
+  {
+   "name": "i2-max",
+   "vt": 2,
+   "scalar": "32767"
+  },
+  {
+   "name": "i4",
+   "vt": 3,
+   "scalar": "70000"
+  },
+  {
+   "name": "i4-negative",
+   "vt": 3,
+   "scalar": "-1"
+  },
+  {
+   "name": "ui1",
+   "vt": 17,
+   "scalar": "200"
+  },
+  {
+   "name": "ui2",
+   "vt": 18,
+   "scalar": "6"
+  },
+  {
+   "name": "ui2-max",
+   "vt": 18,
+   "scalar": "65535"
+  },
+  {
+   "name": "ui4",
+   "vt": 19,
+   "scalar": "4000000000"
+  },
+  {
+   "name": "i8-srational",
+   "vt": 20,
+   "scalar": "-9"
+  },
+  {
+   "name": "ui8-rational",
+   "vt": 21,
+   "scalar": "8589934593"
+  },
+  {
+   "name": "ui8-max",
+   "vt": 21,
+   "scalar": "-1"
+  },
+  {
+   "name": "ui2-upper-bits-ignored",
+   "vt": 18,
+   "scalar": "-65530"
+  },
+  {
+   "name": "i4-upper-bits-ignored",
+   "vt": 3,
+   "scalar": "-4294967290"
+  },
+  {
+   "name": "ui1-upper-bits-ignored",
+   "vt": 17,
+   "scalar": "-248"
+  },
+  {
+   "name": "reserved-bytes-ignored",
+   "vt": 18,
+   "scalar": "6",
+   "reserved_hex": "ffffffffffff"
+  },
+  {
+   "name": "unsupported-vt-empty",
+   "vt": 0,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-null",
+   "vt": 1,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-r4",
+   "vt": 4,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-r8",
+   "vt": 5,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-cy",
+   "vt": 6,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-date",
+   "vt": 7,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-bstr",
+   "vt": 8,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-bool",
+   "vt": 11,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-i1",
+   "vt": 16,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-int",
+   "vt": 22,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-uint",
+   "vt": 23,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-filetime",
+   "vt": 64,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-blob",
+   "vt": 65,
+   "scalar": "1"
+  },
+  {
+   "name": "unsupported-vt-clsid",
+   "vt": 72,
+   "scalar": "1"
+  },
+  {
+   "name": "vector-ui2-first-only",
+   "vt": 4114,
+   "count": 2,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "6",
+     "9"
+    ]
+   }
+  },
+  {
+   "name": "vector-ui2-single",
+   "vt": 4114,
+   "count": 1,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "400"
+    ]
+   }
+  },
+  {
+   "name": "vector-ui4-first-only",
+   "vt": 4115,
+   "count": 2,
+   "payload": {
+    "kind": "u32",
+    "elements": [
+     "4000000000",
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "vector-i8-first-only",
+   "vt": 4116,
+   "count": 2,
+   "payload": {
+    "kind": "i64",
+    "elements": [
+     "-7",
+     "3"
+    ]
+   }
+  },
+  {
+   "name": "vector-ui8-first-only",
+   "vt": 4117,
+   "count": 2,
+   "payload": {
+    "kind": "u64",
+    "elements": [
+     "8589934593",
+     "5"
+    ]
+   }
+  },
+  {
+   "name": "vector-ui8-max-element",
+   "vt": 4117,
+   "count": 1,
+   "payload": {
+    "kind": "u64",
+    "elements": [
+     "18446744073709551615"
+    ]
+   }
+  },
+  {
+   "name": "vector-huge-count-still-first-element",
+   "vt": 4114,
+   "count": 2147483647,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "7"
+    ]
+   }
+  },
+  {
+   "name": "vector-count-zero-with-pointer",
+   "vt": 4114,
+   "count": 0,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "9"
+    ]
+   }
+  },
+  {
+   "name": "vector-count-negative-with-pointer",
+   "vt": 4114,
+   "count": -1,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "9"
+    ]
+   }
+  },
+  {
+   "name": "vector-count-without-pointer",
+   "vt": 4114,
+   "count": 3,
+   "pointer": false
+  },
+  {
+   "name": "vector-ui1-unsupported",
+   "vt": 4113,
+   "count": 2,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "vector-i2-unsupported",
+   "vt": 4098,
+   "count": 1,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "vector-i4-unsupported",
+   "vt": 4099,
+   "count": 1,
+   "payload": {
+    "kind": "u32",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "vector-lpstr-unsupported",
+   "vt": 4126,
+   "count": 1,
+   "payload": {
+    "kind": "u64",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "vector-r8-unsupported",
+   "vt": 4101,
+   "count": 1,
+   "payload": {
+    "kind": "u64",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "array-flag-vector-ui2-unsupported",
+   "vt": 12306,
+   "count": 1,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "1"
+    ]
+   }
+  },
+  {
+   "name": "array-flag-ui2-unsupported",
+   "vt": 8210,
+   "scalar": "6"
+  },
+  {
+   "name": "vector-flag-alone",
+   "vt": 4096,
+   "count": 1,
+   "payload": {
+    "kind": "u16",
+    "elements": [
+     "1"
+    ]
+   }
+  }
+ ]
+}

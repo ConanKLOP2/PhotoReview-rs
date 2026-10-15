@@ -12,3 +12,8 @@ workspace = true
 
 [dependencies]
 pr-core.workspace = true
+pr-imaging.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true }
+windows-core = { workspace = true }

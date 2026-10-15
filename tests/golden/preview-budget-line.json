@@ -1,0 +1,655 @@
+{
+  "generator": "oracle-cs preview-budget-line",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "percent-60-of-32g-source-2g",
+      "input": {
+        "name": "percent-60-of-32g-source-2g",
+        "requested": 1,
+        "percent": 60,
+        "physical": 34359738368,
+        "source": 2147483648,
+        "window": null
+      },
+      "capacity": 18468359372,
+      "line": "Memory budgets: preview cache 17612 MiB; cache share 60% of 32768 MiB physical RAM = 19660 MiB for preview + source-bytes, source-bytes cache 2048 MiB."
+    },
+    {
+      "name": "percent-60-of-32g-default-request",
+      "input": {
+        "name": "percent-60-of-32g-default-request",
+        "requested": 17179869184,
+        "percent": 60,
+        "physical": 34359738368,
+        "source": 2147483648,
+        "window": null
+      },
+      "capacity": 18468359372,
+      "line": "Memory budgets: preview cache 17612 MiB; cache share 60% of 32768 MiB physical RAM = 19660 MiB for preview + source-bytes, source-bytes cache 2048 MiB."
+    },
+    {
+      "name": "percent-60-source-off",
+      "input": {
+        "name": "percent-60-source-off",
+        "requested": 17179869184,
+        "percent": 60,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 20615843020,
+      "line": "Memory budgets: preview cache 19660 MiB; cache share 60% of 32768 MiB physical RAM = 19660 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-60-source-zero-is-not-off",
+      "input": {
+        "name": "percent-60-source-zero-is-not-off",
+        "requested": 17179869184,
+        "percent": 60,
+        "physical": 34359738368,
+        "source": 0,
+        "window": null
+      },
+      "capacity": 20615843020,
+      "line": "Memory budgets: preview cache 19660 MiB; cache share 60% of 32768 MiB physical RAM = 19660 MiB for preview + source-bytes, source-bytes cache 0 MiB."
+    },
+    {
+      "name": "percent-150-clamped-to-90",
+      "input": {
+        "name": "percent-150-clamped-to-90",
+        "requested": 1,
+        "percent": 150,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 30923764531,
+      "line": "Memory budgets: preview cache 29491 MiB; cache share 90% of 32768 MiB physical RAM = 29491 MiB for preview + source-bytes (requested 150% clamped to 90%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-90-exact-no-clamp-text",
+      "input": {
+        "name": "percent-90-exact-no-clamp-text",
+        "requested": 1,
+        "percent": 90,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 30923764531,
+      "line": "Memory budgets: preview cache 29491 MiB; cache share 90% of 32768 MiB physical RAM = 29491 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-91-clamped-to-90",
+      "input": {
+        "name": "percent-91-clamped-to-90",
+        "requested": 1,
+        "percent": 91,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 30923764531,
+      "line": "Memory budgets: preview cache 29491 MiB; cache share 90% of 32768 MiB physical RAM = 29491 MiB for preview + source-bytes (requested 91% clamped to 90%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-4-is-default-window-floor-at-32g",
+      "input": {
+        "name": "percent-4-is-default-window-floor-at-32g",
+        "requested": 1,
+        "percent": 4,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-3-clamped-up-to-floor",
+      "input": {
+        "name": "percent-3-clamped-up-to-floor",
+        "requested": 1,
+        "percent": 3,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes (requested 3% clamped to 4%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-1-clamped-up-to-floor",
+      "input": {
+        "name": "percent-1-clamped-up-to-floor",
+        "requested": 1,
+        "percent": 1,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes (requested 1% clamped to 4%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-0-clamped-up",
+      "input": {
+        "name": "percent-0-clamped-up",
+        "requested": 1,
+        "percent": 0,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes (requested 0% clamped to 4%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-negative-clamped-up",
+      "input": {
+        "name": "percent-negative-clamped-up",
+        "requested": 1,
+        "percent": -5,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes (requested -5% clamped to 4%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-int-min",
+      "input": {
+        "name": "percent-int-min",
+        "requested": 1,
+        "percent": -2147483648,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 4% of 32768 MiB physical RAM = 1310 MiB for preview + source-bytes (requested -2147483648% clamped to 4%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-int-max",
+      "input": {
+        "name": "percent-int-max",
+        "requested": 1,
+        "percent": 2147483647,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 30923764531,
+      "line": "Memory budgets: preview cache 29491 MiB; cache share 90% of 32768 MiB physical RAM = 29491 MiB for preview + source-bytes (requested 2147483647% clamped to 90%; allowed 4-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-large-window-floor-25",
+      "input": {
+        "name": "percent-large-window-floor-25",
+        "requested": 1,
+        "percent": 5,
+        "physical": 34359738368,
+        "source": null,
+        "window": {
+          "forward": 200,
+          "backward": 50
+        }
+      },
+      "capacity": 8589934592,
+      "line": "Memory budgets: preview cache 8192 MiB; cache share 25% of 32768 MiB physical RAM = 8192 MiB for preview + source-bytes (requested 5% clamped to 25%; allowed 25-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-large-window-at-floor",
+      "input": {
+        "name": "percent-large-window-at-floor",
+        "requested": 1,
+        "percent": 25,
+        "physical": 34359738368,
+        "source": null,
+        "window": {
+          "forward": 200,
+          "backward": 50
+        }
+      },
+      "capacity": 8589934592,
+      "line": "Memory budgets: preview cache 8192 MiB; cache share 25% of 32768 MiB physical RAM = 8192 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-zero-window",
+      "input": {
+        "name": "percent-zero-window",
+        "requested": 1,
+        "percent": 1,
+        "physical": 34359738368,
+        "source": null,
+        "window": {
+          "forward": 0,
+          "backward": 0
+        }
+      },
+      "capacity": 343597383,
+      "line": "Memory budgets: preview cache 327 MiB; cache share 1% of 32768 MiB physical RAM = 327 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-negative-window",
+      "input": {
+        "name": "percent-negative-window",
+        "requested": 1,
+        "percent": 1,
+        "physical": 34359738368,
+        "source": null,
+        "window": {
+          "forward": -1,
+          "backward": -1
+        }
+      },
+      "capacity": 343597383,
+      "line": "Memory budgets: preview cache 327 MiB; cache share 1% of 32768 MiB physical RAM = 327 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-8g-default-window-floor",
+      "input": {
+        "name": "percent-8g-default-window-floor",
+        "requested": 1,
+        "percent": 5,
+        "physical": 8589934592,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1374389534,
+      "line": "Memory budgets: preview cache 1310 MiB; cache share 16% of 8192 MiB physical RAM = 1310 MiB for preview + source-bytes (requested 5% clamped to 16%; allowed 16-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-1g-floor-above-90",
+      "input": {
+        "name": "percent-1g-floor-above-90",
+        "requested": 1,
+        "percent": 50,
+        "physical": 1073741824,
+        "source": null,
+        "window": null
+      },
+      "capacity": 966367641,
+      "line": "Memory budgets: preview cache 921 MiB; cache share 90% of 1024 MiB physical RAM = 921 MiB for preview + source-bytes (requested 50% clamped to 90%; allowed 90-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-source-larger-than-share",
+      "input": {
+        "name": "percent-source-larger-than-share",
+        "requested": 1,
+        "percent": 10,
+        "physical": 34359738368,
+        "source": 4294967296,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB; cache share 10% of 32768 MiB physical RAM = 3276 MiB for preview + source-bytes, source-bytes cache 4096 MiB."
+    },
+    {
+      "name": "percent-source-equals-share",
+      "input": {
+        "name": "percent-source-equals-share",
+        "requested": 1,
+        "percent": 10,
+        "physical": 34359738368,
+        "source": 3435973836,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB; cache share 10% of 32768 MiB physical RAM = 3276 MiB for preview + source-bytes, source-bytes cache 3276 MiB."
+    },
+    {
+      "name": "percent-odd-physical-bytes",
+      "input": {
+        "name": "percent-odd-physical-bytes",
+        "requested": 1,
+        "percent": 37,
+        "physical": 17179869183,
+        "source": 123456789,
+        "window": null
+      },
+      "capacity": 6233094808,
+      "line": "Memory budgets: preview cache 5944 MiB; cache share 37% of 16383 MiB physical RAM = 6062 MiB for preview + source-bytes, source-bytes cache 117 MiB."
+    },
+    {
+      "name": "percent-physical-not-mib-multiple",
+      "input": {
+        "name": "percent-physical-not-mib-multiple",
+        "requested": 7,
+        "percent": 60,
+        "physical": 34359738367,
+        "source": 1,
+        "window": null
+      },
+      "capacity": 20615843019,
+      "line": "Memory budgets: preview cache 19660 MiB; cache share 60% of 32767 MiB physical RAM = 19660 MiB for preview + source-bytes, source-bytes cache 0 MiB."
+    },
+    {
+      "name": "percent-physical-1-byte",
+      "input": {
+        "name": "percent-physical-1-byte",
+        "requested": 1,
+        "percent": 60,
+        "physical": 1,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB; cache share 90% of 0 MiB physical RAM = 0 MiB for preview + source-bytes (requested 60% clamped to 90%; allowed 90-90%), source-bytes cache off."
+    },
+    {
+      "name": "percent-physical-long-max",
+      "input": {
+        "name": "percent-physical-long-max",
+        "requested": 1,
+        "percent": 60,
+        "physical": 9223372036854775807,
+        "source": null,
+        "window": null
+      },
+      "capacity": 5534023222112865484,
+      "line": "Memory budgets: preview cache 5277655813324 MiB; cache share 60% of 8796093022207 MiB physical RAM = 5277655813324 MiB for preview + source-bytes, source-bytes cache off."
+    },
+    {
+      "name": "percent-physical-long-max-source-big",
+      "input": {
+        "name": "percent-physical-long-max-source-big",
+        "requested": 1,
+        "percent": 60,
+        "physical": 9223372036854775807,
+        "source": 4611686018427387904,
+        "window": null
+      },
+      "capacity": 922337203685477580,
+      "line": "Memory budgets: preview cache 879609302220 MiB; cache share 60% of 8796093022207 MiB physical RAM = 5277655813324 MiB for preview + source-bytes, source-bytes cache 4398046511104 MiB."
+    },
+    {
+      "name": "percent-physical-zero-uses-bytes",
+      "input": {
+        "name": "percent-physical-zero-uses-bytes",
+        "requested": 3221225472,
+        "percent": 50,
+        "physical": 0,
+        "source": null,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB (physical RAM unknown: byte budget used), source-bytes cache off."
+    },
+    {
+      "name": "percent-physical-negative-uses-bytes",
+      "input": {
+        "name": "percent-physical-negative-uses-bytes",
+        "requested": 3221225472,
+        "percent": 50,
+        "physical": -1,
+        "source": null,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB (physical RAM unknown: byte budget used), source-bytes cache off."
+    },
+    {
+      "name": "percent-physical-zero-source-2g",
+      "input": {
+        "name": "percent-physical-zero-source-2g",
+        "requested": 3221225472,
+        "percent": 50,
+        "physical": 0,
+        "source": 2147483648,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB (physical RAM unknown: byte budget used), source-bytes cache 2048 MiB."
+    },
+    {
+      "name": "bytes-64g-of-32g-clamped-to-half",
+      "input": {
+        "name": "bytes-64g-of-32g-clamped-to-half",
+        "requested": 68719476736,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 17179869184,
+      "line": "Memory budgets: preview cache 16384 MiB (clamped from 65536 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-16g-of-32g-exactly-half",
+      "input": {
+        "name": "bytes-16g-of-32g-exactly-half",
+        "requested": 17179869184,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 17179869184,
+      "line": "Memory budgets: preview cache 16384 MiB, source-bytes cache off."
+    },
+    {
+      "name": "bytes-3g-of-32g-unclamped",
+      "input": {
+        "name": "bytes-3g-of-32g-unclamped",
+        "requested": 3221225472,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB, source-bytes cache off."
+    },
+    {
+      "name": "bytes-16g-of-32g-source-2g",
+      "input": {
+        "name": "bytes-16g-of-32g-source-2g",
+        "requested": 17179869184,
+        "percent": null,
+        "physical": 34359738368,
+        "source": 2147483648,
+        "window": null
+      },
+      "capacity": 15032385536,
+      "line": "Memory budgets: preview cache 14336 MiB (clamped from 16384 MiB to 50% of physical RAM), source-bytes cache 2048 MiB."
+    },
+    {
+      "name": "bytes-16g-of-32g-source-20g",
+      "input": {
+        "name": "bytes-16g-of-32g-source-20g",
+        "requested": 17179869184,
+        "percent": null,
+        "physical": 34359738368,
+        "source": 21474836480,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from 16384 MiB to 50% of physical RAM), source-bytes cache 20480 MiB."
+    },
+    {
+      "name": "bytes-16g-of-32g-source-16g",
+      "input": {
+        "name": "bytes-16g-of-32g-source-16g",
+        "requested": 17179869184,
+        "percent": null,
+        "physical": 34359738368,
+        "source": 17179869184,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from 16384 MiB to 50% of physical RAM), source-bytes cache 16384 MiB."
+    },
+    {
+      "name": "bytes-1-byte-shows-0-mib",
+      "input": {
+        "name": "bytes-1-byte-shows-0-mib",
+        "requested": 1,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB, source-bytes cache off."
+    },
+    {
+      "name": "bytes-zero-becomes-1",
+      "input": {
+        "name": "bytes-zero-becomes-1",
+        "requested": 0,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from 0 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-negative-becomes-1",
+      "input": {
+        "name": "bytes-negative-becomes-1",
+        "requested": -5,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from 0 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-negative-mib-truncates-toward-zero",
+      "input": {
+        "name": "bytes-negative-mib-truncates-toward-zero",
+        "requested": -1572864,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from -1 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-long-max",
+      "input": {
+        "name": "bytes-long-max",
+        "requested": 9223372036854775807,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 17179869184,
+      "line": "Memory budgets: preview cache 16384 MiB (clamped from 8796093022207 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-long-min",
+      "input": {
+        "name": "bytes-long-min",
+        "requested": -9223372036854775808,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from -8796093022208 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-not-mib-multiple",
+      "input": {
+        "name": "bytes-not-mib-multiple",
+        "requested": 1572865,
+        "percent": null,
+        "physical": 34359738368,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1572865,
+      "line": "Memory budgets: preview cache 1 MiB, source-bytes cache off."
+    },
+    {
+      "name": "bytes-physical-unknown",
+      "input": {
+        "name": "bytes-physical-unknown",
+        "requested": 3221225472,
+        "percent": null,
+        "physical": 0,
+        "source": null,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB (physical RAM unknown: byte budget used), source-bytes cache off."
+    },
+    {
+      "name": "bytes-physical-unknown-zero-request",
+      "input": {
+        "name": "bytes-physical-unknown-zero-request",
+        "requested": 0,
+        "percent": null,
+        "physical": 0,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (physical RAM unknown: byte budget used) (clamped from 0 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-physical-unknown-source",
+      "input": {
+        "name": "bytes-physical-unknown-source",
+        "requested": 3221225472,
+        "percent": null,
+        "physical": -7,
+        "source": 2147483648,
+        "window": null
+      },
+      "capacity": 3221225472,
+      "line": "Memory budgets: preview cache 3072 MiB (physical RAM unknown: byte budget used), source-bytes cache 2048 MiB."
+    },
+    {
+      "name": "bytes-physical-odd",
+      "input": {
+        "name": "bytes-physical-odd",
+        "requested": 68719476736,
+        "percent": null,
+        "physical": 17179869183,
+        "source": 1048577,
+        "window": null
+      },
+      "capacity": 8588886014,
+      "line": "Memory budgets: preview cache 8190 MiB (clamped from 65536 MiB to 50% of physical RAM), source-bytes cache 1 MiB."
+    },
+    {
+      "name": "bytes-physical-1-byte",
+      "input": {
+        "name": "bytes-physical-1-byte",
+        "requested": 68719476736,
+        "percent": null,
+        "physical": 1,
+        "source": null,
+        "window": null
+      },
+      "capacity": 1,
+      "line": "Memory budgets: preview cache 0 MiB (clamped from 65536 MiB to 50% of physical RAM), source-bytes cache off."
+    },
+    {
+      "name": "bytes-physical-long-max",
+      "input": {
+        "name": "bytes-physical-long-max",
+        "requested": 68719476736,
+        "percent": null,
+        "physical": 9223372036854775807,
+        "source": null,
+        "window": null
+      },
+      "capacity": 68719476736,
+      "line": "Memory budgets: preview cache 65536 MiB, source-bytes cache off."
+    }
+  ]
+}

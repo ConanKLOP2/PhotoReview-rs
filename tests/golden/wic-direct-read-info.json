@@ -1,0 +1,456 @@
+{
+  "generator": "oracle-cs wic-direct-read-info",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "environment",
+      "os_version": "10.0.26300.0",
+      "windowscodecs_version": "10.0.26100.9711 (WinBuild.160101.0800)"
+    },
+    {
+      "name": "plain",
+      "file": "plain-64x48.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "reader_calls": [
+        {
+          "file": "plain-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "rot6",
+      "file": "rot6-64x48.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 6,
+        "width": 48,
+        "height": 64
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "rot6flat",
+      "file": "rot6-64x1.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 1,
+        "orientation": 6,
+        "width": 1,
+        "height": 64
+      },
+      "reader_calls": [
+        {
+          "file": "rot6-64x1.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-0",
+      "file": "orient-0-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-0-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-1",
+      "file": "orient-1-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-1-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-2",
+      "file": "orient-2-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 2,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-2-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-3",
+      "file": "orient-3-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 3,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-3-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-4",
+      "file": "orient-4-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 4,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-4-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-5",
+      "file": "orient-5-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 5,
+        "width": 80,
+        "height": 120
+      },
+      "reader_calls": [
+        {
+          "file": "orient-5-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-6",
+      "file": "orient-6-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 6,
+        "width": 80,
+        "height": 120
+      },
+      "reader_calls": [
+        {
+          "file": "orient-6-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-7",
+      "file": "orient-7-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 7,
+        "width": 80,
+        "height": 120
+      },
+      "reader_calls": [
+        {
+          "file": "orient-7-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-8",
+      "file": "orient-8-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 8,
+        "width": 80,
+        "height": 120
+      },
+      "reader_calls": [
+        {
+          "file": "orient-8-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "orient-9",
+      "file": "orient-9-120x80.jpg",
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "reader_calls": [
+        {
+          "file": "orient-9-120x80.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "png-bgra32",
+      "file": "gradient-64x48-bgra32.png",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "reader_calls": [
+        {
+          "file": "gradient-64x48-bgra32.png",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "tiff-make",
+      "file": "tiff-make-32x24.tif",
+      "ok": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "orientation": 1,
+        "width": 32,
+        "height": 24
+      },
+      "reader_calls": [
+        {
+          "file": "tiff-make-32x24.tif",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "icc-p3-jpeg",
+      "file": "icc-p3-64x48.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "reader_calls": [
+        {
+          "file": "icc-p3-64x48.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "huge-65500-header-only",
+      "file": "huge-65500.jpg",
+      "ok": {
+        "pixel_width": 65500,
+        "pixel_height": 65500,
+        "orientation": 1,
+        "width": 65500,
+        "height": 65500
+      },
+      "reader_calls": [
+        {
+          "file": "huge-65500.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "truncated-30",
+      "file": "truncated-400x300-30.jpg",
+      "ok": {
+        "pixel_width": 400,
+        "pixel_height": 300,
+        "orientation": 1,
+        "width": 400,
+        "height": 300
+      },
+      "reader_calls": [
+        {
+          "file": "truncated-400x300-30.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-text",
+      "file": "text.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "text.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-empty-file",
+      "file": "empty.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "The component cannot be found. (0x88982F50)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "empty.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-header-garbage",
+      "file": "header-garbage.jpg",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292319,
+        "message": "The image header is unrecognized. (0x88982F61)",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      },
+      "reader_calls": [
+        {
+          "file": "header-garbage.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-missing-file",
+      "missing": "missing.jpg",
+      "error": {
+        "type": "System.IO.FileNotFoundException",
+        "hresult": -2147024894,
+        "message": "Could not find file '<fixtures>\\missing.jpg'.",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "missing.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-missing-directory",
+      "missing_dir": "x.jpg",
+      "error": {
+        "type": "System.IO.DirectoryNotFoundException",
+        "hresult": -2147024893,
+        "message": "Could not find a part of the path '<fixtures>\\no-such-dir\\x.jpg'.",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": [
+        {
+          "file": "x.jpg",
+          "priority": "Viewer",
+          "buffer_size": 65536
+        }
+      ]
+    },
+    {
+      "name": "fail-empty-path",
+      "path": "",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": []
+    },
+    {
+      "name": "fail-blank-path",
+      "path": "   ",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      },
+      "reader_calls": []
+    }
+  ]
+}

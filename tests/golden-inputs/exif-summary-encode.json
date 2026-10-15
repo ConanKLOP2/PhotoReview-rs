@@ -1,0 +1,26 @@
+{
+  "cases": [
+    { "name": "empty-summary", "date_ticks": null },
+    { "name": "date-only", "date_ticks": 638501690020000000 },
+    { "name": "date-min-ticks-zero", "date_ticks": 0 },
+    { "name": "date-max-ticks", "date_ticks": 3155378975999999999 },
+    { "name": "make-only", "make": "Canon" },
+    { "name": "model-only", "model": "X100V", "f_number": [2, 1] },
+    { "name": "iso-and-exposure", "iso": 12800, "exposure": [30, 1] },
+    { "name": "lens-unicode", "lens": "\u1ed0ng k\u00ednh 50mm \u0192/1.8 \ud83d\ude00" },
+    { "name": "full", "date_ticks": 638501690020000000, "make": "Canon", "model": "Canon EOS R5", "lens": "RF24-70mm F2.8 L IS USM", "iso": 400, "focal": [50, 1], "f_number": [28, 10], "exposure": [1, 250] },
+    { "name": "empty-string-make-sets-bit-decodes-null", "make": "" },
+    { "name": "empty-string-make-keeps-iso", "make": "", "iso": 400 },
+    { "name": "make-200-e-acute-cut-at-255-bytes", "make": "", "make_repeat": { "text": "\u00e9", "count": 200 } },
+    { "name": "make-300-ascii-cut-at-255-bytes", "make": "", "make_repeat": { "text": "a", "count": 300 } },
+    { "name": "make-85-cjk-exactly-255-bytes", "make": "", "make_repeat": { "text": "\u65e5", "count": 85 } },
+    { "name": "make-86-cjk-cut-at-255-bytes", "make": "", "make_repeat": { "text": "\u65e5", "count": 86 } },
+    { "name": "unsanitised-whitespace-make-is-resanitised", "make": "  Canon  " },
+    { "name": "iso-zero-roundtrips-to-null", "iso": 0, "make": "Canon" },
+    { "name": "iso-negative", "iso": -5, "make": "Canon" },
+    { "name": "iso-int-max-written-then-dropped", "iso": 2147483647, "make": "Canon" },
+    { "name": "rational-zero-zero-written-then-dropped", "focal": [0, 0], "make": "Canon" },
+    { "name": "rational-zero-denominator-alone-decodes-null", "focal": [5, 0] },
+    { "name": "rational-max", "focal": [4294967295, 4294967295] }
+  ]
+}

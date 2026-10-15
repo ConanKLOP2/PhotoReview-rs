@@ -1,0 +1,132 @@
+{
+ "cases": [
+  {
+   "name": "exception",
+   "type": "Exception"
+  },
+  {
+   "name": "ioexception",
+   "type": "IOException"
+  },
+  {
+   "name": "filenotfoundexception",
+   "type": "FileNotFoundException"
+  },
+  {
+   "name": "directorynotfoundexception",
+   "type": "DirectoryNotFoundException"
+  },
+  {
+   "name": "endofstreamexception",
+   "type": "EndOfStreamException"
+  },
+  {
+   "name": "pathtoolongexception",
+   "type": "PathTooLongException"
+  },
+  {
+   "name": "decodermemoryadmissionexception",
+   "type": "DecoderMemoryAdmissionException"
+  },
+  {
+   "name": "unauthorizedaccessexception",
+   "type": "UnauthorizedAccessException"
+  },
+  {
+   "name": "notsupportedexception",
+   "type": "NotSupportedException"
+  },
+  {
+   "name": "missingimagecodecexception",
+   "type": "MissingImageCodecException"
+  },
+  {
+   "name": "platformnotsupportedexception",
+   "type": "PlatformNotSupportedException"
+  },
+  {
+   "name": "formatexception",
+   "type": "FormatException"
+  },
+  {
+   "name": "invaliddataexception",
+   "type": "InvalidDataException"
+  },
+  {
+   "name": "argumentexception",
+   "type": "ArgumentException"
+  },
+  {
+   "name": "argumentnullexception",
+   "type": "ArgumentNullException"
+  },
+  {
+   "name": "argumentoutofrangeexception",
+   "type": "ArgumentOutOfRangeException"
+  },
+  {
+   "name": "invalidoperationexception",
+   "type": "InvalidOperationException"
+  },
+  {
+   "name": "objectdisposedexception",
+   "type": "ObjectDisposedException"
+  },
+  {
+   "name": "overflowexception",
+   "type": "OverflowException"
+  },
+  {
+   "name": "invalidcastexception",
+   "type": "InvalidCastException"
+  },
+  {
+   "name": "comexception",
+   "type": "COMException"
+  },
+  {
+   "name": "comexception-e_outofmemory",
+   "type": "COMException-E_OUTOFMEMORY"
+  },
+  {
+   "name": "operationcanceledexception",
+   "type": "OperationCanceledException"
+  },
+  {
+   "name": "taskcanceledexception",
+   "type": "TaskCanceledException"
+  },
+  {
+   "name": "outofmemoryexception",
+   "type": "OutOfMemoryException"
+  },
+  {
+   "name": "insufficientmemoryexception",
+   "type": "InsufficientMemoryException"
+  },
+  {
+   "name": "decoderbusyexception",
+   "type": "DecoderBusyException"
+  },
+  {
+   "name": "dllnotfoundexception",
+   "type": "DllNotFoundException"
+  },
+  {
+   "name": "badimageformatexception",
+   "type": "BadImageFormatException"
+  },
+  {
+   "name": "entrypointnotfoundexception",
+   "type": "EntryPointNotFoundException"
+  },
+  {
+   "name": "nullreferenceexception",
+   "type": "NullReferenceException"
+  },
+  {
+   "name": "timeoutexception",
+   "type": "TimeoutException"
+  }
+ ]
+}

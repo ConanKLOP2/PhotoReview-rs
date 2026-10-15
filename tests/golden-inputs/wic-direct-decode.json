@@ -1,0 +1,779 @@
+{
+  "generator": "oracle-cs wic-direct-decode (W4-11c)",
+  "fixtures_dir": "../fixtures/wic-direct",
+  "cases": [
+    {
+      "name": "size-plain-64x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 48
+    },
+    {
+      "name": "size-plain-64x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 0
+    },
+    {
+      "name": "size-plain-0x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 48
+    },
+    {
+      "name": "size-plain-65x49",
+      "file": "plain-64x48.jpg",
+      "box_w": 65,
+      "box_h": 49
+    },
+    {
+      "name": "size-plain-640x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 480
+    },
+    {
+      "name": "size-plain-640x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 0
+    },
+    {
+      "name": "size-plain-0x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 480
+    },
+    {
+      "name": "size-plain-63x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 0
+    },
+    {
+      "name": "size-plain-0x47",
+      "file": "plain-64x48.jpg",
+      "box_w": 0,
+      "box_h": 47
+    },
+    {
+      "name": "size-plain-640x47",
+      "file": "plain-64x48.jpg",
+      "box_w": 640,
+      "box_h": 47
+    },
+    {
+      "name": "size-plain-63x480",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 480
+    },
+    {
+      "name": "size-plain-32x24",
+      "file": "plain-64x48.jpg",
+      "box_w": 32,
+      "box_h": 24
+    },
+    {
+      "name": "size-plain-40x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 40,
+      "box_h": 0
+    },
+    {
+      "name": "size-plain-10x10",
+      "file": "plain-64x48.jpg",
+      "box_w": 10,
+      "box_h": 10
+    },
+    {
+      "name": "size-flatwide-63x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 0
+    },
+    {
+      "name": "size-flatwide-63x480",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 480
+    },
+    {
+      "name": "size-flatwide-64x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 64,
+      "box_h": 0
+    },
+    {
+      "name": "size-flatwide-640x1",
+      "file": "flat-64x1.jpg",
+      "box_w": 640,
+      "box_h": 1
+    },
+    {
+      "name": "size-flattall-0x63",
+      "file": "flat-1x64.jpg",
+      "box_w": 0,
+      "box_h": 63
+    },
+    {
+      "name": "size-flattall-480x63",
+      "file": "flat-1x64.jpg",
+      "box_w": 480,
+      "box_h": 63
+    },
+    {
+      "name": "size-flattall-0x64",
+      "file": "flat-1x64.jpg",
+      "box_w": 0,
+      "box_h": 64
+    },
+    {
+      "name": "size-flattall-1x640",
+      "file": "flat-1x64.jpg",
+      "box_w": 1,
+      "box_h": 640
+    },
+    {
+      "name": "size-short-32x0",
+      "file": "short-64x3.jpg",
+      "box_w": 32,
+      "box_h": 0
+    },
+    {
+      "name": "size-short-0x1",
+      "file": "short-64x3.jpg",
+      "box_w": 0,
+      "box_h": 1
+    },
+    {
+      "name": "size-short-640x1",
+      "file": "short-64x3.jpg",
+      "box_w": 640,
+      "box_h": 1
+    },
+    {
+      "name": "size-narrow-0x32",
+      "file": "narrow-3x64.jpg",
+      "box_w": 0,
+      "box_h": 32
+    },
+    {
+      "name": "size-narrow-1x0",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 0
+    },
+    {
+      "name": "size-narrow-1x640",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 640
+    },
+    {
+      "name": "bytes-plain-63x0",
+      "file": "plain-64x48.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "from_bytes": true
+    },
+    {
+      "name": "bytes-plain-64x48",
+      "file": "plain-64x48.jpg",
+      "box_w": 64,
+      "box_h": 48,
+      "from_bytes": true
+    },
+    {
+      "name": "bytes-flatwide-63x0",
+      "file": "flat-64x1.jpg",
+      "box_w": 63,
+      "box_h": 0,
+      "from_bytes": true
+    },
+    {
+      "name": "bytes-short-0x1",
+      "file": "short-64x3.jpg",
+      "box_w": 0,
+      "box_h": 1,
+      "from_bytes": true
+    },
+    {
+      "name": "bytes-narrow-1x0",
+      "file": "narrow-3x64.jpg",
+      "box_w": 1,
+      "box_h": 0,
+      "from_bytes": true
+    },
+    {
+      "name": "bytes-plain-10x10",
+      "file": "plain-64x48.jpg",
+      "box_w": 10,
+      "box_h": 10,
+      "from_bytes": true
+    },
+    {
+      "name": "rotated-rot6-48x64",
+      "file": "rot6-64x48.jpg",
+      "box_w": 48,
+      "box_h": 64
+    },
+    {
+      "name": "rotated-rot6-480x640",
+      "file": "rot6-64x48.jpg",
+      "box_w": 480,
+      "box_h": 640
+    },
+    {
+      "name": "rotated-rot6-0x64",
+      "file": "rot6-64x48.jpg",
+      "box_w": 0,
+      "box_h": 64
+    },
+    {
+      "name": "rotated-rot6-48x0",
+      "file": "rot6-64x48.jpg",
+      "box_w": 48,
+      "box_h": 0
+    },
+    {
+      "name": "rotated-rot6-47x0",
+      "file": "rot6-64x48.jpg",
+      "box_w": 47,
+      "box_h": 0
+    },
+    {
+      "name": "rotated-rot6-0x63",
+      "file": "rot6-64x48.jpg",
+      "box_w": 0,
+      "box_h": 63
+    },
+    {
+      "name": "rotated-rot6-480x63",
+      "file": "rot6-64x48.jpg",
+      "box_w": 480,
+      "box_h": 63
+    },
+    {
+      "name": "rotated-rot6-24x32",
+      "file": "rot6-64x48.jpg",
+      "box_w": 24,
+      "box_h": 32
+    },
+    {
+      "name": "rotated-rot6flat-0x63",
+      "file": "rot6-64x1.jpg",
+      "box_w": 0,
+      "box_h": 63
+    },
+    {
+      "name": "rotated-rot6flat-480x63",
+      "file": "rot6-64x1.jpg",
+      "box_w": 480,
+      "box_h": 63
+    },
+    {
+      "name": "rotated-rot6flat-0x64",
+      "file": "rot6-64x1.jpg",
+      "box_w": 0,
+      "box_h": 64
+    },
+    {
+      "name": "rotated-rot6flat-1x640",
+      "file": "rot6-64x1.jpg",
+      "box_w": 1,
+      "box_h": 640
+    },
+    {
+      "name": "rot6-no-apply-keeps-stored",
+      "file": "rot6-64x48.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "rot6-no-apply-box-fits-stored-grid",
+      "file": "rot6-64x48.jpg",
+      "box_w": 32,
+      "box_h": 1000,
+      "apply_orientation": false
+    },
+    {
+      "name": "plain-source6-no-apply-ignored",
+      "file": "plain-64x48.jpg",
+      "apply_orientation": false,
+      "source_orientation": 6
+    },
+    {
+      "name": "plain-source6-apply-rotates",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 6
+    },
+    {
+      "name": "plain-source6-apply-box",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 6,
+      "box_w": 24,
+      "box_h": 0
+    },
+    {
+      "name": "rot6-source1-overrides-exif",
+      "file": "rot6-64x48.jpg",
+      "source_orientation": 1
+    },
+    {
+      "name": "rot6-source3-overrides-exif",
+      "file": "rot6-64x48.jpg",
+      "source_orientation": 3
+    },
+    {
+      "name": "plain-source9-reported-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 9
+    },
+    {
+      "name": "plain-source0-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": 0
+    },
+    {
+      "name": "plain-source-minus1-not-applied",
+      "file": "plain-64x48.jpg",
+      "source_orientation": -1
+    },
+    {
+      "name": "orient-0-apply",
+      "file": "orient-0-120x80.jpg"
+    },
+    {
+      "name": "orient-0-no-apply",
+      "file": "orient-0-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-0-box-50x50",
+      "file": "orient-0-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-1-apply",
+      "file": "orient-1-120x80.jpg"
+    },
+    {
+      "name": "orient-1-no-apply",
+      "file": "orient-1-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-1-box-50x50",
+      "file": "orient-1-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-2-apply",
+      "file": "orient-2-120x80.jpg"
+    },
+    {
+      "name": "orient-2-no-apply",
+      "file": "orient-2-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-2-box-50x50",
+      "file": "orient-2-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-3-apply",
+      "file": "orient-3-120x80.jpg"
+    },
+    {
+      "name": "orient-3-no-apply",
+      "file": "orient-3-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-3-box-50x50",
+      "file": "orient-3-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-4-apply",
+      "file": "orient-4-120x80.jpg"
+    },
+    {
+      "name": "orient-4-no-apply",
+      "file": "orient-4-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-4-box-50x50",
+      "file": "orient-4-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-5-apply",
+      "file": "orient-5-120x80.jpg"
+    },
+    {
+      "name": "orient-5-no-apply",
+      "file": "orient-5-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-5-box-50x50",
+      "file": "orient-5-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-6-apply",
+      "file": "orient-6-120x80.jpg"
+    },
+    {
+      "name": "orient-6-no-apply",
+      "file": "orient-6-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-6-box-50x50",
+      "file": "orient-6-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-7-apply",
+      "file": "orient-7-120x80.jpg"
+    },
+    {
+      "name": "orient-7-no-apply",
+      "file": "orient-7-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-7-box-50x50",
+      "file": "orient-7-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-8-apply",
+      "file": "orient-8-120x80.jpg"
+    },
+    {
+      "name": "orient-8-no-apply",
+      "file": "orient-8-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-8-box-50x50",
+      "file": "orient-8-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "orient-9-apply",
+      "file": "orient-9-120x80.jpg"
+    },
+    {
+      "name": "orient-9-no-apply",
+      "file": "orient-9-120x80.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "orient-9-box-50x50",
+      "file": "orient-9-120x80.jpg",
+      "box_w": 50,
+      "box_h": 50
+    },
+    {
+      "name": "dct-400x300-to-100",
+      "file": "gradient-400x300.jpg",
+      "box_w": 100
+    },
+    {
+      "name": "dct-400x300-to-150",
+      "file": "gradient-400x300.jpg",
+      "box_w": 150
+    },
+    {
+      "name": "dct-400x300-to-399",
+      "file": "gradient-400x300.jpg",
+      "box_w": 399
+    },
+    {
+      "name": "dct-800x600-to-100",
+      "file": "gradient-800x600.jpg",
+      "box_w": 100
+    },
+    {
+      "name": "dct-800x600-to-333",
+      "file": "gradient-800x600.jpg",
+      "box_w": 333
+    },
+    {
+      "name": "dct-800x600-box-0x75",
+      "file": "gradient-800x600.jpg",
+      "box_h": 75
+    },
+    {
+      "name": "dct-800x600-to-100-bytes",
+      "file": "gradient-800x600.jpg",
+      "box_w": 100,
+      "from_bytes": true
+    },
+    {
+      "name": "full-400x300",
+      "file": "gradient-400x300.jpg"
+    },
+    {
+      "name": "format-png-bgra32",
+      "file": "gradient-64x48-bgra32.png"
+    },
+    {
+      "name": "format-png-bgra32-box-16",
+      "file": "gradient-64x48-bgra32.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-bgr24",
+      "file": "gradient-64x48-bgr24.png"
+    },
+    {
+      "name": "format-png-bgr24-box-16",
+      "file": "gradient-64x48-bgr24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-gray8",
+      "file": "gray8-32x24.png"
+    },
+    {
+      "name": "format-png-gray8-box-16",
+      "file": "gray8-32x24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-gray16",
+      "file": "gray16-32x24.png"
+    },
+    {
+      "name": "format-png-gray16-box-16",
+      "file": "gray16-32x24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-bw",
+      "file": "bw-32x24.png"
+    },
+    {
+      "name": "format-png-bw-box-16",
+      "file": "bw-32x24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-indexed8",
+      "file": "indexed8-32x24.png"
+    },
+    {
+      "name": "format-png-indexed8-box-16",
+      "file": "indexed8-32x24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-png-rgb48",
+      "file": "rgb48-32x24.png"
+    },
+    {
+      "name": "format-png-rgb48-box-16",
+      "file": "rgb48-32x24.png",
+      "box_w": 16
+    },
+    {
+      "name": "format-bmp-bgr24",
+      "file": "bgr24-32x24.bmp"
+    },
+    {
+      "name": "format-bmp-bgr24-box-16",
+      "file": "bgr24-32x24.bmp",
+      "box_w": 16
+    },
+    {
+      "name": "format-tiff-cmyk32",
+      "file": "cmyk32-32x24.tif"
+    },
+    {
+      "name": "format-tiff-cmyk32-box-16",
+      "file": "cmyk32-32x24.tif",
+      "box_w": 16
+    },
+    {
+      "name": "exif-tiff-make",
+      "file": "tiff-make-32x24.tif"
+    },
+    {
+      "name": "exif-jpeg-make",
+      "file": "jpeg-make-32x24.jpg"
+    },
+    {
+      "name": "exif-jpeg-make-no-apply",
+      "file": "jpeg-make-32x24.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "exif-jpeg-make-source-orientation",
+      "file": "jpeg-make-32x24.jpg",
+      "source_orientation": 3
+    },
+    {
+      "name": "exif-png-none",
+      "file": "gradient-64x48-bgra32.png"
+    },
+    {
+      "name": "colorspace-none",
+      "file": "orange-cs-none.jpg"
+    },
+    {
+      "name": "colorspace-srgb",
+      "file": "orange-cs-1.jpg"
+    },
+    {
+      "name": "colorspace-adobe",
+      "file": "orange-cs-2.jpg"
+    },
+    {
+      "name": "colorspace-adobe-box",
+      "file": "orange-cs-2.jpg",
+      "box_w": 16
+    },
+    {
+      "name": "icc-p3-jpeg",
+      "file": "icc-p3-64x48.jpg"
+    },
+    {
+      "name": "icc-p3-jpeg-bytes",
+      "file": "icc-p3-64x48.jpg",
+      "from_bytes": true
+    },
+    {
+      "name": "icc-p3-jpeg-box",
+      "file": "icc-p3-64x48.jpg",
+      "box_w": 32
+    },
+    {
+      "name": "icc-p3-png-alpha",
+      "file": "icc-p3-alpha-64x48.png"
+    },
+    {
+      "name": "icc-p3-png-alpha-box",
+      "file": "icc-p3-alpha-64x48.png",
+      "box_w": 32
+    },
+    {
+      "name": "seam-preload-priority",
+      "file": "plain-64x48.jpg",
+      "priority": "Preload"
+    },
+    {
+      "name": "seam-viewer-priority",
+      "file": "plain-64x48.jpg"
+    },
+    {
+      "name": "bytes-with-empty-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": ""
+    },
+    {
+      "name": "bytes-with-blank-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "   "
+    },
+    {
+      "name": "bytes-with-missing-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "C:\\nowhere\\label.jpg"
+    },
+    {
+      "name": "bytes-win-over-path-label",
+      "file": "plain-64x48.jpg",
+      "from_bytes": true,
+      "label": "text.jpg"
+    },
+    {
+      "name": "fail-missing-file",
+      "missing": "missing.jpg"
+    },
+    {
+      "name": "fail-missing-directory",
+      "missing_dir": "x.jpg"
+    },
+    {
+      "name": "fail-empty-path",
+      "path": ""
+    },
+    {
+      "name": "fail-blank-path",
+      "path": "   "
+    },
+    {
+      "name": "fail-tab-path",
+      "path": "\t"
+    },
+    {
+      "name": "fail-text",
+      "file": "text.jpg"
+    },
+    {
+      "name": "fail-text-bytes",
+      "file": "text.jpg",
+      "from_bytes": true
+    },
+    {
+      "name": "fail-empty-file",
+      "file": "empty.jpg"
+    },
+    {
+      "name": "fail-empty-bytes",
+      "file": "empty.jpg",
+      "from_bytes": true
+    },
+    {
+      "name": "fail-header-garbage",
+      "file": "header-garbage.jpg"
+    },
+    {
+      "name": "fail-truncated-30",
+      "file": "truncated-400x300-30.jpg"
+    },
+    {
+      "name": "fail-truncated-30-box",
+      "file": "truncated-400x300-30.jpg",
+      "box_w": 100
+    },
+    {
+      "name": "fail-truncated-60",
+      "file": "truncated-128x96-60.jpg"
+    },
+    {
+      "name": "fail-huge-65500-admission",
+      "file": "huge-65500.jpg"
+    },
+    {
+      "name": "fail-huge-65500-admission-no-apply",
+      "file": "huge-65500.jpg",
+      "apply_orientation": false
+    },
+    {
+      "name": "fail-huge-65500-box",
+      "file": "huge-65500.jpg",
+      "box_w": 1000,
+      "box_h": 1000
+    }
+  ]
+}

@@ -1,0 +1,357 @@
+{
+  "generator": "oracle-cs disk-cache-stale-temp",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "deletes-old-tmp-keeps-fresh-and-non-tmp",
+      "input": {
+        "name": "deletes-old-tmp-keeps-fresh-and-non-tmp",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 100,
+        "files": [
+          {
+            "name": "a.png.1.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:45:00Z"
+          },
+          {
+            "name": "b.png.2.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:59:00Z"
+          },
+          {
+            "name": "c.pv4",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [
+        "b.png.2.tmp",
+        "c.pv4"
+      ],
+      "log": []
+    },
+    {
+      "name": "exactly-ten-minutes-old-is-kept",
+      "input": {
+        "name": "exactly-ten-minutes-old-is-kept",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 100,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:50:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "ten-minutes-and-one-tick-is-deleted",
+      "input": {
+        "name": "ten-minutes-and-one-tick-is-deleted",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 100,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:49:59.9999999Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "max-files-caps-deletions",
+      "input": {
+        "name": "max-files-caps-deletions",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 2,
+        "files": [
+          {
+            "name": "f0.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          },
+          {
+            "name": "f1.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          },
+          {
+            "name": "f2.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          },
+          {
+            "name": "f3.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          },
+          {
+            "name": "f4.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 2,
+      "survivors": [
+        "f2.tmp",
+        "f3.tmp",
+        "f4.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "max-files-counts-fresh-files-too",
+      "input": {
+        "name": "max-files-counts-fresh-files-too",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 2,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:59:00Z"
+          },
+          {
+            "name": "b.tmp",
+            "size": 3,
+            "write": "2020-01-01T11:59:00Z"
+          },
+          {
+            "name": "c.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp",
+        "b.tmp",
+        "c.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "max-files-zero-deletes-nothing",
+      "input": {
+        "name": "max-files-zero-deletes-nothing",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 0,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "max-files-negative-deletes-nothing",
+      "input": {
+        "name": "max-files-negative-deletes-nothing",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": -1,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "supplied-clock-not-wall-clock",
+      "input": {
+        "name": "supplied-clock-not-wall-clock",
+        "utc_now": "2020-01-01T00:05:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "supplied-clock-later-deletes",
+      "input": {
+        "name": "supplied-clock-later-deletes",
+        "utc_now": "2020-01-01T00:12:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "future-write-time-is-kept",
+      "input": {
+        "name": "future-write-time-is-kept",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2030-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": []
+    },
+    {
+      "name": "upper-case-extension-matches",
+      "input": {
+        "name": "upper-case-extension-matches",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "A.TMP",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "tmp-not-at-the-end-does-not-match",
+      "input": {
+        "name": "tmp-not-at-the-end-does-not-match",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "a.tmp.png",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          },
+          {
+            "name": "b.tmpx",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 0,
+      "survivors": [
+        "a.tmp.png",
+        "b.tmpx"
+      ],
+      "log": []
+    },
+    {
+      "name": "directory-named-tmp-is-not-a-file",
+      "input": {
+        "name": "directory-named-tmp-is-not-a-file",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "d.tmp",
+            "dir": true
+          },
+          {
+            "name": "e.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "missing-directory-returns-zero",
+      "input": {
+        "name": "missing-directory-returns-zero",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [],
+        "target": "missing"
+      },
+      "removed": 0,
+      "survivors": [],
+      "log": []
+    },
+    {
+      "name": "read-only-stale-tmp-is-logged-and-not-counted",
+      "input": {
+        "name": "read-only-stale-tmp-is-logged-and-not-counted",
+        "utc_now": "2020-01-01T12:00:00Z",
+        "max_files": 10,
+        "files": [
+          {
+            "name": "a.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z",
+            "readonly": true
+          },
+          {
+            "name": "b.tmp",
+            "size": 3,
+            "write": "2020-01-01T10:00:00Z"
+          }
+        ]
+      },
+      "removed": 1,
+      "survivors": [
+        "a.tmp"
+      ],
+      "log": [
+        {
+          "message": "Delete failed: <ROOT>\\a.tmp",
+          "exception": "UnauthorizedAccessException"
+        }
+      ]
+    }
+  ]
+}

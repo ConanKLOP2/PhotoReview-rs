@@ -1,0 +1,560 @@
+{
+  "generator": "oracle-cs embedded-thumbnail-read",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "normal-thumb-160",
+      "file": "thumb-main480-thumb160.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 160,
+        "height": 160,
+        "layout": "Pbgra32",
+        "estimated_bytes": 102400,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 480,
+        "original_height": 480,
+        "backend": "Wpf",
+        "pixels_sha256": "018c12d4edaf23113091c3d180077e9a5febe714f4be6e36e5264ac1c08ce0ae",
+        "corners": [
+          "254,0,0,255",
+          "254,0,0,255",
+          "254,0,0,255",
+          "254,0,0,255"
+        ],
+        "center": "254,0,0,255"
+      }
+    },
+    {
+      "name": "no-thumbnail-plain-jpeg",
+      "file": "plain-main64.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "bomb-claimed-20000",
+      "file": "bomb-claimed-20000.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "bomb-claimed-65535",
+      "file": "bomb-claimed-65535.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "real-thumb-160",
+      "file": "real-thumb-160.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 160,
+        "height": 160,
+        "layout": "Pbgra32",
+        "estimated_bytes": 102400,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 480,
+        "original_height": 480,
+        "backend": "Wpf",
+        "pixels_sha256": "9bc5082c930baa15896c1967edeaeb617986d7124c9790ecef64c1a1f8109295",
+        "corners": [
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255"
+        ],
+        "center": "1,1,1,255"
+      }
+    },
+    {
+      "name": "real-thumb-400",
+      "file": "real-thumb-400.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 400,
+        "height": 400,
+        "layout": "Pbgra32",
+        "estimated_bytes": 640000,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 480,
+        "original_height": 480,
+        "backend": "Wpf",
+        "pixels_sha256": "6cc9421cf8697d5b443a9765a75d01d6c86807c4a69fa68fe7110f978365dff2",
+        "corners": [
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255"
+        ],
+        "center": "1,1,1,255"
+      }
+    },
+    {
+      "name": "real-thumb-480",
+      "file": "real-thumb-480.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 480,
+        "height": 480,
+        "layout": "Pbgra32",
+        "estimated_bytes": 921600,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 480,
+        "original_height": 480,
+        "backend": "Wpf",
+        "pixels_sha256": "35b9bf73550a8a86e7433d7275bba66784079b0f8b975078118dab107d0b1f8b",
+        "corners": [
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255",
+          "1,1,1,255"
+        ],
+        "center": "1,1,1,255"
+      }
+    },
+    {
+      "name": "real-thumb-512",
+      "file": "real-thumb-512.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "real-thumb-600",
+      "file": "real-thumb-600.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "real-thumb-1100",
+      "file": "real-thumb-1100.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "quad-no-orientation",
+      "file": "quad-no-orientation.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "7e32950ca513bc8a7244d8396cbdde30bd093fd86a761f87363aa8adce330030",
+        "corners": [
+          "12,0,252,255",
+          "0,255,0,255",
+          "243,4,0,255",
+          "255,251,255,255"
+        ],
+        "center": "255,245,246,255"
+      }
+    },
+    {
+      "name": "quad-orientation-1",
+      "file": "quad-orientation-1.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "7e32950ca513bc8a7244d8396cbdde30bd093fd86a761f87363aa8adce330030",
+        "corners": [
+          "12,0,252,255",
+          "0,255,0,255",
+          "243,4,0,255",
+          "255,251,255,255"
+        ],
+        "center": "255,245,246,255"
+      }
+    },
+    {
+      "name": "quad-orientation-2",
+      "file": "quad-orientation-2.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 2,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "bfe9870c491e4e0c7509db39996ac4eca8b374661bfac4875afb1c62e9a19b4d",
+        "corners": [
+          "0,255,0,255",
+          "12,0,252,255",
+          "255,251,255,255",
+          "243,4,0,255"
+        ],
+        "center": "187,1,23,255"
+      }
+    },
+    {
+      "name": "quad-orientation-3",
+      "file": "quad-orientation-3.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 3,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "4dc27bc1026ddbaa4c6a9b268297e02cce69f6f46f69a99b0ecb2802c9b15df4",
+        "corners": [
+          "255,251,255,255",
+          "243,4,0,255",
+          "0,255,0,255",
+          "12,0,252,255"
+        ],
+        "center": "0,49,166,255"
+      }
+    },
+    {
+      "name": "quad-orientation-4",
+      "file": "quad-orientation-4.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 4,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "39a1e9b523fc6a153b0229dbc6832e8c305b2255e4f54d61d4fc2c967d0f0fde",
+        "corners": [
+          "243,4,0,255",
+          "255,251,255,255",
+          "12,0,252,255",
+          "0,255,0,255"
+        ],
+        "center": "17,217,76,255"
+      }
+    },
+    {
+      "name": "quad-orientation-5",
+      "file": "quad-orientation-5.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 8,
+        "height": 16,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 5,
+        "original_width": 32,
+        "original_height": 48,
+        "backend": "Wpf",
+        "pixels_sha256": "e2e5b66562b4b89017b7a89765cfd38bc870c6e034574d9907ed22f2c2fd1fd5",
+        "corners": [
+          "12,0,252,255",
+          "243,4,0,255",
+          "0,255,0,255",
+          "255,251,255,255"
+        ],
+        "center": "255,245,246,255"
+      }
+    },
+    {
+      "name": "quad-orientation-6",
+      "file": "quad-orientation-6.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 8,
+        "height": 16,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 32,
+        "original_height": 48,
+        "backend": "Wpf",
+        "pixels_sha256": "8d8f61878a8be93331d79d7d4d0ceb2708d12d10a4ac259176da4f81c6f76724",
+        "corners": [
+          "243,4,0,255",
+          "12,0,252,255",
+          "255,251,255,255",
+          "0,255,0,255"
+        ],
+        "center": "17,217,76,255"
+      }
+    },
+    {
+      "name": "quad-orientation-7",
+      "file": "quad-orientation-7.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 8,
+        "height": 16,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 7,
+        "original_width": 32,
+        "original_height": 48,
+        "backend": "Wpf",
+        "pixels_sha256": "9e916934ea2f0d290256ed03f193ea5642f55ea91b7fbf22c5330d2b60cd8579",
+        "corners": [
+          "255,251,255,255",
+          "0,255,0,255",
+          "243,4,0,255",
+          "12,0,252,255"
+        ],
+        "center": "0,49,166,255"
+      }
+    },
+    {
+      "name": "quad-orientation-8",
+      "file": "quad-orientation-8.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 8,
+        "height": 16,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 8,
+        "original_width": 32,
+        "original_height": 48,
+        "backend": "Wpf",
+        "pixels_sha256": "d11c351d644c052c2d1d9f5e0cfa0f463d99a4a3bc7742a0ad3d8f4d5e2c365a",
+        "corners": [
+          "0,255,0,255",
+          "255,251,255,255",
+          "12,0,252,255",
+          "243,4,0,255"
+        ],
+        "center": "187,1,23,255"
+      }
+    },
+    {
+      "name": "quad-orientation-9-out-of-range",
+      "file": "quad-orientation-9.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "7e32950ca513bc8a7244d8396cbdde30bd093fd86a761f87363aa8adce330030",
+        "corners": [
+          "12,0,252,255",
+          "0,255,0,255",
+          "243,4,0,255",
+          "255,251,255,255"
+        ],
+        "center": "255,245,246,255"
+      }
+    },
+    {
+      "name": "quad-orientation-0",
+      "file": "quad-orientation-0.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 16,
+        "height": 8,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 1,
+        "original_width": 48,
+        "original_height": 32,
+        "backend": "Wpf",
+        "pixels_sha256": "7e32950ca513bc8a7244d8396cbdde30bd093fd86a761f87363aa8adce330030",
+        "corners": [
+          "12,0,252,255",
+          "0,255,0,255",
+          "243,4,0,255",
+          "255,251,255,255"
+        ],
+        "center": "255,245,246,255"
+      }
+    },
+    {
+      "name": "truncated-o6-0",
+      "file": "truncated-o6-0.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-1",
+      "file": "truncated-o6-1.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-2",
+      "file": "truncated-o6-2.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-3",
+      "file": "truncated-o6-3.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-4",
+      "file": "truncated-o6-4.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-20",
+      "file": "truncated-o6-20.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-100",
+      "file": "truncated-o6-100.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-300",
+      "file": "truncated-o6-300.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-600",
+      "file": "truncated-o6-600.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-half",
+      "file": "truncated-o6-half.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "truncated-o6-minus1",
+      "file": "truncated-o6-minus1.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": {
+        "width": 8,
+        "height": 16,
+        "layout": "Pbgra32",
+        "estimated_bytes": 512,
+        "downscaled": true,
+        "orientation": 6,
+        "original_width": 32,
+        "original_height": 48,
+        "backend": "Wpf",
+        "pixels_sha256": "8d8f61878a8be93331d79d7d4d0ceb2708d12d10a4ac259176da4f81c6f76724",
+        "corners": [
+          "243,4,0,255",
+          "12,0,252,255",
+          "255,251,255,255",
+          "0,255,0,255"
+        ],
+        "center": "17,217,76,255"
+      }
+    },
+    {
+      "name": "not-jpeg-png",
+      "file": "not-jpeg.png",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "garbage",
+      "file": "garbage.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "text-named-jpg",
+      "file": "text.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "empty-file",
+      "file": "empty.jpg",
+      "kind": "file",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "missing-file",
+      "file": "x.jpg",
+      "kind": "missing",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    },
+    {
+      "name": "path-is-a-directory",
+      "file": null,
+      "kind": "directory",
+      "note": "TryRead labels every result DecoderBackend.Wpf (cache identity), never WicDirect.",
+      "result": null
+    }
+  ]
+}

@@ -1,0 +1,886 @@
+{
+  "generator": "oracle-cs decode-types",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "image-info-o-1-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o0-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o1-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o2-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o3-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o4-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o5-64x48",
+      "kind": "image-info",
+      "width": 48,
+      "height": 64
+    },
+    {
+      "name": "image-info-o6-64x48",
+      "kind": "image-info",
+      "width": 48,
+      "height": 64
+    },
+    {
+      "name": "image-info-o7-64x48",
+      "kind": "image-info",
+      "width": 48,
+      "height": 64
+    },
+    {
+      "name": "image-info-o8-64x48",
+      "kind": "image-info",
+      "width": 48,
+      "height": 64
+    },
+    {
+      "name": "image-info-o9-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o255-64x48",
+      "kind": "image-info",
+      "width": 64,
+      "height": 48
+    },
+    {
+      "name": "image-info-o6-zero",
+      "kind": "image-info",
+      "width": 0,
+      "height": 0
+    },
+    {
+      "name": "image-info-o8-negative",
+      "kind": "image-info",
+      "width": 7,
+      "height": -3
+    },
+    {
+      "name": "downscale-0x0",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 0
+      },
+      "target_width": 0,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-0x0",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 0
+      },
+      "target_width": 0,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-1x0",
+      "kind": "request",
+      "box": {
+        "width": 1,
+        "height": 0
+      },
+      "target_width": 1,
+      "target_height": 0,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-1x0",
+      "kind": "request",
+      "box": {
+        "width": 1,
+        "height": 0
+      },
+      "target_width": 1,
+      "target_height": 0,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-0x1",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 1
+      },
+      "target_width": 0,
+      "target_height": 1,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-0x1",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 1
+      },
+      "target_width": 0,
+      "target_height": 1,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-5x7",
+      "kind": "request",
+      "box": {
+        "width": 5,
+        "height": 7
+      },
+      "target_width": 5,
+      "target_height": 7,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-5x7",
+      "kind": "request",
+      "box": {
+        "width": 5,
+        "height": 7
+      },
+      "target_width": 5,
+      "target_height": 7,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale--1x0",
+      "kind": "request",
+      "box": {
+        "width": -1,
+        "height": 0
+      },
+      "target_width": -1,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box--1x0",
+      "kind": "request",
+      "box": {
+        "width": -1,
+        "height": 0
+      },
+      "target_width": -1,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-0x-1",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": -1
+      },
+      "target_width": 0,
+      "target_height": -1,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-0x-1",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": -1
+      },
+      "target_width": 0,
+      "target_height": -1,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale--1x-1",
+      "kind": "request",
+      "box": {
+        "width": -1,
+        "height": -1
+      },
+      "target_width": -1,
+      "target_height": -1,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box--1x-1",
+      "kind": "request",
+      "box": {
+        "width": -1,
+        "height": -1
+      },
+      "target_width": -1,
+      "target_height": -1,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale--3x5",
+      "kind": "request",
+      "box": {
+        "width": -3,
+        "height": 5
+      },
+      "target_width": -3,
+      "target_height": 5,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box--3x5",
+      "kind": "request",
+      "box": {
+        "width": -3,
+        "height": 5
+      },
+      "target_width": -3,
+      "target_height": 5,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-5x-3",
+      "kind": "request",
+      "box": {
+        "width": 5,
+        "height": -3
+      },
+      "target_width": 5,
+      "target_height": -3,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "downscale-box-5x-3",
+      "kind": "request",
+      "box": {
+        "width": 5,
+        "height": -3
+      },
+      "target_width": 5,
+      "target_height": -3,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "defaults-width-only",
+      "kind": "request",
+      "box": {
+        "width": 1920,
+        "height": 0
+      },
+      "target_width": 1920,
+      "target_height": 0,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "preload-lane",
+      "kind": "request",
+      "box": {
+        "width": 100,
+        "height": 50
+      },
+      "target_width": 100,
+      "target_height": 50,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Preload",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "no-orientation-known-6",
+      "kind": "request",
+      "box": {
+        "width": 100,
+        "height": 0
+      },
+      "target_width": 100,
+      "target_height": 0,
+      "is_downscale_requested": true,
+      "apply_orientation": false,
+      "priority": "Viewer",
+      "source_orientation": 6,
+      "bytes_length": 0
+    },
+    {
+      "name": "bytes-8",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 0
+      },
+      "target_width": 0,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 8
+    },
+    {
+      "name": "bytes-empty",
+      "kind": "request",
+      "box": {
+        "width": 0,
+        "height": 0
+      },
+      "target_width": 0,
+      "target_height": 0,
+      "is_downscale_requested": false,
+      "apply_orientation": true,
+      "priority": "Viewer",
+      "source_orientation": null,
+      "bytes_length": 0
+    },
+    {
+      "name": "box-with-bytes-and-orientation",
+      "kind": "request",
+      "box": {
+        "width": 16,
+        "height": 16
+      },
+      "target_width": 16,
+      "target_height": 16,
+      "is_downscale_requested": true,
+      "apply_orientation": true,
+      "priority": "Preload",
+      "source_orientation": 8,
+      "bytes_length": 3
+    },
+    {
+      "name": "defaults",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "one-by-one-zero-bytes",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 1,
+        "pixel_height": 1,
+        "estimated_bytes": 0,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 1,
+        "original_height": 1,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "carries-everything",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 3,
+        "pixel_height": 2,
+        "estimated_bytes": 24,
+        "downscaled": true,
+        "orientation": 6,
+        "actual_backend": "TurboJpeg",
+        "original_width": 3000,
+        "original_height": 2000,
+        "is_degraded_fallback": true,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "original-nonpositive-0x0",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": false
+      }
+    },
+    {
+      "name": "original-nonpositive--5x-1",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": false
+      }
+    },
+    {
+      "name": "original-nonpositive-0x900",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 40,
+        "original_height": 900,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "original-nonpositive-1200x0",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 1200,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "unknown-original-downscaled",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 32,
+        "original_height": 24,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": false
+      }
+    },
+    {
+      "name": "known-original-downscaled",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 640,
+        "original_height": 480,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "original-smaller-than-pixels",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 16,
+        "original_height": 12,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": false
+      }
+    },
+    {
+      "name": "original-one-axis-larger",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "estimated_bytes": 4800,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 16,
+        "original_height": 480,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "full-decode-original-smaller",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 32,
+        "pixel_height": 24,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 16,
+        "original_height": 12,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "backend-Wpf",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "Wpf",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "backend-WicDirect",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "backend-TurboJpeg",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "TurboJpeg",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "backend-LibRaw",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 40,
+        "pixel_height": 30,
+        "estimated_bytes": 4800,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "LibRaw",
+        "original_width": 40,
+        "original_height": 30,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "reject-width-0",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "reject-height-0",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "reject-bytes-negative",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "reject-width-negative-and-height-0",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentOutOfRangeException"
+      }
+    },
+    {
+      "name": "reject-buffer-swapped",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "name": "reject-buffer-height",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "name": "reject-buffer-width",
+      "kind": "decoded",
+      "result": {
+        "throws": "ArgumentException"
+      }
+    },
+    {
+      "name": "buffer-matches",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 4,
+        "pixel_height": 3,
+        "estimated_bytes": 48,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 4,
+        "original_height": 3,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "buffer-ignores-estimate-mismatch",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 4,
+        "pixel_height": 3,
+        "estimated_bytes": 1,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 4,
+        "original_height": 3,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": true
+      }
+    },
+    {
+      "name": "opaque-ignores-size",
+      "kind": "decoded",
+      "result": {
+        "pixel_width": 8,
+        "pixel_height": 8,
+        "estimated_bytes": 256,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "WicDirect",
+        "original_width": 8,
+        "original_height": 8,
+        "is_degraded_fallback": false,
+        "has_exif": false,
+        "has_known_original": false
+      }
+    },
+    {
+      "name": "bare-image",
+      "kind": "interface-defaults",
+      "actual_backend": "Wpf",
+      "original_width": 10,
+      "original_height": 7,
+      "has_exif": false,
+      "is_degraded_fallback": false,
+      "is_source_read_metrics": false,
+      "is_raw_preview_info": false,
+      "has_known_original": false
+    },
+    {
+      "name": "lease-default",
+      "kind": "lease",
+      "pixels_null": true,
+      "owned": false
+    },
+    {
+      "name": "lease-borrowed",
+      "kind": "lease",
+      "pixels_null": false,
+      "owned": false
+    },
+    {
+      "name": "lease-owned",
+      "kind": "lease",
+      "pixels_null": false,
+      "owned": true
+    },
+    {
+      "name": "none-attached",
+      "kind": "failure-bytes",
+      "try_get_before": false,
+      "try_get": false,
+      "bytes": null
+    },
+    {
+      "name": "attach-once",
+      "kind": "failure-bytes",
+      "try_get_before": false,
+      "try_get": true,
+      "bytes": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "attach-empty",
+      "kind": "failure-bytes",
+      "try_get_before": false,
+      "try_get": true,
+      "bytes": []
+    },
+    {
+      "name": "attach-twice-last-wins",
+      "kind": "failure-bytes",
+      "try_get_before": false,
+      "try_get": true,
+      "bytes": [
+        9
+      ]
+    }
+  ]
+}

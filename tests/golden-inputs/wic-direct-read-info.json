@@ -1,0 +1,106 @@
+{
+  "generator": "oracle-cs wic-direct-read-info (W4-11c)",
+  "fixtures_dir": "../fixtures/wic-direct",
+  "cases": [
+    {
+      "name": "plain",
+      "file": "plain-64x48.jpg"
+    },
+    {
+      "name": "rot6",
+      "file": "rot6-64x48.jpg"
+    },
+    {
+      "name": "rot6flat",
+      "file": "rot6-64x1.jpg"
+    },
+    {
+      "name": "orient-0",
+      "file": "orient-0-120x80.jpg"
+    },
+    {
+      "name": "orient-1",
+      "file": "orient-1-120x80.jpg"
+    },
+    {
+      "name": "orient-2",
+      "file": "orient-2-120x80.jpg"
+    },
+    {
+      "name": "orient-3",
+      "file": "orient-3-120x80.jpg"
+    },
+    {
+      "name": "orient-4",
+      "file": "orient-4-120x80.jpg"
+    },
+    {
+      "name": "orient-5",
+      "file": "orient-5-120x80.jpg"
+    },
+    {
+      "name": "orient-6",
+      "file": "orient-6-120x80.jpg"
+    },
+    {
+      "name": "orient-7",
+      "file": "orient-7-120x80.jpg"
+    },
+    {
+      "name": "orient-8",
+      "file": "orient-8-120x80.jpg"
+    },
+    {
+      "name": "orient-9",
+      "file": "orient-9-120x80.jpg"
+    },
+    {
+      "name": "png-bgra32",
+      "file": "gradient-64x48-bgra32.png"
+    },
+    {
+      "name": "tiff-make",
+      "file": "tiff-make-32x24.tif"
+    },
+    {
+      "name": "icc-p3-jpeg",
+      "file": "icc-p3-64x48.jpg"
+    },
+    {
+      "name": "huge-65500-header-only",
+      "file": "huge-65500.jpg"
+    },
+    {
+      "name": "truncated-30",
+      "file": "truncated-400x300-30.jpg"
+    },
+    {
+      "name": "fail-text",
+      "file": "text.jpg"
+    },
+    {
+      "name": "fail-empty-file",
+      "file": "empty.jpg"
+    },
+    {
+      "name": "fail-header-garbage",
+      "file": "header-garbage.jpg"
+    },
+    {
+      "name": "fail-missing-file",
+      "missing": "missing.jpg"
+    },
+    {
+      "name": "fail-missing-directory",
+      "missing_dir": "x.jpg"
+    },
+    {
+      "name": "fail-empty-path",
+      "path": ""
+    },
+    {
+      "name": "fail-blank-path",
+      "path": "   "
+    }
+  ]
+}

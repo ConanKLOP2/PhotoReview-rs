@@ -1,0 +1,88 @@
+{
+  "generator": "oracle-cs preload-window",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "window-1-0",
+      "forward": 1,
+      "backward": 0,
+      "image_count": 2
+    },
+    {
+      "name": "window-3-1",
+      "forward": 3,
+      "backward": 1,
+      "image_count": 5
+    },
+    {
+      "name": "window-32-8",
+      "forward": 32,
+      "backward": 8,
+      "image_count": 41
+    },
+    {
+      "name": "window-500-500",
+      "forward": 500,
+      "backward": 500,
+      "image_count": 1001
+    },
+    {
+      "name": "window-0-0",
+      "forward": 0,
+      "backward": 0,
+      "image_count": 1
+    },
+    {
+      "name": "window--1--1",
+      "forward": -1,
+      "backward": -1,
+      "image_count": -1
+    },
+    {
+      "name": "window-2147483647-0",
+      "forward": 2147483647,
+      "backward": 0,
+      "image_count": -2147483648
+    },
+    {
+      "name": "window-2147483647-1",
+      "forward": 2147483647,
+      "backward": 1,
+      "image_count": -2147483647
+    },
+    {
+      "name": "window-1-2147483647",
+      "forward": 1,
+      "backward": 2147483647,
+      "image_count": -2147483647
+    },
+    {
+      "name": "settings-64-16",
+      "kind": "from_settings",
+      "forward": 64,
+      "backward": 16,
+      "equals_default": false
+    },
+    {
+      "name": "settings-default",
+      "kind": "from_settings",
+      "forward": 32,
+      "backward": 8,
+      "equals_default": true
+    },
+    {
+      "name": "settings-1-0",
+      "kind": "from_settings",
+      "forward": 1,
+      "backward": 0,
+      "equals_default": false
+    },
+    {
+      "name": "settings-unclamped-9999-9999",
+      "kind": "from_settings",
+      "forward": 9999,
+      "backward": 9999,
+      "equals_default": false
+    }
+  ]
+}

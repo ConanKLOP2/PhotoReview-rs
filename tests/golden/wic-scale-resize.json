@@ -1,0 +1,126 @@
+{
+  "generator": "oracle-cs wic-scale-resize",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "bgr32-shrink-4x",
+      "throws": null,
+      "width": 16,
+      "height": 12,
+      "layout": "bgr32",
+      "fnv": "276a9b835de3ddb2",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "pbgra32-odd-target",
+      "throws": null,
+      "width": 33,
+      "height": 7,
+      "layout": "pbgra32",
+      "fnv": "784082b68bff1c34",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-to-one-pixel",
+      "throws": null,
+      "width": 1,
+      "height": 1,
+      "layout": "bgr32",
+      "fnv": "fe90b01b56581271",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-shrink-3x-exact-ratio",
+      "throws": null,
+      "width": 40,
+      "height": 30,
+      "layout": "bgr32",
+      "fnv": "ffcad1b23114f044",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-non-uniform-axes",
+      "throws": null,
+      "width": 10,
+      "height": 60,
+      "layout": "bgr32",
+      "fnv": "0b90be558d703bf0",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-enlargement-allowed",
+      "throws": null,
+      "width": 24,
+      "height": 18,
+      "layout": "bgr32",
+      "fnv": "3f3862ebd1594d53",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-one-pixel-strip",
+      "throws": null,
+      "width": 100,
+      "height": 1,
+      "layout": "bgr32",
+      "fnv": "c8cdd176ed7289ea",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "bgr32-same-size-is-a-copy",
+      "throws": null,
+      "width": 17,
+      "height": 9,
+      "layout": "bgr32",
+      "fnv": "2e989837d489f8f6",
+      "sameAsSource": true,
+      "distinctBuffer": true
+    },
+    {
+      "name": "pbgra32-same-size-is-a-copy",
+      "throws": null,
+      "width": 17,
+      "height": 9,
+      "layout": "pbgra32",
+      "fnv": "2de78f878511bff3",
+      "sameAsSource": true,
+      "distinctBuffer": true
+    },
+    {
+      "name": "same-width-different-height-goes-through-wic",
+      "throws": null,
+      "width": 17,
+      "height": 5,
+      "layout": "bgr32",
+      "fnv": "907019644b0e5e7e",
+      "sameAsSource": false,
+      "distinctBuffer": true
+    },
+    {
+      "name": "width-zero-throws",
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "height-zero-throws",
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "negative-width-throws",
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "disposed-source-throws",
+      "throws": "ObjectDisposedException"
+    },
+    {
+      "name": "disposed-source-same-size-throws-before-copy",
+      "throws": "ObjectDisposedException"
+    }
+  ]
+}

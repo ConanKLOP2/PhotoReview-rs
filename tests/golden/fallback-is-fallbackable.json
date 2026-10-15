@@ -1,0 +1,162 @@
+{
+  "generator": "oracle-cs fallback-is-fallbackable",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "is-fallbackable-notsupported",
+      "exception": "NotSupported",
+      "type": "NotSupportedException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-platformnotsupported",
+      "exception": "PlatformNotSupported",
+      "type": "PlatformNotSupportedException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-missingcodec",
+      "exception": "MissingCodec",
+      "type": "MissingImageCodecException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-invalidcast",
+      "exception": "InvalidCast",
+      "type": "InvalidCastException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-overflow",
+      "exception": "Overflow",
+      "type": "OverflowException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-arithmetic",
+      "exception": "Arithmetic",
+      "type": "ArithmeticException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-format",
+      "exception": "Format",
+      "type": "FormatException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-invaliddata",
+      "exception": "InvalidData",
+      "type": "InvalidDataException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-com",
+      "exception": "COM",
+      "type": "COMException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-dllnotfound",
+      "exception": "DllNotFound",
+      "type": "DllNotFoundException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-badimageformat",
+      "exception": "BadImageFormat",
+      "type": "BadImageFormatException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-entrypointnotfound",
+      "exception": "EntryPointNotFound",
+      "type": "EntryPointNotFoundException",
+      "fallbackable": true
+    },
+    {
+      "name": "is-fallbackable-filenotfound",
+      "exception": "FileNotFound",
+      "type": "FileNotFoundException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-directorynotfound",
+      "exception": "DirectoryNotFound",
+      "type": "DirectoryNotFoundException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-operationcanceled",
+      "exception": "OperationCanceled",
+      "type": "OperationCanceledException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-taskcanceled",
+      "exception": "TaskCanceled",
+      "type": "TaskCanceledException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-outofmemory",
+      "exception": "OutOfMemory",
+      "type": "OutOfMemoryException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-memoryadmission",
+      "exception": "MemoryAdmission",
+      "type": "DecoderMemoryAdmissionException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-busy",
+      "exception": "Busy",
+      "type": "DecoderBusyException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-invalidoperation",
+      "exception": "InvalidOperation",
+      "type": "InvalidOperationException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-argument",
+      "exception": "Argument",
+      "type": "ArgumentException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-objectdisposed",
+      "exception": "ObjectDisposed",
+      "type": "ObjectDisposedException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-io",
+      "exception": "IO",
+      "type": "IOException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-fileload",
+      "exception": "FileLoad",
+      "type": "FileLoadException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-unauthorizedaccess",
+      "exception": "UnauthorizedAccess",
+      "type": "UnauthorizedAccessException",
+      "fallbackable": false
+    },
+    {
+      "name": "is-fallbackable-generic",
+      "exception": "Generic",
+      "type": "Exception",
+      "fallbackable": false
+    }
+  ]
+}
