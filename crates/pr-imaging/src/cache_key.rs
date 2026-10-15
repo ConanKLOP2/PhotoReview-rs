@@ -8,15 +8,16 @@
 //! persisted disk-cache file name (`PreviewImageService.GetDiskCachePath`, unit W4-14c): the field values, the
 //! upper-cased path and the `u8` source kind are therefore part of an on-disk format. The key has NO text form of
 //! its own; do not add one here.
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 use std::fmt;
 use std::io;
+use std::path::Path;
 
 use pr_core::abstractions::{FileStat, FileSystem};
 use pr_core::catalog::types::CatalogEntry;
 use pr_core::model::DecoderBackend;
-use pr_core::text::dotnet_path::PathError;
+use pr_core::session::store::SessionStore;
+use pr_core::text::dotnet_path::{PathError, get_full_path};
 
 use crate::decode_types::DecodeBox;
 
@@ -172,7 +173,23 @@ impl ImageCacheKey {
         target_box: DecodeBox,
         options: KeyOptions,
     ) -> Self {
-        todo!("Original => width/height 0, else the box as given; no clamping of negative sides")
+        // Original decodes at full size whatever box the caller passed; a preview keeps the box as given.
+        let (target_width, target_height) = if is_original {
+            (0, 0)
+        } else {
+            (target_box.width, target_box.height)
+        };
+        Self {
+            path,
+            length,
+            last_write_utc_ticks,
+            is_original,
+            target_width,
+            target_height,
+            orientation_applied: options.orientation_applied,
+            backend: options.backend,
+            source_kind: options.source_kind,
+        }
     }
 
     /// C# `Create(string path, bool isOriginal, int targetWidth, ...)`: width-only key (height 0 = unconstrained),
@@ -184,7 +201,7 @@ impl ImageCacheKey {
         target_width: i32,
         options: KeyOptions,
     ) -> Result<Self, CacheKeyError> {
-        todo!("delegate to create with a width-only box")
+        Self::create(fs, path, is_original, DecodeBox::new(target_width, 0), options)
     }
 
     /// C# `Create(string path, bool isOriginal, DecodeBox box, ...)`: `new FileInfo(path)` (full path via
@@ -196,7 +213,9 @@ impl ImageCacheKey {
         target_box: DecodeBox,
         options: KeyOptions,
     ) -> Result<Self, CacheKeyError> {
-        todo!("get_full_path(path), fs.get_file_stat(Path::new(&full)), create_from_stat")
+        let full = get_full_path(path).map_err(CacheKeyError::InvalidPath)?;
+        let stat = fs.get_file_stat(Path::new(&full));
+        Self::create_from_stat(&full, stat, is_original, target_box, options)
     }
 
     /// C# `Create(FileInfo info, ...)`: reuse a stat the caller already took. `full_name` is `FileInfo.FullName` (an
@@ -211,7 +230,19 @@ impl ImageCacheKey {
         target_box: DecodeBox,
         options: KeyOptions,
     ) -> Result<Self, CacheKeyError> {
-        todo!("None => SourceNoLongerExists; else normalize path and build")
+        let stat = stat.ok_or_else(|| CacheKeyError::SourceNoLongerExists {
+            full_name: full_name.to_owned(),
+        })?;
+        let path = normalize_key_path(full_name).map_err(CacheKeyError::InvalidPath)?;
+        let length = i64::try_from(stat.length).unwrap_or(i64::MAX);
+        Ok(Self::new(
+            path,
+            length,
+            stat.last_write_utc.ticks(),
+            is_original,
+            target_box,
+            options,
+        ))
     }
 
     /// C# `Create(CatalogEntry entry, ...)`: when `entry.length` or `entry.last_write_utc` is `None` fall back to
@@ -224,19 +255,42 @@ impl ImageCacheKey {
         target_box: DecodeBox,
         options: KeyOptions,
     ) -> Result<Self, CacheKeyError> {
-        todo!("entry fast path vs create fallback")
+        match (entry.length, entry.last_write_utc) {
+            // Both known: the entry's own stat is the identity; no file-system access, no existence check.
+            (Some(length), Some(last_write)) => {
+                let path = normalize_key_path(entry.path()).map_err(CacheKeyError::InvalidPath)?;
+                Ok(Self::new(
+                    path,
+                    length,
+                    last_write.ticks(),
+                    is_original,
+                    target_box,
+                    options,
+                ))
+            }
+            // Either unknown: stat the disk, exactly like a plain path.
+            _ => Self::create(fs, entry.path(), is_original, target_box, options),
+        }
     }
 
     /// C# `CreateOriginal(ImageCacheKey source)`: same source identity (path, length, ticks, orientation, backend,
     /// source kind), `is_original = true`, box 0 x 0. No file-system access.
     pub fn create_original(source: &ImageCacheKey) -> Self {
-        todo!("clone source with is_original = true and box unbounded")
+        Self {
+            is_original: true,
+            target_width: 0,
+            target_height: 0,
+            ..source.clone()
+        }
     }
 
     /// C# `CreateOriginal(ImageCacheKey source, byte sourceKind)`: as above but with `source_kind` replacing the
     /// source's kind (used for the RAW full decode representation).
     pub fn create_original_with_kind(source: &ImageCacheKey, source_kind: u8) -> Self {
-        todo!("clone source with is_original = true, box unbounded, kind replaced")
+        Self {
+            source_kind,
+            ..Self::create_original(source)
+        }
     }
 
     /// C# `MatchesCurrentSource()`: the file still exists with the same length and write ticks. `false` when the
@@ -244,7 +298,13 @@ impl ImageCacheKey {
     /// `UnauthorizedAccessException`; `get_file_stat` returns `None` for those). Stats `self.path()` (the UPPER-CASED
     /// path: Windows file systems are case-insensitive, so it resolves).
     pub fn matches_current_source(&self, fs: &dyn FileSystem) -> bool {
-        todo!("fs.get_file_stat(Path::new(&self.path)) compared on length and ticks")
+        match fs.get_file_stat(Path::new(&self.path)) {
+            Some(stat) => {
+                i64::try_from(stat.length).unwrap_or(i64::MAX) == self.length
+                    && stat.last_write_utc.ticks() == self.last_write_utc_ticks
+            }
+            None => false,
+        }
     }
 }
 
@@ -254,5 +314,5 @@ impl ImageCacheKey {
 /// # Errors
 /// [`PathError`] when the path is blank or contains NUL (C# `ArgumentException`).
 pub fn normalize_key_path(path: &str) -> Result<String, PathError> {
-    todo!("W4-01a")
+    get_full_path(path).map(|full| SessionStore::to_upper_invariant(&full))
 }
