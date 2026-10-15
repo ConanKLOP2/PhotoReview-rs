@@ -182,3 +182,39 @@ mod stub_tests {
         assert_eq!(MIN_IMAGE_CACHE_RAM_PERCENT, 1);
     }
 }
+
+#[cfg(test)]
+mod folder_estimate_cache_tests {
+    use super::*;
+
+    /// C# `RawFolder(count, length)`: a fresh snapshot each call (distinct `Arc`, so never `ReferenceEquals`).
+    fn raw_folder(count: usize, length: i64) -> Arc<[CatalogEntry]> {
+        (0..count)
+            .map(|index| {
+                let mut entry =
+                    CatalogEntry::new(format!("folder/IMG_{index:06}.CR2")).expect("test path is not blank");
+                entry.length = Some(length);
+                entry
+            })
+            .collect::<Vec<_>>()
+            .into()
+    }
+
+    // C#: RamBudgetPolicyRawLengthTests.FolderEstimateCache_SameInputs_ComputesOnce_AndRecomputesWhenAnyInputChanges
+    #[test]
+    fn folder_estimate_cache_same_inputs_compute_once_and_recompute_when_any_input_changes() {
+        let mut cache = FolderEstimateCache::new();
+        let entries = raw_folder(50, 25_000_000);
+        let decode_box = DecodeBox::new(1920, 1080);
+
+        let first = cache.get_or_compute(&entries, decode_box, None);
+        let again = cache.get_or_compute(&entries, decode_box, None);
+        assert_eq!(first, again);
+        assert_eq!(cache.compute_count(), 1);
+
+        cache.get_or_compute(&entries, decode_box, Some(1_000_000.0)); // calibration changed
+        cache.get_or_compute(&entries, DecodeBox::UNBOUNDED, Some(1_000_000.0)); // mode (box) changed
+        cache.get_or_compute(&raw_folder(50, 25_000_000), DecodeBox::UNBOUNDED, Some(1_000_000.0)); // different snapshot
+        assert_eq!(cache.compute_count(), 4);
+    }
+}
