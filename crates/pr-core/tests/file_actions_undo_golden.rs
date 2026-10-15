@@ -6,8 +6,6 @@
 //! result, the bin calls, the move-override calls and the undo state; then the final disk listing and the whole journal text with
 //! every 32-hex id replaced by `<guid1>`, `<guid2>`, ... in order of first appearance. Everything is compared with the recorded
 //! `steps_out` and `final` (JSON value equality; the journal text byte for byte, INV-6 line format, D-03).
-//!
-//! Red until the W3-05 bodies land: the first step that reaches `UndoService` panics with `todo!()`.
 
 mod undo_support;
 

@@ -1,4 +1,4 @@
-//! Shared fixture of the W3-05 `UndoService` red tests (`file_actions_undo.rs`, `file_actions_undo_golden.rs`).
+//! Shared fixture of the W3-05 `UndoService` tests (`file_actions_undo.rs`, `file_actions_undo_golden.rs`).
 //!
 //! Port of the C# test fakes of `tests/PhotoReview.Core.Tests/FileActions/` (baseline d92d6aae) and of the scripted fakes of
 //! the golden oracle `tools/oracle-cs/Commands/W3-05.cs` (`W305Fs`, `W305Bin`):

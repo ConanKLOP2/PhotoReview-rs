@@ -5,8 +5,8 @@
 //! `FileActionSafetyEdgeTests.cs`, `JournalErrorCodeTests.cs`, `LiveOperationMarkerTests.cs`, `PermanentDeleteTests.cs`.
 //!
 //! Every test carries a `// C#: <Class>.<Method>` comment. Vietnamese message asserts of the C# tests compare with the English
-//! text of the same key ([`EnglishUndoTexts`]). Red until the W3-05 bodies land: each test that reaches `UndoService` panics with
-//! `todo!()`. Nothing here touches the real Recycle Bin: the bin is [`undo_support::ScriptedBin`] over the in-memory disk.
+//! text of the same key ([`EnglishUndoTexts`]). Nothing here touches the real Recycle Bin: the bin is
+//! [`undo_support::ScriptedBin`] over the in-memory disk.
 //!
 //! Documented deviations from the C# tests (they are ports, not skips):
 //! * `DIVERGENCE (R0003)`: the three C# thread tests (`*OffTheCallerThread*`) keep the order and restored-paths asserts and drop
@@ -1820,6 +1820,8 @@ fn undo_last_async_failed_group_delete_stale_reconcile_failed_after_foreign_comm
 /// `Stamp + 1735 ms` as their source stamp and the 2 s-rounded stamp on the FAT files (C# `MoveGroupToFatAsync`).
 fn move_group_to_fat(f: &Fixture, undo: &mut UndoService) {
     let odd = plus_ms(group_stamp(), 1735);
+    // C# `ExecuteGroupAsync` moved the members out of `C:\photos`: the original folder still exists.
+    f.disk.add_dir(r"C:\photos");
     f.add_bytes(FAT_JPEG, b"jpeg", round_to_fat(odd));
     f.add_bytes(FAT_RAW, b"raw data", round_to_fat(odd));
     assert_ne!(f.stamp_of(FAT_JPEG), odd, "precondition: the stamp really was rounded");
