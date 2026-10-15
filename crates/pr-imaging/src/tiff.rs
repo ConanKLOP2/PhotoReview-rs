@@ -2,9 +2,6 @@
 //!
 //! Hostile-input safe: every offset and length is bounds checked and no function panics or allocates on a bad input.
 //! Shared by the EXIF parser (W4-03b) and the RAW container readers (Wave 5). Pure: no I/O, no clock, no `unsafe`.
-//!
-//! Stub: signatures and data types are final, bodies are `todo!()`. Remove the `#![allow]` line when implemented (D11).
-#![allow(unused_variables, dead_code)]
 
 /// Longest ASCII value returned by [`try_get_value_span`] and by [`read_ascii`], in bytes (C# `MaxAsciiBytes`).
 pub const MAX_ASCII_BYTES: usize = 256;
@@ -45,7 +42,50 @@ impl ExifRational {
     /// `numerator / denominator` as `f64`; `0.0` when the denominator is 0 (C# `Value`).
     #[must_use]
     pub fn value(self) -> f64 {
-        todo!("W4-03a: 0.0 when denominator is 0, else numerator / denominator as f64")
+        if self.denominator == 0 {
+            0.0
+        } else {
+            f64::from(self.numerator) / f64::from(self.denominator)
+        }
+    }
+}
+
+/// `N` bytes at `offset`, or `None` when `offset` is negative or the window runs past the end of `data`.
+/// The end is computed with `checked_add` on `usize`, and the offset arrives as `i64`, so no input can wrap.
+fn window<const N: usize>(data: &[u8], offset: i64) -> Option<[u8; N]> {
+    let start = usize::try_from(offset).ok()?;
+    data.get(start..start.checked_add(N)?)?.try_into().ok()
+}
+
+fn u16_of(bytes: [u8; 2], little_endian: bool) -> u16 {
+    if little_endian {
+        u16::from_le_bytes(bytes)
+    } else {
+        u16::from_be_bytes(bytes)
+    }
+}
+
+fn u32_of(bytes: [u8; 4], little_endian: bool) -> u32 {
+    if little_endian {
+        u32::from_le_bytes(bytes)
+    } else {
+        u32::from_be_bytes(bytes)
+    }
+}
+
+fn i16_of(bytes: [u8; 2], little_endian: bool) -> i16 {
+    if little_endian {
+        i16::from_le_bytes(bytes)
+    } else {
+        i16::from_be_bytes(bytes)
+    }
+}
+
+fn i32_of(bytes: [u8; 4], little_endian: bool) -> i32 {
+    if little_endian {
+        i32::from_le_bytes(bytes)
+    } else {
+        i32::from_be_bytes(bytes)
     }
 }
 
@@ -53,7 +93,19 @@ impl ExifRational {
 /// two bytes are neither `II` nor `MM` (both letters must match: `IM` and `MI` are rejected).
 #[must_use]
 pub fn try_read_header(tiff: &[u8]) -> Option<TiffHeader> {
-    todo!("W4-03a")
+    if tiff.len() < 8 {
+        return None;
+    }
+    let little_endian = match (tiff[0], tiff[1]) {
+        (b'I', b'I') => true,
+        (b'M', b'M') => false,
+        _ => return None,
+    };
+    Some(TiffHeader {
+        little_endian,
+        magic: read_u16(tiff, 2, little_endian),
+        ifd0_offset: read_u32(tiff, 4, little_endian),
+    })
 }
 
 /// Byte size of one element of a TIFF field type; `0` for an unknown type (including BigTIFF type 16).
@@ -61,7 +113,13 @@ pub fn try_read_header(tiff: &[u8]) -> Option<TiffHeader> {
 /// 1, 2, 6, 7 => 1; 3, 8 => 2; 4, 9, 11, 13 => 4; 5, 10, 12 => 8.
 #[must_use]
 pub fn type_size(field_type: u16) -> i32 {
-    todo!("W4-03a")
+    match field_type {
+        1 | 2 | 6 | 7 => 1,
+        3 | 8 => 2,
+        4 | 9 | 11 | 13 => 4,
+        5 | 10 | 12 => 8,
+        _ => 0,
+    }
 }
 
 /// Reads a u16 at `offset`; `0` when `offset` is negative or `offset > data.len() - 2` (never panics, never wraps).
@@ -69,13 +127,13 @@ pub fn type_size(field_type: u16) -> i32 {
 /// `offset` is `i32` on purpose (C# `int`): hostile callers pass `entry + 2 + 12 * i` that overflowed or went negative.
 #[must_use]
 pub fn read_u16(data: &[u8], offset: i32, little_endian: bool) -> u16 {
-    todo!("W4-03a")
+    window::<2>(data, i64::from(offset)).map_or(0, |bytes| u16_of(bytes, little_endian))
 }
 
 /// Reads a u32 at `offset`; `0` when `offset` is negative or `offset > data.len() - 4`.
 #[must_use]
 pub fn read_u32(data: &[u8], offset: i32, little_endian: bool) -> u32 {
-    todo!("W4-03a")
+    window::<4>(data, i64::from(offset)).map_or(0, |bytes| u32_of(bytes, little_endian))
 }
 
 /// Returns the bytes of an IFD entry's value (inline in the entry, or at the entry's offset field) inside `tiff`.
@@ -95,14 +153,72 @@ pub fn try_get_value_span(
     count: u32,
     little_endian: bool,
 ) -> Option<&[u8]> {
-    todo!("W4-03a")
+    // The 12-byte entry must lie fully inside the block: an unreadable offset field would otherwise read as 0.
+    let len = i64::try_from(tiff.len()).ok()?;
+    let entry = i64::from(entry_offset);
+    if entry < 0 || entry > len - 12 {
+        return None;
+    }
+    let size = i64::from(type_size(field_type));
+    if size == 0 || count == 0 {
+        return None;
+    }
+    let mut total = size * i64::from(count);
+    if total <= 4 {
+        // Inline: the value sits in the entry's offset field (the 12-byte entry was checked above).
+        return slice_at(tiff, entry + 8, total);
+    }
+    let offset = window::<4>(tiff, entry + 8).map_or(0, |bytes| u32_of(bytes, little_endian));
+    if i64::from(offset) >= len {
+        return None;
+    }
+    let available = len - i64::from(offset);
+    let cap = if field_type == 2 {
+        MAX_ASCII_BYTES
+    } else {
+        MAX_VALUE_BYTES
+    };
+    total = total.min(i64::try_from(cap).unwrap_or(i64::MAX));
+    if matches!(field_type, 2 | 7) {
+        // Text and blobs must lie fully inside the block; a value running past its end is rejected, not shortened.
+        if total > available {
+            return None;
+        }
+    } else {
+        // A numeric array is cut to the whole elements that exist, so its first element stays readable.
+        total = total.min(available / size * size);
+    }
+    if total < size {
+        return None;
+    }
+    slice_at(tiff, i64::from(offset), total)
+}
+
+/// `len` bytes at `start`, or `None` when the range is negative or runs past the end of `data`.
+fn slice_at(data: &[u8], start: i64, len: i64) -> Option<&[u8]> {
+    let start = usize::try_from(start).ok()?;
+    let len = usize::try_from(len).ok()?;
+    data.get(start..start.checked_add(len)?)
 }
 
 /// Reads an ASCII (type 2) or UNDEFINED (type 7) value as text: clamped to [`MAX_ASCII_BYTES`], cut at the first NUL,
 /// decoded as UTF-8 with the .NET replacement behaviour. `None` for any other type or when the text is empty.
 #[must_use]
 pub fn read_ascii(value: &[u8], field_type: u16) -> Option<String> {
-    todo!("W4-03a")
+    if !matches!(field_type, 2 | 7) {
+        return None;
+    }
+    // The clamp comes before the NUL search, so a NUL past the cap is never seen (UNDEFINED carries up to 4096 bytes).
+    let clamped = value.get(..value.len().min(MAX_ASCII_BYTES)).unwrap_or(value);
+    let text = match clamped.iter().position(|&b| b == 0) {
+        Some(end) => clamped.get(..end).unwrap_or(clamped),
+        None => clamped,
+    };
+    if text.is_empty() {
+        None
+    } else {
+        Some(String::from_utf8_lossy(text).into_owned())
+    }
 }
 
 /// Reads the FIRST element of an integer value as `i64` (signed types are sign-extended): BYTE 1, SHORT 3, LONG 4,
@@ -110,14 +226,32 @@ pub fn read_ascii(value: &[u8], field_type: u16) -> Option<String> {
 /// element.
 #[must_use]
 pub fn read_unsigned(value: &[u8], field_type: u16, little_endian: bool) -> Option<i64> {
-    todo!("W4-03a")
+    match field_type {
+        1 => value.first().map(|&b| i64::from(b)),
+        3 => window::<2>(value, 0).map(|b| i64::from(u16_of(b, little_endian))),
+        4 | 13 => window::<4>(value, 0).map(|b| i64::from(u32_of(b, little_endian))),
+        8 => window::<2>(value, 0).map(|b| i64::from(i16_of(b, little_endian))),
+        9 => window::<4>(value, 0).map(|b| i64::from(i32_of(b, little_endian))),
+        _ => None,
+    }
 }
 
 /// Reads the FIRST rational of a value. RATIONAL (5): both words unsigned, zero allowed. SRATIONAL (10): both words
 /// as `i32`, and `None` unless both are strictly positive. `None` for other types or when fewer than 8 bytes.
 #[must_use]
 pub fn read_rational(value: &[u8], field_type: u16, little_endian: bool) -> Option<ExifRational> {
-    todo!("W4-03a")
+    let numerator = u32_of(window::<4>(value, 0)?, little_endian);
+    let denominator = u32_of(window::<4>(value, 4)?, little_endian);
+    match field_type {
+        5 => Some(ExifRational::new(numerator, denominator)),
+        10 => {
+            // Same bits, read as signed: a negative or zero word is rejected.
+            let n = u32::try_from(i32::from_ne_bytes(numerator.to_ne_bytes())).ok()?;
+            let d = u32::try_from(i32::from_ne_bytes(denominator.to_ne_bytes())).ok()?;
+            (n > 0 && d > 0).then(|| ExifRational::new(n, d))
+        }
+        _ => None,
+    }
 }
 
 #[cfg(test)]
@@ -726,7 +860,13 @@ mod tests {
                 let want = out["ok"]
                     .as_bool()
                     .expect("ok")
-                    .then(|| (int_of(out, "length"), out["hex"].as_str().expect("hex").to_owned()));
+                    // The oracle writes upper-case hex (Convert.ToHexString); `hex()` writes lower-case.
+                    .then(|| {
+                        (
+                            int_of(out, "length"),
+                            out["hex"].as_str().expect("hex").to_ascii_lowercase(),
+                        )
+                    });
                 expect_eq("value-span", got, want)
             }
             "ascii" => expect_eq(
