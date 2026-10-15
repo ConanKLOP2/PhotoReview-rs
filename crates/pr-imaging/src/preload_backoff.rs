@@ -8,10 +8,10 @@
 //!
 //! No I/O, no clock, no globals. Interior mutability is a `std::sync::Mutex` (C# `lock`); the types are `Send + Sync`.
 
-#![allow(unused_variables, dead_code)] // D11: remove with the last `todo!()`.
-
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{Mutex, MutexGuard, PoisonError};
+
+use pr_core::text::ignore_case_key;
 
 use crate::cache_key::ImageCacheKey;
 use crate::decode_types::DecodeBox;
@@ -48,43 +48,77 @@ pub struct PreloadBusyBackoff {
 impl PreloadBusyBackoff {
     /// New backoff: no history, pass counter 0.
     pub fn new() -> Self {
-        todo!("Self::default()")
+        Self::default()
+    }
+
+    /// Locks the state. A poisoned lock is recovered: no code runs under the guard that can panic midway.
+    fn lock(&self) -> MutexGuard<'_, BackoffInner> {
+        self.inner.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// C# `BeginPass()`: marks the start of an order pass (the order was rebuilt): `pass = pass.wrapping_add(1)`.
     pub fn begin_pass(&self) {
-        todo!("lock; pass += 1")
+        let mut inner = self.lock();
+        inner.pass = inner.pass.wrapping_add(1);
     }
 
     /// C# `NoteBusy(path, key)`: records a busy outcome and returns how many times this path (as this exact file, i.e.
     /// an equal `key`) has now been busy: `previous + 1` when a state exists with an equal key, else `1`. The stored
     /// state becomes `(key, current pass, count)`.
     pub fn note_busy(&self, path: &str, key: &ImageCacheKey) -> i32 {
-        todo!("lock; equal key => busy_count + 1 else 1; store State{{key, pass, count}}")
+        let path_key = ignore_case_key(path);
+        let mut inner = self.lock();
+        let pass = inner.pass;
+        let count = match inner.states.get(&path_key) {
+            Some(state) if state.key == *key => state.busy_count.wrapping_add(1),
+            _ => 1,
+        };
+        inner.states.insert(
+            path_key,
+            State {
+                key: key.clone(),
+                last_pass: pass,
+                busy_count: count,
+            },
+        );
+        count
     }
 
     /// C# `RecordSuccess(path)`: a preload of the path succeeded; drop its history (the retry cap must not outlive a
     /// good decode). No effect on an unknown path.
     pub fn record_success(&self, path: &str) {
-        todo!("lock; remove")
+        let path_key = ignore_case_key(path);
+        self.lock().states.remove(&path_key);
     }
 
     /// C# `Clear()`: forget every path (folder reload / cache clear). The pass counter is NOT reset.
     pub fn clear(&self) {
-        todo!("lock; states.clear()")
+        self.lock().states.clear();
     }
 
     /// C# `ShouldSkip(path, key)`: `false` for an unknown path; when the stored key differs from `key` the state is
     /// REMOVED (the file changed: a fresh start) and `false` is returned; otherwise
     /// `busy_count > MAX_RETRIES || pass - last_pass <= COOLDOWN_PASSES` (wrapping subtraction).
     pub fn should_skip(&self, path: &str, key: &ImageCacheKey) -> bool {
-        todo!("lock; lookup; key mismatch removes the entry; else cap or cooldown test")
+        let path_key = ignore_case_key(path);
+        let mut inner = self.lock();
+        let pass = inner.pass;
+        let Some(state) = inner.states.get(&path_key) else {
+            return false;
+        };
+        let (same_key, busy_count, last_pass) = (state.key == *key, state.busy_count, state.last_pass);
+        if !same_key {
+            // The file changed: forget the old history so the new identity starts fresh.
+            inner.states.remove(&path_key);
+            return false;
+        }
+        busy_count > MAX_RETRIES || pass.wrapping_sub(last_pass) <= COOLDOWN_PASSES
     }
 
     /// Test seam for the C# test `BeginPassAndNoteBusy_Concurrent_...`, which reads the private `_pass` field by
     /// reflection. Returns the current pass counter.
     pub fn pass_for_tests(&self) -> i32 {
-        todo!("lock; pass")
+        self.lock().pass
     }
 }
 
@@ -109,18 +143,38 @@ pub struct PreviewSizeSampler {
 impl PreviewSizeSampler {
     /// New sampler: box `0x0`, no samples.
     pub fn new() -> Self {
-        todo!("Self::default()")
+        Self::default()
+    }
+
+    /// Locks the sampler state (poison recovered, as in [`PreloadBusyBackoff`]).
+    fn lock(&self) -> MutexGuard<'_, SamplerInner> {
+        self.inner.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// C# `Record(box, bytes)`: `bytes <= 0` is ignored. A box different from the stored one replaces it and resets
     /// total and count; then `total += bytes` (wrapping like unchecked C#), `count += 1`.
     pub fn record(&self, decode_box: DecodeBox, bytes: i64) {
-        todo!("ignore non-positive; reset on box change; accumulate")
+        if bytes <= 0 {
+            return;
+        }
+        let mut inner = self.lock();
+        if inner.decode_box != decode_box {
+            inner.decode_box = decode_box;
+            inner.total_bytes = 0;
+            inner.count = 0;
+        }
+        inner.total_bytes = inner.total_bytes.wrapping_add(bytes);
+        inner.count = inner.count.wrapping_add(1);
     }
 
     /// C# `MeanBytes(box)`: `Some(total as f64 / count as f64)` when `box` equals the stored box and
     /// `count >= MINIMUM_SAMPLES`, else `None`.
     pub fn mean_bytes(&self, decode_box: DecodeBox) -> Option<f64> {
-        todo!("box equal and count >= MINIMUM_SAMPLES => mean")
+        let inner = self.lock();
+        if inner.decode_box == decode_box && inner.count >= MINIMUM_SAMPLES {
+            Some(inner.total_bytes as f64 / f64::from(inner.count))
+        } else {
+            None
+        }
     }
 }
