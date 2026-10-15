@@ -1764,3 +1764,286 @@ mod golden_source_bytes_scenarios {
         }
     }
 }
+
+// ---- verifier probes (W4-10a repair round 1): Rust-only tests that kill the surviving mutants ----
+
+mod verifier_probes {
+    use super::*;
+    use pr_imaging::cache::source_bytes::SourceBytesCachePolicy;
+    use std::error::Error as _;
+    use std::fmt;
+
+    /// A capacity above `Array.MaxLength` (64 GiB of RAM clamps `i64::MAX / 2` to well over 2 GB).
+    fn huge_cache(reader: Arc<dyn SourceReader>) -> SourceBytesCache {
+        let cache = new_cache_with(i64::MAX / 2, reader);
+        assert!(
+            cache.can_cache_range(ARRAY_MAX_LENGTH),
+            "the cache could keep an Array.MaxLength range"
+        );
+        cache
+    }
+
+    /// Fails its first `read` with `kind`, then serves the data (a retry would succeed).
+    struct FailOnceStream {
+        inner: ChunkedStream,
+        kind: io::ErrorKind,
+        failed: bool,
+    }
+
+    impl Read for FailOnceStream {
+        fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+            if !self.failed {
+                self.failed = true;
+                return Err(io::Error::new(self.kind, "injected read failure"));
+            }
+            self.inner.read(buf)
+        }
+    }
+
+    impl Seek for FailOnceStream {
+        fn seek(&mut self, from: SeekFrom) -> io::Result<u64> {
+            self.inner.seek(from)
+        }
+    }
+
+    #[derive(Debug)]
+    struct InnerError;
+
+    impl fmt::Display for InnerError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            f.write_str("inner cause")
+        }
+    }
+
+    impl std::error::Error for InnerError {}
+
+    #[derive(Debug)]
+    struct OuterError(InnerError);
+
+    impl fmt::Display for OuterError {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            f.write_str("outer failure")
+        }
+    }
+
+    impl std::error::Error for OuterError {
+        fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+            Some(&self.0)
+        }
+    }
+
+    /// Records the `buffer_size` the cache hands to the reader, then opens the real file.
+    struct BufferSizeReader(Mutex<Vec<usize>>);
+
+    impl SourceReader for BufferSizeReader {
+        fn open_source(
+            &self,
+            path: &Path,
+            priority: SourceReadPriority,
+            buffer_size: usize,
+        ) -> io::Result<Box<dyn ReadSeek>> {
+            if let Ok(mut log) = self.0.lock() {
+                log.push(buffer_size);
+            }
+            PhysicalSourceReader.open_source(path, priority, buffer_size)
+        }
+    }
+
+    #[test]
+    fn v_range_zero_length_source_is_valid() {
+        // C# ThrowIfNegative(length): length 0 is valid; an empty range of a zero-byte file is [] without a read.
+        let root = TempRoot::new("src-bytes-v-zero-length");
+        let f = fixture(&root, "empty.bin", 0);
+        let reader = Arc::new(CountingReader::must_not_open());
+        let cache = new_cache_with(1024, reader.clone());
+
+        let bytes = cache
+            .get_or_read_range(&f.path, 0, f.ticks, 0, 0, VIEWER)
+            .expect("an empty range of a zero-byte source is valid");
+
+        assert!(bytes.is_empty());
+        assert_eq!(reader.opens(), 0);
+    }
+
+    #[test]
+    fn v_try_get_range_edges() {
+        // C# TryGetRange returns false for an invalid range BEFORE Path.GetFullPath, so a NUL path is not an error.
+        let cache = new_cache(1024);
+        let bad = Path::new("C:\\dir\0name.bin");
+        let invalid_rows: [(i64, i64, i32); 8] = [
+            (10, 5, 6),              // count > length - offset
+            (10, 0, 11),             // count > length
+            (10, 11, 1),             // offset > length
+            (10, -1, 1),             // negative offset
+            (10, 0, 0),              // empty
+            (10, 0, -1),             // negative count
+            (i64::MIN, 1, 1),        // offset > length; length - offset would overflow
+            (i64::MAX, i64::MAX, 1), // count > length - offset at the top of the range
+        ];
+        for (length, offset, count) in invalid_rows {
+            let got = cache.try_get_range(bad, length, 0, offset, count);
+            assert!(
+                matches!(got, Ok(None)),
+                "length={length} offset={offset} count={count}: invalid range is a miss, got {got:?}"
+            );
+        }
+
+        // A valid range reaches GetFullPath, which rejects the NUL path.
+        let valid_rows: [(i64, i64, i32); 3] = [(10, 5, 5), (10, 0, 10), (i64::MAX, 0, 1)];
+        for (length, offset, count) in valid_rows {
+            let got = cache.try_get_range(bad, length, 0, offset, count);
+            assert!(
+                matches!(got, Err(SourceBytesError::Argument { param_name: "path" })),
+                "length={length} offset={offset} count={count}: a valid range with a NUL path is an argument error, \
+                 got {got:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn v_range_count_exactly_array_max_reaches_reader() {
+        // A cacheable range of exactly Array.MaxLength goes through the cache path and is opened; the fake reports
+        // length 1, so the read fails with "file changed" before any 2 GB allocation.
+        let root = TempRoot::new("src-bytes-v-array-max");
+        let reader = Arc::new(CountingReader::new(|_, _| boxed(ChunkedStream::new(vec![1], 1))));
+        let cache = huge_cache(reader.clone());
+        let path = root.join("never-read.bin");
+        let max_count = i32::try_from(ARRAY_MAX_LENGTH).expect("Array.MaxLength fits i32");
+
+        let err = cache
+            .get_or_read_range(&path, ARRAY_MAX_LENGTH, 1, 0, max_count, VIEWER)
+            .expect_err("a source of length 1 cannot supply Array.MaxLength bytes");
+
+        assert_eq!(err.io_kind(), Some(io::ErrorKind::Other), "got {err:?}");
+        assert_eq!(reader.opens(), 1, "count == Array.MaxLength reaches the reader");
+        assert_eq!(cache.count(), 0);
+    }
+
+    #[test]
+    fn v_whole_file_above_array_max_is_key_error_before_open() {
+        // A whole file above Array.MaxLength is ArgumentOutOfRange("key") before the reader is opened. Sparse file:
+        // no disk space is used.
+        let root = TempRoot::new("src-bytes-v-huge-file");
+        let path = root.join("huge.bin");
+        fs::write(&path, b"").expect("create sparse fixture");
+        #[cfg(windows)]
+        {
+            let output = std::process::Command::new("fsutil")
+                .args(["sparse", "setflag"])
+                .arg(&path)
+                .output()
+                .expect("run fsutil");
+            assert!(output.status.success(), "fsutil sparse setflag: {output:?}");
+        }
+        let huge = u64::try_from(ARRAY_MAX_LENGTH + 1).expect("positive");
+        OpenOptions::new()
+            .write(true)
+            .open(&path)
+            .and_then(|file| file.set_len(huge))
+            .expect("extend sparse fixture");
+
+        let reader = Arc::new(CountingReader::must_not_open());
+        let cache = huge_cache(reader.clone());
+
+        let result = cache.get_or_read(&path);
+        let removed = fs::remove_file(&path);
+
+        assert!(
+            matches!(result, Err(SourceBytesError::ArgumentOutOfRange { param_name: "key" })),
+            "got {:?}",
+            result.map(|bytes| bytes.len())
+        );
+        assert_eq!(reader.opens(), 0, "nothing is opened");
+        removed.expect("remove sparse fixture");
+    }
+
+    #[test]
+    fn v_read_error_propagates_not_retried() {
+        // C# has no retry in the read loop: the first reader error (Interrupted included) propagates, uncached.
+        for kind in [
+            io::ErrorKind::Other,
+            io::ErrorKind::Interrupted,
+            io::ErrorKind::PermissionDenied,
+        ] {
+            let root = TempRoot::new("src-bytes-v-read-error");
+            let f = fixture(&root, "data.bin", 64);
+            let content = f.content.clone();
+            let reader = Arc::new(CountingReader::new(move |_, _| {
+                boxed(FailOnceStream {
+                    inner: ChunkedStream::new(content.clone(), 16),
+                    kind,
+                    failed: false,
+                })
+            }));
+            let cache = new_cache_with(1024, reader.clone());
+
+            let err = read_range(&cache, &f, 0, 64).expect_err("the read error propagates");
+            assert_eq!(err.io_kind(), Some(kind), "kind {kind:?}: got {err:?}");
+            assert_eq!(reader.opens(), 1);
+            assert_eq!(cache.count(), 0, "a failed read is not cached");
+
+            let err = cache
+                .get_or_read(&f.path)
+                .expect_err("a whole-file read error propagates");
+            assert_eq!(err.io_kind(), Some(kind), "kind {kind:?}: got {err:?}");
+            assert_eq!(cache.count(), 0);
+        }
+    }
+
+    #[test]
+    fn v_policy_exposes_cache() {
+        let cache = Arc::new(new_cache(1024));
+        let policy = SourceBytesCachePolicy::new(Some(Arc::clone(&cache)));
+        let exposed = policy.cache().expect("an enabled policy exposes its cache");
+        assert!(Arc::ptr_eq(exposed, &cache));
+        let cloned = policy.clone();
+        assert!(Arc::ptr_eq(cloned.cache().expect("a clone keeps the cache"), &cache));
+
+        assert!(SourceBytesCachePolicy::new(None).cache().is_none());
+        assert!(SourceBytesCachePolicy::default().cache().is_none());
+    }
+
+    #[test]
+    fn v_error_source_is_transparent() {
+        let root = TempRoot::new("src-bytes-v-error-source");
+        let f = fixture(&root, "data.bin", 16);
+        let reader = Arc::new(CountingReader::new(|_, _| {
+            Err(io::Error::other(OuterError(InnerError)))
+        }));
+        let cache = new_cache_with(1024, reader);
+
+        let err = read_range(&cache, &f, 0, 16).expect_err("open fails");
+        assert_eq!(err.to_string(), "outer failure");
+        let source = err.source().expect("Io(e) exposes e.source()");
+        assert_eq!(source.to_string(), "inner cause");
+
+        let arg = SourceBytesError::Argument { param_name: "path" };
+        assert!(arg.source().is_none());
+        let range = SourceBytesError::ArgumentOutOfRange { param_name: "offset" };
+        assert!(range.source().is_none());
+    }
+
+    #[test]
+    fn v_buffer_size_is_one_mib() {
+        // C# passes the ISourceReader.OpenSource default bufferSize (1 MiB).
+        assert_eq!(SOURCE_READ_BUFFER_SIZE, 1_048_576);
+        let root = TempRoot::new("src-bytes-v-buffer");
+        let f = fixture(&root, "data.bin", 32);
+        let reader = Arc::new(BufferSizeReader(Mutex::new(Vec::new())));
+        let cache = new_cache_with(1024, reader.clone());
+
+        // A partial range, then the whole file (a different key, so both are real reads).
+        read_range(&cache, &f, 0, 16).expect("range read");
+        cache.get_or_read(&f.path).expect("whole read");
+
+        let sizes = reader.0.lock().map(|log| log.clone()).unwrap_or_default();
+        assert_eq!(sizes, vec![1_048_576, 1_048_576]);
+    }
+
+    #[test]
+    fn v_debug_names_capacity() {
+        let text = format!("{:?}", new_cache(1024));
+        assert!(text.starts_with("SourceBytesCache"), "{text}");
+        assert!(text.contains("capacity_bytes: 1024"), "{text}");
+    }
+}

@@ -440,14 +440,15 @@ impl SourceBytesCache {
         {
             let buffer = Arc::get_mut(&mut bytes)
                 .ok_or_else(|| io::Error::other("source bytes buffer is shared before it was filled"))?;
+            // C# `while (read < count) { n = stream.Read(..); if (n == 0) throw EndOfStream; }`: every reader error
+            // (Interrupted included, .NET has no EINTR retry) propagates on the first failure.
             let mut filled = 0;
             while filled < buffer.len() {
-                match stream.read(&mut buffer[filled..]) {
-                    Ok(0) => return Err(unexpected_eof(&key.path)),
-                    Ok(read) => filled += read,
-                    Err(e) if e.kind() == io::ErrorKind::Interrupted => {}
-                    Err(e) => return Err(e.into()),
+                let read = stream.read(&mut buffer[filled..])?;
+                if read == 0 {
+                    return Err(unexpected_eof(&key.path));
                 }
+                filled += read;
             }
         }
         run_hook(&self.after_read_for_tests);
