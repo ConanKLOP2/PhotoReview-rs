@@ -163,11 +163,15 @@ impl PixelBuffer {
     /// `width * 4 * height` bytes; the `id` is taken only after the allocation succeeded (ids need only be unique and
     /// increasing). The C# unknown-layout check is [`PixelLayout::from_i32`] in Rust.
     pub fn allocate(width: i32, height: i32, layout: PixelLayout) -> Result<Self, PixelBufferError> {
-        if !(1..=i32::MAX / BYTES_PER_PIXEL).contains(&width) {
+        // C# order: width < 1, height < 1, then width > i32::MAX / 4 (so a huge width with a bad height reports height).
+        if width < 1 {
             return Err(PixelBufferError::WidthOutOfRange { width });
         }
         if height < 1 {
             return Err(PixelBufferError::HeightOutOfRange { height });
+        }
+        if width > i32::MAX / BYTES_PER_PIXEL {
+            return Err(PixelBufferError::WidthOutOfRange { width });
         }
         let stride = width * BYTES_PER_PIXEL;
         let byte_count = i64::from(stride) * i64::from(height);

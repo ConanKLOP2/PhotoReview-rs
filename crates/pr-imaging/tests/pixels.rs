@@ -1016,3 +1016,95 @@ fn golden_orientation_pixels_placement_through_apply_orientation() {
     }
     check_all("orientation-pixels", &failures);
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Repair round 1: validation order, ids, mutable span, unallocated-block accessors, error texts
+// ---------------------------------------------------------------------------------------------------------------------
+
+#[test]
+fn allocate_validation_order_matches_csharp() {
+    // C# order: width < 1, height < 1, then width > i32::MAX / 4.
+    assert_eq!(
+        PixelBuffer::allocate(i32::MAX, 0, PixelLayout::Bgr32).unwrap_err(),
+        PixelBufferError::HeightOutOfRange { height: 0 }
+    );
+    assert_eq!(
+        PixelBuffer::allocate(i32::MAX / 4 + 1, -5, PixelLayout::Pbgra32).unwrap_err(),
+        PixelBufferError::HeightOutOfRange { height: -5 }
+    );
+    assert_eq!(
+        PixelBuffer::allocate(0, 0, PixelLayout::Bgr32).unwrap_err(),
+        PixelBufferError::WidthOutOfRange { width: 0 }
+    );
+    assert_eq!(
+        PixelBuffer::allocate(i32::MAX, 1, PixelLayout::Bgr32).unwrap_err(),
+        PixelBufferError::WidthOutOfRange { width: i32::MAX }
+    );
+}
+
+#[test]
+fn ids_are_positive_unique_and_increasing() {
+    let first = PixelBuffer::allocate(1, 1, PixelLayout::Bgr32).expect("alloc");
+    assert!(first.id() >= 1, "ids start at 1, got {}", first.id());
+    let hook = PixelBuffer::unallocated_for_tests(2, 2, PixelLayout::Pbgra32);
+    assert!(hook.id() > first.id());
+    let hook2 = PixelBuffer::unallocated_for_tests(2, 2, PixelLayout::Pbgra32);
+    assert!(hook2.id() > hook.id());
+    let last = PixelBuffer::allocate(1, 1, PixelLayout::Bgr32).expect("alloc");
+    assert!(last.id() > hook2.id());
+    assert!(hook.id() >= 1 && hook2.id() >= 1);
+}
+
+#[test]
+fn try_get_span_mut_on_small_buffer_is_some_and_writable() {
+    let mut buffer = PixelBuffer::allocate(3, 2, PixelLayout::Pbgra32).expect("alloc");
+    assert!(buffer.id() >= 1);
+    {
+        let span = buffer.try_get_span_mut().expect("not disposed").expect("fits");
+        assert_eq!(span.len(), 24);
+        span[23] = 0xAB;
+    }
+    assert_eq!(buffer.bytes().expect("bytes")[23], 0xAB);
+    buffer.dispose();
+    assert_eq!(buffer.try_get_span_mut().unwrap_err(), PixelBufferError::Disposed);
+}
+
+#[test]
+fn try_get_span_mut_over_limit_is_none_on_unallocated() {
+    let mut huge = PixelBuffer::unallocated_for_tests(i32::MAX / 4, 3, PixelLayout::Bgr32);
+    assert!(!fits_in_span(huge.byte_count()));
+    assert!(huge.try_get_span_mut().expect("not disposed").is_none());
+    let mut small = PixelBuffer::unallocated_for_tests(4, 4, PixelLayout::Bgr32);
+    assert!(
+        small
+            .try_get_span_mut()
+            .expect("not disposed")
+            .expect("fits")
+            .is_empty()
+    );
+}
+
+#[test]
+fn unallocated_block_accessors_are_empty_not_crashing() {
+    let mut buffer = PixelBuffer::unallocated_for_tests(8, 8, PixelLayout::Pbgra32);
+    assert!(!buffer.is_disposed());
+    assert!(buffer.bytes().expect("bytes").is_empty());
+    assert!(buffer.bytes_mut().expect("bytes_mut").is_empty());
+    assert!(buffer.get_row(0).expect("row").is_empty());
+    assert!(buffer.get_row_mut(7).expect("row_mut").is_empty());
+    assert!(buffer.try_get_span().expect("span").expect("fits").is_empty());
+}
+
+#[test]
+fn error_texts_are_stable_and_distinct() {
+    let width = PixelBufferError::WidthOutOfRange { width: 0 }.to_string();
+    assert!(width.contains("Width") && width.contains("was 0") && width.contains(&(i32::MAX / 4).to_string()));
+    let height = PixelBufferError::HeightOutOfRange { height: -3 }.to_string();
+    assert!(height.contains("Height") && height.contains("-3"));
+    assert!(PixelBufferError::UnknownLayout(7).to_string().contains("layout 7"));
+    let oom = PixelBufferError::OutOfMemory { byte_count: 123 }.to_string();
+    assert!(oom.contains("123"));
+    assert!(PixelBufferError::Disposed.to_string().contains("disposed"));
+    let row = PixelBufferError::RowOutOfRange { y: 9, height: 4 }.to_string();
+    assert!(row.contains("Row 9") && row.contains("height 4"));
+}
