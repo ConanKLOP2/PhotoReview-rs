@@ -419,6 +419,17 @@ pub fn write_atomically(
     }
 }
 
+/// C# lets platform-codec exceptions propagate unchanged: out-of-memory and cancellation stay what they are (and so are
+/// not cache-entry failures); everything else is an unusable entry (`InvalidArgument`).
+fn map_codec_error(error: crate::decoder_traits::DecodeError) -> PreviewCacheError {
+    use crate::decoder_traits::DecodeError;
+    match error {
+        DecodeError::OutOfMemory { message } => PreviewCacheError::OutOfMemory(message),
+        DecodeError::Canceled => PreviewCacheError::Canceled,
+        other => PreviewCacheError::InvalidArgument(other.to_string()),
+    }
+}
+
 /// C# `WriteAtomicallyAsync(IDecodedImage, IPlatformImageCodec, ...)` (C-02): `platform.to_pixels(image.platform_image())`
 /// (the lease is dropped afterwards), then [`write_atomically`] with the image's backend, orientation, original size and
 /// EXIF; `opacity_verified = false`.
@@ -432,9 +443,7 @@ pub fn write_decoded_image(
     codec: &dyn PreviewPayloadCodec,
     cancel: &CancelToken,
 ) -> Result<(), PreviewCacheError> {
-    let lease = platform
-        .to_pixels(image.platform_image())
-        .map_err(|e| PreviewCacheError::InvalidArgument(e.to_string()))?;
+    let lease = platform.to_pixels(image.platform_image()).map_err(map_codec_error)?;
     let Some(pixels) = lease.pixels() else {
         return Err(PreviewCacheError::InvalidArgument(
             "The platform codec returned no pixels.".to_owned(),
@@ -477,9 +486,7 @@ pub fn to_decoded_image(
     platform: &dyn PlatformImageCodec,
 ) -> Result<DecodedImage, PreviewCacheError> {
     let (width, height) = (entry.pixels.width(), entry.pixels.height());
-    let platform_image = platform
-        .image_from_pixels(entry.pixels)
-        .map_err(|e| PreviewCacheError::InvalidArgument(e.to_string()))?;
+    let platform_image = platform.image_from_pixels(entry.pixels).map_err(map_codec_error)?;
     let options = DecodedImageOptions {
         downscaled: true,
         orientation: entry.orientation,

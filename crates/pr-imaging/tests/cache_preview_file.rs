@@ -1744,3 +1744,80 @@ fn preview_entry_write_golden_matches_csharp() {
         }
     }
 }
+
+// ---- platform-codec failures propagate like the C# exceptions ------------------------------------------------------
+
+/// Platform codec whose both operations fail with a fixed error kind.
+struct FailingPlatformCodec(fn() -> DecodeError);
+
+impl PlatformImageCodec for FailingPlatformCodec {
+    fn name(&self) -> &'static str {
+        "failing"
+    }
+
+    fn image_from_pixels(&self, _pixels: PixelBuffer) -> Result<PlatformImage, DecodeError> {
+        Err((self.0)())
+    }
+
+    fn to_pixels<'a>(&self, _platform_image: &'a PlatformImage) -> Result<PixelLease<'a>, DecodeError> {
+        Err((self.0)())
+    }
+}
+
+fn oom() -> DecodeError {
+    DecodeError::OutOfMemory {
+        message: "oom".to_owned(),
+    }
+}
+
+fn write_with_failing(codec: &FailingPlatformCodec) -> Result<(), PreviewCacheError> {
+    let root = TempRoot::new("pv4-failing-write");
+    let path = root.join("entry.pv4");
+    let image = decoded_image(Shape::bgr(16, 16, DecoderBackend::TurboJpeg, 1), None);
+    write_decoded_image(&image, codec, &path, &FakePayloadCodec::default(), &CancelToken::new())
+}
+
+#[test]
+fn to_pixels_out_of_memory_is_not_a_cache_entry_failure() {
+    let err = write_with_failing(&FailingPlatformCodec(oom)).expect_err("must fail");
+    assert!(matches!(err, PreviewCacheError::OutOfMemory(_)));
+    assert!(!err.is_cache_entry_failure());
+}
+
+#[test]
+fn to_pixels_canceled_is_canceled() {
+    let err = write_with_failing(&FailingPlatformCodec(|| DecodeError::Canceled)).expect_err("must fail");
+    assert!(matches!(err, PreviewCacheError::Canceled));
+    assert!(!err.is_cache_entry_failure());
+}
+
+#[test]
+fn to_pixels_other_failure_is_a_cache_entry_failure() {
+    let codec = FailingPlatformCodec(|| DecodeError::InvalidData {
+        message: "bad".to_owned(),
+    });
+    let err = write_with_failing(&codec).expect_err("must fail");
+    assert!(matches!(err, PreviewCacheError::InvalidArgument(_)));
+    assert!(err.is_cache_entry_failure());
+}
+
+#[test]
+fn from_pixels_out_of_memory_is_not_a_cache_entry_failure() {
+    let root = TempRoot::new("pv4-failing-read");
+    let path = root.join("entry.pv4");
+    let image = decoded_image(Shape::bgr(16, 16, DecoderBackend::TurboJpeg, 1), None);
+    write_decoded_image(
+        &image,
+        &FakePlatformCodec,
+        &path,
+        &FakePayloadCodec::default(),
+        &CancelToken::new(),
+    )
+    .expect("write entry");
+    let err = match read_as_decoded_image(&path, &FailingPlatformCodec(oom), &FakePayloadCodec::default()) {
+        Ok(_) => panic!("must fail"),
+        Err(e) => e,
+    };
+    assert!(matches!(err, PreviewCacheError::OutOfMemory(_)));
+    assert!(!err.is_cache_entry_failure());
+}
