@@ -3,8 +3,8 @@
 //! `tools/oracle-cs`). Port of `PhotoReview.Imaging/Decoding/ExifOrientation.cs` and the transform table of
 //! `PhotoReview.Imaging.Wpf/WpfExifOrientation.cs`.
 //!
-//! Red by design (W4-02a test pass): every function under test is a `todo!()` stub, so these tests fail until the porter
-//! implements the bodies. Do not weaken an assertion to make one pass; a golden that disagrees is a behaviour difference.
+//! Written red in the W4-02a test pass and green once the bodies landed. Do not weaken an assertion to make one pass;
+//! a golden that disagrees is a behaviour difference.
 //!
 //! Documented skips (no Rust twin, not ported here):
 //! - `ExifOrientationPureTests.ReadFromWic_ThrowingQuery_IsOne_ButOutOfMemoryPropagates`: only the `InvalidCastException`
