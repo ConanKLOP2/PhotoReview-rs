@@ -363,3 +363,35 @@ fn debug_names_the_variant_and_the_message_without_the_closure() {
     assert!(text.contains("MissingCodec"), "got {text}");
     assert!(text.contains("english"), "got {text}");
 }
+
+#[test]
+fn error_source_is_delegated_through_the_wrapper() {
+    use std::error::Error;
+    let wrapped = DecodeError::WithSourceBytes {
+        error: Box::new(DecodeError::Io(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "denied",
+        ))),
+        bytes: DecodeFailureSourceBytes::none(),
+    };
+    assert!(wrapped.source().is_some());
+}
+
+#[test]
+fn plain_error_has_no_source_bytes() {
+    assert!(DecodeError::busy().source_bytes().is_none());
+}
+
+/// A2 round trip (attach replaces, empty buffer is `Some`). Needs `DecodeFailureSourceBytes::attach/try_get`, which are
+/// `todo!()` until W4-01b lands; re-enable (remove `ignore`) in the integration that brings W4-01b.
+#[test]
+#[ignore = "blocked by W4-01b: DecodeFailureSourceBytes::attach/try_get are todo!()"]
+fn attach_then_source_bytes_round_trip() {
+    let bytes: Arc<[u8]> = Arc::from(vec![1u8, 2, 3]);
+    let e = DecodeError::missing_codec().attach_source_bytes(bytes);
+    assert_eq!(e.source_bytes().map(|b| b.to_vec()), Some(vec![1, 2, 3]));
+    let empty: Arc<[u8]> = Arc::from(Vec::<u8>::new());
+    let e = e.attach_source_bytes(empty);
+    assert_eq!(e.source_bytes().map(|b| b.len()), Some(0));
+    assert!(matches!(e.kind(), DecodeError::MissingCodec { .. }));
+}
