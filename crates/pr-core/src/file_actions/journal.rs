@@ -20,22 +20,31 @@
 //!
 //! Several `OperationJournal` instances on the same file model several PhotoReview processes: each has its own gate, the
 //! file's share modes are the only cross-instance exclusion (exactly as in C#).
-#![allow(unused_variables, dead_code)] // D11: removed by the porter together with the last todo!()
 
+use std::collections::HashMap;
 use std::fmt;
 use std::fs::File;
-use std::io;
+use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Condvar, Mutex, PoisonError};
 use std::thread::ThreadId;
 use std::time::Duration;
 
 use crate::abstractions::{
-    Clock, FileSystem, InProcessLiveOperationRegistry, JournalCompactionFiles, LiveOperationRegistry, Log,
+    AppendStream, Clock, FileSystem, InProcessLiveOperationRegistry, JournalCompactionFiles, LiveOperationRegistry,
+    Log, ReadSeek,
 };
 use crate::app_paths::AppPaths;
-use crate::file_actions::journal_line::JournalEntry;
-use crate::model::JournalDurability;
+use crate::diagnostics::file_log::FileLog;
+use crate::file_actions::journal_line::{self, JournalDateTime, JournalEntry};
+use crate::file_actions::journal_rules::{
+    STARTUP_COMMITTED_MOVE_LIMIT, is_stale_reconcile_after_committed, try_parse_tail_committed_move,
+};
+use crate::file_actions::reconcile::{self, ReconcileJournal};
+use crate::file_actions::{compaction, errors};
+use crate::io::physical::{decode_text_like_dotnet, new_guid_n};
+use crate::model::{FileOperationType, JournalDurability, JournalState};
+use crate::text::dotnet_path;
 use crate::time::{DateTimeUtc, TICKS_PER_SECOND};
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -423,7 +432,10 @@ impl OperationJournal {
     /// The log C# writes to through `FileLog.Default` (reconcile warnings, W3-03): the injected one, else
     /// `FileLog::default_instance()`.
     pub fn diagnostics_log(&self) -> &dyn Log {
-        todo!()
+        match self.log.as_deref() {
+            Some(log) => log,
+            None => FileLog::default_instance(),
+        }
     }
 
     /// C# `Append(entry)` = `AppendLines([entry])`. In this order (each step observable through a counting file system):
@@ -439,7 +451,7 @@ impl OperationJournal {
     ///    16)`, length 0 -> no repair, else read the LAST byte; not `'\n'` -> prepend `"\r\n"` to the text;
     /// 8. ONE `write_all` of the UTF-8 bytes; 9. durable + real file -> flush-to-disk seam, else `flush()`.
     pub fn append(&self, entry: &JournalEntry) -> io::Result<()> {
-        todo!()
+        self.append_lines(std::slice::from_ref(entry))
     }
 
     /// C# `Dismiss(entries)` (F-19, R09). The clock is read ONCE, before the gate. Under the gate: latest-entry map (FA-01
@@ -448,7 +460,27 @@ impl OperationJournal {
     /// dismissed). Non-empty -> ONE append of all Dismissed lines (one write); empty -> nothing is opened for append and no
     /// directory is created. Files named by the entries are never touched. The live marker is NOT consulted (RV-T05).
     pub fn dismiss(&self, entries: &[JournalEntry]) -> io::Result<DismissOutcome> {
-        todo!()
+        let now = self.clock.utc_now();
+        let mut outcome = DismissOutcome::default();
+        let _gate = self.gate.lock();
+        let latest = self.compute_latest_entries()?;
+        for entry in entries {
+            if latest.get(&entry.id) == Some(entry) {
+                outcome.dismissed.push(JournalEntry {
+                    state: JournalState::Dismissed,
+                    timestamp_utc: JournalDateTime::utc(now),
+                    error: None,
+                    error_code: None,
+                    ..entry.clone()
+                });
+            } else {
+                outcome.skipped.push(entry.clone());
+            }
+        }
+        if !outcome.dismissed.is_empty() {
+            self.append_lines(&outcome.dismissed)?;
+        }
+        Ok(outcome)
     }
 
     /// C# `ReadCommittedMoves`: committed Move lines in file order. Under the gate: missing file -> `Ok(vec![])`; open
@@ -457,14 +489,36 @@ impl OperationJournal {
     /// byte parser `journal_rules::try_parse_tail_committed_move`). Otherwise the stream is dropped, the gate released, and
     /// the full reader [`Self::read_entries`] collects every committed Move (no limit; `StreamReader` line rules).
     pub fn read_committed_moves(&self) -> io::Result<Vec<JournalEntry>> {
-        todo!()
+        {
+            let _gate = self.gate.lock();
+            if !self.fs.file_exists(&self.path) {
+                return Ok(Vec::new());
+            }
+            let mut stream = self.fs.open_read_shared(&self.path, READ_BUFFER_SIZE)?;
+            let length = stream.seek(SeekFrom::End(0))?;
+            if length >= FULL_SCAN_THRESHOLD_BYTES {
+                return read_committed_moves_reverse(stream.as_mut(), length);
+            }
+            // T5: the stream is dropped and the gate released before the full reader re-opens the file.
+        }
+
+        let mut entries = Vec::new();
+        self.read_entries(&mut |entry| {
+            if entry.op_type == FileOperationType::Move && entry.state == JournalState::Committed {
+                entries.push(entry);
+            }
+        })?;
+        Ok(entries)
     }
 
     /// C# `ReadPendingAndFailedOperations` (R2-F-17): ONE pass ([`Self::read_entries`]) building the latest entry per Id
     /// (FA-01 rule; insertion-ordered, a re-assigned Id keeps its first position); then the Prepared ones, then the Failed
     /// ones, each group in order of the Id's FIRST appearance in the file.
     pub fn read_pending_and_failed_operations(&self) -> io::Result<Vec<JournalEntry>> {
-        todo!()
+        let latest = self.compute_latest_entries()?;
+        let prepared = latest.values().filter(|e| e.state == JournalState::Prepared);
+        let failed = latest.values().filter(|e| e.state == JournalState::Failed);
+        Ok(prepared.chain(failed).cloned().collect())
     }
 
     /// C# `ReconcilePendingOperations(preparedBeforeUtc)` (F-14, Q-R27, ADR 0003). Delegates to W3-03:
@@ -473,7 +527,7 @@ impl OperationJournal {
         &self,
         prepared_before_utc: Option<DateTimeUtc>,
     ) -> io::Result<Vec<JournalEntry>> {
-        todo!()
+        reconcile::reconcile_pending_operations(self, prepared_before_utc, self.diagnostics_log())
     }
 
     /// C# `internal AppendIfUnchangedSince(anchor, ownSince, entry)` (P02). Under the gate: `history` = every line of
@@ -486,19 +540,40 @@ impl OperationJournal {
         own_since: &[JournalEntry],
         entry: &JournalEntry,
     ) -> io::Result<bool> {
-        todo!()
+        let _gate = self.gate.lock();
+        let history = self.read_lines_of(&anchor.id)?;
+        // None: the anchor is not in the journal, the whole history is "since" (C# FindLastIndex == -1).
+        let since_start = history.iter().rposition(|e| e == anchor).map_or(0, |at| at + 1);
+        if history[since_start..] != *own_since {
+            return Ok(false);
+        }
+        self.append(entry)?;
+        Ok(true)
     }
 
     /// C# `internal ReadLatestEntry(id)`: under the gate, the effective latest line of `id` (a reconcile-coded Failed right
     /// after a Committed is skipped, FA-01). `Ok(None)` when the Id has no line (or the journal is missing).
     pub fn read_latest_entry(&self, id: &str) -> io::Result<Option<JournalEntry>> {
-        todo!()
+        let _gate = self.gate.lock();
+        let mut latest: Option<JournalEntry> = None;
+        self.read_entries(&mut |entry| {
+            if entry.id == id && !is_stale_reconcile_after_committed(&entry, latest.as_ref()) {
+                latest = Some(entry);
+            }
+        })?;
+        Ok(latest)
     }
 
     /// C# `TryCompact` (F-16, D-14). Never returns an I/O error: the outcome says what happened (see the contract for
     /// the exact step order and the byte counts of each outcome). Uses W3-02's `compaction::build` for the plan.
     pub fn try_compact(&self) -> JournalCompactionResult {
-        todo!()
+        let Some(files) = self.compaction_files.as_deref() else {
+            return JournalCompactionResult::new(JournalCompactionOutcome::NotSupported, 0, 0);
+        };
+        // C# catches IOException / UnauthorizedAccessException / PlatformNotSupportedException: every io::Error here.
+        // Nothing was renamed (the rename is the last step and atomic): the journal is as it was.
+        self.try_compact_with(files)
+            .unwrap_or_else(|err| JournalCompactionResult::failed(&err))
     }
 
     /// C# `ReadEntries(handle)`: under the gate; missing file -> `Ok(())` with no call; otherwise
@@ -507,7 +582,20 @@ impl OperationJournal {
     /// the gate is held (it may call back into this journal on the same thread: the gate is reentrant).
     /// Also W3-03's `ReconcileJournal::read_entries`.
     pub fn read_entries(&self, handle: &mut dyn FnMut(JournalEntry)) -> io::Result<()> {
-        todo!()
+        let _gate = self.gate.lock();
+        if !self.fs.file_exists(&self.path) {
+            return Ok(());
+        }
+        let bytes = {
+            let mut stream = self.fs.open_read_shared(&self.path, READ_BUFFER_SIZE)?;
+            read_to_end(stream.as_mut())?
+        };
+        for line in decode_stream_reader_lines(&bytes) {
+            if let Some(entry) = journal_line::try_parse(&line) {
+                handle(entry);
+            }
+        }
+        Ok(())
     }
 
     /// W3-03's compare-and-append primitive (`ReconcileJournal::append_if`, used for C# `AppendIfStillPending` and
@@ -519,8 +607,369 @@ impl OperationJournal {
         id: &str,
         decide: &mut dyn FnMut(&[JournalEntry]) -> Option<JournalEntry>,
     ) -> io::Result<bool> {
-        todo!()
+        let _gate = self.gate.lock();
+        let lines = self.read_lines_of(id)?;
+        match decide(&lines) {
+            Some(entry) => {
+                self.append(&entry)?;
+                Ok(true)
+            }
+            None => Ok(false),
+        }
     }
+
+    // -----------------------------------------------------------------------------------------------------------
+    // Private helpers
+    // -----------------------------------------------------------------------------------------------------------
+
+    /// The journal path as text (C# `_path`; the app's paths are always valid Unicode).
+    fn path_text(&self) -> String {
+        self.path.to_string_lossy().into_owned()
+    }
+
+    /// Every accepted line whose Id equals `id` (ordinal), in file order. Raw: no FA-01 skipping.
+    fn read_lines_of(&self, id: &str) -> io::Result<Vec<JournalEntry>> {
+        let mut lines = Vec::new();
+        self.read_entries(&mut |entry| {
+            if entry.id == id {
+                lines.push(entry);
+            }
+        })?;
+        Ok(lines)
+    }
+
+    /// C# `ComputeLatestEntries()`: the effective latest line per Id (FA-01 rule) in order of FIRST appearance.
+    fn compute_latest_entries(&self) -> io::Result<LatestEntries> {
+        let mut latest = LatestEntries::default();
+        self.read_entries(&mut |entry| {
+            if !is_stale_reconcile_after_committed(&entry, latest.get(&entry.id)) {
+                latest.set(entry);
+            }
+        })?;
+        Ok(latest)
+    }
+
+    /// C# `AppendLines(entries)`; see [`Self::append`] for the exact order.
+    fn append_lines(&self, entries: &[JournalEntry]) -> io::Result<()> {
+        // C# `ThrowIfUnrepresentable` (W2-FA-03) cannot fire: a Rust `String` cannot hold an unpaired surrogate (T19).
+        let _gate = self.gate.lock();
+        let path_text = self.path_text();
+        if let Some(dir) = dotnet_path::get_directory_name(&path_text) {
+            if !dir.is_empty() {
+                self.fs.create_directory(Path::new(&dir))?;
+            }
+        }
+        let mut text = String::new();
+        for entry in entries {
+            text.push_str(&entry.to_line());
+            text.push_str(JOURNAL_NEW_LINE);
+        }
+        let durable = (self.durability)() == JournalDurability::PowerLossSafe;
+        let mut stream = self.open_append_with_retry(durable)?;
+        // A crash can leave a partial last line; the new record then starts on its own line (checked under the
+        // append handle, RV-C04).
+        if self.tail_lacks_newline()? {
+            text.insert_str(0, JOURNAL_NEW_LINE);
+        }
+        stream.write_all(text.as_bytes())?;
+        if durable {
+            if let Some(file) = stream.as_file_mut() {
+                return match &self.flush_to_disk {
+                    Some(flush) => flush(file),
+                    None => file.sync_all(),
+                };
+            }
+        }
+        stream.flush()
+    }
+
+    /// C# `OpenAppendWithRetry(durable)`: up to [`APPEND_ATTEMPTS`] opens; only a sharing/lock violation is retried,
+    /// after `attempt * APPEND_RETRY_STEP`.
+    fn open_append_with_retry(&self, durable: bool) -> io::Result<Box<dyn AppendStream>> {
+        let mut attempt: u32 = 1;
+        loop {
+            match self.fs.open_append(&self.path, durable) {
+                Ok(stream) => return Ok(stream),
+                Err(err) if attempt < APPEND_ATTEMPTS && is_sharing_or_lock_violation(&err) => {
+                    (self.append_retry_delay)(APPEND_RETRY_STEP * attempt);
+                    attempt += 1;
+                }
+                Err(err) => return Err(err),
+            }
+        }
+    }
+
+    /// C# `TailLacksNewline()`: true when the journal exists, is not empty and its last byte is not `'\n'`.
+    fn tail_lacks_newline(&self) -> io::Result<bool> {
+        if !self.fs.file_exists(&self.path) {
+            return Ok(false);
+        }
+        let mut stream = self.fs.open_read_shared(&self.path, TAIL_PROBE_BUFFER_SIZE)?;
+        let length = stream.seek(SeekFrom::End(0))?;
+        if length == 0 {
+            return Ok(false);
+        }
+        stream.seek(SeekFrom::Start(length - 1))?;
+        let mut byte = [0u8; 1];
+        let read = stream.read(&mut byte)?;
+        Ok(read == 1 && byte[0] != b'\n')
+    }
+
+    /// The body of [`Self::try_compact`] once compaction files are known; every `Err` becomes `Failed`.
+    fn try_compact_with(&self, files: &dyn JournalCompactionFiles) -> io::Result<JournalCompactionResult> {
+        self.remove_stale_compaction_files()?;
+        if !self.fs.file_exists(&self.path) {
+            return Ok(JournalCompactionResult::new(
+                JournalCompactionOutcome::BelowThreshold,
+                0,
+                0,
+            ));
+        }
+
+        let snapshot = {
+            let mut stream = self.fs.open_read_shared(&self.path, READ_BUFFER_SIZE)?;
+            read_to_end(stream.as_mut())?
+        };
+        let snapshot_len = len_i64(snapshot.len());
+        // A partial last line belongs to the delta.
+        let cut = snapshot.iter().rposition(|&b| b == b'\n').map_or(0, |i| i + 1);
+        if (cut as u64) < COMPACTION_THRESHOLD_BYTES {
+            return Ok(JournalCompactionResult::new(
+                JournalCompactionOutcome::BelowThreshold,
+                snapshot_len,
+                snapshot_len,
+            ));
+        }
+
+        let plan = compaction::build(&snapshot[..cut]);
+        if (cut as f64 - plan.kept.len() as f64) < (cut as f64) * COMPACTION_MIN_GAIN {
+            return Ok(JournalCompactionResult::new(
+                JournalCompactionOutcome::NotWorthIt,
+                snapshot_len,
+                snapshot_len,
+            ));
+        }
+
+        let temp_path = format!("{}.{}{}", self.path_text(), new_guid_n(), COMPACTION_FILE_SUFFIX);
+        // Declared before the gate: dropped (and, when not replaced, deleted) after the gate is released, like C# `using`.
+        let mut replacement = files.create_staged_replacement(Path::new(&temp_path))?;
+        replacement.write(&plan.kept)?;
+        replacement.flush_to_disk()?;
+
+        let _gate = self.gate.lock();
+        let mut locked = match files.open_read_deny_writers(&self.path) {
+            Ok(stream) => stream,
+            Err(err) if is_sharing_or_lock_violation(&err) => {
+                return Ok(JournalCompactionResult::new(
+                    JournalCompactionOutcome::Busy,
+                    snapshot_len,
+                    snapshot_len,
+                ));
+            }
+            Err(err) => return Err(err),
+        };
+        let current = read_to_end(locked.as_mut())?;
+        let current_len = len_i64(current.len());
+        if current.len() < cut || current[..cut] != snapshot[..cut] {
+            return Ok(JournalCompactionResult::new(
+                JournalCompactionOutcome::Changed,
+                current_len,
+                current_len,
+            ));
+        }
+        let delta = &current[cut..];
+        let mut new_len = len_i64(plan.kept.len()).saturating_add(len_i64(delta.len()));
+        if let Some(&last) = delta.last() {
+            replacement.write(delta)?;
+            if last != b'\n' {
+                replacement.write(JOURNAL_NEW_LINE.as_bytes())?;
+                new_len = new_len.saturating_add(len_i64(JOURNAL_NEW_LINE.len()));
+            }
+            replacement.flush_to_disk()?;
+        }
+        // The deny-writers stream is still open: no append can land in the old file before the rename.
+        replacement.replace_atomically(&self.path)?;
+        Ok(JournalCompactionResult::new(
+            JournalCompactionOutcome::Compacted,
+            current_len,
+            new_len,
+        ))
+    }
+
+    /// C# `RemoveStaleCompactionFiles()`: deletes `<journal>.*.compact.tmp` leftovers at least
+    /// [`STALE_COMPACTION_FILE_AGE_TICKS`] old; a delete error is ignored (a compaction in progress, or not ours).
+    fn remove_stale_compaction_files(&self) -> io::Result<()> {
+        let path_text = self.path_text();
+        let Some(dir) = dotnet_path::get_directory_name(&path_text) else {
+            return Ok(());
+        };
+        if dir.is_empty() || !self.fs.directory_exists(Path::new(&dir)) {
+            return Ok(());
+        }
+        let pattern = format!("{}.*{}", dotnet_path::get_file_name(&path_text), COMPACTION_FILE_SUFFIX);
+        let files = self.fs.enumerate_files(Path::new(&dir), &pattern)?;
+        for file in files {
+            if !has_compaction_suffix(&file) {
+                continue; // 8.3 pattern quirks
+            }
+            let Some(stat) = self.fs.get_file_stat(&file) else {
+                continue;
+            };
+            let age = self.clock.utc_now().ticks().saturating_sub(stat.last_write_utc.ticks());
+            if age < STALE_COMPACTION_FILE_AGE_TICKS {
+                continue;
+            }
+            // Still open (a compaction in progress after all) or not ours: leave it.
+            let _ = self.fs.delete(&file);
+        }
+        Ok(())
+    }
+}
+
+impl ReconcileJournal for OperationJournal {
+    fn file_system(&self) -> &dyn FileSystem {
+        OperationJournal::file_system(self)
+    }
+
+    fn clock(&self) -> &dyn Clock {
+        OperationJournal::clock(self)
+    }
+
+    fn live_operations(&self) -> &dyn LiveOperationRegistry {
+        self.live_operations.as_ref()
+    }
+
+    fn english_text(&self, code: &str) -> String {
+        errors::catalog_key(code).map_or_else(String::new, |k| self.texts.english(k))
+    }
+
+    fn read_entries(&self, handle: &mut dyn FnMut(JournalEntry)) -> io::Result<()> {
+        OperationJournal::read_entries(self, handle)
+    }
+
+    fn append_if(&self, id: &str, decide: &mut dyn FnMut(&[JournalEntry]) -> Option<JournalEntry>) -> io::Result<bool> {
+        OperationJournal::append_if(self, id, decide)
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Private free helpers
+// ---------------------------------------------------------------------------------------------------------------
+
+/// C# `Dictionary<string, JournalEntry>` without removals: insertion-ordered, a re-assigned key keeps its position,
+/// ordinal keys.
+#[derive(Debug, Default)]
+struct LatestEntries {
+    entries: Vec<JournalEntry>,
+    index: HashMap<String, usize>,
+}
+
+impl LatestEntries {
+    fn get(&self, id: &str) -> Option<&JournalEntry> {
+        self.index.get(id).and_then(|&i| self.entries.get(i))
+    }
+
+    fn set(&mut self, entry: JournalEntry) {
+        match self.index.get(&entry.id) {
+            Some(&i) => {
+                if let Some(slot) = self.entries.get_mut(i) {
+                    *slot = entry;
+                }
+            }
+            None => {
+                self.index.insert(entry.id.clone(), self.entries.len());
+                self.entries.push(entry);
+            }
+        }
+    }
+
+    fn values(&self) -> impl Iterator<Item = &JournalEntry> {
+        self.entries.iter()
+    }
+}
+
+/// C# `ReadCommittedMovesReverse(stream)` (CORE-08): every pass reads only the not-yet-parsed prefix
+/// `[start, boundary)` and parses it once; `boundary` always sits on a line start.
+fn read_committed_moves_reverse(stream: &mut dyn ReadSeek, length: u64) -> io::Result<Vec<JournalEntry>> {
+    let mut boundary = length;
+    let mut window = REVERSE_READ_INITIAL_WINDOW;
+    let mut collected: Vec<JournalEntry> = Vec::new(); // file (ascending) order
+    loop {
+        let start = length.saturating_sub(window);
+        let size = usize::try_from(boundary - start).map_err(io::Error::other)?;
+        let mut buffer = vec![0u8; size];
+        stream.seek(SeekFrom::Start(start))?;
+        stream.read_exact(&mut buffer)?;
+
+        let mut line_start = 0usize;
+        let mut new_boundary = boundary;
+        if start > 0 {
+            match buffer.iter().position(|&b| b == b'\n') {
+                None => {
+                    // One line longer than the window: nothing parseable yet, widen and re-read the same prefix.
+                    window = window.saturating_mul(2);
+                    continue;
+                }
+                Some(first_newline) => {
+                    line_start = first_newline + 1;
+                    new_boundary = start + line_start as u64;
+                }
+            }
+        }
+
+        let mut chunk = parse_committed_moves(&buffer[line_start..]);
+        chunk.append(&mut collected);
+        collected = chunk;
+
+        if collected.len() >= STARTUP_COMMITTED_MOVE_LIMIT || start == 0 {
+            let skip = collected.len().saturating_sub(STARTUP_COMMITTED_MOVE_LIMIT);
+            collected.drain(..skip);
+            return Ok(collected);
+        }
+        boundary = new_boundary;
+        window = window.saturating_mul(2);
+    }
+}
+
+/// C# `ParseCommittedMoves(buffer, offset)`: split at `'\n'` (the last piece may lack it), strip ONE trailing `'\r'`.
+fn parse_committed_moves(buffer: &[u8]) -> Vec<JournalEntry> {
+    let mut entries = Vec::new();
+    let mut remaining = buffer;
+    while !remaining.is_empty() {
+        let (mut line, rest) = match remaining.iter().position(|&b| b == b'\n') {
+            Some(newline) => (&remaining[..newline], &remaining[newline + 1..]),
+            None => (remaining, &remaining[remaining.len()..]),
+        };
+        remaining = rest;
+        if let Some(stripped) = line.strip_suffix(b"\r") {
+            line = stripped;
+        }
+        if let Some(entry) = try_parse_tail_committed_move(line) {
+            entries.push(entry);
+        }
+    }
+    entries
+}
+
+/// C# `ReadToEnd(stream)`: every byte from the current position.
+fn read_to_end(stream: &mut dyn ReadSeek) -> io::Result<Vec<u8>> {
+    let mut bytes = Vec::new();
+    stream.read_to_end(&mut bytes)?;
+    Ok(bytes)
+}
+
+/// A byte count as C# `long`.
+fn len_i64(len: usize) -> i64 {
+    i64::try_from(len).unwrap_or(i64::MAX)
+}
+
+/// C# `file.EndsWith(CompactionFileSuffix, StringComparison.OrdinalIgnoreCase)`.
+fn has_compaction_suffix(file: &Path) -> bool {
+    let text = file.to_string_lossy();
+    text.len()
+        .checked_sub(COMPACTION_FILE_SUFFIX.len())
+        .and_then(|at| text.get(at..))
+        .is_some_and(|tail| crate::text::eq_ignore_case(tail, COMPACTION_FILE_SUFFIX))
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -539,7 +988,23 @@ impl OperationJournal {
 ///    terminator is returned; a terminator at the very end does not produce an empty last line; empty lines in the middle
 ///    are returned as `""`. An empty input gives no line.
 pub fn decode_stream_reader_lines(bytes: &[u8]) -> Vec<String> {
-    todo!()
+    let text = decode_text_like_dotnet(bytes);
+    let mut lines = Vec::new();
+    let mut rest = text.as_str();
+    while !rest.is_empty() {
+        match rest.find(['\r', '\n']) {
+            Some(at) => {
+                lines.push(rest[..at].to_owned());
+                let terminator = if rest[at..].starts_with("\r\n") { 2 } else { 1 };
+                rest = &rest[at + terminator..];
+            }
+            None => {
+                lines.push(rest.to_owned());
+                rest = "";
+            }
+        }
+    }
+    lines
 }
 
 /// C# `IsSharingOrLockViolation`: HRESULT 0x80070020 / 0x80070021, i.e. raw OS error 32 (ERROR_SHARING_VIOLATION) or 33
