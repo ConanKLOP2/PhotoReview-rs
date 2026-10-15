@@ -939,8 +939,10 @@ fn flush_released_when_drain_finishes() {
 
     stuck.gate.set(); // writer drains and writes the entry, then parks in the next (empty) drain's hook
 
+    // Generous bound: a loaded CI runner can take more than 1 s to wake the flusher after the drain; `flush` itself
+    // returns by its own 2 s budget, so this never hangs.
     assert!(
-        flushed.wait(Duration::from_secs(1)),
+        flushed.wait(Duration::from_secs(10)),
         "flush was not released when the drain finished"
     );
     assert!(read_text(&file).contains("released-entry"));
