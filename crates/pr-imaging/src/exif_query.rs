@@ -85,8 +85,8 @@ pub(crate) fn as_string(value: Option<&QueryValue>) -> Option<String> {
 }
 
 /// `ExifQueryInterpreter.AsInteger`: scalar byte/u16/i16/u32/i32 widened to `i64`; non-empty arrays of
-/// u16/u32/i16/i32 give element 0; everything else `None`.
-pub(crate) fn as_integer(value: Option<&QueryValue>) -> Option<i64> {
+/// u16/u32/i16/i32 give element 0; everything else `None`. Public for the WIC EXIF reader (amendment A3).
+pub fn as_integer(value: Option<&QueryValue>) -> Option<i64> {
     todo!("W4-04b")
 }
 
@@ -95,4 +95,197 @@ pub(crate) fn as_integer(value: Option<&QueryValue>) -> Option<i64> {
 /// kept only when both halves are `> 0` as `i32`; everything else `None`.
 pub(crate) fn as_rational(value: Option<&QueryValue>) -> Option<ExifRational> {
     todo!("W4-04b")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Packed unsigned RATIONAL as WIC returns it: numerator in the low 32 bits, denominator in the high 32 bits.
+    fn packed(numerator: u32, denominator: u32) -> u64 {
+        (u64::from(denominator) << 32) | u64::from(numerator)
+    }
+
+    /// Packed SRATIONAL as the C# test builds it: `((long)denominator << 32) | (uint)numerator`.
+    fn packed_signed(numerator: i32, denominator: i32) -> i64 {
+        (i64::from(denominator) << 32) | i64::from(numerator as u32)
+    }
+
+    /// Second element of the signed arrays in the C# tests (`0x0000_0001_0000_0001L`, a valid positive rational).
+    const SIGNED_SECOND_ELEMENT: i64 = 0x0000_0001_0000_0001;
+
+    fn integer(value: QueryValue) -> Option<i64> {
+        as_integer(Some(&value))
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_EmptyArray_IsNull (Array.Empty<ushort>())
+    #[test]
+    fn as_integer_empty_array_is_null_u16() {
+        assert_eq!(integer(QueryValue::U16s(Vec::new())), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_EmptyArray_IsNull (Array.Empty<uint>())
+    #[test]
+    fn as_integer_empty_array_is_null_u32() {
+        assert_eq!(integer(QueryValue::U32s(Vec::new())), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_EmptyArray_IsNull (Array.Empty<short>())
+    #[test]
+    fn as_integer_empty_array_is_null_i16() {
+        assert_eq!(integer(QueryValue::I16s(Vec::new())), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_EmptyArray_IsNull (Array.Empty<int>())
+    #[test]
+    fn as_integer_empty_array_is_null_i32() {
+        assert_eq!(integer(QueryValue::I32s(Vec::new())), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue ((ushort)400)
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_u16() {
+        assert_eq!(integer(QueryValue::U16(400)), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue ((short)400)
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_i16() {
+        assert_eq!(integer(QueryValue::I16(400)), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (400u)
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_u32() {
+        assert_eq!(integer(QueryValue::U32(400)), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (400, an int)
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_i32() {
+        assert_eq!(integer(QueryValue::I32(400)), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (new ushort[] { 400, 1 })
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_u16_array() {
+        assert_eq!(integer(QueryValue::U16s(vec![400, 1])), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (new uint[] { 400, 1 })
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_u32_array() {
+        assert_eq!(integer(QueryValue::U32s(vec![400, 1])), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (new short[] { 400, 1 })
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_i16_array() {
+        assert_eq!(integer(QueryValue::I16s(vec![400, 1])), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_SupportedWicTypes_ReturnTheFirstValue (new int[] { 400, 1 })
+    #[test]
+    fn as_integer_supported_wic_types_return_the_first_value_i32_array() {
+        assert_eq!(integer(QueryValue::I32s(vec![400, 1])), Some(400));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsInteger_ByteAndUnsupportedTypes (byte 144 is read; string and null are not)
+    #[test]
+    fn as_integer_byte_and_unsupported_types() {
+        assert_eq!(integer(QueryValue::U8(144)), Some(144));
+        assert_eq!(integer(QueryValue::Text("400".to_owned())), None);
+        assert_eq!(as_integer(None), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedUnsigned_SplitsNumeratorAndDenominator
+    #[test]
+    fn as_rational_packed_unsigned_splits_numerator_and_denominator() {
+        assert_eq!(
+            as_rational(Some(&QueryValue::U64(packed(1, 250)))),
+            Some(ExifRational::new(1, 250))
+        );
+        let array = QueryValue::U64s(vec![packed(1, 250), packed(9, 9)]);
+        assert_eq!(as_rational(Some(&array)), Some(ExifRational::new(1, 250)));
+        assert_eq!(
+            as_rational(Some(&QueryValue::U64(packed(u32::MAX, 5)))),
+            Some(ExifRational::new(u32::MAX, 5))
+        );
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (1, 250, true)
+    #[test]
+    fn as_rational_packed_signed_positive_parts_are_kept() {
+        let packed = packed_signed(1, 250);
+        assert_eq!(
+            as_rational(Some(&QueryValue::I64(packed))),
+            Some(ExifRational::new(1, 250))
+        );
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), Some(ExifRational::new(1, 250)));
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (0, 250, false)
+    #[test]
+    fn as_rational_packed_signed_zero_numerator_is_dropped() {
+        let packed = packed_signed(0, 250);
+        assert_eq!(as_rational(Some(&QueryValue::I64(packed))), None);
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (1, 0, false)
+    #[test]
+    fn as_rational_packed_signed_zero_denominator_is_dropped() {
+        let packed = packed_signed(1, 0);
+        assert_eq!(as_rational(Some(&QueryValue::I64(packed))), None);
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (-1, 250, false)
+    #[test]
+    fn as_rational_packed_signed_negative_numerator_is_dropped() {
+        let packed = packed_signed(-1, 250);
+        assert_eq!(as_rational(Some(&QueryValue::I64(packed))), None);
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (1, -250, false)
+    #[test]
+    fn as_rational_packed_signed_negative_denominator_is_dropped() {
+        let packed = packed_signed(1, -250);
+        assert_eq!(as_rational(Some(&QueryValue::I64(packed))), None);
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_PackedSigned_NeedsPositiveNumeratorAndDenominator (-1, -250, false)
+    #[test]
+    fn as_rational_packed_signed_both_negative_is_dropped() {
+        let packed = packed_signed(-1, -250);
+        assert_eq!(as_rational(Some(&QueryValue::I64(packed))), None);
+        let array = QueryValue::I64s(vec![packed, SIGNED_SECOND_ELEMENT]);
+        assert_eq!(as_rational(Some(&array)), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsRational_EmptyArraysAndOtherTypes_AreNull
+    #[test]
+    fn as_rational_empty_arrays_and_other_types_are_null() {
+        assert_eq!(as_rational(Some(&QueryValue::U64s(Vec::new()))), None);
+        assert_eq!(as_rational(Some(&QueryValue::I64s(Vec::new()))), None);
+        assert_eq!(as_rational(Some(&QueryValue::Other)), None);
+        assert_eq!(as_rational(None), None);
+    }
+
+    // C#: ExifMetadataMutationGapTests.AsString_StringAndCharArray_AreAcceptedOthersAreNull
+    #[test]
+    fn as_string_string_and_char_array_are_accepted_others_are_null() {
+        assert_eq!(as_string(Some(&QueryValue::Text("a".to_owned()))), Some("a".to_owned()));
+        let chars = QueryValue::Chars(vec![u16::from(b'a'), u16::from(b'b')]);
+        assert_eq!(as_string(Some(&chars)), Some("ab".to_owned()));
+        assert_eq!(as_string(Some(&QueryValue::I32(5))), None);
+        assert_eq!(as_string(None), None);
+    }
 }
