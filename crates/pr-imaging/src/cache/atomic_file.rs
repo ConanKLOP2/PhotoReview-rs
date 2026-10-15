@@ -104,9 +104,9 @@ pub fn write_atomic_with_temp(
     cancel.check()?;
 
     // C# `Path.GetDirectoryName(cachePath)!`: no folder part (or a root path) is an `ArgumentException`.
-    let directory = match cache_path.parent() {
-        Some(parent) if !parent.as_os_str().is_empty() => parent,
-        _ => {
+    let directory = match directory_name(cache_path) {
+        Some(directory) => directory,
+        None => {
             return Err(AtomicWriteError::Io(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "cache path has no directory part",
@@ -128,21 +128,94 @@ pub fn write_atomic_with_temp(
     // Create-new: from here on this call owns the temp file (R07). A failed open leaves a pre-existing file alone.
     let file = open_create_new(temp_path)?;
 
-    let outcome = (|| -> Result<(), AtomicWriteError> {
-        let mut writer = BufWriter::with_capacity(WRITE_BUFFER_SIZE, file);
-        write_payload(&mut writer)?;
-        writer.flush()?;
-        // Close the handle before the rename (Windows cannot rename an open share-none file).
-        drop(writer);
-        // A superseded write (e.g. Clear Cache) must not publish.
-        cancel.check()?;
-        fs::rename(temp_path, cache_path)?;
-        Ok(())
-    })();
+    // Cleanup guard: runs on every exit, including a panic unwinding out of the payload (C# `finally`). The writer
+    // below is dropped (handle closed) before it, on every path. The original error wins over a cleanup failure.
+    let _cleanup = TempCleanup { path: temp_path, log };
 
-    // The writer (and its handle) is gone on every path; the original error wins over a cleanup failure.
-    try_delete(temp_path, log);
-    outcome
+    let mut writer = BufWriter::with_capacity(WRITE_BUFFER_SIZE, file);
+    write_payload(&mut writer)?;
+    writer.flush()?;
+    // Close the handle before the rename (Windows cannot rename an open share-none file).
+    drop(writer);
+    // A superseded write (e.g. Clear Cache) must not publish.
+    cancel.check()?;
+    rename_over(temp_path, cache_path)?;
+    Ok(())
+}
+
+/// Deletes the temp file this call created when dropped (best effort, errors go to the log).
+struct TempCleanup<'a> {
+    path: &'a Path,
+    log: Option<&'a dyn Log>,
+}
+
+impl Drop for TempCleanup<'_> {
+    fn drop(&mut self) {
+        try_delete(self.path, self.log);
+    }
+}
+
+/// C# `Path.GetDirectoryName` for the cache path: everything before the last separator, so `root\sub\` gives
+/// `root\sub` (std's `parent` would give `root`). `None` for no folder part or a root.
+fn directory_name(path: &Path) -> Option<&Path> {
+    let text = path.to_str();
+    let trailing = match text {
+        Some(t) => t.ends_with(['\\', '/']),
+        None => false,
+    };
+    if trailing {
+        let trimmed = Path::new(text?.trim_end_matches(['\\', '/']));
+        // A root (`C:\`, `\`) trims to a path without a final component: C# returns null.
+        trimmed.file_name()?;
+        return Some(trimmed);
+    }
+    path.parent().filter(|p| !p.as_os_str().is_empty())
+}
+
+/// `File.Move(temp, target, overwrite: true)`: `MoveFileExW(MOVEFILE_REPLACE_EXISTING)`, which is denied while another
+/// handle has the target open (even with delete sharing). std's `fs::rename` uses POSIX replace semantics on current
+/// toolchains and would silently succeed there.
+#[cfg(windows)]
+fn rename_over(from: &Path, to: &Path) -> io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+    const MOVEFILE_REPLACE_EXISTING: u32 = 0x1;
+    const MAX_SHORT_PATH: usize = 260;
+
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn MoveFileExW(existing: *const u16, new: *const u16, flags: u32) -> i32;
+    }
+
+    fn wide(path: &Path) -> io::Result<Vec<u16>> {
+        let mut units: Vec<u16> = path.as_os_str().encode_wide().collect();
+        if units.contains(&0) {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "path contains a NUL"));
+        }
+        let drive_rooted = units.len() >= 3 && units[1] == u16::from(b':') && units[2] == u16::from(b'\\');
+        if units.len() >= MAX_SHORT_PATH && drive_rooted {
+            let mut extended: Vec<u16> = r"\\?\".encode_utf16().collect();
+            extended.append(&mut units);
+            units = extended;
+        }
+        units.push(0);
+        Ok(units)
+    }
+
+    let source = wide(from)?;
+    let destination = wide(to)?;
+    // SAFETY: both buffers are NUL-terminated UTF-16 strings without an interior NUL that outlive the call;
+    // MoveFileExW only reads them.
+    let ok = unsafe { MoveFileExW(source.as_ptr(), destination.as_ptr(), MOVEFILE_REPLACE_EXISTING) };
+    if ok != 0 {
+        Ok(())
+    } else {
+        Err(io::Error::last_os_error())
+    }
+}
+
+#[cfg(not(windows))]
+fn rename_over(from: &Path, to: &Path) -> io::Result<()> {
+    fs::rename(from, to)
 }
 
 #[cfg(windows)]

@@ -457,3 +457,108 @@ fn write_atomic_temp_override_in_a_missing_folder_fails_not_found() {
         "the override's folder must not be created"
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Repair round 1 (verifier findings)
+// ---------------------------------------------------------------------------------------------------------------------
+
+fn tmp_files(dir: &Path) -> usize {
+    fs::read_dir(dir)
+        .map(|d| {
+            d.filter_map(Result::ok)
+                .filter(|e| e.file_name().to_string_lossy().ends_with(TEMP_FILE_SUFFIX))
+                .count()
+        })
+        .unwrap_or(0)
+}
+
+// C#: `finally { TryDelete(temp) }` runs when the payload throws; a Rust panic must not leave the temp behind.
+#[test]
+fn write_atomic_payload_panic_removes_temp_file() {
+    let root = TempRoot::new("w408a-panic");
+    let cache = root.path().join("c.bin");
+    let target = cache.clone();
+    let caught = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+        let _ = write_atomic(
+            &target,
+            |w: &mut dyn Write| {
+                w.write_all(b"x")?;
+                panic!("boom")
+            },
+            None,
+            &CancelToken::new(),
+        );
+    }));
+    assert!(caught.is_err());
+    assert_eq!(tmp_files(root.path()), 0, "temp file left behind after a payload panic");
+    assert!(!cache.exists());
+}
+
+// C#: `GetDirectoryName("root\sub\")` is `root\sub`, created before the move fails.
+#[cfg(windows)]
+#[test]
+fn write_atomic_trailing_separator_creates_the_directory_then_fails() {
+    let root = TempRoot::new("w408a-trail");
+    let mut name = root.path().join("sub").into_os_string();
+    name.push("\\");
+    let path = PathBuf::from(name);
+    let result = write_atomic(&path, |w: &mut dyn Write| w.write_all(b"x"), None, &CancelToken::new());
+    assert!(matches!(result, Err(AtomicWriteError::Io(_))));
+    assert!(root.path().join("sub").is_dir());
+    assert_eq!(tmp_files(&root.path().join("sub")), 0);
+}
+
+// C#: `File.Move(overwrite)` is denied while a reader holds the target open, even with FileShare.Delete.
+#[cfg(windows)]
+#[test]
+fn write_atomic_overwrite_fails_while_target_is_open_with_share_delete() {
+    use std::os::windows::fs::OpenOptionsExt;
+    let root = TempRoot::new("w408a-share");
+    let cache = root.path().join("t.bin");
+    fs::write(&cache, [1u8]).unwrap();
+    let held = fs::OpenOptions::new().read(true).share_mode(7).open(&cache).unwrap();
+    let result = write_atomic(
+        &cache,
+        |w: &mut dyn Write| w.write_all(b"new"),
+        None,
+        &CancelToken::new(),
+    );
+    drop(held);
+    assert!(matches!(result, Err(AtomicWriteError::Io(_))));
+    assert_eq!(fs::read(&cache).unwrap(), vec![1u8]);
+    assert_eq!(tmp_files(root.path()), 0);
+}
+
+// Kills the "relative file name without directory" guard mutant: nothing may be written in the current folder.
+#[test]
+fn write_atomic_relative_file_name_without_directory_is_an_error() {
+    let name = "w408a_rel_name_check.bin";
+    let result = write_atomic(
+        Path::new(name),
+        |w: &mut dyn Write| w.write_all(b"x"),
+        None,
+        &CancelToken::new(),
+    );
+    let created = Path::new(name).exists();
+    let _ = fs::remove_file(name);
+    match result {
+        Err(AtomicWriteError::Io(e)) => assert_eq!(e.kind(), io::ErrorKind::InvalidInput),
+        other => panic!("expected InvalidInput, got {other:?}"),
+    }
+    assert!(!created);
+}
+
+#[test]
+fn write_buffer_size_is_64_kib() {
+    assert_eq!(WRITE_BUFFER_SIZE, 65536);
+}
+
+#[test]
+fn atomic_write_error_display_and_source() {
+    use std::error::Error;
+    assert_eq!(AtomicWriteError::Canceled.to_string(), "operation canceled");
+    assert!(AtomicWriteError::Canceled.source().is_none());
+    let io_error = AtomicWriteError::Io(io::Error::other("boom"));
+    assert_eq!(io_error.to_string(), "boom");
+    assert_eq!(io_error.source().unwrap().to_string(), "boom");
+}
