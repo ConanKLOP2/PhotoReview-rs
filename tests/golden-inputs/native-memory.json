@@ -1,0 +1,18 @@
+{
+  "cases": [
+    { "name": "alloc-1", "kind": "allocate", "byte_count": 1 },
+    { "name": "alloc-3", "kind": "allocate", "byte_count": 3 },
+    { "name": "alloc-63", "kind": "allocate", "byte_count": 63 },
+    { "name": "alloc-64", "kind": "allocate", "byte_count": 64 },
+    { "name": "alloc-65", "kind": "allocate", "byte_count": 65 },
+    { "name": "alloc-4096", "kind": "allocate", "byte_count": 4096 },
+    { "name": "alloc-100003", "kind": "allocate", "byte_count": 100003 },
+    { "name": "alloc-one-mib", "kind": "allocate", "byte_count": 1048576 },
+    { "name": "zero-rejected", "kind": "allocate", "byte_count": 0 },
+    { "name": "minus-one-rejected", "kind": "allocate", "byte_count": -1 },
+    { "name": "long-min-rejected", "kind": "allocate", "byte_count": -9223372036854775808 },
+    { "name": "huge-refused-1-shl-62", "kind": "allocate", "byte_count": 4611686018427387904 },
+    { "name": "huge-refused-long-max", "kind": "allocate", "byte_count": 9223372036854775807 },
+    { "name": "unallocated-block", "kind": "unallocated" }
+  ]
+}

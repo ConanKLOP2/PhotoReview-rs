@@ -1,0 +1,25 @@
+{
+  "cases": [
+    { "name": "exif-6-windows-absent", "exif": { "type": "ushort", "value": 6 }, "windows": null },
+    { "name": "exif-valid-wins-over-windows", "exif": { "type": "ushort", "value": 1 }, "windows": { "type": "ushort", "value": 8 } },
+    { "name": "exif-0-falls-to-windows", "exif": { "type": "ushort", "value": 0 }, "windows": { "type": "ushort", "value": 3 } },
+    { "name": "exif-9-falls-to-windows", "exif": { "type": "ushort", "value": 9 }, "windows": { "type": "ushort", "value": 7 } },
+    { "name": "exif-absent-windows-2", "exif": null, "windows": { "type": "ushort", "value": 2 } },
+    { "name": "exif-absent-windows-9", "exif": null, "windows": { "type": "ushort", "value": 9 } },
+    { "name": "both-absent", "exif": null, "windows": null },
+    { "name": "exif-array-uses-first", "exif": { "type": "ushort[]", "values": [5, 2] }, "windows": null },
+    { "name": "exif-array-first-invalid-falls-to-windows", "exif": { "type": "ushort[]", "values": [9, 2] }, "windows": { "type": "ushort", "value": 4 } },
+    { "name": "exif-array-empty-is-absent", "exif": { "type": "ushort[]", "values": [] }, "windows": { "type": "ushort", "value": 3 } },
+    { "name": "exif-uint-6", "exif": { "type": "uint", "value": 6 }, "windows": null },
+    { "name": "exif-byte-3", "exif": { "type": "byte", "value": 3 }, "windows": null },
+    { "name": "exif-short-minus-1-falls-to-windows", "exif": { "type": "short", "value": -1 }, "windows": { "type": "ushort", "value": 8 } },
+    { "name": "exif-int-8", "exif": { "type": "int", "value": 8 }, "windows": null },
+    { "name": "exif-string-is-not-an-integer", "exif": { "type": "string", "value": "6" }, "windows": { "type": "ushort", "value": 2 } },
+    { "name": "exif-long-is-not-an-integer", "exif": { "type": "long", "value": 6 }, "windows": null },
+    { "name": "exif-throws-gives-1-windows-not-asked", "exif": { "type": "throw" }, "windows": { "type": "ushort", "value": 6 } },
+    { "name": "windows-throws-gives-1", "exif": null, "windows": { "type": "throw" } },
+    { "name": "exif-invalid-windows-throws", "exif": { "type": "ushort", "value": 9 }, "windows": { "type": "throw" } },
+    { "name": "windows-uint-5", "exif": null, "windows": { "type": "uint", "value": 5 } },
+    { "name": "windows-array-first", "exif": null, "windows": { "type": "ushort[]", "values": [7, 1] } }
+  ]
+}

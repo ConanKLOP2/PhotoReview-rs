@@ -1,0 +1,196 @@
+{
+  "generator": "oracle-cs adaptive-preview-box",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "full-hd-quality-1.15",
+      "width": 2304,
+      "height": 1280
+    },
+    {
+      "name": "defaults-omitted-use-1-1",
+      "width": 1920,
+      "height": 1152
+    },
+    {
+      "name": "dpi-125-same-device-pixels",
+      "width": 2304,
+      "height": 1280
+    },
+    {
+      "name": "small-resize-up-same-box",
+      "width": 2304,
+      "height": 1280
+    },
+    {
+      "name": "small-resize-down-same-box",
+      "width": 2304,
+      "height": 1280
+    },
+    {
+      "name": "qhd-exact-23-quanta-width",
+      "width": 2944,
+      "height": 1664
+    },
+    {
+      "name": "uhd-4k",
+      "width": 4000,
+      "height": 2560
+    },
+    {
+      "name": "uhd-4k-dpi-150-caps-both",
+      "width": 4000,
+      "height": 3840
+    },
+    {
+      "name": "huge-capped-both-sides",
+      "width": 4000,
+      "height": 4000
+    },
+    {
+      "name": "cap-applies-to-long-side-only",
+      "width": 4000,
+      "height": 512
+    },
+    {
+      "name": "tiny-window-raised-to-minimum",
+      "width": 1280,
+      "height": 768
+    },
+    {
+      "name": "portrait-full-hd",
+      "width": 1280,
+      "height": 2304
+    },
+    {
+      "name": "square-below-minimum",
+      "width": 1280,
+      "height": 1280
+    },
+    {
+      "name": "long-side-exactly-minimum",
+      "width": 1280,
+      "height": 640
+    },
+    {
+      "name": "long-side-one-below-minimum",
+      "width": 1280,
+      "height": 640
+    },
+    {
+      "name": "exact-multiple-of-quantum-no-extra-step",
+      "width": 1280,
+      "height": 1280
+    },
+    {
+      "name": "one-over-quantum-multiple",
+      "width": 1408,
+      "height": 1280
+    },
+    {
+      "name": "float-noise-just-above-multiple",
+      "width": 1280,
+      "height": 1280
+    },
+    {
+      "name": "extreme-aspect-wide-strip",
+      "width": 4000,
+      "height": 128
+    },
+    {
+      "name": "extreme-aspect-100x1-scaled-up",
+      "width": 1280,
+      "height": 128
+    },
+    {
+      "name": "fractional-dpi-175-quality-0.5",
+      "width": 1408,
+      "height": 896
+    },
+    {
+      "name": "both-sides-underflow-to-zero-then-nan",
+      "width": 0,
+      "height": 0
+    },
+    {
+      "name": "one-side-underflows-to-zero",
+      "width": 128,
+      "height": 1280
+    },
+    {
+      "name": "overflow-to-infinity-is-capped",
+      "width": 4000,
+      "height": 4000
+    },
+    {
+      "name": "denormal-viewport-scale-overflows-to-infinity",
+      "width": 4000,
+      "height": 4000
+    },
+    {
+      "name": "error-width-zero",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportWidth"
+    },
+    {
+      "name": "error-height-zero",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportHeight"
+    },
+    {
+      "name": "error-height-nan",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportHeight"
+    },
+    {
+      "name": "error-width-infinity",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportWidth"
+    },
+    {
+      "name": "error-width-negative-infinity",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportWidth"
+    },
+    {
+      "name": "error-width-negative-zero",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportWidth"
+    },
+    {
+      "name": "error-dpi-negative",
+      "error": "ArgumentOutOfRangeException",
+      "param": "dpiScale"
+    },
+    {
+      "name": "error-dpi-nan",
+      "error": "ArgumentOutOfRangeException",
+      "param": "dpiScale"
+    },
+    {
+      "name": "error-quality-zero",
+      "error": "ArgumentOutOfRangeException",
+      "param": "qualityMultiplier"
+    },
+    {
+      "name": "error-quality-infinity",
+      "error": "ArgumentOutOfRangeException",
+      "param": "qualityMultiplier"
+    },
+    {
+      "name": "error-order-width-before-height",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportWidth"
+    },
+    {
+      "name": "error-order-height-before-dpi",
+      "error": "ArgumentOutOfRangeException",
+      "param": "viewportHeight"
+    },
+    {
+      "name": "error-order-dpi-before-quality",
+      "error": "ArgumentOutOfRangeException",
+      "param": "dpiScale"
+    }
+  ]
+}

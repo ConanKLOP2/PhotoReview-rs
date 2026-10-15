@@ -1,0 +1,6594 @@
+{
+  "generator": "oracle-cs pixel-ops",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "orient-1x1-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "f91151825a6eefc9",
+        "hex": "22a528ab",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "4022876a3afded05",
+        "hex": "991c9f22",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "11ec6307b4be2c4d",
+        "hex": "10931699",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "a0486691d4fb3e41",
+        "hex": "870a8d10",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "557de06f5725de51",
+        "hex": "fe810487",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "53a753e1a76dc0a5",
+        "hex": "75f87bfe",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "cd50efd88d72127d",
+        "hex": "ec6ff275",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "681f838e78642059",
+        "hex": "63e669ec",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "7a590997de165449",
+        "hex": "da5de063",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "7c664515836e2d45",
+        "hex": "51d457da",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "892018d214cef309",
+        "hex": "c245c84b",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "b4d976f5a1df9b29",
+        "hex": "8b0e9114",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "19a5055375b91005",
+        "hex": "59dc5fe2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "6427f7b4cceba9cd",
+        "hex": "880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd053d659",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "33227317a427d5a1",
+        "hex": "ff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd0",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "8749f78dfb2302b9",
+        "hex": "76f97cff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "45ffcc741bc5f9a5",
+        "hex": "35b83bbe29ac2fb21da023a61194179a05880b8ef97cff82ed70f376",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "b06d948300a3afcd",
+        "hex": "ac2fb235a023a62994179a1d880b8e117cff820570f376f964e76aed",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "0f018b55aa2c6039",
+        "hex": "db5ee164e76aed70f376f97cff8205880b8e1194179a1da023a629ac",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "cfa5f16b8b000f71",
+        "hex": "9a1da0238e1194178205880b76f97cff6aed70f35ee164e752d558db",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "0cfecb1ab6a77045",
+        "hex": "1194179a05880b8ef97cff82ed70f376e164e76ad558db5ec94ccf52",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "6c05042d198ef5ad",
+        "hex": "40c346c94ccf52d558db5ee164e76aed70f376f97cff8205880b8e11",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "5da0e52041f6b461",
+        "hex": "b73abd40c346c94ccf52d558db5ee164e76aed70f376f97cff820588",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "f92fa6c5322f0acd",
+        "hex": "28ab2eb134b73abd40c346c94ccf52d558db5ee164e76aed70f376f9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "bdcdd5d013d8a5c5",
+        "hex": "f174f77afd800386098c0f9215981b9e21a427aa2db033b639bc3fc2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "ca56e2612a1b78a1",
+        "hex": "bf42c548cb4ed154d75add60e366e96cef72f578fb7e0184078a0d90",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "6427f7b4cceba9cd",
+        "hex": "880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd053d659",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "33227317a427d5a1",
+        "hex": "ff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd0",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "bbfc68ec57129c79",
+        "hex": "be41c447b235b83ba629ac2f9a1da0238e1194178205880b76f97cff",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "45ffcc741bc5f9a5",
+        "hex": "35b83bbe29ac2fb21da023a61194179a05880b8ef97cff82ed70f376",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "769654276753ea8d",
+        "hex": "64e76aed70f376f97cff8205880b8e1194179a1da023a629ac2fb235",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "0f018b55aa2c6039",
+        "hex": "db5ee164e76aed70f376f97cff8205880b8e1194179a1da023a629ac",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "a80a0cf21d2e1d31",
+        "hex": "52d558db5ee164e76aed70f376f97cff8205880b8e1194179a1da023",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "0cfecb1ab6a77045",
+        "hex": "1194179a05880b8ef97cff82ed70f376e164e76ad558db5ec94ccf52",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "517b0e9ef8f89ded",
+        "hex": "880b8e117cff820570f376f964e76aed58db5ee14ccf52d540c346c9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "5da0e52041f6b461",
+        "hex": "b73abd40c346c94ccf52d558db5ee164e76aed70f376f97cff820588",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "f92fa6c5322f0acd",
+        "hex": "28ab2eb134b73abd40c346c94ccf52d558db5ee164e76aed70f376f9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "bdcdd5d013d8a5c5",
+        "hex": "f174f77afd800386098c0f9215981b9e21a427aa2db033b639bc3fc2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 0,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "ca56e2612a1b78a1",
+        "hex": "bf42c548cb4ed154d75add60e366e96cef72f578fb7e0184078a0d90",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "bd00048e69fa8ec5",
+        "hex": "55d85bde61e467ea6df073f679fc7f0285088b0e9114971a",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "bdd33732441299f5",
+        "hex": "cc4fd255d85bde61e467ea6df073f679fc7f0285088b0e91",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "f2b689134d7450e5",
+        "hex": "4fd255d843c649cc67ea6df05bde61e47f02850873f679fc",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "544ab95fae1dde9d",
+        "hex": "f679fc7fea6df073de61e467d255d85bc649cc4fba3dc043",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "1f5c81fa1652bce5",
+        "hex": "61e467ea6df073f649cc4fd255d85bde31b437ba3dc043c6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "737a2c67deaa6075",
+        "hex": "a82bae31c043c649d85bde61b437ba3dcc4fd255e467ea6d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "1b6c199b0d2a3c35",
+        "hex": "4fd255d837ba3dc01fa225a85bde61e443c649cc2bae31b4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "7d4ddb8a5b576a9d",
+        "hex": "d255d85bba3dc043a225a82bc649cc4fae31b43796199c1f",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "c7c1579832a08ba5",
+        "hex": "199c1fa231b437ba49cc4fd20d90139625a82bae3dc043c6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "3af3f2fa0553b975",
+        "hex": "84078a0d901396199c1fa225a82bae31b437ba3dc043c649",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "462ea28eee35b885",
+        "hex": "f578fb7e0184078a0d901396199c1fa225a82bae31b437ba",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "603cdcbe0a6f418d",
+        "hex": "be41c447ca4dd053d659dc5fe265e86bee71f477fa7d0083",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "2a12b4b95ac9e975",
+        "hex": "8c0f9215981b9e21a427aa2db033b639bc3fc245c84bce51",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "bd00048e69fa8ec5",
+        "hex": "55d85bde61e467ea6df073f679fc7f0285088b0e9114971a",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "bdd33732441299f5",
+        "hex": "cc4fd255d85bde61e467ea6df073f679fc7f0285088b0e91",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "f4a07897c4409785",
+        "hex": "5bde61e44fd255d843c649cc7f02850873f679fc67ea6df0",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "544ab95fae1dde9d",
+        "hex": "f679fc7fea6df073de61e467d255d85bc649cc4fba3dc043",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "8177d1a01a9f15e5",
+        "hex": "55d85bde61e467ea6df073f631b437ba3dc043c649cc4fd2",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "da5b2c021762ead5",
+        "hex": "a82bae31cc4fd255b437ba3dd85bde61c043c649e467ea6d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "9469b9fc7fcae5e5",
+        "hex": "43c649cc1fa225a84fd255d82bae31b45bde61e437ba3dc0",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "20af07bbefe09f7d",
+        "hex": "d255d85bae31b437c649cc4fa225a82bba3dc04396199c1f",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 0,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "0a0d33c0cd992b25",
+        "hex": "25a82bae49cc4fd2199c1fa23dc043c60d90139631b437ba",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "3af3f2fa0553b975",
+        "hex": "84078a0d901396199c1fa225a82bae31b437ba3dc043c649",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "462ea28eee35b885",
+        "hex": "f578fb7e0184078a0d901396199c1fa225a82bae31b437ba",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "603cdcbe0a6f418d",
+        "hex": "be41c447ca4dd053d659dc5fe265e86bee71f477fa7d0083",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 0,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "2a12b4b95ac9e975",
+        "hex": "8c0f9215981b9e21a427aa2db033b639bc3fc245c84bce51",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "38c47b9d9c0e658d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "9f0cf6c303b634e1",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "38a85395533f08e9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "6b5ce9e322082f25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "5efd631ac2ef5afd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "3a839d99db1beda9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "f957f8f3caee1d11",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "37748002f0880a85",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "192869a6d3b5d0ad",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "fe61bd8289ad8701",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "24223098007d084d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "d30ac2fa9da14f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "074a60a8026a7c61",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "a58596535b40f545",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "c0f0504d68d32e65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "cb40cdafbf49ba25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "c5fcb3dd31270565",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "e2f8a9d0c70b3065",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "0bf551bc0be53ae5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "23b6bc504f5c2eb5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "df082734718c2a45",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "8d762d43d58ee365",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "ec59a4067e5857c5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "448e06884dfe4f05",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "cd3046324d5a4f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 0,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "a6c3ff7f1b190965",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "38c47b9d9c0e658d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "9f0cf6c303b634e1",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "e2b1d343fa1602e9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "6b5ce9e322082f25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "6bbb465bfa7ecfb5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "0f623b5161015201",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "80023ef55a442039",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "813d13026760ce45",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 0,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "2c204877b0f236a5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "fe61bd8289ad8701",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "24223098007d084d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "d30ac2fa9da14f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "074a60a8026a7c61",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "092203e558822d02",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "62f11fe97e82ae98",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "3d848b17adf78416",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "6b46afc1c63f58f4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "41d7c86cb265f866",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 0,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "34476e455f710234",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 0,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "e0bc3e0fd6a6417e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 0,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "a386a435522ec658",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 0,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "7488a174fa21baf6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "01ce71d03b8e01b8",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "ae3d47a18c5292c2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "13a7600cfb42ae54",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 0,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "1c05d8ac71860f18",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "bce0f7351901ad32",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "687aa0a528660a9c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "6737c76595d9b71e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "ddd4dde42253abc8",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "a73de88f9dd8054e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 0,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "8d8e375c22e21768",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 0,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "e23b6f22062f9b4a",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 0,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "9d1e8e5cc68c5de4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 0,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "e6657f6446baa4ca",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "50640851475b975c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "5966c5c73778b5b2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "071aef825a97a770",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "c57b06ccb80d5e1c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "2acd8068961d62e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "e3396ed9d73bcb65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "6ae64956c9af52a5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "8d69d2da97564885",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "2163a778403bfe25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "632c30afdaaf2d25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "fd697962738cdc25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "fecaa738ea79a445",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "7f93cdedf7b62165",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "dce7f7c6cf7580e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "719f89f12b7199e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "e9e9840ddd051245",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "d1b23ecdff9f61e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "2acd8068961d62e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "e3396ed9d73bcb65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "0aff43dcc9511f65",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "8d69d2da97564885",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "5ec4df45a9475aa5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "632c30afdaaf2d25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "6510404ef6bf10e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "fecaa738ea79a445",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "d3b1bee5becefce5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "dce7f7c6cf7580e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "719f89f12b7199e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "e9e9840ddd051245",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 0,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "d1b23ecdff9f61e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "b476d2125c246b89",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "985347b33272d385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "46fdbbcfe3391e4d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "0a84f5dd03fda401",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "875ac07d5de167d1",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "c53c4416bea769e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "718b8bc82f0d59bd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "22097ecdc1ef9159",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "43c86127a8c56649",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "18c3b99604b84c45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "644f4b8e286bcd49",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "c7fdf2b2076eb4a9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "0a42f25d2657e385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "b476d2125c246b89",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "985347b33272d385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "a4b0c8a3c0c5d24d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "0a84f5dd03fda401",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "9eaa82e619376ad1",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o5",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "c53c4416bea769e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o6",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "3cef17a810d1a5bd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o7",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "22097ecdc1ef9159",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o8",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "d2fba80a811b5949",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "18c3b99604b84c45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "644f4b8e286bcd49",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "c7fdf2b2076eb4a9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l0-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "0a42f25d2657e385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "f91151825a6eefc9",
+        "hex": "22a528ab",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "4022876a3afded05",
+        "hex": "991c9f22",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "11ec6307b4be2c4d",
+        "hex": "10931699",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "a0486691d4fb3e41",
+        "hex": "870a8d10",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "557de06f5725de51",
+        "hex": "fe810487",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "53a753e1a76dc0a5",
+        "hex": "75f87bfe",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "cd50efd88d72127d",
+        "hex": "ec6ff275",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "681f838e78642059",
+        "hex": "63e669ec",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "7a590997de165449",
+        "hex": "da5de063",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "7c664515836e2d45",
+        "hex": "51d457da",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "892018d214cef309",
+        "hex": "c245c84b",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "b4d976f5a1df9b29",
+        "hex": "8b0e9114",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x1-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "19a5055375b91005",
+        "hex": "59dc5fe2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "6427f7b4cceba9cd",
+        "hex": "880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd053d659",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "33227317a427d5a1",
+        "hex": "ff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd0",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "8749f78dfb2302b9",
+        "hex": "76f97cff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "45ffcc741bc5f9a5",
+        "hex": "35b83bbe29ac2fb21da023a61194179a05880b8ef97cff82ed70f376",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "b06d948300a3afcd",
+        "hex": "ac2fb235a023a62994179a1d880b8e117cff820570f376f964e76aed",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "0f018b55aa2c6039",
+        "hex": "db5ee164e76aed70f376f97cff8205880b8e1194179a1da023a629ac",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "cfa5f16b8b000f71",
+        "hex": "9a1da0238e1194178205880b76f97cff6aed70f35ee164e752d558db",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "0cfecb1ab6a77045",
+        "hex": "1194179a05880b8ef97cff82ed70f376e164e76ad558db5ec94ccf52",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "6c05042d198ef5ad",
+        "hex": "40c346c94ccf52d558db5ee164e76aed70f376f97cff8205880b8e11",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "5da0e52041f6b461",
+        "hex": "b73abd40c346c94ccf52d558db5ee164e76aed70f376f97cff820588",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "f92fa6c5322f0acd",
+        "hex": "28ab2eb134b73abd40c346c94ccf52d558db5ee164e76aed70f376f9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "bdcdd5d013d8a5c5",
+        "hex": "f174f77afd800386098c0f9215981b9e21a427aa2db033b639bc3fc2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x7-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "ca56e2612a1b78a1",
+        "hex": "bf42c548cb4ed154d75add60e366e96cef72f578fb7e0184078a0d90",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "6427f7b4cceba9cd",
+        "hex": "880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd053d659",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "33227317a427d5a1",
+        "hex": "ff8205880b8e1194179a1da023a629ac2fb235b83bbe41c447ca4dd0",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "bbfc68ec57129c79",
+        "hex": "be41c447b235b83ba629ac2f9a1da0238e1194178205880b76f97cff",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "45ffcc741bc5f9a5",
+        "hex": "35b83bbe29ac2fb21da023a61194179a05880b8ef97cff82ed70f376",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "769654276753ea8d",
+        "hex": "64e76aed70f376f97cff8205880b8e1194179a1da023a629ac2fb235",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "0f018b55aa2c6039",
+        "hex": "db5ee164e76aed70f376f97cff8205880b8e1194179a1da023a629ac",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "a80a0cf21d2e1d31",
+        "hex": "52d558db5ee164e76aed70f376f97cff8205880b8e1194179a1da023",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "0cfecb1ab6a77045",
+        "hex": "1194179a05880b8ef97cff82ed70f376e164e76ad558db5ec94ccf52",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 7,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 28,
+        "fnv1a64": "517b0e9ef8f89ded",
+        "hex": "880b8e117cff820570f376f964e76aed58db5ee14ccf52d540c346c9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "5da0e52041f6b461",
+        "hex": "b73abd40c346c94ccf52d558db5ee164e76aed70f376f97cff820588",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "f92fa6c5322f0acd",
+        "hex": "28ab2eb134b73abd40c346c94ccf52d558db5ee164e76aed70f376f9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "bdcdd5d013d8a5c5",
+        "hex": "f174f77afd800386098c0f9215981b9e21a427aa2db033b639bc3fc2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-7x1-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 7,
+        "height": 1,
+        "layout": 1,
+        "stride": 28,
+        "byte_count": 28,
+        "fnv1a64": "ca56e2612a1b78a1",
+        "hex": "bf42c548cb4ed154d75add60e366e96cef72f578fb7e0184078a0d90",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "bd00048e69fa8ec5",
+        "hex": "55d85bde61e467ea6df073f679fc7f0285088b0e9114971a",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "bdd33732441299f5",
+        "hex": "cc4fd255d85bde61e467ea6df073f679fc7f0285088b0e91",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "f2b689134d7450e5",
+        "hex": "4fd255d843c649cc67ea6df05bde61e47f02850873f679fc",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "544ab95fae1dde9d",
+        "hex": "f679fc7fea6df073de61e467d255d85bc649cc4fba3dc043",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "1f5c81fa1652bce5",
+        "hex": "61e467ea6df073f649cc4fd255d85bde31b437ba3dc043c6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "737a2c67deaa6075",
+        "hex": "a82bae31c043c649d85bde61b437ba3dcc4fd255e467ea6d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "1b6c199b0d2a3c35",
+        "hex": "4fd255d837ba3dc01fa225a85bde61e443c649cc2bae31b4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "7d4ddb8a5b576a9d",
+        "hex": "d255d85bba3dc043a225a82bc649cc4fae31b43796199c1f",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "c7c1579832a08ba5",
+        "hex": "199c1fa231b437ba49cc4fd20d90139625a82bae3dc043c6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "3af3f2fa0553b975",
+        "hex": "84078a0d901396199c1fa225a82bae31b437ba3dc043c649",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "462ea28eee35b885",
+        "hex": "f578fb7e0184078a0d901396199c1fa225a82bae31b437ba",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "603cdcbe0a6f418d",
+        "hex": "be41c447ca4dd053d659dc5fe265e86bee71f477fa7d0083",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-2x3-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "2a12b4b95ac9e975",
+        "hex": "8c0f9215981b9e21a427aa2db033b639bc3fc245c84bce51",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "bd00048e69fa8ec5",
+        "hex": "55d85bde61e467ea6df073f679fc7f0285088b0e9114971a",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "bdd33732441299f5",
+        "hex": "cc4fd255d85bde61e467ea6df073f679fc7f0285088b0e91",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "f4a07897c4409785",
+        "hex": "5bde61e44fd255d843c649cc7f02850873f679fc67ea6df0",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "544ab95fae1dde9d",
+        "hex": "f679fc7fea6df073de61e467d255d85bc649cc4fba3dc043",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "8177d1a01a9f15e5",
+        "hex": "55d85bde61e467ea6df073f631b437ba3dc043c649cc4fd2",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "da5b2c021762ead5",
+        "hex": "a82bae31cc4fd255b437ba3dd85bde61c043c649e467ea6d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "9469b9fc7fcae5e5",
+        "hex": "43c649cc1fa225a84fd255d82bae31b45bde61e437ba3dc0",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "20af07bbefe09f7d",
+        "hex": "d255d85bae31b437c649cc4fa225a82bba3dc04396199c1f",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 2,
+        "height": 3,
+        "layout": 1,
+        "stride": 8,
+        "byte_count": 24,
+        "fnv1a64": "0a0d33c0cd992b25",
+        "hex": "25a82bae49cc4fd2199c1fa23dc043c60d90139631b437ba",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "3af3f2fa0553b975",
+        "hex": "84078a0d901396199c1fa225a82bae31b437ba3dc043c649",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "462ea28eee35b885",
+        "hex": "f578fb7e0184078a0d901396199c1fa225a82bae31b437ba",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "603cdcbe0a6f418d",
+        "hex": "be41c447ca4dd053d659dc5fe265e86bee71f477fa7d0083",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-3x2-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 3,
+        "height": 2,
+        "layout": 1,
+        "stride": 12,
+        "byte_count": 24,
+        "fnv1a64": "2a12b4b95ac9e975",
+        "hex": "8c0f9215981b9e21a427aa2db033b639bc3fc245c84bce51",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "38c47b9d9c0e658d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "9f0cf6c303b634e1",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "38a85395533f08e9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "6b5ce9e322082f25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "5efd631ac2ef5afd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "3a839d99db1beda9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "f957f8f3caee1d11",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "37748002f0880a85",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "192869a6d3b5d0ad",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "fe61bd8289ad8701",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "24223098007d084d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "d30ac2fa9da14f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-31x33-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "074a60a8026a7c61",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "a58596535b40f545",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "c0f0504d68d32e65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "cb40cdafbf49ba25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "c5fcb3dd31270565",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "e2f8a9d0c70b3065",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "0bf551bc0be53ae5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "23b6bc504f5c2eb5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "df082734718c2a45",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "8d762d43d58ee365",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "ec59a4067e5857c5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "448e06884dfe4f05",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "cd3046324d5a4f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-32x32-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 32,
+        "height": 32,
+        "layout": 1,
+        "stride": 128,
+        "byte_count": 4096,
+        "fnv1a64": "a6c3ff7f1b190965",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "38c47b9d9c0e658d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "9f0cf6c303b634e1",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "e2b1d343fa1602e9",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "6b5ce9e322082f25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "6bbb465bfa7ecfb5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "0f623b5161015201",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "80023ef55a442039",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "813d13026760ce45",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 31,
+        "height": 33,
+        "layout": 1,
+        "stride": 124,
+        "byte_count": 4092,
+        "fnv1a64": "2c204877b0f236a5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "fe61bd8289ad8701",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "24223098007d084d",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "d30ac2fa9da14f45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x31-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "074a60a8026a7c61",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "092203e558822d02",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "62f11fe97e82ae98",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "3d848b17adf78416",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "6b46afc1c63f58f4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "41d7c86cb265f866",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 1,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "34476e455f710234",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 1,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "e0bc3e0fd6a6417e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 1,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "a386a435522ec658",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 65,
+        "height": 64,
+        "layout": 1,
+        "stride": 260,
+        "byte_count": 16640,
+        "fnv1a64": "7488a174fa21baf6",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "01ce71d03b8e01b8",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "ae3d47a18c5292c2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "13a7600cfb42ae54",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-64x65-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 64,
+        "height": 65,
+        "layout": 1,
+        "stride": 256,
+        "byte_count": 16640,
+        "fnv1a64": "1c05d8ac71860f18",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "bce0f7351901ad32",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "687aa0a528660a9c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "6737c76595d9b71e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "ddd4dde42253abc8",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "a73de88f9dd8054e",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 1,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "8d8e375c22e21768",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 1,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "e23b6f22062f9b4a",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 1,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "9d1e8e5cc68c5de4",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 45,
+        "height": 70,
+        "layout": 1,
+        "stride": 180,
+        "byte_count": 12600,
+        "fnv1a64": "e6657f6446baa4ca",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "50640851475b975c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "5966c5c73778b5b2",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "071aef825a97a770",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-70x45-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "c57b06ccb80d5e1c",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "2acd8068961d62e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "e3396ed9d73bcb65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "6ae64956c9af52a5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "8d69d2da97564885",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "2163a778403bfe25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "632c30afdaaf2d25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "fd697962738cdc25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "fecaa738ea79a445",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "7f93cdedf7b62165",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "dce7f7c6cf7580e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "719f89f12b7199e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "e9e9840ddd051245",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x40-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "d1b23ecdff9f61e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "2acd8068961d62e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "e3396ed9d73bcb65",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "0aff43dcc9511f65",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "8d69d2da97564885",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "5ec4df45a9475aa5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "632c30afdaaf2d25",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "6510404ef6bf10e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "fecaa738ea79a445",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 40,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 160,
+        "fnv1a64": "d3b1bee5becefce5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "dce7f7c6cf7580e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "719f89f12b7199e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "e9e9840ddd051245",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-40x1-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 40,
+        "height": 1,
+        "layout": 1,
+        "stride": 160,
+        "byte_count": 160,
+        "fnv1a64": "d1b23ecdff9f61e5",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "b476d2125c246b89",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "985347b33272d385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "46fdbbcfe3391e4d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "0a84f5dd03fda401",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "875ac07d5de167d1",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "c53c4416bea769e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "718b8bc82f0d59bd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "22097ecdc1ef9159",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "43c86127a8c56649",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "18c3b99604b84c45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "644f4b8e286bcd49",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "c7fdf2b2076eb4a9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-33x1-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "0a42f25d2657e385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o0",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "b476d2125c246b89",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "985347b33272d385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o2",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "a4b0c8a3c0c5d24d",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o3",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "0a84f5dd03fda401",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o4",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "9eaa82e619376ad1",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o5",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "c53c4416bea769e5",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o6",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "3cef17a810d1a5bd",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o7",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "22097ecdc1ef9159",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o8",
+      "kind": "orient",
+      "result": {
+        "width": 33,
+        "height": 1,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 132,
+        "fnv1a64": "d2fba80a811b5949",
+        "same_instance": false,
+        "source_disposed": true,
+        "id_changed": true
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o9",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "18c3b99604b84c45",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o-1",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "644f4b8e286bcd49",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o-2147483648",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "c7fdf2b2076eb4a9",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "orient-1x33-l1-o2147483647",
+      "kind": "orient",
+      "result": {
+        "width": 1,
+        "height": 33,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 132,
+        "fnv1a64": "0a42f25d2657e385",
+        "same_instance": true,
+        "source_disposed": false,
+        "id_changed": false
+      }
+    },
+    {
+      "name": "roundtrip-1x1",
+      "kind": "compose",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "160a766f538e21c9",
+        "hex": "bb3ec144",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot90-twice-1x1",
+      "kind": "compose",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "6173f0e042165a3d",
+        "hex": "cc4fd255",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot180-1x1",
+      "kind": "compose",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "6173f0e042165a3d",
+        "hex": "cc4fd255",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot90-four-1x1",
+      "kind": "compose",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 0,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "e8d0f95cd4c5f105",
+        "hex": "dd60e366",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "transpose-twice-1x1",
+      "kind": "compose",
+      "result": {
+        "width": 1,
+        "height": 1,
+        "layout": 1,
+        "stride": 4,
+        "byte_count": 4,
+        "fnv1a64": "36b93fe55a1cd0d1",
+        "hex": "ee71f477",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "roundtrip-5x3",
+      "kind": "compose",
+      "result": {
+        "width": 5,
+        "height": 3,
+        "layout": 1,
+        "stride": 20,
+        "byte_count": 60,
+        "fnv1a64": "169f67eebb0c0df9",
+        "hex": "bb3ec144c74acd50d356d95cdf62e568eb6ef174f77afd800386098c0f9215981b9e21a427aa2db033b639bc3fc245c84bce51d457da5de063e669ec",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot90-twice-5x3",
+      "kind": "compose",
+      "result": {
+        "width": 5,
+        "height": 3,
+        "layout": 1,
+        "stride": 20,
+        "byte_count": 60,
+        "fnv1a64": "2ecb15d120b9900d",
+        "hex": "74f77afd68eb6ef15cdf62e550d356d944c74acd38bb3ec12caf32b520a326a914971a9d088b0e91fc7f0285f073f679e467ea6dd85bde61cc4fd255",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot180-5x3",
+      "kind": "compose",
+      "result": {
+        "width": 5,
+        "height": 3,
+        "layout": 1,
+        "stride": 20,
+        "byte_count": 60,
+        "fnv1a64": "2ecb15d120b9900d",
+        "hex": "74f77afd68eb6ef15cdf62e550d356d944c74acd38bb3ec12caf32b520a326a914971a9d088b0e91fc7f0285f073f679e467ea6dd85bde61cc4fd255",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot90-four-5x3",
+      "kind": "compose",
+      "result": {
+        "width": 5,
+        "height": 3,
+        "layout": 0,
+        "stride": 20,
+        "byte_count": 60,
+        "fnv1a64": "9d6b074c3cf3a185",
+        "hex": "dd60e366e96cef72f578fb7e0184078a0d901396199c1fa225a82bae31b437ba3dc043c649cc4fd255d85bde61e467ea6df073f679fc7f0285088b0e",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "transpose-twice-5x3",
+      "kind": "compose",
+      "result": {
+        "width": 5,
+        "height": 3,
+        "layout": 1,
+        "stride": 20,
+        "byte_count": 60,
+        "fnv1a64": "1e0bdbd952094c39",
+        "hex": "ee71f477fa7d008306890c8f1295189b1ea124a72aad30b336b93cbf42c548cb4ed154d75add60e366e96cef72f578fb7e0184078a0d901396199c1f",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "roundtrip-33x31",
+      "kind": "compose",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "1ff20c3de6a76c19",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot90-twice-33x31",
+      "kind": "compose",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "f4b0d106c50a944d",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot180-33x31",
+      "kind": "compose",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "f4b0d106c50a944d",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot90-four-33x31",
+      "kind": "compose",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 0,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "fd051b4f96697f65",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "transpose-twice-33x31",
+      "kind": "compose",
+      "result": {
+        "width": 33,
+        "height": 31,
+        "layout": 1,
+        "stride": 132,
+        "byte_count": 4092,
+        "fnv1a64": "49622e9205aa67c9",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "roundtrip-70x45",
+      "kind": "compose",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "85af1c8805e7bf72",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "rot90-twice-70x45",
+      "kind": "compose",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "ed5a67ff66e669b0",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot180-70x45",
+      "kind": "compose",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "ed5a67ff66e669b0",
+        "equals_original": false
+      }
+    },
+    {
+      "name": "rot90-four-70x45",
+      "kind": "compose",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 0,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "88c9681c03f78dd2",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "transpose-twice-70x45",
+      "kind": "compose",
+      "result": {
+        "width": 70,
+        "height": 45,
+        "layout": 1,
+        "stride": 280,
+        "byte_count": 12600,
+        "fnv1a64": "d73e21e1c7748bdc",
+        "equals_original": true
+      }
+    },
+    {
+      "name": "alpha-opaque-1x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-1x1-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-1x1-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-1x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-1x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-1x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-17x3",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-17x3-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-0-2-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-0-2-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-8-1-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-8-1-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-16-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-16-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-16-2-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-17x3-16-2-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-17x3",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-17x3",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-17x3",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-64x2",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-64x2-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-0-1-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-0-1-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-32-1-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-32-1-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-63-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-63-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-63-1-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-64x2-63-1-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-64x2",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-64x2",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-64x2",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-3x9",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-3x9-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-0-8-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-0-8-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-1-4-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-1-4-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-2-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-2-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-2-8-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-3x9-2-8-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-3x9",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-3x9",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-3x9",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-21x5",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-21x5-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-0-4-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-0-4-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-10-2-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-10-2-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-20-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-20-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-20-4-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-21x5-20-4-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-21x5",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-21x5",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-21x5",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-8x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-8x1-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-8x1-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-8x1-4-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-8x1-4-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-8x1-7-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-8x1-7-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-8x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-8x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-8x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-opaque-9x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-one-9x1-0-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-9x1-0-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-9x1-4-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-9x1-4-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-9x1-8-0-a0",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-one-9x1-8-0-a254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-all-zero-9x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-zero-9x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-bgr32-unused-ff-9x1",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-colour-bytes-ignored",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": true,
+        "has_alpha": false
+      }
+    },
+    {
+      "name": "alpha-colour-bytes-ff-alpha-254",
+      "kind": "alpha",
+      "result": {
+        "is_fully_opaque": false,
+        "has_alpha": true
+      }
+    },
+    {
+      "name": "disposed-orient-6-l0",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-orient-6-l1",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-orient-1-l0",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-orient-1-l1",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-is_fully_opaque-l0",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-is_fully_opaque-l1",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-has_alpha-l0",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    },
+    {
+      "name": "disposed-has_alpha-l1",
+      "kind": "disposed",
+      "result": {
+        "throws": "ObjectDisposedException"
+      }
+    }
+  ]
+}

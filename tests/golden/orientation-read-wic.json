@@ -1,0 +1,302 @@
+{
+  "generator": "oracle-cs orientation-read-wic",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "exif-6-windows-absent",
+      "exif": {
+        "type": "ushort",
+        "value": 6
+      },
+      "windows": null,
+      "orientation": 6,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-valid-wins-over-windows",
+      "exif": {
+        "type": "ushort",
+        "value": 1
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 8
+      },
+      "orientation": 1,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-0-falls-to-windows",
+      "exif": {
+        "type": "ushort",
+        "value": 0
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 3
+      },
+      "orientation": 3,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-9-falls-to-windows",
+      "exif": {
+        "type": "ushort",
+        "value": 9
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 7
+      },
+      "orientation": 7,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-absent-windows-2",
+      "exif": null,
+      "windows": {
+        "type": "ushort",
+        "value": 2
+      },
+      "orientation": 2,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-absent-windows-9",
+      "exif": null,
+      "windows": {
+        "type": "ushort",
+        "value": 9
+      },
+      "orientation": 1,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "both-absent",
+      "exif": null,
+      "windows": null,
+      "orientation": 1,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-array-uses-first",
+      "exif": {
+        "type": "ushort[]",
+        "values": [
+          5,
+          2
+        ]
+      },
+      "windows": null,
+      "orientation": 5,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-array-first-invalid-falls-to-windows",
+      "exif": {
+        "type": "ushort[]",
+        "values": [
+          9,
+          2
+        ]
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 4
+      },
+      "orientation": 4,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-array-empty-is-absent",
+      "exif": {
+        "type": "ushort[]",
+        "values": []
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 3
+      },
+      "orientation": 3,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-uint-6",
+      "exif": {
+        "type": "uint",
+        "value": 6
+      },
+      "windows": null,
+      "orientation": 6,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-byte-3",
+      "exif": {
+        "type": "byte",
+        "value": 3
+      },
+      "windows": null,
+      "orientation": 3,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-short-minus-1-falls-to-windows",
+      "exif": {
+        "type": "short",
+        "value": -1
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 8
+      },
+      "orientation": 8,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-int-8",
+      "exif": {
+        "type": "int",
+        "value": 8
+      },
+      "windows": null,
+      "orientation": 8,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "exif-string-is-not-an-integer",
+      "exif": {
+        "type": "string",
+        "value": "6"
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 2
+      },
+      "orientation": 2,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-long-is-not-an-integer",
+      "exif": {
+        "type": "long",
+        "value": 6
+      },
+      "windows": null,
+      "orientation": 1,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-throws-gives-1-windows-not-asked",
+      "exif": {
+        "type": "throw"
+      },
+      "windows": {
+        "type": "ushort",
+        "value": 6
+      },
+      "orientation": 1,
+      "asked": [
+        "exif"
+      ]
+    },
+    {
+      "name": "windows-throws-gives-1",
+      "exif": null,
+      "windows": {
+        "type": "throw"
+      },
+      "orientation": 1,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "exif-invalid-windows-throws",
+      "exif": {
+        "type": "ushort",
+        "value": 9
+      },
+      "windows": {
+        "type": "throw"
+      },
+      "orientation": 1,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "windows-uint-5",
+      "exif": null,
+      "windows": {
+        "type": "uint",
+        "value": 5
+      },
+      "orientation": 5,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    },
+    {
+      "name": "windows-array-first",
+      "exif": null,
+      "windows": {
+        "type": "ushort[]",
+        "values": [
+          7,
+          1
+        ]
+      },
+      "orientation": 7,
+      "asked": [
+        "exif",
+        "windows"
+      ]
+    }
+  ]
+}

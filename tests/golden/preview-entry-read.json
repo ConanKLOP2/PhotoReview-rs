@@ -1,0 +1,1822 @@
+{
+  "generator": "oracle-cs preview-entry-read",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "fixture-v7-with-exif",
+      "base": "exif",
+      "ops": [],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2875,
+      "backend": 1,
+      "orientation": 6,
+      "width": 96,
+      "height": 64,
+      "original_width": 6000,
+      "original_height": 4000,
+      "layout": "Bgr32",
+      "has_exif": true,
+      "exif_make": "Canon",
+      "exif_model": "EOS R5",
+      "exif_iso": 400
+    },
+    {
+      "name": "fixture-v7-no-exif-pbgra-source",
+      "base": "noexif",
+      "ops": [],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v6-no-exif-block-still-read",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "delete",
+          "offset": 24,
+          "count": 2
+        },
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "06"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2798,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v6-with-exif-bytes-misread-as-payload-fails-decode",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "06"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Preview cache entry payload could not be decoded.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "bad-magic-first-byte",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 0,
+          "hex": "58"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid header magic.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "bad-magic-last-byte",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 3,
+          "hex": "00"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid header magic.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "version-0-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "00"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry is version 0, expected 7.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "version-5-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "05"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry is version 5, expected 7.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "version-8-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "08"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry is version 8, expected 7.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "version-255-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "ff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry is version 255, expected 7.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "backend-wpf-0",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 5,
+          "hex": "00"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 0,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "backend-libraw-3-is-defined",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 5,
+          "hex": "03"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 3,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "backend-4-undefined",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 5,
+          "hex": "04"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid decoder backend byte.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "backend-200-undefined",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 5,
+          "hex": "c8"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid decoder backend byte.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "orientation-0-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 6,
+          "hex": "00"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid orientation byte.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "orientation-9-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 6,
+          "hex": "09"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid orientation byte.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "orientation-255-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 6,
+          "hex": "ff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an invalid orientation byte.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "orientation-8-ok",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 6,
+          "hex": "08"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 2,
+      "orientation": 8,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "alpha-flag-1-selects-pbgra32",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 7,
+          "hex": "01"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Pbgra32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "alpha-flag-ff-selects-pbgra32",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 7,
+          "hex": "ff"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2875,
+      "backend": 1,
+      "orientation": 6,
+      "width": 96,
+      "height": 64,
+      "original_width": 6000,
+      "original_height": 4000,
+      "layout": "Pbgra32",
+      "has_exif": true,
+      "exif_make": "Canon",
+      "exif_model": "EOS R5",
+      "exif_iso": 400
+    },
+    {
+      "name": "width-zero-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 8,
+          "hex": "00000000"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "width-minus1-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 8,
+          "hex": "ffffffff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "width-intmax-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 8,
+          "hex": "ffffff7f"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Cache entry payload dimensions do not match its header.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "width-intmin-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 8,
+          "hex": "00000080"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "height-zero-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 12,
+          "hex": "00000000"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "height-minus1-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 12,
+          "hex": "ffffffff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "height-intmax-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 12,
+          "hex": "ffffff7f"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Cache entry payload dimensions do not match its header.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "height-intmin-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 12,
+          "hex": "00000080"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid pixel dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "width-97-mismatches-payload-fails-decode",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 8,
+          "hex": "61000000"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Cache entry payload dimensions do not match its header.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "height-65-mismatches-payload-fails-decode",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 12,
+          "hex": "41000000"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Cache entry payload dimensions do not match its header.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-width-zero-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 16,
+          "hex": "00000000"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-width-minus5-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 16,
+          "hex": "fbffffff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-width-intmin-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 16,
+          "hex": "00000080"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-height-zero-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 20,
+          "hex": "00000000"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-height-minus5-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 20,
+          "hex": "fbffffff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-height-intmin-rejected",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 20,
+          "hex": "00000080"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has invalid original dimensions.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-dims-1x1-accepted",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 16,
+          "hex": "01000000"
+        },
+        {
+          "op": "set",
+          "offset": 20,
+          "hex": "01000000"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 1,
+      "original_height": 1,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "original-dims-intmax-accepted",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 16,
+          "hex": "ffffff7f"
+        },
+        {
+          "op": "set",
+          "offset": 20,
+          "hex": "ffffff7f"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2800,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 2147483647,
+      "original_height": 2147483647,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "cut-at-0-is-end-of-stream",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 0
+        }
+      ],
+      "outcome": "end-of-stream",
+      "message": null,
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "cut-at-1-is-end-of-stream",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 1
+        }
+      ],
+      "outcome": "end-of-stream",
+      "message": null,
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "cut-at-4-is-end-of-stream",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 4
+        }
+      ],
+      "outcome": "end-of-stream",
+      "message": null,
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "cut-at-23-is-end-of-stream",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 23
+        }
+      ],
+      "outcome": "end-of-stream",
+      "message": null,
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-cut-at-24-no-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 24
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-cut-at-25-no-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 25
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-exif-fixture-cut-at-26-oversized-exif",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 26
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-noexif-cut-at-26-empty-exif-no-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 26
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-noexif-cut-at-27-truncated-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 27
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-noexif-cut-at-29-truncated-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 29
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-noexif-cut-at-30-truncated-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 30
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-exif-cut-at-99-oversized-exif",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 99
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-exif-cut-at-100-oversized-exif",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 100
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-exif-cut-at-101-exif-fills-file-no-payload",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 101
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-exif-cut-at-102-one-payload-byte",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 102
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v6-cut-at-24-no-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "delete",
+          "offset": 24,
+          "count": 2
+        },
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "06"
+        },
+        {
+          "op": "truncate",
+          "length": 24
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v6-cut-at-25-one-payload-byte",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "delete",
+          "offset": 24,
+          "count": 2
+        },
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "06"
+        },
+        {
+          "op": "truncate",
+          "length": 25
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v6-cut-at-28-four-byte-payload-no-eoi",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "delete",
+          "offset": 24,
+          "count": 2
+        },
+        {
+          "op": "set",
+          "offset": 4,
+          "hex": "06"
+        },
+        {
+          "op": "truncate",
+          "length": 28
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "v7-noexif-cut-at-2799-truncated-last-byte",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 2799
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "last-byte-zeroed-no-eoi",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 2799,
+          "hex": "00"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "eoi-bytes-swapped",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 2798,
+          "hex": "d9ff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "trailing-byte-after-eoi",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "append",
+          "hex": "00"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "four-byte-payload-ending-in-eoi-passes-eoi-check",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 26
+        },
+        {
+          "op": "append",
+          "hex": "ffd8ffd9"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Preview cache entry payload could not be decoded.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "three-byte-payload-eoi-is-truncated",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "truncate",
+          "length": 26
+        },
+        {
+          "op": "append",
+          "hex": "d8ffd9"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry payload is truncated (no JPEG end-of-image marker).",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-1025-oversized",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0104"
+        },
+        {
+          "op": "append_zeros",
+          "count": 2000
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-65535-oversized",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "ffff"
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-1024-garbage-block-no-exif",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0004"
+        },
+        {
+          "op": "insert_zeros",
+          "offset": 26,
+          "count": 1024
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 3824,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-1024-over-original-payload-fails-decode",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0004"
+        }
+      ],
+      "outcome": "decode-failed",
+      "message": "Preview cache entry payload could not be decoded.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-block-unknown-codec-version-keeps-pixels",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 26,
+          "hex": "09"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2875,
+      "backend": 1,
+      "orientation": 6,
+      "width": 96,
+      "height": 64,
+      "original_width": 6000,
+      "original_height": 4000,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-block-all-zero-keeps-pixels",
+      "base": "exif",
+      "ops": [
+        {
+          "op": "zero",
+          "offset": 26,
+          "count": 75
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2875,
+      "backend": 1,
+      "orientation": 6,
+      "width": 96,
+      "height": 64,
+      "original_width": 6000,
+      "original_height": 4000,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-10-fills-file-exactly-no-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0a00"
+        },
+        {
+          "op": "truncate",
+          "length": 36
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has no payload.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-11-one-byte-past-end-oversized",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0b00"
+        },
+        {
+          "op": "truncate",
+          "length": 36
+        }
+      ],
+      "outcome": "invalid-data",
+      "message": "Preview cache entry has an oversized EXIF block.",
+      "file_bytes": null,
+      "backend": null,
+      "orientation": null,
+      "width": null,
+      "height": null,
+      "original_width": null,
+      "original_height": null,
+      "layout": null,
+      "has_exif": null,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    },
+    {
+      "name": "exif-length-1-then-payload",
+      "base": "noexif",
+      "ops": [
+        {
+          "op": "set",
+          "offset": 24,
+          "hex": "0100"
+        },
+        {
+          "op": "insert",
+          "offset": 26,
+          "hex": "01"
+        }
+      ],
+      "outcome": "ok",
+      "message": null,
+      "file_bytes": 2801,
+      "backend": 2,
+      "orientation": 1,
+      "width": 96,
+      "height": 64,
+      "original_width": 96,
+      "original_height": 64,
+      "layout": "Bgr32",
+      "has_exif": false,
+      "exif_make": null,
+      "exif_model": null,
+      "exif_iso": null
+    }
+  ]
+}

@@ -1,0 +1,702 @@
+{
+  "generator": "oracle-cs preview-entry-write",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "plain-bgr32-no-exif",
+      "case": {
+        "name": "plain-bgr32-no-exif",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "backend-turbojpeg-orientation-6",
+      "case": {
+        "name": "backend-turbojpeg-orientation-6",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 2,
+        "orientation": 6,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307020600100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "backend-wpf-0",
+      "case": {
+        "name": "backend-wpf-0",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 0,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307000100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "backend-libraw-3",
+      "case": {
+        "name": "backend-libraw-3",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 3,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307030100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-1",
+      "case": {
+        "name": "orientation-1",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-2",
+      "case": {
+        "name": "orientation-2",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 2,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010200100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-3",
+      "case": {
+        "name": "orientation-3",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 3,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010300100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-4",
+      "case": {
+        "name": "orientation-4",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 4,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010400100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-5",
+      "case": {
+        "name": "orientation-5",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 5,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010500100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-6",
+      "case": {
+        "name": "orientation-6",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 6,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010600100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-7",
+      "case": {
+        "name": "orientation-7",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 7,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010700100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-8",
+      "case": {
+        "name": "orientation-8",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 8,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010800100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "original-larger-than-pixels",
+      "case": {
+        "name": "original-larger-than-pixels",
+        "width": 96,
+        "height": 64,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 6000,
+        "original_height": 4000,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100600000004000000070170000a00f00000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "original-zero-falls-back-to-pixel-size",
+      "case": {
+        "name": "original-zero-falls-back-to-pixel-size",
+        "width": 96,
+        "height": 64,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 0,
+        "original_height": 0,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100600000004000000060000000400000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "original-width-zero-only",
+      "case": {
+        "name": "original-width-zero-only",
+        "width": 96,
+        "height": 64,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 0,
+        "original_height": 4000,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100600000004000000060000000a00f00000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "original-height-negative-only",
+      "case": {
+        "name": "original-height-negative-only",
+        "width": 96,
+        "height": 64,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 6000,
+        "original_height": -1,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100600000004000000070170000400000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "with-exif",
+      "case": {
+        "name": "with-exif",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": {
+          "date": "2024:05:06 07:08:09",
+          "make": "Canon",
+          "model": "EOS R5",
+          "lens": "RF24-70mm F2.8 L IS USM",
+          "iso": 400,
+          "focal": [
+            50,
+            1
+          ],
+          "f_number": [
+            28,
+            10
+          ],
+          "exposure": [
+            1,
+            250
+          ]
+        },
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000004b0001ff8092e3489b6ddc080543616e6f6e06454f5320523517524632342d37306d6d2046322e38204c2049532055534d9001000032000000010000001c0000000a00000001000000fa000000",
+      "exif_length": 75,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "with-exif-date-only",
+      "case": {
+        "name": "with-exif-date-only",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": {
+          "date": "2024:05:06"
+        },
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000a00010100400d795f6ddc08",
+      "exif_length": 10,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "empty-exif-summary-is-no-block",
+      "case": {
+        "name": "empty-exif-summary-is-no-block",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": {},
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "pbgra32-all-opaque",
+      "case": {
+        "name": "pbgra32-all-opaque",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "pbgra32-opaque-scan-is-skipped-when-verified",
+      "case": {
+        "name": "pbgra32-opaque-scan-is-skipped-when-verified",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": true
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "pbgra32-one-transparent-pixel-rejected",
+      "case": {
+        "name": "pbgra32-one-transparent-pixel-rejected",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false,
+        "transparent_pixel": [
+          15,
+          7
+        ]
+      },
+      "outcome": "argument",
+      "message": "Bitmaps with transparent pixels cannot be stored in the JPEG preview cache. (Parameter 'pixels')",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "pbgra32-first-pixel-transparent-rejected",
+      "case": {
+        "name": "pbgra32-first-pixel-transparent-rejected",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false,
+        "transparent_pixel": [
+          0,
+          0
+        ]
+      },
+      "outcome": "argument",
+      "message": "Bitmaps with transparent pixels cannot be stored in the JPEG preview cache. (Parameter 'pixels')",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "pbgra32-transparent-but-verified-flag-skips-scan",
+      "case": {
+        "name": "pbgra32-transparent-but-verified-flag-skips-scan",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": true,
+        "transparent_pixel": [
+          3,
+          3
+        ]
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100100000000800000010000000080000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "orientation-0-rejected",
+      "case": {
+        "name": "orientation-0-rejected",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 0,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "out-of-range",
+      "message": "EXIF orientation must be 1-8. (Parameter 'orientation')\r\nActual value was 0.",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "orientation-9-rejected",
+      "case": {
+        "name": "orientation-9-rejected",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 9,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "out-of-range",
+      "message": "EXIF orientation must be 1-8. (Parameter 'orientation')\r\nActual value was 9.",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "orientation-minus1-rejected",
+      "case": {
+        "name": "orientation-minus1-rejected",
+        "width": 16,
+        "height": 8,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": -1,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "out-of-range",
+      "message": "EXIF orientation must be 1-8. (Parameter 'orientation')\r\nActual value was -1.",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "transparent-and-bad-orientation-reports-transparency-first",
+      "case": {
+        "name": "transparent-and-bad-orientation-reports-transparency-first",
+        "width": 16,
+        "height": 8,
+        "layout": "pbgra32",
+        "backend": 1,
+        "orientation": 0,
+        "original_width": 16,
+        "original_height": 8,
+        "exif": null,
+        "opacity_verified": false,
+        "transparent_pixel": [
+          1,
+          1
+        ]
+      },
+      "outcome": "argument",
+      "message": "Bitmaps with transparent pixels cannot be stored in the JPEG preview cache. (Parameter 'pixels')",
+      "prefix_hex": null,
+      "exif_length": null,
+      "payload_starts_with_soi": null,
+      "payload_ends_with_eoi": null,
+      "file_count_after": 0
+    },
+    {
+      "name": "one-by-one",
+      "case": {
+        "name": "one-by-one",
+        "width": 1,
+        "height": 1,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 1,
+        "original_height": 1,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100010000000100000001000000010000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    },
+    {
+      "name": "wide-2200x3",
+      "case": {
+        "name": "wide-2200x3",
+        "width": 2200,
+        "height": 3,
+        "layout": "bgr32",
+        "backend": 1,
+        "orientation": 1,
+        "original_width": 2200,
+        "original_height": 3,
+        "exif": null,
+        "opacity_verified": false
+      },
+      "outcome": "written",
+      "message": null,
+      "prefix_hex": "5052564307010100980800000300000098080000030000000000",
+      "exif_length": 0,
+      "payload_starts_with_soi": true,
+      "payload_ends_with_eoi": true,
+      "file_count_after": 1
+    }
+  ]
+}

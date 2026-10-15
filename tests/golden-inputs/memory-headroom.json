@@ -1,0 +1,411 @@
+{
+  "generator": "oracle-cs memory-headroom",
+  "cases": [
+    {
+      "name": "has-exact-fit",
+      "fn": "has",
+      "value": 1000,
+      "total": 2000,
+      "load": 1000
+    },
+    {
+      "name": "has-one-over",
+      "fn": "has",
+      "value": 1001,
+      "total": 2000,
+      "load": 1000
+    },
+    {
+      "name": "has-one-under",
+      "fn": "has",
+      "value": 999,
+      "total": 2000,
+      "load": 1000
+    },
+    {
+      "name": "has-zero-estimate-full-load",
+      "fn": "has",
+      "value": 0,
+      "total": 2000,
+      "load": 2000
+    },
+    {
+      "name": "has-one-estimate-full-load",
+      "fn": "has",
+      "value": 1,
+      "total": 2000,
+      "load": 2000
+    },
+    {
+      "name": "has-load-above-total-zero-estimate",
+      "fn": "has",
+      "value": 0,
+      "total": 2000,
+      "load": 3000
+    },
+    {
+      "name": "has-load-above-total-one",
+      "fn": "has",
+      "value": 1,
+      "total": 2000,
+      "load": 3000
+    },
+    {
+      "name": "has-load-above-total-negative-estimate-fits",
+      "fn": "has",
+      "value": -5000,
+      "total": 2000,
+      "load": 3000
+    },
+    {
+      "name": "has-load-above-total-negative-estimate-over",
+      "fn": "has",
+      "value": -500,
+      "total": 2000,
+      "load": 3000
+    },
+    {
+      "name": "has-negative-load-treated-as-zero-fit",
+      "fn": "has",
+      "value": 2000,
+      "total": 2000,
+      "load": -500
+    },
+    {
+      "name": "has-negative-load-treated-as-zero-over",
+      "fn": "has",
+      "value": 2001,
+      "total": 2000,
+      "load": -500
+    },
+    {
+      "name": "has-min-load-treated-as-zero",
+      "fn": "has",
+      "value": 2000,
+      "total": 2000,
+      "load": -9223372036854775808
+    },
+    {
+      "name": "has-unknown-total-zero",
+      "fn": "has",
+      "value": 9223372036854775807,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "has-unknown-total-negative",
+      "fn": "has",
+      "value": 9223372036854775807,
+      "total": -1,
+      "load": 500
+    },
+    {
+      "name": "has-unknown-total-min",
+      "fn": "has",
+      "value": 9223372036854775807,
+      "total": -9223372036854775808,
+      "load": 9223372036854775807
+    },
+    {
+      "name": "has-unknown-total-huge-load",
+      "fn": "has",
+      "value": 1,
+      "total": 0,
+      "load": 9223372036854775807
+    },
+    {
+      "name": "has-max-estimate-known-total",
+      "fn": "has",
+      "value": 9223372036854775807,
+      "total": 9223372036854775807,
+      "load": 0
+    },
+    {
+      "name": "has-max-estimate-total-minus-one",
+      "fn": "has",
+      "value": 9223372036854775807,
+      "total": 9223372036854775806,
+      "load": 0
+    },
+    {
+      "name": "has-max-total-max-load",
+      "fn": "has",
+      "value": 0,
+      "total": 9223372036854775807,
+      "load": 9223372036854775807
+    },
+    {
+      "name": "has-max-total-max-load-one",
+      "fn": "has",
+      "value": 1,
+      "total": 9223372036854775807,
+      "load": 9223372036854775807
+    },
+    {
+      "name": "has-min-estimate",
+      "fn": "has",
+      "value": -9223372036854775808,
+      "total": 1,
+      "load": 9223372036854775807
+    },
+    {
+      "name": "has-negative-estimate-small-total",
+      "fn": "has",
+      "value": -1,
+      "total": 1,
+      "load": 0
+    },
+    {
+      "name": "has-total-one-load-zero-estimate-one",
+      "fn": "has",
+      "value": 1,
+      "total": 1,
+      "load": 0
+    },
+    {
+      "name": "has-total-one-load-one-estimate-one",
+      "fn": "has",
+      "value": 1,
+      "total": 1,
+      "load": 1
+    },
+    {
+      "name": "has-bayer-100mp-1200mb-refused",
+      "fn": "has",
+      "value": 1300000000,
+      "total": 1200000000,
+      "load": 0
+    },
+    {
+      "name": "has-bayer-100mp-1500mb-fits",
+      "fn": "has",
+      "value": 1300000000,
+      "total": 1500000000,
+      "load": 0
+    },
+    {
+      "name": "has-threshold-sized",
+      "fn": "has",
+      "value": 134217728,
+      "total": 17179869184,
+      "load": 4294967296
+    },
+    {
+      "name": "output-12000x9000-in-16g-8g-load",
+      "fn": "output",
+      "value": 432000000,
+      "total": 17179869184,
+      "load": 8589934592
+    },
+    {
+      "name": "output-16000x12000-in-16g-4g-load",
+      "fn": "output",
+      "value": 768000000,
+      "total": 17179869184,
+      "load": 4294967296
+    },
+    {
+      "name": "output-20000x20000-in-16g-14g-load",
+      "fn": "output",
+      "value": 1600000000,
+      "total": 17179869184,
+      "load": 15032385536
+    },
+    {
+      "name": "output-12000x9000-unknown-total",
+      "fn": "output",
+      "value": 432000000,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "output-exact-double-fit",
+      "fn": "output",
+      "value": 500,
+      "total": 1000,
+      "load": 0
+    },
+    {
+      "name": "output-double-one-over",
+      "fn": "output",
+      "value": 501,
+      "total": 1000,
+      "load": 0
+    },
+    {
+      "name": "output-exact-double-fit-with-load",
+      "fn": "output",
+      "value": 250,
+      "total": 1000,
+      "load": 500
+    },
+    {
+      "name": "output-double-one-over-with-load",
+      "fn": "output",
+      "value": 251,
+      "total": 1000,
+      "load": 500
+    },
+    {
+      "name": "output-zero-buffer",
+      "fn": "output",
+      "value": 0,
+      "total": 1,
+      "load": 0
+    },
+    {
+      "name": "output-zero-buffer-load-above-total",
+      "fn": "output",
+      "value": 0,
+      "total": 1000,
+      "load": 2000
+    },
+    {
+      "name": "output-negative-load-ignored",
+      "fn": "output",
+      "value": 500,
+      "total": 1000,
+      "load": -300
+    },
+    {
+      "name": "output-threshold-value-as-buffer",
+      "fn": "output",
+      "value": 134217728,
+      "total": 17179869184,
+      "load": 0
+    },
+    {
+      "name": "output-threshold-value-in-256mb",
+      "fn": "output",
+      "value": 134217728,
+      "total": 268435456,
+      "load": 0
+    },
+    {
+      "name": "output-threshold-value-in-256mb-plus-load",
+      "fn": "output",
+      "value": 134217728,
+      "total": 268435456,
+      "load": 1
+    },
+    {
+      "name": "output-half-max-known-total-refused",
+      "fn": "output",
+      "value": 4611686018427387903,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-fits-when-total-is-max",
+      "fn": "output",
+      "value": 4611686018427387903,
+      "total": 9223372036854775807,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-exact-peak-total",
+      "fn": "output",
+      "value": 4611686018427387903,
+      "total": 9223372036854775806,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-peak-one-over",
+      "fn": "output",
+      "value": 4611686018427387903,
+      "total": 9223372036854775805,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-plus-one-known-total-refused",
+      "fn": "output",
+      "value": 4611686018427387904,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-plus-one-max-total-overflow-branch",
+      "fn": "output",
+      "value": 4611686018427387904,
+      "total": 9223372036854775807,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-plus-one-unknown-total-fits",
+      "fn": "output",
+      "value": 4611686018427387904,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-plus-one-negative-total-fits",
+      "fn": "output",
+      "value": 4611686018427387904,
+      "total": -7,
+      "load": 0
+    },
+    {
+      "name": "output-max-buffer-known-total",
+      "fn": "output",
+      "value": 9223372036854775807,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-max-buffer-max-total",
+      "fn": "output",
+      "value": 9223372036854775807,
+      "total": 9223372036854775807,
+      "load": 0
+    },
+    {
+      "name": "output-max-buffer-unknown-total",
+      "fn": "output",
+      "value": 9223372036854775807,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "output-wrapped-negative-known-total",
+      "fn": "output",
+      "value": -1,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-wrapped-negative-unknown-total",
+      "fn": "output",
+      "value": -1,
+      "total": 0,
+      "load": 0
+    },
+    {
+      "name": "output-min-buffer-known-total",
+      "fn": "output",
+      "value": -9223372036854775808,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-min-buffer-unknown-total",
+      "fn": "output",
+      "value": -9223372036854775808,
+      "total": -9223372036854775808,
+      "load": 5
+    },
+    {
+      "name": "output-wrapped-int-max-product",
+      "fn": "output",
+      "value": -17179869180,
+      "total": 68719476736,
+      "load": 0
+    },
+    {
+      "name": "output-half-max-minus-one",
+      "fn": "output",
+      "value": 4611686018427387902,
+      "total": 9223372036854775807,
+      "load": 0
+    }
+  ]
+}

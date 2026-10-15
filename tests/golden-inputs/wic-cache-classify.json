@@ -1,0 +1,29 @@
+{
+  "generator": "oracle-cs wic-cache-classify",
+  "cases": [
+    {"name": "e-outofmemory", "hresult": 2147942414, "guid": "00000000-0000-0000-0000-000000000000"},
+    {"name": "wincodec-err-componentnotfound-is-not-oom", "hresult": 2289446752, "guid": "00000000-0000-0000-0000-000000000000"},
+    {"name": "e-fail-is-not-oom", "hresult": 2147500037, "guid": "00000000-0000-0000-0000-000000000000"},
+    {"name": "e-invalidarg-is-not-oom", "hresult": 2147942487, "guid": "00000000-0000-0000-0000-000000000000"},
+    {"name": "zero-hresult-is-not-oom", "hresult": 0, "guid": "00000000-0000-0000-0000-000000000000"},
+    {"name": "fmt-blackwhite", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc905"},
+    {"name": "fmt-2bpp-gray", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc906"},
+    {"name": "fmt-4bpp-gray", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc907"},
+    {"name": "fmt-8bpp-gray", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc908"},
+    {"name": "fmt-16bpp-gray", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90b"},
+    {"name": "fmt-16bpp-bgr555", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc909"},
+    {"name": "fmt-16bpp-bgr565", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90a"},
+    {"name": "fmt-24bpp-bgr", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90c"},
+    {"name": "fmt-24bpp-rgb", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90d"},
+    {"name": "fmt-32bpp-bgr", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90e"},
+    {"name": "fmt-48bpp-rgb", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc915"},
+    {"name": "fmt-48bpp-bgr", "hresult": 0, "guid": "e605a384-b468-46ce-bb2e-36f180e64313"},
+    {"name": "fmt-32bpp-cmyk", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91c"},
+    {"name": "fmt-64bpp-cmyk", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91f"},
+    {"name": "fmt-32bpp-bgra-has-alpha", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90f"},
+    {"name": "fmt-32bpp-pbgra-has-alpha", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc910"},
+    {"name": "fmt-8bpp-indexed-may-have-palette-alpha", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc904"},
+    {"name": "fmt-unlisted-guid-same-prefix-is-not-opaque", "hresult": 0, "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91d"},
+    {"name": "fmt-empty-guid", "hresult": 0, "guid": "00000000-0000-0000-0000-000000000000"}
+  ]
+}

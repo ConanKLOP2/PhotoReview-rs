@@ -1,0 +1,1061 @@
+{
+  "generator": "oracle-cs preview-disk-cache-path",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "standard-default",
+      "input": {
+        "name": "standard-default",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "standard-same-key-other-spelling",
+      "input": {
+        "name": "standard-same-key-other-spelling",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "c:\\pics\\a.JPG",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "standard-dot-segments",
+      "input": {
+        "name": "standard-dot-segments",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\Sub\\..\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "original-mode",
+      "input": {
+        "name": "original-mode",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": true,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "157FD409830CF406FE27AE8AA08CCD420C1F282EF4B3A26662394FB09DEDECE2.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\157FD409830CF406FE27AE8AA08CCD420C1F282EF4B3A26662394FB09DEDECE2.pv4"
+    },
+    {
+      "name": "original-mode-box-forced-zero",
+      "input": {
+        "name": "original-mode-box-forced-zero",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": true,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "157FD409830CF406FE27AE8AA08CCD420C1F282EF4B3A26662394FB09DEDECE2.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\157FD409830CF406FE27AE8AA08CCD420C1F282EF4B3A26662394FB09DEDECE2.pv4"
+    },
+    {
+      "name": "width-only-box",
+      "input": {
+        "name": "width-only-box",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 0
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "68BA691979E8A8392CA382CC7E6B875C5995C94F93A9AF3040AA4F1B0086DAA4.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\68BA691979E8A8392CA382CC7E6B875C5995C94F93A9AF3040AA4F1B0086DAA4.pv4"
+    },
+    {
+      "name": "height-only-box",
+      "input": {
+        "name": "height-only-box",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 0,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "FE934BD56D0F6E8E960770D3CAF89EAC3C997F8473E3CB27F79A6A949F83BDC7.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\FE934BD56D0F6E8E960770D3CAF89EAC3C997F8473E3CB27F79A6A949F83BDC7.pv4"
+    },
+    {
+      "name": "unbounded-box",
+      "input": {
+        "name": "unbounded-box",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "D89F439D4102C325DCCD45E176B7E432CC7738E60E4DFCFF3D3AD753BAC582EB.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\D89F439D4102C325DCCD45E176B7E432CC7738E60E4DFCFF3D3AD753BAC582EB.pv4"
+    },
+    {
+      "name": "negative-box-values",
+      "input": {
+        "name": "negative-box-values",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": -5,
+          "h": -1
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": -5,
+        "height": -1,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "4BC1C5ED3CCF827B980505698B6451FBD0ABCCA2559413B817FF9902732F1B57.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\4BC1C5ED3CCF827B980505698B6451FBD0ABCCA2559413B817FF9902732F1B57.pv4"
+    },
+    {
+      "name": "int-max-box",
+      "input": {
+        "name": "int-max-box",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2147483647,
+          "h": 2147483647
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2147483647,
+        "height": 2147483647,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "DE85027D3B82139D95DBFD378A1885522373E721DA86F140DC08360C09A85AA5.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\DE85027D3B82139D95DBFD378A1885522373E721DA86F140DC08360C09A85AA5.pv4"
+    },
+    {
+      "name": "orientation-not-applied",
+      "input": {
+        "name": "orientation-not-applied",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "orient": false
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": false,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "AE3D531FE7BA7A9390B7C9F4ECA5F25794973E31FA981A1E833D26913093C45F.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\AE3D531FE7BA7A9390B7C9F4ECA5F25794973E31FA981A1E833D26913093C45F.pv4"
+    },
+    {
+      "name": "backend-Wpf",
+      "input": {
+        "name": "backend-Wpf",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "backend": "Wpf"
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "backend-WicDirect",
+      "input": {
+        "name": "backend-WicDirect",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "backend": "WicDirect"
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "WicDirect",
+        "source_kind": 0
+      },
+      "file_name": "520B33ECA8B986B64174FE07B7FFAE02CFB90733D8B5C614C563D69D7613F619.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\520B33ECA8B986B64174FE07B7FFAE02CFB90733D8B5C614C563D69D7613F619.pv4"
+    },
+    {
+      "name": "backend-TurboJpeg",
+      "input": {
+        "name": "backend-TurboJpeg",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "backend": "TurboJpeg"
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      },
+      "file_name": "52BE41A626BB2F2440999F64269CF3155D7DEA7A8CE4F4F1409C84D7FE8E345C.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\52BE41A626BB2F2440999F64269CF3155D7DEA7A8CE4F4F1409C84D7FE8E345C.pv4"
+    },
+    {
+      "name": "backend-LibRaw",
+      "input": {
+        "name": "backend-LibRaw",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "backend": "LibRaw"
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "LibRaw",
+        "source_kind": 0
+      },
+      "file_name": "FD1AB2FA3EB0A72844EDC0A30441E077352F3473C28B5D0455E4380676B6E9FC.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\FD1AB2FA3EB0A72844EDC0A30441E077352F3473C28B5D0455E4380676B6E9FC.pv4"
+    },
+    {
+      "name": "kind-standard-0-no-suffix",
+      "input": {
+        "name": "kind-standard-0-no-suffix",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "source_kind": 0
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "kind-raw-preview-1",
+      "input": {
+        "name": "kind-raw-preview-1",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\B.dng",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "source_kind": 1
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\B.DNG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "file_name": "A710891D1B8A0978794682FB72571D5542631CF37D90FF4DE6A7EA10D9740EA1.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\A710891D1B8A0978794682FB72571D5542631CF37D90FF4DE6A7EA10D9740EA1.pv4"
+    },
+    {
+      "name": "kind-raw-full-2",
+      "input": {
+        "name": "kind-raw-full-2",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\B.dng",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": true,
+          "w": 0,
+          "h": 0,
+          "source_kind": 2
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\B.DNG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 2
+      },
+      "file_name": "EE5DC68511A187B43F300B0D473A9A1B3FFB3F65B4A6090CE515BA9EE9F473CB.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\EE5DC68511A187B43F300B0D473A9A1B3FFB3F65B4A6090CE515BA9EE9F473CB.pv4"
+    },
+    {
+      "name": "kind-7-unnamed",
+      "input": {
+        "name": "kind-7-unnamed",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "source_kind": 7
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 7
+      },
+      "file_name": "8F6BC61F661FFA0A480EDB132B7A8CAA94D3F5B96EB8AAB1438265796A2645C5.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\8F6BC61F661FFA0A480EDB132B7A8CAA94D3F5B96EB8AAB1438265796A2645C5.pv4"
+    },
+    {
+      "name": "kind-255",
+      "input": {
+        "name": "kind-255",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "source_kind": 255
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 255
+      },
+      "file_name": "6005682F20C13983201BAA2EC87D0CA4D82CE6F05EA2136EBD79B8A6AC5BB982.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\6005682F20C13983201BAA2EC87D0CA4D82CE6F05EA2136EBD79B8A6AC5BB982.pv4"
+    },
+    {
+      "name": "raw-path-standard-kind-same-hash-as-jpg-rule",
+      "input": {
+        "name": "raw-path-standard-kind-same-hash-as-jpg-rule",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\B.dng",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350,
+          "source_kind": 0
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\B.DNG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "26B97617022B212C8C0F3BCC53E14C8247B47E9F4830D1C44E9520F995A442F3.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\26B97617022B212C8C0F3BCC53E14C8247B47E9F4830D1C44E9520F995A442F3.pv4"
+    },
+    {
+      "name": "length-zero",
+      "input": {
+        "name": "length-zero",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 0,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "40552437B14AD8133D0945553910D573EB86399734A4FDA0EC984E0BE68BE2D3.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\40552437B14AD8133D0945553910D573EB86399734A4FDA0EC984E0BE68BE2D3.pv4"
+    },
+    {
+      "name": "length-negative",
+      "input": {
+        "name": "length-negative",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": -1,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": -1,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "AC3CF96138F36BAD2570799219E844B2C663DAF723753847AF8F9BD6630A1E94.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\AC3CF96138F36BAD2570799219E844B2C663DAF723753847AF8F9BD6630A1E94.pv4"
+    },
+    {
+      "name": "length-long-max",
+      "input": {
+        "name": "length-long-max",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 9223372036854775807,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 9223372036854775807,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "C18D2E73085DD437F249C6B08011C64F4642C0925BF56D01C4582C251FD13335.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\C18D2E73085DD437F249C6B08011C64F4642C0925BF56D01C4582C251FD13335.pv4"
+    },
+    {
+      "name": "ticks-zero",
+      "input": {
+        "name": "ticks-zero",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 0,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 0,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "56E380F99592A85623C382881A8E71FC9882B8EC1C6E4B9AC5BE8736D19764F9.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\56E380F99592A85623C382881A8E71FC9882B8EC1C6E4B9AC5BE8736D19764F9.pv4"
+    },
+    {
+      "name": "ticks-max-datetime",
+      "input": {
+        "name": "ticks-max-datetime",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 3155378975999999999,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 3155378975999999999,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "E38086E29CFB836A545A952615955FCCD4FB82AF08ADD067841639324614054D.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\E38086E29CFB836A545A952615955FCCD4FB82AF08ADD067841639324614054D.pv4"
+    },
+    {
+      "name": "unc-source",
+      "input": {
+        "name": "unc-source",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "\\\\server\\share\\Photos\\x.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "\\\\SERVER\\SHARE\\PHOTOS\\X.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "D9CB6C08F7127EE7B645DFE1C6DBA0AFBF30F93F7E8F77897457F47BC5B2D88B.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\D9CB6C08F7127EE7B645DFE1C6DBA0AFBF30F93F7E8F77897457F47BC5B2D88B.pv4"
+    },
+    {
+      "name": "non-ascii-source-utf8",
+      "input": {
+        "name": "non-ascii-source-utf8",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Ảnh\\ảnh đẹp \uD83D\uDE00.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\ẢNH\\ẢNH ĐẸP \uD83D\uDE00.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "8AEAE5FDC846E282111DD60D5E0BBA3CA6CA576A1B662653A11438E7114FB333.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\8AEAE5FDC846E282111DD60D5E0BBA3CA6CA576A1B662653A11438E7114FB333.pv4"
+    },
+    {
+      "name": "long-path-source",
+      "input": {
+        "name": "long-path-source",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\segment00\\segment01\\segment02\\segment03\\segment04\\segment05\\segment06\\segment07\\segment08\\segment09\\segment10\\segment11\\segment12\\segment13\\segment14\\segment15\\segment16\\segment17\\segment18\\segment19\\segment20\\segment21\\segment22\\segment23\\segment24\\segment25\\segment26\\segment27\\segment28\\segment29\\x.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\SEGMENT00\\SEGMENT01\\SEGMENT02\\SEGMENT03\\SEGMENT04\\SEGMENT05\\SEGMENT06\\SEGMENT07\\SEGMENT08\\SEGMENT09\\SEGMENT10\\SEGMENT11\\SEGMENT12\\SEGMENT13\\SEGMENT14\\SEGMENT15\\SEGMENT16\\SEGMENT17\\SEGMENT18\\SEGMENT19\\SEGMENT20\\SEGMENT21\\SEGMENT22\\SEGMENT23\\SEGMENT24\\SEGMENT25\\SEGMENT26\\SEGMENT27\\SEGMENT28\\SEGMENT29\\X.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "831BB3C5E8929C741D2E3083F17A825CC391BE872BFEA6BC7B34D7759C39EC34.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\831BB3C5E8929C741D2E3083F17A825CC391BE872BFEA6BC7B34D7759C39EC34.pv4"
+    },
+    {
+      "name": "source-with-pipe-like-chars",
+      "input": {
+        "name": "source-with-pipe-like-chars",
+        "directory": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache",
+        "key": {
+          "path": "C:\\Pics\\a x;y,z#1.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A X;Y,Z#1.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "5858AFEA524A78B0DD1A9ECFA6F642743C8D14A93B46FCFDD988860A9EBB3266.pv4",
+      "path": "C:\\Users\\test\\AppData\\Local\\PhotoReviewRs\\cache\\5858AFEA524A78B0DD1A9ECFA6F642743C8D14A93B46FCFDD988860A9EBB3266.pv4"
+    },
+    {
+      "name": "dir-trailing-separator",
+      "input": {
+        "name": "dir-trailing-separator",
+        "directory": "C:\\cache\\",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "dir-forward-slashes",
+      "input": {
+        "name": "dir-forward-slashes",
+        "directory": "C:/cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "C:/cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "dir-unc",
+      "input": {
+        "name": "dir-unc",
+        "directory": "\\\\server\\share\\cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "\\\\server\\share\\cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "dir-drive-root",
+      "input": {
+        "name": "dir-drive-root",
+        "directory": "D:\\",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "D:\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "dir-drive-relative",
+      "input": {
+        "name": "dir-drive-relative",
+        "directory": "D:",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "D:\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    },
+    {
+      "name": "dir-relative",
+      "input": {
+        "name": "dir-relative",
+        "directory": "cache",
+        "key": {
+          "path": "C:\\Pics\\A.jpg",
+          "length": 1234,
+          "ticks": 638000000000000000,
+          "original": false,
+          "w": 2400,
+          "h": 1350
+        }
+      },
+      "key": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "file_name": "CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4",
+      "path": "cache\\CC7D79274BE0DCCFDBDF0EF50E7FAF9D7B9C25F1E90068F203E3CAC2A1E0C524.pv4"
+    }
+  ]
+}

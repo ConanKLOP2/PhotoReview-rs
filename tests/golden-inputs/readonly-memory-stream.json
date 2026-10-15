@@ -1,0 +1,15 @@
+{
+  "cases": [
+    { "name": "whole-4-bytes", "shape": "whole", "hex": "01020304" },
+    { "name": "whole-1-byte", "shape": "whole", "hex": "ff" },
+    { "name": "whole-jpeg-magic", "shape": "whole", "hex": "ffd8ffe000104a464946" },
+    { "name": "whole-zeros", "shape": "whole", "hex": "0000000000" },
+    { "name": "whole-empty-array", "shape": "whole", "hex": "" },
+    { "name": "empty-memory", "shape": "empty", "hex": "" },
+    { "name": "slice-middle", "shape": "slice", "hex": "0102030405060708", "offset": 2, "count": 4 },
+    { "name": "slice-head", "shape": "slice", "hex": "0102030405060708", "offset": 0, "count": 3 },
+    { "name": "slice-tail", "shape": "slice", "hex": "0102030405060708", "offset": 6, "count": 2 },
+    { "name": "slice-single", "shape": "slice", "hex": "0102030405060708", "offset": 7, "count": 1 },
+    { "name": "slice-empty-at-end", "shape": "slice", "hex": "010203", "offset": 3, "count": 0 }
+  ]
+}

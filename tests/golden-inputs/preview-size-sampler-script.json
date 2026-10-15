@@ -1,0 +1,48 @@
+{
+  "cases": [
+    { "name": "no-samples-is-null", "ops": [
+      { "op": "mean", "box_width": 100, "box_height": 100 } ] },
+    { "name": "seven-samples-null-eighth-gives-mean", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 100, "times": 7 },
+      { "op": "mean", "box_width": 100, "box_height": 100 },
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 900 },
+      { "op": "mean", "box_width": 100, "box_height": 100 } ] },
+    { "name": "box-change-restarts-mean", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 100, "times": 8 },
+      { "op": "record", "box_width": 500, "box_height": 500, "bytes": 50 },
+      { "op": "mean", "box_width": 100, "box_height": 100 },
+      { "op": "mean", "box_width": 500, "box_height": 500 },
+      { "op": "record", "box_width": 500, "box_height": 500, "bytes": 50, "times": 7 },
+      { "op": "mean", "box_width": 500, "box_height": 500 } ] },
+    { "name": "non-positive-bytes-ignored-and-do-not-change-box", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 100, "times": 7 },
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 0 },
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": -50 },
+      { "op": "record", "box_width": 999, "box_height": 999, "bytes": 0 },
+      { "op": "record", "box_width": 999, "box_height": 999, "bytes": -1 },
+      { "op": "mean", "box_width": 100, "box_height": 100 },
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 100 },
+      { "op": "mean", "box_width": 100, "box_height": 100 } ] },
+    { "name": "mean-keeps-fraction", "ops": [
+      { "op": "record", "box_width": 64, "box_height": 64, "bytes": 1, "times": 7 },
+      { "op": "record", "box_width": 64, "box_height": 64, "bytes": 2 },
+      { "op": "mean", "box_width": 64, "box_height": 64 },
+      { "op": "record", "box_width": 64, "box_height": 64, "bytes": 2 },
+      { "op": "mean", "box_width": 64, "box_height": 64 } ] },
+    { "name": "initial-box-is-unbounded-so-unbounded-samples-accumulate", "ops": [
+      { "op": "record", "box_width": 0, "box_height": 0, "bytes": 10, "times": 8 },
+      { "op": "mean", "box_width": 0, "box_height": 0 },
+      { "op": "mean", "box_width": 1, "box_height": 0 } ] },
+    { "name": "mean-for-other-box-is-null-and-does-not-reset", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 100, "times": 8 },
+      { "op": "mean", "box_width": 200, "box_height": 100 },
+      { "op": "mean", "box_width": 100, "box_height": 100 } ] },
+    { "name": "large-total-beyond-int32", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 100, "bytes": 4000000000, "times": 8 },
+      { "op": "mean", "box_width": 100, "box_height": 100 } ] },
+    { "name": "swapped-width-height-is-a-different-box", "ops": [
+      { "op": "record", "box_width": 100, "box_height": 200, "bytes": 5, "times": 8 },
+      { "op": "mean", "box_width": 200, "box_height": 100 },
+      { "op": "mean", "box_width": 100, "box_height": 200 } ] }
+  ]
+}

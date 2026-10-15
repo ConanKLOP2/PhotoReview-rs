@@ -1,0 +1,530 @@
+{
+ "cases": [
+  {
+   "name": "under-quota-noted-writes-skip-full-scans",
+   "pattern": "*.png",
+   "max_bytes": 1000,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:30:00Z"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "n0.png",
+     "size": 100,
+     "access": "2020-01-01T00:40:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "n0.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "n1.png",
+     "size": 100,
+     "access": "2020-01-01T00:41:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "n1.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "n2.png",
+     "size": 100,
+     "access": "2020-01-01T00:42:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "n2.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "n3.png",
+     "size": 100,
+     "access": "2020-01-01T00:43:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "n3.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "n4.png",
+     "size": 100,
+     "access": "2020-01-01T00:44:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "n4.png"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "noted-writes-over-quota-scan-and-evict-oldest",
+   "pattern": "*.png",
+   "max_bytes": 250,
+   "steps": [
+    {
+     "op": "file",
+     "name": "oldest.png",
+     "size": 100,
+     "access": "2020-01-01T00:00:00Z"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "mid.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "mid.png"
+    },
+    {
+     "op": "file",
+     "name": "newest.png",
+     "size": 100,
+     "access": "2020-01-01T00:20:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "newest.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "write-noted-after-empty-scan-is-tracked",
+   "pattern": "*.png",
+   "max_bytes": 50,
+   "steps": [
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "big.png",
+     "size": 100
+    },
+    {
+     "op": "note_written",
+     "name": "big.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "note-while-size-unknown-still-forces-a-scan",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "op": "file",
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "op": "file",
+     "name": "c.png",
+     "size": 100,
+     "access": "2020-01-01T00:03:00Z"
+    },
+    {
+     "op": "file",
+     "name": "d.png",
+     "size": 10,
+     "access": "2020-01-01T00:04:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "d.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "empty-directory-next-pass-skipped",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "steps": [
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "exactly-at-quota-next-pass-skipped",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "missing-directory-every-pass-scans",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "dir_missing": true,
+   "steps": [
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "full-scan-forced-every-256th-pass",
+   "pattern": "*.png",
+   "max_bytes": 1000,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass_n",
+     "count": 255
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass_n",
+     "count": 255
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass_n",
+     "count": 254
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "forced-scan-sees-unnoted-growth",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "op": "pass_n",
+     "count": 254
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "clear-forgets-tracked-size",
+   "pattern": "*.png",
+   "max_bytes": 1000,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "clear"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "clear-also-removes-temp-files-not-other-patterns",
+   "pattern": "*.png",
+   "max_bytes": 1000,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "file",
+     "name": "a.png.1.tmp",
+     "size": 10
+    },
+    {
+     "op": "file",
+     "name": "b.pv4",
+     "size": 10
+    },
+    {
+     "op": "file",
+     "name": "c.pv4.2.tmp",
+     "size": 10
+    },
+    {
+     "op": "clear"
+    }
+   ]
+  },
+  {
+   "name": "note-written-of-missing-file-is-ignored",
+   "pattern": "*.png",
+   "max_bytes": 50,
+   "steps": [
+    {
+     "op": "pass"
+    },
+    {
+     "op": "note_written",
+     "name": "ghost.png"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "overwrite-noted-counts-as-growth",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100
+    },
+    {
+     "op": "note_written",
+     "name": "a.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "negative-quota-is-clamped-to-zero",
+   "pattern": "*.png",
+   "max_bytes": -10,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "file",
+     "name": "z.png",
+     "size": 0
+    },
+    {
+     "op": "note_written",
+     "name": "z.png"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "locked-file-keeps-cache-over-quota-so-every-pass-scans",
+   "pattern": "*.png",
+   "max_bytes": 50,
+   "steps": [
+    {
+     "op": "file",
+     "name": "locked.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "op": "lock",
+     "name": "locked.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "unlock",
+     "name": "locked.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "failing-listing-counts-a-scan-and-keeps-size-unknown",
+   "pattern": "a\u0000b",
+   "max_bytes": 1,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 10
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  },
+  {
+   "name": "external-delete-goes-unnoticed-until-a-scan",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "steps": [
+    {
+     "op": "file",
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "delete",
+     "name": "a.png"
+    },
+    {
+     "op": "file",
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "op": "note_written",
+     "name": "b.png"
+    },
+    {
+     "op": "pass"
+    },
+    {
+     "op": "pass"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,108 @@
+{
+  "cases": [
+    {
+      "name": "is-fallbackable-notsupported",
+      "exception": "NotSupported"
+    },
+    {
+      "name": "is-fallbackable-platformnotsupported",
+      "exception": "PlatformNotSupported"
+    },
+    {
+      "name": "is-fallbackable-missingcodec",
+      "exception": "MissingCodec"
+    },
+    {
+      "name": "is-fallbackable-invalidcast",
+      "exception": "InvalidCast"
+    },
+    {
+      "name": "is-fallbackable-overflow",
+      "exception": "Overflow"
+    },
+    {
+      "name": "is-fallbackable-arithmetic",
+      "exception": "Arithmetic"
+    },
+    {
+      "name": "is-fallbackable-format",
+      "exception": "Format"
+    },
+    {
+      "name": "is-fallbackable-invaliddata",
+      "exception": "InvalidData"
+    },
+    {
+      "name": "is-fallbackable-com",
+      "exception": "COM"
+    },
+    {
+      "name": "is-fallbackable-dllnotfound",
+      "exception": "DllNotFound"
+    },
+    {
+      "name": "is-fallbackable-badimageformat",
+      "exception": "BadImageFormat"
+    },
+    {
+      "name": "is-fallbackable-entrypointnotfound",
+      "exception": "EntryPointNotFound"
+    },
+    {
+      "name": "is-fallbackable-filenotfound",
+      "exception": "FileNotFound"
+    },
+    {
+      "name": "is-fallbackable-directorynotfound",
+      "exception": "DirectoryNotFound"
+    },
+    {
+      "name": "is-fallbackable-operationcanceled",
+      "exception": "OperationCanceled"
+    },
+    {
+      "name": "is-fallbackable-taskcanceled",
+      "exception": "TaskCanceled"
+    },
+    {
+      "name": "is-fallbackable-outofmemory",
+      "exception": "OutOfMemory"
+    },
+    {
+      "name": "is-fallbackable-memoryadmission",
+      "exception": "MemoryAdmission"
+    },
+    {
+      "name": "is-fallbackable-busy",
+      "exception": "Busy"
+    },
+    {
+      "name": "is-fallbackable-invalidoperation",
+      "exception": "InvalidOperation"
+    },
+    {
+      "name": "is-fallbackable-argument",
+      "exception": "Argument"
+    },
+    {
+      "name": "is-fallbackable-objectdisposed",
+      "exception": "ObjectDisposed"
+    },
+    {
+      "name": "is-fallbackable-io",
+      "exception": "IO"
+    },
+    {
+      "name": "is-fallbackable-fileload",
+      "exception": "FileLoad"
+    },
+    {
+      "name": "is-fallbackable-unauthorizedaccess",
+      "exception": "UnauthorizedAccess"
+    },
+    {
+      "name": "is-fallbackable-generic",
+      "exception": "Generic"
+    }
+  ]
+}

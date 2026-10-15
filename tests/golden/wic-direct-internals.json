@@ -1,0 +1,957 @@
+{
+  "generator": "oracle-cs wic-direct-internals",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "constants",
+      "srgb_exif_color_space": 1,
+      "guard_threshold_bytes": 134217728,
+      "opaque_formats": [
+        "6fddc324-4e03-4bfe-b185-3d77768dc905",
+        "6fddc324-4e03-4bfe-b185-3d77768dc906",
+        "6fddc324-4e03-4bfe-b185-3d77768dc907",
+        "6fddc324-4e03-4bfe-b185-3d77768dc908",
+        "6fddc324-4e03-4bfe-b185-3d77768dc90b",
+        "6fddc324-4e03-4bfe-b185-3d77768dc909",
+        "6fddc324-4e03-4bfe-b185-3d77768dc90a",
+        "6fddc324-4e03-4bfe-b185-3d77768dc90c",
+        "6fddc324-4e03-4bfe-b185-3d77768dc90d",
+        "6fddc324-4e03-4bfe-b185-3d77768dc90e",
+        "6fddc324-4e03-4bfe-b185-3d77768dc915",
+        "e605a384-b468-46ce-bb2e-36f180e64313",
+        "6fddc324-4e03-4bfe-b185-3d77768dc91c",
+        "6fddc324-4e03-4bfe-b185-3d77768dc91f"
+      ]
+    },
+    {
+      "name": "to-int-size-1x1",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 1,
+      "ok": {
+        "width": 1,
+        "height": 1
+      }
+    },
+    {
+      "name": "to-int-size-2147483647x1",
+      "fn": "to-int-size",
+      "width": 2147483647,
+      "height": 1,
+      "ok": {
+        "width": 2147483647,
+        "height": 1
+      }
+    },
+    {
+      "name": "to-int-size-1x2147483647",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 2147483647,
+      "ok": {
+        "width": 1,
+        "height": 2147483647
+      }
+    },
+    {
+      "name": "to-int-size-2147483647x2147483647",
+      "fn": "to-int-size",
+      "width": 2147483647,
+      "height": 2147483647,
+      "ok": {
+        "width": 2147483647,
+        "height": 2147483647
+      }
+    },
+    {
+      "name": "to-int-size-0x0",
+      "fn": "to-int-size",
+      "width": 0,
+      "height": 0,
+      "ok": {
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "name": "to-int-size-64x48",
+      "fn": "to-int-size",
+      "width": 64,
+      "height": 48,
+      "ok": {
+        "width": 64,
+        "height": 48
+      }
+    },
+    {
+      "name": "to-int-size-refused-2147483648x1",
+      "fn": "to-int-size",
+      "width": 2147483648,
+      "height": 1,
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WIC reported image dimensions beyond the supported range: 2147483648x1",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "to-int-size-refused-1x2147483648",
+      "fn": "to-int-size",
+      "width": 1,
+      "height": 2147483648,
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WIC reported image dimensions beyond the supported range: 1x2147483648",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "to-int-size-refused-2147483648x2147483648",
+      "fn": "to-int-size",
+      "width": 2147483648,
+      "height": 2147483648,
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WIC reported image dimensions beyond the supported range: 2147483648x2147483648",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "to-int-size-refused-4294967295x5",
+      "fn": "to-int-size",
+      "width": 4294967295,
+      "height": 5,
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WIC reported image dimensions beyond the supported range: 4294967295x5",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "to-int-size-refused-5x4294967295",
+      "fn": "to-int-size",
+      "width": 5,
+      "height": 4294967295,
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WIC reported image dimensions beyond the supported range: 5x4294967295",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "output-byte-length-1x1",
+      "fn": "output-byte-length",
+      "width": 1,
+      "height": 1,
+      "ok": 4
+    },
+    {
+      "name": "output-byte-length-6000x6000",
+      "fn": "output-byte-length",
+      "width": 6000,
+      "height": 6000,
+      "ok": 144000000
+    },
+    {
+      "name": "output-byte-length-2147483647x2147483647",
+      "fn": "output-byte-length",
+      "width": 2147483647,
+      "height": 2147483647,
+      "ok": 9223372036854775807
+    },
+    {
+      "name": "output-byte-length-0x5",
+      "fn": "output-byte-length",
+      "width": 0,
+      "height": 5,
+      "ok": 0
+    },
+    {
+      "name": "output-byte-length-65500x65500",
+      "fn": "output-byte-length",
+      "width": 65500,
+      "height": 65500,
+      "ok": 17161000000
+    },
+    {
+      "name": "output-byte-length-46341x46341",
+      "fn": "output-byte-length",
+      "width": 46341,
+      "height": 46341,
+      "ok": 8589953124
+    },
+    {
+      "name": "output-byte-length-32768x16384",
+      "fn": "output-byte-length",
+      "width": 32768,
+      "height": 16384,
+      "ok": 2147483648
+    },
+    {
+      "name": "output-byte-length-2147483647x1",
+      "fn": "output-byte-length",
+      "width": 2147483647,
+      "height": 1,
+      "ok": 8589934588
+    },
+    {
+      "name": "ensure-output-fits-below-threshold-never-consulted",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4095,
+      "buffer_length": 134217727,
+      "total": 0,
+      "load": 0,
+      "ok": true,
+      "consulted": 0
+    },
+    {
+      "name": "ensure-output-fits-zero-length-never-consulted",
+      "fn": "ensure-output-fits",
+      "width": 0,
+      "height": 0,
+      "buffer_length": 0,
+      "total": 0,
+      "load": 0,
+      "ok": true,
+      "consulted": 0
+    },
+    {
+      "name": "ensure-output-fits-exactly-threshold-consults-and-refuses",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4096,
+      "buffer_length": 134217728,
+      "total": 67108864,
+      "load": 0,
+      "consulted": 1,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 8192x4096 (134217728 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-exactly-threshold-consults-and-fits",
+      "fn": "ensure-output-fits",
+      "width": 8192,
+      "height": 4096,
+      "buffer_length": 134217728,
+      "total": 68719476736,
+      "load": 0,
+      "ok": true,
+      "consulted": 1
+    },
+    {
+      "name": "ensure-output-fits-negative-wrapped-refused-without-consulting",
+      "fn": "ensure-output-fits",
+      "width": 2147483647,
+      "height": 2147483647,
+      "buffer_length": -17179869180,
+      "total": 68719476736,
+      "load": 0,
+      "consulted": 0,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 2147483647x2147483647 (-17179869180 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-minus-one-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": -1,
+      "total": 4611686018427387903,
+      "load": 0,
+      "consulted": 0,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 40000x20000 (-1 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-int-max-plus-one-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 2147483648,
+      "total": 4611686018427387903,
+      "load": 0,
+      "consulted": 0,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 40000x20000 (2147483648 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-four-gib-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 4294967296,
+      "total": 4611686018427387903,
+      "load": 0,
+      "consulted": 0,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 40000x20000 (4294967296 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-long-max-refused",
+      "fn": "ensure-output-fits",
+      "width": 40000,
+      "height": 20000,
+      "buffer_length": 9223372036854775807,
+      "total": 4611686018427387903,
+      "load": 0,
+      "consulted": 0,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 40000x20000 (9223372036854775807 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-exactly-int-max-fits",
+      "fn": "ensure-output-fits",
+      "width": 32768,
+      "height": 16384,
+      "buffer_length": 2147483647,
+      "total": 68719476736,
+      "load": 0,
+      "ok": true,
+      "consulted": 1
+    },
+    {
+      "name": "ensure-output-fits-huge-on-small-machine-refused",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 1073741824,
+      "load": 0,
+      "consulted": 1,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 20000x20000 (1600000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-huge-on-big-machine-fits",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 68719476736,
+      "load": 0,
+      "ok": true,
+      "consulted": 1
+    },
+    {
+      "name": "ensure-output-fits-unknown-total-fits",
+      "fn": "ensure-output-fits",
+      "width": 20000,
+      "height": 20000,
+      "buffer_length": 1600000000,
+      "total": 0,
+      "load": 0,
+      "ok": true,
+      "consulted": 1
+    },
+    {
+      "name": "ensure-output-fits-load-eats-budget-refused",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 2147483648,
+      "load": 1610612736,
+      "consulted": 1,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 10000x10000 (400000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "ensure-output-fits-exact-peak-fits",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 800000000,
+      "load": 0,
+      "ok": true,
+      "consulted": 1
+    },
+    {
+      "name": "ensure-output-fits-one-over-peak-refused",
+      "fn": "ensure-output-fits",
+      "width": 10000,
+      "height": 10000,
+      "buffer_length": 400000000,
+      "total": 799999999,
+      "load": 0,
+      "consulted": 1,
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "hresult": -2146232800,
+        "message": "WicDirect output dimensions are too large for the available memory: 10000x10000 (400000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "is-opaque-BlackWhite",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc905",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-2bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc906",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-4bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc907",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-8bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc908",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-16bppGray",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90b",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-16bppBGR555",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc909",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-16bppBGR565",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90a",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-24bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90c",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-24bppRGB",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90d",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-32bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90e",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-48bppRGB",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc915",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-48bppBGR",
+      "fn": "is-opaque-format",
+      "guid": "e605a384-b468-46ce-bb2e-36f180e64313",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-32bppCMYK",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91c",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-64bppCMYK",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc91f",
+      "ok": true
+    },
+    {
+      "name": "is-opaque-32bppBGRA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc90f",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-32bppPBGRA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc910",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-32bppRGBA",
+      "fn": "is-opaque-format",
+      "guid": "f5c7ad2d-6a8d-43dd-a7a8-a29935261ae9",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-64bppRGBA",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc916",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-8bppIndexed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc904",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-1bppIndexed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc901",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-8bppAlpha",
+      "fn": "is-opaque-format",
+      "guid": "e6cd0116-eeba-4161-aa85-27dd9fb3a895",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-32bppGrayFloat",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc911",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-DontCare",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc900",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-zero",
+      "fn": "is-opaque-format",
+      "guid": "00000000-0000-0000-0000-000000000000",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-random",
+      "fn": "is-opaque-format",
+      "guid": "0123abcd-0000-4000-8000-00000000beef",
+      "ok": false
+    },
+    {
+      "name": "is-opaque-32bppBGR-last-byte-changed",
+      "fn": "is-opaque-format",
+      "guid": "6fddc324-4e03-4bfe-b185-3d77768dc9ff",
+      "ok": false
+    },
+    {
+      "name": "transform-options--1",
+      "fn": "map-transform-options",
+      "orientation": -1,
+      "ok": 0
+    },
+    {
+      "name": "transform-options-0",
+      "fn": "map-transform-options",
+      "orientation": 0,
+      "ok": 0
+    },
+    {
+      "name": "transform-options-1",
+      "fn": "map-transform-options",
+      "orientation": 1,
+      "ok": 0
+    },
+    {
+      "name": "transform-options-2",
+      "fn": "map-transform-options",
+      "orientation": 2,
+      "ok": 8
+    },
+    {
+      "name": "transform-options-3",
+      "fn": "map-transform-options",
+      "orientation": 3,
+      "ok": 2
+    },
+    {
+      "name": "transform-options-4",
+      "fn": "map-transform-options",
+      "orientation": 4,
+      "ok": 16
+    },
+    {
+      "name": "transform-options-5",
+      "fn": "map-transform-options",
+      "orientation": 5,
+      "ok": 11
+    },
+    {
+      "name": "transform-options-6",
+      "fn": "map-transform-options",
+      "orientation": 6,
+      "ok": 1
+    },
+    {
+      "name": "transform-options-7",
+      "fn": "map-transform-options",
+      "orientation": 7,
+      "ok": 9
+    },
+    {
+      "name": "transform-options-8",
+      "fn": "map-transform-options",
+      "orientation": 8,
+      "ok": 3
+    },
+    {
+      "name": "transform-options-9",
+      "fn": "map-transform-options",
+      "orientation": 9,
+      "ok": 0
+    },
+    {
+      "name": "transform-options-65535",
+      "fn": "map-transform-options",
+      "orientation": 65535,
+      "ok": 0
+    },
+    {
+      "name": "transform-options-2147483647",
+      "fn": "map-transform-options",
+      "orientation": 2147483647,
+      "ok": 0
+    },
+    {
+      "name": "transform-options--2147483648",
+      "fn": "map-transform-options",
+      "orientation": -2147483648,
+      "ok": 0
+    },
+    {
+      "name": "as-invalid-data-default-label",
+      "fn": "as-invalid-data",
+      "detail": "E_INVALIDARG",
+      "decoder": null,
+      "ok": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WicDirect rejected the image data: E_INVALIDARG",
+        "inner_type": "System.ArgumentException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "as-invalid-data-wpf-label",
+      "fn": "as-invalid-data",
+      "detail": "bad header",
+      "decoder": "WPF",
+      "ok": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WPF rejected the image data: bad header",
+        "inner_type": "System.ArgumentException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "as-invalid-data-empty-detail",
+      "fn": "as-invalid-data",
+      "detail": "",
+      "decoder": null,
+      "ok": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WicDirect rejected the image data: ",
+        "inner_type": "System.ArgumentException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "as-invalid-data-unicode-detail",
+      "fn": "as-invalid-data",
+      "detail": "Ảnh hỏng: ü ß 漢字",
+      "decoder": null,
+      "ok": {
+        "type": "System.IO.InvalidDataException",
+        "hresult": -2146233087,
+        "message": "WicDirect rejected the image data: Ảnh hỏng: ü ß 漢字",
+        "inner_type": "System.ArgumentException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-com-active-is-icc",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": true,
+      "hresult": -2003292336,
+      "message": "converter exploded",
+      "error": {
+        "type": "System.NotSupportedException",
+        "hresult": -2146233067,
+        "message": "WicDirect could not transform the embedded ICC profile to sRGB: converter exploded",
+        "inner_type": "System.Runtime.InteropServices.COMException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-com-inactive-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": false,
+      "hresult": -2003292336,
+      "message": "converter exploded",
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292336,
+        "message": "converter exploded",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-com-active-windows-says-no",
+      "fn": "copy-pixels-guarded",
+      "throw": "com",
+      "active": true,
+      "hresult": -2147467259,
+      "message": "Windows says no",
+      "error": {
+        "type": "System.NotSupportedException",
+        "hresult": -2146233067,
+        "message": "WicDirect could not transform the embedded ICC profile to sRGB: Windows says no",
+        "inner_type": "System.Runtime.InteropServices.COMException",
+        "is_localized": true,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-invalid-op-active-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "invalid-op",
+      "active": true,
+      "hresult": 0,
+      "message": "not a COM failure",
+      "error": {
+        "type": "System.InvalidOperationException",
+        "hresult": -2146233079,
+        "message": "not a COM failure",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-argument-active-untouched",
+      "fn": "copy-pixels-guarded",
+      "throw": "argument",
+      "active": true,
+      "hresult": 0,
+      "message": "E_INVALIDARG",
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "message": "E_INVALIDARG",
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "copy-pixels-guarded-success-active",
+      "fn": "copy-pixels-guarded",
+      "throw": "none",
+      "active": true,
+      "hresult": 0,
+      "message": "",
+      "ok": true
+    },
+    {
+      "name": "copy-pixels-guarded-success-inactive",
+      "fn": "copy-pixels-guarded",
+      "throw": "none",
+      "active": false,
+      "hresult": 0,
+      "message": "",
+      "ok": true
+    },
+    {
+      "name": "factory-not-initialized-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2003292404,
+      "created": false,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2003292404,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "factory-e-fail-with-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147467259,
+      "created": true,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2147467259,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "factory-success-with-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 0,
+      "created": true,
+      "ok": true
+    },
+    {
+      "name": "factory-success-without-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 0,
+      "created": false,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2147467259,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "factory-s-false-without-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": 1,
+      "created": false,
+      "error": {
+        "type": "System.Runtime.InteropServices.COMException",
+        "hresult": -2147467259,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "factory-e-invalidarg-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024809,
+      "created": false,
+      "error": {
+        "type": "System.ArgumentException",
+        "hresult": -2147024809,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "factory-e-outofmemory-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024882,
+      "created": false,
+      "error": {
+        "type": "System.OutOfMemoryException",
+        "hresult": -2147024882,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      }
+    },
+    {
+      "name": "factory-e-nointerface-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147467262,
+      "created": false,
+      "error": {
+        "type": "System.InvalidCastException",
+        "hresult": -2147467262,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": true
+      }
+    },
+    {
+      "name": "factory-file-not-found-no-factory",
+      "fn": "throw-if-factory-failed",
+      "hr": -2147024894,
+      "created": false,
+      "error": {
+        "type": "System.IO.FileNotFoundException",
+        "hresult": -2147024894,
+        "inner_type": null,
+        "is_localized": false,
+        "fallbackable": false
+      }
+    }
+  ]
+}

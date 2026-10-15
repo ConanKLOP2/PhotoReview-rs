@@ -1,0 +1,905 @@
+{
+ "generator": "oracle-cs wic-exif-values",
+ "cases": [
+  {
+   "name": "exif-tag-0",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    }
+   }
+  },
+  {
+   "name": "exif-tag-1",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 1
+    }
+   }
+  },
+  {
+   "name": "exif-tag-2",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 2
+    }
+   }
+  },
+  {
+   "name": "exif-tag-3",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 3
+    }
+   }
+  },
+  {
+   "name": "exif-tag-4",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 4
+    }
+   }
+  },
+  {
+   "name": "exif-tag-5",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 5
+    }
+   }
+  },
+  {
+   "name": "exif-tag-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "exif-tag-7",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 7
+    }
+   }
+  },
+  {
+   "name": "exif-tag-8",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 8
+    }
+   }
+  },
+  {
+   "name": "exif-tag-9",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    }
+   }
+  },
+  {
+   "name": "exif-tag-255",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 255
+    }
+   }
+  },
+  {
+   "name": "exif-tag-65535",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 65535
+    }
+   }
+  },
+  {
+   "name": "exif-tag-i32-minus-1",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "i32",
+     "value": "-1"
+    }
+   }
+  },
+  {
+   "name": "exif-tag-i32-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "i32",
+     "value": "6"
+    }
+   }
+  },
+  {
+   "name": "exif-tag-u8-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u8",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "exif-tag-i16-8",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "i16",
+     "value": 8
+    }
+   }
+  },
+  {
+   "name": "exif-tag-u32-3",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u32",
+     "value": "3"
+    }
+   }
+  },
+  {
+   "name": "exif-tag-u16-array-first-wins",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16[]",
+     "value": [
+      6,
+      9
+     ]
+    }
+   }
+  },
+  {
+   "name": "exif-tag-u16-array-invalid-first-falls-back",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16[]",
+     "value": [
+      9,
+      6
+     ]
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 3
+    }
+   }
+  },
+  {
+   "name": "exif-tag-empty-array-falls-back",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16[]",
+     "value": []
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 5
+    }
+   }
+  },
+  {
+   "name": "exif-tag-i16-array-negative-clr-unsigned-falls-back",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "i16[]",
+     "value": [
+      -1
+     ]
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 2
+    }
+   }
+  },
+  {
+   "name": "exif-tag-string-is-not-an-integer",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "string",
+     "value": "6"
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 4
+    }
+   }
+  },
+  {
+   "name": "exif-tag-u64-is-not-an-integer",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u64",
+     "value": "6"
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 4
+    }
+   }
+  },
+  {
+   "name": "exif-tag-double-is-not-an-integer",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "double",
+     "value": "6"
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 4
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-absent-0",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 0
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-0-0",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 0
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-9-0",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 0
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-absent-1",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 1
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-0-1",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 1
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-9-1",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 1
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-absent-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-0-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-9-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-absent-8",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 8
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-0-8",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 8
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-9-8",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 8
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-absent-9",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 9
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-0-9",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 9
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-exif-9-9",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 9
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 9
+    }
+   }
+  },
+  {
+   "name": "windows-fallback-both-absent",
+   "read_orientation": true,
+   "root": null,
+   "answers": {}
+  },
+  {
+   "name": "exif-3-wins-over-windows-6",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 3
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "exif-1-never-falls-through",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 1
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "exif-8-never-falls-through",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 8
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 3
+    }
+   }
+  },
+  {
+   "name": "exif-2-never-falls-through",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 2
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "windows-value-i32",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "i32",
+     "value": "7"
+    }
+   }
+  },
+  {
+   "name": "orientation-not-requested-is-never-queried",
+   "read_orientation": false,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 6
+    },
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 3
+    }
+   }
+  },
+  {
+   "name": "orientation-not-requested-throwing-query-not-asked",
+   "read_orientation": false,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "System.Photo.Orientation": {
+     "type": "throw",
+     "message": "damaged"
+    }
+   }
+  },
+  {
+   "name": "orientation-not-requested-exif-still-read",
+   "read_orientation": false,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    },
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 6
+    }
+   }
+  },
+  {
+   "name": "exif-failure-keeps-orientation",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 6
+    },
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=36868}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=306}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=272}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=42036}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=34855}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=37386}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=33437}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=33434}": {
+     "type": "throw",
+     "message": "damaged"
+    }
+   }
+  },
+  {
+   "name": "orientation-failure-keeps-exif",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "System.Photo.Orientation": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    }
+   }
+  },
+  {
+   "name": "orientation-fails-on-fallback-only-keeps-exif",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 0
+    },
+    "System.Photo.Orientation": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Nikon"
+    }
+   }
+  },
+  {
+   "name": "both-halves-fail",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "throw",
+     "message": "damaged"
+    }
+   }
+  },
+  {
+   "name": "exif-aborts-at-first-throw-no-later-queries",
+   "read_orientation": false,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "string",
+     "value": "2024:05:01 14:03:22"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=272}": {
+     "type": "string",
+     "value": "R5"
+    },
+    "/app1/ifd/exif/{ushort=34855}": {
+     "type": "u16",
+     "value": 400
+    }
+   }
+  },
+  {
+   "name": "exif-throw-on-last-query-discards-the-rest",
+   "read_orientation": false,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "string",
+     "value": "2024:05:01 14:03:22"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    },
+    "/app1/ifd/exif/{ushort=33434}": {
+     "type": "throw",
+     "message": "damaged"
+    }
+   }
+  },
+  {
+   "name": "exif-throw-on-date-chain-second-step",
+   "read_orientation": false,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "u32",
+     "value": "1"
+    },
+    "/app1/ifd/exif/{ushort=36868}": {
+     "type": "throw",
+     "message": "damaged"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    }
+   }
+  },
+  {
+   "name": "jpeg-root-both-halves",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 6
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    },
+    "/app1/ifd/{ushort=272}": {
+     "type": "chars",
+     "value": "EOS R5"
+    },
+    "/app1/ifd/exif/{ushort=36867}": {
+     "type": "string",
+     "value": "2024:05:01 14:03:22"
+    },
+    "/app1/ifd/exif/{ushort=34855}": {
+     "type": "u16",
+     "value": 400
+    },
+    "/app1/ifd/exif/{ushort=37386}": {
+     "type": "u64",
+     "value": "4294967346"
+    }
+   }
+  },
+  {
+   "name": "tiff-root-reads-ifd-paths",
+   "read_orientation": true,
+   "root": "/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 8
+    },
+    "/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "TiffMaker"
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "WrongRoot"
+    }
+   }
+  },
+  {
+   "name": "tiff-root-orientation-through-windows-policy",
+   "read_orientation": true,
+   "root": "/ifd",
+   "answers": {
+    "System.Photo.Orientation": {
+     "type": "u16",
+     "value": 6
+    },
+    "/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "T"
+    }
+   }
+  },
+  {
+   "name": "root-null-no-exif-even-with-tags",
+   "read_orientation": true,
+   "root": null,
+   "answers": {
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "Canon"
+    },
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 3
+    }
+   }
+  },
+  {
+   "name": "jpeg-root-nothing-usable-is-null-summary",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {
+    "/app1/ifd/{ushort=274}": {
+     "type": "u16",
+     "value": 2
+    },
+    "/app1/ifd/{ushort=271}": {
+     "type": "string",
+     "value": "   "
+    }
+   }
+  },
+  {
+   "name": "jpeg-root-orientation-1-and-exif-null",
+   "read_orientation": true,
+   "root": "/app1/ifd",
+   "answers": {}
+  },
+  {
+   "name": "empty-root-string-is-used-verbatim",
+   "read_orientation": false,
+   "root": "",
+   "answers": {
+    "/{ushort=271}": {
+     "type": "string",
+     "value": "NoRoot"
+    }
+   }
+  }
+ ]
+}

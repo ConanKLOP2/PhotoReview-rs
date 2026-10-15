@@ -1,0 +1,234 @@
+{
+ "cases": [
+  {
+   "name": "deletes-old-tmp-keeps-fresh-and-non-tmp",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 100,
+   "files": [
+    {
+     "name": "a.png.1.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:45:00Z"
+    },
+    {
+     "name": "b.png.2.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:59:00Z"
+    },
+    {
+     "name": "c.pv4",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "exactly-ten-minutes-old-is-kept",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 100,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:50:00Z"
+    }
+   ]
+  },
+  {
+   "name": "ten-minutes-and-one-tick-is-deleted",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 100,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:49:59.9999999Z"
+    }
+   ]
+  },
+  {
+   "name": "max-files-caps-deletions",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 2,
+   "files": [
+    {
+     "name": "f0.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    },
+    {
+     "name": "f1.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    },
+    {
+     "name": "f2.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    },
+    {
+     "name": "f3.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    },
+    {
+     "name": "f4.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "max-files-counts-fresh-files-too",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 2,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:59:00Z"
+    },
+    {
+     "name": "b.tmp",
+     "size": 3,
+     "write": "2020-01-01T11:59:00Z"
+    },
+    {
+     "name": "c.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "max-files-zero-deletes-nothing",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 0,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "max-files-negative-deletes-nothing",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": -1,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "supplied-clock-not-wall-clock",
+   "utc_now": "2020-01-01T00:05:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "supplied-clock-later-deletes",
+   "utc_now": "2020-01-01T00:12:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "future-write-time-is-kept",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2030-01-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "upper-case-extension-matches",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "A.TMP",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "tmp-not-at-the-end-does-not-match",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "a.tmp.png",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    },
+    {
+     "name": "b.tmpx",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "directory-named-tmp-is-not-a-file",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "d.tmp",
+     "dir": true
+    },
+    {
+     "name": "e.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "missing-directory-returns-zero",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [],
+   "target": "missing"
+  },
+  {
+   "name": "read-only-stale-tmp-is-logged-and-not-counted",
+   "utc_now": "2020-01-01T12:00:00Z",
+   "max_files": 10,
+   "files": [
+    {
+     "name": "a.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z",
+     "readonly": true
+    },
+    {
+     "name": "b.tmp",
+     "size": 3,
+     "write": "2020-01-01T10:00:00Z"
+    }
+   ]
+  }
+ ]
+}

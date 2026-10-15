@@ -1,0 +1,539 @@
+{
+ "cases": [
+  {
+   "name": "lru-evicts-oldest-until-under-quota",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "files": [
+    {
+     "name": "oldest.png",
+     "size": 100,
+     "access": "2020-01-01T00:00:00Z",
+     "creation": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "middle.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    },
+    {
+     "name": "newest.png",
+     "size": 100,
+     "access": "2020-01-01T00:20:00Z",
+     "creation": "2020-01-01T00:20:00Z"
+    }
+   ]
+  },
+  {
+   "name": "within-quota-deletes-nothing",
+   "pattern": "*.png",
+   "max_bytes": 1000,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 50,
+     "access": "2020-01-01T00:05:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 50,
+     "access": "2020-01-01T00:09:00Z"
+    }
+   ]
+  },
+  {
+   "name": "total-exactly-at-quota-deletes-nothing",
+   "pattern": "*.png",
+   "max_bytes": 200,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "one-byte-over-quota-deletes-the-oldest",
+   "pattern": "*.png",
+   "max_bytes": 199,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "zero-quota-deletes-everything",
+   "pattern": "*.png",
+   "max_bytes": 0,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 2,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "c.png",
+     "size": 3,
+     "access": "2020-01-01T00:03:00Z"
+    }
+   ]
+  },
+  {
+   "name": "negative-quota-static-is-not-clamped-deletes-everything",
+   "pattern": "*.png",
+   "max_bytes": -5,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 0,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 10,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "zero-length-files-at-zero-quota-stay",
+   "pattern": "*.png",
+   "max_bytes": 0,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 0,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 0,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "missing-directory-returns-minus-one-and-creates-nothing",
+   "pattern": "*.png",
+   "max_bytes": 10,
+   "files": [],
+   "target": "missing"
+  },
+  {
+   "name": "path-is-a-file-returns-minus-one",
+   "pattern": "*.png",
+   "max_bytes": 0,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10
+    }
+   ],
+   "target": "file"
+  },
+  {
+   "name": "empty-directory-returns-zero",
+   "pattern": "*.png",
+   "max_bytes": 10,
+   "files": []
+  },
+  {
+   "name": "access-time-decides-before-creation-time",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:30:00Z",
+     "creation": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:20:00Z",
+     "creation": "2020-01-01T00:50:00Z"
+    }
+   ]
+  },
+  {
+   "name": "equal-access-creation-time-breaks-the-tie",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:09:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:03:00Z"
+    }
+   ]
+  },
+  {
+   "name": "full-tie-keeps-listing-order",
+   "pattern": "*.png",
+   "max_bytes": 200,
+   "files": [
+    {
+     "name": "c.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    },
+    {
+     "name": "B.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    },
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    }
+   ]
+  },
+  {
+   "name": "full-tie-different-sizes-listing-order",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "files": [
+    {
+     "name": "x2.png",
+     "size": 100,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    },
+    {
+     "name": "x1.png",
+     "size": 60,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    },
+    {
+     "name": "x3.png",
+     "size": 40,
+     "access": "2020-01-01T00:10:00Z",
+     "creation": "2020-01-01T00:10:00Z"
+    }
+   ]
+  },
+  {
+   "name": "stops-as-soon-as-under-quota",
+   "pattern": "*.png",
+   "max_bytes": 250,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "c.png",
+     "size": 100,
+     "access": "2020-01-01T00:03:00Z"
+    },
+    {
+     "name": "d.png",
+     "size": 10,
+     "access": "2020-01-01T00:04:00Z"
+    }
+   ]
+  },
+  {
+   "name": "pattern-png-ignores-other-extensions-temp-files-and-directories",
+   "pattern": "*.png",
+   "max_bytes": 0,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.PNG",
+     "size": 10,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "c.png.0123456789abcdef.tmp",
+     "size": 10,
+     "access": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "d.pv4",
+     "size": 10,
+     "access": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "e.png.meta",
+     "size": 10,
+     "access": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "f.png",
+     "dir": true
+    },
+    {
+     "name": "g.pngx",
+     "size": 10,
+     "access": "2020-01-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "pattern-pv4",
+   "pattern": "*.pv4",
+   "max_bytes": 10,
+   "files": [
+    {
+     "name": "a.pv4",
+     "size": 10,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.pv4",
+     "size": 10,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "c.png",
+     "size": 100,
+     "access": "2020-01-01T00:00:00Z"
+    },
+    {
+     "name": "d.pv4.1.tmp",
+     "size": 100,
+     "access": "2020-01-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "pattern-star-matches-every-file",
+   "pattern": "*",
+   "max_bytes": 15,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.tmp",
+     "size": 10,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "noext",
+     "size": 10,
+     "access": "2020-01-01T00:03:00Z"
+    },
+    {
+     "name": "sub",
+     "dir": true
+    }
+   ]
+  },
+  {
+   "name": "pattern-dos-question-mark",
+   "pattern": "?.png",
+   "max_bytes": 0,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "ab.png",
+     "size": 10,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": ".png",
+     "size": 10,
+     "access": "2020-01-01T00:03:00Z"
+    }
+   ]
+  },
+  {
+   "name": "future-access-time-is-newest",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "files": [
+    {
+     "name": "future.png",
+     "size": 100,
+     "access": "2099-01-01T00:00:00Z",
+     "creation": "2099-01-01T00:00:00Z"
+    },
+    {
+     "name": "past.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z",
+     "creation": "2020-01-01T00:01:00Z"
+    }
+   ]
+  },
+  {
+   "name": "old-years-sort-before-new",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "files": [
+    {
+     "name": "y2019.png",
+     "size": 100,
+     "access": "2019-06-01T00:00:00Z"
+    },
+    {
+     "name": "y1999.png",
+     "size": 100,
+     "access": "1999-06-01T00:00:00Z"
+    },
+    {
+     "name": "y2001.png",
+     "size": 100,
+     "access": "2001-06-01T00:00:00Z"
+    }
+   ]
+  },
+  {
+   "name": "locked-oldest-file-stays-counted-and-is-logged",
+   "pattern": "*.png",
+   "max_bytes": 150,
+   "files": [
+    {
+     "name": "locked.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z",
+     "locked": true
+    },
+    {
+     "name": "other.png",
+     "size": 100,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "locked-file-at-tiny-quota-everything-else-goes",
+   "pattern": "*.png",
+   "max_bytes": 10,
+   "files": [
+    {
+     "name": "locked.png",
+     "size": 100,
+     "access": "2020-01-01T00:05:00Z",
+     "locked": true
+    },
+    {
+     "name": "a.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 100,
+     "access": "2020-01-01T00:09:00Z"
+    }
+   ]
+  },
+  {
+   "name": "locked-file-without-log-logs-nothing",
+   "pattern": "*.png",
+   "max_bytes": 0,
+   "log": false,
+   "files": [
+    {
+     "name": "locked.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z",
+     "locked": true
+    }
+   ]
+  },
+  {
+   "name": "read-only-file-is-an-access-error-and-stays-counted",
+   "pattern": "*.png",
+   "max_bytes": 50,
+   "files": [
+    {
+     "name": "ro.png",
+     "size": 100,
+     "access": "2020-01-01T00:01:00Z",
+     "readonly": true
+    },
+    {
+     "name": "rw.png",
+     "size": 40,
+     "access": "2020-01-01T00:02:00Z"
+    }
+   ]
+  },
+  {
+   "name": "nul-in-pattern-throws-argument-exception",
+   "pattern": "a\u0000b",
+   "max_bytes": 1,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10
+    }
+   ]
+  },
+  {
+   "name": "exact-fit-after-two-deletes",
+   "pattern": "*.png",
+   "max_bytes": 100,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 60,
+     "access": "2020-01-01T00:01:00Z"
+    },
+    {
+     "name": "b.png",
+     "size": 40,
+     "access": "2020-01-01T00:02:00Z"
+    },
+    {
+     "name": "c.png",
+     "size": 100,
+     "access": "2020-01-01T00:03:00Z"
+    }
+   ]
+  }
+ ]
+}

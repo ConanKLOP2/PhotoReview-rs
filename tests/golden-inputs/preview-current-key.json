@@ -1,0 +1,327 @@
+{
+  "generator": "oracle-cs preview-current-key",
+  "cases": [
+    {
+      "name": "jpg-preview-default-backend",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": null
+    },
+    {
+      "name": "jpg-preview-turbo",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": "TurboJpeg"
+    },
+    {
+      "name": "jpg-preview-wicdirect",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": "WicDirect"
+    },
+    {
+      "name": "jpg-preview-libraw-backend",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": "LibRaw"
+    },
+    {
+      "name": "jpg-original-ignores-box",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": true,
+      "w": 2400,
+      "h": 1350,
+      "backend": "TurboJpeg"
+    },
+    {
+      "name": "jpg-original-default-backend",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": true,
+      "w": 2400,
+      "h": 1350,
+      "backend": null
+    },
+    {
+      "name": "dng-preview-raw-kind",
+      "path": "C:\\Pics\\b.dng",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": null
+    },
+    {
+      "name": "nef-upper-ext-raw-kind",
+      "path": "C:\\Pics\\B.NEF",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 2400,
+      "h": 1350,
+      "backend": "WicDirect"
+    },
+    {
+      "name": "cr3-original-raw-kind",
+      "path": "C:\\Pics\\c.cr3",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": true,
+      "w": 2400,
+      "h": 1350,
+      "backend": null
+    },
+    {
+      "name": "raw-ext.cr2",
+      "path": "C:\\Pics\\x.cr2",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "raw-ext.arw",
+      "path": "C:\\Pics\\x.arw",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "raw-ext.raf",
+      "path": "C:\\Pics\\x.raf",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "raw-ext.orf",
+      "path": "C:\\Pics\\x.orf",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "raw-ext.rw2",
+      "path": "C:\\Pics\\x.rw2",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "not-raw-tif",
+      "path": "C:\\Pics\\x.tif",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "not-raw-heic",
+      "path": "C:\\Pics\\x.heic",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "raw-like-suffix-dngx-not-raw",
+      "path": "C:\\Pics\\x.dngx",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "no-extension",
+      "path": "C:\\Pics\\README",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "trailing-dot-extension",
+      "path": "C:\\Pics\\x.dng.",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "unbounded-box",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 0,
+      "h": 0,
+      "backend": null
+    },
+    {
+      "name": "width-only-box",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 1920,
+      "h": 0,
+      "backend": null
+    },
+    {
+      "name": "height-only-box",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 0,
+      "h": 1080,
+      "backend": null
+    },
+    {
+      "name": "negative-box-kept",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": -5,
+      "h": -7,
+      "backend": null
+    },
+    {
+      "name": "width-only-overload",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 1920,
+      "h": 999,
+      "backend": null,
+      "width_only": true
+    },
+    {
+      "name": "width-only-overload-original",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": true,
+      "w": 1920,
+      "h": 999,
+      "backend": null,
+      "width_only": true
+    },
+    {
+      "name": "lowercase-path-upper-cased",
+      "path": "c:\\pics\\sub\\..\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "forward-slashes",
+      "path": "C:/Pics/a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "unc-path",
+      "path": "\\\\server\\share\\a.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "non-ascii-path",
+      "path": "C:\\Ảnh\\ảnh đẹp.jpg",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "zero-length",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 0,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "ticks-zero",
+      "path": "C:\\Pics\\a.jpg",
+      "length": 1234,
+      "ticks": 0,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    },
+    {
+      "name": "empty-path-throws",
+      "path": "",
+      "length": 1234,
+      "ticks": 638000000000000000,
+      "original_mode": false,
+      "w": 800,
+      "h": 600,
+      "backend": null
+    }
+  ]
+}

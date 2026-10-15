@@ -1,0 +1,206 @@
+{
+  "generator": "oracle-cs exif-summary-text",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "plain",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "empty",
+      "cleaned": null,
+      "utf16_length": null
+    },
+    {
+      "name": "null-text",
+      "cleaned": null,
+      "utf16_length": null
+    },
+    {
+      "name": "spaces-trimmed",
+      "cleaned": "Canon EOS R5",
+      "utf16_length": 12
+    },
+    {
+      "name": "interior-spaces-kept",
+      "cleaned": "Canon   EOS",
+      "utf16_length": 11
+    },
+    {
+      "name": "whitespace-only",
+      "cleaned": null,
+      "utf16_length": null
+    },
+    {
+      "name": "nul-cuts",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "leading-nul",
+      "cleaned": null,
+      "utf16_length": null
+    },
+    {
+      "name": "trailing-nul-padding",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "tab-becomes-space",
+      "cleaned": "a b",
+      "utf16_length": 3
+    },
+    {
+      "name": "newline-becomes-space",
+      "cleaned": "a b",
+      "utf16_length": 3
+    },
+    {
+      "name": "crlf-two-spaces",
+      "cleaned": "a  b",
+      "utf16_length": 4
+    },
+    {
+      "name": "del-0x7f-becomes-space",
+      "cleaned": "a b",
+      "utf16_length": 3
+    },
+    {
+      "name": "c1-0x85-becomes-space",
+      "cleaned": "a b",
+      "utf16_length": 3
+    },
+    {
+      "name": "c1-0x9f-becomes-space",
+      "cleaned": "a b",
+      "utf16_length": 3
+    },
+    {
+      "name": "control-only",
+      "cleaned": null,
+      "utf16_length": null
+    },
+    {
+      "name": "control-edges-trimmed",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "nbsp-interior-kept",
+      "cleaned": "a\u00A0b",
+      "utf16_length": 3
+    },
+    {
+      "name": "nbsp-edges-trimmed",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "ideographic-space-trimmed",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "line-separator-trimmed",
+      "cleaned": "Canon",
+      "utf16_length": 5
+    },
+    {
+      "name": "zero-width-space-kept",
+      "cleaned": "​Canon​",
+      "utf16_length": 7
+    },
+    {
+      "name": "bom-kept",
+      "cleaned": "\uFEFFCanon",
+      "utf16_length": 6
+    },
+    {
+      "name": "replacement-char-kept",
+      "cleaned": "a�b",
+      "utf16_length": 3
+    },
+    {
+      "name": "private-use-kept",
+      "cleaned": "a\uE000b",
+      "utf16_length": 3
+    },
+    {
+      "name": "exactly-64",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 64
+    },
+    {
+      "name": "65-capped-to-64",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 64
+    },
+    {
+      "name": "100-capped-to-64",
+      "cleaned": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "utf16_length": 64
+    },
+    {
+      "name": "63-then-space-then-b-trims-to-63",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 63
+    },
+    {
+      "name": "a-then-70-spaces-then-b",
+      "cleaned": "a",
+      "utf16_length": 1
+    },
+    {
+      "name": "e-acute-70-capped",
+      "cleaned": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+      "utf16_length": 64
+    },
+    {
+      "name": "cjk-70-capped",
+      "cleaned": "日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日日",
+      "utf16_length": 64
+    },
+    {
+      "name": "emoji-40-is-80-units-capped-to-32-emoji",
+      "cleaned": "\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00",
+      "utf16_length": 64
+    },
+    {
+      "name": "63-a-then-emoji-drops-half-pair",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 63
+    },
+    {
+      "name": "62-a-then-emoji-fits-exactly",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\uD83D\uDE00",
+      "utf16_length": 64
+    },
+    {
+      "name": "64-a-then-emoji",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 64
+    },
+    {
+      "name": "62-a-space-emoji-cut-after-space",
+      "cleaned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "utf16_length": 62
+    },
+    {
+      "name": "combining-marks-40",
+      "cleaned": "éééééééééééééééééééééééééééééééé",
+      "utf16_length": 64
+    },
+    {
+      "name": "vietnamese-lens",
+      "cleaned": "Ống kính 50mm ƒ/1.8 \uD83D\uDE00",
+      "utf16_length": 22
+    },
+    {
+      "name": "mixed-nul-after-cap-region",
+      "cleaned": "xxxxxxxxxx",
+      "utf16_length": 10
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "generator": "oracle-cs wic-bgrx-to-bgr",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "zero-pixels",
+      "throws": null,
+      "hex": ""
+    },
+    {
+      "name": "one-pixel-scalar-only",
+      "throws": null,
+      "hex": "01080f"
+    },
+    {
+      "name": "three-pixels-tail-only",
+      "throws": null,
+      "hex": "01080f1d242b394047"
+    },
+    {
+      "name": "four-pixels-one-vector-step",
+      "throws": null,
+      "hex": "01080f1d242b394047555c63"
+    },
+    {
+      "name": "five-pixels-vector-plus-tail",
+      "throws": null,
+      "hex": "01080f1d242b394047555c6371787f"
+    },
+    {
+      "name": "seventeen-pixels",
+      "throws": null,
+      "hex": "01080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cf"
+    },
+    {
+      "name": "sixty-four-pixels",
+      "throws": null,
+      "hex": "01080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cfdde4ebf90007151c2331383f4d545b697077858c93a1a8afbdc4cbd9e0e7f5fc0311181f2d343b495057656c7381888f9da4abb9c0c7d5dce3f1f8ff0d141b293037454c5361686f7d848b99a0a7b5bcc3d1d8dfedf4fb091017252c3341484f5d646b798087959ca3b1b8bfcdd4dbe9f0f7050c1321282f3d444b596067757c8391989fadb4bbc9d0d7e5ecf3"
+    },
+    {
+      "name": "two-hundred-fifty-seven-pixels",
+      "throws": null,
+      "hex": "01080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cfdde4ebf90007151c2331383f4d545b697077858c93a1a8afbdc4cbd9e0e7f5fc0311181f2d343b495057656c7381888f9da4abb9c0c7d5dce3f1f8ff0d141b293037454c5361686f7d848b99a0a7b5bcc3d1d8dfedf4fb091017252c3341484f5d646b798087959ca3b1b8bfcdd4dbe9f0f7050c1321282f3d444b596067757c8391989fadb4bbc9d0d7e5ecf301080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cfdde4ebf90007151c2331383f4d545b697077858c93a1a8afbdc4cbd9e0e7f5fc0311181f2d343b495057656c7381888f9da4abb9c0c7d5dce3f1f8ff0d141b293037454c5361686f7d848b99a0a7b5bcc3d1d8dfedf4fb091017252c3341484f5d646b798087959ca3b1b8bfcdd4dbe9f0f7050c1321282f3d444b596067757c8391989fadb4bbc9d0d7e5ecf301080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cfdde4ebf90007151c2331383f4d545b697077858c93a1a8afbdc4cbd9e0e7f5fc0311181f2d343b495057656c7381888f9da4abb9c0c7d5dce3f1f8ff0d141b293037454c5361686f7d848b99a0a7b5bcc3d1d8dfedf4fb091017252c3341484f5d646b798087959ca3b1b8bfcdd4dbe9f0f7050c1321282f3d444b596067757c8391989fadb4bbc9d0d7e5ecf301080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3e1e8effd040b192027353c4351585f6d747b899097a5acb3c1c8cfdde4ebf90007151c2331383f4d545b697077858c93a1a8afbdc4cbd9e0e7f5fc0311181f2d343b495057656c7381888f9da4abb9c0c7d5dce3f1f8ff0d141b293037454c5361686f7d848b99a0a7b5bcc3d1d8dfedf4fb091017252c3341484f5d646b798087959ca3b1b8bfcdd4dbe9f0f7050c1321282f3d444b596067757c8391989fadb4bbc9d0d7e5ecf301080f"
+    },
+    {
+      "name": "destination-exactly-3n-no-room-for-vector-tail",
+      "throws": null,
+      "hex": "01080f1d242b394047555c63"
+    },
+    {
+      "name": "destination-exactly-3n-eight-pixels",
+      "throws": null,
+      "hex": "01080f1d242b394047555c6371787f8d949ba9b0b7c5ccd3"
+    },
+    {
+      "name": "partial-trailing-pixel-ignored",
+      "throws": null,
+      "hex": "01080f1d242b"
+    },
+    {
+      "name": "too-short-destination-throws",
+      "throws": "ArgumentException",
+      "hex": null
+    },
+    {
+      "name": "too-short-by-one-throws",
+      "throws": "ArgumentException",
+      "hex": null
+    }
+  ]
+}

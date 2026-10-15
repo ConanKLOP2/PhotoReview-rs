@@ -1,0 +1,400 @@
+{
+ "cases": [
+  {
+   "name": "plain-bgr32-no-exif",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "backend-turbojpeg-orientation-6",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 2,
+   "orientation": 6,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "backend-wpf-0",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 0,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "backend-libraw-3",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 3,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-1",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-2",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 2,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-3",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 3,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-4",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 4,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-5",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 5,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-6",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 6,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-7",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 7,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-8",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 8,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "original-larger-than-pixels",
+   "width": 96,
+   "height": 64,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 6000,
+   "original_height": 4000,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "original-zero-falls-back-to-pixel-size",
+   "width": 96,
+   "height": 64,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 0,
+   "original_height": 0,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "original-width-zero-only",
+   "width": 96,
+   "height": 64,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 0,
+   "original_height": 4000,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "original-height-negative-only",
+   "width": 96,
+   "height": 64,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 6000,
+   "original_height": -1,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "with-exif",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": {
+    "date": "2024:05:06 07:08:09",
+    "make": "Canon",
+    "model": "EOS R5",
+    "lens": "RF24-70mm F2.8 L IS USM",
+    "iso": 400,
+    "focal": [
+     50,
+     1
+    ],
+    "f_number": [
+     28,
+     10
+    ],
+    "exposure": [
+     1,
+     250
+    ]
+   },
+   "opacity_verified": false
+  },
+  {
+   "name": "with-exif-date-only",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": {
+    "date": "2024:05:06"
+   },
+   "opacity_verified": false
+  },
+  {
+   "name": "empty-exif-summary-is-no-block",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": {},
+   "opacity_verified": false
+  },
+  {
+   "name": "pbgra32-all-opaque",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "pbgra32-opaque-scan-is-skipped-when-verified",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": true
+  },
+  {
+   "name": "pbgra32-one-transparent-pixel-rejected",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false,
+   "transparent_pixel": [
+    15,
+    7
+   ]
+  },
+  {
+   "name": "pbgra32-first-pixel-transparent-rejected",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false,
+   "transparent_pixel": [
+    0,
+    0
+   ]
+  },
+  {
+   "name": "pbgra32-transparent-but-verified-flag-skips-scan",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": true,
+   "transparent_pixel": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "orientation-0-rejected",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 0,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-9-rejected",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 9,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "orientation-minus1-rejected",
+   "width": 16,
+   "height": 8,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": -1,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "transparent-and-bad-orientation-reports-transparency-first",
+   "width": 16,
+   "height": 8,
+   "layout": "pbgra32",
+   "backend": 1,
+   "orientation": 0,
+   "original_width": 16,
+   "original_height": 8,
+   "exif": null,
+   "opacity_verified": false,
+   "transparent_pixel": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "one-by-one",
+   "width": 1,
+   "height": 1,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 1,
+   "original_height": 1,
+   "exif": null,
+   "opacity_verified": false
+  },
+  {
+   "name": "wide-2200x3",
+   "width": 2200,
+   "height": 3,
+   "layout": "bgr32",
+   "backend": 1,
+   "orientation": 1,
+   "original_width": 2200,
+   "original_height": 3,
+   "exif": null,
+   "opacity_verified": false
+  }
+ ]
+}

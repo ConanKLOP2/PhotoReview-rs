@@ -1,0 +1,2636 @@
+{
+  "generator": "oracle-cs image-cache-key",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "spelling-0",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-0",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-1",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-1",
+        "kind": "entry",
+        "path": "c:\\pics\\a.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-2",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-2",
+        "kind": "entry",
+        "path": "C:\\Pics\\.\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-3",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-3",
+        "kind": "entry",
+        "path": "C:/Pics/A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-4",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-4",
+        "kind": "entry",
+        "path": "C:\\Pics\\Sub\\..\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-5",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-5",
+        "kind": "entry",
+        "path": "C:\\Pics\\\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "spelling-6",
+      "kind": "entry",
+      "input": {
+        "name": "spelling-6",
+        "kind": "entry",
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2400,
+        "h": 900
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-long-s",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-long-s",
+        "kind": "entry",
+        "path": "C:\\Pics\\Å¿.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Å¿.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-dotless-i",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-dotless-i",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ä±.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ä±.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-sharp-s",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-sharp-s",
+        "kind": "entry",
+        "path": "C:\\Pics\\straÃŸe.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\STRAÃŸE.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-e-acute",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-e-acute",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ã©.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ã©.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-dz-lower",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-dz-lower",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ç†.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ç†.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-dz-title",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-dz-title",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ç….jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ç….JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-greek-final-sigma",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-greek-final-sigma",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ï‚.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ï‚.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-turkish-dotted-I",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-turkish-dotted-I",
+        "kind": "entry",
+        "path": "C:\\Pics\\Ä°.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Ä°.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-cjk",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-cjk",
+        "kind": "entry",
+        "path": "C:\\Pics\\å†™çœŸ\\æ—¥æœ¬.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\Å†™ÇŒŸ\\Æ—¥ÆŒ¬.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "unicode-astral",
+      "kind": "entry",
+      "input": {
+        "name": "unicode-astral",
+        "kind": "entry",
+        "path": "C:\\Pics\\U0001F600.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\U0001F600.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-unc",
+      "kind": "entry",
+      "input": {
+        "name": "path-unc",
+        "kind": "entry",
+        "path": "\\\\server\\share\\Dir\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "\\\\SERVER\\SHARE\\DIR\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-extended",
+      "kind": "entry",
+      "input": {
+        "name": "path-extended",
+        "kind": "entry",
+        "path": "\\\\?\\C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "\\\\?\\C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-drive-root-file",
+      "kind": "entry",
+      "input": {
+        "name": "path-drive-root-file",
+        "kind": "entry",
+        "path": "C:\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-trailing-dot",
+      "kind": "entry",
+      "input": {
+        "name": "path-trailing-dot",
+        "kind": "entry",
+        "path": "C:\\Pics\\a.jpg.",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-trailing-space",
+      "kind": "entry",
+      "input": {
+        "name": "path-trailing-space",
+        "kind": "entry",
+        "path": "C:\\Pics\\a.jpg ",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-dot-dot-above-root",
+      "kind": "entry",
+      "input": {
+        "name": "path-dot-dot-above-root",
+        "kind": "entry",
+        "path": "C:\\..\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "path-spaces-inside",
+      "kind": "entry",
+      "input": {
+        "name": "path-spaces-inside",
+        "kind": "entry",
+        "path": "C:\\My Pics\\a b.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\MY PICS\\A B.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "box-preview",
+      "kind": "entry",
+      "input": {
+        "name": "box-preview",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2304,
+        "h": 1280
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "box-width-only",
+      "kind": "entry",
+      "input": {
+        "name": "box-width-only",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 2304,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "box-height-only",
+      "kind": "entry",
+      "input": {
+        "name": "box-height-only",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 1280
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "box-unbounded-preview",
+      "kind": "entry",
+      "input": {
+        "name": "box-unbounded-preview",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "box-negative-preview-kept",
+      "kind": "entry",
+      "input": {
+        "name": "box-negative-preview-kept",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": -1,
+        "h": -2
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": -1,
+        "height": -2,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "original-ignores-box",
+      "kind": "entry",
+      "input": {
+        "name": "original-ignores-box",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 2304,
+        "h": 1280
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "original-ignores-negative-box",
+      "kind": "entry",
+      "input": {
+        "name": "original-ignores-negative-box",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": -7,
+        "h": -9
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "original-zero-box",
+      "kind": "entry",
+      "input": {
+        "name": "original-zero-box",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": true,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "orientation-not-applied",
+      "kind": "entry",
+      "input": {
+        "name": "orientation-not-applied",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "orient": false
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": false,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "backend-wpf",
+      "kind": "entry",
+      "input": {
+        "name": "backend-wpf",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "backend": "Wpf"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "backend-wicdirect",
+      "kind": "entry",
+      "input": {
+        "name": "backend-wicdirect",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "backend": "WicDirect"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "WicDirect",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "backend-turbojpeg",
+      "kind": "entry",
+      "input": {
+        "name": "backend-turbojpeg",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "backend": "TurboJpeg"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "backend-libraw",
+      "kind": "entry",
+      "input": {
+        "name": "backend-libraw",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "backend": "LibRaw"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "LibRaw",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "source-kind-0",
+      "kind": "entry",
+      "input": {
+        "name": "source-kind-0",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "source_kind": 0,
+        "kind": "entry"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "source-kind-1",
+      "kind": "entry",
+      "input": {
+        "name": "source-kind-1",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "source_kind": 1,
+        "kind": "entry"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      }
+    },
+    {
+      "name": "source-kind-2",
+      "kind": "entry",
+      "input": {
+        "name": "source-kind-2",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "source_kind": 2,
+        "kind": "entry"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 2
+      }
+    },
+    {
+      "name": "source-kind-3",
+      "kind": "entry",
+      "input": {
+        "name": "source-kind-3",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "source_kind": 3,
+        "kind": "entry"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 3
+      }
+    },
+    {
+      "name": "source-kind-255",
+      "kind": "entry",
+      "input": {
+        "name": "source-kind-255",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 1600,
+        "h": 0,
+        "source_kind": 255,
+        "kind": "entry"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1600,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 255
+      }
+    },
+    {
+      "name": "length-zero",
+      "kind": "entry",
+      "input": {
+        "name": "length-zero",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "length-max",
+      "kind": "entry",
+      "input": {
+        "name": "length-max",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 9223372036854775807,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 9223372036854775807,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "length-negative-kept",
+      "kind": "entry",
+      "input": {
+        "name": "length-negative-kept",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": -1,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": -1,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "ticks-zero",
+      "kind": "entry",
+      "input": {
+        "name": "ticks-zero",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 0,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 0,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "ticks-max",
+      "kind": "entry",
+      "input": {
+        "name": "ticks-max",
+        "kind": "entry",
+        "path": "C:\\Pics\\A.jpg",
+        "length": 1234,
+        "ticks": 3155378975999999999,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 3155378975999999999,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "throws-nul-in-path",
+      "kind": "entry",
+      "input": {
+        "name": "throws-nul-in-path",
+        "kind": "entry",
+        "path": "C:\\Pics\u0007\u0000.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Null character in path. (Parameter 'path')"
+      }
+    },
+    {
+      "name": "throws-whitespace-path",
+      "kind": "entry",
+      "input": {
+        "name": "throws-whitespace-path",
+        "kind": "entry",
+        "path": "   ",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original": false,
+        "w": 0,
+        "h": 0
+      },
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Path cannot be null or whitespace. (Parameter 'path')"
+      }
+    },
+    {
+      "name": "pair-same",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-spelling-0",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-spelling-1",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-spelling-2",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-spelling-3",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-file",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\B.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": false
+    },
+    {
+      "name": "pair-other-length",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1235,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-ticks",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000001,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-width",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 3200,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-height",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1408,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-width-only-vs-box",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-original-vs-preview-same-dims",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-original-boxes-ignored",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "pair-original-vs-original-other-length",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-orientation",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": false,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-backend",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "WicDirect",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-other-kind",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": true
+    },
+    {
+      "name": "pair-long-s-equals-s",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\Å¿.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\S.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": false
+    },
+    {
+      "name": "pair-dotless-i-differs-from-I",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\Ä±.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\I.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": false
+    },
+    {
+      "name": "pair-sharp-s-differs-from-SS",
+      "kind": "pair",
+      "a": {
+        "path": "C:\\PICS\\STRAÃŸE.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "C:\\PICS\\STRASSE.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": false,
+      "not_equal": true,
+      "equals_method": false,
+      "hash_equal": false,
+      "path_equal": false
+    },
+    {
+      "name": "pair-unc-case",
+      "kind": "pair",
+      "a": {
+        "path": "\\\\SERVER\\SHARE\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "b": {
+        "path": "\\\\SERVER\\SHARE\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "equal": true,
+      "not_equal": false,
+      "equals_method": true,
+      "hash_equal": true,
+      "path_equal": true
+    },
+    {
+      "name": "original-of-preview-box",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": false,
+        "backend": "WicDirect",
+        "source_kind": 1
+      },
+      "original": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": false,
+        "backend": "WicDirect",
+        "source_kind": 1
+      },
+      "kind_arg": 2,
+      "original_kind": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": false,
+        "backend": "WicDirect",
+        "source_kind": 2
+      }
+    },
+    {
+      "name": "original-of-preview-default-kind-2",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 900,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "original": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "kind_arg": 2,
+      "original_kind": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 2
+      }
+    },
+    {
+      "name": "original-of-preview-kind-0",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      },
+      "original": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      },
+      "kind_arg": 0,
+      "original_kind": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      }
+    },
+    {
+      "name": "original-of-already-original",
+      "kind": "original_of",
+      "source": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 2
+      },
+      "original": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 2
+      },
+      "kind_arg": 1,
+      "original_kind": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      }
+    },
+    {
+      "name": "file-path-unchanged",
+      "kind": "file",
+      "input": {
+        "name": "file-path-unchanged",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-path-mixed-case-name-upper-cased",
+      "kind": "file",
+      "input": {
+        "name": "file-path-mixed-case-name-upper-cased",
+        "kind": "file",
+        "file": {
+          "name": "mixed Case.JPG",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "path": "<ROOT>\\MIXED CASE.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-width-overload",
+      "kind": "file",
+      "input": {
+        "name": "file-width-overload",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "width",
+        "original": false,
+        "w": 3200,
+        "h": 0
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 3200,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-fileinfo-overload",
+      "kind": "file",
+      "input": {
+        "name": "file-fileinfo-overload",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "fileinfo",
+        "original": false,
+        "w": 2304,
+        "h": 1280
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-entry-no-stat-falls-back-to-disk",
+      "kind": "file",
+      "input": {
+        "name": "file-entry-no-stat-falls-back-to-disk",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "entry-no-stat",
+        "original": false,
+        "w": 2304,
+        "h": 1280
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2304,
+        "height": 1280,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-original-box-ignored",
+      "kind": "file",
+      "input": {
+        "name": "file-original-box-ignored",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": true,
+        "w": 2304,
+        "h": 1280
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-empty-file",
+      "kind": "file",
+      "input": {
+        "name": "file-empty-file",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 0,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-replacement-different-length",
+      "kind": "file",
+      "input": {
+        "name": "file-replacement-different-length",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0,
+        "then": "rewrite",
+        "then_length": 7
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": false,
+      "recreated_equals": false
+    },
+    {
+      "name": "file-replacement-same-length-other-ticks",
+      "kind": "file",
+      "input": {
+        "name": "file-replacement-same-length-other-ticks",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0,
+        "then": "touch",
+        "then_ticks": 638000000000012345
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": false,
+      "recreated_equals": false
+    },
+    {
+      "name": "file-grow-by-one-same-ticks",
+      "kind": "file",
+      "input": {
+        "name": "file-grow-by-one-same-ticks",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0,
+        "then": "grow"
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": false,
+      "recreated_equals": false
+    },
+    {
+      "name": "file-removed-after-key",
+      "kind": "file",
+      "input": {
+        "name": "file-removed-after-key",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0,
+        "then": "delete"
+      },
+      "result": {
+        "path": "<ROOT>\\PHOTO.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": false,
+      "recreated_equals": null
+    },
+    {
+      "name": "file-unicode-name",
+      "kind": "file",
+      "input": {
+        "name": "file-unicode-name",
+        "kind": "file",
+        "file": {
+          "name": "Å¿traÃŸe Ä±.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "path": "<ROOT>\\Å¿TRAÃŸE Ä±.JPG",
+        "length": 4,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "matches_before": true,
+      "matches_after": true,
+      "recreated_equals": true
+    },
+    {
+      "name": "file-missing-fileinfo",
+      "kind": "file",
+      "input": {
+        "name": "file-missing-fileinfo",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000,
+          "create": false
+        },
+        "overload": "fileinfo",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "throws": "FileNotFoundException",
+        "message": "Image source no longer exists",
+        "file_name": "<ROOT>\\photo.jpg"
+      }
+    },
+    {
+      "name": "file-missing-path",
+      "kind": "file",
+      "input": {
+        "name": "file-missing-path",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000,
+          "create": false
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "throws": "FileNotFoundException",
+        "message": "Image source no longer exists",
+        "file_name": "<ROOT>\\photo.jpg"
+      }
+    },
+    {
+      "name": "file-missing-width",
+      "kind": "file",
+      "input": {
+        "name": "file-missing-width",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000,
+          "create": false
+        },
+        "overload": "width",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "throws": "FileNotFoundException",
+        "message": "Image source no longer exists",
+        "file_name": "<ROOT>\\photo.jpg"
+      }
+    },
+    {
+      "name": "file-missing-entry-no-stat",
+      "kind": "file",
+      "input": {
+        "name": "file-missing-entry-no-stat",
+        "kind": "file",
+        "file": {
+          "name": "photo.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000,
+          "create": false
+        },
+        "overload": "entry-no-stat",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "throws": "FileNotFoundException",
+        "message": "Image source no longer exists",
+        "file_name": "<ROOT>\\photo.jpg"
+      }
+    },
+    {
+      "name": "file-directory-is-not-a-source",
+      "kind": "file",
+      "input": {
+        "name": "file-directory-is-not-a-source",
+        "kind": "file",
+        "file": {
+          "name": "folder.jpg",
+          "length": 4,
+          "write_ticks": 638000000000000000,
+          "directory": true
+        },
+        "overload": "path",
+        "original": false,
+        "w": 2400,
+        "h": 0
+      },
+      "result": {
+        "throws": "FileNotFoundException",
+        "message": "Image source no longer exists",
+        "file_name": "<ROOT>\\folder.jpg"
+      }
+    }
+  ]
+}

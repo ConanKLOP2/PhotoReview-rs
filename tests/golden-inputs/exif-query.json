@@ -1,0 +1,957 @@
+{
+  "cases": [
+    {
+      "name": "every-tag-jpeg",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": "2024:05:01 14:03:22"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        },
+        "/app1/ifd/{ushort=272}": {
+          "type": "chars",
+          "value": "EOS R5"
+        },
+        "/app1/ifd/exif/{ushort=41012}": {
+          "type": "string",
+          "value": "RF50"
+        },
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16",
+          "value": 400
+        },
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "4294967346"
+        },
+        "/app1/ifd/exif/{ushort=33437}": {
+          "type": "u64",
+          "value": "42949672988"
+        },
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "u64",
+          "value": "1073741824001"
+        }
+      }
+    },
+    {
+      "name": "every-tag-tiff",
+      "root": "/ifd",
+      "values": {
+        "/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": "2024:05:01 14:03:22"
+        },
+        "/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        },
+        "/ifd/{ushort=272}": {
+          "type": "chars",
+          "value": "EOS R5"
+        },
+        "/ifd/exif/{ushort=41012}": {
+          "type": "string",
+          "value": "RF50"
+        },
+        "/ifd/exif/{ushort=34855}": {
+          "type": "u16",
+          "value": 400
+        },
+        "/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "4294967346"
+        },
+        "/ifd/exif/{ushort=33437}": {
+          "type": "u64",
+          "value": "42949672988"
+        },
+        "/ifd/exif/{ushort=33434}": {
+          "type": "u64",
+          "value": "1073741824001"
+        }
+      }
+    },
+    {
+      "name": "nothing-present",
+      "root": "/app1/ifd",
+      "values": {}
+    },
+    {
+      "name": "only-ifd0-datetime",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/{ushort=306}": {
+          "type": "string",
+          "value": "2022:03:03 12:01:20"
+        }
+      }
+    },
+    {
+      "name": "date-digitized-beats-datetime",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36868}": {
+          "type": "string",
+          "value": "2023:04:02 13:02:21"
+        },
+        "/app1/ifd/{ushort=306}": {
+          "type": "string",
+          "value": "2022:03:03 12:01:20"
+        }
+      }
+    },
+    {
+      "name": "date-original-beats-all",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": "2024:05:01 14:03:22"
+        },
+        "/app1/ifd/exif/{ushort=36868}": {
+          "type": "string",
+          "value": "2023:04:02 13:02:21"
+        },
+        "/app1/ifd/{ushort=306}": {
+          "type": "string",
+          "value": "2022:03:03 12:01:20"
+        }
+      }
+    },
+    {
+      "name": "date-empty-string-stops-chain",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": ""
+        },
+        "/app1/ifd/{ushort=306}": {
+          "type": "string",
+          "value": "2022:03:03 12:01:20"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "date-garbage-stops-chain",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": "garbage"
+        },
+        "/app1/ifd/exif/{ushort=36868}": {
+          "type": "string",
+          "value": "2023:04:02 13:02:21"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "date-wrong-type-falls-through",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "u16",
+          "value": 5
+        },
+        "/app1/ifd/exif/{ushort=36868}": {
+          "type": "string",
+          "value": "2023:04:02 13:02:21"
+        }
+      }
+    },
+    {
+      "name": "date-as-chars",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "chars",
+          "value": "2024:05:01 14:03:22"
+        }
+      }
+    },
+    {
+      "name": "date-zero-placeholder",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=36867}": {
+          "type": "string",
+          "value": "0000:00:00 00:00:00"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "X"
+        }
+      }
+    },
+    {
+      "name": "string-wrong-types",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/{ushort=271}": {
+          "type": "u16",
+          "value": 5
+        },
+        "/app1/ifd/{ushort=272}": {
+          "type": "bytes",
+          "value": [
+            67,
+            97
+          ]
+        },
+        "/app1/ifd/{ushort=306}": {
+          "type": "double",
+          "value": "1.5"
+        },
+        "/app1/ifd/exif/{ushort=41012}": {
+          "type": "string",
+          "value": "L"
+        }
+      }
+    },
+    {
+      "name": "wrong-root-tiff-paths-ignored",
+      "root": "/app1/ifd",
+      "values": {
+        "/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "custom-root",
+      "root": "/x/ifd",
+      "values": {
+        "/x/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Nikon"
+        }
+      }
+    },
+    {
+      "name": "iso-u8",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u8",
+          "value": 144
+        }
+      }
+    },
+    {
+      "name": "iso-u16",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16",
+          "value": 400
+        }
+      }
+    },
+    {
+      "name": "iso-i16",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i16",
+          "value": 400
+        }
+      }
+    },
+    {
+      "name": "iso-u32",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32",
+          "value": "400"
+        }
+      }
+    },
+    {
+      "name": "iso-i32",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i32",
+          "value": "400"
+        }
+      }
+    },
+    {
+      "name": "iso-u16-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16[]",
+          "value": [
+            400,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "iso-u32-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32[]",
+          "value": [
+            "400",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "iso-i16-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i16[]",
+          "value": [
+            400,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "iso-i32-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i32[]",
+          "value": [
+            "400",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "iso-empty-u16-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16[]",
+          "value": []
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-empty-u32-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32[]",
+          "value": []
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-empty-i16-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i16[]",
+          "value": []
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-empty-i32-array",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i32[]",
+          "value": []
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-negative-i16",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i16",
+          "value": -1
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-negative-i32",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i32",
+          "value": "-400"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-negative-i16-array-clr-reinterpretation",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i16[]",
+          "value": [
+            -1
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-negative-i32-array-clr-reinterpretation",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "i32[]",
+          "value": [
+            "-400"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-zero",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16",
+          "value": 0
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-u32-max",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32",
+          "value": "4294967295"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-10-million-boundary",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32",
+          "value": "10000000"
+        }
+      }
+    },
+    {
+      "name": "iso-10-million-plus-one",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u32",
+          "value": "10000001"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-string-not-parsed",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "string",
+          "value": "400"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "iso-u64-not-integer",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u64",
+          "value": "400"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-packed-unsigned",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "u64",
+          "value": "1073741824001"
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-array-first-only",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "u64[]",
+          "value": [
+            "1073741824001",
+            "38654705673"
+          ]
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-max-numerator",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "25769803775"
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-zero-numerator",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "1073741824000"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-unsigned-zero-denominator",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "1"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-1m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "1073741824001"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-1m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "1073741824001",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-0m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "1073741824000"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-0m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "1073741824000",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-1m0",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "1"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-1m0",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "1",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-m1m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "1078036791295"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-m1m250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "1078036791295",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-1mm250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "-1073741823999"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-1mm250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "-1073741823999",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-m1mm250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "-1069446856705"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-m1mm250",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "-1069446856705",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-2147483647m2147483647",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "9223372034707292159"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-2147483647m2147483647",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "9223372034707292159",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-0m1",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64",
+          "value": "4294967296"
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-signed-array-0m1",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "i64[]",
+          "value": [
+            "4294967296",
+            "4294967297"
+          ]
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-empty-arrays",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64[]",
+          "value": []
+        },
+        "/app1/ifd/exif/{ushort=33437}": {
+          "type": "i64[]",
+          "value": []
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-other-types",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "double",
+          "value": "50.0"
+        },
+        "/app1/ifd/exif/{ushort=33437}": {
+          "type": "u32",
+          "value": "28"
+        },
+        "/app1/ifd/exif/{ushort=33434}": {
+          "type": "u16",
+          "value": 1
+        },
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "Canon"
+        }
+      }
+    },
+    {
+      "name": "rational-arrays-both-signs",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64[]",
+          "value": [
+            "4294967346"
+          ]
+        },
+        "/app1/ifd/exif/{ushort=33437}": {
+          "type": "i64[]",
+          "value": [
+            "42949672988"
+          ]
+        }
+      }
+    },
+    {
+      "name": "text-passes-through-cleaning",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "  Canon\u0000junk "
+        },
+        "/app1/ifd/{ushort=272}": {
+          "type": "string",
+          "value": "\u0001\u0002"
+        },
+        "/app1/ifd/exif/{ushort=41012}": {
+          "type": "string",
+          "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      }
+    },
+    {
+      "name": "all-nothing-usable",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/{ushort=271}": {
+          "type": "string",
+          "value": "\u0000"
+        },
+        "/app1/ifd/exif/{ushort=34855}": {
+          "type": "u16",
+          "value": 0
+        },
+        "/app1/ifd/exif/{ushort=37386}": {
+          "type": "u64",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "name": "chars-with-nul-and-control",
+      "root": "/app1/ifd",
+      "values": {
+        "/app1/ifd/{ushort=271}": {
+          "type": "chars",
+          "value": "Ca\tnon\u0000x"
+        }
+      }
+    }
+  ]
+}

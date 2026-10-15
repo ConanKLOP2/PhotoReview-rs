@@ -1,0 +1,248 @@
+{
+  "generator": "oracle-cs thumbnail-cache-key",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "typical-jpeg",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "lowercase-spelling-is-another-key",
+      "path": "c:\\photos\\img_0001.jpg",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "c:\\photos\\img_0001.jpg",
+      "stamp": "c:\\photos\\img_0001.jpg|1234567|638000000000000000|800|orient=1",
+      "key": "e08a59df569c621cc5b02aaf4bd83f964ec352d5f75dff7fd9f3e571bcb8bb6a",
+      "file_name": "e08a59df569c621cc5b02aaf4bd83f964ec352d5f75dff7fd9f3e571bcb8bb6a.png"
+    },
+    {
+      "name": "forward-slashes-normalized",
+      "path": "C:/Photos/IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "forward-slashes-raw-build-key",
+      "path": "C:/Photos/IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": false,
+      "keyed_path": "C:/Photos/IMG_0001.JPG",
+      "stamp": "C:/Photos/IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "7c14e64abb4a791aaccbb3abb81ccdd397e550cf445b69e2a9c3a1e50f0d8b3b",
+      "file_name": "7c14e64abb4a791aaccbb3abb81ccdd397e550cf445b69e2a9c3a1e50f0d8b3b.png"
+    },
+    {
+      "name": "dot-segments-normalized",
+      "path": "C:\\Photos\\.\\sub\\..\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "doubled-separators-collapsed",
+      "path": "C:\\\\Photos\\\\\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "trailing-dot-segment-trimmed",
+      "path": "C:\\Photos.\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "trailing-space-file-trimmed",
+      "path": "C:\\Photos\\IMG_0001.JPG ",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000000|800|orient=1",
+      "key": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5",
+      "file_name": "f80fe022514e1a676940ef3203b8644c179cf5181957048681d71bdd7b8ee2d5.png"
+    },
+    {
+      "name": "unc",
+      "path": "\\\\server\\share\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "\\\\server\\share\\Photos\\a.jpg",
+      "stamp": "\\\\server\\share\\Photos\\a.jpg|42|638000000000000000|800|orient=1",
+      "key": "48fe15baf6b865c893163f36bb5739b64062a107bef96e93d95d3743d935afbb",
+      "file_name": "48fe15baf6b865c893163f36bb5739b64062a107bef96e93d95d3743d935afbb.png"
+    },
+    {
+      "name": "extended-prefix-kept",
+      "path": "\\\\?\\C:\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "\\\\?\\C:\\Photos\\a.jpg",
+      "stamp": "\\\\?\\C:\\Photos\\a.jpg|42|638000000000000000|800|orient=1",
+      "key": "ce535b37d4282322c3e3a757a803e0a06840462313903bf016ce0af892452e61",
+      "file_name": "ce535b37d4282322c3e3a757a803e0a06840462313903bf016ce0af892452e61.png"
+    },
+    {
+      "name": "extended-prefix-plain-twin",
+      "path": "C:\\Photos\\a.jpg",
+      "length": 42,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\a.jpg",
+      "stamp": "C:\\Photos\\a.jpg|42|638000000000000000|800|orient=1",
+      "key": "92dca4493f0ca6b753af095846edabf8b31cb1e356865626caec94aaa328ea46",
+      "file_name": "92dca4493f0ca6b753af095846edabf8b31cb1e356865626caec94aaa328ea46.png"
+    },
+    {
+      "name": "vietnamese-nfc",
+      "path": "C:\\Ảnh\\ảnh 1.jpg",
+      "length": 2048,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Ảnh\\ảnh 1.jpg",
+      "stamp": "C:\\Ảnh\\ảnh 1.jpg|2048|638000000000000000|800|orient=1",
+      "key": "bde8b043d39d4e290572a3673e6b6a907e510b9f43a21c3330c56c19dfb071e7",
+      "file_name": "bde8b043d39d4e290572a3673e6b6a907e510b9f43a21c3330c56c19dfb071e7.png"
+    },
+    {
+      "name": "vietnamese-nfd",
+      "path": "C:\\Ảnh\\ảnh 1.jpg",
+      "length": 2048,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Ảnh\\ảnh 1.jpg",
+      "stamp": "C:\\Ảnh\\ảnh 1.jpg|2048|638000000000000000|800|orient=1",
+      "key": "f601ad1ac8b22737b253ba4660ad07cf0fdda58db7b07f3b88a294a31c7153f9",
+      "file_name": "f601ad1ac8b22737b253ba4660ad07cf0fdda58db7b07f3b88a294a31c7153f9.png"
+    },
+    {
+      "name": "emoji-and-cjk",
+      "path": "D:\\写真\\\uD83D\uDCF7 cam\\photo.jpeg",
+      "length": 99,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "D:\\写真\\\uD83D\uDCF7 cam\\photo.jpeg",
+      "stamp": "D:\\写真\\\uD83D\uDCF7 cam\\photo.jpeg|99|638000000000000000|800|orient=1",
+      "key": "3dfa113a1f2db68a3df1168e27cd9f0e852b6c002f99c52bffd1cccadb945945",
+      "file_name": "3dfa113a1f2db68a3df1168e27cd9f0e852b6c002f99c52bffd1cccadb945945.png"
+    },
+    {
+      "name": "zero-length-zero-ticks",
+      "path": "C:\\a.jpg",
+      "length": 0,
+      "last_write_ticks": 0,
+      "get_full_path": true,
+      "keyed_path": "C:\\a.jpg",
+      "stamp": "C:\\a.jpg|0|0|800|orient=1",
+      "key": "b7dec5fa27a1682b123137c80d9ed808bedc71cc116a62a19d71faa8454cdd6c",
+      "file_name": "b7dec5fa27a1682b123137c80d9ed808bedc71cc116a62a19d71faa8454cdd6c.png"
+    },
+    {
+      "name": "max-ticks",
+      "path": "C:\\a.jpg",
+      "length": 1,
+      "last_write_ticks": 3155378975999999999,
+      "get_full_path": true,
+      "keyed_path": "C:\\a.jpg",
+      "stamp": "C:\\a.jpg|1|3155378975999999999|800|orient=1",
+      "key": "52595bc1aa8ffc714e0242a0d49f0b0ee6f8c51c6e0a43ffdeb72b5f65848e4a",
+      "file_name": "52595bc1aa8ffc714e0242a0d49f0b0ee6f8c51c6e0a43ffdeb72b5f65848e4a.png"
+    },
+    {
+      "name": "max-length",
+      "path": "C:\\a.jpg",
+      "length": 9223372036854775807,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\a.jpg",
+      "stamp": "C:\\a.jpg|9223372036854775807|638000000000000000|800|orient=1",
+      "key": "71a396cc9a26dca6879ebb561abd284d192e9c2b73213ed915da19fb2838a63d",
+      "file_name": "71a396cc9a26dca6879ebb561abd284d192e9c2b73213ed915da19fb2838a63d.png"
+    },
+    {
+      "name": "ticks-plus-one-is-another-key",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234567,
+      "last_write_ticks": 638000000000000001,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234567|638000000000000001|800|orient=1",
+      "key": "7dbadb715ddde3560af5ce1a358aa32c20a2bdc58ddb8ea56ebc736504bb3f78",
+      "file_name": "7dbadb715ddde3560af5ce1a358aa32c20a2bdc58ddb8ea56ebc736504bb3f78.png"
+    },
+    {
+      "name": "length-plus-one-is-another-key",
+      "path": "C:\\Photos\\IMG_0001.JPG",
+      "length": 1234568,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.JPG",
+      "stamp": "C:\\Photos\\IMG_0001.JPG|1234568|638000000000000000|800|orient=1",
+      "key": "787738e8c41c3fe04ffe610d6f00356db81d131bd602075b5868b9b93648f9c7",
+      "file_name": "787738e8c41c3fe04ffe610d6f00356db81d131bd602075b5868b9b93648f9c7.png"
+    },
+    {
+      "name": "raw-extension",
+      "path": "C:\\Photos\\IMG_0001.CR2",
+      "length": 25000000,
+      "last_write_ticks": 638000000000000000,
+      "get_full_path": true,
+      "keyed_path": "C:\\Photos\\IMG_0001.CR2",
+      "stamp": "C:\\Photos\\IMG_0001.CR2|25000000|638000000000000000|800|orient=1",
+      "key": "7d7a6dfb16420b2cec07c2072329e3474ba6b96ca32ed19f4a1f81f34ccb3d89",
+      "file_name": "7d7a6dfb16420b2cec07c2072329e3474ba6b96ca32ed19f4a1f81f34ccb3d89.png"
+    },
+    {
+      "name": "pipe-in-name-raw",
+      "path": "C:\\a|1|2.jpg",
+      "length": 3,
+      "last_write_ticks": 4,
+      "get_full_path": false,
+      "keyed_path": "C:\\a|1|2.jpg",
+      "stamp": "C:\\a|1|2.jpg|3|4|800|orient=1",
+      "key": "086c682aeefd98f60822f0ee4725fbee8f7a68328b8463c10a088dfb25c8f6e0",
+      "file_name": "086c682aeefd98f60822f0ee4725fbee8f7a68328b8463c10a088dfb25c8f6e0.png"
+    },
+    {
+      "name": "drive-root-file",
+      "path": "Z:\\x",
+      "length": 7,
+      "last_write_ticks": 8,
+      "get_full_path": true,
+      "keyed_path": "Z:\\x",
+      "stamp": "Z:\\x|7|8|800|orient=1",
+      "key": "fa2a3e3d80e9401ab5e932dc482f4dcceb694f0b44d0458ccb7869179f091cd3",
+      "file_name": "fa2a3e3d80e9401ab5e932dc482f4dcceb694f0b44d0458ccb7869179f091cd3.png"
+    }
+  ]
+}

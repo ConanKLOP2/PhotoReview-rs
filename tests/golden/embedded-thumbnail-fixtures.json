@@ -1,0 +1,222 @@
+{
+  "generator": "oracle-cs embedded-thumbnail-fixtures",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "file": "thumb-main480-thumb160.jpg",
+      "length": 5460,
+      "sha256": "c9492e1b5bdc0dfd60fd29a37f57394bfa787f1145e132dd21f35c5dfce17d53",
+      "what": "EmbeddedThumbnailReaderTests.NormalThumbnail_StillDecodes (main 480 red, thumbnail 160 blue)"
+    },
+    {
+      "file": "plain-main64.jpg",
+      "length": 694,
+      "sha256": "fd807b72bf6f4b63507ed855443029cd3669c9bf259a2567f6a429e5a425fc82",
+      "what": "EmbeddedThumbnailJpegFixture.CreateWithoutThumbnail"
+    },
+    {
+      "file": "bomb-claimed-20000.jpg",
+      "length": 1400,
+      "sha256": "f4b585a68a1201d93394513cfb797d66fbc00925c8ba2d79d892d5c67d1e3fdc",
+      "what": "WithClaimedThumbnailSize(20000,20000)"
+    },
+    {
+      "file": "bomb-claimed-65535.jpg",
+      "length": 1400,
+      "sha256": "f3648bcf878795647bfa504aa2e98a5cfa86dff4cfc5827654a9bec0b73abe69",
+      "what": "WithClaimedThumbnailSize(65535,65535)"
+    },
+    {
+      "file": "real-thumb-160.jpg",
+      "length": 5374,
+      "sha256": "b66ccbc5077f208c93b7e92cc961924bbccbc857f43f6c93acf8b7797fcd12f7",
+      "what": "WithRealThumbnail(160): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "real-thumb-400.jpg",
+      "length": 7474,
+      "sha256": "88ba7e43d10aad5668a74132156da3325a536017654254a0f0da19a1f2b9f2a2",
+      "what": "WithRealThumbnail(400): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "real-thumb-480.jpg",
+      "length": 8574,
+      "sha256": "ed7940fc3a700604e162ee1a5bdc0b2c32d729b05963eb9a2c4c9799d9d6efa8",
+      "what": "WithRealThumbnail(480): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "real-thumb-512.jpg",
+      "length": 9070,
+      "sha256": "f90a97f038eff8dc530cfc28cf009344dee07710e70fa7b522cd5ba18e0e974f",
+      "what": "WithRealThumbnail(512): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "real-thumb-600.jpg",
+      "length": 10750,
+      "sha256": "f1349cca07e248674068ad90c547fe79aef3f026451a041ddbdb2416adf24aeb",
+      "what": "WithRealThumbnail(600): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "real-thumb-1100.jpg",
+      "length": 24018,
+      "sha256": "66fca3519179aa4e207d5ab0bc58895776450a68154b89b1224c763caab5acf6",
+      "what": "WithRealThumbnail(1100): hand-spliced solid thumbnail"
+    },
+    {
+      "file": "quad-no-orientation.jpg",
+      "length": 1441,
+      "sha256": "5172b08e95d3d7c1599d6c108e3a3e72e94ab11f94f8f1ec0e734fbbd7919fdf",
+      "what": "no orientation tag"
+    },
+    {
+      "file": "quad-orientation-1.jpg",
+      "length": 1453,
+      "sha256": "86f937772347e9b28bc7cb6b462546980dc8e7dfee39a3a6a182d95b724f0f45",
+      "what": "EXIF orientation 1"
+    },
+    {
+      "file": "quad-orientation-2.jpg",
+      "length": 1453,
+      "sha256": "38bbe12160eb1719f4d608101f4e3886937ec26675f5d4c7b7d7702fe0a4c45e",
+      "what": "EXIF orientation 2"
+    },
+    {
+      "file": "quad-orientation-3.jpg",
+      "length": 1453,
+      "sha256": "c2f80447a7f5688c839d5ffcae02f7d16c988ef6734b60b56102ec57a9f85aef",
+      "what": "EXIF orientation 3"
+    },
+    {
+      "file": "quad-orientation-4.jpg",
+      "length": 1453,
+      "sha256": "03aaf2cdd001324bd0081f40fa4dcfb84ed836fafed57db04880f2634019d5b2",
+      "what": "EXIF orientation 4"
+    },
+    {
+      "file": "quad-orientation-5.jpg",
+      "length": 1453,
+      "sha256": "43909bc6362d9f2a027a3c138fbb3775d0d4786ea4d4b8c299e68d96c50a5a6c",
+      "what": "EXIF orientation 5"
+    },
+    {
+      "file": "quad-orientation-6.jpg",
+      "length": 1453,
+      "sha256": "5e6afb1b839efabdfe26772a5f7cf50dd753bbb24531ff4c054f68952062831b",
+      "what": "EXIF orientation 6"
+    },
+    {
+      "file": "quad-orientation-7.jpg",
+      "length": 1453,
+      "sha256": "a76923a54cc3530743db1526d3a9f1c47cd3edc8001b0558ca0dce3aab32c999",
+      "what": "EXIF orientation 7"
+    },
+    {
+      "file": "quad-orientation-8.jpg",
+      "length": 1453,
+      "sha256": "5558438c745e0b3dd7aa68dc21b52595ea1b91307fabaebd66980057594f6ed8",
+      "what": "EXIF orientation 8"
+    },
+    {
+      "file": "quad-orientation-9.jpg",
+      "length": 1453,
+      "sha256": "f8f969b3e3c804093cf36ec9247b38c8ef18124c88e8cad41943385eb2b62e78",
+      "what": "orientation out of range: treated as 1"
+    },
+    {
+      "file": "quad-orientation-0.jpg",
+      "length": 1453,
+      "sha256": "5e77d8de9685f10c8bc8c99fa1a8302595e0dcd2805b5573f70aefcb18d7addc",
+      "what": "orientation 0: treated as 1"
+    },
+    {
+      "file": "truncated-o6-0.jpg",
+      "length": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "what": "quad-orientation-6.jpg cut to 0 bytes"
+    },
+    {
+      "file": "truncated-o6-1.jpg",
+      "length": 1,
+      "sha256": "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89",
+      "what": "quad-orientation-6.jpg cut to 1 bytes"
+    },
+    {
+      "file": "truncated-o6-2.jpg",
+      "length": 2,
+      "sha256": "71563ad80061407ede9c6f316836284bd3710a520c5a792b5eda1cb703690815",
+      "what": "quad-orientation-6.jpg cut to 2 bytes"
+    },
+    {
+      "file": "truncated-o6-3.jpg",
+      "length": 3,
+      "sha256": "6e568e1f67fba258184c78181539e5e8fdee447e49bb706fc0ea34fbf12336a5",
+      "what": "quad-orientation-6.jpg cut to 3 bytes"
+    },
+    {
+      "file": "truncated-o6-4.jpg",
+      "length": 4,
+      "sha256": "ba4f25bf16ba4be6bc7d3276fafeb67f9eb3c5df042bc3a405e1af15b921eed7",
+      "what": "quad-orientation-6.jpg cut to 4 bytes"
+    },
+    {
+      "file": "truncated-o6-20.jpg",
+      "length": 20,
+      "sha256": "04d4e9744a0c1fd428d9819468cdf5ee1fa24c99a8643b025ba07f6c03c9c2f3",
+      "what": "quad-orientation-6.jpg cut to 20 bytes"
+    },
+    {
+      "file": "truncated-o6-100.jpg",
+      "length": 100,
+      "sha256": "f15b25f0e5d867592f0e7cbe2a42ac1fd4c74dd764656e804a838112ab6912aa",
+      "what": "quad-orientation-6.jpg cut to 100 bytes"
+    },
+    {
+      "file": "truncated-o6-300.jpg",
+      "length": 300,
+      "sha256": "329f3f6c14048a5a76a149353fa352c78739756fe8b66826f44c3a5c54710fa4",
+      "what": "quad-orientation-6.jpg cut to 300 bytes"
+    },
+    {
+      "file": "truncated-o6-600.jpg",
+      "length": 600,
+      "sha256": "c4ee64d046b15095e5af3cccfcf63dfe8f42097ac6445f77a18e8761dd2f581d",
+      "what": "quad-orientation-6.jpg cut to 600 bytes"
+    },
+    {
+      "file": "truncated-o6-half.jpg",
+      "length": 726,
+      "sha256": "b244acb0a3470095f24e0ba9f6279e2d4e87ca62c775c4cd292fc28349b07378",
+      "what": "quad-orientation-6.jpg cut to 726 bytes"
+    },
+    {
+      "file": "truncated-o6-minus1.jpg",
+      "length": 1452,
+      "sha256": "b1322e14664518a0b2050926137b2471ff9469f5ed3a126c3b0a96a08e7e549f",
+      "what": "quad-orientation-6.jpg cut to 1452 bytes"
+    },
+    {
+      "file": "not-jpeg.png",
+      "length": 166,
+      "sha256": "94df5db377e1b6e48da7c7ec6493ae737d7fa7ba0e4fa0b83badf16ecc88b478",
+      "what": "PNG (no EXIF thumbnail)"
+    },
+    {
+      "file": "garbage.jpg",
+      "length": 400,
+      "sha256": "f9151d5e3fa7f1ea0dbf095dad820ae9f00dbd82965e4000db9eb0e3e65f1002",
+      "what": "400 bytes of noise"
+    },
+    {
+      "file": "text.jpg",
+      "length": 23,
+      "sha256": "2f9be1027db475e94a543b452f4c6737a191b9163913bf1599402c3b6022c794",
+      "what": "text file named .jpg"
+    },
+    {
+      "file": "empty.jpg",
+      "length": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "what": "zero bytes"
+    }
+  ]
+}

@@ -1,0 +1,1008 @@
+{
+  "cases": [
+    {
+      "name": "primary-ok-same-backend-returned-as-is",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "ok",
+        "backend": "TurboJpeg",
+        "tag": 1
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "primary-ok-other-backend-relabelled-keeps-every-property",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 2
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "primary-ok-wicdirect-image-for-turbo-primary-relabelled",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "ok",
+        "backend": "WicDirect",
+        "tag": 3
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "primary-ok-libraw-primary-same-backend",
+      "op": "decode",
+      "primary_backend": "LibRaw",
+      "primary": {
+        "kind": "ok",
+        "backend": "LibRaw",
+        "tag": 4
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\raw\\a.cr2"
+      }
+    },
+    {
+      "name": "primary-ok-wpf-primary-wpf-image",
+      "op": "decode",
+      "primary_backend": "Wpf",
+      "primary": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 5
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-notsupported",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot: NotSupported"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-missingcodec",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "MissingCodec",
+        "message": "primary cannot: MissingCodec"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-invalidcast",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidCast",
+        "message": "primary cannot: InvalidCast"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-overflow",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Overflow",
+        "message": "primary cannot: Overflow"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-format",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Format",
+        "message": "primary cannot: Format"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-invaliddata",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "primary cannot: InvalidData"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-com",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "COM",
+        "message": "primary cannot: COM"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-dllnotfound",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "DllNotFound",
+        "message": "primary cannot: DllNotFound"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-badimageformat",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "BadImageFormat",
+        "message": "primary cannot: BadImageFormat"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-entrypointnotfound",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "EntryPointNotFound",
+        "message": "primary cannot: EntryPointNotFound"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "falls-back-on-platformnotsupported",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "PlatformNotSupported",
+        "message": "primary cannot: PlatformNotSupported"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 10
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "fallback-image-on-other-backend-relabelled-wpf",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "LibRaw",
+        "tag": 11
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "fallback-image-on-wicdirect-relabelled-wpf",
+      "op": "decode",
+      "primary_backend": "WicDirect",
+      "primary": {
+        "kind": "throw",
+        "exception": "COM",
+        "message": "Native COM failure",
+        "hresult": -2003292336
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "WicDirect",
+        "tag": 12
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "wpf-primary-failure-still-falls-back-to-wpf-slot",
+      "op": "decode",
+      "primary_backend": "Wpf",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 13
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "com-message-text-in-warning",
+      "op": "decode",
+      "primary_backend": "WicDirect",
+      "primary": {
+        "kind": "throw",
+        "exception": "COM",
+        "message": "The component cannot be found. (0x88982F50)"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\café中.jpg"
+      }
+    },
+    {
+      "name": "path-with-quote-in-warning",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "bad"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\it's.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-filenotfound",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "FileNotFound",
+        "message": "primary refuses: FileNotFound"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-directorynotfound",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "DirectoryNotFound",
+        "message": "primary refuses: DirectoryNotFound"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-operationcanceled",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "OperationCanceled",
+        "message": "primary refuses: OperationCanceled"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-taskcanceled",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "TaskCanceled",
+        "message": "primary refuses: TaskCanceled"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-outofmemory",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "OutOfMemory",
+        "message": "primary refuses: OutOfMemory"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-memoryadmission",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "MemoryAdmission",
+        "message": "primary refuses: MemoryAdmission"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-busy",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Busy",
+        "message": "primary refuses: Busy"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-invalidoperation",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "primary refuses: InvalidOperation"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-argument",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Argument",
+        "message": "primary refuses: Argument"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-objectdisposed",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "ObjectDisposed",
+        "message": "primary refuses: ObjectDisposed"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-io",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "IO",
+        "message": "primary refuses: IO"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-fileload",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "FileLoad",
+        "message": "primary refuses: FileLoad"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-unauthorizedaccess",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "UnauthorizedAccess",
+        "message": "primary refuses: UnauthorizedAccess"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-generic",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Generic",
+        "message": "primary refuses: Generic"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-arithmetic",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Arithmetic",
+        "message": "primary refuses: Arithmetic"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "no-fallback-on-admission-refusal-wic",
+      "op": "decode",
+      "primary_backend": "WicDirect",
+      "primary": {
+        "kind": "throw",
+        "exception": "MemoryAdmission",
+        "message": "The image is too large for the available memory."
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\big.jpg"
+      }
+    },
+    {
+      "name": "fallback-also-throws-its-own-exception-propagates",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "primary scan data"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "Format",
+        "message": "fallback sentinel"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "fallback-throws-file-not-found",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "FileNotFound",
+        "message": "gone"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "fallback-throws-busy",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "Busy",
+        "message": "queue full"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "source-bytes-handed-to-fallback-when-request-has-none",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad scan",
+        "attach_bytes": 8
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "source-bytes-ignored-when-request-already-has-bytes",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad scan",
+        "attach_bytes": 8
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg",
+        "bytes_len": 5
+      }
+    },
+    {
+      "name": "source-bytes-empty-buffer-is-still-handed-over",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad scan",
+        "attach_bytes": 0
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "source-bytes-not-attached-nothing-handed-over",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad scan"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "request-bytes-empty-buffer-counts-as-given",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad scan",
+        "attach_bytes": 8
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg",
+        "bytes_len": 0
+      }
+    },
+    {
+      "name": "fallback-request-keeps-box-orientation-and-source-orientation",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "x",
+        "attach_bytes": 3
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg",
+        "target_width": 800,
+        "target_height": 600,
+        "apply_orientation": false,
+        "source_orientation": 6
+      }
+    },
+    {
+      "name": "source-bytes-not-used-for-non-fallbackable",
+      "op": "decode",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "Busy",
+        "message": "queue full",
+        "attach_bytes": 8
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-primary-ok-no-fallback",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "ok",
+        "backend": "TurboJpeg",
+        "tag": 1
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "fallback must not run"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-falls-back-on-not-supported",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 2
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-falls-back-on-com",
+      "op": "read-info",
+      "primary_backend": "WicDirect",
+      "primary": {
+        "kind": "throw",
+        "exception": "COM",
+        "message": "com failure"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 3
+      },
+      "request": {
+        "path": "C:\\photos\\b.jpg"
+      }
+    },
+    {
+      "name": "read-info-no-fallback-on-file-not-found",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "FileNotFound",
+        "message": "gone"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-no-fallback-on-busy",
+      "op": "read-info",
+      "primary_backend": "LibRaw",
+      "primary": {
+        "kind": "throw",
+        "exception": "Busy",
+        "message": "queue full"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\raw\\a.cr2"
+      }
+    },
+    {
+      "name": "read-info-no-fallback-on-invalid-operation",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidOperation",
+        "message": "bug"
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 0
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-fallback-also-throws",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "NotSupported",
+        "message": "primary cannot"
+      },
+      "fallback": {
+        "kind": "throw",
+        "exception": "Format",
+        "message": "fallback sentinel"
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    },
+    {
+      "name": "read-info-source-bytes-do-not-matter",
+      "op": "read-info",
+      "primary_backend": "TurboJpeg",
+      "primary": {
+        "kind": "throw",
+        "exception": "InvalidData",
+        "message": "bad",
+        "attach_bytes": 8
+      },
+      "fallback": {
+        "kind": "ok",
+        "backend": "Wpf",
+        "tag": 4
+      },
+      "request": {
+        "path": "C:\\photos\\a.jpg"
+      }
+    }
+  ]
+}

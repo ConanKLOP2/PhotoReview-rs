@@ -1,0 +1,48 @@
+{
+  "generator": "oracle-cs atomic-cache-file",
+  "cases": [
+    {"name": "write-new-file-creates-directory", "steps": [
+      {"op": "write", "target": "sub/deep/entry.bin", "payload": "ok", "hex": "010203"}]},
+    {"name": "replaces-existing-entry-no-temp-left", "steps": [
+      {"op": "write", "target": "c/entry.pv4", "payload": "ok", "hex": "010203"},
+      {"op": "write", "target": "c/entry.pv4", "payload": "ok", "hex": "0908"}]},
+    {"name": "empty-payload-publishes-empty-file", "steps": [
+      {"op": "write", "target": "entry.bin", "payload": "ok", "hex": ""}]},
+    {"name": "large-payload-over-buffer-size", "steps": [
+      {"op": "write", "target": "entry.bin", "payload": "ok", "hex": "ab", "repeat": 200000}]},
+    {"name": "cancelled-before-write-creates-nothing", "steps": [
+      {"op": "write", "target": "sub/entry.pv4", "payload": "ok", "hex": "01", "cancel_before": true}]},
+    {"name": "cancelled-before-write-keeps-old-entry", "steps": [
+      {"op": "write", "target": "c/entry.pv4", "payload": "ok", "hex": "0102"},
+      {"op": "write", "target": "c/entry.pv4", "payload": "ok", "hex": "09", "cancel_before": true}]},
+    {"name": "cancelled-during-payload-not-published", "steps": [
+      {"op": "write", "target": "c/entry.pv4", "payload": "cancel_after_write", "hex": "01"}]},
+    {"name": "cancelled-during-payload-keeps-old-entry", "steps": [
+      {"op": "write", "target": "c/entry.pv4", "payload": "ok", "hex": "0102"},
+      {"op": "write", "target": "c/entry.pv4", "payload": "cancel_after_write", "hex": "07"}]},
+    {"name": "payload-throws-cleans-temp-override", "steps": [
+      {"op": "write", "target": "d/entry.bin", "payload": "throw", "temp": "entry.bin.fixed.tmp"}]},
+    {"name": "payload-throws-after-partial-write-cleans-temp", "steps": [
+      {"op": "write", "target": "d/entry.bin", "payload": "throw_after_write", "hex": "010203", "temp": "entry.bin.fixed.tmp"}]},
+    {"name": "payload-throws-keeps-old-entry", "steps": [
+      {"op": "write", "target": "d/entry.bin", "payload": "ok", "hex": "0102"},
+      {"op": "write", "target": "d/entry.bin", "payload": "throw_after_write", "hex": "09"}]},
+    {"name": "preexisting-temp-is-refused-and-untouched", "steps": [
+      {"op": "precreate", "path": "d/entry.bin.fixed.tmp", "hex": "090909"},
+      {"op": "write", "target": "d/entry.bin", "payload": "ok", "hex": "01", "temp": "entry.bin.fixed.tmp"}]},
+    {"name": "preexisting-temp-survives-precancelled-call", "steps": [
+      {"op": "precreate", "path": "d/entry.bin.fixed.tmp", "hex": "0a"},
+      {"op": "write", "target": "d/entry.bin", "payload": "ok", "hex": "01", "temp": "entry.bin.fixed.tmp", "cancel_before": true}]},
+    {"name": "temp-override-used-then-renamed-away", "steps": [
+      {"op": "write", "target": "d/entry.bin", "payload": "ok", "hex": "01", "temp": "my.tmp"}]},
+    {"name": "target-is-an-existing-directory", "steps": [
+      {"op": "mkdir", "path": "d/entry.bin"},
+      {"op": "write", "target": "d/entry.bin", "payload": "ok", "hex": "01", "temp": "entry.bin.fixed.tmp"}]},
+    {"name": "parent-path-is-a-file", "steps": [
+      {"op": "precreate", "path": "blocker", "hex": "01"},
+      {"op": "write", "target": "blocker/entry.bin", "payload": "ok", "hex": "01"}]},
+    {"name": "two-writes-different-targets-same-dir", "steps": [
+      {"op": "write", "target": "d/a.bin", "payload": "ok", "hex": "0a"},
+      {"op": "write", "target": "d/b.bin", "payload": "ok", "hex": "0b"}]}
+  ]
+}

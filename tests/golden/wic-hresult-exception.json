@@ -1,0 +1,1409 @@
+{
+  "generator": "oracle-cs wic-hresult-exception",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "success-codes",
+      "results": [
+        {
+          "hresult": "0x00000000",
+          "type": null,
+          "exception_hresult": null,
+          "base_types": null
+        },
+        {
+          "hresult": "0x00000001",
+          "type": null,
+          "exception_hresult": null,
+          "base_types": null
+        },
+        {
+          "hresult": "0x00080000",
+          "type": null,
+          "exception_hresult": null,
+          "base_types": null
+        },
+        {
+          "hresult": "0x7FFFFFFF",
+          "type": null,
+          "exception_hresult": null,
+          "base_types": null
+        }
+      ]
+    },
+    {
+      "name": "standard-com",
+      "results": [
+        {
+          "hresult": "0x80004001",
+          "type": "System.NotImplementedException",
+          "exception_hresult": "0x80004001",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80004002",
+          "type": "System.InvalidCastException",
+          "exception_hresult": "0x80004002",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80004003",
+          "type": "System.NullReferenceException",
+          "exception_hresult": "0x80004003",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80004004",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80004004",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80004005",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80004005",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8000FFFF",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8000FFFF",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070005",
+          "type": "System.UnauthorizedAccessException",
+          "exception_hresult": "0x80070005",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070006",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070006",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007000E",
+          "type": "System.OutOfMemoryException",
+          "exception_hresult": "0x8007000E",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070057",
+          "type": "System.ArgumentException",
+          "exception_hresult": "0x80070057",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80000002",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80000002",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80000003",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80000003",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8000000B",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8000000B",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8000000C",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8000000C",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8000000E",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8000000E",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80000013",
+          "type": "System.ObjectDisposedException",
+          "exception_hresult": "0x80000013",
+          "base_types": [
+            "System.InvalidOperationException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "win32",
+      "results": [
+        {
+          "hresult": "0x80070001",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070001",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070002",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x80070002",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070003",
+          "type": "System.IO.DirectoryNotFoundException",
+          "exception_hresult": "0x80070003",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070008",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070008",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007000B",
+          "type": "System.BadImageFormatException",
+          "exception_hresult": "0x8007000B",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007000D",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007000D",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007000F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007000F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070015",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x80070015",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007001F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007001F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070020",
+          "type": "System.IO.FileLoadException",
+          "exception_hresult": "0x80070020",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070021",
+          "type": "System.IO.FileLoadException",
+          "exception_hresult": "0x80070021",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070026",
+          "type": "System.IO.EndOfStreamException",
+          "exception_hresult": "0x80070026",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070032",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070032",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070035",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x80070035",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070043",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x80070043",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070050",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070050",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070070",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070070",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070079",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070079",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007007E",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x8007007E",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007007F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007007F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070083",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80070083",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800700B7",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800700B7",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800700C1",
+          "type": "System.BadImageFormatException",
+          "exception_hresult": "0x800700C1",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800700CE",
+          "type": "System.IO.PathTooLongException",
+          "exception_hresult": "0x800700CE",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070216",
+          "type": "System.ArithmeticException",
+          "exception_hresult": "0x80070216",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800703E3",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800703E3",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800703E9",
+          "type": "System.StackOverflowException",
+          "exception_hresult": "0x800703E9",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800703EE",
+          "type": "System.IO.FileLoadException",
+          "exception_hresult": "0x800703EE",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007045D",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007045D",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800704C7",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800704C7",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007054F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007054F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80070570",
+          "type": "System.BadImageFormatException",
+          "exception_hresult": "0x80070570",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800705AA",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800705AA",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800705AD",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800705AD",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "storage",
+      "results": [
+        {
+          "hresult": "0x80030001",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030001",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030002",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030002",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030003",
+          "type": "System.IO.DirectoryNotFoundException",
+          "exception_hresult": "0x80030003",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030005",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030005",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030008",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030008",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8003001D",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8003001D",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8003001E",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8003001E",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030020",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030020",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030021",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030021",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80030102",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80030102",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wincodec",
+      "results": [
+        {
+          "hresult": "0x88982F04",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F04",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F05",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F05",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F07",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F07",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F0B",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F0B",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F0C",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F0C",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F0D",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F0D",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F40",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F40",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F41",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F41",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F42",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F42",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F43",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F43",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F44",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F44",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F45",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F45",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F46",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F46",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F48",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F48",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F49",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F49",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F50",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F50",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F51",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F51",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F52",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F52",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F60",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F60",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F61",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F61",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F62",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F62",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F63",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F63",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F70",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F70",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F71",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F71",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F72",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F72",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F73",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F73",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F80",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F80",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F81",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F81",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8A",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8A",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8B",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8B",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8C",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8C",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8D",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8D",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8E",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8E",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F8F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F8F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F90",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F90",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F91",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F91",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F92",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F92",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F93",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F93",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F94",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F94",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F95",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F95",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x88982F96",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x88982F96",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "clr",
+      "results": [
+        {
+          "hresult": "0x80131500",
+          "type": "System.Exception",
+          "exception_hresult": "0x80131500",
+          "base_types": []
+        },
+        {
+          "hresult": "0x80131501",
+          "type": "System.SystemException",
+          "exception_hresult": "0x80131501",
+          "base_types": [
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131502",
+          "type": "System.ArgumentOutOfRangeException",
+          "exception_hresult": "0x80131502",
+          "base_types": [
+            "System.ArgumentException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131503",
+          "type": "System.ArrayTypeMismatchException",
+          "exception_hresult": "0x80131503",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131505",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80131505",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131508",
+          "type": "System.IndexOutOfRangeException",
+          "exception_hresult": "0x80131508",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131509",
+          "type": "System.InvalidOperationException",
+          "exception_hresult": "0x80131509",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131513",
+          "type": "System.MissingMethodException",
+          "exception_hresult": "0x80131513",
+          "base_types": [
+            "System.MissingMemberException",
+            "System.MemberAccessException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131515",
+          "type": "System.NotSupportedException",
+          "exception_hresult": "0x80131515",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131516",
+          "type": "System.OverflowException",
+          "exception_hresult": "0x80131516",
+          "base_types": [
+            "System.ArithmeticException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131523",
+          "type": "System.EntryPointNotFoundException",
+          "exception_hresult": "0x80131523",
+          "base_types": [
+            "System.TypeLoadException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131524",
+          "type": "System.DllNotFoundException",
+          "exception_hresult": "0x80131524",
+          "base_types": [
+            "System.TypeLoadException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131537",
+          "type": "System.FormatException",
+          "exception_hresult": "0x80131537",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131539",
+          "type": "System.PlatformNotSupportedException",
+          "exception_hresult": "0x80131539",
+          "base_types": [
+            "System.NotSupportedException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8013153B",
+          "type": "System.OperationCanceledException",
+          "exception_hresult": "0x8013153B",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131620",
+          "type": "System.IO.IOException",
+          "exception_hresult": "0x80131620",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131621",
+          "type": "System.IO.FileLoadException",
+          "exception_hresult": "0x80131621",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80131622",
+          "type": "System.ObjectDisposedException",
+          "exception_hresult": "0x80131622",
+          "base_types": [
+            "System.InvalidOperationException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8013150A",
+          "type": "System.Security.SecurityException",
+          "exception_hresult": "0x8013150A",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80020012",
+          "type": "System.DivideByZeroException",
+          "exception_hresult": "0x80020012",
+          "base_types": [
+            "System.ArithmeticException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8002000A",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8002000A",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "other-com",
+      "results": [
+        {
+          "hresult": "0x800401F0",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x800401F0",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80010106",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80010106",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8001010E",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8001010E",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80040154",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80040154",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800A0035",
+          "type": "System.IO.FileNotFoundException",
+          "exception_hresult": "0x800A0035",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800A0039",
+          "type": "System.IO.IOException",
+          "exception_hresult": "0x800A0039",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800A0046",
+          "type": "System.Security.SecurityException",
+          "exception_hresult": "0x800A0046",
+          "base_types": [
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x800A004C",
+          "type": "System.IO.DirectoryNotFoundException",
+          "exception_hresult": "0x800A004C",
+          "base_types": [
+            "System.IO.IOException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8009000E",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8009000E",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0xC0000005",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0xC0000005",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0xA0001234",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0xA0001234",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x80000000",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x80000000",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0xFFFFFFFF",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0xFFFFFFFF",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x887A0005",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x887A0005",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        },
+        {
+          "hresult": "0x8007139F",
+          "type": "System.Runtime.InteropServices.COMException",
+          "exception_hresult": "0x8007139F",
+          "base_types": [
+            "System.Runtime.InteropServices.ExternalException",
+            "System.SystemException",
+            "System.Exception"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "cases": [
+    {
+      "name": "window-1-0",
+      "forward": 1,
+      "backward": 0
+    },
+    {
+      "name": "window-3-1",
+      "forward": 3,
+      "backward": 1
+    },
+    {
+      "name": "window-32-8",
+      "forward": 32,
+      "backward": 8
+    },
+    {
+      "name": "window-500-500",
+      "forward": 500,
+      "backward": 500
+    },
+    {
+      "name": "window-0-0",
+      "forward": 0,
+      "backward": 0
+    },
+    {
+      "name": "window--1--1",
+      "forward": -1,
+      "backward": -1
+    },
+    {
+      "name": "window-2147483647-0",
+      "forward": 2147483647,
+      "backward": 0
+    },
+    {
+      "name": "window-2147483647-1",
+      "forward": 2147483647,
+      "backward": 1
+    },
+    {
+      "name": "window-1-2147483647",
+      "forward": 1,
+      "backward": 2147483647
+    }
+  ],
+  "settings_cases": [
+    {
+      "name": "settings-64-16",
+      "forward_count": 64,
+      "backward_count": 16
+    },
+    {
+      "name": "settings-default"
+    },
+    {
+      "name": "settings-1-0",
+      "forward_count": 1,
+      "backward_count": 0
+    },
+    {
+      "name": "settings-unclamped-9999-9999",
+      "forward_count": 9999,
+      "backward_count": 9999
+    }
+  ]
+}

@@ -1,0 +1,1042 @@
+{
+  "generator": "oracle-cs decoder-factory",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "wpf-only-creates-all-backends",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "LibRaw",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wpf": 4
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend WicDirect is not registered, falling back to Wpf.",
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf.",
+        "Decoder backend LibRaw is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "wic-and-wpf-both-ok",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 1,
+        "wpf": 2
+      },
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "wic-fails-falls-back-to-wpf",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "Wpf"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 1,
+        "wpf": 2
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder WicDirect failed for 'x.jpg', falling back to Wpf: marker wic fails",
+        "Decoder WicDirect.ReadInfo failed for 'x.jpg', falling back to Wpf: marker wic fails"
+      ]
+    },
+    {
+      "name": "turbo-fails-wic-and-wpf-present",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": true,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "Wpf"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "turbo": 1,
+        "wic": 1,
+        "wpf": 2
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder TurboJpeg failed for 'x.jpg', falling back to Wpf: marker turbo fails",
+        "Decoder TurboJpeg.ReadInfo failed for 'x.jpg', falling back to Wpf: marker turbo fails"
+      ]
+    },
+    {
+      "name": "no-wpf-maps-wpf-slot-to-wic-direct",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 3
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "no-wpf-wic-direct-fails-is-not-retried",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          },
+          "read_info": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          },
+          "read_info": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 2
+      },
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "no-wpf-other-backend-falls-back-to-wic",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": true,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "Wpf"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "turbo": 1,
+        "wic": 1
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder TurboJpeg failed for 'x.jpg', falling back to Wpf: marker turbo fails",
+        "Decoder TurboJpeg.ReadInfo failed for 'x.jpg', falling back to Wpf: marker turbo fails"
+      ]
+    },
+    {
+      "name": "wpf-factory-fills-slot",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "factory-wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "factory-wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "factory-wpf": 3,
+        "wic": 1
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "wpf-factory-only",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "factory-wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "factory-wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "LibRaw",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "factory-wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "factory-wpf": 3
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend WicDirect is not registered, falling back to Wpf.",
+        "Decoder backend LibRaw is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "explicit-wpf-wins-over-wpf-factory",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "explicit",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "explicit",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "explicit": 2
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "no-wpf-no-wic-direct-is-composition-error",
+      "ctor_error": {
+        "type": "ArgumentException",
+        "message": "No decoder can serve the Wpf backend: register a Wpf provider, pass wpfDecoderFactory, or register WicDirect. (Parameter 'providers')"
+      },
+      "create": [],
+      "provider_runs": {},
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "empty-providers-no-factory-is-composition-error",
+      "ctor_error": {
+        "type": "ArgumentException",
+        "message": "No decoder can serve the Wpf backend: register a Wpf provider, pass wpfDecoderFactory, or register WicDirect. (Parameter 'providers')"
+      },
+      "create": [],
+      "provider_runs": {},
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "duplicate-provider-last-wins",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic-second",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic-second": 1,
+        "wpf": 1
+      },
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "unregistered-backend-warns-and-serves-wpf",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": true,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wpf": 1
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "unregistered-backend-wpf-fails-is-an-error",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "LibRaw",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          },
+          "read_info": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          }
+        }
+      ],
+      "provider_runs": {
+        "wpf": 1
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend LibRaw is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "both-primary-and-wpf-fail",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          },
+          "read_info": {
+            "ok": false,
+            "error_type": "NotSupportedException"
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 1,
+        "wpf": 1
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder WicDirect failed for 'x.jpg', falling back to Wpf: marker wic fails",
+        "Decoder WicDirect.ReadInfo failed for 'x.jpg', falling back to Wpf: marker wic fails"
+      ]
+    },
+    {
+      "name": "create-twice-builds-once",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": true,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": true,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 1,
+        "wpf": 2
+      },
+      "decorator_calls": [],
+      "warnings": []
+    },
+    {
+      "name": "decorator-sees-requested-backend",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "WicDirect",
+          "decorated": true,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": true,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": true,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": true,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": true,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 1,
+        "wpf": 3
+      },
+      "decorator_calls": [
+        {
+          "backend": "WicDirect",
+          "inner_type": "fallback"
+        },
+        {
+          "backend": "Wpf",
+          "inner_type": "marker:wpf"
+        },
+        {
+          "backend": "TurboJpeg",
+          "inner_type": "marker:wpf"
+        }
+      ],
+      "warnings": [
+        "Decoder backend TurboJpeg is not registered, falling back to Wpf."
+      ]
+    },
+    {
+      "name": "decorator-with-mapped-wpf-slot",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": false,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": true,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "WicDirect",
+          "decorated": true,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "Wpf",
+          "decorated": true,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": true,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "wic": 2
+      },
+      "decorator_calls": [
+        {
+          "backend": "Wpf",
+          "inner_type": "marker:wic"
+        },
+        {
+          "backend": "WicDirect",
+          "inner_type": "marker:wic"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "name": "decorator-wraps-fallback-wrapper",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": false,
+        "TurboJpeg": true,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "TurboJpeg",
+          "decorated": true,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wpf",
+            "actual_backend": "Wpf"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "turbo": 1,
+        "wpf": 1
+      },
+      "decorator_calls": [
+        {
+          "backend": "TurboJpeg",
+          "inner_type": "fallback"
+        }
+      ],
+      "warnings": [
+        "Decoder TurboJpeg failed for 'x.jpg', falling back to Wpf: marker turbo fails",
+        "Decoder TurboJpeg.ReadInfo failed for 'x.jpg', falling back to Wpf: marker turbo fails"
+      ]
+    },
+    {
+      "name": "persisted-wpf-setting-with-only-wic",
+      "ctor_error": null,
+      "is_registered": {
+        "Wpf": true,
+        "WicDirect": true,
+        "TurboJpeg": true,
+        "LibRaw": false
+      },
+      "create": [
+        {
+          "backend": "Wpf",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "TurboJpeg",
+          "decorated": false,
+          "wrapped_in_fallback": true,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "turbo",
+            "actual_backend": "TurboJpeg"
+          },
+          "read_info": {
+            "ok": true
+          }
+        },
+        {
+          "backend": "LibRaw",
+          "decorated": false,
+          "wrapped_in_fallback": false,
+          "same_instance_as_previous": null,
+          "decode": {
+            "ok": true,
+            "served_by": "wic",
+            "actual_backend": "WicDirect"
+          },
+          "read_info": {
+            "ok": true
+          }
+        }
+      ],
+      "provider_runs": {
+        "turbo": 1,
+        "wic": 3
+      },
+      "decorator_calls": [],
+      "warnings": [
+        "Decoder backend LibRaw is not registered, falling back to Wpf."
+      ]
+    }
+  ]
+}

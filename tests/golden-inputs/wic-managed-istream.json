@@ -1,0 +1,859 @@
+{
+  "generator": "oracle-cs wic-managed-istream",
+  "cases": [
+    {
+      "name": "read-short-read-at-eof-reports-count",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 6
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 4
+        },
+        {
+          "op": "read",
+          "cb": 4
+        }
+      ]
+    },
+    {
+      "name": "read-zero-bytes",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 0
+        }
+      ]
+    },
+    {
+      "name": "read-whole-stream",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 8
+        },
+        {
+          "op": "read",
+          "cb": 1
+        }
+      ]
+    },
+    {
+      "name": "read-and-seek-null-out-pointers",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": 3,
+          "null_out": true
+        },
+        {
+          "op": "seek",
+          "move": 1,
+          "origin": 0,
+          "null_out": true
+        }
+      ]
+    },
+    {
+      "name": "seek-begin-5",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 5,
+          "origin": 0
+        }
+      ]
+    },
+    {
+      "name": "seek-current-plus-2",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 2,
+          "origin": 1
+        }
+      ]
+    },
+    {
+      "name": "seek-current-minus-3",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -3,
+          "origin": 1
+        }
+      ]
+    },
+    {
+      "name": "seek-end-minus-2",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -2,
+          "origin": 2
+        }
+      ]
+    },
+    {
+      "name": "seek-end-0",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 4
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 2
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-current-fails-position-kept",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -3,
+          "origin": 1
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-begin-fails",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -1,
+          "origin": 0
+        }
+      ]
+    },
+    {
+      "name": "seek-before-start-end-fails",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": -9,
+          "origin": 2
+        }
+      ]
+    },
+    {
+      "name": "seek-invalid-origin-3",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 3
+        }
+      ]
+    },
+    {
+      "name": "seek-invalid-origin-minus-1",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": -1
+        }
+      ]
+    },
+    {
+      "name": "seek-past-end-then-read-gets-nothing",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 20,
+          "origin": 0
+        },
+        {
+          "op": "read",
+          "cb": 4
+        }
+      ]
+    },
+    {
+      "name": "stat-readonly-reports-length",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "stat",
+          "flag": 0
+        },
+        {
+          "op": "stat",
+          "flag": 1
+        }
+      ]
+    },
+    {
+      "name": "stat-growable-after-write",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 8
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1,
+            2
+          ]
+        },
+        {
+          "op": "stat",
+          "flag": 1
+        }
+      ]
+    },
+    {
+      "name": "stat-empty",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "stat",
+          "flag": 0
+        }
+      ]
+    },
+    {
+      "name": "write-reports-cb-through-pointer",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "cb": 3
+        },
+        {
+          "op": "write",
+          "data": [
+            9
+          ],
+          "null_out": true
+        }
+      ]
+    },
+    {
+      "name": "write-overwrites-in-the-middle",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 1,
+          "origin": 0
+        },
+        {
+          "op": "write",
+          "data": [
+            7,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-after-seek-past-end-zero-fills",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "seek",
+          "move": 6,
+          "origin": 0
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "write-zero-bytes",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": []
+        }
+      ]
+    },
+    {
+      "name": "write-readonly-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 3
+      },
+      "ops": [
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "set-size-grows-with-zeros",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 7
+        }
+      ]
+    },
+    {
+      "name": "set-size-shrink-clamps-position-then-grow-zeroes",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 6
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 3
+        },
+        {
+          "op": "set_size",
+          "size": 6
+        }
+      ]
+    },
+    {
+      "name": "set-size-same-length",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 8
+        }
+      ]
+    },
+    {
+      "name": "set-size-readonly-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 4
+        }
+      ]
+    },
+    {
+      "name": "set-size-above-i64-max-out-of-range",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": -1
+        }
+      ]
+    },
+    {
+      "name": "noops-and-commit",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "set_size",
+          "size": 7
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "op": "revert"
+        },
+        {
+          "op": "lock"
+        },
+        {
+          "op": "unlock"
+        }
+      ]
+    },
+    {
+      "name": "clone-and-copy-to-not-supported",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "clone"
+        },
+        {
+          "op": "copy_to"
+        }
+      ]
+    },
+    {
+      "name": "after-dispose-every-op",
+      "backend": {
+        "kind": "readonly",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "read",
+          "cb": 1
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        },
+        {
+          "op": "seek",
+          "move": 0,
+          "origin": 0
+        },
+        {
+          "op": "set_size",
+          "size": 1
+        },
+        {
+          "op": "stat",
+          "flag": 0
+        },
+        {
+          "op": "commit"
+        },
+        {
+          "op": "revert"
+        },
+        {
+          "op": "lock"
+        },
+        {
+          "op": "unlock"
+        },
+        {
+          "op": "clone"
+        },
+        {
+          "op": "copy_to"
+        },
+        {
+          "op": "dispose"
+        }
+      ]
+    },
+    {
+      "name": "after-dispose-growable-write-and-set-size",
+      "backend": {
+        "kind": "growable",
+        "data": [],
+        "position": 0
+      },
+      "ops": [
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ]
+        },
+        {
+          "op": "set_size",
+          "size": 4
+        }
+      ]
+    },
+    {
+      "name": "read-and-write-negative-cb-out-of-range",
+      "backend": {
+        "kind": "growable",
+        "data": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "position": 2
+      },
+      "ops": [
+        {
+          "op": "read",
+          "cb": -1
+        },
+        {
+          "op": "write",
+          "data": [
+            1
+          ],
+          "cb": -1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,896 @@
+{
+  "generator": "oracle-cs preview-current-key",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "jpg-preview-default-backend",
+      "input": {
+        "name": "jpg-preview-default-backend",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "jpg-preview-turbo",
+      "input": {
+        "name": "jpg-preview-turbo",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "TurboJpeg"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 1,
+      "mode_calls": 1
+    },
+    {
+      "name": "jpg-preview-wicdirect",
+      "input": {
+        "name": "jpg-preview-wicdirect",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "WicDirect"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "WicDirect",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 1,
+      "mode_calls": 1
+    },
+    {
+      "name": "jpg-preview-libraw-backend",
+      "input": {
+        "name": "jpg-preview-libraw-backend",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "LibRaw"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "LibRaw",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 1,
+      "mode_calls": 1
+    },
+    {
+      "name": "jpg-original-ignores-box",
+      "input": {
+        "name": "jpg-original-ignores-box",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": true,
+        "w": 2400,
+        "h": 1350,
+        "backend": "TurboJpeg"
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "TurboJpeg",
+        "source_kind": 0
+      },
+      "box_calls": 0,
+      "backend_calls": 1,
+      "mode_calls": 1
+    },
+    {
+      "name": "jpg-original-default-backend",
+      "input": {
+        "name": "jpg-original-default-backend",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": true,
+        "w": 2400,
+        "h": 1350,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 0,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "dng-preview-raw-kind",
+      "input": {
+        "name": "dng-preview-raw-kind",
+        "path": "C:\\Pics\\b.dng",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\B.DNG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "nef-upper-ext-raw-kind",
+      "input": {
+        "name": "nef-upper-ext-raw-kind",
+        "path": "C:\\Pics\\B.NEF",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 2400,
+        "h": 1350,
+        "backend": "WicDirect"
+      },
+      "result": {
+        "path": "C:\\PICS\\B.NEF",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 2400,
+        "height": 1350,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "WicDirect",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 1,
+      "mode_calls": 1
+    },
+    {
+      "name": "cr3-original-raw-kind",
+      "input": {
+        "name": "cr3-original-raw-kind",
+        "path": "C:\\Pics\\c.cr3",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": true,
+        "w": 2400,
+        "h": 1350,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\C.CR3",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 0,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-ext.cr2",
+      "input": {
+        "name": "raw-ext.cr2",
+        "path": "C:\\Pics\\x.cr2",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.CR2",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-ext.arw",
+      "input": {
+        "name": "raw-ext.arw",
+        "path": "C:\\Pics\\x.arw",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.ARW",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-ext.raf",
+      "input": {
+        "name": "raw-ext.raf",
+        "path": "C:\\Pics\\x.raf",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.RAF",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-ext.orf",
+      "input": {
+        "name": "raw-ext.orf",
+        "path": "C:\\Pics\\x.orf",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.ORF",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-ext.rw2",
+      "input": {
+        "name": "raw-ext.rw2",
+        "path": "C:\\Pics\\x.rw2",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.RW2",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 1
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "not-raw-tif",
+      "input": {
+        "name": "not-raw-tif",
+        "path": "C:\\Pics\\x.tif",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.TIF",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "not-raw-heic",
+      "input": {
+        "name": "not-raw-heic",
+        "path": "C:\\Pics\\x.heic",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.HEIC",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "raw-like-suffix-dngx-not-raw",
+      "input": {
+        "name": "raw-like-suffix-dngx-not-raw",
+        "path": "C:\\Pics\\x.dngx",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.DNGX",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "no-extension",
+      "input": {
+        "name": "no-extension",
+        "path": "C:\\Pics\\README",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\README",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "trailing-dot-extension",
+      "input": {
+        "name": "trailing-dot-extension",
+        "path": "C:\\Pics\\x.dng.",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\X.DNG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "unbounded-box",
+      "input": {
+        "name": "unbounded-box",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 0,
+        "h": 0,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "width-only-box",
+      "input": {
+        "name": "width-only-box",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 1920,
+        "h": 0,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1920,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "height-only-box",
+      "input": {
+        "name": "height-only-box",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 0,
+        "h": 1080,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 0,
+        "height": 1080,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "negative-box-kept",
+      "input": {
+        "name": "negative-box-kept",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": -5,
+        "h": -7,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": -5,
+        "height": -7,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "width-only-overload",
+      "input": {
+        "name": "width-only-overload",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 1920,
+        "h": 999,
+        "backend": null,
+        "width_only": true
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 1920,
+        "height": 0,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "width-only-overload-original",
+      "input": {
+        "name": "width-only-overload-original",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": true,
+        "w": 1920,
+        "h": 999,
+        "backend": null,
+        "width_only": true
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": true,
+        "width": 0,
+        "height": 0,
+        "box_unbounded": true,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 0,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "lowercase-path-upper-cased",
+      "input": {
+        "name": "lowercase-path-upper-cased",
+        "path": "c:\\pics\\sub\\..\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "forward-slashes",
+      "input": {
+        "name": "forward-slashes",
+        "path": "C:/Pics/a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "unc-path",
+      "input": {
+        "name": "unc-path",
+        "path": "\\\\server\\share\\a.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "\\\\SERVER\\SHARE\\A.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "non-ascii-path",
+      "input": {
+        "name": "non-ascii-path",
+        "path": "C:\\Ảnh\\ảnh đẹp.jpg",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\ẢNH\\ẢNH ĐẸP.JPG",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "zero-length",
+      "input": {
+        "name": "zero-length",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 0,
+        "ticks": 638000000000000000,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "ticks-zero",
+      "input": {
+        "name": "ticks-zero",
+        "path": "C:\\Pics\\a.jpg",
+        "length": 1234,
+        "ticks": 0,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "path": "C:\\PICS\\A.JPG",
+        "length": 1234,
+        "ticks": 0,
+        "is_original": false,
+        "width": 800,
+        "height": 600,
+        "box_unbounded": false,
+        "orientation_applied": true,
+        "backend": "Wpf",
+        "source_kind": 0
+      },
+      "box_calls": 1,
+      "backend_calls": 0,
+      "mode_calls": 1
+    },
+    {
+      "name": "empty-path-throws",
+      "input": {
+        "name": "empty-path-throws",
+        "path": "",
+        "length": 1234,
+        "ticks": 638000000000000000,
+        "original_mode": false,
+        "w": 800,
+        "h": 600,
+        "backend": null
+      },
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Path cannot be null or whitespace. (Parameter 'path')"
+      },
+      "box_calls": 0,
+      "backend_calls": 0,
+      "mode_calls": 0
+    }
+  ]
+}

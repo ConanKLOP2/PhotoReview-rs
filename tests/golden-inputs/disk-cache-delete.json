@@ -1,0 +1,207 @@
+{
+ "cases": [
+  {
+   "name": "try-delete-existing-file",
+   "op": "try_delete",
+   "target": "a.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10
+    }
+   ]
+  },
+  {
+   "name": "try-delete-missing-file-false-no-log",
+   "op": "try_delete",
+   "target": "gone.png",
+   "files": []
+  },
+  {
+   "name": "try-delete-locked-file-false-and-logged",
+   "op": "try_delete",
+   "target": "a.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "locked": true
+    }
+   ]
+  },
+  {
+   "name": "try-delete-locked-file-without-log",
+   "op": "try_delete",
+   "target": "a.png",
+   "log": false,
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "locked": true
+    }
+   ]
+  },
+  {
+   "name": "try-delete-read-only-file-unauthorized-and-logged",
+   "op": "try_delete",
+   "target": "a.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10,
+     "readonly": true
+    }
+   ]
+  },
+  {
+   "name": "try-delete-directory-is-false",
+   "op": "try_delete",
+   "target": "sub",
+   "files": [
+    {
+     "name": "sub",
+     "dir": true
+    }
+   ]
+  },
+  {
+   "name": "try-delete-case-folder-itself-is-false",
+   "op": "try_delete",
+   "target": ".",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1
+    }
+   ]
+  },
+  {
+   "name": "try-delete-empty-path-is-false",
+   "op": "try_delete",
+   "target": "",
+   "files": []
+  },
+  {
+   "name": "try-delete-other-case-spelling",
+   "op": "try_delete",
+   "target": "A.PNG",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 10
+    }
+   ]
+  },
+  {
+   "name": "clear-static-removes-matching-only",
+   "op": "clear_static",
+   "pattern": "*.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1
+    },
+    {
+     "name": "b.PNG",
+     "size": 1
+    },
+    {
+     "name": "c.pv4",
+     "size": 1
+    },
+    {
+     "name": "d.png.1.tmp",
+     "size": 1
+    },
+    {
+     "name": "e.png",
+     "dir": true
+    }
+   ]
+  },
+  {
+   "name": "clear-static-locked-file-logged-others-removed",
+   "op": "clear_static",
+   "pattern": "*.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1,
+     "locked": true
+    },
+    {
+     "name": "b.png",
+     "size": 1
+    }
+   ]
+  },
+  {
+   "name": "clear-static-nul-pattern-throws",
+   "op": "clear_static",
+   "pattern": "a\u0000b",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1
+    }
+   ]
+  },
+  {
+   "name": "clear-instance-removes-pattern-and-temp-files",
+   "op": "clear_instance",
+   "pattern": "*.pv4",
+   "files": [
+    {
+     "name": "a.pv4",
+     "size": 1
+    },
+    {
+     "name": "a.pv4.1.tmp",
+     "size": 1
+    },
+    {
+     "name": "b.png.2.tmp",
+     "size": 1
+    },
+    {
+     "name": "c.png",
+     "size": 1
+    }
+   ]
+  },
+  {
+   "name": "clear-instance-locked-temp-not-logged-locked-entry-logged",
+   "op": "clear_instance",
+   "pattern": "*.png",
+   "files": [
+    {
+     "name": "a.png",
+     "size": 1,
+     "locked": true
+    },
+    {
+     "name": "b.png.1.tmp",
+     "size": 1,
+     "locked": true
+    },
+    {
+     "name": "c.png",
+     "size": 1
+    }
+   ]
+  },
+  {
+   "name": "clear-instance-read-only-temp-not-logged",
+   "op": "clear_instance",
+   "pattern": "*.png",
+   "files": [
+    {
+     "name": "x.tmp",
+     "size": 1,
+     "readonly": true
+    }
+   ]
+  }
+ ]
+}

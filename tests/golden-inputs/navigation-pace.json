@@ -1,0 +1,103 @@
+{
+  "cases": [
+    { "name": "initial-state", "ops": [
+      { "op": "direction" }, { "op": "lead", "decode_ms": 350 }, { "op": "delay", "decode_ms": 350 } ] },
+    { "name": "direction-follows-last-move-and-repeat-is-noop", "ops": [
+      { "op": "record", "index": 10 }, { "op": "advance", "ms": 600 }, { "op": "record", "index": 11 },
+      { "op": "advance", "ms": 600 }, { "op": "record", "index": 12 }, { "op": "advance", "ms": 600 }, { "op": "record", "index": 13 },
+      { "op": "direction" },
+      { "op": "advance", "ms": 600 }, { "op": "record", "index": 12 }, { "op": "direction" },
+      { "op": "record", "index": 12 }, { "op": "direction" } ] },
+    { "name": "jump-after-home-keeps-forward", "ops": [
+      { "op": "record", "index": 500 }, { "op": "record", "index": 0 }, { "op": "direction" },
+      { "op": "record", "index": 1 }, { "op": "direction" } ] },
+    { "name": "jump-after-prev-keeps-backward", "ops": [
+      { "op": "record", "index": 5 }, { "op": "record", "index": 4 }, { "op": "direction" },
+      { "op": "record", "index": 400 }, { "op": "direction" } ] },
+    { "name": "negative-index-ignored", "ops": [
+      { "op": "record", "index": 5 }, { "op": "advance", "ms": 30 }, { "op": "record", "index": -1 },
+      { "op": "advance", "ms": 30 }, { "op": "record", "index": 6 }, { "op": "advance", "ms": 30 }, { "op": "record", "index": 7 },
+      { "op": "lead", "decode_ms": 300 } ] },
+    { "name": "lead-is-rate-times-decode", "ops": [
+      { "op": "record", "index": 0 }, { "op": "advance", "ms": 33 }, { "op": "record", "index": 1 }, { "op": "lead", "decode_ms": 350 },
+      { "op": "advance", "ms": 33 }, { "op": "record", "index": 2 },
+      { "op": "lead", "decode_ms": 350 }, { "op": "lead", "decode_ms": 20 }, { "op": "lead", "decode_ms": 10000 } ] },
+    { "name": "lead-expires-when-burst-stops", "ops": [
+      { "op": "steps", "from": 0, "count": 10, "step": 1, "interval_ms": 33 },
+      { "op": "lead", "decode_ms": 350 }, { "op": "advance", "ms": 151 }, { "op": "lead", "decode_ms": 350 } ] },
+    { "name": "jump-resets-estimate", "ops": [
+      { "op": "steps", "from": 0, "count": 10, "step": 1, "interval_ms": 33 },
+      { "op": "advance", "ms": 33 }, { "op": "record", "index": 500 }, { "op": "lead", "decode_ms": 350 },
+      { "op": "steps", "from": 500, "count": 1, "step": 1, "interval_ms": 33 }, { "op": "lead", "decode_ms": 350 } ] },
+    { "name": "pause-resets-estimate", "ops": [
+      { "op": "steps", "from": 0, "count": 10, "step": 1, "interval_ms": 33 },
+      { "op": "advance", "ms": 501 }, { "op": "record", "index": 11 }, { "op": "lead", "decode_ms": 350 } ] },
+    { "name": "viewer-delay-burst-fast", "ops": [
+      { "op": "steps", "from": 0, "count": 10, "step": 1, "interval_ms": 33 }, { "op": "delay", "decode_ms": 350 } ] },
+    { "name": "viewer-delay-capped-slow-burst", "ops": [
+      { "op": "steps", "from": 0, "count": 10, "step": 1, "interval_ms": 200 }, { "op": "delay", "decode_ms": 350 } ] },
+    { "name": "step-exactly-500ms-is-still-burst", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 500 }, { "op": "lead", "decode_ms": 1000 } ] },
+    { "name": "step-501ms-restarts", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 501 }, { "op": "lead", "decode_ms": 1000 } ] },
+    { "name": "one-interval-is-not-a-burst", "ops": [
+      { "op": "steps", "from": 0, "count": 1, "step": 1, "interval_ms": 100 }, { "op": "lead", "decode_ms": 300 } ] },
+    { "name": "ewma-steady-100", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 }, { "op": "lead", "decode_ms": 300 } ] },
+    { "name": "ewma-100-then-200", "ops": [
+      { "op": "record", "index": 0 }, { "op": "advance", "ms": 100 }, { "op": "record", "index": 1 },
+      { "op": "advance", "ms": 200 }, { "op": "record", "index": 2 }, { "op": "lead", "decode_ms": 300 }, { "op": "lead", "decode_ms": 130 }, { "op": "lead", "decode_ms": 131 } ] },
+    { "name": "ewma-100-200-50-400", "ops": [
+      { "op": "record", "index": 0 }, { "op": "advance", "ms": 100 }, { "op": "record", "index": 1 },
+      { "op": "advance", "ms": 200 }, { "op": "record", "index": 2 }, { "op": "advance", "ms": 50 }, { "op": "record", "index": 3 },
+      { "op": "advance", "ms": 400 }, { "op": "record", "index": 4 },
+      { "op": "lead", "decode_ms": 1000 }, { "op": "lead", "decode_ms": 153 }, { "op": "lead", "decode_ms": 154 } ] },
+    { "name": "decode-equals-interval-needs-no-lead", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 },
+      { "op": "lead", "decode_ms": 100 }, { "op": "lead", "decode_ms": 50 }, { "op": "lead", "decode_ms": 101 }, { "op": "lead", "decode_ms": 0 },
+      { "op": "lead", "decode_ms": -5 }, { "op": "lead", "decode_ms": 100000 } ] },
+    { "name": "decode-nan-and-infinity", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 },
+      { "op": "lead", "decode_ms": "NaN" }, { "op": "lead", "decode_ms": "Infinity" }, { "op": "lead", "decode_ms": "-Infinity" },
+      { "op": "delay", "decode_ms": "NaN" }, { "op": "delay", "decode_ms": "Infinity" } ] },
+    { "name": "viewer-delay-boundaries", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 40 },
+      { "op": "delay", "decode_ms": 100 }, { "op": "delay", "decode_ms": 40 }, { "op": "delay", "decode_ms": 41 },
+      { "op": "delay", "decode_ms": 30 }, { "op": "delay", "decode_ms": 0 } ] },
+    { "name": "viewer-delay-1.5x-odd-interval", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 33 }, { "op": "delay", "decode_ms": 350 },
+      { "op": "delay", "decode_ms": 33.5 } ] },
+    { "name": "viewer-delay-cap-edge-67", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 67 }, { "op": "delay", "decode_ms": 500 } ] },
+    { "name": "active-window-twice-interval-inclusive", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 },
+      { "op": "advance", "ms": 50 }, { "op": "lead", "decode_ms": 300 },
+      { "op": "advance", "ms": 130 }, { "op": "lead", "decode_ms": 300 },
+      { "op": "advance", "ms": 20 }, { "op": "lead", "decode_ms": 300 }, { "op": "delay", "decode_ms": 300 },
+      { "op": "advance", "ms": 1 }, { "op": "lead", "decode_ms": 300 }, { "op": "delay", "decode_ms": 300 } ] },
+    { "name": "active-window-floor-150-inclusive", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 20 },
+      { "op": "advance", "ms": 150 }, { "op": "lead", "decode_ms": 60 },
+      { "op": "advance", "ms": 1 }, { "op": "lead", "decode_ms": 60 } ] },
+    { "name": "jump-then-fresh-burst", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 }, { "op": "lead", "decode_ms": 300 },
+      { "op": "advance", "ms": 100 }, { "op": "record", "index": 50 }, { "op": "lead", "decode_ms": 300 },
+      { "op": "advance", "ms": 100 }, { "op": "record", "index": 51 }, { "op": "advance", "ms": 100 }, { "op": "record", "index": 52 },
+      { "op": "lead", "decode_ms": 300 } ] },
+    { "name": "backward-burst-direction-and-lead", "ops": [
+      { "op": "steps", "from": 100, "count": 4, "step": -1, "interval_ms": 40 },
+      { "op": "direction" }, { "op": "lead", "decode_ms": 200 } ] },
+    { "name": "zero-interval-same-tick-steps", "ops": [
+      { "op": "record", "index": 0 }, { "op": "record", "index": 1 }, { "op": "record", "index": 2 }, { "op": "direction" },
+      { "op": "lead", "decode_ms": 300 }, { "op": "delay", "decode_ms": 300 } ] },
+    { "name": "clock-goes-backwards", "ops": [
+      { "op": "record", "index": 0 }, { "op": "advance", "ms": -50 }, { "op": "record", "index": 1 },
+      { "op": "advance", "ms": -50 }, { "op": "record", "index": 2 }, { "op": "lead", "decode_ms": 300 }, { "op": "delay", "decode_ms": 300 } ] },
+    { "name": "repeat-index-does-not-extend-window", "ops": [
+      { "op": "steps", "from": 0, "count": 2, "step": 1, "interval_ms": 100 },
+      { "op": "advance", "ms": 150 }, { "op": "record", "index": 2 }, { "op": "advance", "ms": 51 }, { "op": "lead", "decode_ms": 300 } ] },
+    { "name": "max-index-jump", "ops": [
+      { "op": "record", "index": 0 }, { "op": "record", "index": 2147483647 }, { "op": "direction" },
+      { "op": "record", "index": 2147483646 }, { "op": "direction" } ] }
+  ]
+}
