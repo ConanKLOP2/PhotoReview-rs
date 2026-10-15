@@ -3093,3 +3093,51 @@ fn english_recovery_retry_texts_match_en_json() {
     }
     assert!(mismatches.is_empty(), "catalog mismatches:\n{}", mismatches.join("\n"));
 }
+
+// Rust-only (mutation repair, W3-06 round 1). C# `RetryCoreAsync` builds
+// `prepared = failed with { LastWriteUtc = sourceStat.LastWriteUtc, ... }`: the value comes from
+// `FileInfo.LastWriteTimeUtc` (Kind Utc), so a snapshot read from a zone-less (Unspecified) journal line is
+// re-journaled WITH a `Z` on the Prepared and Committed lines. Keeping the snapshot's `JournalDateTime` would drop it.
+#[test]
+fn single_retry_journals_the_stat_last_write_as_utc_even_when_the_snapshot_was_unspecified() {
+    let rig = Rig::new();
+    rig.fs.seed_text(SOURCE, "12345", ts(CSHARP_CLOCK_TICKS));
+    let stat = stat_of(&rig.fs, SOURCE);
+    let failed = JournalEntry {
+        last_write_utc: JournalDateTime::unspecified(stat.last_write_utc),
+        ..failed_entry(
+            "op-1",
+            FileOperationType::Move,
+            SOURCE,
+            DEST,
+            stat.length as i64,
+            stat.last_write_utc,
+            ts(CSHARP_CLOCK_TICKS),
+        )
+    };
+
+    let result = rig
+        .service()
+        .retry_move_or_copy(&failed, false, &CancelToken::none())
+        .expect("not cancelled");
+    assert!(result.succeeded, "{}", result.message);
+
+    let utc_text = format!(
+        "\"LastWriteUtc\":\"{}\"",
+        JournalDateTime::utc(stat.last_write_utc).to_json()
+    );
+    let unspecified_text = format!(
+        "\"LastWriteUtc\":\"{}\"",
+        JournalDateTime::unspecified(stat.last_write_utc).to_json()
+    );
+    assert_ne!(utc_text, unspecified_text, "the two kinds must serialize differently");
+    let lines = rig.fs.journal_lines();
+    let written: Vec<&String> = lines
+        .iter()
+        .filter(|l| l.contains("\"Prepared\"") || l.contains("\"Committed\""))
+        .collect();
+    assert_eq!(written.len(), 2, "{lines:#?}");
+    for line in written {
+        assert!(line.contains(&utc_text), "expected {utc_text} in {line}");
+    }
+}
