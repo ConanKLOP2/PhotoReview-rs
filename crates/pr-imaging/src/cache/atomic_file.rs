@@ -8,10 +8,10 @@
 //! This is a disposable cache write, not a durability-critical journal: NO write-through, NO fsync. The only
 //! guarantee is that a crash (or a cancelled/failed write) never leaves a half-written file at the cache path.
 //! Uses `std::fs` directly (the `FileSystem` trait has no create-new stream; C# also bypasses `IFileSystem` here).
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 use std::fmt;
-use std::io::{self, Write};
+use std::fs::{self, OpenOptions};
+use std::io::{self, BufWriter, Write};
 use std::path::Path;
 
 use pr_core::abstractions::Log;
@@ -66,7 +66,7 @@ impl From<Canceled> for AtomicWriteError {
 /// `cache_path + "." + guid_n + ".tmp"` (pure; C# `cachePath + "." + Guid.NewGuid().ToString("N") + ".tmp"`).
 /// `guid_n` is 32 lowercase hex digits (`pr_core::io::physical::new_guid_n()`).
 pub fn temporary_path_for(cache_path: &str, guid_n: &str) -> String {
-    todo!("cache_path + '.' + guid_n + TEMP_FILE_SUFFIX")
+    format!("{cache_path}.{guid_n}{TEMP_FILE_SUFFIX}")
 }
 
 /// C# `AtomicCacheFile.WriteAsync(cachePath, writePayload, log, cancellationToken)`: writes the payload to a fresh
@@ -101,7 +101,65 @@ pub fn write_atomic_with_temp(
     temporary_path_override: Option<&Path>,
     cancel: &CancelToken,
 ) -> Result<(), AtomicWriteError> {
-    todo!("see the doc comment of write_atomic")
+    cancel.check()?;
+
+    // C# `Path.GetDirectoryName(cachePath)!`: no folder part (or a root path) is an `ArgumentException`.
+    let directory = match cache_path.parent() {
+        Some(parent) if !parent.as_os_str().is_empty() => parent,
+        _ => {
+            return Err(AtomicWriteError::Io(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "cache path has no directory part",
+            )));
+        }
+    };
+    fs::create_dir_all(directory)?;
+
+    let generated;
+    let temp_path: &Path = match temporary_path_override {
+        Some(p) => p,
+        None => {
+            let name = temporary_path_for(&cache_path.to_string_lossy(), &pr_core::io::physical::new_guid_n());
+            generated = std::path::PathBuf::from(name);
+            &generated
+        }
+    };
+
+    // Create-new: from here on this call owns the temp file (R07). A failed open leaves a pre-existing file alone.
+    let file = open_create_new(temp_path)?;
+
+    let outcome = (|| -> Result<(), AtomicWriteError> {
+        let mut writer = BufWriter::with_capacity(WRITE_BUFFER_SIZE, file);
+        write_payload(&mut writer)?;
+        writer.flush()?;
+        // Close the handle before the rename (Windows cannot rename an open share-none file).
+        drop(writer);
+        // A superseded write (e.g. Clear Cache) must not publish.
+        cancel.check()?;
+        fs::rename(temp_path, cache_path)?;
+        Ok(())
+    })();
+
+    // The writer (and its handle) is gone on every path; the original error wins over a cleanup failure.
+    try_delete(temp_path, log);
+    outcome
+}
+
+#[cfg(windows)]
+fn open_create_new(path: &Path) -> io::Result<fs::File> {
+    use std::os::windows::fs::OpenOptionsExt;
+    const FILE_FLAG_SEQUENTIAL_SCAN: u32 = 0x0800_0000;
+    OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .share_mode(0)
+        .custom_flags(FILE_FLAG_SEQUENTIAL_SCAN)
+        .open(path)
+}
+
+#[cfg(not(windows))]
+fn open_create_new(path: &Path) -> io::Result<fs::File> {
+    OpenOptions::new().write(true).create_new(true).open(path)
 }
 
 /// C# `DiskCacheStore.TryDelete(path, log)` as used by the cleanup: `false` when the file does not exist; deletes it
@@ -109,5 +167,16 @@ pub fn write_atomic_with_temp(
 /// (`log.error`) and returns `false`. W4-09 owns the public twin; if it lands first this private copy is replaced by
 /// a call to it (no behaviour change).
 fn try_delete(path: &Path, log: Option<&dyn Log>) -> bool {
-    todo!("File.Exists, File.Delete, !File.Exists; catch IOException and UnauthorizedAccessException")
+    if !path.exists() {
+        return false;
+    }
+    match fs::remove_file(path) {
+        Ok(()) => !path.exists(),
+        Err(e) => {
+            if let Some(log) = log {
+                log.error(&format!("Delete failed: {}", path.display()), Some(&e));
+            }
+            false
+        }
+    }
 }

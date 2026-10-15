@@ -132,7 +132,7 @@ fn payload_bytes(step: &Value) -> Vec<u8> {
         .get("repeat")
         .and_then(Value::as_u64)
         .map_or(1, |n| usize::try_from(n).expect("repeat fits in usize"));
-    from_hex(str_of(step, "hex")).repeat(repeat)
+    from_hex(step.get("hex").and_then(Value::as_str).unwrap_or("")).repeat(repeat)
 }
 
 /// Runs one golden `write` step on `root`. The payload kinds are `ok`, `throw`, `throw_after_write` and
