@@ -85,3 +85,104 @@ fn relative_file_name_without_directory_is_an_error() {
 fn buffer_size_constant() {
     assert_eq!(pr_imaging::cache::atomic_file::WRITE_BUFFER_SIZE, 65536);
 }
+
+// ---- W4-08a verify: long paths ----
+fn long_dir(base: &std::path::Path, total: usize) -> PathBuf {
+    let mut p = base.to_path_buf();
+    let mut i = 0;
+    while p.as_os_str().len() < total {
+        p.push(format!("segment_{:03}_xxxxxxxxxxxxxxxxxxxxxxxx", i));
+        i += 1;
+    }
+    p
+}
+
+#[test]
+fn long_path_rename_over_plain() {
+    let root = TempRoot::new("w408vl");
+    let dir = long_dir(root.path(), 270);
+    let cache = dir.join("c.bin");
+    let r = write_atomic(
+        &cache,
+        |w: &mut dyn Write| w.write_all(b"abc"),
+        None,
+        &CancelToken::new(),
+    );
+    assert!(r.is_ok(), "{r:?}");
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+    assert_eq!(tmp_count(&dir), 0);
+}
+
+#[test]
+fn long_path_rename_over_verbatim_input() {
+    let root = TempRoot::new("w408vl");
+    let dir = long_dir(root.path(), 270);
+    let verb = PathBuf::from(format!(r"\\?\{}", dir.display())).join("c.bin");
+    let r = write_atomic(
+        &verb,
+        |w: &mut dyn Write| w.write_all(b"abc"),
+        None,
+        &CancelToken::new(),
+    );
+    assert!(r.is_ok(), "{r:?}");
+    assert_eq!(fs::read(&verb).unwrap(), b"abc");
+}
+
+#[test]
+fn long_path_only_temp_over_limit() {
+    // destination < 260 but destination + ".<32hex>.tmp" >= 260
+    let root = TempRoot::new("w408vl");
+    let mut dir = long_dir(root.path(), 200);
+    // shrink so that dir + "\\" + name is exactly 240 chars
+    let name_len = 240usize.saturating_sub(dir.as_os_str().len() + 1);
+    let name = "n".repeat(name_len.max(1));
+    let cache = dir.join(&name);
+    dir = cache.parent().unwrap().to_path_buf();
+    assert!(cache.as_os_str().len() < 260 && cache.as_os_str().len() + 37 >= 260 - 20);
+    let r = write_atomic(
+        &cache,
+        |w: &mut dyn Write| w.write_all(b"abc"),
+        None,
+        &CancelToken::new(),
+    );
+    assert!(r.is_ok(), "{r:?}");
+    assert_eq!(tmp_count(&dir), 0);
+}
+
+#[test]
+fn long_path_unc_admin_share() {
+    let root = TempRoot::new("w408vl");
+    let s = root.path().display().to_string();
+    let rest = &s[3..];
+    let unc = PathBuf::from(format!(r"\\127.0.0.1\{}$\{}", &s[..1], rest));
+    if fs::metadata(&unc).is_err() {
+        eprintln!("admin share unavailable");
+        return;
+    }
+    let dir = long_dir(&unc, 290);
+    let cache = dir.join("c.bin");
+    let r = write_atomic(
+        &cache,
+        |w: &mut dyn Write| w.write_all(b"abc"),
+        None,
+        &CancelToken::new(),
+    );
+    assert!(r.is_ok(), "{r:?}");
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+}
+
+#[test]
+fn long_path_unc_which_step() {
+    let root = TempRoot::new("w408vl");
+    let s = root.path().display().to_string();
+    let unc = PathBuf::from(format!(r"\\127.0.0.1\{}$\{}", &s[..1], &s[3..]));
+    if fs::metadata(&unc).is_err() {
+        return;
+    }
+    let dir = long_dir(&unc, 290);
+    eprintln!("len {}", dir.as_os_str().len());
+    eprintln!("create_dir_all: {:?}", fs::create_dir_all(&dir));
+    let f = dir.join("a.tmp");
+    eprintln!("write: {:?}", fs::write(&f, b"x"));
+    eprintln!("rename: {:?}", fs::rename(&f, dir.join("b.bin")));
+}

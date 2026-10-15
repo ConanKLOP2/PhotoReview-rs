@@ -186,6 +186,17 @@ fn rename_over(from: &Path, to: &Path) -> io::Result<()> {
         fn MoveFileExW(existing: *const u16, new: *const u16, flags: u32) -> i32;
     }
 
+    /// `\\server\share...` but not `\\?\...`, `\\.\...` or `\\\...`.
+    fn is_plain_unc(units: &[u16]) -> bool {
+        let bs = u16::from(b'\\');
+        units.len() >= 3
+            && units[0] == bs
+            && units[1] == bs
+            && units[2] != bs
+            && units[2] != u16::from(b'?')
+            && units[2] != u16::from(b'.')
+    }
+
     fn wide(path: &Path) -> io::Result<Vec<u16>> {
         let mut units: Vec<u16> = path.as_os_str().encode_wide().collect();
         if units.contains(&0) {
@@ -195,6 +206,11 @@ fn rename_over(from: &Path, to: &Path) -> io::Result<()> {
         if units.len() >= MAX_SHORT_PATH && drive_rooted {
             let mut extended: Vec<u16> = r"\\?\".encode_utf16().collect();
             extended.append(&mut units);
+            units = extended;
+        } else if units.len() >= MAX_SHORT_PATH && is_plain_unc(&units) {
+            // \\server\share\x -> \\?\UNC\server\share\x (what C# Path normalisation does)
+            let mut extended: Vec<u16> = r"\\?\UNC\".encode_utf16().collect();
+            extended.extend_from_slice(&units[2..]);
             units = extended;
         }
         units.push(0);
