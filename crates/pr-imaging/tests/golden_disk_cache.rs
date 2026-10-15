@@ -169,9 +169,15 @@ fn lock_exclusive(path: &Path) -> File {
         .unwrap_or_else(|e| panic!("lock {}: {e}", path.display()))
 }
 
-/// Regular files directly in `dir`, sorted ordinally (directories never count as survivors).
+/// Regular files directly in `dir`, sorted ordinally (directories never count as survivors). A folder that does not
+/// exist has none (golden `missing-directory-every-pass-scans`: the oracle reports `[]`, and the pass must not create
+/// the folder).
 fn survivors(dir: &Path) -> Vec<String> {
-    let mut names: Vec<String> = fs::read_dir(dir)
+    let listing = match fs::read_dir(dir) {
+        Err(e) if e.kind() == io::ErrorKind::NotFound => return Vec::new(),
+        other => other,
+    };
+    let mut names: Vec<String> = listing
         .expect("list store folder")
         .map(|entry| entry.expect("entry"))
         .filter(|entry| entry.file_type().is_ok_and(|t| t.is_file()))
