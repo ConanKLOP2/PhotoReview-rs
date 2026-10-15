@@ -1096,15 +1096,51 @@ fn unallocated_block_accessors_are_empty_not_crashing() {
 }
 
 #[test]
-fn error_texts_are_stable_and_distinct() {
-    let width = PixelBufferError::WidthOutOfRange { width: 0 }.to_string();
-    assert!(width.contains("Width") && width.contains("was 0") && width.contains(&(i32::MAX / 4).to_string()));
-    let height = PixelBufferError::HeightOutOfRange { height: -3 }.to_string();
-    assert!(height.contains("Height") && height.contains("-3"));
-    assert!(PixelBufferError::UnknownLayout(7).to_string().contains("layout 7"));
-    let oom = PixelBufferError::OutOfMemory { byte_count: 123 }.to_string();
-    assert!(oom.contains("123"));
-    assert!(PixelBufferError::Disposed.to_string().contains("disposed"));
-    let row = PixelBufferError::RowOutOfRange { y: 9, height: 4 }.to_string();
-    assert!(row.contains("Row 9") && row.contains("height 4"));
+fn error_texts_match_dotnet() {
+    let e = |w: PixelBufferError| w.to_string();
+    assert_eq!(
+        e(PixelBufferError::WidthOutOfRange { width: 0 }),
+        "width ('0') must be greater than or equal to '1'. (Parameter 'width')\nActual value was 0."
+    );
+    assert_eq!(
+        e(PixelBufferError::WidthOutOfRange { width: 536_870_912 }),
+        "width ('536870912') must be less than or equal to '536870911'. (Parameter 'width')\nActual value was 536870912."
+    );
+    assert_eq!(
+        e(PixelBufferError::HeightOutOfRange { height: -3 }),
+        "height ('-3') must be greater than or equal to '1'. (Parameter 'height')\nActual value was -3."
+    );
+    assert_eq!(
+        e(PixelBufferError::UnknownLayout(2)),
+        "Unknown pixel layout. (Parameter 'layout')\nActual value was 2."
+    );
+    assert_eq!(
+        e(PixelBufferError::RowOutOfRange { y: -1, height: 5 }),
+        "y ('-1') must be a non-negative value. (Parameter 'y')\nActual value was -1."
+    );
+    assert_eq!(
+        e(PixelBufferError::RowOutOfRange { y: 5, height: 5 }),
+        "y ('5') must be less than '5'. (Parameter 'y')\nActual value was 5."
+    );
+    assert!(e(PixelBufferError::OutOfMemory { byte_count: 123 }).contains("123"));
+    assert!(e(PixelBufferError::Disposed).contains("disposed"));
+}
+
+#[test]
+fn largest_legal_width_is_not_width_out_of_range() {
+    let max = i32::MAX / 4;
+    // The boundary itself is legal: never WidthOutOfRange (kills `>` -> `>=`).
+    let r = PixelBuffer::allocate(max, i32::MAX, PixelLayout::Pbgra32);
+    assert!(
+        matches!(r, Err(PixelBufferError::OutOfMemory { .. })),
+        "got {:?}",
+        r.err()
+    );
+    if let Err(PixelBufferError::OutOfMemory { byte_count }) = r {
+        assert_eq!(byte_count, i64::from(max) * 4 * i64::from(i32::MAX));
+    }
+    assert!(matches!(
+        PixelBuffer::allocate(max + 1, 1, PixelLayout::Pbgra32),
+        Err(PixelBufferError::WidthOutOfRange { .. })
+    ));
 }

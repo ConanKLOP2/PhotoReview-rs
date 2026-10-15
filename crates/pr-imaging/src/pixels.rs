@@ -72,20 +72,45 @@ impl fmt::Display for PixelBufferError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::WidthOutOfRange { width } => {
+                let max = i32::MAX / BYTES_PER_PIXEL;
+                if *width < 1 {
+                    write!(
+                        f,
+                        "width ('{width}') must be greater than or equal to '1'. (Parameter 'width')\nActual value was {width}."
+                    )
+                } else {
+                    write!(
+                        f,
+                        "width ('{width}') must be less than or equal to '{max}'. (Parameter 'width')\nActual value was {width}."
+                    )
+                }
+            }
+            Self::HeightOutOfRange { height } => write!(
+                f,
+                "height ('{height}') must be greater than or equal to '1'. (Parameter 'height')\nActual value was {height}."
+            ),
+            Self::UnknownLayout(value) => {
                 write!(
                     f,
-                    "Width must be between 1 and {} (was {width}).",
-                    i32::MAX / BYTES_PER_PIXEL
+                    "Unknown pixel layout. (Parameter 'layout')\nActual value was {value}."
                 )
             }
-            Self::HeightOutOfRange { height } => write!(f, "Height must be at least 1 (was {height})."),
-            Self::UnknownLayout(value) => write!(f, "Unknown pixel layout {value}."),
             Self::OutOfMemory { byte_count } => write!(f, "Insufficient memory for {byte_count} bytes of pixels."),
             Self::Disposed => f.write_str(
                 "Cannot access a disposed object.\r\nObject name: 'PhotoReview.Imaging.Pixels.PixelBuffer'.",
             ),
             Self::RowOutOfRange { y, height } => {
-                write!(f, "Row {y} is outside the buffer (height {height}).")
+                if *y < 0 {
+                    write!(
+                        f,
+                        "y ('{y}') must be a non-negative value. (Parameter 'y')\nActual value was {y}."
+                    )
+                } else {
+                    write!(
+                        f,
+                        "y ('{y}') must be less than '{height}'. (Parameter 'y')\nActual value was {y}."
+                    )
+                }
             }
         }
     }
