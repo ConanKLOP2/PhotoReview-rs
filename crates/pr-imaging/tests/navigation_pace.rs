@@ -8,12 +8,12 @@
 //! Red pass (W4-06a): every test fails through the stub's `todo!()` bodies. The fake clock is an `Arc<AtomicI64>`
 //! shared with the pace, so a test advances time after the pace was built.
 
-use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicI64, Ordering};
 use std::time::Duration;
 
 use pr_imaging::navigation_pace::{
-    NavigationPace, BURST_IDLE_FLOOR_MS, MAX_LEAD, MAX_STEP_INTERVAL_MS, MAX_VIEWER_START_DELAY_MS, TICKS_PER_SECOND,
+    BURST_IDLE_FLOOR_MS, MAX_LEAD, MAX_STEP_INTERVAL_MS, MAX_VIEWER_START_DELAY_MS, NavigationPace, TICKS_PER_SECOND,
 };
 use pr_test_support::golden::{self, i64_of, str_of};
 use serde_json::Value;
