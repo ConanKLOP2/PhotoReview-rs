@@ -19,7 +19,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
-use pr_core::abstractions::{Clock, FileSystem, RecycleBin};
+use pr_core::abstractions::{AppendStream, Clock, CopyCreationProof, FileStat, FileSystem, ReadSeek, RecycleBin};
 use pr_core::app_paths::AppPaths;
 use pr_core::catalog::types::CaptureGroup;
 use pr_core::file_actions::errors::{self, DESTINATION_OUTSIDE_SOURCE};
@@ -252,6 +252,136 @@ impl RecycleBin for ScenarioBin {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// FaultableFs: the C# `FaultableFileSystem` of the mutation-gap tests
+// ---------------------------------------------------------------------------------------------------------------
+
+/// C# `FileExistsHook`: `Some(answer)` overrides `file_exists`. C# throws from `FileExists`; the Rust `file_exists` cannot
+/// fail, so a test that makes it throw answers `true` instead ("cannot confirm the file is gone" = still counted there).
+pub type ExistsHook = Arc<dyn Fn(&Path) -> Option<bool> + Send + Sync>;
+/// C# `StatFilter`: rewrites what a stat returns (`None` = the file looks missing).
+pub type StatFilter = Arc<dyn Fn(&Path, Option<FileStat>) -> Option<FileStat> + Send + Sync>;
+/// C# `AfterMove`: runs after a successful move.
+pub type AfterMove = Arc<dyn Fn(&Path, &Path) + Send + Sync>;
+
+#[derive(Default)]
+struct FaultableHooks {
+    exists: Option<ExistsHook>,
+    stat_filter: Option<StatFilter>,
+    after_move: Option<AfterMove>,
+}
+
+/// A [`FileSystem`] over the fixture's [`HookFileSystem`] adding the three hooks of C# `FaultableFileSystem`; every other
+/// call is forwarded unchanged, so it is transparent while no hook is set.
+pub struct FaultableFs {
+    inner: Arc<HookFileSystem>,
+    hooks: Mutex<FaultableHooks>,
+}
+
+impl FaultableFs {
+    pub fn new(inner: Arc<HookFileSystem>) -> Self {
+        Self {
+            inner,
+            hooks: Mutex::new(FaultableHooks::default()),
+        }
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, FaultableHooks> {
+        self.hooks.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+    }
+
+    pub fn set_exists_hook(&self, hook: Option<ExistsHook>) {
+        self.lock().exists = hook;
+    }
+
+    pub fn set_stat_filter(&self, filter: Option<StatFilter>) {
+        self.lock().stat_filter = filter;
+    }
+
+    pub fn set_after_move(&self, hook: Option<AfterMove>) {
+        self.lock().after_move = hook;
+    }
+
+    fn filter(&self, path: &Path, stat: Option<FileStat>) -> Option<FileStat> {
+        let filter = self.lock().stat_filter.clone();
+        match filter {
+            Some(filter) => filter(path, stat),
+            None => stat,
+        }
+    }
+}
+
+impl FileSystem for FaultableFs {
+    fn file_exists(&self, path: &Path) -> bool {
+        let hook = self.lock().exists.clone();
+        hook.and_then(|hook| hook(path))
+            .unwrap_or_else(|| self.inner.file_exists(path))
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.inner.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
+        let stat = self.inner.get_file_stat(path);
+        self.filter(path, stat)
+    }
+    fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
+        let stat = self.inner.try_get_file_stat(path)?;
+        Ok(self.filter(path, stat))
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.move_file(source, destination)?;
+        let hook = self.lock().after_move.clone();
+        if let Some(hook) = hook {
+            hook(source, destination);
+        }
+        Ok(())
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.copy_file(source, destination)
+    }
+    fn try_copy_new_with_proof(
+        &self,
+        source: &Path,
+        destination: &Path,
+        proof: &CopyCreationProof,
+    ) -> io::Result<bool> {
+        self.inner.try_copy_new_with_proof(source, destination, proof)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        self.inner.delete(path)
+    }
+    fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
+        self.inner.open_read_shared(path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
+        self.inner.open_append(path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        self.inner.write_all_text_atomic(path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        self.inner.read_all_text(path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
+        self.inner.enumerate_files(directory, pattern)
+    }
+    fn try_probe_readable(&self, path: &Path) -> Result<(), String> {
+        self.inner.try_probe_readable(path)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
+        self.inner.enumerate_directories(directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        self.inner.create_directory(path)
+    }
+    fn try_delete_empty_directory(&self, path: &Path) -> bool {
+        self.inner.try_delete_empty_directory(path)
+    }
+    fn resolve_real_path(&self, path: &Path) -> io::Result<PathBuf> {
+        self.inner.resolve_real_path(path)
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 // Fixture
 // ---------------------------------------------------------------------------------------------------------------
 
@@ -259,6 +389,8 @@ impl RecycleBin for ScenarioBin {
 pub struct Fixture {
     pub disk: Arc<FakeFileSystem>,
     pub hooks: Arc<HookFileSystem>,
+    /// The file system the journal and the service see: [`FaultableFs`] over `hooks` (transparent until a hook is set).
+    pub faulty: Arc<FaultableFs>,
     pub clock: Arc<FakeClock>,
     pub bin: Arc<ScenarioBin>,
     pub journal: Arc<OperationJournal>,
@@ -302,7 +434,8 @@ impl Fixture {
         let disk = Arc::new(FakeFileSystem::with_clock(clock.clone()));
         let hooks = Arc::new(HookFileSystem::new(disk.clone()));
         let bin = Arc::new(ScenarioBin::new(disk.clone()));
-        let fs: Arc<dyn FileSystem> = hooks.clone();
+        let faulty = Arc::new(FaultableFs::new(hooks.clone()));
+        let fs: Arc<dyn FileSystem> = faulty.clone();
         let clock_dyn: Arc<dyn Clock> = clock.clone();
         let journal = Arc::new(OperationJournal::with_options(
             &fixture_paths(),
@@ -318,6 +451,7 @@ impl Fixture {
         Self {
             disk,
             hooks,
+            faulty,
             clock,
             bin,
             journal,

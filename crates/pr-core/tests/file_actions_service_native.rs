@@ -190,10 +190,12 @@ fn interleaved_sequence_leaves_deterministic_state() {
 
 fn make_junction(link: &Path, target: &Path) {
     std::fs::create_dir_all(target).expect("junction target");
+    // `cmd` reads a `/` inside a path as a switch ("Invalid switch - link"): pass both paths with backslashes only.
+    let windows = |path: &Path| path.to_string_lossy().replace('/', "\\");
     let status = Command::new("cmd")
         .args(["/C", "mklink", "/J"])
-        .arg(link)
-        .arg(target)
+        .arg(windows(link))
+        .arg(windows(target))
         .status()
         .expect("mklink runs");
     assert!(status.success(), "mklink /J failed");

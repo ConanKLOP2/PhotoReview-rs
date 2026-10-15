@@ -116,7 +116,14 @@ fn execute_async_relative_destination_through_junction_stays_inside_folder_succe
     fx.hooks.add_reparse_point(r"C:\photos\link", r"C:\photos\real");
     let result = fx.run(&single(SOURCE, Move, Some(r"link\processed")));
     assert!(result.succeeded);
-    assert!(fx.file_exists(r"C:\photos\real\processed\a.jpg"));
+    // The service moves to the LEXICAL destination (C# `destinationPath`); the in-memory fake does not redirect a move
+    // through the simulated junction, so the file is found under the link's own name.
+    assert_eq!(
+        result.destination_path.as_deref(),
+        Some(r"C:\photos\link\processed\a.jpg")
+    );
+    assert!(fx.file_exists(r"C:\photos\link\processed\a.jpg"));
+    assert!(!fx.file_exists(SOURCE));
 }
 
 // C#: FileActionServiceTests.ExecuteAsync_DriveRelativeDestination_FailsWithoutJournalOrMove (Theory: Move, Copy)
@@ -705,13 +712,15 @@ fn execute_async_cancelled_copy_is_dismissed_only_while_the_source_is_untouched(
         fx.hooks.set_copy_hook(Some(Arc::new(move |source: &Path, _: &Path| {
             match change {
                 Change::None => {}
-                Change::Content => disk.add_file_at(source, b"changed!!!!", stamp(LAST_WRITE_TICKS)),
+                // C# "jpeg edited meanwhile": another LENGTH with the same stamp.
+                Change::Content => disk.add_file_at(source, b"edited meanwhile!", stamp(LAST_WRITE_TICKS)),
                 Change::Stamp => disk.add_file_at(source, &common_file_actions::pattern_bytes(11), last_write_plus(1)),
             }
             Some(canceled_error())
         })));
         let result = fx.run(&single(SOURCE, Copy, Some("sel")));
         assert!(!result.succeeded);
+        assert_eq!(result.error.as_deref(), Some(OPERATION_CANCELED_MESSAGE));
         assert_eq!(fx.journal_entries().pop().map(|e| e.state), Some(expected));
     }
 }
@@ -720,20 +729,38 @@ fn execute_async_cancelled_copy_is_dismissed_only_while_the_source_is_untouched(
 // Needs the P1 stat seam (P-12): a stat that fails makes the source uninspectable, so the entry is Failed, never Dismissed.
 #[test]
 fn execute_async_cancelled_copy_and_source_cannot_be_inspected_keeps_the_failed_recovery_item_and_does_not_throw() {
-    let fx = Fixture::new();
-    fx.add_file(SOURCE, 11);
-    fx.hooks
-        .set_copy_hook(Some(Arc::new(|_: &Path, _: &Path| Some(canceled_error()))));
-    fx.hooks.set_stat_hook(Some(Arc::new(|path: &Path| {
-        if path.to_string_lossy().eq_ignore_ascii_case(SOURCE) {
-            Some(io::Error::new(io::ErrorKind::PermissionDenied, "access denied"))
-        } else {
-            None
-        }
-    })));
-    let result = fx.run(&single(SOURCE, Copy, Some("sel")));
-    assert!(!result.succeeded);
-    assert_eq!(fx.journal_entries().pop().map(|e| e.state), Some(JournalState::Failed));
+    // Theory over the fault kinds (C# io / unauthorized / argument / notsupported / invalid).
+    for kind in [
+        io::ErrorKind::Other,
+        io::ErrorKind::PermissionDenied,
+        io::ErrorKind::InvalidInput,
+        io::ErrorKind::Unsupported,
+        io::ErrorKind::InvalidData,
+    ] {
+        let fx = Fixture::new();
+        fx.add_file(SOURCE, 11);
+        let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let flag = cancelled.clone();
+        fx.hooks.set_copy_hook(Some(Arc::new(move |_: &Path, _: &Path| {
+            flag.store(true, std::sync::atomic::Ordering::SeqCst);
+            Some(canceled_error())
+        })));
+        // Only the post-failure inspection fails (C# `cancelled && path == Jpeg`).
+        fx.hooks.set_stat_hook(Some(Arc::new(move |path: &Path| {
+            if cancelled.load(std::sync::atomic::Ordering::SeqCst)
+                && path.to_string_lossy().eq_ignore_ascii_case(SOURCE)
+            {
+                Some(io::Error::new(kind, "fault"))
+            } else {
+                None
+            }
+        })));
+        let result = fx.run(&single(SOURCE, Copy, Some("sel")));
+        assert!(!result.succeeded, "{kind:?}");
+        let entries = fx.journal_entries();
+        assert_eq!(entries.len(), 2, "{kind:?}: Prepared + one outcome");
+        assert_eq!(entries.last().map(|e| e.state), Some(JournalState::Failed), "{kind:?}");
+    }
 }
 
 // C#: FileActionServiceSingleMutationGapTests.ExecuteAsync_UnknownOperation_FailsAsUnsupportedAndWritesNoJournalLine
@@ -933,20 +960,30 @@ fn recycle_no_recycle_bin_does_not_ask_capacity() {
 }
 
 // C#: FileActionFaultInjectionGapTests.CancelAfterPrepared_SingleMove_IsObserved
-// The cancel token is cancelled when the move starts (golden `cancel_on`): the move is refused after Prepared.
+// The token is cancelled right after the Prepared append (C# `FaultKind.CancelAfter` on the first journal append): the
+// move is refused at the hand-off, the photo stays, and the entry does not stay Prepared (it is Dismissed: untouched).
 #[test]
 fn cancel_after_prepared_single_move_is_observed() {
     let fx = Fixture::new();
     fx.add_file(SOURCE, 11);
     let cancel = CancelToken::new();
     let trigger = cancel.clone();
-    fx.hooks.set_move_hook(Some(Arc::new(move |_: &Path, _: &Path| {
-        trigger.cancel();
+    let journal = journal_path();
+    fx.hooks.set_open_append_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(&journal) {
+            trigger.cancel();
+        }
         None
     })));
     let result = fx.run_with(&single(SOURCE, Move, Some("sel")), &cancel);
     assert!(!result.succeeded);
-    assert!(fx.journal_entries().iter().any(|e| e.state == JournalState::Prepared));
+    assert_eq!(result.error.as_deref(), Some(TASK_CANCELED_MESSAGE));
+    assert!(fx.file_exists(SOURCE));
+    assert!(!fx.file_exists(r"C:\photos\sel\a.jpg"));
+    assert!(fx.events_of(&["move"]).is_empty());
+    let entries = fx.journal_entries();
+    assert_eq!(entries.first().map(|e| e.state), Some(JournalState::Prepared));
+    assert_eq!(entries.last().map(|e| e.state), Some(JournalState::Dismissed));
 }
 
 // C#: FileActionFaultInjectionGapTests.Unauthorized_AtTheFileOperation_IsACleanFailure

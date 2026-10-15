@@ -28,8 +28,8 @@ use std::time::Duration;
 const HAND_OFF: Duration = Duration::from_secs(10);
 
 use common_file_actions::{
-    Fixture, LAST_WRITE_TICKS, canceled_error, english_code_text, english_texts, fail_journal_append_nth, group,
-    journal_path, last_write_plus, stamp,
+    Fixture, LAST_WRITE_TICKS, english_code_text, english_texts, fail_journal_append_nth, group, journal_path,
+    last_write_plus, stamp,
 };
 use pr_core::abstractions::FileSystem;
 use pr_core::file_actions::errors::{
@@ -291,33 +291,48 @@ fn execute_group_move_fails_and_is_rolled_back_reports_skipped_missing_only_when
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_CompensationThrowsUnexpectedType_ReportsSkippedMissingOnlyWhenAPartnerVanished
 // Open question 2, option B (recommended, P-level): a panic inside a file-system call is not a recoverable state. The
 // panic propagates out of the service; the RAII guard releases the gate; the Prepared line stays for reconcile.
+// Theory over `sidecarMissing`: the RAW forward move fails, the rollback move of the moved JPEG blows up (C#
+// `InvalidOperationException`, Rust: a panic). `skipped_missing` cannot be observed (no result comes back under B); what
+// is pinned is the disk/journal outcome, for both variants.
 #[test]
 fn execute_group_compensation_throws_unexpected_type_reports_skipped_missing_only_when_a_partner_vanished() {
-    let fx = Fixture::new();
-    add_triple(&fx);
-    fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
-        if source.to_string_lossy().eq_ignore_ascii_case(XMP) {
-            Some(io::Error::other("boom"))
-        } else {
+    for sidecar_missing in [true, false] {
+        let fx = Fixture::new();
+        add_pair(&fx);
+        if !sidecar_missing {
+            fx.add_file(XMP, 5);
+        }
+        fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
+            if source.to_string_lossy().eq_ignore_ascii_case(RAW) {
+                return Some(io::Error::other("simulated"));
+            }
+            if source
+                .to_string_lossy()
+                .eq_ignore_ascii_case(r"C:\photos\sel\IMG_0001.JPG")
+            {
+                panic!("simulated unexpected fault"); // the rollback of the first member blows up
+            }
             None
-        }
-    })));
-    fx.hooks.set_stat_hook(Some(Arc::new(|path: &Path| {
-        if path.to_string_lossy().eq_ignore_ascii_case(RAW) {
-            panic!("file system panicked during compensation");
-        }
-        None
-    })));
-    let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        fx.run_group(&group(JPEG, RAW, Some(XMP), Move, Some("sel")))
-    }));
-    assert!(outcome.is_err(), "B: the panic propagates to the caller");
-    assert!(!fx.service.is_busy(), "the RAII guard released the gate");
-    assert_eq!(
-        last_state(&fx),
-        Some(JournalState::Prepared),
-        "the Prepared line stays for startup reconcile"
-    );
+        })));
+        let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            fx.run_group(&group(JPEG, RAW, Some(XMP), Move, Some("sel")))
+        }));
+        assert!(
+            outcome.is_err(),
+            "B: the panic propagates to the caller ({sidecar_missing})"
+        );
+        assert!(!fx.service.is_busy(), "the RAII guard released the gate");
+        assert_eq!(
+            last_state(&fx),
+            Some(JournalState::Prepared),
+            "the Prepared line stays for startup reconcile"
+        );
+        assert!(
+            fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"),
+            "the JPEG really is still moved"
+        );
+        assert!(fx.file_exists(RAW));
+    }
 }
 
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_CopyRollbackFindsTheCopyChanged_LeavesItAndCountsItAsStuck
@@ -413,48 +428,76 @@ fn execute_group_copy_leaves_partial_file_rollback_never_tries_to_delete_it() {
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_CopyRollbackDeletedTheCopyButCannotConfirmIt_IsNotDismissedAsRolledBack
 #[test]
 fn execute_group_copy_rollback_deleted_the_copy_but_cannot_confirm_it_is_not_dismissed_as_rolled_back() {
+    const MOVED_JPEG: &str = r"C:\photos\sel\IMG_0001.JPG";
     let fx = Fixture::new();
     add_pair(&fx);
-    fx.hooks.set_copy_hook(Some(Arc::new(|_: &Path, destination: &Path| {
-        if destination.to_string_lossy().ends_with("IMG_0001.CR3") {
-            Some(io::Error::other("copy failed"))
+    fx.hooks.set_copy_hook(Some(Arc::new(|source: &Path, _: &Path| {
+        if source.to_string_lossy().eq_ignore_ascii_case(RAW) {
+            Some(io::Error::other("simulated"))
         } else {
             None
         }
     })));
-    // The copy is deleted, but the stat that confirms it fails (P1 seam): the entry must stay Failed, not Dismissed.
-    fx.hooks.set_stat_hook(Some(Arc::new(|path: &Path| {
-        if path.to_string_lossy().ends_with("IMG_0001.JPG") {
-            Some(io::Error::new(io::ErrorKind::PermissionDenied, "access denied"))
-        } else {
-            None
+    // The rollback deletes the first copy, then the existence check that confirms it cannot answer (C# FileExists
+    // throws; the Rust `file_exists` cannot fail, so the hook answers "still there"): stuck, although the disk is clean.
+    let deleted = Arc::new(AtomicBool::new(false));
+    let flag = deleted.clone();
+    fx.hooks.set_delete_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(MOVED_JPEG) {
+            flag.store(true, Ordering::SeqCst);
         }
+        None
+    })));
+    fx.faulty.set_exists_hook(Some(Arc::new(move |path: &Path| {
+        (deleted.load(Ordering::SeqCst) && path.to_string_lossy().eq_ignore_ascii_case(MOVED_JPEG)).then_some(true)
     })));
     let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
     assert!(!result.succeeded);
+    assert!(!fx.file_exists(MOVED_JPEG));
+    assert_eq!(
+        result.error.as_deref(),
+        Some(rollback_failed_text("simulated", 1).as_str())
+    );
+    assert_eq!(
+        result.entry.as_ref().map(|e| e.state),
+        Some(JournalState::Failed),
+        "an unconfirmed rollback stays a Recovery item"
+    );
     assert_eq!(last_state(&fx), Some(JournalState::Failed));
 }
 
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_CopyDestinationMissingOrWrongSizeAfterCopy_FailsVerificationWithTheCodedError
 #[test]
 fn execute_group_copy_destination_missing_or_wrong_size_after_copy_fails_verification_with_the_coded_error() {
-    let fx = Fixture::new();
-    add_pair(&fx);
-    let disk = fx.disk.clone();
-    fx.hooks
-        .set_copy_hook(Some(Arc::new(move |source: &Path, destination: &Path| {
-            if destination.to_string_lossy().ends_with("IMG_0001.CR3") {
-                // The copy "succeeds" but writes a short file.
-                disk.add_file_at(destination, b"aa", stamp(LAST_WRITE_TICKS));
-                let _ = source;
-                return Some(io::Error::other("ignored"));
-            }
-            None
-        })));
-    let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
-    assert!(!result.succeeded);
-    let last = fx.journal_entries().pop().expect("a Failed or Dismissed line");
-    assert_eq!(last.error_code.as_deref(), Some(VERIFY_SIZE_CHANGED));
+    const MOVED_JPEG: &str = r"C:\photos\sel\IMG_0001.JPG";
+    // Theory: the copied JPEG looks missing (false) or 10 bytes longer (true) right after the copy (C# `StatFilter`).
+    for wrong_length in [false, true] {
+        let fx = Fixture::new();
+        add_pair(&fx);
+        fx.faulty
+            .set_stat_filter(Some(Arc::new(move |path: &Path, stat| match stat {
+                Some(stat) if path.to_string_lossy().eq_ignore_ascii_case(MOVED_JPEG) => {
+                    wrong_length.then_some(pr_core::abstractions::FileStat {
+                        length: stat.length + 10,
+                        ..stat
+                    })
+                }
+                other => other,
+            })));
+        let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
+        assert!(!result.succeeded, "{wrong_length}");
+        assert_eq!(
+            result.error.as_deref(),
+            Some(english_code_text(VERIFY_SIZE_CHANGED).as_str()),
+            "{wrong_length}"
+        );
+        // Through the filter the disk then looks unchanged (no copy observable at the destination, sources intact), so
+        // the group counts as fully rolled back: Dismissed, no error code (same C# rule, G8.5).
+        assert_eq!(last_state(&fx), Some(JournalState::Dismissed), "{wrong_length}");
+        // R01b: a copy whose size is wrong is still the observed file and is removed again; a destination that could
+        // not be observed right after the copy has no identity to prove, so it is kept.
+        assert_eq!(fx.file_exists(MOVED_JPEG), !wrong_length, "{wrong_length}");
+    }
 }
 
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_MoveFailsAndTheMovedMemberIsAlreadyBackAtItsSource_IsFullyRolledBackWithoutRollbackNote
@@ -513,31 +556,55 @@ fn execute_group_move_reports_destination_exists_for_foreign_file_leaves_it_and_
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_MoveRollbackCannotConfirmTheRestoredFile_CountsItAsStuck
 #[test]
 fn execute_group_move_rollback_cannot_confirm_the_restored_file_counts_it_as_stuck() {
-    let fx = Fixture::new();
-    add_pair(&fx);
-    fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
-        if source.to_string_lossy().ends_with("IMG_0001.CR3") {
-            Some(io::Error::other("boom"))
-        } else {
-            None
-        }
-    })));
-    // The restore of the JPEG succeeds, but the stat that confirms it fails.
-    fx.hooks.set_stat_hook(Some(Arc::new(|path: &Path| {
-        if path.to_string_lossy().ends_with("IMG_0001.JPG") {
-            Some(io::Error::new(io::ErrorKind::PermissionDenied, "access denied"))
-        } else {
-            None
-        }
-    })));
-    let result = fx.run_group(&group(JPEG, RAW, None, Move, Some("sel")));
-    assert!(!result.succeeded);
-    assert!(
-        result
-            .error
-            .as_deref()
-            .is_some_and(|e| e.contains("could not be put back"))
-    );
+    // Theory `hidden`: after the rollback move the restored file looks missing (true) or 10 bytes longer (false).
+    for hidden in [true, false] {
+        let fx = Fixture::new();
+        add_pair(&fx);
+        fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
+            if source.to_string_lossy().eq_ignore_ascii_case(RAW) {
+                Some(io::Error::other("simulated"))
+            } else {
+                None
+            }
+        })));
+        let moved_back = Arc::new(AtomicBool::new(false));
+        let flag = moved_back.clone();
+        fx.faulty.set_after_move(Some(Arc::new(move |source: &Path, _: &Path| {
+            if source
+                .to_string_lossy()
+                .eq_ignore_ascii_case(r"C:\photos\sel\IMG_0001.JPG")
+            {
+                flag.store(true, Ordering::SeqCst); // the rollback move of the first member just ran
+            }
+        })));
+        fx.faulty
+            .set_stat_filter(Some(Arc::new(move |path: &Path, stat| match stat {
+                Some(stat)
+                    if moved_back.load(Ordering::SeqCst) && path.to_string_lossy().eq_ignore_ascii_case(JPEG) =>
+                {
+                    (!hidden).then_some(pr_core::abstractions::FileStat {
+                        length: stat.length + 10,
+                        ..stat
+                    })
+                }
+                other => other,
+            })));
+        let result = fx.run_group(&group(JPEG, RAW, None, Move, Some("sel")));
+        assert!(!result.succeeded, "{hidden}");
+        assert_eq!(
+            result.error.as_deref(),
+            Some(rollback_failed_text("simulated", 1).as_str()),
+            "{hidden}"
+        );
+        assert_eq!(
+            fx.journal_entries()
+                .iter()
+                .filter(|e| e.state == JournalState::Failed)
+                .count(),
+            1,
+            "{hidden}"
+        );
+    }
 }
 
 // C#: FileActionServiceGroupMutationGapTests.ExecuteGroupAsync_MoveRollbackMoveThrows_CountsTheMemberAsStuckWithoutEscaping
@@ -687,25 +754,42 @@ fn execute_group_recycle_second_member_fails_classifies_the_failed_member_by_sou
 // Theory over the exception kinds; the Rust error text is the injected io::Error's to_string(), not "fault".
 #[test]
 fn execute_group_inspecting_a_member_fails_marks_only_that_member_unknown_and_still_returns() {
-    for kind in [io::ErrorKind::PermissionDenied, io::ErrorKind::Other] {
+    // C# kinds: io, unauthorized, argument, notsupported.
+    for kind in [
+        io::ErrorKind::Other,
+        io::ErrorKind::PermissionDenied,
+        io::ErrorKind::InvalidInput,
+        io::ErrorKind::Unsupported,
+    ] {
         let fx = Fixture::new();
         add_pair(&fx);
-        fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
-            if source.to_string_lossy().ends_with("IMG_0001.CR3") {
-                Some(io::Error::other("boom"))
-            } else {
-                None
+        let failed = Arc::new(AtomicBool::new(false));
+        let flag = failed.clone();
+        fx.bin.set_send_hook(Some(Arc::new(move |path: &Path| {
+            if !path.to_string_lossy().eq_ignore_ascii_case(RAW) {
+                return None;
             }
+            flag.store(true, Ordering::SeqCst);
+            Some(io::Error::other("boom"))
         })));
+        // The inspection after the failure cannot stat the RAW.
         fx.hooks.set_stat_hook(Some(Arc::new(move |path: &Path| {
-            if path.to_string_lossy().ends_with("IMG_0001.CR3") {
+            if failed.load(Ordering::SeqCst) && path.to_string_lossy().eq_ignore_ascii_case(RAW) {
                 Some(io::Error::new(kind, "inspection failed"))
             } else {
                 None
             }
         })));
-        let result = fx.run_group(&group(JPEG, RAW, None, Move, Some("sel")));
+        let result = fx.run_group(&group(JPEG, RAW, None, Recycle, None));
         assert!(!result.succeeded, "{kind:?}");
+        assert_eq!(result.error.as_deref(), Some("boom"), "{kind:?}");
+        let jpeg = result
+            .members
+            .iter()
+            .find(|m| m.member.source == JPEG)
+            .expect("JPEG member");
+        assert!(jpeg.state_known, "{kind:?}");
+        assert!(jpeg.completed, "{kind:?}");
         let raw = result
             .members
             .iter()
@@ -713,6 +797,7 @@ fn execute_group_inspecting_a_member_fails_marks_only_that_member_unknown_and_st
             .expect("RAW member");
         assert!(!raw.state_known, "{kind:?}");
         assert!(raw.conflict, "{kind:?}");
+        assert!(!raw.completed, "{kind:?}");
         assert_eq!(raw.error.as_deref(), Some("inspection failed"), "{kind:?}");
     }
 }
@@ -859,25 +944,30 @@ fn execute_group_move_fails_midway_fat_destination_compensation_restores_moved_m
 // C#: CaptureGroupActionRollbackTests.ExecuteGroupAsync_MoveFailsAfterFirstMember_RollbackDoesNotUseTheForwardMoveOverride
 #[test]
 fn execute_group_move_fails_after_first_member_rollback_does_not_use_the_forward_move_override() {
-    let override_calls = Arc::new(AtomicUsize::new(0));
-    let counter = override_calls.clone();
+    let override_calls = Arc::new(Mutex::new(Vec::<String>::new()));
+    let calls = override_calls.clone();
     let fx = Fixture::with_move_override(move |disk| -> MoveOverride {
         Arc::new(move |source: &Path, destination: &Path| {
-            counter.fetch_add(1, Ordering::SeqCst);
+            calls.lock().expect("calls").push(source.to_string_lossy().into_owned());
+            if source.to_string_lossy().eq_ignore_ascii_case(RAW) {
+                return Err(io::Error::other("simulated second-member failure"));
+            }
             disk.move_file(source, destination)
         })
     });
     add_pair(&fx);
-    fx.hooks.set_move_hook(Some(Arc::new(|source: &Path, _: &Path| {
-        if source.to_string_lossy().ends_with("IMG_0001.CR3") {
-            Some(io::Error::other("boom"))
-        } else {
-            None
-        }
-    })));
     let _ = fx.run_group(&group(JPEG, RAW, None, Move, Some("sel")));
-    // Forward: JPEG via the override (1). RAW fails before the override (no call). Rollback uses move_file, not the override.
-    assert_eq!(override_calls.load(Ordering::SeqCst), 1);
+    // The rollback is a plain file-system move, not a second override call.
+    assert_eq!(
+        *override_calls.lock().expect("calls"),
+        vec![JPEG.to_owned(), RAW.to_owned()]
+    );
+    assert!(fx.file_exists(JPEG));
+    assert_eq!(
+        fx.events_of(&["move"]).len(),
+        1,
+        "the rollback went through FileSystem::move_file"
+    );
 }
 
 // C#: CaptureGroupActionRollbackTests.ExecuteGroupAsync_MoveRollbackBlockedByChangedDestination_KeepsMovedFileAndReportsIt
@@ -953,19 +1043,23 @@ fn execute_group_move_rollback_never_overwrites_file_that_appeared_at_source() {
 // C#: CaptureGroupActionRollbackTests.ExecuteGroupAsync_MoveCancelledAfterFirstMember_RollsBack
 #[test]
 fn execute_group_move_cancelled_after_first_member_rolls_back() {
-    let fx = Fixture::new();
-    add_pair(&fx);
     let cancel = CancelToken::new();
     let trigger = cancel.clone();
-    fx.hooks.set_move_hook(Some(Arc::new(move |source: &Path, _: &Path| {
-        if source.to_string_lossy().ends_with("IMG_0001.CR3") {
+    // The override moves, then the user cancels while the first member is done (C# `cts.Cancel()` in the override).
+    let fx = Fixture::with_move_override(move |disk| -> MoveOverride {
+        Arc::new(move |source: &Path, destination: &Path| {
+            disk.move_file(source, destination)?;
             trigger.cancel();
-        }
-        None
-    })));
+            Ok(())
+        })
+    });
+    add_pair(&fx);
     let result = fx.run_group_with(&group(JPEG, RAW, None, Move, Some("sel")), &cancel);
     assert!(!result.succeeded);
-    assert!(fx.file_exists(JPEG), "rolled back");
+    assert_eq!(result.error.as_deref(), Some(OPERATION_CANCELED_MESSAGE));
+    assert!(fx.file_exists(JPEG) && fx.file_exists(RAW), "rolled back");
+    assert!(!fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"));
+    assert_eq!(result.entry.as_ref().map(|e| e.state), Some(JournalState::Dismissed));
     assert_eq!(last_state(&fx), Some(JournalState::Dismissed));
 }
 
@@ -1014,21 +1108,40 @@ fn execute_group_copy_second_member_fails_deletes_only_the_copies_it_created_and
 fn execute_group_copy_cancelled_and_rollback_leaves_a_copy_journals_the_cancellation_code() {
     let fx = Fixture::new();
     add_pair(&fx);
-    fx.hooks.set_copy_hook(Some(Arc::new(|_: &Path, destination: &Path| {
-        if destination.to_string_lossy().ends_with("IMG_0001.CR3") {
-            Some(canceled_error())
-        } else {
-            None
+    let cancel = CancelToken::new();
+    let trigger = cancel.clone();
+    // The user cancels while the first member is being copied; the rollback cannot remove that first copy.
+    fx.hooks.set_copy_hook(Some(Arc::new(move |source: &Path, _: &Path| {
+        if source.to_string_lossy().eq_ignore_ascii_case(JPEG) {
+            trigger.cancel();
         }
+        None
     })));
-    fx.hooks
-        .set_delete_hook(Some(Arc::new(|_: &Path| Some(io::Error::other("in use")))));
-    let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
+    fx.hooks.set_delete_hook(Some(Arc::new(|path: &Path| {
+        path.to_string_lossy()
+            .eq_ignore_ascii_case(r"C:\photos\sel\IMG_0001.JPG")
+            .then(|| io::Error::other("simulated undeletable copy"))
+    })));
+    let result = fx.run_group_with(&group(JPEG, RAW, None, Copy, Some("sel")), &cancel);
     assert!(!result.succeeded);
-    assert_eq!(result.error.as_deref(), Some(OPERATION_CANCELED_MESSAGE));
+    assert!(
+        fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"),
+        "left behind: it needs Recovery"
+    );
     assert_eq!(
-        fx.journal_entries().pop().and_then(|e| e.error_code).as_deref(),
-        Some(CANCELLED_BY_USER)
+        result.error.as_deref(),
+        Some(rollback_failed_text(OPERATION_CANCELED_MESSAGE, 1).as_str())
+    );
+    let failed: Vec<_> = fx
+        .journal_entries()
+        .into_iter()
+        .filter(|e| e.state == JournalState::Failed)
+        .collect();
+    assert_eq!(failed.len(), 1);
+    assert_eq!(failed[0].error_code.as_deref(), Some(CANCELLED_BY_USER));
+    assert_eq!(
+        failed[0].error.as_deref(),
+        Some(english_code_text(CANCELLED_BY_USER).as_str())
     );
 }
 
@@ -1040,14 +1153,14 @@ fn execute_group_copy_cancelled_mid_way_removes_only_the_copies_this_operation_m
     fx.add_file(r"C:\photos\sel\other.jpg", 2);
     let cancel = CancelToken::new();
     let trigger = cancel.clone();
-    fx.hooks
-        .set_copy_hook(Some(Arc::new(move |_: &Path, destination: &Path| {
-            if destination.to_string_lossy().ends_with("IMG_0001.CR3") {
-                trigger.cancel();
-            }
-            None
-        })));
-    let _ = fx.run_group_with(&group(JPEG, RAW, None, Copy, Some("sel")), &cancel);
+    fx.hooks.set_copy_hook(Some(Arc::new(move |source: &Path, _: &Path| {
+        if source.to_string_lossy().eq_ignore_ascii_case(JPEG) {
+            trigger.cancel(); // the user cancels while the first member is being copied
+        }
+        None
+    })));
+    let result = fx.run_group_with(&group(JPEG, RAW, None, Copy, Some("sel")), &cancel);
+    assert!(!result.succeeded);
     assert!(
         fx.file_exists(r"C:\photos\sel\other.jpg"),
         "a file this operation did not make is kept"
@@ -1056,6 +1169,10 @@ fn execute_group_copy_cancelled_mid_way_removes_only_the_copies_this_operation_m
         !fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"),
         "the copy this operation made is removed"
     );
+    assert!(!fx.file_exists(r"C:\photos\sel\IMG_0001.CR3"));
+    assert!(fx.file_exists(JPEG) && fx.file_exists(RAW));
+    assert_eq!(result.entry.as_ref().map(|e| e.state), Some(JournalState::Dismissed));
+    assert_eq!(last_state(&fx), Some(JournalState::Dismissed));
 }
 
 // C#: CaptureGroupActionRollbackTests.ExecuteGroupAsync_CopyLeavesPartialFile_PartialFileIsKeptAndRecoveryShowsConflict
@@ -1220,14 +1337,23 @@ fn execute_group_move_with_the_same_path_listed_twice_fails_and_leaves_the_file_
 fn execute_group_permanent_member_larger_than_the_bin_does_not_count_against_the_bin_capacity() {
     let fx = Fixture::new();
     add_pair(&fx);
-    fx.bin.set_no_bin_roots(&[XMP]);
-    fx.bin.set_capacity(r"C:\", 45);
+    // Only the RAW has no bin (C# `MixedBin.CanRecycle(path) => path != Raw`): the RAW path itself is the "root".
+    fx.bin.set_no_bin_roots(&[RAW]);
+    fx.bin.set_capacity(r"C:\", 45); // fits the 40-byte JPEG; 40 + 60 would not fit
     let mut request = group(JPEG, RAW, None, Recycle, None);
     request.allow_permanent_delete = true;
     let result = fx.run_group(&request);
     assert!(
         result.succeeded,
-        "RAW (60 bytes) is permanent and is not counted against the 45-byte bin"
+        "RAW (60 bytes) is permanent and is not counted against the 45-byte bin: {:?}",
+        result.error
+    );
+    assert_eq!(fx.bin.recycled(), vec![JPEG.to_owned()]);
+    assert_eq!(fx.bin.permanently_deleted(), vec![RAW.to_owned()]);
+    assert_eq!(
+        fx.bin.fits_calls(),
+        vec![JPEG.to_owned()],
+        "only the bin-bound members are measured"
     );
 }
 
@@ -1241,12 +1367,14 @@ fn execute_group_preflights_every_source_before_journal_or_mutation() {
     let fx = Fixture::new();
     add_triple(&fx);
     fx.add_dir(SEL);
-    fx.disk.delete(Path::new(RAW)).expect("RAW vanished");
-    fx.add_file(r"C:\photos\sel\IMG_0001.CR3", 9); // a destination conflict found in the preflight
+    fx.add_file(r"C:\photos\sel\IMG_0001.CR3", 9); // the second member's destination exists: found in the preflight
     let result = fx.run_group(&group(JPEG, RAW, Some(XMP), Move, Some("sel")));
     assert!(!result.succeeded);
+    assert!(result.members.is_empty());
     assert!(fx.journal_lines().is_empty(), "nothing is journaled");
-    assert!(fx.file_exists(JPEG) && fx.file_exists(XMP));
+    assert!(fx.file_exists(JPEG) && fx.file_exists(RAW) && fx.file_exists(XMP));
+    assert!(!fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"));
+    assert!(fx.events_of(&["move", "copy"]).is_empty());
 }
 
 // C#: CaptureGroupActionServiceTests.ExecuteGroupAsync_PreparedJournalAppendFails_DoesNotMutateAnyMember
@@ -1348,14 +1476,18 @@ fn execute_group_second_call_while_first_runs_is_rejected_without_journal_line_a
     let (release_tx, release_rx) = mpsc::channel::<()>();
     let entered_tx = Mutex::new(entered_tx);
     let release_rx = Mutex::new(release_rx);
+    let first_move = AtomicBool::new(true);
     let fx = Fixture::with_move_override(move |disk| -> MoveOverride {
         Arc::new(move |source: &Path, destination: &Path| {
-            entered_tx.lock().expect("sender").send(()).expect("test is listening");
-            release_rx
-                .lock()
-                .expect("receiver")
-                .recv_timeout(HAND_OFF)
-                .expect("test releases the move");
+            // Only the first member's move blocks; the second member of the same call runs through.
+            if first_move.swap(false, Ordering::SeqCst) {
+                entered_tx.lock().expect("sender").send(()).expect("test is listening");
+                release_rx
+                    .lock()
+                    .expect("receiver")
+                    .recv_timeout(HAND_OFF)
+                    .expect("test releases the move");
+            }
             disk.move_file(source, destination)
         })
     });
@@ -1614,15 +1746,25 @@ fn cancel_after_prepared_group_move_is_observed_and_rolled_back() {
     add_pair(&fx);
     let cancel = CancelToken::new();
     let trigger = cancel.clone();
-    fx.hooks.set_move_hook(Some(Arc::new(move |source: &Path, _: &Path| {
-        if source.to_string_lossy().ends_with("IMG_0001.CR3") {
+    // Cancelled right after the Prepared line (C# `FaultKind.CancelAfter` on the first journal append).
+    let journal = journal_path();
+    fx.hooks.set_open_append_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(&journal) {
             trigger.cancel();
         }
         None
     })));
     let result = fx.run_group_with(&group(JPEG, RAW, None, Move, Some("sel")), &cancel);
+    assert!(cancel.is_canceled());
     assert!(!result.succeeded);
-    assert!(fx.file_exists(JPEG), "the moved JPEG is rolled back");
+    assert_eq!(result.error.as_deref(), Some(OPERATION_CANCELED_MESSAGE));
+    assert!(fx.events_of(&["move"]).is_empty(), "nothing moved");
+    assert!(fx.file_exists(JPEG) && fx.file_exists(RAW));
+    assert!(!fx.file_exists(r"C:\photos\sel\IMG_0001.JPG"));
+    assert!(
+        !matches!(last_state(&fx), Some(JournalState::Prepared | JournalState::Committed)),
+        "neither Prepared nor Committed is the latest state"
+    );
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1641,7 +1783,10 @@ fn many_simultaneous_actions_exactly_one_runs() {
     let counter = runs.clone();
     let fx = Fixture::with_move_override(move |disk| -> MoveOverride {
         Arc::new(move |source: &Path, destination: &Path| {
-            counter.fetch_add(1, Ordering::SeqCst);
+            // Counts winning ACTIONS: only the first member's move of the winner waits for the losers.
+            if counter.fetch_add(1, Ordering::SeqCst) > 0 {
+                return disk.move_file(source, destination);
+            }
             for _ in 0..(THREADS - 1) {
                 rejected_rx
                     .lock()
@@ -1677,7 +1822,16 @@ fn many_simultaneous_actions_exactly_one_runs() {
             .map(|h| h.join().expect("thread finished"))
             .collect()
     });
-    assert_eq!(runs.load(Ordering::SeqCst), 1, "exactly one action ran");
+    assert_eq!(
+        runs.load(Ordering::SeqCst),
+        2,
+        "exactly one action ran: the two moves of its JPEG + RAW"
+    );
+    assert_eq!(
+        results.iter().filter(|r| r.succeeded).count(),
+        1,
+        "exactly one action ran"
+    );
     assert_eq!(rejected.load(Ordering::SeqCst), THREADS - 1);
     assert_eq!(results.iter().filter(|r| r.rejected).count(), THREADS - 1);
 }
