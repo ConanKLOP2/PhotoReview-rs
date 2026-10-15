@@ -43,7 +43,7 @@ impl DecodeBox {
     /// `Width <= 0 && Height <= 0`.
     #[must_use]
     pub const fn is_unbounded(&self) -> bool {
-        todo!()
+        self.width <= 0 && self.height <= 0
     }
 
     /// `Fit`: largest size inside the box with the source aspect; never upscales; the constraining side is exactly the box side,
