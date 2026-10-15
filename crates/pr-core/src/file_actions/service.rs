@@ -548,7 +548,6 @@ impl FileActionService {
             && self.is_source_gone(&request.source);
 
         FileActionResult {
-            rejected: false,
             journal_persisted: journal_error.is_none(),
             journal_error,
             permanently_deleted: run.permanent && mutation_completed,
@@ -1378,7 +1377,8 @@ impl From<Canceled> for ActionFailure {
 /// `"Null character in path. (Parameter 'path')"` for a NUL, and the .NET `SR.IO_PathTooLong_Path` text with the path.
 fn path_error_to_io(err: PathError, path: &str) -> io::Error {
     match err {
-        PathError::Argument if path.contains('\0') && !path.chars().all(|c| c == ' ') => io::Error::new(
+        // A path holding a NUL is never empty or blank, so the .NET "empty" check (made first) cannot win here.
+        PathError::Argument if path.contains('\0') => io::Error::new(
             io::ErrorKind::InvalidInput,
             "Null character in path. (Parameter 'path')",
         ),

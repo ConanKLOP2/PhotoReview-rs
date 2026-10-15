@@ -1322,6 +1322,88 @@ fn execute_group_recycle_bin_overflows_on_the_first_volume_only_is_refused_befor
     assert!(fx.bin.recycled().is_empty());
 }
 
+// RemoveCreatedCopies, in-flight branch: the first member's own copy (proof raised, observed right after the copy) fails
+// verification and then cannot be deleted: it is counted as stuck (rollback note with 1) and the entry stays Failed.
+// Rust-only mutant killer for the in-flight `stuck += 1`.
+#[test]
+fn execute_group_copy_in_flight_own_copy_that_cannot_be_deleted_counts_as_stuck() {
+    const MOVED_JPEG: &str = r"C:\photos\sel\IMG_0001.JPG";
+    let fx = Fixture::new();
+    add_pair(&fx);
+    // The copied JPEG looks 10 bytes longer than the source: verification fails with VerifySizeChanged.
+    fx.faulty.set_stat_filter(Some(Arc::new(|path: &Path, stat| match stat {
+        Some(stat) if path.to_string_lossy().eq_ignore_ascii_case(MOVED_JPEG) => {
+            Some(pr_core::abstractions::FileStat {
+                length: stat.length + 10,
+                ..stat
+            })
+        }
+        other => other,
+    })));
+    fx.hooks.set_delete_hook(Some(Arc::new(|path: &Path| {
+        path.to_string_lossy()
+            .eq_ignore_ascii_case(MOVED_JPEG)
+            .then(|| io::Error::other("in use"))
+    })));
+    let result = fx.run_group(&group(JPEG, RAW, None, Copy, Some("sel")));
+    assert!(!result.succeeded);
+    assert!(fx.file_exists(MOVED_JPEG), "the undeletable own copy stays");
+    assert_eq!(
+        result.error.as_deref(),
+        Some(rollback_failed_text(&english_code_text(VERIFY_SIZE_CHANGED), 1).as_str())
+    );
+    assert_eq!(last_state(&fx), Some(JournalState::Failed));
+}
+
+// InspectGroupMember, Recycle: the failed member is a conflict when its source changed in length OR in write time
+// (each alone is enough; same file => no conflict). Rust-only mutant killer for the `||`.
+#[test]
+fn execute_group_recycle_failed_member_is_conflict_when_length_or_stamp_alone_changed() {
+    for (bytes, stamp_offset, conflict) in [(61usize, 0i64, true), (60, 1, true), (60, 0, false)] {
+        let fx = Fixture::new();
+        add_pair(&fx);
+        let disk = fx.disk.clone();
+        fx.bin.set_send_hook(Some(Arc::new(move |path: &Path| {
+            if !path.to_string_lossy().eq_ignore_ascii_case(RAW) {
+                return None;
+            }
+            disk.add_file_at(
+                Path::new(RAW),
+                &common_file_actions::pattern_bytes(bytes),
+                last_write_plus(stamp_offset),
+            );
+            Some(io::Error::other("boom"))
+        })));
+        let result = fx.run_group(&group(JPEG, RAW, None, Recycle, None));
+        assert!(!result.succeeded);
+        let raw = result
+            .members
+            .iter()
+            .find(|m| m.member.source == RAW)
+            .expect("RAW member");
+        assert_eq!(raw.conflict, conflict, "{bytes} bytes, +{stamp_offset} s");
+        assert!(!raw.completed && raw.source_exists && raw.state_known);
+    }
+}
+
+// G2 (C# `string.IsNullOrWhiteSpace(request.Destination)`): a whitespace-only destination is "no destination", refused
+// before anything is read or journaled. Rust-only mutant killer (golden covers the single path).
+#[test]
+fn execute_group_whitespace_destination_is_no_destination() {
+    for op in [Move, Copy] {
+        let fx = Fixture::new();
+        add_pair(&fx);
+        let result = fx.run_group(&group(JPEG, RAW, None, op, Some(" \t ")));
+        assert!(!result.succeeded, "{op:?}");
+        assert_eq!(
+            result.error.as_deref(),
+            Some(english_texts().core_file_action_no_destination().as_str()),
+            "{op:?}"
+        );
+        assert!(fx.journal_lines().is_empty(), "{op:?}");
+    }
+}
+
 // C#: CaptureGroupActionGapTests.ExecuteGroupAsync_MoveWithTheSamePathListedTwice_FailsAndLeavesTheFileInPlace
 #[test]
 fn execute_group_move_with_the_same_path_listed_twice_fails_and_leaves_the_file_in_place() {

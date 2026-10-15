@@ -943,6 +943,46 @@ fn recycle_bin_fits_passes_stat_size_and_recycles() {
     assert_eq!(fx.bin.fits_calls(), vec![SOURCE.to_owned()]);
 }
 
+// T7: a `GetFullPath` failure is the action's failure with the .NET message, never a panic: a source folder holding a
+// NUL makes `GetFullPath` throw `ArgumentException("Null character in path.", "path")` (the empty-folder case is the
+// golden `single-move-source-without-folder`). Nothing is created or journaled. Rust-only twin of that .NET text.
+#[test]
+fn execute_async_source_folder_with_nul_fails_with_the_dotnet_message() {
+    let fx = Fixture::new();
+    let result = fx.run(&single("C:\\pho\0tos\\a.jpg", Move, Some("sel")));
+    assert!(!result.succeeded);
+    assert_eq!(
+        result.error.as_deref(),
+        Some("Null character in path. (Parameter 'path')")
+    );
+    assert!(!fx.file_exists(&journal_path()));
+}
+
+// INV-4 through the trait W3-05/W3-06 use: the forwarding impl takes, reports and releases the SAME gate.
+#[test]
+fn file_action_gate_trait_forwards_to_the_one_gate() {
+    use pr_core::file_actions::undo::FileActionGate;
+    let fx = Fixture::new();
+    let gate: &dyn FileActionGate = &fx.service;
+    assert!(!gate.is_busy());
+    assert!(gate.try_begin());
+    assert!(gate.is_busy() && fx.service.is_busy());
+    assert!(!gate.try_begin(), "held: a second taker is refused");
+    assert!(!fx.service.try_begin());
+    gate.end();
+    assert!(!fx.service.is_busy());
+}
+
+// Q-R8 (C# `LacksRecycleBin`, used by the App to ask for confirmation): true exactly when the path has no Recycle Bin.
+// Rust-only mutant killer (no C# test calls it directly in this unit's files).
+#[test]
+fn lacks_recycle_bin_is_true_only_where_there_is_no_bin() {
+    let fx = Fixture::new();
+    fx.bin.set_no_bin_roots(&[r"E:\"]);
+    assert!(fx.service.lacks_recycle_bin(r"E:\photos\a.jpg"));
+    assert!(!fx.service.lacks_recycle_bin(SOURCE));
+}
+
 // C#: PermanentDeleteTests.Recycle_NoRecycleBin_DoesNotAskCapacity
 #[test]
 fn recycle_no_recycle_bin_does_not_ask_capacity() {
