@@ -18,18 +18,19 @@ use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime};
 
-use pr_core::abstractions::{FileStat, FileSystem, Log, ReadSeek, SystemClock};
+use pr_core::abstractions::{AppendStream, FileStat, FileSystem, Log, ReadSeek, SystemClock};
+use pr_core::diagnostics::perf::{PerfEvent, PerfListener, PerfValue, PhotoReviewPerf, path_id as perf_path_id};
 use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::DecoderBackend;
 use pr_core::sync::CancelToken;
-use pr_core::text::dotnet_path::get_full_path;
+use pr_core::text::dotnet_path::{PathError, get_full_path};
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache::disk_store::{PngEncoder, is_cache_entry_failure, write_pixels_atomically};
 use pr_imaging::cache::thumbnails::{
     CacheImageInfo, CacheImageReader, DEFAULT_MAX_DISK_BYTES, DEFAULT_MAX_RAM_BYTES, EmbeddedThumbnailReaderFn,
-    PendingThumbnail, ThumbnailCache, ThumbnailCacheConfigError, ThumbnailCacheOptions, ThumbnailCacheServices,
-    ThumbnailError, ThumbnailImage, ThumbnailRequest, ThumbnailResult, build_key, build_stamp, cache_file_path,
-    decode_disk_thumbnail, sha256,
+    LoadSpawner, PendingThumbnail, ThumbnailCache, ThumbnailCacheConfigError, ThumbnailCacheOptions,
+    ThumbnailCacheServices, ThumbnailError, ThumbnailImage, ThumbnailRequest, ThumbnailResult, build_key, build_stamp,
+    cache_file_path, decode_disk_thumbnail, sha256,
 };
 use pr_imaging::decode_types::{
     DecodeBox, DecodedImage, DecodedImageOptions, DecodedImageView, PixelLease, PlatformImage,
@@ -1222,6 +1223,702 @@ fn dropped_caller_then_load_fails_removes_in_flight_entry() {
         "the failed in-flight entry is gone, a new load succeeds"
     );
     assert_eq!(calls.load(Ordering::SeqCst), 2, "the second get started a new load");
+}
+
+// ---- Rust-only adversarial checks (finish pass): INV-2, perf, error classes, seams -----------------------------------
+
+#[test]
+fn clear_disk_during_load_result_is_not_cached() {
+    // Rust-only: semantics 7 (ClearDisk bumps the generation like ClearMemory; INV-2)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls, gate) = gate_first_call(|_| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let cache = fx.cache(embedded);
+    let first = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load started");
+
+    cache.clear_disk();
+    gate.release.send(()).expect("release the load");
+    let returned = first
+        .wait()
+        .expect("the caller still gets its result")
+        .expect("has a thumbnail");
+
+    let second = settle(cache.get(SOURCE, None).expect("valid path")).expect("has a thumbnail");
+    assert!(
+        !Arc::ptr_eq(&returned, &second),
+        "a load that ended across clear_disk is not cached"
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[test]
+fn joiner_after_clear_memory_caches_the_shared_result() {
+    // Rust-only: semantics 2g parity (C# reads the generation per caller after GetOrAdd: the starter's predates the
+    // clear, a joiner's does not, so the joiner caches the shared result)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls, gate) = gate_first_call(|_| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let cache = fx.cache(embedded);
+    let starter = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load started");
+    cache.clear_memory();
+    let joiner = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.release.send(()).expect("release the load");
+
+    let from_starter = starter.wait().expect("load succeeds").expect("has a thumbnail");
+    let from_joiner = joiner.wait().expect("load succeeds").expect("has a thumbnail");
+    assert!(Arc::ptr_eq(&from_starter, &from_joiner), "one shared load");
+    let again = settle(cache.get(SOURCE, None).expect("valid path")).expect("has a thumbnail");
+    assert!(Arc::ptr_eq(&from_joiner, &again), "the joiner cached the shared result");
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn dropping_one_of_two_handles_keeps_the_shared_load_joinable() {
+    // Rust-only: C# keeps the Lazy in _inFlight while any caller waits; a third caller joins the same load
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls, gate) = gate_first_call(|_| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let cache = fx.cache(embedded);
+    let first = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load started");
+    let second = pending(cache.get(SOURCE, None).expect("valid path"));
+
+    drop(first);
+    let third = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.release.send(()).expect("release the load");
+
+    let a = second.wait().expect("load succeeds").expect("has a thumbnail");
+    let b = third.wait().expect("load succeeds").expect("has a thumbnail");
+    assert!(Arc::ptr_eq(&a, &b), "the third caller joined the running load");
+    assert_eq!(calls.load(Ordering::SeqCst), 1, "one load for every caller");
+}
+
+/// A spawner that runs each job on a thread and reports on `done` once the job (and its captures) is gone.
+fn reporting_spawner() -> (LoadSpawner, Receiver<()>) {
+    let (done_tx, done_rx) = mpsc::channel::<()>();
+    let done_tx = Mutex::new(done_tx);
+    let spawner: LoadSpawner = Arc::new(move |job: Box<dyn FnOnce() + Send + 'static>| {
+        let done = done_tx.lock().expect("done sender lock").clone();
+        std::thread::spawn(move || {
+            job();
+            let _ = done.send(());
+        });
+        Ok(())
+    });
+    (spawner, done_rx)
+}
+
+#[test]
+fn dispose_releases_the_ram_cache() {
+    // Rust-only: semantics 8 (Dispose clears the RAM cache under the lock)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, _calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let (spawner, done) = reporting_spawner();
+    let options = ThumbnailCacheOptions {
+        spawner: Some(spawner),
+        ..fx.options(FAKE_DIR, embedded)
+    };
+    let cache = ThumbnailCache::new(fx.services(), options).expect("valid options");
+    let image = settle(cache.get(SOURCE, None).expect("valid path")).expect("has a thumbnail");
+    done.recv().expect("the start-up sweep job ended");
+    done.recv().expect("the load job ended");
+    assert_eq!(
+        Arc::strong_count(&image),
+        2,
+        "the test and the RAM cache hold the image"
+    );
+
+    cache.dispose();
+
+    assert_eq!(Arc::strong_count(&image), 1, "dispose dropped the RAM entry");
+}
+
+#[test]
+fn dispose_cancels_the_token_of_running_loads() {
+    // Rust-only: semantics 8 (Dispose cancels the dispose token the running load was given)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (started_tx, started_rx) = mpsc::channel::<()>();
+    let (release_tx, release_rx) = mpsc::channel::<()>();
+    let started_tx = Mutex::new(started_tx);
+    let release_rx = Mutex::new(release_rx);
+    let embedded: EmbeddedThumbnailReaderFn = Arc::new(move |_: &str, token: &CancelToken| {
+        started_tx.lock().expect("lock").send(()).expect("the test waits");
+        release_rx.lock().expect("lock").recv().expect("the test releases");
+        if token.is_canceled() {
+            Err(ThumbnailError::Canceled)
+        } else {
+            Ok(Some(decoded_image(16, 16, (64, 64))))
+        }
+    });
+    let cache = fx.cache(embedded);
+    let load = pending(cache.get(SOURCE, None).expect("valid path"));
+    started_rx.recv().expect("the load started");
+
+    cache.dispose();
+    release_tx.send(()).expect("release the load");
+
+    assert!(
+        matches!(load.wait(), Err(ThumbnailError::Canceled)),
+        "the reader saw the cancelled token"
+    );
+}
+
+#[test]
+fn panicking_reader_reports_panicked_and_is_not_cached() {
+    // Rust-only: semantics 3 (a panic in the load is Err(Panicked) for every waiter; the next get starts a new load)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls) = counting_embedded(|index, _, _| {
+        if index == 0 {
+            panic!("boom in the reader");
+        }
+        Ok(Some(decoded_image(16, 16, (64, 64))))
+    });
+    let cache = fx.cache(embedded);
+
+    // Bounded: a panic that escaped the job would leave the load without an outcome.
+    let first = pending(cache.get(SOURCE, None).expect("valid path"))
+        .wait_timeout(Duration::from_secs(10))
+        .expect("the panicking load still ends");
+    match first {
+        Err(ThumbnailError::Panicked(message)) => assert!(message.contains("boom in the reader"), "{message}"),
+        other => panic!("expected Err(Panicked), got {:?}", other.map(|image| image.is_some())),
+    }
+    let retry = settle(cache.get(SOURCE, None).expect("valid path"));
+    assert!(retry.is_some(), "the failed load was forgotten");
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[test]
+fn failed_spawn_reports_spawn_error_and_is_not_cached() {
+    // Rust-only: semantics 3 and 9 (a spawn failure publishes Err(Spawn) and forgets the entry; the start-up sweep's
+    // spawn failure is logged and its signal is done, OQ8)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let spawns = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&spawns);
+    let spawner: LoadSpawner = Arc::new(move |_job: Box<dyn FnOnce() + Send + 'static>| {
+        counter.fetch_add(1, Ordering::SeqCst);
+        Err(io::Error::other("no threads left"))
+    });
+    let (embedded, calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let options = ThumbnailCacheOptions {
+        spawner: Some(spawner),
+        ..fx.options(FAKE_DIR, embedded)
+    };
+    let cache = ThumbnailCache::new(fx.services(), options).expect("valid options");
+    assert!(
+        cache.wait_startup_cleanup(Duration::ZERO),
+        "a sweep that could not start is done"
+    );
+    assert!(fx.log.contains(LogLevel::Error, "Stale temp file cleanup failed: "));
+
+    for attempt in 0..2 {
+        // Bounded: an unpublished spawn failure would leave the load without an outcome.
+        let result = pending(cache.get(SOURCE, None).expect("valid path"))
+            .wait_timeout(Duration::from_secs(10))
+            .expect("a load that could not start still ends");
+        assert!(
+            matches!(result, Err(ThumbnailError::Spawn(_))),
+            "attempt {attempt}: Err(Spawn)"
+        );
+    }
+    assert_eq!(spawns.load(Ordering::SeqCst), 3, "the sweep, then one new load per get");
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn get_normalizes_the_path_before_keying() {
+    // Rust-only: semantics 1/2d (Path.GetFullPath before the key: `/` and `.` segments name the same entry)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let cache = fx.cache(embedded);
+
+    let first = settle(cache.get(SOURCE, None).expect("valid path")).expect("has a thumbnail");
+    let second = settle(cache.get("C:/Photos/./x/../a.jpg", None).expect("valid path")).expect("has a thumbnail");
+
+    assert!(Arc::ptr_eq(&first, &second), "the normalized path is the same key");
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn get_invalid_or_directory_path_is_a_faulted_request() {
+    // Rust-only: semantics 2d/2e (GetFullPath failure and a directory are faulted requests, not synchronous errors)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    fx.fs.add_dir(r"C:\Photos\folder.jpg");
+    let cache = fx.cache(unused_embedded());
+
+    let invalid = cache.get("C:\\Photos\\a\0.jpg", None).expect("not a synchronous error");
+    assert!(
+        matches!(
+            invalid,
+            ThumbnailRequest::Ready(Err(ThumbnailError::InvalidPath(PathError::Argument)))
+        ),
+        "got {invalid:?}"
+    );
+    match cache
+        .get(r"C:\Photos\folder.jpg", None)
+        .expect("not a synchronous error")
+    {
+        ThumbnailRequest::Ready(Err(ThumbnailError::Stat(error))) => assert_eq!(error.kind(), io::ErrorKind::NotFound),
+        other => panic!("expected Ready(Err(Stat(NotFound))), got {other:?}"),
+    }
+}
+
+#[test]
+fn get_rejects_every_white_space_path() {
+    // Rust-only: semantics 2a (C# ThrowIfNullOrWhiteSpace uses char.IsWhiteSpace, not only ' ')
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let cache = fx.cache(unused_embedded());
+    for blank in ["", " ", "\t\r\n", "\u{3000}\u{a0}"] {
+        assert!(
+            matches!(cache.get(blank, None), Err(ThumbnailError::BlankPath)),
+            "{blank:?}"
+        );
+    }
+}
+
+#[test]
+fn disk_hit_notes_the_access_with_the_injected_clock() {
+    // Rust-only: semantics 4 (a disk hit calls DiskCacheStore::note_accessed, which stamps the last-access time)
+    let root = TempRoot::new("note-accessed");
+    let source = root.join("a.jpg");
+    fs::write(&source, SOURCE_BYTES).expect("write source");
+    let thumbs = root.join("thumbs");
+    fs::create_dir_all(&thumbs).expect("create thumbs");
+    let source_text = source.to_str().expect("utf-8 path");
+    let entry = thumbnail_cache_file(&thumbs, source_text, physical_stat(&source));
+    fs::write(&entry, b"cached-png").expect("write entry");
+    // 2020-01-01T00:00:00Z: far from the real access time the write just set.
+    let stamp = DateTimeUtc::from_ticks(637_134_336_000_000_000).expect("in range");
+    let reader = Arc::new(FakeCacheReader::returning(
+        1,
+        1,
+        CacheImageInfo {
+            source_width: 1,
+            source_height: 1,
+            downscaled: false,
+        },
+    ));
+    let services = ThumbnailCacheServices {
+        platform_codec: Arc::new(TagCodec::default()),
+        cache_image_reader: reader.clone(),
+        embedded_backend: Arc::new(NoThumbnailBackend),
+        fs: Arc::new(PhysicalFileSystem),
+    };
+    let log: Arc<dyn Log> = Arc::new(RecordingLog::new());
+    let options = ThumbnailCacheOptions {
+        clock: Arc::new(FakeClock::at(stamp)),
+        embedded_reader: Some(unused_embedded()),
+        ..default_reader_options(&thumbs, log)
+    };
+    let cache = ThumbnailCache::new(services, options).expect("valid options");
+
+    let image = settle(cache.get(source_text, None).expect("valid path"));
+
+    assert!(image.is_some(), "served from disk");
+    let accessed = fs::metadata(&entry).expect("entry kept").accessed().expect("atime");
+    assert_eq!(
+        DateTimeUtc::from_system_time(accessed).map(DateTimeUtc::ticks),
+        Some(stamp.ticks()),
+        "the hit stamped the entry's last-access time with the injected clock"
+    );
+}
+
+#[test]
+fn non_cache_entry_disk_failure_propagates_and_keeps_the_entry() {
+    // Rust-only: semantics 4 / trap 7.9 (out of memory is not a damaged entry: no delete, no fall-through)
+    let root = TempRoot::new("disk-oom");
+    let source = root.join("a.jpg");
+    fs::write(&source, SOURCE_BYTES).expect("write source");
+    let thumbs = root.join("thumbs");
+    fs::create_dir_all(&thumbs).expect("create thumbs");
+    let source_text = source.to_str().expect("utf-8 path");
+    let entry = thumbnail_cache_file(&thumbs, source_text, physical_stat(&source));
+    fs::write(&entry, b"cached-png").expect("write entry");
+    let makers: [NamedDecodeError; 2] = [
+        ("OutOfMemory", || DecodeError::OutOfMemory {
+            message: "Not enough memory to decode the cache entry.".to_owned(),
+        }),
+        ("Canceled", || DecodeError::Canceled),
+    ];
+    for (label, make) in makers {
+        assert!(!is_cache_entry_failure(&make()), "{label} is not a cache-entry failure");
+        let log = Arc::new(RecordingLog::new());
+        let reader = Arc::new(FakeCacheReader::failing(make));
+        let (embedded, calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (16, 16)))));
+        let services = ThumbnailCacheServices {
+            platform_codec: Arc::new(TagCodec::default()),
+            cache_image_reader: reader.clone(),
+            embedded_backend: Arc::new(NoThumbnailBackend),
+            fs: Arc::new(PhysicalFileSystem),
+        };
+        let options = ThumbnailCacheOptions {
+            log: log.clone(),
+            embedded_reader: Some(embedded),
+            ..default_reader_options(&thumbs, log.clone())
+        };
+        let cache = ThumbnailCache::new(services, options).expect("valid options");
+
+        let result = cache.get(source_text, None).expect("valid path").wait();
+
+        assert!(
+            matches!(result, Err(ThumbnailError::Decode(_))),
+            "{label}: propagated as Decode"
+        );
+        assert!(entry.exists(), "{label}: the entry is kept");
+        assert_eq!(
+            calls.load(Ordering::SeqCst),
+            0,
+            "{label}: no fall-through to the embedded reader"
+        );
+        assert!(
+            !log.contains(LogLevel::Error, "Disk thumbnail read failed"),
+            "{label}: not logged as damaged"
+        );
+    }
+}
+
+#[test]
+fn decode_disk_thumbnail_refuses_an_empty_entry_and_passes_the_exact_bytes() {
+    // Rust-only: semantics 6 (length 0 is InvalidData before the decode; otherwise the whole file reaches the reader)
+    let fake_fs = FakeFileSystem::new();
+    fake_fs.add_file(r"C:\thumbs\empty.png", b"");
+    fake_fs.add_file(r"C:\thumbs\full.png", b"png-bytes-0123456789");
+    let codec = TagCodec::default();
+    let reader = FakeCacheReader::new(|_, encoded| {
+        assert_eq!(encoded, b"png-bytes-0123456789", "the reader gets the whole entry");
+        let pixels = PixelBuffer::allocate(2, 3, PixelLayout::Pbgra32).expect("valid size");
+        Ok((
+            pixels,
+            CacheImageInfo {
+                source_width: 2,
+                source_height: 3,
+                downscaled: false,
+            },
+        ))
+    });
+
+    match decode_disk_thumbnail(Path::new(r"C:\thumbs\empty.png"), &fake_fs, &reader, &codec) {
+        Err(DecodeError::InvalidData { message }) => {
+            assert_eq!(message, "Thumbnail cache entry has an invalid length.");
+        }
+        other => panic!("expected InvalidData, got {:?}", other.map(|image| image.pixel_width())),
+    }
+    assert_eq!(reader.call_count(), 0, "an empty entry is refused before decoding");
+
+    let image = decode_disk_thumbnail(Path::new(r"C:\thumbs\full.png"), &fake_fs, &reader, &codec).expect("decodes");
+    assert_eq!((image.pixel_width(), image.pixel_height()), (2, 3));
+    assert_eq!(
+        codec.images.load(Ordering::SeqCst),
+        1,
+        "the codec made the platform image"
+    );
+    assert!(matches!(
+        decode_disk_thumbnail(Path::new(r"C:\thumbs\missing.png"), &fake_fs, &reader, &codec),
+        Err(DecodeError::FileNotFound { .. })
+    ));
+}
+
+#[test]
+fn abandoned_load_is_forgotten_before_it_ends() {
+    // Rust-only (DIVERGENCE in PendingThumbnail::drop): once the last handle is dropped, a new get starts a new load
+    // at once instead of joining the abandoned one (deterministic twin of the RV-I10 replacement)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls, gate) = gate_first_call(|index| {
+        if index == 0 {
+            Err(ThumbnailError::Reader(Arc::new(io::Error::other("transient"))))
+        } else {
+            Ok(Some(decoded_image(16, 16, (64, 64))))
+        }
+    });
+    let cache = fx.cache(embedded);
+    let only = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load started");
+
+    drop(only);
+    let retry = pending(cache.get(SOURCE, None).expect("valid path"));
+    // Bounded: a retry that joined the abandoned load would wait for the release below forever.
+    let outcome = retry.wait_timeout(Duration::from_secs(10));
+    gate.release.send(()).expect("release the abandoned load");
+
+    let image = outcome
+        .expect("the retry did not join the abandoned, still-gated load")
+        .expect("the new load succeeds");
+    assert!(image.is_some(), "the new load did not join the abandoned, failing one");
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+/// A spawner that keeps every job until the test runs it ([`HeldJobs::run_all`]).
+#[derive(Default)]
+struct HeldJobs {
+    jobs: Mutex<Vec<Box<dyn FnOnce() + Send + 'static>>>,
+}
+
+impl HeldJobs {
+    fn spawner(self: &Arc<Self>) -> LoadSpawner {
+        let held = Arc::clone(self);
+        Arc::new(move |job: Box<dyn FnOnce() + Send + 'static>| {
+            held.jobs.lock().expect("jobs lock").push(job);
+            Ok(())
+        })
+    }
+
+    fn run_all(&self) {
+        let jobs = std::mem::take(&mut *self.jobs.lock().expect("jobs lock"));
+        for job in jobs {
+            job();
+        }
+    }
+}
+
+#[test]
+fn load_started_after_dispose_is_canceled_before_any_read() {
+    // Rust-only: semantics 4 (LoadOrCreateAsync starts with cancellationToken.ThrowIfCancellationRequested)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (embedded, calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let held = Arc::new(HeldJobs::default());
+    let options = ThumbnailCacheOptions {
+        spawner: Some(held.spawner()),
+        ..fx.options(FAKE_DIR, embedded)
+    };
+    let cache = ThumbnailCache::new(fx.services(), options).expect("valid options");
+    let load = pending(cache.get(SOURCE, None).expect("valid path"));
+
+    cache.dispose();
+    held.run_all();
+
+    assert!(matches!(load.wait(), Err(ThumbnailError::Canceled)));
+    assert_eq!(calls.load(Ordering::SeqCst), 0, "the reader never ran");
+}
+
+/// A [`FakeFileSystem`] wrapper whose first `file_exists` of a `.png` path reports on `started` and waits for
+/// `release` (the window between the existence check and the disk decode / embedded read).
+struct GatedExistsFs {
+    disk: Arc<FakeFileSystem>,
+    gate: Mutex<Option<(Sender<()>, Receiver<()>)>>,
+}
+
+impl GatedExistsFs {
+    fn new(disk: Arc<FakeFileSystem>) -> (Arc<Self>, Gate) {
+        let (started_tx, started_rx) = mpsc::channel::<()>();
+        let (release_tx, release_rx) = mpsc::channel::<()>();
+        let fs = Arc::new(Self {
+            disk,
+            gate: Mutex::new(Some((started_tx, release_rx))),
+        });
+        (
+            fs,
+            Gate {
+                started: started_rx,
+                release: release_tx,
+            },
+        )
+    }
+}
+
+impl FileSystem for GatedExistsFs {
+    fn file_exists(&self, path: &Path) -> bool {
+        if path.extension().is_some_and(|ext| ext == "png") {
+            let gate = self.gate.lock().expect("gate lock").take();
+            if let Some((started, release)) = gate {
+                started.send(()).expect("the test waits");
+                release.recv().expect("the test releases");
+            }
+        }
+        self.disk.file_exists(path)
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.disk.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
+        self.disk.get_file_stat(path)
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.disk.move_file(source, destination)
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.disk.copy_file(source, destination)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        self.disk.delete(path)
+    }
+    fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
+        self.disk.open_read_shared(path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
+        self.disk.open_append(path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        self.disk.write_all_text_atomic(path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        self.disk.read_all_text(path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
+        self.disk.enumerate_files(directory, pattern)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
+        self.disk.enumerate_directories(directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        self.disk.create_directory(path)
+    }
+}
+
+#[test]
+fn dispose_after_the_existence_check_cancels_the_disk_decode() {
+    // Rust-only: semantics 4 (C# DecodeAsync = Task.Run(.., token): a cancelled token is Canceled, not a damaged entry;
+    // the entry is neither decoded nor deleted)
+    let reader = FakeCacheReader::returning(
+        1,
+        1,
+        CacheImageInfo {
+            source_width: 1,
+            source_height: 1,
+            downscaled: false,
+        },
+    );
+    let fx = Fixture::new(reader);
+    let stat = fx.fs.peek_stat(SOURCE).expect("the source exists");
+    let entry = thumbnail_cache_file(Path::new(FAKE_DIR), SOURCE, stat);
+    fx.fs.add_file(&entry, b"cached-png");
+    let (gated, gate) = GatedExistsFs::new(fx.fs.clone());
+    let (embedded, calls) = counting_embedded(|_, _, _| Ok(Some(decoded_image(16, 16, (64, 64)))));
+    let cache = ThumbnailCache::new(fx.services_on(gated), fx.options(FAKE_DIR, embedded)).expect("valid options");
+    let load = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load checks the disk entry");
+
+    cache.dispose();
+    gate.release.send(()).expect("release the load");
+
+    assert!(matches!(load.wait(), Err(ThumbnailError::Canceled)));
+    assert_eq!(fx.reader.call_count(), 0, "the disk entry was not decoded");
+    assert_eq!(
+        calls.load(Ordering::SeqCst),
+        0,
+        "no fall-through to the embedded reader"
+    );
+    assert!(fx.fs.file_exists(&entry), "a cancellation keeps the entry");
+}
+
+#[test]
+fn default_reader_checks_the_dispose_token_before_reading() {
+    // Rust-only: semantics 10 (C# DefaultReadEmbeddedThumbnailAsync: Task.Run(.., token) + ThrowIfCancellationRequested)
+    let fx = Fixture::new(FakeCacheReader::failing(|| DecodeError::Canceled));
+    let (gated, gate) = GatedExistsFs::new(fx.fs.clone());
+    let codec = Arc::new(TagCodec::default());
+    let services = ThumbnailCacheServices {
+        platform_codec: codec.clone(),
+        cache_image_reader: fx.reader.clone(),
+        embedded_backend: Arc::new(FakeEmbeddedBackend {
+            main: (64, 64),
+            thumbnail: (16, 16),
+        }),
+        fs: gated,
+    };
+    let options = ThumbnailCacheOptions {
+        embedded_reader: None,
+        ..fx.options(FAKE_DIR, unused_embedded())
+    };
+    let cache = ThumbnailCache::new(services, options).expect("valid options");
+    let load = pending(cache.get(SOURCE, None).expect("valid path"));
+    gate.started.recv().expect("the load checks the disk entry");
+
+    cache.dispose();
+    gate.release.send(()).expect("release the load");
+
+    assert!(matches!(load.wait(), Err(ThumbnailError::Canceled)));
+    assert_eq!(
+        codec.images.load(Ordering::SeqCst),
+        0,
+        "the embedded thumbnail was not read"
+    );
+}
+
+/// Collects the `ThumbEnd` events of one path id as `(nav, source)`.
+struct ThumbEndListener {
+    path_id: String,
+    events: Mutex<Vec<(i64, String)>>,
+}
+
+impl PerfListener for ThumbEndListener {
+    fn on_event_written(&self, event: &PerfEvent) {
+        if event.name != "ThumbEnd" {
+            return;
+        }
+        if let [PerfValue::Int(nav), PerfValue::Str(path_id), PerfValue::Str(source), _] = event.payload.as_slice()
+            && *path_id == self.path_id
+        {
+            self.events.lock().expect("events lock").push((*nav, source.clone()));
+        }
+    }
+}
+
+#[test]
+fn perf_thumb_end_reports_each_source_with_the_callers_nav() {
+    // Rust-only: semantics 2f/4 and the perf trap (ram/disk/embedded/none with the caller's nav; none for a RAW or a
+    // failed reader)
+    let cases = [
+        (r"C:\PerfThumb\emb.jpg", Some("embedded")),
+        (r"C:\PerfThumb\none.jpg", Some("none")),
+        (r"C:\PerfThumb\fail.jpg", None),
+        (r"C:\PerfThumb\raw.cr2", None),
+        (r"C:\PerfThumb\disk.jpg", Some("disk")),
+    ];
+    let reader = FakeCacheReader::returning(
+        1,
+        1,
+        CacheImageInfo {
+            source_width: 1,
+            source_height: 1,
+            downscaled: false,
+        },
+    );
+    let fx = Fixture::new(reader);
+    for (path, _) in cases {
+        fx.fs.add_file(path, b"bytes");
+    }
+    let disk_stat = fx.fs.peek_stat(r"C:\PerfThumb\disk.jpg").expect("exists");
+    fx.fs.add_file(
+        thumbnail_cache_file(Path::new(FAKE_DIR), r"C:\PerfThumb\disk.jpg", disk_stat),
+        b"png",
+    );
+    let embedded: EmbeddedThumbnailReaderFn = Arc::new(|path: &str, _: &CancelToken| {
+        if path.ends_with("none.jpg") {
+            Ok(None)
+        } else if path.ends_with("fail.jpg") {
+            Err(ThumbnailError::Reader(Arc::new(io::Error::other("transient"))))
+        } else {
+            Ok(Some(decoded_image(16, 16, (64, 64))))
+        }
+    });
+    let cache = fx.cache(embedded);
+    PhotoReviewPerf::set_nav_context(4242);
+
+    for (path, expected) in cases {
+        let listener = Arc::new(ThumbEndListener {
+            path_id: perf_path_id(path),
+            events: Mutex::new(Vec::new()),
+        });
+        let subscription = PhotoReviewPerf::log().subscribe(listener.clone());
+        let _ = cache.get(path, None).expect("valid path").wait();
+        drop(subscription);
+        let events = listener.events.lock().expect("events lock").clone();
+        let expected: Vec<(i64, String)> = expected.map(|s| (4242, s.to_owned())).into_iter().collect();
+        assert_eq!(events, expected, "{path}");
+    }
+
+    let listener = Arc::new(ThumbEndListener {
+        path_id: perf_path_id(r"C:\PerfThumb\emb.jpg"),
+        events: Mutex::new(Vec::new()),
+    });
+    let subscription = PhotoReviewPerf::log().subscribe(listener.clone());
+    let hit = cache.get(r"C:\PerfThumb\emb.jpg", None).expect("valid path");
+    assert!(matches!(hit, ThumbnailRequest::Ready(Ok(Some(_)))), "a RAM hit");
+    drop(subscription);
+    assert_eq!(
+        *listener.events.lock().expect("events lock"),
+        vec![(4242, "ram".to_owned())]
+    );
+    PhotoReviewPerf::set_nav_context(0);
 }
 
 // ---- WicCacheImageIoTests.cs and the native disk-decode checks ----------------------------------------------------
