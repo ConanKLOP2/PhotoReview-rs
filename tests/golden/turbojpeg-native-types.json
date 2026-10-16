@@ -1,0 +1,770 @@
+{
+  "generator": "oracle-cs turbojpeg-native-types",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "enum-tj-init",
+      "kind": "enum",
+      "type": "TjInit",
+      "members": [
+        {
+          "name": "Compress",
+          "value": 0
+        },
+        {
+          "name": "Decompress",
+          "value": 1
+        },
+        {
+          "name": "Transform",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "enum-tj-param",
+      "kind": "enum",
+      "type": "TjParam",
+      "members": [
+        {
+          "name": "StopOnWarning",
+          "value": 0
+        },
+        {
+          "name": "BottomUp",
+          "value": 1
+        },
+        {
+          "name": "NoRealloc",
+          "value": 2
+        },
+        {
+          "name": "Quality",
+          "value": 3
+        },
+        {
+          "name": "Subsamp",
+          "value": 4
+        },
+        {
+          "name": "JpegWidth",
+          "value": 5
+        },
+        {
+          "name": "JpegHeight",
+          "value": 6
+        },
+        {
+          "name": "Precision",
+          "value": 7
+        },
+        {
+          "name": "Colorspace",
+          "value": 8
+        },
+        {
+          "name": "FastUpsample",
+          "value": 9
+        },
+        {
+          "name": "FastDct",
+          "value": 10
+        },
+        {
+          "name": "Optimize",
+          "value": 11
+        },
+        {
+          "name": "Progressive",
+          "value": 12
+        },
+        {
+          "name": "ScanLimit",
+          "value": 13
+        },
+        {
+          "name": "Arithmetic",
+          "value": 14
+        },
+        {
+          "name": "Lossless",
+          "value": 15
+        },
+        {
+          "name": "LosslessPsv",
+          "value": 16
+        },
+        {
+          "name": "LosslessPt",
+          "value": 17
+        },
+        {
+          "name": "RestartBlocks",
+          "value": 18
+        },
+        {
+          "name": "RestartRows",
+          "value": 19
+        },
+        {
+          "name": "XDensity",
+          "value": 20
+        },
+        {
+          "name": "YDensity",
+          "value": 21
+        },
+        {
+          "name": "DensityUnits",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "name": "enum-tj-pixel-format",
+      "kind": "enum",
+      "type": "TjPixelFormat",
+      "members": [
+        {
+          "name": "Rgb",
+          "value": 0
+        },
+        {
+          "name": "Bgr",
+          "value": 1
+        },
+        {
+          "name": "Rgbx",
+          "value": 2
+        },
+        {
+          "name": "Bgrx",
+          "value": 3
+        },
+        {
+          "name": "Xbgr",
+          "value": 4
+        },
+        {
+          "name": "Xrgb",
+          "value": 5
+        },
+        {
+          "name": "Gray",
+          "value": 6
+        },
+        {
+          "name": "Rgba",
+          "value": 7
+        },
+        {
+          "name": "Bgra",
+          "value": 8
+        },
+        {
+          "name": "Abgr",
+          "value": 9
+        },
+        {
+          "name": "Argb",
+          "value": 10
+        },
+        {
+          "name": "Cmyk",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "name": "dll-name",
+      "kind": "dll-name",
+      "dll_name": "turbojpeg.dll"
+    },
+    {
+      "name": "eq-same",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        2
+      ],
+      "b": [
+        1,
+        2
+      ],
+      "equals": true,
+      "op_equal": true,
+      "op_not_equal": false,
+      "equals_object": true,
+      "hash_equal": true
+    },
+    {
+      "name": "eq-denominator-differs",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        2
+      ],
+      "b": [
+        1,
+        4
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-numerator-differs",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        2
+      ],
+      "b": [
+        3,
+        2
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-both-differ",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        2
+      ],
+      "b": [
+        3,
+        4
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-not-normalised-1-8-vs-2-16",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        8
+      ],
+      "b": [
+        2,
+        16
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-swapped-fields",
+      "kind": "factor-equality",
+      "a": [
+        2,
+        1
+      ],
+      "b": [
+        1,
+        2
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-zero-zero",
+      "kind": "factor-equality",
+      "a": [
+        0,
+        0
+      ],
+      "b": [
+        0,
+        0
+      ],
+      "equals": true,
+      "op_equal": true,
+      "op_not_equal": false,
+      "equals_object": true,
+      "hash_equal": true
+    },
+    {
+      "name": "eq-negative",
+      "kind": "factor-equality",
+      "a": [
+        -1,
+        8
+      ],
+      "b": [
+        -1,
+        8
+      ],
+      "equals": true,
+      "op_equal": true,
+      "op_not_equal": false,
+      "equals_object": true,
+      "hash_equal": true
+    },
+    {
+      "name": "eq-negative-vs-positive",
+      "kind": "factor-equality",
+      "a": [
+        -1,
+        8
+      ],
+      "b": [
+        1,
+        8
+      ],
+      "equals": false,
+      "op_equal": false,
+      "op_not_equal": true,
+      "equals_object": false,
+      "hash_equal": false
+    },
+    {
+      "name": "eq-extremes",
+      "kind": "factor-equality",
+      "a": [
+        2147483647,
+        -2147483648
+      ],
+      "b": [
+        2147483647,
+        -2147483648
+      ],
+      "equals": true,
+      "op_equal": true,
+      "op_not_equal": false,
+      "equals_object": true,
+      "hash_equal": true
+    },
+    {
+      "name": "eq-one-vs-1-1",
+      "kind": "factor-equality",
+      "a": [
+        1,
+        1
+      ],
+      "b": [
+        1,
+        1
+      ],
+      "equals": true,
+      "op_equal": true,
+      "op_not_equal": false,
+      "equals_object": true,
+      "hash_equal": true
+    },
+    {
+      "name": "str-one",
+      "kind": "factor-to-string",
+      "factor": [
+        1,
+        1
+      ],
+      "text": "1/1"
+    },
+    {
+      "name": "str-1-8",
+      "kind": "factor-to-string",
+      "factor": [
+        1,
+        8
+      ],
+      "text": "1/8"
+    },
+    {
+      "name": "str-3-8",
+      "kind": "factor-to-string",
+      "factor": [
+        3,
+        8
+      ],
+      "text": "3/8"
+    },
+    {
+      "name": "str-16-8",
+      "kind": "factor-to-string",
+      "factor": [
+        16,
+        8
+      ],
+      "text": "16/8"
+    },
+    {
+      "name": "str-0-0",
+      "kind": "factor-to-string",
+      "factor": [
+        0,
+        0
+      ],
+      "text": "0/0"
+    },
+    {
+      "name": "str-negative",
+      "kind": "factor-to-string",
+      "factor": [
+        -1,
+        8
+      ],
+      "text": "-1/8"
+    },
+    {
+      "name": "str-extremes",
+      "kind": "factor-to-string",
+      "factor": [
+        2147483647,
+        -2147483648
+      ],
+      "text": "2147483647/-2147483648"
+    },
+    {
+      "name": "out-6000x4000-1-8",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        1,
+        8
+      ],
+      "width": 750,
+      "height": 500,
+      "stride": 3000,
+      "buffer_length": 1500000
+    },
+    {
+      "name": "out-6000x4000-1-4",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        1,
+        4
+      ],
+      "width": 1500,
+      "height": 1000,
+      "stride": 6000,
+      "buffer_length": 6000000
+    },
+    {
+      "name": "out-6000x4000-3-8",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        3,
+        8
+      ],
+      "width": 2250,
+      "height": 1500,
+      "stride": 9000,
+      "buffer_length": 13500000
+    },
+    {
+      "name": "out-6000x4000-1-2",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        1,
+        2
+      ],
+      "width": 3000,
+      "height": 2000,
+      "stride": 12000,
+      "buffer_length": 24000000
+    },
+    {
+      "name": "out-6000x4000-5-8",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        5,
+        8
+      ],
+      "width": 3750,
+      "height": 2500,
+      "stride": 15000,
+      "buffer_length": 37500000
+    },
+    {
+      "name": "out-6000x4000-3-4",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        3,
+        4
+      ],
+      "width": 4500,
+      "height": 3000,
+      "stride": 18000,
+      "buffer_length": 54000000
+    },
+    {
+      "name": "out-6000x4000-7-8",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        7,
+        8
+      ],
+      "width": 5250,
+      "height": 3500,
+      "stride": 21000,
+      "buffer_length": 73500000
+    },
+    {
+      "name": "out-6000x4000-1-1",
+      "kind": "output-buffer",
+      "width_in": 6000,
+      "height_in": 4000,
+      "factor": [
+        1,
+        1
+      ],
+      "width": 6000,
+      "height": 4000,
+      "stride": 24000,
+      "buffer_length": 96000000
+    },
+    {
+      "name": "out-1x1-1-8-rounds-up",
+      "kind": "output-buffer",
+      "width_in": 1,
+      "height_in": 1,
+      "factor": [
+        1,
+        8
+      ],
+      "width": 1,
+      "height": 1,
+      "stride": 4,
+      "buffer_length": 4
+    },
+    {
+      "name": "out-7x9-1-8",
+      "kind": "output-buffer",
+      "width_in": 7,
+      "height_in": 9,
+      "factor": [
+        1,
+        8
+      ],
+      "width": 1,
+      "height": 2,
+      "stride": 4,
+      "buffer_length": 8
+    },
+    {
+      "name": "out-9x17-3-8",
+      "kind": "output-buffer",
+      "width_in": 9,
+      "height_in": 17,
+      "factor": [
+        3,
+        8
+      ],
+      "width": 4,
+      "height": 7,
+      "stride": 16,
+      "buffer_length": 112
+    },
+    {
+      "name": "out-3x64-5-8",
+      "kind": "output-buffer",
+      "width_in": 3,
+      "height_in": 64,
+      "factor": [
+        5,
+        8
+      ],
+      "width": 2,
+      "height": 40,
+      "stride": 8,
+      "buffer_length": 320
+    },
+    {
+      "name": "out-801x601-7-8",
+      "kind": "output-buffer",
+      "width_in": 801,
+      "height_in": 601,
+      "factor": [
+        7,
+        8
+      ],
+      "width": 701,
+      "height": 526,
+      "stride": 2804,
+      "buffer_length": 1474904
+    },
+    {
+      "name": "out-65535x65535-1-8",
+      "kind": "output-buffer",
+      "width_in": 65535,
+      "height_in": 65535,
+      "factor": [
+        1,
+        8
+      ],
+      "width": 8192,
+      "height": 8192,
+      "stride": 32768,
+      "buffer_length": 268435456
+    },
+    {
+      "name": "out-upscale-16-8",
+      "kind": "output-buffer",
+      "width_in": 333,
+      "height_in": 77,
+      "factor": [
+        16,
+        8
+      ],
+      "width": 666,
+      "height": 154,
+      "stride": 2664,
+      "buffer_length": 410256
+    },
+    {
+      "name": "out-upscale-9-8",
+      "kind": "output-buffer",
+      "width_in": 333,
+      "height_in": 77,
+      "factor": [
+        9,
+        8
+      ],
+      "width": 375,
+      "height": 87,
+      "stride": 1500,
+      "buffer_length": 130500
+    },
+    {
+      "name": "out-stride-just-fits",
+      "kind": "output-buffer",
+      "width_in": 536870911,
+      "height_in": 1,
+      "factor": [
+        1,
+        1
+      ],
+      "width": 536870911,
+      "height": 1,
+      "stride": 2147483644,
+      "buffer_length": 2147483644
+    },
+    {
+      "name": "out-stride-overflows",
+      "kind": "output-buffer",
+      "width_in": 536870912,
+      "height_in": 1,
+      "factor": [
+        1,
+        1
+      ],
+      "exception": {
+        "type": "InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 536870912x1 (2147483648 bytes)."
+      }
+    },
+    {
+      "name": "out-int-max-width-1-1",
+      "kind": "output-buffer",
+      "width_in": 2147483647,
+      "height_in": 1,
+      "factor": [
+        1,
+        1
+      ],
+      "exception": {
+        "type": "InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 2147483647x1 (8589934588 bytes)."
+      }
+    },
+    {
+      "name": "out-int-max-width-1-8",
+      "kind": "output-buffer",
+      "width_in": 2147483647,
+      "height_in": 1,
+      "factor": [
+        1,
+        8
+      ],
+      "width": 268435456,
+      "height": 1,
+      "stride": 1073741824,
+      "buffer_length": 1073741824
+    },
+    {
+      "name": "out-buffer-overflows",
+      "kind": "output-buffer",
+      "width_in": 100000,
+      "height_in": 100000,
+      "factor": [
+        1,
+        1
+      ],
+      "exception": {
+        "type": "InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 100000x100000 (40000000000 bytes)."
+      }
+    },
+    {
+      "name": "out-buffer-just-fits",
+      "kind": "output-buffer",
+      "width_in": 16383,
+      "height_in": 32768,
+      "factor": [
+        1,
+        1
+      ],
+      "width": 16383,
+      "height": 32768,
+      "stride": 65532,
+      "buffer_length": 2147352576
+    },
+    {
+      "name": "out-buffer-one-row-too-many",
+      "kind": "output-buffer",
+      "width_in": 16384,
+      "height_in": 32768,
+      "factor": [
+        1,
+        1
+      ],
+      "exception": {
+        "type": "InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 16384x32768 (2147483648 bytes)."
+      }
+    },
+    {
+      "name": "out-upscale-overflow-16-8",
+      "kind": "output-buffer",
+      "width_in": 1500000000,
+      "height_in": 1,
+      "factor": [
+        16,
+        8
+      ],
+      "exception": {
+        "type": "InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 3000000000x2 (24000000000 bytes)."
+      }
+    }
+  ]
+}

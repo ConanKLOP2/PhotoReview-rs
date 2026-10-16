@@ -231,6 +231,78 @@ JsonArray cases = command switch
     "native-memory" => Commands.NativeMemory(inputs),
     "readonly-memory-stream" => Commands.ReadOnlyMemoryStream(inputs),
     "pixel-codec" => Commands.PixelCodec(inputs),
+    // Commands\W5-01a
+    "raw-formats" => Commands.RawFormats(inputs),
+    // Commands\W5-01b
+    "raw-contract-records" => Commands.RawContractRecords(inputs),
+    "raw-header-budget" => Commands.RawHeaderBudget(inputs),
+    // Commands\W5-02a
+    "tiff-navigator" => Commands.TiffNavigatorCases(inputs),
+    // Commands\W5-02b
+    "jpeg-marker-probe" => Commands.JpegMarkerProbeCases(inputs),
+    // Commands\W5-03
+    "cr2-container" => Commands.Cr2Container(inputs),
+    "cr2-container-corpus" => Commands.Cr2ContainerCorpus(inputs),
+    // Commands\W5-04
+    "nef-container" => Commands.NefContainer(inputs),
+    // Commands\W5-05
+    "orf-container" => Commands.OrfContainerCases(inputs),
+    // Commands\W5-06
+    "raw-dng-synthetic" => Commands.RawDngSynthetic(inputs),
+    "raw-dng-corpus" => Commands.RawDngCorpus(inputs),
+    // Commands\W5-07
+    "raw-arw-reader" => Commands.RawArwReader(inputs, inputPath),
+    // Commands\W5-08
+    "rw2-container" => Commands.Rw2Container(inputs),
+    "rw2-corpus" => Commands.Rw2Corpus(inputs),
+    // Commands\W5-09
+    "raf-container" => Commands.RafContainerCases(inputs),
+    "raf-can-read" => Commands.RafCanReadCases(inputs),
+    "raf-corpus" => Commands.RafCorpusCases(inputs),
+    // Commands\W5-10a
+    "bmff-navigator" => Commands.BmffNavigatorCases(inputs),
+    // Commands\W5-10b
+    "raw-cr3-reader" => Commands.RawCr3Reader(inputs, inputPath),
+    // Commands\W5-11a
+    "raw-registry-find" => Commands.RawRegistryFind(inputs),
+    "raw-icc-ensure" => Commands.RawIccEnsure(inputs),
+    // Commands\W5-11b
+    "preview-selector-select" => Commands.PreviewSelectorSelectCases(inputs),
+    "preview-selector-jpeg-frame" => Commands.PreviewSelectorJpegFrameCases(inputs),
+    "adobe-rgb-exif" => Commands.AdobeRgbExifCases(inputs),
+    // Commands\W5-11c
+    "raw-exif" => Commands.RawExifCases(inputs),
+    "raw-exif-corpus" => Commands.RawExifCorpus(inputs),
+    // Commands\W5-12a
+    "raw-header-source-io" => Commands.RawHeaderSourceIo(inputs),
+    // Commands\W5-12b
+    "raw-decoder-core" => Commands.RawDecoderCore(inputs),
+    "raw-decoder-fallback" => Commands.RawDecoderFallback(inputs),
+    // Commands\W5-12c
+    "raw-routing" => Commands.RawRouting(inputs),
+    // Commands\W5-13a
+    "turbojpeg-native-types" => Commands.TurboJpegNativeTypes(inputs),
+    "turbojpeg-native-handle" => Commands.TurboJpegNativeHandle(inputs),
+    "turbojpeg-native-decode" => Commands.TurboJpegNativeDecode(inputs, inputPath),
+    // Commands\W5-14a
+    "pixel-area-resample" => Commands.PixelAreaResample(inputs),
+    // Commands\W5-14b
+    "turbojpeg-fixtures" => Commands.TurboJpegFixtures(inputs, inputPath),
+    "turbojpeg-pure" => Commands.TurboJpegPure(inputs),
+    "turbojpeg-decode" => Commands.TurboJpegDecode(inputs, inputPath),
+    "turbojpeg-read-info" => Commands.TurboJpegReadInfo(inputs, inputPath),
+    // Commands\W5-15b
+    "libraw-version" => Commands.LibRawVersionCases(inputs),
+    // Commands\W5-16a
+    "full-decode-gate" => Commands.FullDecodeGateScenarios(inputs),
+    // Commands\W5-16b
+    "libraw-memory-guard" => Commands.LibRawMemoryGuard(inputs),
+    // Commands\W5-16c
+    "libraw-decoder" => Commands.LibRawDecoderCases(inputs),
+    "libraw-decoder-native" => Commands.LibRawDecoderNativeCases(inputs),
+    // Commands\W5-17
+    "rgb-bgra-resample" => Commands.RgbBgraResample(inputs),
+    "rgb-bgra-validate" => Commands.RgbBgraValidate(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

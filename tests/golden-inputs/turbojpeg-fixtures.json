@@ -1,0 +1,47 @@
+{
+  "generator": "oracle-cs turbojpeg-fixtures (W5-14b)",
+  "output_dir": "../fixtures/turbojpeg",
+  "note": "Run once; commit the written files; turbojpeg-decode and turbojpeg-read-info are pinned to their bytes. Also reads ../fixtures/wic-direct (W4-11c, already committed).",
+  "parity_sizes": [
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      17
+    ],
+    [
+      17,
+      1
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      33,
+      31
+    ],
+    [
+      64,
+      48
+    ],
+    [
+      100,
+      75
+    ],
+    [
+      257,
+      129
+    ],
+    [
+      400,
+      300
+    ],
+    [
+      640,
+      480
+    ]
+  ]
+}

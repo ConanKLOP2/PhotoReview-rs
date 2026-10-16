@@ -13,3 +13,11 @@ workspace = true
 [dependencies]
 pr-core.workspace = true
 pr-imaging.workspace = true
+
+[dev-dependencies]
+pr-test-support.workspace = true
+serde_json.workspace = true
+
+# W5-12b native twins (WicDirectDecoder); no cycle: pr-platform-win depends on pr-core and pr-imaging only.
+[target.'cfg(windows)'.dev-dependencies]
+pr-platform-win.workspace = true

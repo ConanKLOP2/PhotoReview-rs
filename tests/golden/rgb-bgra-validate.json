@@ -1,0 +1,963 @@
+{
+  "generator": "oracle-cs rgb-bgra-validate",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "source-exact-6000x4000-c1",
+      "op": "source",
+      "ok": 24000000,
+      "error": null
+    },
+    {
+      "name": "source-one-byte-short-6000x4000-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-data-larger-than-needed-c1",
+      "op": "source",
+      "ok": 100,
+      "error": null
+    },
+    {
+      "name": "source-zero-height-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-zero-width-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-width-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-height-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-both-negative-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-1x1-c1",
+      "op": "source",
+      "ok": 1,
+      "error": null
+    },
+    {
+      "name": "source-1x1-short-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-data-size-c1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-exact-6000x4000-c3",
+      "op": "source",
+      "ok": 72000000,
+      "error": null
+    },
+    {
+      "name": "source-one-byte-short-6000x4000-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-data-larger-than-needed-c3",
+      "op": "source",
+      "ok": 300,
+      "error": null
+    },
+    {
+      "name": "source-zero-height-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-zero-width-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-width-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-height-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-both-negative-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-1x1-c3",
+      "op": "source",
+      "ok": 3,
+      "error": null
+    },
+    {
+      "name": "source-1x1-short-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-negative-data-size-c3",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-intmax-by-1-c1-accepted",
+      "op": "source",
+      "ok": 2147483647,
+      "error": null
+    },
+    {
+      "name": "source-intmax-by-1-c1-short",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-intmax-by-1-c3-over-int",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-65535x65535-c3-over-int",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-46341x46341-c3-over-int",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-1000x1000-data-100",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-0x10-data-1000",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-intmax-squared-c3-wraps-unchecked",
+      "op": "source",
+      "ok": 3,
+      "error": null
+    },
+    {
+      "name": "source-intmax-squared-c1-wraps-unchecked",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-intmax-squared-c1-data-zero",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-46341x46340-c1",
+      "op": "source",
+      "ok": 2147441940,
+      "error": null
+    },
+    {
+      "name": "source-46341x46341-c1-over-int",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an invalid processed image buffer length."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-0",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-2",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-4",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels--1",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-5",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-255",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "source-unsupported-channels-before-bad-size",
+      "op": "source",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "target-300x200",
+      "op": "target",
+      "ok": 240000,
+      "error": null
+    },
+    {
+      "name": "target-1x1",
+      "op": "target",
+      "ok": 4,
+      "error": null
+    },
+    {
+      "name": "target-0x5",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 0x5."
+      }
+    },
+    {
+      "name": "target-5x0",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 5x0."
+      }
+    },
+    {
+      "name": "target-neg1x5",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at -1x5."
+      }
+    },
+    {
+      "name": "target-5xneg1",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 5x-1."
+      }
+    },
+    {
+      "name": "target-both-negative",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at -3x-3."
+      }
+    },
+    {
+      "name": "target-65535x65535",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 65535x65535."
+      }
+    },
+    {
+      "name": "target-30000x20000",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 30000x20000."
+      }
+    },
+    {
+      "name": "target-20000x20000",
+      "op": "target",
+      "ok": 1600000000,
+      "error": null
+    },
+    {
+      "name": "target-23170x23170",
+      "op": "target",
+      "ok": 2147395600,
+      "error": null
+    },
+    {
+      "name": "target-array-max-536870897x1",
+      "op": "target",
+      "ok": 2147483588,
+      "error": null
+    },
+    {
+      "name": "target-array-max-plus-536870898x1",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 536870898x1."
+      }
+    },
+    {
+      "name": "target-1x536870897",
+      "op": "target",
+      "ok": 2147483588,
+      "error": null
+    },
+    {
+      "name": "target-1x536870898",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 1x536870898."
+      }
+    },
+    {
+      "name": "target-intmax-x-1",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 2147483647x1."
+      }
+    },
+    {
+      "name": "target-intmax-squared-wraps-unchecked",
+      "op": "target",
+      "ok": 4,
+      "error": null
+    },
+    {
+      "name": "target-2147483646x2147483646-wraps",
+      "op": "target",
+      "ok": 16,
+      "error": null
+    },
+    {
+      "name": "target-46341x46341",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 46341x46341."
+      }
+    },
+    {
+      "name": "target-65536x65536",
+      "op": "target",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "The decoded RAW image is too large to hold in memory at 65536x65536."
+      }
+    },
+    {
+      "name": "supported--1",
+      "op": "supported",
+      "ok": false,
+      "error": null
+    },
+    {
+      "name": "supported-0",
+      "op": "supported",
+      "ok": false,
+      "error": null
+    },
+    {
+      "name": "supported-1",
+      "op": "supported",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "supported-2",
+      "op": "supported",
+      "ok": false,
+      "error": null
+    },
+    {
+      "name": "supported-3",
+      "op": "supported",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "supported-4",
+      "op": "supported",
+      "ok": false,
+      "error": null
+    },
+    {
+      "name": "supported-255",
+      "op": "supported",
+      "ok": false,
+      "error": null
+    },
+    {
+      "name": "buffer-new-4x4",
+      "op": "buffer-new",
+      "ok": {
+        "width": 4,
+        "height": 4,
+        "stride": 16,
+        "length": 64,
+        "aligned": true
+      },
+      "error": null
+    },
+    {
+      "name": "buffer-new-1x1",
+      "op": "buffer-new",
+      "ok": {
+        "width": 1,
+        "height": 1,
+        "stride": 4,
+        "length": 4,
+        "aligned": true
+      },
+      "error": null
+    },
+    {
+      "name": "buffer-new-7x3",
+      "op": "buffer-new",
+      "ok": {
+        "width": 7,
+        "height": 3,
+        "stride": 28,
+        "length": 84,
+        "aligned": true
+      },
+      "error": null
+    },
+    {
+      "name": "buffer-new-16x8",
+      "op": "buffer-new",
+      "ok": {
+        "width": 16,
+        "height": 8,
+        "stride": 64,
+        "length": 512,
+        "aligned": true
+      },
+      "error": null
+    },
+    {
+      "name": "buffer-new-zero-width",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "ArgumentOutOfRangeException",
+        "message": "width ('0') must be greater than or equal to '1'. (Parameter 'width')\r\nActual value was 0."
+      }
+    },
+    {
+      "name": "buffer-new-zero-height",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "ArgumentOutOfRangeException",
+        "message": "height ('0') must be greater than or equal to '1'. (Parameter 'height')\r\nActual value was 0."
+      }
+    },
+    {
+      "name": "buffer-new-negative-width",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "ArgumentOutOfRangeException",
+        "message": "width ('-1') must be greater than or equal to '1'. (Parameter 'width')\r\nActual value was -1."
+      }
+    },
+    {
+      "name": "buffer-new-negative-height",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "ArgumentOutOfRangeException",
+        "message": "height ('-1') must be greater than or equal to '1'. (Parameter 'height')\r\nActual value was -1."
+      }
+    },
+    {
+      "name": "buffer-new-both-negative",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "ArgumentOutOfRangeException",
+        "message": "width ('-1') must be greater than or equal to '1'. (Parameter 'width')\r\nActual value was -1."
+      }
+    },
+    {
+      "name": "buffer-new-width-stride-overflow-536870912",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-width-stride-overflow-intmax",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-length-overflow-65535x65535",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-length-overflow-30000x20000",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-length-overflow-1x536870912",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-length-overflow-2x1073741824",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "buffer-new-negative-stride-times-negative-height",
+      "op": "buffer-new",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "rtb-bad-target-0x10",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> 0x10."
+      }
+    },
+    {
+      "name": "rtb-bad-target-10x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> 10x0."
+      }
+    },
+    {
+      "name": "rtb-bad-target--1x10",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> -1x10."
+      }
+    },
+    {
+      "name": "rtb-bad-target-10x-1",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> 10x-1."
+      }
+    },
+    {
+      "name": "rtb-bad-target-0x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> 0x0."
+      }
+    },
+    {
+      "name": "rtb-bad-target--5x-5",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 10x10 -> -5x-5."
+      }
+    },
+    {
+      "name": "rtb-bad-source-0x1",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 0x1 -> 1x1."
+      }
+    },
+    {
+      "name": "rtb-bad-source-1x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 1x0 -> 1x1."
+      }
+    },
+    {
+      "name": "rtb-bad-source--1x1",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions -1x1 -> 1x1."
+      }
+    },
+    {
+      "name": "rtb-bad-source-1x-1",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 1x-1 -> 1x1."
+      }
+    },
+    {
+      "name": "rtb-bad-source-0x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 0x0 -> 1x1."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-0x4-0x2",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 0x4 -> 0x2."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-0x4-2x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 0x4 -> 2x0."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-0x4-2x2",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 0x4 -> 2x2."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x0-0x2",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x0 -> 0x2."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x0-2x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x0 -> 2x0."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x0-2x2",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x0 -> 2x2."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x4-0x2",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x4 -> 0x2."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x4-2x0",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x4 -> 2x0."
+      }
+    },
+    {
+      "name": "rtb-zero-sides-4x4-2x2",
+      "op": "resize-to-buffer",
+      "ok": {
+        "length": 16,
+        "stride": 8
+      },
+      "error": null
+    },
+    {
+      "name": "rtb-ok-same-4x4",
+      "op": "resize-to-buffer",
+      "ok": {
+        "length": 64,
+        "stride": 16
+      },
+      "error": null
+    },
+    {
+      "name": "rtb-ok-box-60x60-to-20x20",
+      "op": "resize-to-buffer",
+      "ok": {
+        "length": 1600,
+        "stride": 80
+      },
+      "error": null
+    },
+    {
+      "name": "rtb-ok-gray-2x2",
+      "op": "resize-to-buffer",
+      "ok": {
+        "length": 16,
+        "stride": 8
+      },
+      "error": null
+    },
+    {
+      "name": "rtb-unsupported-channels-4",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "rtb-unsupported-channels-2-bilinear",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "LibRaw returned an unsupported processed image format."
+      }
+    },
+    {
+      "name": "rtb-guard-before-channels-zero-target",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions 4x4 -> 0x4."
+      }
+    },
+    {
+      "name": "rtb-target-length-overflow",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "rtb-target-stride-overflow",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "OverflowException",
+        "message": "Arithmetic operation resulted in an overflow."
+      }
+    },
+    {
+      "name": "rtb-negative-source-and-zero-target",
+      "op": "resize-to-buffer",
+      "ok": null,
+      "error": {
+        "type": "InvalidDataException",
+        "message": "Invalid RAW resize dimensions -1x4 -> 0x4."
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+ "corpus_dir": null,
+ "corpus_dir_env": "PHOTOREVIEW_RAW_CORPUS_DIR",
+ "extension": ".cr2",
+ "note": "The corpus (tools/fetch-raw-samples.ps1 of the C# repo) is not committed. The oracle reads every *.cr2 of corpus_dir (or of the environment variable) and writes one case per file, ordered by file name; without a directory it writes zero cases."
+}

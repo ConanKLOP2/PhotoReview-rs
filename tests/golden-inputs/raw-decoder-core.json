@@ -1,0 +1,2305 @@
+{
+ "cases": [
+  {
+   "name": "read-info-sensor-known-cached",
+   "csharp_test": "RawDecoderTests.ReadInfo_CachesParsedContainerBySourceIdentity",
+   "file": {
+    "physical": false,
+    "size": 128
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      4000,
+      3000
+     ],
+     "orientation": 1,
+     "previews": [],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-sensor-orientation-6",
+   "csharp_test": "RawDecoder.ReadInfo (stored size + orientation)",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 6,
+     "previews": [],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-one-side-0x3000-uses-preview",
+   "csharp_test": "RawDecoderMutationGapTests.ReadInfo_OnlyOneSensorSideDeclared_UsesTheBestPreviewSize",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      3000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-one-side-0x3000-no-preview-throws",
+   "csharp_test": "RawDecoderMutationGapTests.ReadInfo_OnlyOneSensorSideDeclaredAndNoPreview_Throws",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      3000
+     ],
+     "orientation": 1,
+     "previews": [],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-one-side-4000x0-uses-preview",
+   "csharp_test": "RawDecoderMutationGapTests.ReadInfo_OnlyOneSensorSideDeclared_UsesTheBestPreviewSize",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      4000,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-one-side-4000x0-no-preview-throws",
+   "csharp_test": "RawDecoderMutationGapTests.ReadInfo_OnlyOneSensorSideDeclaredAndNoPreview_Throws",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      4000,
+      0
+     ],
+     "orientation": 1,
+     "previews": [],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "read-info-unknown-size-preview-walked-once",
+   "csharp_test": "RawDecoderResolvedInfoCacheTests.ReadInfo_SecondTime_ReadsNoBytesAndReturnsTheSameSize",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 70163,
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000001000F010200060000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000043616E6F6E0000000000000000000000000000000000000000000000"
+     },
+     {
+      "at": 70000,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 70000,
+       "length": 163,
+       "width": 0,
+       "height": 0,
+       "color_space": "Unknown"
+      }
+     ],
+     "exif_blocks": [
+      {
+       "offset": 0,
+       "length": 128,
+       "tiff": true
+      }
+     ]
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "decode-second-time-reads-nothing-keeps-exif",
+   "csharp_test": "RawDecoderResolvedInfoCacheTests.Decode_SecondTime_ReadsNothingFromTheHeaderAndKeepsTheExif",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 70163,
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000001000F010200060000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000043616E6F6E0000000000000000000000000000000000000000000000"
+     },
+     {
+      "at": 70000,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 70000,
+       "length": 163,
+       "width": 0,
+       "height": 0,
+       "color_space": "Unknown"
+      }
+     ],
+     "exif_blocks": [
+      {
+       "offset": 0,
+       "length": 128,
+       "tiff": true
+      }
+     ]
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "cache": {
+    "capacity": 67108864
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-changed-file-rereads-exif",
+   "csharp_test": "RawDecoderResolvedInfoCacheTests.Decode_ChangedFile_DoesNotReuseTheCachedExif",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 70163,
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000001000F010200060000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000043616E6F6E0000000000000000000000000000000000000000000000"
+     },
+     {
+      "at": 70000,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 70000,
+       "length": 163,
+       "width": 0,
+       "height": 0,
+       "color_space": "Unknown"
+      }
+     ],
+     "exif_blocks": [
+      {
+       "offset": 0,
+       "length": 128,
+       "tiff": true
+      }
+     ]
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "rewrite",
+     "minutes": 5,
+     "file": {
+      "size": 70163,
+      "segments": [
+       {
+        "at": 0,
+        "hex": "49492A000800000001000F01020006000000640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004E696B6F6E0000000000000000000000000000000000000000000000"
+       },
+       {
+        "at": 70000,
+        "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+       }
+      ]
+     }
+    },
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "read-info-default-registry-tiff-orientation-6",
+   "csharp_test": "RawDecoderTests.ReadInfo_ReturnsSensorDimensionsAndOrientation",
+   "file": {
+    "physical": false,
+    "size": 0,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\test.dng",
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000003001201030001000000060000000102040001000000320000000202040001000000A300000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "decode-default-registry-reads-only-header-and-preview",
+   "csharp_test": "RawDecoderTests.Decode_ReadsOnlyPreviewBytesAndHeader_NoWholeFileRead",
+   "file": {
+    "physical": false,
+    "size": 10485760,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\large.dng",
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000003001201030001000000010000000102040001000000320000000202040001000000A300000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 300,
+      "h": 225,
+      "downscaled": true,
+      "original": [
+       640,
+       480
+      ]
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "box": [
+      300,
+      300
+     ]
+    }
+   ]
+  },
+  {
+   "name": "decode-default-registry-caches-preview-range-only",
+   "csharp_test": "RawDecoderTests.Decode_CachesPreviewRangeInsteadOfWholeRawFile",
+   "file": {
+    "physical": true,
+    "name": "camera.dng",
+    "size": 10485760,
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000003001201030001000000010000000102040001000000320000000202040001000000A300000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240,
+      "downscaled": true,
+      "original": [
+       640,
+       480
+      ]
+     }
+    }
+   },
+   "cache": {
+    "capacity": 2097152
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "box": [
+      320,
+      240
+     ],
+     "priority": "Preload"
+    },
+    {
+     "op": "decode",
+     "box": [
+      320,
+      240
+     ],
+     "priority": "Preload"
+    }
+   ]
+  },
+  {
+   "name": "decode-transposed-applied-swaps-sensor",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_TransposedOrientationWithOrientationApplied_SwapsTheDeclaredSensorSize",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 6,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 900,
+      "h": 1200
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "apply_orientation": true
+    }
+   ]
+  },
+  {
+   "name": "decode-orientation-1-not-applied-keeps-sensor",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_OrientationNotApplied_KeepsTheDeclaredSensorSize",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "apply_orientation": false
+    }
+   ]
+  },
+  {
+   "name": "decode-orientation-6-not-applied-keeps-sensor",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_OrientationNotApplied_KeepsTheDeclaredSensorSize",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 6,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "apply_orientation": false
+    }
+   ]
+  },
+  {
+   "name": "decode-one-side-0x3000-reports-decoded-size",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_OnlyOneSensorSideDeclared_ReportsTheDecodedImageSizeAsTheOriginal",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      3000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-one-side-4000x0-reports-decoded-size",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_OnlyOneSensorSideDeclared_ReportsTheDecodedImageSizeAsTheOriginal",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      4000,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-thumbnail-limit-256x192",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewAtTheThumbnailLimitWithNoDeclaredSensorSize_IsDownscaledOnlyWhenItIsATinyThumbnail",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 256,
+       "height": 192,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 256,
+      "h": 192
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-thumbnail-limit-257x193",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewAtTheThumbnailLimitWithNoDeclaredSensorSize_IsDownscaledOnlyWhenItIsATinyThumbnail",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 257,
+       "height": 193,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 257,
+      "h": 193
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-thumbnail-limit-192x256",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewAtTheThumbnailLimitWithNoDeclaredSensorSize_IsDownscaledOnlyWhenItIsATinyThumbnail",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 192,
+       "height": 256,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 192,
+      "h": 256
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-sensor-6000x900-vs-1200x900",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewDiffersFromTheSensorInOneDimension_IsDownscaledUnlessBothSidesMatch",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      900
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-sensor-1200x4000-vs-1200x900",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewDiffersFromTheSensorInOneDimension_IsDownscaledUnlessBothSidesMatch",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      1200,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-sensor-1200x900-vs-1200x900",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewDiffersFromTheSensorInOneDimension_IsDownscaledUnlessBothSidesMatch",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      1200,
+      900
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-container-exif-wins",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_ContainerAndDecodedImageBothCarryExif_TheContainersExifWins",
+   "file": {
+    "physical": false,
+    "size": 4096,
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A000800000001000F010200060000006400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000043616E6F6E0000000000000000000000000000000000000000000000"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 1024,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": [
+      {
+       "offset": 0,
+       "length": 128,
+       "tiff": true
+      }
+     ]
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900,
+      "exif_make": "FromTheJpeg"
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-no-container-exif-uses-decoded-exif",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_ContainerHasNoExif_FallsBackToTheDecodedImagesExif",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900,
+      "exif_make": "FromTheJpeg"
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-inner-flags-pass-through",
+   "csharp_test": "RawDecoder.Decode (downscaled, backend, degraded of the inner image)",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      1200,
+      900
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900,
+      "downscaled": true,
+      "backend": "WicDirect",
+      "degraded": true
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-embedded-preview-is-jpeg-own-size",
+   "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_EmbeddedPreview_ExposesTheJpegsOwnSizeEvenWhenDownscaledIntoTheBox",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      0,
+      0
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 640,
+       "height": 480,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 160,
+      "h": 120,
+      "downscaled": true,
+      "original": [
+       640,
+       480
+      ]
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "box": [
+      160,
+      120
+     ]
+    }
+   ]
+  },
+  {
+   "name": "decode-request-fields-reach-inner",
+   "csharp_test": "RawDecoder.DecodePreview (inner request: box, flag, priority, container orientation)",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 8,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 900,
+      "h": 1200
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode",
+     "box": [
+      300,
+      200
+     ],
+     "apply_orientation": false,
+     "priority": "Preload"
+    }
+   ]
+  },
+  {
+   "name": "decode-bytes-header-plus-preview",
+   "csharp_test": "RawDecoder.Decode (SourceBytesRead = header + preview)",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      1200,
+      900
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 32,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-range-cache-hit-counts-nothing",
+   "csharp_test": "RawDecoderFallbackBreadthTests.Decode_PreviewServedFromTheRangeCache_CountsNoPreviewBytes",
+   "file": {
+    "physical": true,
+    "name": "one.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "cache": {
+    "capacity": 67108864
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "decode-adobe-rgb-preview-gets-icc",
+   "csharp_test": "RawDecoderTests.AdobeRgbHint_InjectsBundledProfileAndMatchesProfileTaggedJpeg (byte level)",
+   "file": {
+    "physical": false,
+    "size": 4096,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "AdobeRgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-at-first-byte",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewStartingAtTheVeryFirstByte_IsRead",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 0,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-past-end",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewRangeRunsPastTheEndOfTheFile_FailsWithTheOutsideTheFileError",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 4090,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-negative-offset",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewWithANegativeOffset_FailsWithTheOutsideTheFileError",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": -1,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-ends-at-end",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewEndingExactlyAtTheEndOfTheFile_IsRead",
+   "file": {
+    "physical": false,
+    "size": 4096
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 4056,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-short-reads",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_SourceReturningShortReads_StillDeliversTheWholePreview",
+   "file": {
+    "physical": false,
+    "size": 4096,
+    "max_chunk": 7,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-exactly-max-preview",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_PreviewOfExactlyTheMaximumSize_IsAcceptedNotTreatedAsTooLarge",
+   "file": {
+    "physical": false,
+    "size": 0,
+    "zero_length": 134217856
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 134217728,
+       "width": 4000,
+       "height": 3000,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 4000,
+      "h": 3000
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-longer-than-cap",
+   "csharp_test": "RawDecoderPreviewHardeningTests.Decode_PreviewLongerThanTheCap_FailsLocalizedBeforeReading",
+   "file": {
+    "physical": true,
+    "name": "huge.dng",
+    "size": 256,
+    "segments": []
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      4000,
+      3000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 16,
+       "length": 134217729,
+       "width": 4000,
+       "height": 3000,
+       "color_space": "Unknown"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "range-adobe-rgb-not-a-jpeg",
+   "csharp_test": "RawDecoderPreviewHardeningTests.Decode_AdobeRgbPreviewThatIsNotAJpeg_FailsWithTheLocalizedCorruptSentence",
+   "file": {
+    "physical": true,
+    "name": "notjpeg.dng",
+    "size": 256,
+    "segments": [],
+    "fill": "11"
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      640,
+      480
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 16,
+       "length": 64,
+       "width": 640,
+       "height": 480,
+       "color_space": "AdobeRgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 640,
+      "h": 480
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "unsupported-no-reader",
+   "csharp_test": "RawDecoderTests.Decode_UnsupportedRawContainer_CarriesTheLocalizedUnsupportedSentence",
+   "file": {
+    "physical": false,
+    "size": 0,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\broken.dng",
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A"
+     }
+    ]
+   },
+   "container": {
+    "kind": "none"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "unsupported-default-registry-3-bytes",
+   "csharp_test": "RawDecoderTests.Decode_TruncatedRawContainerOrEmbeddedPreview_FailsWithTypedErrors (container half)",
+   "file": {
+    "physical": false,
+    "size": 0,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\broken.dng",
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A"
+     }
+    ]
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "malformed-default-registry-12-bytes",
+   "csharp_test": "RawDecoderTests.Decode_MalformedRawContainer_CarriesTheLocalizedCorruptSentenceAndKeepsItsType",
+   "file": {
+    "physical": false,
+    "size": 12,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\broken.dng",
+    "segments": [
+     {
+      "at": 0,
+      "hex": "49492A00"
+     }
+    ]
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "container-reader-throws-invalid-data",
+   "csharp_test": "RawDecoderPreviewHardeningTests.Decode_ContainerReaderThrowsInvalidData_FailsLocalizedCorruptWithoutTryingAnyFallback",
+   "file": {
+    "physical": true,
+    "name": "bad.dng",
+    "size": 256,
+    "segments": []
+   },
+   "container": {
+    "kind": "throws",
+    "message": "RAW header read exceeded hard limit."
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "fallback": {
+    "bytes": 0
+   },
+   "full": {
+    "throw": {
+     "type": "NotSupported",
+     "message": "full"
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "header-io-failure-surfaces-io-error",
+   "csharp_test": "RawHeaderSourceIoTests.Decode_HeaderIoFailure_SurfacesTheRealIoErrorNotACorruptRawError",
+   "file": {
+    "physical": false,
+    "size": 100000,
+    "virtual_path": "C:\\raw-virtual-nonexistent\\virtual-io-failure.dng",
+    "faulty_read": "device not ready"
+   },
+   "container": {
+    "kind": "default"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1,
+      "h": 1
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "identity-append-between-stat-and-open",
+   "csharp_test": "RawDecoderIdentityTests.Decode_FileReplacedWithADifferentLengthBetweenStatAndOpen_FailsAndIsNotCached",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "open_hooks": [
+    {
+     "n": 1,
+     "action": "append",
+     "bytes": 500
+    }
+   ],
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "hooks",
+     "enabled": false
+    },
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "identity-touch-between-stat-and-open",
+   "csharp_test": "RawDecoderIdentityTests.Decode_FileReplacedByASameLengthFileBetweenStatAndOpen_FailsAsChanged",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "open_hooks": [
+    {
+     "n": 1,
+     "action": "touch"
+    }
+   ],
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "identity-read-info-touch-not-cached",
+   "csharp_test": "RawDecoderIdentityTests.ReadInfo_FileReplacedBySameLengthFileBetweenStatAndOpen_FailsAsChangedAndIsNotCached",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "open_hooks": [
+    {
+     "n": 1,
+     "action": "touch"
+    }
+   ],
+   "ops": [
+    {
+     "op": "read_info"
+    },
+    {
+     "op": "hooks",
+     "enabled": false
+    },
+    {
+     "op": "read_info"
+    },
+    {
+     "op": "read_info"
+    }
+   ]
+  },
+  {
+   "name": "identity-preview-open-sees-other-length",
+   "csharp_test": "RawDecoderIdentityTests.Decode_PreviewReadOpensADifferentlySizedFile_FailsInsteadOfReadingTheWrongBytes",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "open_hooks": [
+    {
+     "n": 2,
+     "action": "append",
+     "bytes": 500
+    }
+   ],
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "identity-touch-between-container-and-preview",
+   "csharp_test": "RawDecoder.DecodePreview (identity re-check before the preview read)",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 227,
+    "segments": [
+     {
+      "at": 64,
+      "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+     }
+    ]
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      320,
+      240
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 163,
+       "width": 320,
+       "height": 240,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    }
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 320,
+      "h": 240
+     }
+    }
+   },
+   "open_hooks": [
+    {
+     "n": 2,
+     "action": "touch"
+    }
+   ],
+   "ops": [
+    {
+     "op": "decode"
+    },
+    {
+     "op": "hooks",
+     "enabled": false
+    },
+    {
+     "op": "decode"
+    }
+   ]
+  },
+  {
+   "name": "identity-file-moved-during-container-read",
+   "csharp_test": "RawDecoderMutationGapTests.Decode_FileRemovedWhileTheContainerIsBeingRead_FailsAsChangedWhileReading",
+   "file": {
+    "physical": true,
+    "name": "a.dng",
+    "size": 4096,
+    "segments": []
+   },
+   "container": {
+    "kind": "fixed",
+    "info": {
+     "format": "Dng",
+     "sensor": [
+      6000,
+      4000
+     ],
+     "orientation": 1,
+     "previews": [
+      {
+       "index": 0,
+       "offset": 64,
+       "length": 40,
+       "width": 1200,
+       "height": 900,
+       "color_space": "Srgb"
+      }
+     ],
+     "exif_blocks": []
+    },
+    "on_read": "move-file"
+   },
+   "inner": {
+    "default": {
+     "ok": {
+      "w": 1200,
+      "h": 900
+     }
+    }
+   },
+   "ops": [
+    {
+     "op": "decode"
+    }
+   ]
+  }
+ ]
+}

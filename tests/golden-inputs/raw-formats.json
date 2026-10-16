@@ -1,0 +1,22 @@
+{
+  "paths": [
+    "photo.cr2", "photo.cr3", "photo.nef", "photo.arw", "photo.dng", "photo.raf", "photo.orf", "photo.rw2",
+    "photo.CR2", "photo.Cr3", "PHOTO.NEF", "photo.ARW", "photo.DnG", "photo.RAF", "photo.ORF", "photo.RW2",
+    "photo.nrw", "photo.NRW", "photo.pef", "photo.PEF", "photo.jpg", "photo.jpeg", "photo.tif", "photo.tiff", "photo.heic", "photo.webp", "photo.xmp",
+    null, "", " ", "\t", "\r\n", "\u00a0", "\u3000", "\u0085", "\u2028",
+    "photo", "photo.", ".", "..", ".cr2", "..cr2", "a..cr2", "a.cr2.", "a.cr2 ", "a.cr2\u00a0", " a.cr2", " .cr2", "a. cr2", "a.cr2.bak", "a.cr2.jpg", "a.jpg.cr2",
+    "photo.cr", "photo.cr22", "photo.cr3x", "photo.xcr3", "photo.c r2", "photo.cr2\u0000", "photo.cr\u00002",
+    "C:\\dir.cr2\\file", "C:\\dir.cr2\\file.jpg", "C:\\dir\\file.cr2", "C:/dir/file.NEF", "C:/dir.nef/", "C:\\dir\\", "C:\\dir.cr2\\", "C:file.cr2", "C:.cr2", "dir.cr2/", "dir.cr2\\",
+    "\\\\server\\share\\a.arw", "\\\\server\\share.arw\\f", "\\\\?\\C:\\a.dng", "a:b.cr2", "a:b.cr2:stream",
+    "photo.\u212ar2", "photo.cr\u0032", "photo.\u0131ef", "photo.NEF\u0130", "photo.\u017fraw", "photo.\uff43r2", "photo.\u24b8r2",
+    "photo.D\u004eG", "photo.d\u006eg", "x.RW2", "x.rw2.RW2", "\u00e9t\u00e9.cr3", "\ud83d\udcf7.dng", "name with spaces.Raf", "a\tb.orf"
+  ],
+  "probe_lengths": [
+    0, 1, 12, 63, 64, 65, 100, 4096, 2147483647, 2147483648, 4294967296, 9223372036854775807,
+    -1, -64, -2147483648, -2147483649, -9223372036854775808
+  ],
+  "inner_kinds": [
+    "none", "IOException", "FileNotFoundException", "EndOfStreamException", "ObjectDisposedException",
+    "InvalidDataException", "ArgumentException", "UnauthorizedAccessException", "InvalidOperationException"
+  ]
+}

@@ -1,0 +1,194 @@
+{
+ "cases": [
+  {
+   "name": "magic-16-ext-.raf",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-16-ext-.RAF",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".RAF"
+  },
+  {
+   "name": "magic-16-ext-.Raf",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".Raf"
+  },
+  {
+   "name": "magic-16-ext-.rAF",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".rAF"
+  },
+  {
+   "name": "magic-then-garbage-to-64",
+   "head_hex": "46554A4946494C4D4343442D52415720EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-then-20-bytes",
+   "head_hex": "46554A4946494C4D4343442D524157200000000000000000000000000000000000000000",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-15-bytes",
+   "head_hex": "46554A4946494C4D4343442D524157",
+   "extension": ".raf"
+  },
+  {
+   "name": "empty-head",
+   "head_hex": "",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-wrong-ext-raw",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raw"
+  },
+  {
+   "name": "magic-empty-ext",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ""
+  },
+  {
+   "name": "magic-ext-without-dot",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": "raf"
+  },
+  {
+   "name": "magic-ext-trailing-space",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raf "
+  },
+  {
+   "name": "magic-ext-leading-space",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": " .raf"
+  },
+  {
+   "name": "magic-ext-dot-raf-dot",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raf."
+  },
+  {
+   "name": "magic-ext-cr2",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".cr2"
+  },
+  {
+   "name": "magic-ext-non-ascii-dotless-i",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raı"
+  },
+  {
+   "name": "magic-ext-kelvin-sign-no-effect",
+   "head_hex": "46554A4946494C4D4343442D52415720",
+   "extension": ".raK"
+  },
+  {
+   "name": "lowercase-magic",
+   "head_hex": "66756A6966696C6D6363642D72617720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-without-trailing-space",
+   "head_hex": "46554A4946494C4D4343442D52415700",
+   "extension": ".raf"
+  },
+  {
+   "name": "tiff-header-ext-raf",
+   "head_hex": "49492A00000000000000000000000000",
+   "extension": ".raf"
+  },
+  {
+   "name": "bmff-header-ext-raf",
+   "head_hex": "0000001866747970637278200000000000000000",
+   "extension": ".raf"
+  },
+  {
+   "name": "zeros-16-ext-raf",
+   "head_hex": "00000000000000000000000000000000",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-0-flipped",
+   "head_hex": "06554A4946494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-1-flipped",
+   "head_hex": "46154A4946494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-2-flipped",
+   "head_hex": "46550A4946494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-3-flipped",
+   "head_hex": "46554A0946494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-4-flipped",
+   "head_hex": "46554A4906494C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-5-flipped",
+   "head_hex": "46554A4946094C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-6-flipped",
+   "head_hex": "46554A4946490C4D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-7-flipped",
+   "head_hex": "46554A4946494C0D4343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-8-flipped",
+   "head_hex": "46554A4946494C4D0343442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-9-flipped",
+   "head_hex": "46554A4946494C4D4303442D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-10-flipped",
+   "head_hex": "46554A4946494C4D4343042D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-11-flipped",
+   "head_hex": "46554A4946494C4D4343446D52415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-12-flipped",
+   "head_hex": "46554A4946494C4D4343442D12415720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-13-flipped",
+   "head_hex": "46554A4946494C4D4343442D52015720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-14-flipped",
+   "head_hex": "46554A4946494C4D4343442D52411720",
+   "extension": ".raf"
+  },
+  {
+   "name": "magic-byte-15-flipped",
+   "head_hex": "46554A4946494C4D4343442D52415760",
+   "extension": ".raf"
+  }
+ ]
+}

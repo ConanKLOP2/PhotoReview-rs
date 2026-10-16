@@ -290,3 +290,170 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
   not forward `as_cancellable` (C# parity); the relabel wrapper drops `source_bytes_read` and `embedded_preview_size`;
   the 0x0 underflow quirk of `AdaptivePreviewPolicy` and the negative-window quirks of `PreloadWindow` stay (QUIRK-*
   goldens); `SourceBytesCache` buffers are zeroed and an allocation failure aborts (record in PARITY I-10).
+
+## Wave 5 roster (RAW, TurboJPEG, LibRaw; dependency-graph scheduling, P-28)
+
+Source of truth for scope: `docs/MULTI-AGENT-PLAN.md` section 3 (rows W5-01..W5-17, split into sub-units by the contract writers, P-18).
+Every unit below has its contract (`contracts/W5-*.md`), a stub with `todo!()` bodies in its crate path
+(`pr-imaging-raw`, `pr-turbojpeg`, `pr-libraw`), an oracle file in `tools/oracle-cs/Commands/` (except W5-13b and W5-15a, which are
+host-dependent FFI gates without a golden), inputs in `tests/golden-inputs/` and goldens in `tests/golden/`. Counts are golden
+cases. The tier only orders the table; a unit starts as soon as its direct dependencies are merged (P-28).
+
+### Tier A: leaves (no Wave 5 dependency)
+| WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-01a | RAW vocabulary: `RawFormat`, `RawFileTypes`, `RawContainerInfo`, limits | `formats` | Haiku | `raw-formats` (135) |
+| W5-01b | Contract types: `EmbeddedPreview`, `ExifBlock`, header traits, header error, `InMemoryRawHeaderSource` | `contracts` | Haiku | `raw-contract-records` (12), `raw-header-budget` (12) |
+| W5-02b | `JpegMarkerProbe` | `jpeg_probe` | Sonnet | `jpeg-marker-probe` (86) |
+| W5-10a | `BmffBoxNavigator` | `bmff` | Sonnet | `bmff-navigator` (127) |
+| W5-12a | `SourceRawHeaderSource` (64 KiB blocks, 8 MiB header budget) | `header_source` | Sonnet | `raw-header-source-io` (27) |
+
+| WU | Unit | Rust (`pr_turbojpeg::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-13a | TurboJPEG FFI: run-time loading, `TurboJpegHandle`, `unsafe` | `native` | **Opus** | `turbojpeg-native-types` (46), `turbojpeg-native-handle` (23), `turbojpeg-native-decode` (146) |
+| W5-14a | `PixelAreaResampler` | `area_resampler` | Haiku | `pixel-area-resample` (78) |
+
+| WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-16a | `FullDecodeGate` (process-wide admission, INV-8) | `full_decode_gate` | **Opus** | `full-decode-gate` (30) |
+| W5-16b | `DecodeMemoryGuard` | `memory_guard` | Sonnet | `libraw-memory-guard` (359) |
+| W5-17 | `RgbBgraResampler` | `resampler` | Haiku | `rgb-bgra-resample` (176), `rgb-bgra-validate` (113) |
+
+### Tier B: shared parsers and gates (depend on Tier A)
+| WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-02a | `TiffHeaderNavigator` (`reconcile_jpeg_size` takes the frame walker as a closure, D47) | `tiff_nav` | Sonnet | `tiff-navigator` (538) |
+| W5-11b | `PreviewSelector`, `try_read_jpeg_frame`, `is_adobe_rgb_exif` | `preview_selector` | Sonnet | `preview-selector-select` (160), `preview-selector-jpeg-frame` (142), `adobe-rgb-exif` (61) |
+
+| WU | Unit | Rust (`pr_turbojpeg::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-13b | `TurboJpegAvailability` probe (host-dependent, no golden) | `availability` | Sonnet | - |
+
+| WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-15a | LibRaw FFI: run-time loading, `LibRawHandle`, layout proof, progress callback (no golden) | `native` | **Opus** | - |
+| W5-15b | `LibRawAvailability` probe (merge with W5-15a as one pair) | `availability` | Sonnet | `libraw-version` (162) |
+
+### Tier C: container readers and consumers of Tier B
+| WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-03 | `Cr2ContainerReader` | `readers::cr2` | Haiku (Sonnet if `bytes_read` parity does not converge) | `cr2-container` (153), `cr2-container-corpus` (0) |
+| W5-04 | `NefContainerReader` | `readers::nef` | Haiku (escalate to Sonnet at once on queue-order / maker-note / crop failures) | `nef-container` (246) |
+| W5-05 | `OrfContainerReader` | `readers::orf` | Haiku (Sonnet after one failed round) | `orf-container` (233) |
+| W5-06 | `DngContainerReader` (rated yellow; the plan said Haiku) | `readers::dng` | Sonnet | `raw-dng-synthetic` (258), `raw-dng-corpus` (1) |
+| W5-07 | `ArwContainerReader` | `readers::arw` | Haiku (Sonnet after one failed round) | `raw-arw-reader` (181) |
+| W5-08 | `Rw2ContainerReader` | `readers::rw2` | Sonnet | `rw2-container` (235), `rw2-corpus` (3) |
+| W5-09 | `RafContainerReader` | `readers::raf` | Haiku | `raf-container` (123), `raf-can-read` (38), `raf-corpus` (3) |
+| W5-10b | `Cr3ContainerReader` | `readers::cr3` | Sonnet | `raw-cr3-reader` (321) |
+| W5-11c | `RawExif` | `raw_exif` | Sonnet | `raw-exif` (82), `raw-exif-corpus` (0) |
+
+| WU | Unit | Rust (`pr_turbojpeg::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-14b | `TurboJpegDecoder` (injected `Decompressor`, `FineScaler`, memory seams) | `decoder` | Sonnet | `turbojpeg-fixtures` (18), `turbojpeg-pure` (847), `turbojpeg-decode` (184), `turbojpeg-read-info` (43) |
+
+| WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-16c | `LibRawDecoder` (seam traits + `NativeLibRaw` adapter) | `decoder` | **Opus** (verifier Opus) | `libraw-decoder` (155), `libraw-decoder-native` (35) |
+
+### Tier D: registry and routing
+| WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-11a | `RawContainerReaderRegistry`, `RawJpegIccProfile` (asset `assets/AdobeCompat-v2.icc`) | `registry` | Haiku | `raw-registry-find` (49), `raw-icc-ensure` (44) |
+| W5-12c | `FormatRoutingDecoder` | `routing` | Sonnet | `raw-routing` (116) |
+
+### Tier E: `RawDecoder`
+| WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
+|---|---|---|---|---|
+| W5-12b1 | `RawDecoder` core: `read_info`, `decode`, preview range reads | `decoder` | Sonnet (verifier Opus: INV-1 identity, INV-8) | `raw-decoder-core` (50) |
+| W5-12b2 | `RawDecoder` fallback chain (child module) | `decoder::fallback` | Sonnet | `raw-decoder-fallback` (75) |
+
+Dependency graph (direct, merge order inside a crate): 01a + 01b (one type cycle, merge together) -> 02a, 02b, 10a, 12a, 11b ->
+readers 03..09 and 10b (each needs 02a/02b and, for the size-reconcile tests, 11b), 11c -> 11a (registry names every reader) ->
+12c, 12b1/12b2 (12b needs 11a, 11b, 11c, 12a). `pr-turbojpeg`: 13a, 14a -> 14b; 13b needs 13a. `pr-libraw`: 16b -> 15a + 15b;
+16a, 16b, 17, 15a -> 16c. The three crates are independent of each other except for the `pr-libraw` dev-dependency on
+`pr-imaging-raw` (W5-16c native twin). The Wave 5 contracts still mention `contracts/drafts-w5/<unit>/...`: that folder is gone;
+the stub is at its crate path, the oracle at `tools/oracle-cs/Commands/<unit>.cs`, the inputs under `tests/golden-inputs/`.
+
+## Lead decisions (Wave 5)
+
+Decided and wired in this PR (the stubs show the result; D28 applies):
+
+- **D45 One owner for the shared RAW types:** W5-01b (`contracts`) owns `EmbeddedPreview`, `ExifBlock`, `EmbeddedPreviewKind`,
+  `PreviewColorSpace`, the `RawHeaderError` enum (`InvalidData { message, io }`, `ArgumentOutOfRange`, `Canceled`) with the
+  method `is_io_failure()`, and `RawHeaderSource::read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError>`.
+  W5-01a (`formats`) keeps `RawFormat`, `RawContainerInfo`, `RAW_EXTENSIONS`/`is_raw_extension` and `formats::limits`; its
+  temporary copies of those types, `RawHeaderCause`, the struct `RawHeaderError` and the free `is_io_failure` were deleted.
+  The crate root re-exports both. W5-01a's contract text about those types is superseded by this entry.
+- **D46 Module paths:** limits are `crate::formats::limits`; the TIFF navigator is `crate::tiff_nav`; the marker probe is
+  `crate::jpeg_probe`; readers are `crate::readers::*`. The draft names `crate::limits`, `crate::tiff::navigator`,
+  `crate::tiff_navigator`, `jpeg_marker_probe`, `RawError`, `RawReadError` and `crate::header_source::RawHeaderError` were rewritten.
+- **D47 Frame walker as a parameter:** `tiff_nav::reconcile_jpeg_size` takes the JPEG frame walker as a closure so W5-02a does
+  not depend on W5-11b (which depends on the readers). Readers pass `preview_selector::try_read_jpeg_frame`. The synthetic
+  reader tests that expect a JPEG frame size to win stay red until W5-11b has a body, so W5-11b is scheduled before the readers.
+- **D48 Shared test builders:** pure byte builders (`TiffBytes`, `create_minimal_jpeg`, `SyntheticRawBuilder`, fuzz mutators,
+  golden spec interpreter) live in `pr_test_support::raw` (no crate cycle); the first reader porter (W5-02a) creates them and
+  adds the `SyntheticRawBuilder` round-trip test; all later units consume them. `InMemoryRawHeaderSource` stays in
+  `pr-imaging-raw` (W5-01b). Each reader contract's "private copy in the test file" option is withdrawn.
+- **D49 RAW corpus:** the corpus is not in the Rust repo, is not on this machine and downloading it needs the user's yes, so
+  it was not fetched. Corpus tests read `PHOTOREVIEW_RAW_CORPUS_DIR` (default `tests/fixtures/raw-corpus/`, now in
+  `.gitignore`) and skip by early return when a file is absent, unless `PHOTOREVIEW_RAW_CORPUS_STRICT` is `1`/`true` (then they
+  panic naming the variable). The draft variable names `PHOTOREVIEW_RS_RAW_CORPUS` and `PHOTOREVIEW_RAW_CORPUS` are replaced by
+  `PHOTOREVIEW_RAW_CORPUS_DIR` on the Rust side. The corpus goldens (`cr2-container-corpus`, `raw-dng-corpus`, `rw2-corpus`,
+  `raf-corpus`, `raw-exif-corpus`, the corpus cases of `raw-arw-reader`, `raw-cr3-reader` and `libraw-decoder-native`) were
+  generated without the corpus: zero cases, `present: false` or `skipped: true` for the corpus entries. Regenerate them once the
+  corpus is fetched (proposal P-30).
+- **D50 Native DLL loading:** `pr-turbojpeg::native` and `pr-libraw::native` declare `LoadLibraryExW`/`GetProcAddress`/
+  `FreeLibrary` themselves in a private `#[cfg(windows)]` block (two ~10-line copies, no `libloading`, no `windows` feature, no new
+  dependency). Hoist one shared copy later if a third site appears. Native tests are `#[ignore = "native"]` and load the DLL by
+  absolute path from `native/x64/`.
+- **D51 Seam ownership in `pr-libraw`:** `RawStructure` is defined in `memory_guard` (W5-16b) and re-exported by `native`;
+  `ProcessedImageHeader`, `IMAGE_*`, the progress callback, `set_cancel_token`, `progress_verdict` and the `CheckCancellation_*`
+  tests are W5-15a; the seam traits `LibRawApi`/`LibRawSession`/`ProcessedImage` and the `NativeLibRaw` adapter are W5-16c
+  (`decoder.rs` has no `unsafe`). Sub-unit names: W5-16a = `FullDecodeGate`, W5-16b = `DecodeMemoryGuard`, W5-16c = `LibRawDecoder`
+  (two sibling contract headers swap the labels; the file names are right).
+- **D52 `pr-turbojpeg` seams:** `Decompressor::*` returns `Result<i32, DecodeError>` so P/Invoke exceptions propagate (INV-12);
+  `compress8` and `create_compressor` stay in `native` and `TurboJpegSyntheticFormatTests` are ported natively (no extra oracle
+  command); the fine scaler is injected (`FineScaler`) and its production adapter over `pr_platform_win::wic::scaler` is written in
+  the composition root (W8); native tests find `native/x64/turbojpeg.dll` by absolute path (W5-13b's "next to the test exe"
+  wording is superseded). W5-14a's note that the decoder calls `area_resampler::resize` is wrong: at `d92d6aae` the C# decoder
+  fine-scales with the WIC scaler.
+- **D53 `RawDecoder` split:** W5-12b is two sub-units, `decoder.rs` (12b1) and the child module `decoder/fallback.rs` (12b2, an
+  `impl RawDecoder` block reading the private fields). W5-12b1 must also list the integration test
+  `FormatRoutingDecoder_RoutesRawExtensionWhenEnabled` (router over a real `RawDecoder`). The integration tests
+  `PreviewService_DoesNotPreReadWholeRawFileIntoSourceCache` and `RawPreloadBudgetSlowTests` have no owner: they go to a Wave 5
+  integration unit W5-18 (proposal P-31).
+- **D54 Parity choices kept:** `FormatRoutingDecoder` keeps `as_cancellable() == None` and takes a `RawRoutingTexts` trait (the
+  `WebpHeicTexts` pattern); the range-end overflow in `PreviewSelector` reproduces C# wrap-around (3 golden cases flip if
+  saturating arithmetic is chosen instead); `SourceRawHeaderSource` retries `ErrorKind::Interrupted` (Rust-only, as std
+  `read_exact`); the p95 timing assert of `Fuzz_Cr2ContainerReader_Robust` is dropped (AGENTS.md bans timing asserts) and recorded as
+  a DIVERGENCE by the porter; cancellation of a queued `FullDecodeGate` waiter polls every 10 ms until A7.
+- **D55 Oracle wiring:** `tools/oracle.ps1` also builds `PhotoReview.Imaging.Raw`, `.TurboJpeg` and `.LibRaw` from the archive into
+  the core folder, copies the git-ignored `native/x64/*.dll` of the C# checkout into the build tree (no tool downloads anything)
+  and copies `turbojpeg.dll`/`libraw.dll` next to `oracle-cs.exe`; `OracleCs.csproj` references the three assemblies. Internal
+  classes are reached by reflection; the C# repo is not touched. Oracle fixes found by compiling: a CR inside a doc comment of
+  W5-11c, missing usings in W5-14b and W5-16c.
+- **D56 Golden input fixes found by running the oracle:** patches that ran past the end of the data in `orf-container`
+  (`note-with-1-bytes-before-the-end-of-file`, clipped to the file end) and `raw-exif` (`block-at-offset-clamped-by-source-end`);
+  a JS-rounded `i64::MAX` in `raw-header-source-io` (`9223372036854776000` -> `9223372036854775807`); `truncate_to` 1100 > file
+  size 755 in `raw-cr3-reader` (`real-layout-truncated-in-the-middle-of-the-track-jpeg`, now 673 = middle of the 163-byte track
+  JPEG); the 3 corpus cases of `raw-arw-reader` are `optional`; `raf-corpus` records `present: false` without a corpus instead of
+  throwing.
+- **D57 Cargo:** `pr-imaging-raw`, `pr-turbojpeg` and `pr-libraw` get `[dev-dependencies]` `pr-test-support` and `serde_json` (so
+  parallel porters never edit a manifest); `pr-imaging-raw` and `pr-turbojpeg` get `pr-platform-win` as a `cfg(windows)`
+  dev-dependency (native twins, no cycle), `pr-libraw` gets `pr-imaging-raw` (W5-16c). No new external crate; `sha2` is not added
+  (D33).
+- **D58 PARITY ids** used by the Wave 5 rows: I-02, I-03, I-13, I-14, I-15, INV-8, INV-12; new rows `X-raw-limits`,
+  `X-preview-selector`, `I-02b` (TurboJPEG native layer) and `I-15b` (LibRaw native layer).
+
+To apply at porter kick-off (not wired here because they change a unit's behaviour; the porter of the named unit owns it):
+
+- **A8 (W5-12b, W4-01c, W4-11c):** `DecodeError` gets an additive slot for the inner OS error of a `NotSupported` (for example
+  `inner_hresult: Option<i32>` on the ICC-transform failure of W4-11c) so the golden cases tagged `requires:[inner_com_hresult]`
+  in `raw-decoder-fallback` and 3 C# test rows can pass. Without it they stay red; if the porter rejects it, record a `Different`
+  row and drop them (proposal P-32).
+- **A9 (W5-12b):** fix the doc comment of `RawPreviewFallback` (W5-01b): `RawDecoder` classifies thumbnail failures with its own
+  `IsRecoverablePreviewFailure` list (InvalidCast, Overflow and DllNotFound are not recoverable there), not with the W4-12b whitelist.
+- **A10 (W5-16a):** `CancelToken::wait_timeout` (A7) replaces the 10 ms cancellation polling inside `wait_for_grant`.
+- **A11 (W5-13a, W5-15a):** a lead-owned `tools/stage-native.ps1` (SHA-256 pin check; copies `turbojpeg.dll`, `libraw.dll` and the
+  licence files next to the test and app executables) and a Rust-side `tools/fetch-native.ps1`; CI runs it before `--include-ignored`.
+

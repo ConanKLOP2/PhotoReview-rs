@@ -1,0 +1,259 @@
+{
+  "generator": "oracle-cs raw-registry-find",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "default-registration-order",
+      "order": [
+        "Cr2",
+        "Nef",
+        "Arw",
+        "Dng",
+        "Orf",
+        "Rw2",
+        "Cr3",
+        "Raf"
+      ]
+    },
+    {
+      "name": "cr2-lower",
+      "reader": "Cr2",
+      "index": 0
+    },
+    {
+      "name": "cr2-upper-extension",
+      "reader": "Cr2",
+      "index": 0
+    },
+    {
+      "name": "cr2-mixed-case-extension",
+      "reader": "Cr2",
+      "index": 0
+    },
+    {
+      "name": "cr2-without-cr-marker-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "cr2-header-exactly-10-bytes",
+      "reader": "Cr2",
+      "index": 0
+    },
+    {
+      "name": "cr2-header-9-bytes-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "cr2-big-endian-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "nef-little-endian",
+      "reader": "Nef",
+      "index": 1
+    },
+    {
+      "name": "nef-big-endian",
+      "reader": "Nef",
+      "index": 1
+    },
+    {
+      "name": "nef-header-exactly-4-bytes",
+      "reader": "Nef",
+      "index": 1
+    },
+    {
+      "name": "nef-header-3-bytes-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "nef-bad-magic-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "arw-little-endian",
+      "reader": "Arw",
+      "index": 2
+    },
+    {
+      "name": "arw-big-endian-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "dng-little-endian",
+      "reader": "Dng",
+      "index": 3
+    },
+    {
+      "name": "dng-big-endian",
+      "reader": "Dng",
+      "index": 3
+    },
+    {
+      "name": "dng-bad-magic-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "orf-iiro",
+      "reader": "Orf",
+      "index": 4
+    },
+    {
+      "name": "orf-iirs",
+      "reader": "Orf",
+      "index": 4
+    },
+    {
+      "name": "orf-mmor",
+      "reader": "Orf",
+      "index": 4
+    },
+    {
+      "name": "orf-standard-tiff-fallback",
+      "reader": "Orf",
+      "index": 4
+    },
+    {
+      "name": "orf-big-endian-tiff-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "orf-upper-extension",
+      "reader": "Orf",
+      "index": 4
+    },
+    {
+      "name": "rw2-iiu",
+      "reader": "Rw2",
+      "index": 5
+    },
+    {
+      "name": "rw2-with-tiff-magic-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "cr3-ftyp-crx",
+      "reader": "Cr3",
+      "index": 6
+    },
+    {
+      "name": "cr3-upper-extension",
+      "reader": "Cr3",
+      "index": 6
+    },
+    {
+      "name": "cr3-header-exactly-12-bytes",
+      "reader": "Cr3",
+      "index": 6
+    },
+    {
+      "name": "cr3-header-11-bytes-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "cr3-other-brand-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "raf-magic",
+      "reader": "Raf",
+      "index": 7
+    },
+    {
+      "name": "raf-header-exactly-16-bytes",
+      "reader": "Raf",
+      "index": 7
+    },
+    {
+      "name": "raf-header-15-bytes-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "raf-magic-last-byte-wrong-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "raf-bytes-in-a-nef-extension-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "nrw-is-reserved-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "pef-is-reserved-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "jpg-extension-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "empty-extension-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "extension-without-dot-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "extension-with-trailing-space-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "empty-header-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "64-byte-header-dng",
+      "reader": "Dng",
+      "index": 3
+    },
+    {
+      "name": "custom-empty-registry-is-null",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "custom-duplicate-first-wins",
+      "reader": "Cr2",
+      "index": 0
+    },
+    {
+      "name": "custom-cr2-after-others",
+      "reader": "Cr2",
+      "index": 2
+    },
+    {
+      "name": "custom-subset-misses-extension",
+      "reader": null,
+      "index": null
+    },
+    {
+      "name": "custom-reverse-order-still-routes-by-extension",
+      "reader": "Orf",
+      "index": 3
+    }
+  ]
+}

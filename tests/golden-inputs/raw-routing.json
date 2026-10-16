@@ -1,0 +1,2041 @@
+{
+  "generator": "oracle-cs raw-routing",
+  "cases": [
+    {
+      "name": "path-0-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-0-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-1-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        }
+      ]
+    },
+    {
+      "name": "path-1-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        }
+      ]
+    },
+    {
+      "name": "path-2-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nef"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nef"
+        },
+        {
+          "op": "decode",
+          "path": "photo.nef"
+        }
+      ]
+    },
+    {
+      "name": "path-2-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nef"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nef"
+        },
+        {
+          "op": "decode",
+          "path": "photo.nef"
+        }
+      ]
+    },
+    {
+      "name": "path-3-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.arw"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw"
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw"
+        }
+      ]
+    },
+    {
+      "name": "path-3-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.arw"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw"
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw"
+        }
+      ]
+    },
+    {
+      "name": "path-4-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.dng"
+        },
+        {
+          "op": "decode",
+          "path": "photo.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-4-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.dng"
+        },
+        {
+          "op": "decode",
+          "path": "photo.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-5-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.raf"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.raf"
+        },
+        {
+          "op": "decode",
+          "path": "photo.raf"
+        }
+      ]
+    },
+    {
+      "name": "path-5-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.raf"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.raf"
+        },
+        {
+          "op": "decode",
+          "path": "photo.raf"
+        }
+      ]
+    },
+    {
+      "name": "path-6-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.orf"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.orf"
+        },
+        {
+          "op": "decode",
+          "path": "photo.orf"
+        }
+      ]
+    },
+    {
+      "name": "path-6-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.orf"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.orf"
+        },
+        {
+          "op": "decode",
+          "path": "photo.orf"
+        }
+      ]
+    },
+    {
+      "name": "path-7-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.rw2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.rw2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.rw2"
+        }
+      ]
+    },
+    {
+      "name": "path-7-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.rw2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.rw2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.rw2"
+        }
+      ]
+    },
+    {
+      "name": "path-8-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2"
+        },
+        {
+          "op": "read_info",
+          "path": "PHOTO.CR2"
+        },
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2"
+        }
+      ]
+    },
+    {
+      "name": "path-8-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2"
+        },
+        {
+          "op": "read_info",
+          "path": "PHOTO.CR2"
+        },
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2"
+        }
+      ]
+    },
+    {
+      "name": "path-9-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Dng"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Dng"
+        },
+        {
+          "op": "decode",
+          "path": "photo.Dng"
+        }
+      ]
+    },
+    {
+      "name": "path-9-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Dng"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Dng"
+        },
+        {
+          "op": "decode",
+          "path": "photo.Dng"
+        }
+      ]
+    },
+    {
+      "name": "path-10-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF"
+        }
+      ]
+    },
+    {
+      "name": "path-10-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF"
+        }
+      ]
+    },
+    {
+      "name": "path-11-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/raw dir/photo.NEF"
+        },
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF"
+        }
+      ]
+    },
+    {
+      "name": "path-11-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/raw dir/photo.NEF"
+        },
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF"
+        }
+      ]
+    },
+    {
+      "name": "path-12-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw"
+        },
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw"
+        }
+      ]
+    },
+    {
+      "name": "path-12-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw"
+        },
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw"
+        }
+      ]
+    },
+    {
+      "name": "path-13-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\?\\C:\\a.dng"
+        },
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-13-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\?\\C:\\a.dng"
+        },
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-14-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".cr2"
+        },
+        {
+          "op": "read_info",
+          "path": ".cr2"
+        },
+        {
+          "op": "decode",
+          "path": ".cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-14-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".cr2"
+        },
+        {
+          "op": "read_info",
+          "path": ".cr2"
+        },
+        {
+          "op": "decode",
+          "path": ".cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-15-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a..cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a..cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a..cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-15-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a..cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a..cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a..cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-16-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": " a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": " a.cr2"
+        },
+        {
+          "op": "decode",
+          "path": " a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-16-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": " a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": " a.cr2"
+        },
+        {
+          "op": "decode",
+          "path": " a.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-17-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "C:file.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-17-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "C:file.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-18-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a:b.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a:b.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a:b.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-18-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a:b.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a:b.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a:b.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-19-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3"
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3"
+        },
+        {
+          "op": "decode",
+          "path": "été.cr3"
+        }
+      ]
+    },
+    {
+      "name": "path-19-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3"
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3"
+        },
+        {
+          "op": "decode",
+          "path": "été.cr3"
+        }
+      ]
+    },
+    {
+      "name": "path-20-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "📷.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "📷.dng"
+        },
+        {
+          "op": "decode",
+          "path": "📷.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-20-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "📷.dng"
+        },
+        {
+          "op": "read_info",
+          "path": "📷.dng"
+        },
+        {
+          "op": "decode",
+          "path": "📷.dng"
+        }
+      ]
+    },
+    {
+      "name": "path-21-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2"
+        },
+        {
+          "op": "read_info",
+          "path": "x.rw2.RW2"
+        },
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2"
+        }
+      ]
+    },
+    {
+      "name": "path-21-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2"
+        },
+        {
+          "op": "read_info",
+          "path": "x.rw2.RW2"
+        },
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2"
+        }
+      ]
+    },
+    {
+      "name": "path-22-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a.jpg.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-22-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a.jpg.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2"
+        }
+      ]
+    },
+    {
+      "name": "path-23-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-23-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-24-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.PNG"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.PNG"
+        },
+        {
+          "op": "decode",
+          "path": "photo.PNG"
+        }
+      ]
+    },
+    {
+      "name": "path-24-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.PNG"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.PNG"
+        },
+        {
+          "op": "decode",
+          "path": "photo.PNG"
+        }
+      ]
+    },
+    {
+      "name": "path-25-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo"
+        },
+        {
+          "op": "read_info",
+          "path": "photo"
+        },
+        {
+          "op": "decode",
+          "path": "photo"
+        }
+      ]
+    },
+    {
+      "name": "path-25-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo"
+        },
+        {
+          "op": "read_info",
+          "path": "photo"
+        },
+        {
+          "op": "decode",
+          "path": "photo"
+        }
+      ]
+    },
+    {
+      "name": "path-26-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nrw"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nrw"
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw"
+        }
+      ]
+    },
+    {
+      "name": "path-26-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nrw"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nrw"
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw"
+        }
+      ]
+    },
+    {
+      "name": "path-27-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.pef"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef"
+        },
+        {
+          "op": "decode",
+          "path": "photo.pef"
+        }
+      ]
+    },
+    {
+      "name": "path-27-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.pef"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef"
+        },
+        {
+          "op": "decode",
+          "path": "photo.pef"
+        }
+      ]
+    },
+    {
+      "name": "path-28-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-28-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-29-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir.cr2\\"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\"
+        }
+      ]
+    },
+    {
+      "name": "path-29-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir.cr2\\"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\"
+        }
+      ]
+    },
+    {
+      "name": "path-30-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "dir.cr2/"
+        },
+        {
+          "op": "read_info",
+          "path": "dir.cr2/"
+        },
+        {
+          "op": "decode",
+          "path": "dir.cr2/"
+        }
+      ]
+    },
+    {
+      "name": "path-30-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "dir.cr2/"
+        },
+        {
+          "op": "read_info",
+          "path": "dir.cr2/"
+        },
+        {
+          "op": "decode",
+          "path": "dir.cr2/"
+        }
+      ]
+    },
+    {
+      "name": "path-31-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2."
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2."
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2."
+        }
+      ]
+    },
+    {
+      "name": "path-31-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2."
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2."
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2."
+        }
+      ]
+    },
+    {
+      "name": "path-32-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        }
+      ]
+    },
+    {
+      "name": "path-32-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        }
+      ]
+    },
+    {
+      "name": "path-33-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        }
+      ]
+    },
+    {
+      "name": "path-33-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 "
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 "
+        }
+      ]
+    },
+    {
+      "name": "path-34-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-34-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.jpg"
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg"
+        }
+      ]
+    },
+    {
+      "name": "path-35-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2:stream"
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2:stream"
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2:stream"
+        }
+      ]
+    },
+    {
+      "name": "path-35-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2:stream"
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2:stream"
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2:stream"
+        }
+      ]
+    },
+    {
+      "name": "path-36-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Kr2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Kr2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.Kr2"
+        }
+      ]
+    },
+    {
+      "name": "path-36-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Kr2"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Kr2"
+        },
+        {
+          "op": "decode",
+          "path": "photo.Kr2"
+        }
+      ]
+    },
+    {
+      "name": "path-37-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr22"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr22"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr22"
+        }
+      ]
+    },
+    {
+      "name": "path-37-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr22"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr22"
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr22"
+        }
+      ]
+    },
+    {
+      "name": "path-38-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.webp"
+        },
+        {
+          "op": "decode",
+          "path": "photo.webp"
+        }
+      ]
+    },
+    {
+      "name": "path-38-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.webp"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.webp"
+        },
+        {
+          "op": "decode",
+          "path": "photo.webp"
+        }
+      ]
+    },
+    {
+      "name": "path-39-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.heic"
+        },
+        {
+          "op": "decode",
+          "path": "photo.heic"
+        }
+      ]
+    },
+    {
+      "name": "path-39-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.heic"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.heic"
+        },
+        {
+          "op": "decode",
+          "path": "photo.heic"
+        }
+      ]
+    },
+    {
+      "name": "path-40-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ""
+        },
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "path-40-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ""
+        },
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "path-41-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": " "
+        },
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "path-41-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": " "
+        },
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "path-42-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir\\"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir\\"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir\\"
+        }
+      ]
+    },
+    {
+      "name": "path-42-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir\\"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir\\"
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir\\"
+        }
+      ]
+    },
+    {
+      "name": "path-43-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "."
+        },
+        {
+          "op": "read_info",
+          "path": "."
+        },
+        {
+          "op": "decode",
+          "path": "."
+        }
+      ]
+    },
+    {
+      "name": "path-43-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "."
+        },
+        {
+          "op": "read_info",
+          "path": "."
+        },
+        {
+          "op": "decode",
+          "path": "."
+        }
+      ]
+    },
+    {
+      "name": "path-44-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".."
+        },
+        {
+          "op": "read_info",
+          "path": ".."
+        },
+        {
+          "op": "decode",
+          "path": ".."
+        }
+      ]
+    },
+    {
+      "name": "path-44-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".."
+        },
+        {
+          "op": "read_info",
+          "path": ".."
+        },
+        {
+          "op": "decode",
+          "path": ".."
+        }
+      ]
+    },
+    {
+      "name": "blank-0-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "blank-0-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "blank-1-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "blank-1-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "blank-2-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\t"
+        },
+        {
+          "op": "decode",
+          "path": "\t"
+        }
+      ]
+    },
+    {
+      "name": "blank-2-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\t"
+        },
+        {
+          "op": "decode",
+          "path": "\t"
+        }
+      ]
+    },
+    {
+      "name": "blank-3-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\r\n"
+        },
+        {
+          "op": "decode",
+          "path": "\r\n"
+        }
+      ]
+    },
+    {
+      "name": "blank-3-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\r\n"
+        },
+        {
+          "op": "decode",
+          "path": "\r\n"
+        }
+      ]
+    },
+    {
+      "name": "blank-4-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "blank-4-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "blank-5-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "　"
+        },
+        {
+          "op": "decode",
+          "path": "　"
+        }
+      ]
+    },
+    {
+      "name": "blank-5-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "　"
+        },
+        {
+          "op": "decode",
+          "path": "　"
+        }
+      ]
+    },
+    {
+      "name": "blank-6-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "blank-6-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": ""
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "blank-7-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "blank-7-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " "
+        },
+        {
+          "op": "decode",
+          "path": " "
+        }
+      ]
+    },
+    {
+      "name": "toggle-off-on-off",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "photo.arw"
+        },
+        {
+          "op": "set_enabled",
+          "value": true
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw"
+        },
+        {
+          "op": "set_enabled",
+          "value": false
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw"
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw"
+        }
+      ]
+    },
+    {
+      "name": "toggle-on-off-on",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "set_enabled",
+          "value": false
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "set_enabled",
+          "value": true
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3"
+        }
+      ]
+    },
+    {
+      "name": "setting-not-read-for-non-raw",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.png"
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw"
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef"
+        },
+        {
+          "op": "decode",
+          "path": ""
+        }
+      ]
+    },
+    {
+      "name": "setting-read-once-per-raw-call",
+      "raw_enabled": true,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2"
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg"
+        },
+        {
+          "op": "read_info",
+          "path": "b.dng"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-0",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-1",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw"
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-2",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/x/y.RAF"
+        },
+        {
+          "op": "read_info",
+          "path": "C:/x/y.RAF"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-3",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2"
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-4",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3"
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3"
+        }
+      ]
+    },
+    {
+      "name": "disabled-names-file-5",
+      "raw_enabled": false,
+      "ops": [
+        {
+          "op": "decode",
+          "path": "sp ace's.orf"
+        },
+        {
+          "op": "read_info",
+          "path": "sp ace's.orf"
+        }
+      ]
+    }
+  ]
+}

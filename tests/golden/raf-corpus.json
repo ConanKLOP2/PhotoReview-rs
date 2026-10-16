@@ -1,0 +1,21 @@
+{
+  "generator": "oracle-cs raf-corpus",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "x-e2s",
+      "file_name": "Fujifilm - X-E2S - 14bit 14bit uncompressed (3_2).RAF",
+      "present": false
+    },
+    {
+      "name": "x-t2",
+      "file_name": "Fujifilm - X-T2 - 14bit 14bit uncompressed (3_2).RAF",
+      "present": false
+    },
+    {
+      "name": "x100v",
+      "file_name": "Fujifilm - X100V - 14bit 14bit compressed (3_2).RAF",
+      "present": false
+    }
+  ]
+}

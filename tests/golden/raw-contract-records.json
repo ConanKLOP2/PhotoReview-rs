@@ -1,0 +1,163 @@
+{
+  "generator": "oracle-cs raw-contract-records",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "enums",
+      "type": "enums",
+      "embedded_preview_kind": {
+        "Jpeg": 0
+      },
+      "preview_color_space": {
+        "Unknown": 0,
+        "Srgb": 1,
+        "AdobeRgb": 2
+      }
+    },
+    {
+      "name": "preview-default-header-resolved-false",
+      "type": "preview",
+      "index": 0,
+      "offset": 100,
+      "length": 2000,
+      "kind": "Jpeg",
+      "width": 640,
+      "height": 480,
+      "color_space": "Unknown",
+      "header_resolved": false,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    },
+    {
+      "name": "preview-header-resolved-true-differs",
+      "type": "preview",
+      "index": 0,
+      "offset": 100,
+      "length": 2000,
+      "kind": "Jpeg",
+      "width": 640,
+      "height": 480,
+      "color_space": "Srgb",
+      "header_resolved": true,
+      "equals": false,
+      "hash_equal": false,
+      "with_copy_equals": true
+    },
+    {
+      "name": "preview-index-differs",
+      "type": "preview",
+      "index": 1,
+      "offset": 100,
+      "length": 2000,
+      "kind": "Jpeg",
+      "width": 0,
+      "height": 0,
+      "color_space": "AdobeRgb",
+      "header_resolved": false,
+      "equals": false,
+      "hash_equal": false,
+      "with_copy_equals": true
+    },
+    {
+      "name": "preview-colour-space-differs",
+      "type": "preview",
+      "index": 0,
+      "offset": 0,
+      "length": 1,
+      "kind": "Jpeg",
+      "width": 1,
+      "height": 1,
+      "color_space": "Srgb",
+      "header_resolved": false,
+      "equals": false,
+      "hash_equal": false,
+      "with_copy_equals": true
+    },
+    {
+      "name": "preview-size-unknown-zero",
+      "type": "preview",
+      "index": 0,
+      "offset": 4294967296,
+      "length": 0,
+      "kind": "Jpeg",
+      "width": 0,
+      "height": 0,
+      "color_space": "Unknown",
+      "header_resolved": false,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    },
+    {
+      "name": "preview-extreme-values",
+      "type": "preview",
+      "index": 2147483647,
+      "offset": 9223372036854775807,
+      "length": 9223372036854775807,
+      "kind": "Jpeg",
+      "width": 2147483647,
+      "height": -2147483648,
+      "color_space": "Unknown",
+      "header_resolved": true,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    },
+    {
+      "name": "block-default-ifd-is-exif-false",
+      "type": "block",
+      "offset": 0,
+      "length": 131072,
+      "is_tiff_header": true,
+      "ifd_is_exif": false,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    },
+    {
+      "name": "block-ifd-is-exif-true-differs",
+      "type": "block",
+      "offset": 512,
+      "length": 4096,
+      "is_tiff_header": true,
+      "ifd_is_exif": true,
+      "equals": false,
+      "hash_equal": false,
+      "with_copy_equals": true
+    },
+    {
+      "name": "block-not-tiff-header",
+      "type": "block",
+      "offset": 512,
+      "length": 4096,
+      "is_tiff_header": false,
+      "ifd_is_exif": false,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    },
+    {
+      "name": "block-offset-differs",
+      "type": "block",
+      "offset": 1,
+      "length": 2,
+      "is_tiff_header": true,
+      "ifd_is_exif": false,
+      "equals": false,
+      "hash_equal": false,
+      "with_copy_equals": true
+    },
+    {
+      "name": "block-extreme-values",
+      "type": "block",
+      "offset": -1,
+      "length": 9223372036854775807,
+      "is_tiff_header": false,
+      "ifd_is_exif": true,
+      "equals": true,
+      "hash_equal": true,
+      "with_copy_equals": true
+    }
+  ]
+}

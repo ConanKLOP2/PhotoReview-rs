@@ -1,0 +1,531 @@
+{
+  "generator": "oracle-cs libraw-decoder-native",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "native-version",
+      "op": "version",
+      "version": "0.22.2-Release"
+    },
+    {
+      "name": "native-format-error-table",
+      "op": "format-error",
+      "codes": [
+        0,
+        -1,
+        -2,
+        -3,
+        -4,
+        -5,
+        -6,
+        -7,
+        -8,
+        -9,
+        -10,
+        -100007,
+        -100008,
+        -100009,
+        -100010,
+        -100011,
+        -100012,
+        -100013,
+        -100014,
+        1,
+        2,
+        12,
+        9999,
+        -2147483648
+      ],
+      "messages": [
+        {
+          "code": 0,
+          "message": "No error"
+        },
+        {
+          "code": -1,
+          "message": "Unspecified error"
+        },
+        {
+          "code": -2,
+          "message": "Unsupported file format or not RAW file"
+        },
+        {
+          "code": -3,
+          "message": "Request for nonexisting image number"
+        },
+        {
+          "code": -4,
+          "message": "Out of order call of libraw function"
+        },
+        {
+          "code": -5,
+          "message": "No thumbnail in file"
+        },
+        {
+          "code": -6,
+          "message": "Unsupported thumbnail format"
+        },
+        {
+          "code": -7,
+          "message": "No input stream, or input stream closed"
+        },
+        {
+          "code": -8,
+          "message": "Decoder not implemented for this data format"
+        },
+        {
+          "code": -9,
+          "message": "Request for nonexisting thumbnail number"
+        },
+        {
+          "code": -10,
+          "message": "Unknown error code"
+        },
+        {
+          "code": -100007,
+          "message": "Unsufficient memory"
+        },
+        {
+          "code": -100008,
+          "message": "Corrupted data or unexpected EOF"
+        },
+        {
+          "code": -100009,
+          "message": "Input/output error"
+        },
+        {
+          "code": -100010,
+          "message": "Cancelled by user callback"
+        },
+        {
+          "code": -100011,
+          "message": "Bad crop box"
+        },
+        {
+          "code": -100012,
+          "message": "Image too big for processing"
+        },
+        {
+          "code": -100013,
+          "message": "Libraw internal mempool overflowed"
+        },
+        {
+          "code": -100014,
+          "message": "Unknown error code"
+        },
+        {
+          "code": 1,
+          "message": "Unknown error code"
+        },
+        {
+          "code": 2,
+          "message": "Unknown error code"
+        },
+        {
+          "code": 12,
+          "message": "Unknown error code"
+        },
+        {
+          "code": 9999,
+          "message": "Unknown error code"
+        },
+        {
+          "code": -2147483648,
+          "message": "Unknown error code"
+        }
+      ]
+    },
+    {
+      "name": "native-failure--100008",
+      "op": "failure",
+      "code": -100008,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: Corrupted data or unexpected EOF"
+      }
+    },
+    {
+      "name": "native-failure-thumb--100008",
+      "op": "failure",
+      "code": -100008,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: Corrupted data or unexpected EOF"
+      }
+    },
+    {
+      "name": "native-failure--100009",
+      "op": "failure",
+      "code": -100009,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: Input/output error"
+      }
+    },
+    {
+      "name": "native-failure-thumb--100009",
+      "op": "failure",
+      "code": -100009,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: Input/output error"
+      }
+    },
+    {
+      "name": "native-failure--2",
+      "op": "failure",
+      "code": -2,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: Unsupported file format or not RAW file"
+      }
+    },
+    {
+      "name": "native-failure-thumb--2",
+      "op": "failure",
+      "code": -2,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: Unsupported file format or not RAW file"
+      }
+    },
+    {
+      "name": "native-failure--1",
+      "op": "failure",
+      "code": -1,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: Unspecified error"
+      }
+    },
+    {
+      "name": "native-failure-thumb--1",
+      "op": "failure",
+      "code": -1,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: Unspecified error"
+      }
+    },
+    {
+      "name": "native-failure-1",
+      "op": "failure",
+      "code": 1,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: Unknown error code"
+      }
+    },
+    {
+      "name": "native-failure-thumb-1",
+      "op": "failure",
+      "code": 1,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: Unknown error code"
+      }
+    },
+    {
+      "name": "native-failure-0",
+      "op": "failure",
+      "code": 0,
+      "operation": "unpack RAW data",
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not unpack RAW data: No error"
+      }
+    },
+    {
+      "name": "native-failure-thumb-0",
+      "op": "failure",
+      "code": 0,
+      "thumbnail": true,
+      "value": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not create embedded JPEG thumbnail: No error"
+      }
+    },
+    {
+      "name": "native-check-result-0",
+      "op": "check-result",
+      "code": 0,
+      "operation": "op",
+      "ok": true
+    },
+    {
+      "name": "native-check-result--100002",
+      "op": "check-result",
+      "code": -100002,
+      "operation": "op",
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not op: Unknown error code"
+      }
+    },
+    {
+      "name": "native-check-result-1",
+      "op": "check-result",
+      "code": 1,
+      "operation": "process RAW data",
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not process RAW data: Unknown error code"
+      }
+    },
+    {
+      "name": "native-check-result--100007",
+      "op": "check-result",
+      "code": -100007,
+      "operation": "open RAW file",
+      "throws": {
+        "type": "InvalidOperationException",
+        "message": "Not enough memory to decode this RAW image."
+      }
+    },
+    {
+      "name": "native-check-result-12",
+      "op": "check-result",
+      "code": 12,
+      "operation": "open RAW file",
+      "throws": {
+        "type": "InvalidOperationException",
+        "message": "Not enough memory to decode this RAW image."
+      }
+    },
+    {
+      "name": "native-open-success-once",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        0
+      ],
+      "ok": true,
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-io-short-no-retry",
+      "op": "open-retry",
+      "path": "C:\\short.cr3",
+      "codes": [
+        -100009
+      ],
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "calls": [
+        "C:\\short.cr3"
+      ]
+    },
+    {
+      "name": "native-open-io-long-retries",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100009,
+        0
+      ],
+      "ok": true,
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+        "\\\\?\\C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-retry-fails-original-error",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100009,
+        -100001
+      ],
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+        "\\\\?\\C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-retry-io-again",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100009,
+        -100009
+      ],
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+        "\\\\?\\C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-non-io-long-no-retry",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100001
+      ],
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Unknown error code"
+      },
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-memory-long-no-retry",
+      "op": "open-retry",
+      "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100007
+      ],
+      "throws": {
+        "type": "InvalidOperationException",
+        "message": "Not enough memory to decode this RAW image."
+      },
+      "calls": [
+        "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-io-relative-long-no-retry",
+      "op": "open-retry",
+      "path": "photos\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100009
+      ],
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "calls": [
+        "photos\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-open-io-unc-long-retries",
+      "op": "open-retry",
+      "path": "\\\\server\\share\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+      "codes": [
+        -100009,
+        0
+      ],
+      "ok": true,
+      "calls": [
+        "\\\\server\\share\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+        "\\\\?\\UNC\\server\\share\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3"
+      ]
+    },
+    {
+      "name": "native-junk-read-info",
+      "op": "junk",
+      "call": "read-info",
+      "file_name": "junk.cr2",
+      "seed": 1234,
+      "length": 8192,
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Unsupported file format or not RAW file"
+      },
+      "deleted": true,
+      "slots_after": 1
+    },
+    {
+      "name": "native-missing-read-info",
+      "op": "missing-file",
+      "call": "read-info",
+      "path": "Z:\\definitely-missing\\file.orf",
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "stages": []
+    },
+    {
+      "name": "native-junk-thumbnail",
+      "op": "junk",
+      "call": "thumbnail",
+      "file_name": "junk.nef",
+      "seed": 1234,
+      "length": 8192,
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Unsupported file format or not RAW file"
+      },
+      "deleted": true,
+      "slots_after": 1
+    },
+    {
+      "name": "native-missing-thumbnail",
+      "op": "missing-file",
+      "call": "thumbnail",
+      "path": "Z:\\definitely-missing\\file.orf",
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "stages": []
+    },
+    {
+      "name": "native-junk-decode",
+      "op": "junk",
+      "call": "decode",
+      "file_name": "junk.cr2",
+      "seed": 1234,
+      "length": 8192,
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Unsupported file format or not RAW file"
+      },
+      "deleted": true,
+      "slots_after": 1
+    },
+    {
+      "name": "native-missing-decode",
+      "op": "missing-file",
+      "call": "decode",
+      "path": "Z:\\definitely-missing\\file.orf",
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "stages": [
+        "configured"
+      ]
+    },
+    {
+      "name": "native-junk-empty-file",
+      "op": "junk",
+      "call": "read-info",
+      "file_name": "empty.cr2",
+      "seed": 1,
+      "length": 0,
+      "throws": {
+        "type": "InvalidDataException",
+        "message": "LibRaw could not open RAW file: Input/output error"
+      },
+      "deleted": true,
+      "slots_after": 1
+    }
+  ]
+}

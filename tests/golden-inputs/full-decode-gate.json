@@ -1,0 +1,1049 @@
+{
+ "cases": [
+  {
+   "name": "viewer-after-three-preloads-goes-first",
+   "max_queued_preloads": 3,
+   "holder": {
+    "priority": "Preload",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p3",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "viewer",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "viewers-fifo",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "preloads-fifo-without-viewers",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "viewers-and-preloads-interleaved-arrival",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "cancel-queued-viewer-keeps-slot",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "cancelled",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "cancel",
+     "name": "cancelled"
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "cancel-preload-frees-queue-spot",
+   "max_queued_preloads": 1,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "first",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "cancel",
+     "name": "first"
+    },
+    {
+     "op": "counters"
+    },
+    {
+     "op": "enter",
+     "name": "second",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "cancel-middle-viewer-keeps-fifo",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "cancel",
+     "name": "v2"
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "cancel-oldest-preload-next-preload-is-promoted-instead",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "cancel",
+     "name": "p1"
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v5",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "pre-cancelled-token-on-free-gate",
+   "max_queued_preloads": 2,
+   "holder": null,
+   "steps": [
+    {
+     "op": "enter_canceled",
+     "name": "x",
+     "priority": "Viewer"
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "pre-cancelled-token-on-busy-gate",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter_canceled",
+     "name": "x",
+     "priority": "Preload"
+    },
+    {
+     "op": "enter_canceled",
+     "name": "y",
+     "priority": "Viewer"
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "preload-queue-full-is-busy-viewer-never-refused",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p3",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    },
+    {
+     "op": "enter",
+     "name": "viewer",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "max-zero-refuses-queued-preload-but-viewer-queues",
+   "max_queued_preloads": 0,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "max-negative-refuses-queued-preload",
+   "max_queued_preloads": -1,
+   "holder": {
+    "priority": "Preload",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "max-zero-free-slot-grants-preload",
+   "max_queued_preloads": 0,
+   "holder": null,
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "busy-then-cancel-then-room-again",
+   "max_queued_preloads": 1,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "cancel",
+     "name": "p1"
+    },
+    {
+     "op": "enter",
+     "name": "p3",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "every-path-leaves-gate-free",
+   "max_queued_preloads": 1,
+   "holder": {
+    "priority": "Preload",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "refused",
+     "priority": "Preload",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "aging-promotes-after-three-completions",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "aging-below-bound-yields",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "unworked-leases-never-age",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": false
+    }
+   ]
+  },
+  {
+   "name": "unworked-holder-worked-viewers",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "two-overdue-preloads-one-promotion-per-three",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "two-preloads-long-viewer-run",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v5",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v6",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v7",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v8",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v9",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v10",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "second-preload-ages-from-the-last-promotion",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v5",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v6",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v7",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "mixed-worked-viewers",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": false
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v5",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v6",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "worked-preload-counts-for-the-next-preload",
+   "max_queued_preloads": 3,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p1",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p2",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "p3",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v4",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v5",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v6",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v7",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v8",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "preload-holder-worked-ages-preload",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Preload",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v3",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "holder-released-twice-counts-once",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true,
+    "release_twice": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "p",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v1",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "v2",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "holder-released-twice-unworked",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": false,
+    "release_twice": true
+   },
+   "steps": [
+    {
+     "op": "enter",
+     "name": "w",
+     "priority": "Viewer",
+     "worked": true
+    }
+   ]
+  },
+  {
+   "name": "free-gate-sequential-enters",
+   "max_queued_preloads": 2,
+   "holder": null,
+   "steps": [
+    {
+     "op": "enter",
+     "name": "a",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "b",
+     "priority": "Preload",
+     "worked": true
+    },
+    {
+     "op": "enter",
+     "name": "c",
+     "priority": "Viewer",
+     "worked": true
+    },
+    {
+     "op": "counters"
+    }
+   ]
+  },
+  {
+   "name": "no-waiters-holder-only",
+   "max_queued_preloads": 2,
+   "holder": {
+    "priority": "Viewer",
+    "worked": true
+   },
+   "steps": [
+    {
+     "op": "counters"
+    }
+   ]
+  }
+ ]
+}

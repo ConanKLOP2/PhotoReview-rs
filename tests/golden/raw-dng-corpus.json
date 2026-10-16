@@ -1,0 +1,10 @@
+{
+  "generator": "oracle-cs raw-dng-corpus",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "corpus-absent",
+      "corpus_present": false
+    }
+  ]
+}

@@ -1,0 +1,3250 @@
+{
+ "cases": [
+  {
+   "name": "constants-all",
+   "op": "constants"
+  },
+  {
+   "name": "is-bayer-c-1-f0",
+   "op": "is-bayer",
+   "colors": -1,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c-1-f1",
+   "op": "is-bayer",
+   "colors": -1,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c-1-f2492765332",
+   "op": "is-bayer",
+   "colors": -1,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c-1-f4294967295",
+   "op": "is-bayer",
+   "colors": -1,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c0-f0",
+   "op": "is-bayer",
+   "colors": 0,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c0-f1",
+   "op": "is-bayer",
+   "colors": 0,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c0-f2492765332",
+   "op": "is-bayer",
+   "colors": 0,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c0-f4294967295",
+   "op": "is-bayer",
+   "colors": 0,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c1-f0",
+   "op": "is-bayer",
+   "colors": 1,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c1-f1",
+   "op": "is-bayer",
+   "colors": 1,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c1-f2492765332",
+   "op": "is-bayer",
+   "colors": 1,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c1-f4294967295",
+   "op": "is-bayer",
+   "colors": 1,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c2-f0",
+   "op": "is-bayer",
+   "colors": 2,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c2-f1",
+   "op": "is-bayer",
+   "colors": 2,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c2-f2492765332",
+   "op": "is-bayer",
+   "colors": 2,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c2-f4294967295",
+   "op": "is-bayer",
+   "colors": 2,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c3-f0",
+   "op": "is-bayer",
+   "colors": 3,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c3-f1",
+   "op": "is-bayer",
+   "colors": 3,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c3-f2492765332",
+   "op": "is-bayer",
+   "colors": 3,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c3-f4294967295",
+   "op": "is-bayer",
+   "colors": 3,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c4-f0",
+   "op": "is-bayer",
+   "colors": 4,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c4-f1",
+   "op": "is-bayer",
+   "colors": 4,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c4-f2492765332",
+   "op": "is-bayer",
+   "colors": 4,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c4-f4294967295",
+   "op": "is-bayer",
+   "colors": 4,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c5-f0",
+   "op": "is-bayer",
+   "colors": 5,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c5-f1",
+   "op": "is-bayer",
+   "colors": 5,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c5-f2492765332",
+   "op": "is-bayer",
+   "colors": 5,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c5-f4294967295",
+   "op": "is-bayer",
+   "colors": 5,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c6-f0",
+   "op": "is-bayer",
+   "colors": 6,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c6-f1",
+   "op": "is-bayer",
+   "colors": 6,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c6-f2492765332",
+   "op": "is-bayer",
+   "colors": 6,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c6-f4294967295",
+   "op": "is-bayer",
+   "colors": 6,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c7-f0",
+   "op": "is-bayer",
+   "colors": 7,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c7-f1",
+   "op": "is-bayer",
+   "colors": 7,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c7-f2492765332",
+   "op": "is-bayer",
+   "colors": 7,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c7-f4294967295",
+   "op": "is-bayer",
+   "colors": 7,
+   "filters": 4294967295
+  },
+  {
+   "name": "is-bayer-c2147483647-f0",
+   "op": "is-bayer",
+   "colors": 2147483647,
+   "filters": 0
+  },
+  {
+   "name": "is-bayer-c2147483647-f1",
+   "op": "is-bayer",
+   "colors": 2147483647,
+   "filters": 1
+  },
+  {
+   "name": "is-bayer-c2147483647-f2492765332",
+   "op": "is-bayer",
+   "colors": 2147483647,
+   "filters": 2492765332
+  },
+  {
+   "name": "is-bayer-c2147483647-f4294967295",
+   "op": "is-bayer",
+   "colors": 2147483647,
+   "filters": 4294967295
+  },
+  {
+   "name": "classify-n0-none",
+   "op": "classify",
+   "decoder": null,
+   "structure": null
+  },
+  {
+   "name": "classify-n0-mosaic",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n0-nomosaic",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n0-four",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n0-mosaic4",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n0-mosaic5",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n0-mosaic0",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n0-mosaicneg",
+   "op": "classify",
+   "decoder": null,
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n1-none",
+   "op": "classify",
+   "decoder": "",
+   "structure": null
+  },
+  {
+   "name": "classify-n1-mosaic",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n1-nomosaic",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n1-four",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n1-mosaic4",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n1-mosaic5",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n1-mosaic0",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n1-mosaicneg",
+   "op": "classify",
+   "decoder": "",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n2-none",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n2-mosaic",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n2-nomosaic",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n2-four",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n2-mosaic4",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n2-mosaic5",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n2-mosaic0",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n2-mosaicneg",
+   "op": "classify",
+   "decoder": "unpacked_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n3-none",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n3-mosaic",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n3-nomosaic",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n3-four",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n3-mosaic4",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n3-mosaic5",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n3-mosaic0",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n3-mosaicneg",
+   "op": "classify",
+   "decoder": "canon_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n4-none",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n4-mosaic",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n4-nomosaic",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n4-four",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n4-mosaic4",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n4-mosaic5",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n4-mosaic0",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n4-mosaicneg",
+   "op": "classify",
+   "decoder": "nikon_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n5-none",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n5-mosaic",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n5-nomosaic",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n5-four",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n5-mosaic4",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n5-mosaic5",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n5-mosaic0",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n5-mosaicneg",
+   "op": "classify",
+   "decoder": "lossless_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n6-none",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n6-mosaic",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n6-nomosaic",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n6-four",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n6-mosaic4",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n6-mosaic5",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n6-mosaic0",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n6-mosaicneg",
+   "op": "classify",
+   "decoder": "packed_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n7-none",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n7-mosaic",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n7-nomosaic",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n7-four",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n7-mosaic4",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n7-mosaic5",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n7-mosaic0",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n7-mosaicneg",
+   "op": "classify",
+   "decoder": "deflate_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n8-none",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n8-mosaic",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n8-nomosaic",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n8-four",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n8-mosaic4",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n8-mosaic5",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n8-mosaic0",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n8-mosaicneg",
+   "op": "classify",
+   "decoder": "lossy_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n9-none",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n9-mosaic",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n9-nomosaic",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n9-four",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n9-mosaic4",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n9-mosaic5",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n9-mosaic0",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n9-mosaicneg",
+   "op": "classify",
+   "decoder": "uncompressed_fp_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n10-none",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n10-mosaic",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n10-nomosaic",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n10-four",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n10-mosaic4",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n10-mosaic5",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n10-mosaic0",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n10-mosaicneg",
+   "op": "classify",
+   "decoder": "deflate_fp_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n11-none",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n11-mosaic",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n11-nomosaic",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n11-four",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n11-mosaic4",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n11-mosaic5",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n11-mosaic0",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n11-mosaicneg",
+   "op": "classify",
+   "decoder": "lossless_fp_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n12-none",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n12-mosaic",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n12-nomosaic",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n12-four",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n12-mosaic4",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n12-mosaic5",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n12-mosaic0",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n12-mosaicneg",
+   "op": "classify",
+   "decoder": "_fp_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n13-none",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n13-mosaic",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n13-nomosaic",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n13-four",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n13-mosaic4",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n13-mosaic5",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n13-mosaic0",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n13-mosaicneg",
+   "op": "classify",
+   "decoder": "fp_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n14-none",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": null
+  },
+  {
+   "name": "classify-n14-mosaic",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n14-nomosaic",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n14-four",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n14-mosaic4",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n14-mosaic5",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n14-mosaic0",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n14-mosaicneg",
+   "op": "classify",
+   "decoder": "LOSSLESS_DNG_LOAD_RAW()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n15-none",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n15-mosaic",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n15-nomosaic",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n15-four",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n15-mosaic4",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n15-mosaic5",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n15-mosaic0",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n15-mosaicneg",
+   "op": "classify",
+   "decoder": "Deflate_Dng_Load_Raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n16-none",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n16-mosaic",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n16-nomosaic",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n16-four",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n16-mosaic4",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n16-mosaic5",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n16-mosaic0",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n16-mosaicneg",
+   "op": "classify",
+   "decoder": "x_deflate_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n17-none",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n17-mosaic",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n17-nomosaic",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n17-four",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n17-mosaic4",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n17-mosaic5",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n17-mosaic0",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n17-mosaicneg",
+   "op": "classify",
+   "decoder": "deflate_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n18-none",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n18-mosaic",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n18-nomosaic",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n18-four",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n18-mosaic4",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n18-mosaic5",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n18-mosaic0",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n18-mosaicneg",
+   "op": "classify",
+   "decoder": "deflate dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n19-none",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n19-mosaic",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n19-nomosaic",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n19-four",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n19-mosaic4",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n19-mosaic5",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n19-mosaic0",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n19-mosaicneg",
+   "op": "classify",
+   "decoder": "lossless_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n20-none",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n20-mosaic",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n20-nomosaic",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n20-four",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n20-mosaic4",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n20-mosaic5",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n20-mosaic0",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n20-mosaicneg",
+   "op": "classify",
+   "decoder": "dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n21-none",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": null
+  },
+  {
+   "name": "classify-n21-mosaic",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n21-nomosaic",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n21-four",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n21-mosaic4",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n21-mosaic5",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n21-mosaic0",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n21-mosaicneg",
+   "op": "classify",
+   "decoder": "adobe_copy_pixel",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n22-none",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n22-mosaic",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n22-nomosaic",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n22-four",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n22-mosaic4",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n22-mosaic5",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n22-mosaic0",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n22-mosaicneg",
+   "op": "classify",
+   "decoder": "sony_arw2_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n23-none",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": null
+  },
+  {
+   "name": "classify-n23-mosaic",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n23-nomosaic",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n23-four",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n23-mosaic4",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n23-mosaic5",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n23-mosaic0",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n23-mosaicneg",
+   "op": "classify",
+   "decoder": "deflate_dng_fp_dng",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "classify-n24-none",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": null
+  },
+  {
+   "name": "classify-n24-mosaic",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n24-nomosaic",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 3,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n24-four",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 0
+   }
+  },
+  {
+   "name": "classify-n24-mosaic4",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 4,
+    "filters": 370546198
+   }
+  },
+  {
+   "name": "classify-n24-mosaic5",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 5,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n24-mosaic0",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": 0,
+    "filters": 2492765332
+   }
+  },
+  {
+   "name": "classify-n24-mosaicneg",
+   "op": "classify",
+   "decoder": " deflate_dng_load_raw()",
+   "structure": {
+    "colors": -1,
+    "filters": 1
+   }
+  },
+  {
+   "name": "estimate-100mp-bounded-raw-eq-Bayer",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-100mp-bounded-raw-eq-Linear",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-100mp-bounded-raw-eq-Float",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-100mp-full-size-Bayer",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 11600,
+   "target_height": 8700,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-100mp-full-size-Linear",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 11600,
+   "target_height": 8700,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-100mp-full-size-Float",
+   "op": "estimate",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 11600,
+   "target_height": 8700,
+   "raw_width": 11600,
+   "raw_height": 8700,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-crop-sensor-larger-Bayer",
+   "op": "estimate",
+   "width": 4000,
+   "height": 2500,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4200,
+   "raw_height": 2860,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-crop-sensor-larger-Linear",
+   "op": "estimate",
+   "width": 4000,
+   "height": 2500,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4200,
+   "raw_height": 2860,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-crop-sensor-larger-Float",
+   "op": "estimate",
+   "width": 4000,
+   "height": 2500,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4200,
+   "raw_height": 2860,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-sensor-smaller-than-output-Bayer",
+   "op": "estimate",
+   "width": 4200,
+   "height": 2860,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4000,
+   "raw_height": 2500,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-sensor-smaller-than-output-Linear",
+   "op": "estimate",
+   "width": 4200,
+   "height": 2860,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4000,
+   "raw_height": 2500,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-sensor-smaller-than-output-Float",
+   "op": "estimate",
+   "width": 4200,
+   "height": 2860,
+   "target_width": 100,
+   "target_height": 100,
+   "raw_width": 4000,
+   "raw_height": 2500,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-48mp-Bayer",
+   "op": "estimate",
+   "width": 8000,
+   "height": 6000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 8000,
+   "raw_height": 6000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-48mp-Linear",
+   "op": "estimate",
+   "width": 8000,
+   "height": 6000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 8000,
+   "raw_height": 6000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-48mp-Float",
+   "op": "estimate",
+   "width": 8000,
+   "height": 6000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 8000,
+   "raw_height": 6000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-unknown-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-unknown-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-unknown-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-width-only-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-width-only-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-width-only-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-height-only-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-height-only-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-height-only-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 0,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-negative-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -6000,
+   "raw_height": -4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-negative-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -6000,
+   "raw_height": -4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-negative-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -6000,
+   "raw_height": -4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-w-negative-h-pos-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -1,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-w-negative-h-pos-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -1,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-w-negative-h-pos-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": -1,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-one-pixel-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-one-pixel-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-one-pixel-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-zero-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-zero-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-zero-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-width-zero-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-width-zero-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-width-zero-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 0,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-negative-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -1920,
+   "target_height": -1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-negative-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -1920,
+   "target_height": -1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-negative-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -1920,
+   "target_height": -1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-one-negative-Bayer",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -5,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-one-negative-Linear",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -5,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-one-negative-Float",
+   "op": "estimate",
+   "width": 6000,
+   "height": 4000,
+   "target_width": -5,
+   "target_height": 1280,
+   "raw_width": 6000,
+   "raw_height": 4000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-1x1-Bayer",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-1x1-Linear",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-1x1-Float",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 1,
+   "raw_height": 1,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-1x1-all-zero-Bayer",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-1x1-all-zero-Linear",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-1x1-all-zero-Float",
+   "op": "estimate",
+   "width": 1,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-width-zero-Bayer",
+   "op": "estimate",
+   "width": 0,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-width-zero-Linear",
+   "op": "estimate",
+   "width": 0,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-width-zero-Float",
+   "op": "estimate",
+   "width": 0,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-height-zero-Bayer",
+   "op": "estimate",
+   "width": 10,
+   "height": 0,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-height-zero-Linear",
+   "op": "estimate",
+   "width": 10,
+   "height": 0,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-height-zero-Float",
+   "op": "estimate",
+   "width": 10,
+   "height": 0,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-width-negative-Bayer",
+   "op": "estimate",
+   "width": -1,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-width-negative-Linear",
+   "op": "estimate",
+   "width": -1,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-width-negative-Float",
+   "op": "estimate",
+   "width": -1,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-height-negative-Bayer",
+   "op": "estimate",
+   "width": 10,
+   "height": -1,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-height-negative-Linear",
+   "op": "estimate",
+   "width": 10,
+   "height": -1,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-height-negative-Float",
+   "op": "estimate",
+   "width": 10,
+   "height": -1,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-both-negative-Bayer",
+   "op": "estimate",
+   "width": -4,
+   "height": -4,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-both-negative-Linear",
+   "op": "estimate",
+   "width": -4,
+   "height": -4,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-both-negative-Float",
+   "op": "estimate",
+   "width": -4,
+   "height": -4,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-width-min-int-Bayer",
+   "op": "estimate",
+   "width": -2147483648,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-width-min-int-Linear",
+   "op": "estimate",
+   "width": -2147483648,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-width-min-int-Float",
+   "op": "estimate",
+   "width": -2147483648,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-int-max-all-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-int-max-all-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-int-max-all-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-int-max-source-only-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-int-max-source-only-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-int-max-source-only-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-int-max-w-1-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-int-max-w-1-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-int-max-w-1-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-int-max-w-1-target-max-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-int-max-w-1-target-max-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-int-max-w-1-target-max-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 1,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-large-below-saturation-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 380000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-large-below-saturation-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 380000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-large-below-saturation-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 380000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-large-near-saturation-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-large-near-saturation-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-large-near-saturation-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 0,
+   "target_height": 0,
+   "raw_width": 0,
+   "raw_height": 0,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-large-near-saturation-raw-Bayer",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 2147483647,
+   "raw_height": 390000000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-large-near-saturation-raw-Linear",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 2147483647,
+   "raw_height": 390000000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-large-near-saturation-raw-Float",
+   "op": "estimate",
+   "width": 2147483647,
+   "height": 390000000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 2147483647,
+   "raw_height": 390000000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-raw-max-only-Bayer",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-raw-max-only-Linear",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-raw-max-only-Float",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10,
+   "raw_width": 2147483647,
+   "raw_height": 2147483647,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-max-only-Bayer",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-max-only-Linear",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-max-only-Float",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 2147483647,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-target-max-wide-Bayer",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 1,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-target-max-wide-Linear",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 1,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-target-max-wide-Float",
+   "op": "estimate",
+   "width": 10,
+   "height": 10,
+   "target_width": 2147483647,
+   "target_height": 1,
+   "raw_width": 10,
+   "raw_height": 10,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-50k-square-Bayer",
+   "op": "estimate",
+   "width": 50000,
+   "height": 50000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 50000,
+   "raw_height": 50000,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-50k-square-Linear",
+   "op": "estimate",
+   "width": 50000,
+   "height": 50000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 50000,
+   "raw_height": 50000,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-50k-square-Float",
+   "op": "estimate",
+   "width": 50000,
+   "height": 50000,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 50000,
+   "raw_height": 50000,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-200mp-sensor-Bayer",
+   "op": "estimate",
+   "width": 16000,
+   "height": 12500,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 16000,
+   "raw_height": 12500,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-200mp-sensor-Linear",
+   "op": "estimate",
+   "width": 16000,
+   "height": 12500,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 16000,
+   "raw_height": 12500,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-200mp-sensor-Float",
+   "op": "estimate",
+   "width": 16000,
+   "height": 12500,
+   "target_width": 1920,
+   "target_height": 1280,
+   "raw_width": 16000,
+   "raw_height": 12500,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-float-crossing-i64-Bayer",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16500,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16500,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-float-crossing-i64-Linear",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16500,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16500,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-float-crossing-i64-Float",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16500,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16500,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-float-just-below-i64-Bayer",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16470,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16470,
+   "family": "Bayer"
+  },
+  {
+   "name": "estimate-float-just-below-i64-Linear",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16470,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16470,
+   "family": "Linear"
+  },
+  {
+   "name": "estimate-float-just-below-i64-Float",
+   "op": "estimate",
+   "width": 16000000,
+   "height": 16470,
+   "target_width": 1,
+   "target_height": 1,
+   "raw_width": 16000000,
+   "raw_height": 16470,
+   "family": "Float"
+  },
+  {
+   "name": "estimate-defaults-100mp-full",
+   "op": "estimate-defaults",
+   "width": 11600,
+   "height": 8700,
+   "target_width": 11600,
+   "target_height": 8700
+  },
+  {
+   "name": "estimate-defaults-bounded",
+   "op": "estimate-defaults",
+   "width": 6000,
+   "height": 4000,
+   "target_width": 1920,
+   "target_height": 1280
+  },
+  {
+   "name": "estimate-defaults-invalid-0-10",
+   "op": "estimate-defaults",
+   "width": 0,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10
+  },
+  {
+   "name": "estimate-defaults-invalid-10-0",
+   "op": "estimate-defaults",
+   "width": 10,
+   "height": 0,
+   "target_width": 10,
+   "target_height": 10
+  },
+  {
+   "name": "estimate-defaults-invalid-neg-10",
+   "op": "estimate-defaults",
+   "width": -1,
+   "height": 10,
+   "target_width": 10,
+   "target_height": 10
+  },
+  {
+   "name": "estimate-defaults-absurd",
+   "op": "estimate-defaults",
+   "width": 2147483647,
+   "height": 2147483647,
+   "target_width": 2147483647,
+   "target_height": 2147483647
+  },
+  {
+   "name": "estimate-defaults-target-negative",
+   "op": "estimate-defaults",
+   "width": 100,
+   "height": 100,
+   "target_width": -10,
+   "target_height": 10
+  }
+ ]
+}

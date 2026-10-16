@@ -13,3 +13,11 @@ workspace = true
 [dependencies]
 pr-core.workspace = true
 pr-imaging.workspace = true
+
+[dev-dependencies]
+pr-test-support.workspace = true
+serde_json.workspace = true
+
+# W5-14b native fine-scale tests use the real WIC scaler through a test adapter.
+[target.'cfg(windows)'.dev-dependencies]
+pr-platform-win.workspace = true

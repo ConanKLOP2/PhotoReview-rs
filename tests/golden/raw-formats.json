@@ -1,0 +1,681 @@
+{
+  "generator": "oracle-cs raw-formats",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "extension",
+      "path": "photo.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr3",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.nef",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.arw",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.dng",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.raf",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.orf",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.rw2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.CR2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.Cr3",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "PHOTO.NEF",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.ARW",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.DnG",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.RAF",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.ORF",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.RW2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.nrw",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.NRW",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.pef",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.PEF",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.jpg",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.jpeg",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.tif",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.tiff",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.heic",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.webp",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.xmp",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": null,
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": " ",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\t",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\r\n",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\u00A0",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\u3000",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\u0085",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\u2028",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": ".",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "..",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": ".cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "..cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a..cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a.cr2.",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "a.cr2 ",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "a.cr2\u00A0",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": " a.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": " .cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a. cr2",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "a.cr2.bak",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "a.cr2.jpg",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "a.jpg.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr22",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr3x",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.xcr3",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.c r2",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr2\u0000",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr\u00002",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:\\dir.cr2\\file",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:\\dir.cr2\\file.jpg",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:\\dir\\file.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "C:/dir/file.NEF",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "C:/dir.nef/",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:\\dir\\",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:\\dir.cr2\\",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "C:file.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "C:.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "dir.cr2/",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "dir.cr2\\",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\\\\server\\share\\a.arw",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "\\\\server\\share.arw\\f",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "\\\\?\\C:\\a.dng",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a:b.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a:b.cr2:stream",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.Kr2",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.cr2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.ıef",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.NEFİ",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.ſraw",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.ｃr2",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.Ⓒr2",
+      "is_raw": false
+    },
+    {
+      "kind": "extension",
+      "path": "photo.DNG",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "photo.dng",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "x.RW2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "x.rw2.RW2",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "été.cr3",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "\uD83D\uDCF7.dng",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "name with spaces.Raf",
+      "is_raw": true
+    },
+    {
+      "kind": "extension",
+      "path": "a\tb.orf",
+      "is_raw": true
+    },
+    {
+      "kind": "enum",
+      "name": "Unknown",
+      "value": 0
+    },
+    {
+      "kind": "enum",
+      "name": "Cr2",
+      "value": 1
+    },
+    {
+      "kind": "enum",
+      "name": "Cr3",
+      "value": 2
+    },
+    {
+      "kind": "enum",
+      "name": "Nef",
+      "value": 3
+    },
+    {
+      "kind": "enum",
+      "name": "Nrw",
+      "value": 4
+    },
+    {
+      "kind": "enum",
+      "name": "Arw",
+      "value": 5
+    },
+    {
+      "kind": "enum",
+      "name": "Dng",
+      "value": 6
+    },
+    {
+      "kind": "enum",
+      "name": "Raf",
+      "value": 7
+    },
+    {
+      "kind": "enum",
+      "name": "Orf",
+      "value": 8
+    },
+    {
+      "kind": "enum",
+      "name": "Rw2",
+      "value": 9
+    },
+    {
+      "kind": "enum",
+      "name": "Pef",
+      "value": 10
+    },
+    {
+      "kind": "limit",
+      "name": "DefaultExifBlockBytes",
+      "value": 131072
+    },
+    {
+      "kind": "limit",
+      "name": "MaxEntriesPerIfd",
+      "value": 4096
+    },
+    {
+      "kind": "limit",
+      "name": "MaxExifBlockBytes",
+      "value": 4194304
+    },
+    {
+      "kind": "limit",
+      "name": "MaxHeaderBytes",
+      "value": 8388608
+    },
+    {
+      "kind": "limit",
+      "name": "MaxIfdCount",
+      "value": 64
+    },
+    {
+      "kind": "limit",
+      "name": "MaxJpegFillBytes",
+      "value": 65536
+    },
+    {
+      "kind": "limit",
+      "name": "MaxJpegMarkerSegments",
+      "value": 512
+    },
+    {
+      "kind": "limit",
+      "name": "MaxPreviewBytes",
+      "value": 134217728
+    },
+    {
+      "kind": "probe",
+      "length": 0,
+      "result": 0
+    },
+    {
+      "kind": "probe",
+      "length": 1,
+      "result": 1
+    },
+    {
+      "kind": "probe",
+      "length": 12,
+      "result": 12
+    },
+    {
+      "kind": "probe",
+      "length": 63,
+      "result": 63
+    },
+    {
+      "kind": "probe",
+      "length": 64,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 65,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 100,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 4096,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 2147483647,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 2147483648,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 4294967296,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": 9223372036854775807,
+      "result": 64
+    },
+    {
+      "kind": "probe",
+      "length": -1,
+      "result": -1
+    },
+    {
+      "kind": "probe",
+      "length": -64,
+      "result": -64
+    },
+    {
+      "kind": "probe",
+      "length": -2147483648,
+      "result": -2147483648
+    },
+    {
+      "kind": "probe",
+      "length": -2147483649,
+      "result": 2147483647
+    },
+    {
+      "kind": "probe",
+      "length": -9223372036854775808,
+      "result": 0
+    },
+    {
+      "kind": "io-failure",
+      "inner": "none",
+      "result": false
+    },
+    {
+      "kind": "io-failure",
+      "inner": "IOException",
+      "result": true
+    },
+    {
+      "kind": "io-failure",
+      "inner": "FileNotFoundException",
+      "result": true
+    },
+    {
+      "kind": "io-failure",
+      "inner": "EndOfStreamException",
+      "result": true
+    },
+    {
+      "kind": "io-failure",
+      "inner": "ObjectDisposedException",
+      "result": true
+    },
+    {
+      "kind": "io-failure",
+      "inner": "InvalidDataException",
+      "result": false
+    },
+    {
+      "kind": "io-failure",
+      "inner": "ArgumentException",
+      "result": false
+    },
+    {
+      "kind": "io-failure",
+      "inner": "UnauthorizedAccessException",
+      "result": false
+    },
+    {
+      "kind": "io-failure",
+      "inner": "InvalidOperationException",
+      "result": false
+    }
+  ]
+}

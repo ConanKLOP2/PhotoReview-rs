@@ -1,0 +1,3458 @@
+{
+  "generator": "oracle-cs raw-routing",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "path-0-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.cr2",
+        "photo.cr2",
+        "photo.cr2"
+      ]
+    },
+    {
+      "name": "path-0-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr2'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr2'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr2'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-1-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr3",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.cr3",
+        "photo.cr3",
+        "photo.cr3"
+      ]
+    },
+    {
+      "name": "path-1-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr3'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr3 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr3'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr3 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr3'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr3 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-2-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nef",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nef",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.nef",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.nef",
+        "photo.nef",
+        "photo.nef"
+      ]
+    },
+    {
+      "name": "path-2-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nef",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.nef'.",
+          "describe": "RAW support is turned off in Settings, so photo.nef cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nef",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.nef'.",
+          "describe": "RAW support is turned off in Settings, so photo.nef cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.nef",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.nef'.",
+          "describe": "RAW support is turned off in Settings, so photo.nef cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-3-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.arw",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.arw",
+        "photo.arw",
+        "photo.arw"
+      ]
+    },
+    {
+      "name": "path-3-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-4-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.dng",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.dng",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.dng",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.dng",
+        "photo.dng",
+        "photo.dng"
+      ]
+    },
+    {
+      "name": "path-4-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.dng cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.dng cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.dng cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-5-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.raf",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.raf",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.raf",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.raf",
+        "photo.raf",
+        "photo.raf"
+      ]
+    },
+    {
+      "name": "path-5-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.raf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.raf'.",
+          "describe": "RAW support is turned off in Settings, so photo.raf cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.raf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.raf'.",
+          "describe": "RAW support is turned off in Settings, so photo.raf cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.raf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.raf'.",
+          "describe": "RAW support is turned off in Settings, so photo.raf cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-6-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.orf",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.orf",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.orf",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.orf",
+        "photo.orf",
+        "photo.orf"
+      ]
+    },
+    {
+      "name": "path-6-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.orf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.orf'.",
+          "describe": "RAW support is turned off in Settings, so photo.orf cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.orf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.orf'.",
+          "describe": "RAW support is turned off in Settings, so photo.orf cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.orf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.orf'.",
+          "describe": "RAW support is turned off in Settings, so photo.orf cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-7-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.rw2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.rw2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.rw2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.rw2",
+        "photo.rw2",
+        "photo.rw2"
+      ]
+    },
+    {
+      "name": "path-7-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.rw2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.rw2'.",
+          "describe": "RAW support is turned off in Settings, so photo.rw2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.rw2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.rw2'.",
+          "describe": "RAW support is turned off in Settings, so photo.rw2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.rw2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.rw2'.",
+          "describe": "RAW support is turned off in Settings, so photo.rw2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-8-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "PHOTO.CR2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "PHOTO.CR2",
+        "PHOTO.CR2",
+        "PHOTO.CR2"
+      ]
+    },
+    {
+      "name": "path-8-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'PHOTO.CR2'.",
+          "describe": "RAW support is turned off in Settings, so PHOTO.CR2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "PHOTO.CR2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'PHOTO.CR2'.",
+          "describe": "RAW support is turned off in Settings, so PHOTO.CR2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "PHOTO.CR2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'PHOTO.CR2'.",
+          "describe": "RAW support is turned off in Settings, so PHOTO.CR2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-9-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Dng",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Dng",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.Dng",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.Dng",
+        "photo.Dng",
+        "photo.Dng"
+      ]
+    },
+    {
+      "name": "path-9-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.Dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.Dng cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.Dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.Dng cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.Dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.Dng'.",
+          "describe": "RAW support is turned off in Settings, so photo.Dng cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-10-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "C:\\raw dir\\photo.NEF",
+        "C:\\raw dir\\photo.NEF",
+        "C:\\raw dir\\photo.NEF"
+      ]
+    },
+    {
+      "name": "path-10-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-11-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:/raw dir/photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "C:/raw dir/photo.NEF",
+        "C:/raw dir/photo.NEF",
+        "C:/raw dir/photo.NEF"
+      ]
+    },
+    {
+      "name": "path-11-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:/raw dir/photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:/raw dir/photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-12-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "\\\\server\\share\\a.arw",
+        "\\\\server\\share\\a.arw",
+        "\\\\server\\share\\a.arw"
+      ]
+    },
+    {
+      "name": "path-12-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.arw'.",
+          "describe": "RAW support is turned off in Settings, so a.arw cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.arw'.",
+          "describe": "RAW support is turned off in Settings, so a.arw cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.arw'.",
+          "describe": "RAW support is turned off in Settings, so a.arw cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-13-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\?\\C:\\a.dng",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "\\\\?\\C:\\a.dng",
+        "\\\\?\\C:\\a.dng",
+        "\\\\?\\C:\\a.dng"
+      ]
+    },
+    {
+      "name": "path-13-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.dng'.",
+          "describe": "RAW support is turned off in Settings, so a.dng cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\?\\C:\\a.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.dng'.",
+          "describe": "RAW support is turned off in Settings, so a.dng cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\\\\?\\C:\\a.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.dng'.",
+          "describe": "RAW support is turned off in Settings, so a.dng cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-14-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": ".cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": ".cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        ".cr2",
+        ".cr2",
+        ".cr2"
+      ]
+    },
+    {
+      "name": "path-14-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '.cr2'.",
+          "describe": "RAW support is turned off in Settings, so .cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": ".cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '.cr2'.",
+          "describe": "RAW support is turned off in Settings, so .cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": ".cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '.cr2'.",
+          "describe": "RAW support is turned off in Settings, so .cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-15-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a..cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a..cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a..cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "a..cr2",
+        "a..cr2",
+        "a..cr2"
+      ]
+    },
+    {
+      "name": "path-15-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a..cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a..cr2'.",
+          "describe": "RAW support is turned off in Settings, so a..cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a..cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a..cr2'.",
+          "describe": "RAW support is turned off in Settings, so a..cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a..cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a..cr2'.",
+          "describe": "RAW support is turned off in Settings, so a..cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-16-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": " a.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": " a.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": " a.cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        " a.cr2",
+        " a.cr2",
+        " a.cr2"
+      ]
+    },
+    {
+      "name": "path-16-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": " a.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode ' a.cr2'.",
+          "describe": "RAW support is turned off in Settings, so  a.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": " a.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode ' a.cr2'.",
+          "describe": "RAW support is turned off in Settings, so  a.cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": " a.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode ' a.cr2'.",
+          "describe": "RAW support is turned off in Settings, so  a.cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-17-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:file.cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "C:file.cr2",
+        "C:file.cr2",
+        "C:file.cr2"
+      ]
+    },
+    {
+      "name": "path-17-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'file.cr2'.",
+          "describe": "RAW support is turned off in Settings, so file.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'file.cr2'.",
+          "describe": "RAW support is turned off in Settings, so file.cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "C:file.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'file.cr2'.",
+          "describe": "RAW support is turned off in Settings, so file.cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-18-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a:b.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a:b.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a:b.cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "a:b.cr2",
+        "a:b.cr2",
+        "a:b.cr2"
+      ]
+    },
+    {
+      "name": "path-18-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a:b.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'b.cr2'.",
+          "describe": "RAW support is turned off in Settings, so b.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a:b.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'b.cr2'.",
+          "describe": "RAW support is turned off in Settings, so b.cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a:b.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'b.cr2'.",
+          "describe": "RAW support is turned off in Settings, so b.cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-19-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "été.cr3",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "été.cr3",
+        "été.cr3",
+        "été.cr3"
+      ]
+    },
+    {
+      "name": "path-19-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'été.cr3'.",
+          "describe": "RAW support is turned off in Settings, so été.cr3 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'été.cr3'.",
+          "describe": "RAW support is turned off in Settings, so été.cr3 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "été.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'été.cr3'.",
+          "describe": "RAW support is turned off in Settings, so été.cr3 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-20-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\uD83D\uDCF7.dng",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\uD83D\uDCF7.dng",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\uD83D\uDCF7.dng",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "\uD83D\uDCF7.dng",
+        "\uD83D\uDCF7.dng",
+        "\uD83D\uDCF7.dng"
+      ]
+    },
+    {
+      "name": "path-20-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\uD83D\uDCF7.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '\uD83D\uDCF7.dng'.",
+          "describe": "RAW support is turned off in Settings, so \uD83D\uDCF7.dng cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\uD83D\uDCF7.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '\uD83D\uDCF7.dng'.",
+          "describe": "RAW support is turned off in Settings, so \uD83D\uDCF7.dng cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "\uD83D\uDCF7.dng",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode '\uD83D\uDCF7.dng'.",
+          "describe": "RAW support is turned off in Settings, so \uD83D\uDCF7.dng cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-21-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "x.rw2.RW2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "x.rw2.RW2",
+        "x.rw2.RW2",
+        "x.rw2.RW2"
+      ]
+    },
+    {
+      "name": "path-21-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'x.rw2.RW2'.",
+          "describe": "RAW support is turned off in Settings, so x.rw2.RW2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "x.rw2.RW2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'x.rw2.RW2'.",
+          "describe": "RAW support is turned off in Settings, so x.rw2.RW2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "x.rw2.RW2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'x.rw2.RW2'.",
+          "describe": "RAW support is turned off in Settings, so x.rw2.RW2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-22-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a.jpg.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "a.jpg.cr2",
+        "a.jpg.cr2",
+        "a.jpg.cr2"
+      ]
+    },
+    {
+      "name": "path-22-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.jpg.cr2'.",
+          "describe": "RAW support is turned off in Settings, so a.jpg.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a.jpg.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.jpg.cr2'.",
+          "describe": "RAW support is turned off in Settings, so a.jpg.cr2 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.jpg.cr2'.",
+          "describe": "RAW support is turned off in Settings, so a.jpg.cr2 cannot be shown.",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "path-23-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.jpg",
+        "photo.jpg",
+        "photo.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-23-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.jpg",
+        "photo.jpg",
+        "photo.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-24-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.PNG",
+        "photo.PNG",
+        "photo.PNG"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-24-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.PNG",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.PNG",
+        "photo.PNG",
+        "photo.PNG"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-25-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo",
+        "photo",
+        "photo"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-25-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo",
+        "photo",
+        "photo"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-26-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.nrw",
+        "photo.nrw",
+        "photo.nrw"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-26-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.nrw",
+        "photo.nrw",
+        "photo.nrw"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-27-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.pef",
+        "photo.pef",
+        "photo.pef"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-27-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.pef",
+        "photo.pef",
+        "photo.pef"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-28-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\folder.cr2\\photo.jpg",
+        "C:\\folder.cr2\\photo.jpg",
+        "C:\\folder.cr2\\photo.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-28-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\folder.cr2\\photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\folder.cr2\\photo.jpg",
+        "C:\\folder.cr2\\photo.jpg",
+        "C:\\folder.cr2\\photo.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-29-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\dir.cr2\\",
+        "C:\\dir.cr2\\",
+        "C:\\dir.cr2\\"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-29-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir.cr2\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\dir.cr2\\",
+        "C:\\dir.cr2\\",
+        "C:\\dir.cr2\\"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-30-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "dir.cr2/",
+        "dir.cr2/",
+        "dir.cr2/"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-30-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "dir.cr2/",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "dir.cr2/",
+        "dir.cr2/",
+        "dir.cr2/"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-31-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2.",
+        "a.cr2.",
+        "a.cr2."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-31-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2.",
+        "a.cr2.",
+        "a.cr2."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-32-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2 ",
+        "a.cr2 ",
+        "a.cr2 "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-32-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2 ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2 ",
+        "a.cr2 ",
+        "a.cr2 "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-33-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2\u00A0",
+        "a.cr2\u00A0",
+        "a.cr2\u00A0"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-33-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2\u00A0",
+        "a.cr2\u00A0",
+        "a.cr2\u00A0"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-34-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2.jpg",
+        "a.cr2.jpg",
+        "a.cr2.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-34-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2.jpg",
+        "a.cr2.jpg",
+        "a.cr2.jpg"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-35-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2:stream",
+        "a.cr2:stream",
+        "a.cr2:stream"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-35-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "a.cr2:stream",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "a.cr2:stream",
+        "a.cr2:stream",
+        "a.cr2:stream"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-36-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.Kr2",
+        "photo.Kr2",
+        "photo.Kr2"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-36-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.Kr2",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.Kr2",
+        "photo.Kr2",
+        "photo.Kr2"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-37-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.cr22",
+        "photo.cr22",
+        "photo.cr22"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-37-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr22",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.cr22",
+        "photo.cr22",
+        "photo.cr22"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-38-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.webp",
+        "photo.webp",
+        "photo.webp"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-38-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.webp",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.webp",
+        "photo.webp",
+        "photo.webp"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-39-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.heic",
+        "photo.heic",
+        "photo.heic"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-39-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.heic",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.heic",
+        "photo.heic",
+        "photo.heic"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-40-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "",
+        ""
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-40-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "",
+        ""
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-41-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": " ",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        " ",
+        " "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-41-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": " ",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        " ",
+        " "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-42-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\dir\\",
+        "C:\\dir\\",
+        "C:\\dir\\"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-42-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "C:\\dir\\",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "C:\\dir\\",
+        "C:\\dir\\",
+        "C:\\dir\\"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-43-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        ".",
+        ".",
+        "."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-43-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": ".",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        ".",
+        ".",
+        "."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-44-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "..",
+        "..",
+        ".."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "path-44-off",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "..",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "..",
+        "..",
+        ".."
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-0-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        ""
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-0-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        ""
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-1-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " ",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        " "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-1-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": " ",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": " ",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        " "
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-2-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\t",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\t",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\t"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-2-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\t",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\t",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\t"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-3-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\r\n",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\r\n",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\r\n"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-3-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\r\n",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\r\n",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\r\n"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-4-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u00A0",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u00A0"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-4-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u00A0",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u00A0",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u00A0"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-5-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u3000",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u3000",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u3000"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-5-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u3000",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u3000",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u3000"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-6-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u0085",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u0085",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u0085"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-6-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u0085",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u0085",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u0085"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-7-on",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u2028",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u2028",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u2028"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "blank-7-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "\u2028",
+          "throws": "ArgumentException",
+          "is_localized": false,
+          "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "describe": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "\u2028",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "\u2028"
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "toggle-off-on-off",
+      "ops": [
+        {
+          "op": "read_info",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": true,
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": false,
+          "enabled_calls": 2
+        },
+        {
+          "op": "read_info",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 3
+        },
+        {
+          "op": "decode",
+          "path": "photo.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.arw'.",
+          "describe": "RAW support is turned off in Settings, so photo.arw cannot be shown.",
+          "enabled_calls": 4
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": [
+        "photo.arw"
+      ]
+    },
+    {
+      "name": "toggle-on-off-on",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": false,
+          "enabled_calls": 1
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.cr3'.",
+          "describe": "RAW support is turned off in Settings, so photo.cr3 cannot be shown.",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 2
+        },
+        {
+          "op": "set_enabled",
+          "path": null,
+          "value": true,
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "photo.cr3",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [
+        "photo.jpg"
+      ],
+      "raw_paths": [
+        "photo.cr3",
+        "photo.cr3"
+      ]
+    },
+    {
+      "name": "setting-not-read-for-non-raw",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "photo.jpg",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.png",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "photo.nrw",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "read_info",
+          "path": "photo.pef",
+          "routed": "standard",
+          "enabled_calls": 0
+        },
+        {
+          "op": "decode",
+          "path": "",
+          "routed": "standard",
+          "enabled_calls": 0
+        }
+      ],
+      "standard_paths": [
+        "photo.jpg",
+        "photo.png",
+        "photo.nrw",
+        "photo.pef",
+        ""
+      ],
+      "raw_paths": []
+    },
+    {
+      "name": "setting-read-once-per-raw-call",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "a.cr2",
+          "routed": "raw",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "a.cr2",
+          "routed": "raw",
+          "enabled_calls": 2
+        },
+        {
+          "op": "decode",
+          "path": "a.jpg",
+          "routed": "standard",
+          "enabled_calls": 2
+        },
+        {
+          "op": "read_info",
+          "path": "b.dng",
+          "routed": "raw",
+          "enabled_calls": 3
+        }
+      ],
+      "standard_paths": [
+        "a.jpg"
+      ],
+      "raw_paths": [
+        "a.cr2",
+        "a.cr2",
+        "b.dng"
+      ]
+    },
+    {
+      "name": "disabled-names-file-0",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:\\raw dir\\photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:\\raw dir\\photo.NEF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'photo.NEF'.",
+          "describe": "RAW support is turned off in Settings, so photo.NEF cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "disabled-names-file-1",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "\\\\server\\share\\a.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.arw'.",
+          "describe": "RAW support is turned off in Settings, so a.arw cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "\\\\server\\share\\a.arw",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'a.arw'.",
+          "describe": "RAW support is turned off in Settings, so a.arw cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "disabled-names-file-2",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:/x/y.RAF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'y.RAF'.",
+          "describe": "RAW support is turned off in Settings, so y.RAF cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:/x/y.RAF",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'y.RAF'.",
+          "describe": "RAW support is turned off in Settings, so y.RAF cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "disabled-names-file-3",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "C:file.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'file.cr2'.",
+          "describe": "RAW support is turned off in Settings, so file.cr2 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "C:file.cr2",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'file.cr2'.",
+          "describe": "RAW support is turned off in Settings, so file.cr2 cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "disabled-names-file-4",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "été.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'été.cr3'.",
+          "describe": "RAW support is turned off in Settings, so été.cr3 cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "été.cr3",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'été.cr3'.",
+          "describe": "RAW support is turned off in Settings, so été.cr3 cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    },
+    {
+      "name": "disabled-names-file-5",
+      "ops": [
+        {
+          "op": "decode",
+          "path": "sp ace's.orf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'sp ace's.orf'.",
+          "describe": "RAW support is turned off in Settings, so sp ace's.orf cannot be shown.",
+          "enabled_calls": 1
+        },
+        {
+          "op": "read_info",
+          "path": "sp ace's.orf",
+          "throws": "NotSupportedException",
+          "is_localized": true,
+          "message": "RAW support is disabled; cannot decode 'sp ace's.orf'.",
+          "describe": "RAW support is turned off in Settings, so sp ace's.orf cannot be shown.",
+          "enabled_calls": 2
+        }
+      ],
+      "standard_paths": [],
+      "raw_paths": []
+    }
+  ]
+}

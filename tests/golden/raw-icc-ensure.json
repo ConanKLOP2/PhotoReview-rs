@@ -1,0 +1,350 @@
+{
+  "generator": "oracle-cs raw-icc-ensure",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "bundled-profile-identity",
+      "profile_len": 374,
+      "profile_fnv1a64": "1d3e7e4f40c58953"
+    },
+    {
+      "name": "empty-input",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "one-byte",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "png",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "swapped-soi",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "zeros",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "ff-then-eoi-is-not-soi",
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Adobe RGB preview is not a valid JPEG stream."
+    },
+    {
+      "name": "soi-only",
+      "ok": true,
+      "same": false,
+      "len": 394,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "untagged-jfif",
+      "ok": true,
+      "same": false,
+      "len": 411,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "untagged-no-segments",
+      "ok": true,
+      "same": false,
+      "len": 402,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-mpf-is-not-icc",
+      "ok": true,
+      "same": false,
+      "len": 422,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "icc-identifier-in-app1-is-not-tagged",
+      "ok": true,
+      "same": false,
+      "len": 421,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "icc-after-scan-header-is-not-tagged",
+      "ok": true,
+      "same": false,
+      "len": 418,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-payload-11-bytes-just-short-of-identifier",
+      "ok": true,
+      "same": false,
+      "len": 417,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-identifier-differs-in-last-byte",
+      "ok": true,
+      "same": false,
+      "len": 420,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-lowercase-identifier",
+      "ok": true,
+      "same": false,
+      "len": 420,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-length-0x4000-past-end",
+      "ok": true,
+      "same": false,
+      "len": 415,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-length-1-below-minimum",
+      "ok": true,
+      "same": false,
+      "len": 415,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-length-0",
+      "ok": true,
+      "same": false,
+      "len": 415,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app1-length-0xffff",
+      "ok": true,
+      "same": false,
+      "len": 415,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "app2-length-exactly-fits-the-buffer",
+      "ok": true,
+      "same": true,
+      "len": 23,
+      "head_hex": "ffd8ffe200134943435f50524f46494c45000101"
+    },
+    {
+      "name": "app2-length-one-past-the-end",
+      "ok": true,
+      "same": false,
+      "len": 415,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "segment-header-cut-after-marker",
+      "ok": true,
+      "same": false,
+      "len": 397,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "stream-ends-after-marker-byte",
+      "ok": true,
+      "same": false,
+      "len": 396,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "three-bytes-after-soi",
+      "ok": true,
+      "same": false,
+      "len": 398,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "non-ff-byte-where-marker-expected",
+      "ok": true,
+      "same": false,
+      "len": 420,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "fill-bytes-run-to-end",
+      "ok": true,
+      "same": false,
+      "len": 398,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "stream-ends-inside-fill-then-marker",
+      "ok": true,
+      "same": false,
+      "len": 398,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "eoi-before-icc-stops-the-walk",
+      "ok": true,
+      "same": false,
+      "len": 416,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    },
+    {
+      "name": "icc-first-segment",
+      "ok": true,
+      "same": true,
+      "len": 24,
+      "head_hex": "ffd8ffe200124943435f50524f46494c45000101"
+    },
+    {
+      "name": "icc-after-other-segments",
+      "ok": true,
+      "same": true,
+      "len": 118,
+      "head_hex": "ffd8ffe000074a46494600ffe100084578696600"
+    },
+    {
+      "name": "icc-after-segment-longer-than-255",
+      "ok": true,
+      "same": true,
+      "len": 326,
+      "head_hex": "ffd8ffe1012c0000000000000000000000000000"
+    },
+    {
+      "name": "icc-after-rst7",
+      "ok": true,
+      "same": true,
+      "len": 26,
+      "head_hex": "ffd8ffd7ffe200124943435f50524f46494c4500"
+    },
+    {
+      "name": "icc-after-rst0",
+      "ok": true,
+      "same": true,
+      "len": 26,
+      "head_hex": "ffd8ffd0ffe200124943435f50524f46494c4500"
+    },
+    {
+      "name": "icc-after-sof-length-segment",
+      "ok": true,
+      "same": true,
+      "len": 31,
+      "head_hex": "ffd8ffcf0005000000ffe200124943435f50524f"
+    },
+    {
+      "name": "icc-after-second-soi-marker",
+      "ok": true,
+      "same": true,
+      "len": 26,
+      "head_hex": "ffd8ffd8ffe200124943435f50524f46494c4500"
+    },
+    {
+      "name": "icc-after-tem-0x01",
+      "ok": true,
+      "same": true,
+      "len": 26,
+      "head_hex": "ffd8ff01ffe200124943435f50524f46494c4500"
+    },
+    {
+      "name": "icc-after-empty-segment",
+      "ok": true,
+      "same": true,
+      "len": 28,
+      "head_hex": "ffd8ffe10002ffe200124943435f50524f46494c"
+    },
+    {
+      "name": "icc-segment-ends-exactly-at-end",
+      "ok": true,
+      "same": true,
+      "len": 22,
+      "head_hex": "ffd8ffe200124943435f50524f46494c45000101"
+    },
+    {
+      "name": "icc-segment-only-identifier",
+      "ok": true,
+      "same": true,
+      "len": 20,
+      "head_hex": "ffd8ffe2000e4943435f50524f46494c4500ffd9"
+    },
+    {
+      "name": "standalone-markers-and-fill-before-icc",
+      "ok": true,
+      "same": true,
+      "len": 29,
+      "head_hex": "ffd8ffff01ffd0ffe200124943435f50524f4649"
+    },
+    {
+      "name": "two-icc-segments",
+      "ok": true,
+      "same": true,
+      "len": 44,
+      "head_hex": "ffd8ffe200124943435f50524f46494c45000101"
+    },
+    {
+      "name": "app2-mpf-then-icc",
+      "ok": true,
+      "same": true,
+      "len": 50,
+      "head_hex": "ffd8ffe200124d50460000000000000000000000"
+    },
+    {
+      "name": "large-untagged-stream",
+      "ok": true,
+      "same": false,
+      "len": 4505,
+      "head_hex": "ffd8ffe201864943435f50524f46494c45000101",
+      "profile_equal": true,
+      "tail_equals_input_after_soi": true
+    }
+  ]
+}

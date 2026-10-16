@@ -1,0 +1,3126 @@
+{
+  "generator": "oracle-cs preview-selector-jpeg-frame",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "minimal-640x480",
+      "source": "memory",
+      "source_length": "163",
+      "parts": [
+        {
+          "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 163,
+      "offset": "0",
+      "length": "163",
+      "error": "none",
+      "read_count": 5,
+      "bytes_charged": 163,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "frame-ends-exactly-at-range-end",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "frame-cut-by-one-byte",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "14",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "frame-cut-by-two-bytes",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "13",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sof-minimum-5-byte-payload",
+      "source": "memory",
+      "source_length": "11",
+      "parts": [
+        {
+          "hex": "FFD8FFC000070801E00280"
+        }
+      ],
+      "total_length": 11,
+      "offset": "0",
+      "length": "11",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 11,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "sof-4-byte-payload-rejected",
+      "source": "memory",
+      "source_length": "11",
+      "parts": [
+        {
+          "hex": "FFD8FFC000060801E00280"
+        }
+      ],
+      "total_length": 11,
+      "offset": "0",
+      "length": "11",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 11,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sof-4-byte-payload-does-not-read-next-segment",
+      "source": "memory",
+      "source_length": "14",
+      "parts": [
+        {
+          "hex": "FFD8FFC00004080101E00280FFD9"
+        }
+      ],
+      "total_length": 14,
+      "offset": "0",
+      "length": "14",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 14,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sof-runs-past-buffer",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC000110801E0028003012200"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sof-length-0xFFFF-far-beyond-buffer",
+      "source": "memory",
+      "source_length": "11",
+      "parts": [
+        {
+          "hex": "FFD8FFC0FFFF0801E00280"
+        }
+      ],
+      "total_length": 11,
+      "offset": "0",
+      "length": "11",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 11,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sof-precision-12-is-accepted-here",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0C01E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "sof-precision-0-is-accepted-here",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0001E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "first-frame-marker-C0-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 1000,
+      "height": 700
+    },
+    {
+      "name": "first-frame-marker-C1-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC1000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 1000,
+      "height": 700
+    },
+    {
+      "name": "first-frame-marker-C2-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC2000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 1000,
+      "height": 700
+    },
+    {
+      "name": "first-frame-marker-C3-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC3000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-C4-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC4000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 111,
+      "height": 222
+    },
+    {
+      "name": "first-frame-marker-C5-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC5000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-C6-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC6000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-C7-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC7000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-C8-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC8000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 111,
+      "height": 222
+    },
+    {
+      "name": "first-frame-marker-C9-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFC9000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-CA-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCA000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-CB-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCB000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-CC-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCC000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 28,
+      "ok": true,
+      "color_space": 0,
+      "width": 111,
+      "height": 222
+    },
+    {
+      "name": "first-frame-marker-CD-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCD000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-CE-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCE000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "first-frame-marker-CF-then-valid-baseline",
+      "source": "memory",
+      "source_length": "28",
+      "parts": [
+        {
+          "hex": "FFD8FFCF000B0802BC03E801011100FFC0000B0800DE006F01011100"
+        }
+      ],
+      "total_length": 28,
+      "offset": "0",
+      "length": "28",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 28,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "skipped-segment-C4-20-bytes",
+      "source": "memory",
+      "source_length": "39",
+      "parts": [
+        {
+          "hex": "FFD8FFC400160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 39,
+      "offset": "0",
+      "length": "39",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 39,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "skipped-segment-C8-20-bytes",
+      "source": "memory",
+      "source_length": "39",
+      "parts": [
+        {
+          "hex": "FFD8FFC800160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 39,
+      "offset": "0",
+      "length": "39",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 39,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "skipped-segment-CC-20-bytes",
+      "source": "memory",
+      "source_length": "39",
+      "parts": [
+        {
+          "hex": "FFD8FFCC00160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 39,
+      "offset": "0",
+      "length": "39",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 39,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "size-0x480",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0000001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "size-640x0",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B080000028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "size-0x0",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B080000000001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "size-1x1",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B080001000101011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "name": "size-65535x65535",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B08FFFFFFFF01011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 65535,
+      "height": 65535
+    },
+    {
+      "name": "size-65535x1",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B080001FFFF01011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 65535,
+      "height": 1
+    },
+    {
+      "name": "size-1x65535",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B08FFFF000101011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 1,
+      "height": 65535
+    },
+    {
+      "name": "empty-segment-before-frame",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FFE00002FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 19,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-length-0-ends-the-walk",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FFE00000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 19,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "segment-length-1-ends-the-walk",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FFE00001FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 19,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "segment-payload-254-skipped-with-full-length",
+      "source": "memory",
+      "source_length": "273",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00100",
+          "pad_to": 258
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 273,
+      "offset": "0",
+      "length": "273",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 273,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-payload-255-skipped-with-full-length",
+      "source": "memory",
+      "source_length": "274",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00101",
+          "pad_to": 259
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 274,
+      "offset": "0",
+      "length": "274",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 274,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-payload-256-skipped-with-full-length",
+      "source": "memory",
+      "source_length": "275",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00102",
+          "pad_to": 260
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 275,
+      "offset": "0",
+      "length": "275",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 275,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-payload-300-skipped-with-full-length",
+      "source": "memory",
+      "source_length": "319",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE0012E",
+          "pad_to": 304
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 319,
+      "offset": "0",
+      "length": "319",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 319,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-payload-65533-skipped-with-full-length",
+      "source": "memory",
+      "source_length": "65552",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE0FFFF",
+          "pad_to": 65537
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 65552,
+      "offset": "0",
+      "length": "65552",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 65552,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "segment-length-65535-runs-past-range",
+      "source": "memory",
+      "source_length": "119",
+      "parts": [
+        {
+          "hex": "FFD8FFE0FFFF00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 119,
+      "offset": "0",
+      "length": "119",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 119,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "terminator-00-before-frame",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FF000002FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 19,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "terminator-DA-before-frame",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FFDA0002FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 19,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "terminator-D9-before-frame",
+      "source": "memory",
+      "source_length": "19",
+      "parts": [
+        {
+          "hex": "FFD8FFD90002FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 19,
+      "offset": "0",
+      "length": "19",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 19,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "standalone-01-before-frame",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "FFD8FF01FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "0",
+      "length": "17",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 17,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-D0-before-frame",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "FFD8FFD0FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "0",
+      "length": "17",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 17,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-D4-before-frame",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "FFD8FFD4FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "0",
+      "length": "17",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 17,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-D7-before-frame",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "FFD8FFD7FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "0",
+      "length": "17",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 17,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-D8-before-frame",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "FFD8FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "0",
+      "length": "17",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 17,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "app-segments-510-then-frame",
+      "source": "memory",
+      "source_length": "2055",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00002",
+          "repeat": 510
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 2055,
+      "offset": "0",
+      "length": "2055",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 2055,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "app-segments-511-then-frame",
+      "source": "memory",
+      "source_length": "2059",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00002",
+          "repeat": 511
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 2059,
+      "offset": "0",
+      "length": "2059",
+      "error": "none",
+      "read_count": 514,
+      "bytes_charged": 2059,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "app-segments-512-then-frame",
+      "source": "memory",
+      "source_length": "2063",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00002",
+          "repeat": 512
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 2063,
+      "offset": "0",
+      "length": "2063",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 2063,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "app-segments-513-then-frame",
+      "source": "memory",
+      "source_length": "2067",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE00002",
+          "repeat": 513
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 2067,
+      "offset": "0",
+      "length": "2067",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 2067,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "standalone-markers-510-then-frame",
+      "source": "memory",
+      "source_length": "1035",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFD0",
+          "repeat": 510
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 1035,
+      "offset": "0",
+      "length": "1035",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 1035,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-markers-511-then-frame",
+      "source": "memory",
+      "source_length": "1037",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFD0",
+          "repeat": 511
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 1037,
+      "offset": "0",
+      "length": "1037",
+      "error": "none",
+      "read_count": 514,
+      "bytes_charged": 1037,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "standalone-markers-512-then-frame",
+      "source": "memory",
+      "source_length": "1039",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFD0",
+          "repeat": 512
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 1039,
+      "offset": "0",
+      "length": "1039",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 1039,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "standalone-markers-513-then-frame",
+      "source": "memory",
+      "source_length": "1041",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFD0",
+          "repeat": 513
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 1041,
+      "offset": "0",
+      "length": "1041",
+      "error": "none",
+      "read_count": 513,
+      "bytes_charged": 1041,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fill-1-then-frame",
+      "source": "memory",
+      "source_length": "16",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 1
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 16,
+      "offset": "0",
+      "length": "16",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 16,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-255-then-frame",
+      "source": "memory",
+      "source_length": "270",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 255
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 270,
+      "offset": "0",
+      "length": "270",
+      "error": "none",
+      "read_count": 258,
+      "bytes_charged": 270,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-256-then-frame",
+      "source": "memory",
+      "source_length": "271",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 256
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 271,
+      "offset": "0",
+      "length": "271",
+      "error": "none",
+      "read_count": 259,
+      "bytes_charged": 271,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-600-then-frame",
+      "source": "memory",
+      "source_length": "615",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 600
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 615,
+      "offset": "0",
+      "length": "615",
+      "error": "none",
+      "read_count": 603,
+      "bytes_charged": 615,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-65535-then-frame",
+      "source": "memory",
+      "source_length": "65550",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 65535
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 65550,
+      "offset": "0",
+      "length": "65550",
+      "error": "none",
+      "read_count": 65538,
+      "bytes_charged": 65550,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-65536-then-frame",
+      "source": "memory",
+      "source_length": "65551",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 65536
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 65551,
+      "offset": "0",
+      "length": "65551",
+      "error": "none",
+      "read_count": 65539,
+      "bytes_charged": 65551,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-65537-then-frame",
+      "source": "memory",
+      "source_length": "65552",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 65537
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 65552,
+      "offset": "0",
+      "length": "65552",
+      "error": "none",
+      "read_count": 65538,
+      "bytes_charged": 65552,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fill-70000-then-frame",
+      "source": "memory",
+      "source_length": "70015",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 70000
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 70015,
+      "offset": "0",
+      "length": "70015",
+      "error": "none",
+      "read_count": 65538,
+      "bytes_charged": 70015,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fill-does-not-use-segment-budget-100-fill-511-segments",
+      "source": "memory",
+      "source_length": "2159",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 100
+        },
+        {
+          "hex": "FFE00002",
+          "repeat": 511
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 2159,
+      "offset": "0",
+      "length": "2159",
+      "error": "none",
+      "read_count": 614,
+      "bytes_charged": 2159,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-between-segments-resets-the-run",
+      "source": "memory",
+      "source_length": "80019",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 40000
+        },
+        {
+          "hex": "FFE00002"
+        },
+        {
+          "hex": "FF",
+          "repeat": 40000
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 80019,
+      "offset": "0",
+      "length": "80019",
+      "error": "none",
+      "read_count": 80004,
+      "bytes_charged": 80019,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "fill-then-terminator",
+      "source": "memory",
+      "source_length": "29",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 10
+        },
+        {
+          "hex": "FFD90002"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 29,
+      "offset": "0",
+      "length": "29",
+      "error": "none",
+      "read_count": 12,
+      "bytes_charged": 29,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fill-run-reaches-end-of-range",
+      "source": "memory",
+      "source_length": "22",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 20
+        }
+      ],
+      "total_length": 22,
+      "offset": "0",
+      "length": "22",
+      "error": "none",
+      "read_count": 18,
+      "bytes_charged": 22,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fill-then-3-byte-tail",
+      "source": "memory",
+      "source_length": "7",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FF",
+          "repeat": 2
+        },
+        {
+          "hex": "FFC000"
+        }
+      ],
+      "total_length": 7,
+      "offset": "0",
+      "length": "7",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 7,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "no-soi",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "0000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-only",
+      "source": "memory",
+      "source_length": "2",
+      "parts": [
+        {
+          "hex": "FFD8"
+        }
+      ],
+      "total_length": 2,
+      "offset": "0",
+      "length": "2",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-reversed",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "D8FFFFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "15",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-plus-3-bytes",
+      "source": "memory",
+      "source_length": "5",
+      "parts": [
+        {
+          "hex": "FFD8FFC000"
+        }
+      ],
+      "total_length": 5,
+      "offset": "0",
+      "length": "5",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 5,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-plus-4-bytes-segment-header-only",
+      "source": "memory",
+      "source_length": "6",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B"
+        }
+      ],
+      "total_length": 6,
+      "offset": "0",
+      "length": "6",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 6,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "not-a-marker",
+      "source": "memory",
+      "source_length": "8",
+      "parts": [
+        {
+          "hex": "FFD8123456789ABC"
+        }
+      ],
+      "total_length": 8,
+      "offset": "0",
+      "length": "8",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 8,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "segment-length-below-own-field",
+      "source": "memory",
+      "source_length": "8",
+      "parts": [
+        {
+          "hex": "FFD8FFE000010000"
+        }
+      ],
+      "total_length": 8,
+      "offset": "0",
+      "length": "8",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 8,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "segment-runs-past-the-range",
+      "source": "memory",
+      "source_length": "8",
+      "parts": [
+        {
+          "hex": "FFD8FFE0FFF00000"
+        }
+      ],
+      "total_length": 8,
+      "offset": "0",
+      "length": "8",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 8,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "sos-before-any-frame",
+      "source": "memory",
+      "source_length": "8",
+      "parts": [
+        {
+          "hex": "FFD8FFDA00020000"
+        }
+      ],
+      "total_length": 8,
+      "offset": "0",
+      "length": "8",
+      "error": "none",
+      "read_count": 2,
+      "bytes_charged": 8,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "offset-160-honoured",
+      "source": "memory",
+      "source_length": "423",
+      "parts": [
+        {
+          "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "total_length": 423,
+      "offset": "160",
+      "length": "163",
+      "error": "none",
+      "read_count": 5,
+      "bytes_charged": 423,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "offset-160-length-to-end-of-file",
+      "source": "memory",
+      "source_length": "423",
+      "parts": [
+        {
+          "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "total_length": 423,
+      "offset": "160",
+      "length": "263",
+      "error": "none",
+      "read_count": 5,
+      "bytes_charged": 423,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "offset-3-inside-garbage-prefix",
+      "source": "memory",
+      "source_length": "18",
+      "parts": [
+        {
+          "hex": "010203"
+        },
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 18,
+      "offset": "3",
+      "length": "15",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 18,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "offset-minus-1",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "-1",
+      "length": "100",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "offset-equals-source-length",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "15",
+      "length": "100",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "offset-past-source-length",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "100",
+      "length": "4",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "offset-int64-max",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "9223372036854775807",
+      "length": "10",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "offset-source-length-minus-1",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "14",
+      "length": "100",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-3",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "3",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-4",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "4",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-0",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "0",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-negative",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "-5",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-int64-min",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "-9223372036854775808",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-claimed-past-end-by-1",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "16",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "length-claimed-past-end-by-1000000",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "1000015",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "length-int64-max-offset-0-is-clamped",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "length-int64-max-offset-1-overflows-the-end",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "1",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-int64-max-offset-2-overflows-the-end",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "2",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "length-int64-max-div-2-offset-0",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "4611686018427387903",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "length-int64-max-minus-1-offset-1-no-overflow-not-soi",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "1",
+      "length": "9223372036854775806",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 15,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-at-offset-1-length-int64-max-overflows-the-end",
+      "source": "memory",
+      "source_length": "16",
+      "parts": [
+        {
+          "hex": "00"
+        },
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 16,
+      "offset": "1",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 16,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-at-offset-2-length-int64-max-overflows-the-end",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "0000"
+        },
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "2",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 17,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-at-offset-1-length-int64-max-minus-1-does-not-overflow",
+      "source": "memory",
+      "source_length": "16",
+      "parts": [
+        {
+          "hex": "00"
+        },
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 16,
+      "offset": "1",
+      "length": "9223372036854775806",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 16,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "soi-at-offset-2-length-int64-max-minus-1-overflows-the-end",
+      "source": "memory",
+      "source_length": "17",
+      "parts": [
+        {
+          "hex": "0000"
+        },
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 17,
+      "offset": "2",
+      "length": "9223372036854775806",
+      "error": "none",
+      "read_count": 1,
+      "bytes_charged": 17,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "soi-at-offset-0-length-int64-max-is-clamped-control",
+      "source": "memory",
+      "source_length": "15",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 15,
+      "offset": "0",
+      "length": "9223372036854775807",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 15,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "range-ends-before-sof-fuji",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "70000",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 65536,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fuji-sof-past-64k-found",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 85621,
+      "ok": true,
+      "color_space": 0,
+      "width": 6000,
+      "height": 4000
+    },
+    {
+      "name": "fuji-sof-past-64k-with-300KB-trailing-data-not-read",
+      "source": "memory",
+      "source_length": "385621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        },
+        {
+          "hex": "00",
+          "repeat": 300000
+        }
+      ],
+      "total_length": 385621,
+      "offset": "0",
+      "length": "385621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 131072,
+      "ok": true,
+      "color_space": 0,
+      "width": 6000,
+      "height": 4000
+    },
+    {
+      "name": "fuji-at-offset-160",
+      "source": "memory",
+      "source_length": "86281",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 160
+        },
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080CC0132003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        },
+        {
+          "hex": "00",
+          "repeat": 500
+        }
+      ],
+      "total_length": 86281,
+      "offset": "160",
+      "length": "85621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 86281,
+      "ok": true,
+      "color_space": 0,
+      "width": 4896,
+      "height": 3264
+    },
+    {
+      "name": "fuji-frame-marker-C0",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 85621,
+      "ok": true,
+      "color_space": 0,
+      "width": 6000,
+      "height": 4000
+    },
+    {
+      "name": "fuji-frame-marker-C1",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC10011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 85621,
+      "ok": true,
+      "color_space": 0,
+      "width": 6000,
+      "height": 4000
+    },
+    {
+      "name": "fuji-frame-marker-C2",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC20011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 85621,
+      "ok": true,
+      "color_space": 0,
+      "width": 6000,
+      "height": 4000
+    },
+    {
+      "name": "fuji-frame-marker-C3",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC30011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 85621,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fuji-frame-marker-C5",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC50011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 85621,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fuji-frame-marker-C9",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC90011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 85621,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fuji-frame-marker-CA",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFCA0011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 85621,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "fuji-frame-marker-CB",
+      "source": "memory",
+      "source_length": "85621",
+      "parts": [
+        {
+          "hex": "FFD8FFE1FFAC"
+        },
+        {
+          "hex": "11",
+          "repeat": 65450
+        },
+        {
+          "hex": "FFE24E22"
+        },
+        {
+          "hex": "11",
+          "repeat": 20000
+        },
+        {
+          "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFCB0011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 85621,
+      "offset": "0",
+      "length": "85621",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 85621,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "exif-R03-le-with-frame",
+      "source": "memory",
+      "source_length": "235",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 235,
+      "offset": "0",
+      "length": "235",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 235,
+      "ok": true,
+      "color_space": 2,
+      "width": 800,
+      "height": 600
+    },
+    {
+      "name": "exif-R03-be-with-frame",
+      "source": "memory",
+      "source_length": "235",
+      "parts": [
+        {
+          "hex": "FFD8FFE100464578696600004D4D002A00000008000187690004000000010000001A000000000001A0050004000000010000002C00000000000100010002000000045230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 235,
+      "offset": "0",
+      "length": "235",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 235,
+      "ok": true,
+      "color_space": 2,
+      "width": 800,
+      "height": 600
+    },
+    {
+      "name": "exif-R98-with-frame",
+      "source": "memory",
+      "source_length": "235",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 235,
+      "offset": "0",
+      "length": "235",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 235,
+      "ok": true,
+      "color_space": 0,
+      "width": 800,
+      "height": 600
+    },
+    {
+      "name": "exif-in-app2-not-used",
+      "source": "memory",
+      "source_length": "235",
+      "parts": [
+        {
+          "hex": "FFD8FFE2004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 235,
+      "offset": "0",
+      "length": "235",
+      "error": "none",
+      "read_count": 6,
+      "bytes_charged": 235,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-app1-payload-13-bytes-not-read",
+      "source": "memory",
+      "source_length": "180",
+      "parts": [
+        {
+          "hex": "FFD8FFE1000F45786966000049492A00080000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 180,
+      "offset": "0",
+      "length": "180",
+      "error": "none",
+      "read_count": 6,
+      "bytes_charged": 180,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-app1-payload-14-bytes-read-not-adobe",
+      "source": "memory",
+      "source_length": "181",
+      "parts": [
+        {
+          "hex": "FFD8FFE1001045786966000049492A0008000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 181,
+      "offset": "0",
+      "length": "181",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 181,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-second-app1-adobe",
+      "source": "memory",
+      "source_length": "307",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 307,
+      "offset": "0",
+      "length": "307",
+      "error": "none",
+      "read_count": 9,
+      "bytes_charged": 307,
+      "ok": true,
+      "color_space": 2,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-first-app1-adobe-second-not",
+      "source": "memory",
+      "source_length": "307",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 307,
+      "offset": "0",
+      "length": "307",
+      "error": "none",
+      "read_count": 8,
+      "bytes_charged": 307,
+      "ok": true,
+      "color_space": 2,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-then-lossless-frame-keeps-colour",
+      "source": "memory",
+      "source_length": "87",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC3000B0801E0028001011100"
+        }
+      ],
+      "total_length": 87,
+      "offset": "0",
+      "length": "87",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 87,
+      "ok": false,
+      "color_space": 2
+    },
+    {
+      "name": "exif-then-zero-width-frame-keeps-colour",
+      "source": "memory",
+      "source_length": "87",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC0000B0801E0000001011100"
+        }
+      ],
+      "total_length": 87,
+      "offset": "0",
+      "length": "87",
+      "error": "none",
+      "read_count": 5,
+      "bytes_charged": 87,
+      "ok": false,
+      "color_space": 2
+    },
+    {
+      "name": "exif-then-range-cut-keeps-colour",
+      "source": "memory",
+      "source_length": "87",
+      "parts": [
+        {
+          "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 87,
+      "offset": "0",
+      "length": "84",
+      "error": "none",
+      "read_count": 4,
+      "bytes_charged": 87,
+      "ok": false,
+      "color_space": 2
+    },
+    {
+      "name": "exif-after-frame-not-seen",
+      "source": "memory",
+      "source_length": "87",
+      "parts": [
+        {
+          "hex": "FFD8FFC0000B0801E0028001011100FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000"
+        }
+      ],
+      "total_length": 87,
+      "offset": "0",
+      "length": "87",
+      "error": "none",
+      "read_count": 3,
+      "bytes_charged": 87,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "exif-noise-outside-interop-entry",
+      "source": "memory",
+      "source_length": "255",
+      "parts": [
+        {
+          "hex": "FFD8FFE1005A45786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000787852303378782041646F626520524742207878FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+        }
+      ],
+      "total_length": 255,
+      "offset": "0",
+      "length": "255",
+      "error": "none",
+      "read_count": 7,
+      "bytes_charged": 255,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "budget-exhausting-app-segments-140",
+      "source": "memory",
+      "source_length": "9175195",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE0FFFF",
+          "pad_to": 65537,
+          "repeat": 140
+        },
+        {
+          "hex": "FFC0000B0800F0014001011100"
+        }
+      ],
+      "total_length": 9175195,
+      "offset": "0",
+      "length": "9175195",
+      "error": "invalid-data",
+      "read_count": 130,
+      "bytes_charged": 8388608
+    },
+    {
+      "name": "budget-just-inside-app-segments-100",
+      "source": "memory",
+      "source_length": "6553715",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE0FFFF",
+          "pad_to": 65537,
+          "repeat": 100
+        },
+        {
+          "hex": "FFC0000B0800F0014001011100"
+        }
+      ],
+      "total_length": 6553715,
+      "offset": "0",
+      "length": "6553715",
+      "error": "none",
+      "read_count": 103,
+      "bytes_charged": 6553715,
+      "ok": true,
+      "color_space": 0,
+      "width": 320,
+      "height": 240
+    },
+    {
+      "name": "app1-exif-payload-65533-read-in-one-go",
+      "source": "memory",
+      "source_length": "65552",
+      "parts": [
+        {
+          "hex": "FFD8"
+        },
+        {
+          "hex": "FFE1FFFF457869660000",
+          "pad_to": 65537
+        },
+        {
+          "hex": "FFC0000B0801E0028001011100"
+        }
+      ],
+      "total_length": 65552,
+      "offset": "0",
+      "length": "65552",
+      "error": "none",
+      "read_count": 5,
+      "bytes_charged": 65552,
+      "ok": true,
+      "color_space": 0,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "throw-invalid-source",
+      "source": "throw-invalid",
+      "source_length": "64",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 64
+        }
+      ],
+      "total_length": 64,
+      "offset": "0",
+      "length": "64",
+      "error": "invalid-data",
+      "read_count": 1,
+      "bytes_charged": 0
+    },
+    {
+      "name": "throw-io-source",
+      "source": "throw-io",
+      "source_length": "64",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 64
+        }
+      ],
+      "total_length": 64,
+      "offset": "0",
+      "length": "64",
+      "error": "io-failure",
+      "read_count": 1,
+      "bytes_charged": 0
+    },
+    {
+      "name": "throw-io-source-range-too-short-reads-nothing",
+      "source": "throw-io",
+      "source_length": "64",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 64
+        }
+      ],
+      "total_length": 64,
+      "offset": "0",
+      "length": "3",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "throw-io-source-offset-outside-reads-nothing",
+      "source": "throw-io",
+      "source_length": "64",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 64
+        }
+      ],
+      "total_length": 64,
+      "offset": "100",
+      "length": "10",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    },
+    {
+      "name": "throw-invalid-source-offset-minus-1-reads-nothing",
+      "source": "throw-invalid",
+      "source_length": "64",
+      "parts": [
+        {
+          "hex": "00",
+          "repeat": 64
+        }
+      ],
+      "total_length": 64,
+      "offset": "-1",
+      "length": "10",
+      "error": "none",
+      "read_count": 0,
+      "bytes_charged": 0,
+      "ok": false,
+      "color_space": 0
+    }
+  ]
+}

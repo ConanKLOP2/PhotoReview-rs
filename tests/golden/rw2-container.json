@@ -1,0 +1,6862 @@
+{
+  "generator": "oracle-cs rw2-container",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty-file",
+      "op": "read",
+      "data": {
+        "len": 0,
+        "patches": []
+      },
+      "budget": null,
+      "ok": false,
+      "error": "too-short",
+      "info": null,
+      "bytes_read": 0
+    },
+    {
+      "name": "one-byte",
+      "op": "read",
+      "data": {
+        "len": 1,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "too-short",
+      "info": null,
+      "bytes_read": 0
+    },
+    {
+      "name": "fifteen-bytes-iiu",
+      "op": "read",
+      "data": {
+        "len": 15,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "too-short",
+      "info": null,
+      "bytes_read": 0
+    },
+    {
+      "name": "sixteen-bytes-empty-ifd",
+      "op": "read",
+      "data": {
+        "len": 16,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 16
+    },
+    {
+      "name": "sixteen-bytes-ifd-offset-zero",
+      "op": "read",
+      "data": {
+        "len": 16,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 16
+    },
+    {
+      "name": "junk-header-5a",
+      "op": "read",
+      "data": {
+        "len": 64,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 64
+    },
+    {
+      "name": "zeros-64",
+      "op": "read",
+      "data": {
+        "len": 64,
+        "patches": []
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 64
+    },
+    {
+      "name": "big-endian-mm-0055",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4d4d005500000008000100020003000000011388"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "big-endian-mm-5500-bytes",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4d4d550000000008000100020003000000011388"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "little-endian-tiff-magic-42",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49492a0008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-0054",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949540008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-0056",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949560008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-0155",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550108000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-ffff",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949ffff08000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-4f52-orf",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949524f08000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "magic-0000",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949000008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "byte-order-im",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494d550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "byte-order-mi",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4d49550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "lowercase-ii",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "6969550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-zero",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-four",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550004"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-seven",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550007"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-eight-is-header-end",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200030001000000881300000300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-len-minus-1",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500c7"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-len-minus-2",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500c6"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-len-minus-3",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500c5"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-uint-max",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500ffffffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-offset-int-max-plus-1",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550000000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-at-16-valid",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550010000000000000000000000002000200030001000000a00f00000300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 4000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "ifd0-count-only-no-entry-fits",
+      "op": "read",
+      "data": {
+        "len": 20,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000003"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 20
+    },
+    {
+      "name": "ifd0-claims-100-entries-three-fit",
+      "op": "read",
+      "data": {
+        "len": 46,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000064000200030001000000881300000300030001000000b80b0000120103000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 6,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 46
+    },
+    {
+      "name": "sensor-tags-short",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200030001000000881300000300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-tags-long",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200040001000000701700000300040001000000a00f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-tags-gf1-short",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200030001000000dc0f00000300030001000000c80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 4060,
+        "sensor_height": 3016,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-borders-gh5",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000006000200030001000000901400000300030001000000400f000004000300010000000800000005000300010000000c0000000600030001000000380f000007000300010000004c14"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5184,
+        "sensor_height": 3888,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-borders-crop-6024x4016",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000006000200040001000000881700000300040001000000b00f00000400040001000000080000000500040001000000180000000600040001000000a80f000007000400010000008817"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-borders-without-size-tags",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000400040001000000080000000500040001000000180000000600040001000000a80f000007000400010000008817"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-equal-borders-fall-back",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000006000200040001000000701700000300040001000000a00f0000040004000100000032000000050004000100000064000000060004000100000032000000070004000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-width-borders-reversed",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f0000050004000100000064000000070004000100000028"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-height-borders-reversed",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f0000040004000100000064000000060004000100000028"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-width-borders-differ-by-one",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f0000050004000100000064000000070004000100000065"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 1,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-only-left-border",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000003000200040001000000701700000300040001000000a00f0000050004000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-only-right-border",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000003000200040001000000701700000300040001000000a00f0000070004000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-only-top-and-bottom-borders",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f000004000400010000000a0000000600040001000000c20b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-width-from-borders-height-from-tag",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f000005000400010000000800000007000400010000009013"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-height-from-borders-width-from-tag",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f00000400040001000000080000000600040001000000c00b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-borders-int-max",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000400040001000000000000000500040001000000000000000600040001000000ffffff7f0700040001000000ffffff7f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 2147483647,
+        "sensor_height": 2147483647,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-border-right-above-int-max-falls-back",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000006000200040001000000701700000300040001000000a00f0000040004000100000000000000050004000100000000000000060004000100000000000080070004000100000000000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-border-right-above-int-max-no-tags",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000400040004000100000000000000050004000100000000000000060004000100000000000080070004000100000000000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-left-border-huge",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f00000500040001000000feffffff0700040001000000ffffffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-tags-int-max",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200040001000000ffffff7f0300040001000000ffffff7f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 2147483647,
+        "sensor_height": 2147483647,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-above-int-max",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200040001000000ffffffff030004000100000000000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-zero",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200040001000000000000000300040001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-count-zero",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200040000000000881300000300040000000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-sshort-negative",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200080001000000ffff00000300080001000000ffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-sshort-positive",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200080001000000881300000300080001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-slong-negative",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200090001000000ffffffff030009000100000000000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tags-slong-positive",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200090001000000881300000300090001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-border-sshort-negative-left",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f00000500080001000000ffff0000070004000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-border-slong-negative-top",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f00000400090001000000f6ffffff060004000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 6000,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-borders-byte-type",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200040001000000701700000300040001000000a00f0000050001000100000008000000070001000100000064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 92,
+        "sensor_height": 4000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "sensor-tag-type-undefined",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200070001000000881300000300070001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-type-ascii",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200020001000000881300000300020001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-type-zero",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200000001000000881300000300000001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-type-rational-out-of-line",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000200020005000100000040000000030005000100000048"
+          },
+          {
+            "at": 64,
+            "hex": "8813000001000000b80b000001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-short-array-first-element",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000200020003000300000040000000030003000300000048"
+          },
+          {
+            "at": 64,
+            "hex": "8813090000000000b80b09"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-long-array-out-of-line",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000200020004000200000040000000030004000200000048"
+          },
+          {
+            "at": 64,
+            "hex": "8813000009000000b80b000009"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-offset-beyond-file",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000020002000400020000007d0000000300040002000000ffffffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-tag-offset-element-ends-at-file-end",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000020002000400020000007400000003000300030000007a"
+          },
+          {
+            "at": 116,
+            "hex": "881300000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "sensor-duplicate-tags-first-wins",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000004000200030001000000881300000200030001000000701700000300030001000000b80b00000300030001000000a00f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-tags-in-second-ifd-ignored",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010000010300010000000100000064"
+          },
+          {
+            "at": 100,
+            "hex": "02000200030001000000881300000300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "sensor-generic-image-width-tags-ignored",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000001030001000000a00f00000101030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "orientation-ifd0-1",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-2",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000002"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 2,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-3",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000003"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-4",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000004"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 4,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-5",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000005"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 5,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-6",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-7",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000007"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 7,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-8",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-out-of-range-0",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001001201030001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-out-of-range-9",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000100000009"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-out-of-range-255",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001001201030001000000ff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-out-of-range-256",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010012010300010000000001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-out-of-range-65535",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001001201030001000000ffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-long-6",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120104000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-long-0x80000006",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120104000100000006000080"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-byte-8",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120101000100000008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-sshort-negative",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001001201080001000000ffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-sshort-6",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120108000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-undefined-type",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120107000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-count-zero",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000000000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-short-count-2-inline",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001001201030002000000080003"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-short-count-3-out-of-line",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000100120103000300000040"
+          },
+          {
+            "at": 64,
+            "hex": "06"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-ifd0-array-beyond-file",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010012010300ffffffffffffff7f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-duplicate-first-wins",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000200120103000100000003000000120103000100000008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-duplicate-first-invalid-second-not-consulted",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000200120103000100000009000000120103000100000008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "orientation-in-second-ifd-ignored",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010002000300010000008813000064"
+          },
+          {
+            "at": 100,
+            "hex": "0100120103000100000006"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "jpeg-basic",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-synthetic-320x240-at-32",
+      "op": "read",
+      "data": {
+        "len": 195,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000400a30000002000000000000000000000000000ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110800f0014003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 32,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 32,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 195
+    },
+    {
+      "name": "jpeg-with-sensor-and-borders",
+      "op": "read",
+      "data": {
+        "len": 463,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000007002e000700a30000002c0100000200030001000000901400000300030001000000400f000004000300010000000800000005000300010000000c0000000600030001000000380f000007000300010000004c14"
+          },
+          {
+            "at": 300,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5184,
+        "sensor_height": 3888,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 300,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 300,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 463
+    },
+    {
+      "name": "jpeg-entry-type-0-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000000a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-1-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000100a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-2-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000200a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-3-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000300a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-4-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000400a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-5-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000500a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-7-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-type-99-is-ignored",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e006300a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-count-0",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0004000000000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "jpeg-count-1",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0004000100000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "jpeg-count-4",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0004000400000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "jpeg-count-5",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0004000500000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 5,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 5,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "jpeg-count-6",
+      "op": "read",
+      "data": {
+        "len": 128,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0004000600000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 6,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 6,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 128
+    },
+    {
+      "name": "jpeg-count-uint-max",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700ffffffff40"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-count-beyond-file",
+      "op": "read",
+      "data": {
+        "len": 463,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700404b4c002c01"
+          },
+          {
+            "at": 300,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 463
+    },
+    {
+      "name": "jpeg-count-one-past-end",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a400000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-count-exact-end",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-count-shorter-than-data",
+      "op": "read",
+      "data": {
+        "len": 327,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007009900000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 153,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 153,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 327
+    },
+    {
+      "name": "jpeg-offset-1-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000ff01"
+          },
+          {
+            "at": 511,
+            "hex": "ff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-2-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000fe01"
+          },
+          {
+            "at": 510,
+            "hex": "ffd8"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-3-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000fd01"
+          },
+          {
+            "at": 509,
+            "hex": "ffd8ff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-4-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000fc01"
+          },
+          {
+            "at": 508,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-5-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000fb01"
+          },
+          {
+            "at": 507,
+            "hex": "ffd8ffd901"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-6-bytes-before-end-count-100",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000fa01"
+          },
+          {
+            "at": 506,
+            "hex": "ffd8ffd90102"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-count-6-fits-exactly-at-end",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070006000000fa01"
+          },
+          {
+            "at": 506,
+            "hex": "ffd801020304"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 506,
+            "length": 6,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 506,
+            "length": 6,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "jpeg-offset-zero",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "ffd855000800000001002e00070064"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": false,
+      "error": "invalid-header",
+      "info": null,
+      "bytes_read": 200
+    },
+    {
+      "name": "jpeg-offset-one",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007003200000001"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "jpeg-offset-inside-ifd-area-with-soi",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007003200000064"
+          },
+          {
+            "at": 100,
+            "hex": "ffd8ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 100,
+            "length": 50,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 100,
+            "length": 50,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "jpeg-offset-uint-max",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e00070064000000ffffffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "jpeg-no-soi-zero-bytes",
+      "op": "read",
+      "data": {
+        "len": 364,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007002c01000040"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 364
+    },
+    {
+      "name": "jpeg-soi-split-by-zero",
+      "op": "read",
+      "data": {
+        "len": 71,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ff00d8d9aabbcc"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 71
+    },
+    {
+      "name": "jpeg-soi-reversed",
+      "op": "read",
+      "data": {
+        "len": 71,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000700000040"
+          },
+          {
+            "at": 64,
+            "hex": "d8ff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 71
+    },
+    {
+      "name": "jpeg-count-5-soi-only",
+      "op": "read",
+      "data": {
+        "len": 69,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000500000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 5,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 5,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 69
+    },
+    {
+      "name": "jpeg-two-entries-first-wins",
+      "op": "read",
+      "data": {
+        "len": 400,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700a3000000640000002e000700a3000000c8"
+          },
+          {
+            "at": 100,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e002800301ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 100,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 100,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 400
+    },
+    {
+      "name": "jpeg-first-entry-bad-second-good-not-considered",
+      "op": "read",
+      "data": {
+        "len": 400,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e0007009f860100640000002e000700a3000000c8"
+          },
+          {
+            "at": 200,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 400
+    },
+    {
+      "name": "jpeg-in-second-ifd-ignored",
+      "op": "read",
+      "data": {
+        "len": 400,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010002000300010000008813000064"
+          },
+          {
+            "at": 100,
+            "hex": "01002e000700a3000000c8"
+          },
+          {
+            "at": 200,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 400
+    },
+    {
+      "name": "jpeg-entry-first-in-ifd-then-orientation",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700a300000040000000120103000100000006"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "jpeg-entry-after-many-tags",
+      "op": "read",
+      "data": {
+        "len": 451,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000016000010030001000000000000000110030001000000010000000210030001000000020000000310030001000000030000000410030001000000040000000510030001000000050000000610030001000000060000000710030001000000070000000810030001000000080000000910030001000000090000000a100300010000000a0000000b100300010000000b0000000c100300010000000c0000000d100300010000000d0000000e100300010000000e0000000f100300010000000f0000001010030001000000100000001110030001000000110000001210030001000000120000001310030001000000130000001201030001000000030000002e000700a3000000200100000000000000000000000000000000ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 288,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 288,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 451
+    },
+    {
+      "name": "jpeg-entry-at-index-4094-of-5000-entries",
+      "op": "read",
+      "data": {
+        "len": 60209,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000008813"
+          },
+          {
+            "at": 49138,
+            "hex": "2e000700a30000007eea"
+          },
+          {
+            "at": 60030,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 60030,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 60030,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 60209
+    },
+    {
+      "name": "jpeg-entry-at-index-4095-of-5000-entries",
+      "op": "read",
+      "data": {
+        "len": 60209,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000008813"
+          },
+          {
+            "at": 49150,
+            "hex": "2e000700a30000007eea"
+          },
+          {
+            "at": 60030,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 60030,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 60030,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 60209
+    },
+    {
+      "name": "jpeg-entry-at-index-4096-of-5000-entries",
+      "op": "read",
+      "data": {
+        "len": 60209,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000008813"
+          },
+          {
+            "at": 49162,
+            "hex": "2e000700a30000007eea"
+          },
+          {
+            "at": 60030,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 60209
+    },
+    {
+      "name": "jpeg-entry-at-index-4097-of-5000-entries",
+      "op": "read",
+      "data": {
+        "len": 60209,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000008813"
+          },
+          {
+            "at": 49174,
+            "hex": "2e000700a30000007eea"
+          },
+          {
+            "at": 60030,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 60209
+    },
+    {
+      "name": "ifd-with-4096-entries-last-is-sensor-height",
+      "op": "read",
+      "data": {
+        "len": 49182,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000010"
+          },
+          {
+            "at": 49150,
+            "hex": "0300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 49182
+    },
+    {
+      "name": "ifd-with-4097-entries-last-is-sensor-height",
+      "op": "read",
+      "data": {
+        "len": 49194,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500080000000110"
+          },
+          {
+            "at": 49162,
+            "hex": "0300030001000000b80b"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 49194
+    },
+    {
+      "name": "exif-block-jpeg-length-163",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "exif-block-jpeg-length-1000",
+      "op": "read",
+      "data": {
+        "len": 1064,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700e803000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 1000,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 1000,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 1064
+    },
+    {
+      "name": "exif-block-jpeg-length-131071",
+      "op": "read",
+      "data": {
+        "len": 131135,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700ffff010040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131071,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131071,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131135
+    },
+    {
+      "name": "exif-block-jpeg-length-131072",
+      "op": "read",
+      "data": {
+        "len": 131136,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000000020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131072,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131136
+    },
+    {
+      "name": "exif-block-jpeg-length-131073",
+      "op": "read",
+      "data": {
+        "len": 131137,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000100020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131073,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131137
+    },
+    {
+      "name": "exif-block-jpeg-length-200000",
+      "op": "read",
+      "data": {
+        "len": 200064,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700400d030040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 200000,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 196608
+    },
+    {
+      "name": "exif-block-jpeg-length-1048576",
+      "op": "read",
+      "data": {
+        "len": 1048640,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000000100040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 1048576,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 196608
+    },
+    {
+      "name": "exif-block-jpeg-offset-1000",
+      "op": "read",
+      "data": {
+        "len": 1163,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a3000000e803"
+          },
+          {
+            "at": 1000,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 1000,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 1000,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 1163
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-1",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000100000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-3",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000300000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-6",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-8",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-big-endian-3",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe100224578696600004d4d002a00000008000101120003000000010003000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-big-endian-6",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe100224578696600004d4d002a00000008000101120003000000010006000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-big-endian-8",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe100224578696600004d4d002a00000008000101120003000000010008000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-without-exif",
+      "op": "read",
+      "data": {
+        "len": 227,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a300000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 163,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 163,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 227
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-out-of-range-0",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000000000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-out-of-range-9",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000900000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-exif-orientation-out-of-range-65535",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a000800000001001201030001000000ffff000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-ifd0-wins-over-jpeg",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c700000040000000120103000100000006"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-ifd0-one-wins-over-jpeg",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c700000040000000120103000100000001"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-ifd0-out-of-range-uses-jpeg",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c700000040000000120103000100000009"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-ifd0-zero-uses-jpeg",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c7000000400000001201030001"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000300000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-ifd0-undefined-type-uses-jpeg",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c700000040000000120107000100000006"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000300000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 3,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-jpeg-second-app1-ignored",
+      "op": "read",
+      "data": {
+        "len": 299,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700eb00000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc00011080040004003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 235,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 235,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 299
+    },
+    {
+      "name": "fallback-jpeg-exif-after-app0",
+      "op": "read",
+      "data": {
+        "len": 281,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700d900000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe000104a46494600010100000100010000ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc00011080040004003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 217,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 217,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 281
+    },
+    {
+      "name": "fallback-jpeg-exif-cut-by-count",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007001400000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 20,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 20,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131060",
+      "op": "read",
+      "data": {
+        "len": 131130,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700faff010040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffcb"
+          },
+          {
+            "at": 131088,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131066,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131066,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131130
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131072",
+      "op": "read",
+      "data": {
+        "len": 131142,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000600020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffd7"
+          },
+          {
+            "at": 131100,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131078,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131142
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131073",
+      "op": "read",
+      "data": {
+        "len": 131143,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000700020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffd8"
+          },
+          {
+            "at": 131101,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131079,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131143
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131079",
+      "op": "read",
+      "data": {
+        "len": 131149,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000d00020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffde"
+          },
+          {
+            "at": 131107,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131085,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131149
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131080",
+      "op": "read",
+      "data": {
+        "len": 131150,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000e00020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffdf"
+          },
+          {
+            "at": 131108,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131086,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131150
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131081",
+      "op": "read",
+      "data": {
+        "len": 131151,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007000f00020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffe0"
+          },
+          {
+            "at": 131109,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131087,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131151
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-131090",
+      "op": "read",
+      "data": {
+        "len": 131160,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e0007001800020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffe9"
+          },
+          {
+            "at": 131118,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 131096,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 131160
+    },
+    {
+      "name": "fallback-exif-segment-ends-at-140000",
+      "op": "read",
+      "data": {
+        "len": 140070,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700e622020040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe2ffff"
+          },
+          {
+            "at": 65603,
+            "hex": "ffe2ffff"
+          },
+          {
+            "at": 131140,
+            "hex": "ffe222b6"
+          },
+          {
+            "at": 140028,
+            "hex": "ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffda0002ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 140006,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 140070
+    },
+    {
+      "name": "fallback-exif-at-jpeg-start-large-jpeg",
+      "op": "read",
+      "data": {
+        "len": 300263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700a794040040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000600000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 300199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 196608
+    },
+    {
+      "name": "budget-ifd0-orientation-skips-exif-read-one-block",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002002e000700c700000040000000120103000100000006"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": 65536,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 6,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "budget-exif-window-needs-two-blocks-one-allowed-throws",
+      "op": "read",
+      "data": {
+        "len": 200263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700070e030040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": 65536,
+      "ok": false,
+      "error": "source",
+      "info": null,
+      "bytes_read": 65536
+    },
+    {
+      "name": "budget-exif-window-three-blocks-two-allowed-throws",
+      "op": "read",
+      "data": {
+        "len": 200263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700070e030040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": 131072,
+      "ok": false,
+      "error": "source",
+      "info": null,
+      "bytes_read": 131072
+    },
+    {
+      "name": "budget-exif-window-three-blocks-three-allowed-ok",
+      "op": "read",
+      "data": {
+        "len": 200263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700070e030040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": 196608,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 200199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 131072,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 196608
+    },
+    {
+      "name": "budget-small-file-one-block-ok",
+      "op": "read",
+      "data": {
+        "len": 263,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000001002e000700c700000040"
+          },
+          {
+            "at": 64,
+            "hex": "ffd8ffe1002245786966000049492a0008000000010012010300010000000800000000000000ffe000104a46494600010100000100010000ffdb00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010ffc000110801e0028003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffda000c03010002110311003f00aa55aa55aa55ffd9"
+          }
+        ]
+      },
+      "budget": 65536,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 8,
+        "previews": [
+          {
+            "index": 0,
+            "offset": 64,
+            "length": 199,
+            "kind": "Jpeg",
+            "width": 0,
+            "height": 0,
+            "color_space": "Unknown",
+            "header_resolved": false
+          }
+        ],
+        "exif_blocks": [
+          {
+            "offset": 64,
+            "length": 199,
+            "is_tiff_header": false,
+            "ifd_is_exif": false
+          }
+        ]
+      },
+      "bytes_read": 263
+    },
+    {
+      "name": "budget-8-bytes-header-throws",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": 8,
+      "ok": false,
+      "error": "source",
+      "info": null,
+      "bytes_read": 0
+    },
+    {
+      "name": "budget-200-bytes-file-one-block-ok",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": 200,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "budget-zero-throws",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000010002000300010000008813"
+          }
+        ]
+      },
+      "budget": 0,
+      "ok": false,
+      "error": "source",
+      "info": null,
+      "bytes_read": 0
+    },
+    {
+      "name": "hostile-array-counts-above-int32",
+      "op": "read",
+      "data": {
+        "len": 512,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550010000000435202000000000003004a010400ffffffff6400000011010400ffffffffc800000017010400ffffffff2c01"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 512
+    },
+    {
+      "name": "hostile-sensor-and-jpeg-entries-with-huge-counts",
+      "op": "read",
+      "data": {
+        "len": 256,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000040002000400ffffffff6400000003000300ffffffffc800000004000400ffffffffffffffff2e000700ffffff7fffffff7f"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 256
+    },
+    {
+      "name": "hostile-next-ifd-points-to-itself",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955000800000002000200030001000000881300000300030001000000b80b000008"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 3000,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "hostile-all-ff-after-header",
+      "op": "read",
+      "data": {
+        "len": 200,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 0,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 200
+    },
+    {
+      "name": "hostile-entry-count-ffff",
+      "op": "read",
+      "data": {
+        "len": 400,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000ffff02000300010000008813"
+          }
+        ]
+      },
+      "budget": null,
+      "ok": true,
+      "error": null,
+      "info": {
+        "format": "Rw2",
+        "sensor_width": 5000,
+        "sensor_height": 0,
+        "orientation": 1,
+        "previews": [],
+        "exif_blocks": []
+      },
+      "bytes_read": 400
+    },
+    {
+      "name": "ext-_dot_rw2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": true
+    },
+    {
+      "name": "ext-_dot_RW2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".RW2",
+      "can_read": true
+    },
+    {
+      "name": "ext-_dot_Rw2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".Rw2",
+      "can_read": true
+    },
+    {
+      "name": "ext-_dot_rW2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rW2",
+      "can_read": true
+    },
+    {
+      "name": "ext-_dot_rw2_sp_",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw2 ",
+      "can_read": false
+    },
+    {
+      "name": "ext-_sp__dot_rw2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": " .rw2",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_rw3",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw3",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_rw",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw",
+      "can_read": false
+    },
+    {
+      "name": "ext-rw2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": "rw2",
+      "can_read": false
+    },
+    {
+      "name": "ext-empty",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": "",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_nef",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".nef",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_orf",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_cr2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".cr2",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot__dot_rw2",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": "..rw2",
+      "can_read": false
+    },
+    {
+      "name": "ext-_dot_rw22",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw22",
+      "can_read": false
+    },
+    {
+      "name": "head-empty",
+      "op": "can-read",
+      "data": {
+        "len": 0,
+        "patches": []
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-1",
+      "op": "can-read",
+      "data": {
+        "len": 1,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-2",
+      "op": "can-read",
+      "data": {
+        "len": 2,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-3-iiu",
+      "op": "can-read",
+      "data": {
+        "len": 3,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-4-exact",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": true
+    },
+    {
+      "name": "head-64-bytes",
+      "op": "can-read",
+      "data": {
+        "len": 64,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": true
+    },
+    {
+      "name": "head-8-bytes-ifd8",
+      "op": "can-read",
+      "data": {
+        "len": 8,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949550008000000"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": true
+    },
+    {
+      "name": "head-4-and-rest-ff",
+      "op": "can-read",
+      "data": {
+        "len": 8,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500ffffffff"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": true
+    },
+    {
+      "name": "head-byte-0-xor-40",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "09495500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-0-xor-1",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "48495500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-0-xor-ff",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "b6495500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-1-xor-40",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49095500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-1-xor-1",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49485500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-1-xor-ff",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49b65500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-2-xor-40",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49491500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-2-xor-1",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495400"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-2-xor-ff",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4949aa00"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-3-xor-40",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495540"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-3-xor-1",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495501"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-byte-3-xor-ff",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "494955ff"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-mm-0055",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4d4d0055"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-mm-5500",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "4d4d5500"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-tiff-ii42",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49492a00"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-orf-iiro",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495253"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    },
+    {
+      "name": "head-iiu-ext-nef",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495500"
+          }
+        ]
+      },
+      "ext": ".nef",
+      "can_read": false
+    },
+    {
+      "name": "head-magic-0155",
+      "op": "can-read",
+      "data": {
+        "len": 4,
+        "patches": [
+          {
+            "at": 0,
+            "hex": "49495501"
+          }
+        ]
+      },
+      "ext": ".rw2",
+      "can_read": false
+    }
+  ]
+}

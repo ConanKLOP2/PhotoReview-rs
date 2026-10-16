@@ -1,0 +1,3704 @@
+{
+  "generator": "oracle-cs turbojpeg-decode (W5-14b)",
+  "fixtures_dir": "../fixtures",
+  "note": "Real TurboJpegDecoder(PixelBufferImageCodec.Instance), MemoryInfo injected per case (D19). Pixel hashes are SHA-256 of the B,G,R bytes (the 4th byte is reported separately). fine_scale cases go through WIC Fant: compare the hash only when windowscodecs_version matches the environment row.",
+  "cases": [
+    {
+      "name": "sig-3-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8FF"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-0",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": ""
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-1",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FF"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-2",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-3",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD800"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-4",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "00D8FF"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "no-signature-5",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FF00FF"
+      },
+      "path": "sig.jpg"
+    },
+    {
+      "name": "non-jpeg-bytes-without-path",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "01020304"
+      },
+      "path": ""
+    },
+    {
+      "name": "non-jpeg-bytes-with-path",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "01020304"
+      },
+      "path": "some-photo.jpg"
+    },
+    {
+      "name": "no-source-blank-path",
+      "from": "none",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": null,
+      "path": ""
+    },
+    {
+      "name": "no-source-whitespace-path",
+      "from": "none",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": null,
+      "path": "   "
+    },
+    {
+      "name": "missing-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "missing": "does-not-exist.jpg"
+      }
+    },
+    {
+      "name": "missing-directory",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "missing_dir": "x.jpg"
+      }
+    },
+    {
+      "name": "text-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/text.jpg"
+      }
+    },
+    {
+      "name": "empty-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/empty.jpg"
+      }
+    },
+    {
+      "name": "bad-precision",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "bad_precision"
+          }
+        ]
+      },
+      "path": "g.jpg"
+    },
+    {
+      "name": "truncated-6-10-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "truncate",
+            "num": 6,
+            "den": 10
+          }
+        ]
+      },
+      "path": "cut.jpg"
+    },
+    {
+      "name": "truncated-6-10-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "truncate",
+            "num": 6,
+            "den": 10
+          }
+        ]
+      }
+    },
+    {
+      "name": "truncated-400x300-30",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/truncated-400x300-30.jpg"
+      }
+    },
+    {
+      "name": "header-garbage",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/header-garbage.jpg"
+      }
+    },
+    {
+      "name": "no-sof",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8FFE000041122FFC40002FFD9"
+      },
+      "path": "nosof.jpg"
+    },
+    {
+      "name": "zero-width",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 0,
+            "height": 48
+          }
+        ]
+      },
+      "path": "zero.jpg"
+    },
+    {
+      "name": "corrupt-entropy-256",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/gradient-256x256.jpg",
+        "transforms": [
+          {
+            "op": "destroy_entropy_from_half"
+          }
+        ]
+      },
+      "path": "corrupt.jpg"
+    },
+    {
+      "name": "guard-exact-threshold",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4096
+          }
+        ]
+      },
+      "path": "t.jpg"
+    },
+    {
+      "name": "guard-just-below-threshold",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4095
+          }
+        ]
+      },
+      "path": "t.jpg"
+    },
+    {
+      "name": "guard-downscale-huge",
+      "from": "bytes",
+      "box": [
+        2000,
+        2000
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 20000,
+            "height": 20000
+          }
+        ]
+      },
+      "path": "t.jpg"
+    },
+    {
+      "name": "guard-impossible-size",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 32768,
+            "height": 16384
+          }
+        ]
+      },
+      "path": "t.jpg"
+    },
+    {
+      "name": "guard-huge-small-machine",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 20000,
+            "height": 20000
+          }
+        ]
+      },
+      "path": "bomb.jpg"
+    },
+    {
+      "name": "guard-legit-108mp",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 17179869184,
+        "load": 4294967296
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 12000,
+            "height": 9000
+          }
+        ]
+      },
+      "path": "big.jpg"
+    },
+    {
+      "name": "guard-sof0-patch-8192x4096",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4096
+          }
+        ]
+      },
+      "path": "bomb.jpg"
+    },
+    {
+      "name": "huge-65500",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      }
+    },
+    {
+      "name": "huge-65500-small-machine",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      }
+    },
+    {
+      "name": "source-at-threshold",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "zero_file": 134217728
+      }
+    },
+    {
+      "name": "source-below-threshold",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "zero_file": 134217727
+      }
+    },
+    {
+      "name": "progressive-64-scans",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "progressive_gray": 0
+      },
+      "path": "p.jpg"
+    },
+    {
+      "name": "progressive-512-scans",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "progressive_gray": 7
+      },
+      "path": "p512.jpg"
+    },
+    {
+      "name": "icc-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/icc-p3-64x48.jpg"
+      }
+    },
+    {
+      "name": "icc-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/icc-p3-64x48.jpg"
+      },
+      "path": "icc.jpg"
+    },
+    {
+      "name": "full-1x1-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x1-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-1x17-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-17x1-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-8x8-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-33x31-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-64x48-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-100x75-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-257x129-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-400x300-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      }
+    },
+    {
+      "name": "full-640x480-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o1-w200",
+      "from": "file",
+      "box": [
+        200,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o1-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o3-w200",
+      "from": "file",
+      "box": [
+        200,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o3-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o6-w150",
+      "from": "file",
+      "box": [
+        150,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o6-w75",
+      "from": "file",
+      "box": [
+        75,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o8-w150",
+      "from": "file",
+      "box": [
+        150,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "exact-dct-400x300-o8-w75",
+      "from": "file",
+      "box": [
+        75,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "fine-400x300-o1-w130",
+      "from": "file",
+      "box": [
+        130,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o1-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o6-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o6-w130",
+      "from": "file",
+      "box": [
+        130,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o5-w77",
+      "from": "file",
+      "box": [
+        77,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o3-w399",
+      "from": "file",
+      "box": [
+        399,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-400x300-o8-w11",
+      "from": "file",
+      "box": [
+        11,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "fine-tall-10x1000-box-10x999",
+      "from": "file",
+      "box": [
+        10,
+        999
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/tall-10x1000.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "output-format-64x48-o1-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "output-format-64x48-o6-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "output-format-64x48-o5-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "output-format-64x48-o6-w0",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": false
+    },
+    {
+      "name": "box-landscape-height",
+      "from": "file",
+      "box": [
+        400,
+        200
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-landscape-width",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-height-only",
+      "from": "file",
+      "box": [
+        0,
+        100
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-square-300",
+      "from": "file",
+      "box": [
+        300,
+        300
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-exact-eighth",
+      "from": "file",
+      "box": [
+        100,
+        75
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-tiny-not-upscaled",
+      "from": "file",
+      "box": [
+        1000,
+        1000
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-equal-size",
+      "from": "file",
+      "box": [
+        64,
+        48
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-one-px-less",
+      "from": "file",
+      "box": [
+        63,
+        48
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-flat-64x1",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/flat-64x1.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-flat-1x64",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/flat-1x64.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-short-64x3",
+      "from": "file",
+      "box": [
+        16,
+        16
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/short-64x3.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-narrow-3x64",
+      "from": "file",
+      "box": [
+        16,
+        16
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/narrow-3x64.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-rot6-64x48",
+      "from": "file",
+      "box": [
+        24,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-rot6-64x1",
+      "from": "file",
+      "box": [
+        1,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x1.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-rot6-64x48-wide",
+      "from": "file",
+      "box": [
+        32,
+        24
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "box-from-bytes",
+      "from": "bytes",
+      "box": [
+        300,
+        300
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "path": "mem.jpg",
+      "fine_scale": true
+    },
+    {
+      "name": "orient-0-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-0-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-1-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-1-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-2-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-2-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-3-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-3-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-4-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-4-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-5-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-5-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-6-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-6-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-7-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-7-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-8-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-8-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-9-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-9-120x80.jpg"
+      }
+    },
+    {
+      "name": "rot6-no-apply",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      }
+    },
+    {
+      "name": "rot6-no-apply-box",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true
+    },
+    {
+      "name": "rot6-source-orientation-ignored-without-apply",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": 3
+    },
+    {
+      "name": "plain-source-orientation-6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "source_orientation": 6
+    },
+    {
+      "name": "memory-override-3-over-exif-6",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o6.jpg"
+      },
+      "path": "memory.jpg",
+      "source_orientation": 3
+    },
+    {
+      "name": "source-orientation-9",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "source_orientation": 9
+    },
+    {
+      "name": "source-orientation-0",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": 0
+    },
+    {
+      "name": "source-orientation-minus-1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": -1
+    },
+    {
+      "name": "exif-full-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      }
+    },
+    {
+      "name": "exif-full-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      },
+      "path": "mem.jpg"
+    },
+    {
+      "name": "exif-full-downscaled",
+      "from": "file",
+      "box": [
+        32,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      }
+    },
+    {
+      "name": "exif-partial",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-partial-64x48.jpg"
+      }
+    },
+    {
+      "name": "exif-none",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/noexif-64x48.jpg"
+      }
+    },
+    {
+      "name": "exif-make-32x24",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/jpeg-make-32x24.jpg"
+      }
+    },
+    {
+      "name": "lead-com-0x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 0,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-1x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 1,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-2x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 2,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-3x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 3,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-20x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 20,
+            "size": 60000
+          }
+        ]
+      }
+    }
+  ]
+}

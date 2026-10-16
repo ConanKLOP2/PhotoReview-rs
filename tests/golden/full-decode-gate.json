@@ -1,0 +1,886 @@
+{
+  "generator": "oracle-cs full-decode-gate",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "viewer-after-three-preloads-goes-first",
+      "outcomes": {
+        "viewer": "granted",
+        "p1": "granted",
+        "p2": "granted",
+        "p3": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "viewer",
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 1,
+          "preloads": 3
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 1,
+        "preloads": 3
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "viewers-fifo",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 2,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 2,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "preloads-fifo-without-viewers",
+      "outcomes": {
+        "p1": "granted",
+        "p2": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "p1",
+        "p2"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "viewers-and-preloads-interleaved-arrival",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p1": "granted",
+        "p2": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p1",
+        "p2"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 2,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "cancel-queued-viewer-keeps-slot",
+      "outcomes": {
+        "cancelled": "canceled"
+      },
+      "busy_messages": [],
+      "order": [],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "cancel-preload-frees-queue-spot",
+      "outcomes": {
+        "first": "canceled",
+        "second": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "second"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 0
+        },
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 1
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "cancel-middle-viewer-keeps-fifo",
+      "outcomes": {
+        "v2": "canceled",
+        "v1": "granted",
+        "v3": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v3"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 2,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 2,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "cancel-oldest-preload-next-preload-is-promoted-instead",
+      "outcomes": {
+        "p1": "canceled",
+        "v1": "granted",
+        "v2": "granted",
+        "p2": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "v5": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p2",
+        "v3",
+        "v4",
+        "v5"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 5,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "pre-cancelled-token-on-free-gate",
+      "outcomes": {
+        "x": "canceled"
+      },
+      "busy_messages": [],
+      "order": [],
+      "snapshots": [
+        {
+          "slots": 1,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "pre-cancelled-token-on-busy-gate",
+      "outcomes": {
+        "x": "canceled",
+        "y": "canceled"
+      },
+      "busy_messages": [],
+      "order": [],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "preload-queue-full-is-busy-viewer-never-refused",
+      "outcomes": {
+        "p3": "busy",
+        "viewer": "granted",
+        "p1": "granted",
+        "p2": "granted"
+      },
+      "busy_messages": [
+        "The RAW full-decode queue is busy; this background decode was skipped."
+      ],
+      "order": [
+        "viewer",
+        "p1",
+        "p2"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 2
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 1,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "max-zero-refuses-queued-preload-but-viewer-queues",
+      "outcomes": {
+        "p": "busy",
+        "v": "granted"
+      },
+      "busy_messages": [
+        "The RAW full-decode queue is busy; this background decode was skipped."
+      ],
+      "order": [
+        "v"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 1,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 1,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "max-negative-refuses-queued-preload",
+      "outcomes": {
+        "p": "busy"
+      },
+      "busy_messages": [
+        "The RAW full-decode queue is busy; this background decode was skipped."
+      ],
+      "order": [],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "max-zero-free-slot-grants-preload",
+      "outcomes": {
+        "p": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "p"
+      ],
+      "snapshots": [
+        {
+          "slots": 1,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "busy-then-cancel-then-room-again",
+      "outcomes": {
+        "p2": "busy",
+        "p1": "canceled",
+        "p3": "granted"
+      },
+      "busy_messages": [
+        "The RAW full-decode queue is busy; this background decode was skipped."
+      ],
+      "order": [
+        "p3"
+      ],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 1
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "every-path-leaves-gate-free",
+      "outcomes": {
+        "refused": "busy",
+        "p": "granted"
+      },
+      "busy_messages": [
+        "The RAW full-decode queue is busy; this background decode was skipped."
+      ],
+      "order": [
+        "p"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "aging-promotes-after-three-completions",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p": "granted",
+        "v3": "granted",
+        "v4": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p",
+        "v3",
+        "v4"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 4,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "aging-below-bound-yields",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 2,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "unworked-leases-never-age",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "p"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 4,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "unworked-holder-worked-viewers",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "v3": "granted",
+        "p": "granted",
+        "v4": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "v3",
+        "p",
+        "v4"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 4,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "two-overdue-preloads-one-promotion-per-three",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p1": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p2": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p1",
+        "v3",
+        "v4",
+        "p2"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 4,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "two-preloads-long-viewer-run",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p1": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p2": "granted",
+        "v5": "granted",
+        "v6": "granted",
+        "v7": "granted",
+        "v8": "granted",
+        "v9": "granted",
+        "v10": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p1",
+        "v3",
+        "v4",
+        "p2",
+        "v5",
+        "v6",
+        "v7",
+        "v8",
+        "v9",
+        "v10"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 10,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "second-preload-ages-from-the-last-promotion",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p1": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p2": "granted",
+        "v5": "granted",
+        "v6": "granted",
+        "v7": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p1",
+        "v3",
+        "v4",
+        "p2",
+        "v5",
+        "v6",
+        "v7"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 7,
+        "preloads": 2
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "mixed-worked-viewers",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p": "granted",
+        "v5": "granted",
+        "v6": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "p",
+        "v5",
+        "v6"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 6,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "worked-preload-counts-for-the-next-preload",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p1": "granted",
+        "v3": "granted",
+        "v4": "granted",
+        "p2": "granted",
+        "v5": "granted",
+        "v6": "granted",
+        "p3": "granted",
+        "v7": "granted",
+        "v8": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p1",
+        "v3",
+        "v4",
+        "p2",
+        "v5",
+        "v6",
+        "p3",
+        "v7",
+        "v8"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 8,
+        "preloads": 3
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "preload-holder-worked-ages-preload",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p": "granted",
+        "v3": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p",
+        "v3"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 3,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "holder-released-twice-counts-once",
+      "outcomes": {
+        "v1": "granted",
+        "v2": "granted",
+        "p": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "v1",
+        "v2",
+        "p"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 2,
+        "preloads": 1
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "holder-released-twice-unworked",
+      "outcomes": {
+        "w": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "w"
+      ],
+      "snapshots": [],
+      "before_release": {
+        "slots": 0,
+        "viewers": 1,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "free-gate-sequential-enters",
+      "outcomes": {
+        "a": "granted",
+        "b": "granted",
+        "c": "granted"
+      },
+      "busy_messages": [],
+      "order": [
+        "a",
+        "b",
+        "c"
+      ],
+      "snapshots": [
+        {
+          "slots": 1,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    },
+    {
+      "name": "no-waiters-holder-only",
+      "outcomes": {},
+      "busy_messages": [],
+      "order": [],
+      "snapshots": [
+        {
+          "slots": 0,
+          "viewers": 0,
+          "preloads": 0
+        }
+      ],
+      "before_release": {
+        "slots": 0,
+        "viewers": 0,
+        "preloads": 0
+      },
+      "final": {
+        "slots": 1,
+        "viewers": 0,
+        "preloads": 0
+      }
+    }
+  ]
+}
