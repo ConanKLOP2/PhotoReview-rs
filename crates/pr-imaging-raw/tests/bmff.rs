@@ -662,13 +662,18 @@ fn box_value(box_: &BmffBox) -> Value {
     })
 }
 
+/// Golden inputs write values beyond 2^53 as decimal strings.
+fn json_i64(v: &Value) -> Option<i64> {
+    v.as_i64().or_else(|| v.as_str().and_then(|s| s.parse().ok()))
+}
+
 fn parent_from_json(parent: &Value) -> BmffBox {
     BmffBox {
         box_type: parent["type"].as_str().expect("parent type").to_owned(),
-        offset: parent["offset"].as_i64().expect("parent offset"),
-        total_size: parent["total_size"].as_i64().expect("parent total_size"),
-        payload_offset: parent["payload_offset"].as_i64().expect("parent payload_offset"),
-        payload_size: parent["payload_size"].as_i64().expect("parent payload_size"),
+        offset: json_i64(&parent["offset"]).expect("parent offset"),
+        total_size: json_i64(&parent["total_size"]).expect("parent total_size"),
+        payload_offset: json_i64(&parent["payload_offset"]).expect("parent payload_offset"),
+        payload_size: json_i64(&parent["payload_size"]).expect("parent payload_size"),
         uuid: parent
             .get("uuid")
             .and_then(Value::as_str)
