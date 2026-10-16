@@ -119,7 +119,10 @@ impl DiagOptions {
 ///
 /// `NumberStyles.Integer` = leading and trailing white (only U+0009..U+000D and U+0020), one optional `+`/`-` directly
 /// before the ASCII digits, then nothing but NUL characters (`'\0'`) after the trailing white. Any failure is `None`.
-fn parse_preload_workers(raw: &str) -> Option<u32> {
+///
+/// `pub` per amendment A4 (W4-15a): `pr_imaging::preload::policy::parse_diag_workers` delegates here, so the one rule is
+/// golden-tested twice (`diag-options` and `preload-policy`).
+pub fn parse_preload_workers(raw: &str) -> Option<u32> {
     fn is_white(c: char) -> bool {
         matches!(c, '\t' | '\n' | '\u{0B}' | '\u{0C}' | '\r' | ' ')
     }

@@ -108,43 +108,13 @@ pub enum ResumeVerdict {
 /// trailing white U+0009..U+000D/U+0020, one leading `+`/`-`, ASCII digits, trailing NULs) and `0 <= n <= 16`; anything
 /// else (incl. `None`, `""`, `"1.5"`, `"2147483648"`, `"-1"`) is `None`. `"-0"` is `Some(0)`.
 ///
-/// Same accepted set as `pr_core::diagnostics::diag_options` (private `parse_preload_workers`); see contract open
-/// question 1 (share it instead of duplicating).
+/// Amendment A4: delegates to `pr_core::diagnostics::diag_options::parse_preload_workers` (the same C# rule, read by
+/// `DiagOptions`), so one parser is golden-tested twice (`diag-options` and `preload-policy`). Its upper bound is
+/// [`MAX_DIAG_WORKERS`] (the golden `constants` case pins both).
 pub fn parse_diag_workers(value: Option<&str>) -> Option<i32> {
-    fn is_white(c: char) -> bool {
-        matches!(c, '\t' | '\n' | '\u{0B}' | '\u{0C}' | '\r' | ' ')
-    }
-
-    let text = value?.trim_start_matches(is_white);
-    let (negative, digits_and_rest) = if let Some(rest) = text.strip_prefix('+') {
-        (false, rest)
-    } else if let Some(rest) = text.strip_prefix('-') {
-        (true, rest)
-    } else {
-        (false, text)
-    };
-
-    // ASCII digits only (.NET rejects other Unicode digits); leading zeros are fine. The value saturates well past
-    // the range limit, which rejects it anyway (as `int` overflow makes `TryParse` fail in .NET).
-    let digit_count = digits_and_rest.bytes().take_while(u8::is_ascii_digit).count();
-    if digit_count == 0 {
-        return None;
-    }
-    let (digits, rest) = digits_and_rest.split_at(digit_count);
-    let magnitude = digits
-        .bytes()
-        .fold(0_u64, |acc, digit| (acc * 10 + u64::from(digit - b'0')).min(1_000));
-
-    // Trailing white, then nothing but NUL characters.
-    if !rest.trim_start_matches(is_white).chars().all(|c| c == '\0') {
-        return None;
-    }
-    if negative && magnitude != 0 {
-        return None;
-    }
-    i32::try_from(magnitude)
-        .ok()
-        .filter(|n| (0..=MAX_DIAG_WORKERS).contains(n))
+    value
+        .and_then(pr_core::diagnostics::diag_options::parse_preload_workers)
+        .and_then(|n| i32::try_from(n).ok())
 }
 
 /// C# `internal static bool InPreloadWindow(int index, int center, (int Direction, int Lead) shape, PreloadWindow window)`:
@@ -170,6 +140,7 @@ pub fn is_still_wanted(index: i32, center: i32, shape: Shape) -> bool {
     if ahead == 0 {
         return false;
     }
+    // `ahead > 0` and `ahead >= 0` agree here (`ahead == 0` returned above): equivalent mutant, accepted.
     shape.lead == 0 || ahead > 0
 }
 
@@ -204,6 +175,7 @@ pub fn resume_check_delay(check: i32) -> Duration {
     // is `Math.Pow(2, min(check, 16))`, exact for every integer exponent (0 for very negative ones).
     let ticks = (base_ticks * 2_f64.powi(check.min(16))).round_ties_even();
     let max_ticks = (RESUME_CHECK_MAX_DELAY.as_nanos() / u128::from(NANOS_PER_TICK)) as f64;
+    // `<` vs `<=` is unobservable: at `ticks == max_ticks` both arms give 30 s (and 2 s * 2^k is never exactly 30 s).
     if ticks < max_ticks {
         // 0 <= ticks < 300_000_000: the conversion is exact.
         Duration::from_nanos(ticks as u64 * NANOS_PER_TICK)
@@ -299,6 +271,7 @@ pub fn format_f0_invariant(value: f64) -> String {
     if value.is_nan() {
         "NaN".to_owned()
     } else if value.is_infinite() {
+        // `> 0.0` vs `>= 0.0` is unobservable for an infinite value (equivalent mutant, accepted).
         if value > 0.0 { "Infinity" } else { "-Infinity" }.to_owned()
     } else {
         format!("{value:.0}")
