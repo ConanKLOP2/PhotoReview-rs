@@ -2047,3 +2047,154 @@ mod verifier_probes {
         assert!(text.contains("capacity_bytes: 1024"), "{text}");
     }
 }
+
+/// Repair round 2: path shapes checked against the .NET oracle on d92d6aae (`SourceBytesCache` probe): lone UTF-16
+/// surrogates in file names, invalid-name characters on the whole-file API, trailing separator / dot, `CON`.
+#[cfg(windows)]
+mod path_shapes {
+    use super::*;
+    use std::ffi::OsString;
+    use std::os::windows::ffi::OsStringExt;
+
+    /// `<root>\<prefix><unit><suffix>` where `unit` is one raw UTF-16 code unit (an unpaired surrogate here).
+    fn wide_name(root: &TempRoot, prefix: &str, unit: u16, suffix: &str) -> PathBuf {
+        let mut wide: Vec<u16> = prefix.encode_utf16().collect();
+        wide.push(unit);
+        wide.extend(suffix.encode_utf16());
+        root.join(OsString::from_wide(&wide))
+    }
+
+    /// Oracle: `surrogate: OK len=3` (GetOrRead), and the read is cached under the surrogate name itself.
+    #[test]
+    fn whole_file_with_lone_surrogate_name_is_read_and_cached() {
+        let root = TempRoot::new("src-bytes-surrogate-whole");
+        let path = wide_name(&root, "x", 0xD800, ".bin");
+        fs::write(&path, [9u8, 9, 9]).expect("write surrogate-named fixture");
+        let reader = physical_reader();
+        let cache = new_cache_with(1 << 20, reader.clone());
+
+        let first = cache.get_or_read(&path).expect("C# reads this file");
+        let second = cache.get_or_read(&path).expect("cached");
+
+        assert_eq!(&*first, &[9u8, 9, 9]);
+        assert!(Arc::ptr_eq(&first, &second));
+        assert_eq!(reader.opens(), 1);
+        assert!(cache.try_prefetch(&path).expect("prefetch of a cached file"));
+        assert_eq!(reader.opens(), 1);
+    }
+
+    /// Oracle: `surrogate-range: OK len=2` (GetOrReadRange with the file's own identity).
+    #[test]
+    fn range_with_lone_surrogate_name_is_read() {
+        let root = TempRoot::new("src-bytes-surrogate-range");
+        let path = wide_name(&root, "x", 0xD800, ".bin");
+        fs::write(&path, [7u8, 8, 9]).expect("write surrogate-named fixture");
+        let ticks = file_ticks(&path);
+        let cache = new_cache(1 << 20);
+
+        let bytes = cache
+            .get_or_read_range(&path, 3, ticks, 1, 2, VIEWER)
+            .expect("C# reads this range");
+
+        assert_eq!(&*bytes, &[8u8, 9]);
+        assert_eq!(cache.count(), 1);
+        let hit = cache.try_get_range(&path, 3, ticks, 1, 2).expect("valid path");
+        assert!(hit.is_some_and(|h| Arc::ptr_eq(&h, &bytes)));
+    }
+
+    /// Two names that differ only in WHICH unpaired surrogate they hold are two files (a lossy U+FFFD key would merge
+    /// them), and evict is OrdinalIgnoreCase on the rest of the name but exact on the surrogate.
+    #[test]
+    fn distinct_lone_surrogates_are_distinct_keys_and_evict_matches_case_insensitively() {
+        let root = TempRoot::new("src-bytes-surrogate-keys");
+        let a = wide_name(&root, "x", 0xD800, ".bin");
+        let b = wide_name(&root, "x", 0xD801, ".bin");
+        fs::write(&a, [1u8]).expect("write a");
+        fs::write(&b, [2u8, 2]).expect("write b");
+        let reader = physical_reader();
+        let cache = new_cache_with(1 << 20, reader.clone());
+
+        assert_eq!(&*cache.get_or_read(&a).expect("read a"), &[1u8]);
+        assert_eq!(&*cache.get_or_read(&b).expect("read b"), &[2u8, 2]);
+        assert_eq!(cache.count(), 2);
+        assert_eq!(reader.opens(), 2);
+
+        // Upper-cased spelling of `a` (only the ASCII parts change): removes `a`, leaves `b`.
+        cache
+            .evict(&wide_name(&root, "X", 0xD800, ".BIN"))
+            .expect("evict a, other case");
+        assert_eq!(cache.count(), 1);
+        assert_eq!(cache.path_version_count_for_tests(), 1);
+        cache.get_or_read(&b).expect("b still cached");
+        assert_eq!(reader.opens(), 2, "b was not evicted");
+        cache.get_or_read(&a).expect("a re-read");
+        assert_eq!(reader.opens(), 3, "a was evicted");
+    }
+
+    /// The I/O error message of a whole-file call that `FileInfo.Length` rejects: `"{OS message} : '{full}'."`.
+    fn assert_invalid_name(err: &SourceBytesError, full: &Path) {
+        assert_ne!(
+            err.io_kind(),
+            Some(io::ErrorKind::NotFound),
+            "C# throws IOException: {err:?}"
+        );
+        assert!(err.io_kind().is_some(), "an I/O error: {err:?}");
+        let text = err.to_string();
+        assert!(!text.starts_with("Could not find file"), "{text}");
+        assert!(text.ends_with(&format!(" : '{}'.", full.display())), "{text}");
+        let os = io::Error::from_raw_os_error(123).to_string();
+        let os_message = os.strip_suffix(" (os error 123)").unwrap_or(&os);
+        assert!(text.starts_with(os_message), "{text} / {os_message}");
+    }
+
+    /// Oracle: `wildcard` and `pipe`: `IOException | The filename, directory name, or volume label syntax is
+    /// incorrect. : '<root>\a?.bin'.` (ERROR_INVALID_NAME from `FileInfo.Length`), not `FileNotFoundException`.
+    #[test]
+    fn whole_file_invalid_name_is_io_error_not_file_not_found() {
+        let root = TempRoot::new("src-bytes-invalid-name");
+        let reader = Arc::new(CountingReader::must_not_open());
+        let cache = new_cache_with(1 << 20, reader.clone());
+        for name in ["a?.bin", "a|b.bin", "a*.bin"] {
+            let path = root.join(name);
+            let err = cache.get_or_read(&path).expect_err(name);
+            assert_invalid_name(&err, &path);
+            let err = cache.try_prefetch(&path).expect_err(name);
+            assert_invalid_name(&err, &path);
+        }
+        assert_eq!(reader.opens(), 0, "the stat fails before any open");
+        assert_eq!(cache.count(), 0);
+    }
+
+    /// Oracle: `missing-dir`, `missing-file`, `con`, `prefetch-missing-dir`: `FileNotFoundException | Could not find
+    /// file '<full>'.`; `trailing-dot: OK len=4`; `trailing-sep`: an I/O error at open (os error 267), not NotFound.
+    #[test]
+    fn whole_file_missing_device_trailing_dot_and_separator() {
+        let root = TempRoot::new("src-bytes-path-shapes");
+        let a = write_file(&root, "a.bin", &[1, 2, 3, 4]);
+        let cache = new_cache(1 << 20);
+
+        for missing in [root.join("nodir").join("a.bin"), root.join("b.bin")] {
+            let err = cache.get_or_read(&missing).expect_err("missing");
+            assert_eq!(err.io_kind(), Some(io::ErrorKind::NotFound));
+            assert_eq!(err.to_string(), format!("Could not find file '{}'.", missing.display()));
+            let err = cache.try_prefetch(&missing).expect_err("missing");
+            assert_eq!(err.io_kind(), Some(io::ErrorKind::NotFound));
+        }
+        let err = cache.get_or_read(&root.join("CON")).expect_err("device");
+        assert_eq!(err.io_kind(), Some(io::ErrorKind::NotFound), "{err:?}");
+        let err = cache.get_or_read(root.path()).expect_err("a directory");
+        assert_eq!(err.io_kind(), Some(io::ErrorKind::NotFound), "{err:?}");
+
+        let mut dotted = a.clone().into_os_string();
+        dotted.push(".");
+        assert_eq!(cache.get_or_read(Path::new(&dotted)).expect("trailing dot").len(), 4);
+
+        let mut separated = a.into_os_string();
+        separated.push("\\");
+        let err = cache
+            .get_or_read(Path::new(&separated))
+            .expect_err("trailing separator");
+        assert!(err.io_kind().is_some(), "{err:?}");
+        assert_ne!(err.io_kind(), Some(io::ErrorKind::NotFound), "{err:?}");
+    }
+}
