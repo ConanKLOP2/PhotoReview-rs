@@ -331,25 +331,32 @@ pub fn resize(
         target_height: target_height as usize,
         channels: channels as usize,
     };
-    // Sizes are positive `i32`s, so these products are exact in `i64`; the source must cover the geometry on every path.
-    let source_needed = i64::from(source_width) * i64::from(source_height) * i64::from(channels);
-    if (rgb.len() as i64) < source_needed {
-        return Err(ResampleError::InvalidData(
-            "The RGB source is shorter than its geometry.".to_owned(),
-        ));
-    }
     match select_path(source_width, source_height, target_width, target_height) {
         // `convert` checks the BGRA length itself (its pixel count comes from `rgb.len()`).
         ResamplePath::Convert => convert(rgb, bgra, geometry.channels, cancel),
         ResamplePath::BoxAverage => {
+            check_source_length(rgb, source_width, source_height, channels)?;
             check_target_length(target_width, target_height, bgra)?;
             box_average(rgb, geometry, bgra, cancel)
         }
         ResamplePath::Bilinear => {
+            check_source_length(rgb, source_width, source_height, channels)?;
             check_target_length(target_width, target_height, bgra)?;
             bilinear(rgb, geometry, bgra, cancel)
         }
     }
+}
+
+/// Box and bilinear read `sw * sh * channels` source bytes (`i64` product of positive `i32`s). Convert does not call this: like
+/// C# it converts `rgb.len() / channels` pixels and ignores the source geometry.
+fn check_source_length(rgb: &[u8], source_width: i32, source_height: i32, channels: i32) -> Result<(), ResampleError> {
+    let needed = i64::from(source_width) * i64::from(source_height) * i64::from(channels);
+    if (rgb.len() as i64) < needed {
+        return Err(ResampleError::InvalidData(
+            "The RGB source is shorter than its geometry.".to_owned(),
+        ));
+    }
+    Ok(())
 }
 
 /// The BGRA slice must hold `tw * th * 4` bytes (`i64` product, the sizes are positive `i32`s).

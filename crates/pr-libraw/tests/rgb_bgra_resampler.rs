@@ -902,7 +902,8 @@ fn resize_rejects_non_positive_sizes_and_short_slices_as_invalid_data_without_wr
         Err(ResampleError::InvalidData(_))
     ));
     assert!(matches!(
-        resize(&[0u8; 2], 1, 1, &mut bgra, 1, 1, &CancelToken::none(), 3),
+        resize(&[0u8; 11], 2, 2, &mut bgra, 1, 1, &CancelToken::none(), 3), // box path: source shorter than 2*2*3
+        // (Convert does not check the geometry, like C#: see convert_short_rgb_*)
         Err(ResampleError::InvalidData(_))
     ));
     let mut short = [7u8; 2];
@@ -1243,4 +1244,36 @@ fn rgb_bgra_validate_golden_matches_csharp() {
         inputs.len(),
         mismatches.iter().take(30).cloned().collect::<Vec<_>>().join("\n")
     );
+}
+
+// C# Resize -> Convert uses rgb.Length / channels pixels and ignores sourceWidth/sourceHeight: a source shorter than
+// sw*sh*channels is converted partially without error. Contract "Different" lists the short-source check for the
+// box and bilinear paths only.
+#[test]
+fn convert_short_rgb_converts_available_pixels_like_csharp() {
+    let rgb = [10u8, 20, 30, 40, 50, 60]; // 2 pixels, geometry says 2x2
+    let mut bgra = [7u8; 16];
+    let r = resize(&rgb, 2, 2, &mut bgra, 2, 2, &CancelToken::none(), 3);
+    assert!(r.is_ok(), "C# converts 2 pixels without error, got {r:?}");
+    assert_eq!(&bgra[..8], &[30, 20, 10, 255, 60, 50, 40, 255]);
+    assert_eq!(&bgra[8..], &[7u8; 8]);
+}
+
+#[test]
+fn convert_empty_rgb_is_noop_like_csharp() {
+    let mut bgra = [7u8; 16];
+    let r = resize(&[], 2, 2, &mut bgra, 2, 2, &CancelToken::none(), 1);
+    assert!(r.is_ok(), "C# loops zero times, got {r:?}");
+}
+
+// Admission: a BGRA slice shorter than tw*th*4 must be refused on the box and bilinear paths (Convert already is).
+#[test]
+fn short_bgra_is_refused_on_box_and_bilinear() {
+    let rgb = vec![9u8; 8 * 8 * 3];
+    for (tw, th) in [(2, 2), (6, 6)] {
+        let mut bgra = vec![0u8; tw * th * 4 - 1];
+        let r = resize(&rgb, 8, 8, &mut bgra, tw as i32, th as i32, &CancelToken::none(), 3);
+        assert!(r.is_err(), "{tw}x{th}: short bgra accepted: {r:?}");
+        assert!(bgra.iter().all(|&b| b == 0), "{tw}x{th}: bgra written despite error");
+    }
 }
