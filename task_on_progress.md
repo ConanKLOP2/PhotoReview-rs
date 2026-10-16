@@ -1,74 +1,49 @@
 # Task on progress
 
-**Updated:** 2026-10-15 (branch `integration/wave-3`)
+**Updated:** 2026-10-16 (branch `integration/wave-4`, PR #20)
 
-## State
-- master: Wave 0 + Wave 1 + sync to C# baseline d92d6aae.
-- `integration/wave-2`: all 21 Wave 2 units (W2-00..W2-20) merged in three batches; PR open to master.
-- Repair round merged (fix/W2-14, 17, 00, 18, 01, 03, 12, 13, 19; no conflicts). Gate on this branch (CARGO_TARGET_DIR=target-wave-2/integ):
-  - `cargo fmt --all --check`: clean.
-  - `cargo clippy --workspace --all-targets --locked -- -D warnings`: clean.
-  - `cargo test --workspace --locked --no-fail-fast`: 77 test binaries, 59 ignored. One run out of four showed exit 101
-    with one failing suite that I did not identify (output was filtered); the next two runs were fully green. Treat as a
-    timing-sensitive flake (units W2-13/W2-19 also reported flaky save-worker / diagnostics_file_log tests under load).
-  - `cargo test -p pr-core --test io_physical -- --include-ignored`: 64 passed, 0 failed.
+## How to resume (read this first)
+1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-28: unconfirmed proposals, all acted on),
+   `docs/MULTI-AGENT-PLAN.md`, `docs/PARITY.md` ("Wave 4 final status"), `tools/autopilot/README.md`.
+2. Standing user instruction: run the whole port end to end, auto-fix + auto-merge (squash) every PR, never ask;
+   log open questions as a `P-nn` row and act on the recommended option. Replies in Vietnamese.
+3. The 15-minute loop was cancelled; restart it with `/loop 15m` + `tools/autopilot/loop-prompt.md`.
+4. Permission classifier blocks some `gh pr merge`, `git branch -D`, `git push --delete`, publish commands in
+   workflow agents; the user must add the rules from `tools/autopilot/README.md` to `.claude/settings.local.json`
+   (agents cannot grant themselves permissions). The main session pushes and opens PRs when a workflow agent refuses.
 
-## Verdicts after the repair round
-- Closed (Done in PARITY.md): W2-00 (3 mutants killed), W2-12 (M20 killed), W2-13 (M22 killed), W2-18 (all 9 mutants killed),
-  W2-19 (mutant killed).
-- Behaviour fixes: W2-14 (trailing space/dot segments in directory_exists/get_file_stat, junction cap error 1921) and
-  W2-17 (PerfCsvListener trace dir via GetFullPath semantics) now match the C# oracle.
-- Remaining, still Partial:
-  - W2-14: 4 mutants alive (MAX_FOLLOWED_LINKS cap needs a symlink, unavailable without privilege; file_exists_full probe is behaviourally equivalent).
-  - W2-17: CHANNEL_CAPACITY 100_000 -> 10 only killed by a value-pinning test.
-  - W2-01: 2 equivalent mutants (surrogate range edges).
-  - W2-03: 13 survivors killed; 6 judged equivalent; the original M-number mapping could not be confirmed.
-  - W2-20 test fix was already merged earlier (2c9e711 / 56451aa).
-- PASS: W2-15, W2-16. Other units (W2-02, 04..11) have no open issue.
+## State (verified)
+- **master** (`985ba99`): Wave 0, 1, 2, 3 merged (PR #8, #17), Wave 4 contracts (#16), Wave 4 plan, docs (#9-#15, #18),
+  autopilot kit (#19). C# baseline for all goldens: `d92d6aae`.
+- **PR #20 (open, auto-merge on)**: Wave 4 port (`integration/wave-4`, 36 sub-units). Last gate run on the merged tree:
+  `cargo fmt` clean, `cargo clippy --workspace --all-targets --locked -- -D warnings` clean,
+  `cargo test --workspace --locked --no-fail-fast`: 3619 passed, 0 failed, 304 ignored. First CI run failed on 7
+  `pr-imaging` tests (CI temp dir is an 8.3 short name `RUNNER~1`; .NET-style `GetFullPath` expands it); fixed in
+  `d113721` (`TempRoot` uses the long `%TEMP%`); CI re-run pending when this was written.
+- Wave 4 units Partial (PARITY lists the open items): W4-01c, 02b, 10b, 11c, 11e, 14b, 14c, 14d, 16a + 2 native-test gaps.
+  Open: `cargo test -p pr-imaging -p pr-platform-win -- --include-ignored` has 32 failing native tests (30 are `todo!()`
+  native seams: `pr-imaging` cannot dev-depend on `pr-platform-win`, a cycle; 1 needs the WIC JPEG codec; 1 blocked on
+  W4-11c OQ1). cargo-mutants was only partly run (W4-16a 10/152, W4-01c ~35/43, W4-10b 40 manual mutations).
+  Latent bug noted in W4-14a: `PreviewError::is_busy/is_canceled` do not unwrap `WithSourceBytes` (C# still retries).
+- Wave 3 Partial: W3-01 (cargo-mutants not done, 228/231 untested), W3-05 (verifier re-run unfinished); ignored native
+  journal tests (journal 19, compaction 15, reconcile 2, startup_recovery 6, INV-6 equivalence 5) not run.
+- Wave 2 Partial: W2-14 (4 mutants need a privileged symlink), W2-17, W2-01, W2-03.
+- Known flaky tests (timing, fail under load): `diagnostics_file_log::*` (W2-16); bounds were raised, more may appear.
 
-## Next
-1. Decide whether the 4 W2-14 mutants need a privileged-symlink test (CI with Developer Mode) or are accepted as equivalent.
-2. Phase 0 still open: UI spikes (R0001; C# moved to Win32 + Direct2D, ADR 0010), COM Explorer spike.
-3. Then Wave 3 (data safety) per docs/MULTI-AGENT-PLAN.md, with lessons from section 11.
+## Not done
+- **C# sync patch "external editors"** (P-17): C# `master` is past `d92d6aae` (`ExternalEditor.cs`, `AppSettings`,
+  `SettingsNormalizer`, `SettingsStore`, `ShortcutMappings`, `IDialogService`, languages). Needs W1-04, W2-01/02/03,
+  W2-20 re-ported and goldens regenerated at the new baseline (`docs/SYNC-LEDGER.md` row exists).
+- **Phase 0**: UI spike R0001 (P-06: Win32 + Direct2D via `windows-rs`), COM Explorer spike (P-07).
+- **Waves 5+6** (RAW/TurboJPEG/LibRaw; Platform Windows), **7** (benchmarking), **8** (App/UI). Schedule the port workflows
+  by dependency graph (P-28), not by tiers. Wave 4 lost 11 units to "blocked by a stub of the same tier".
+- Rough progress: Waves 0-3 done (59 units), Wave 4 ported and in PR; about 45% of units, about 35-40% by effort.
 
-## Wave 3 contracts (branch `wave3/contracts`)
-- Wired: 8 contracts (`contracts/W3-01..08.md`), 12 stub files (`file_actions/{journal,transaction,compaction,
-  journal_rules,reconcile,startup_recovery,service,undo,recovery_retry,recovery_check,partial_cleanup}.rs`,
-  `io/journal_compaction_files.rs`), 8 oracle files in `tools/oracle-cs/Commands/` plus 15 dispatch lines,
-  15 inputs in `tests/golden-inputs/`, 15 goldens in `tests/golden/`.
-- Run: `tools/oracle.ps1 -Commit d92d6aae` once per command (15 runs, all built and ran); every golden regenerated a
-  second time and compared byte for byte: identical. No pre-existing golden changed.
-- Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
-  `cargo test --workspace --locked`: 1406 passed, 0 failed, 59 ignored (no new tests: stubs are `todo!()`).
-- NOT run: cargo-mutants; Rust tests against the new goldens (none written yet). Open decisions D26 (a)-(f) in
-  contracts/README.md are undecided; fixtures `operations-legacy.jsonl` and `journal-older-build/*.jsonl` are not synced.
-- Next: lead decides D26, Haiku ports tests per unit (red), then Opus porters in D23/D24 order.
-
-## Wave 3 lead foundation (branch `integration/wave-3`, CARGO_TARGET_DIR=target-wave-3/integ)
-- Done (one commit each): P-11 `AppendStream` + `open_append -> Box<dyn AppendStream>`; P-12 `FileSystem::try_get_file_stat`
-  (physical, counting, fake overrides; `io::physical::is_stat_missing`); P-13 `RecycleBin::try_restore -> io::Result<bool>`
-  (+ `FakeRecycleBin` send/delete/restore hooks); P-14 `pr_test_support::{HookFileSystem, FaultInjectionFileSystem}`;
-  P-15 fixtures synced at d92d6aae (sync script also maps the two W2-03 config fixtures, which a sync run used to delete).
-- Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
-  `cargo test --workspace --locked`: 1442 passed, 0 failed, 61 ignored; `--ignored` on `io_physical_seams` (2) and
-  `io_physical` (47): all passed.
-- NOT done: `CrashPointFileSystem`, `FaultableFileSystem`, `FaultInjectionMatrix`/`Rig`/`SecondOrder`/`FaultInvariants` (W3-09,
-  P-16); cargo-mutants on the new seams; no PR opened from this step.
-- Next: Haiku red-test pass per unit against the landed seams, then porters in D23/D24 order.
-
-## Wave 3 integration (branch `integration/wave-3`, 2026-10-16)
-- Merged: W3-02, W3-07, W3-08 (i1); W3-01 (verdict FAIL), W3-03 (i2); W3-04 (i3); W3-05 (verdict FAIL), W3-06 (i4); W3-09 tests (02640a5).
-  Only conflicts were in `docs/PARITY.md`; resolved by keeping the Done/Ported rows. Not pushed before this step.
-- Run in the integration steps (fmt, clippy `-D warnings`, `cargo test --workspace --locked --no-fail-fast` after each batch):
-  all clean; one flake in `diagnostics_file_log::flush_drained_set_while_entry_queued_waits_until_written` (W2 test) under load, green on rerun.
-- Open: W3-01 mutation testing not done (228/231 untested); W3-05 verifier mutation re-run unfinished (porter round 3: 198 mutants, 178 caught, 2 missed and killed);
-  `#[ignore]`d tests (journal 19, compaction 15, reconcile 2, startup_recovery 6, INV-6 equivalence 5) not run with `--include-ignored`.
-- C# moved past `d92d6aae` (external editors): NOT ported; P-17, patch WU W2-S1 after Wave 3.
-
-
-## Wave 4 integration (branch `integration/wave-4`, 2026-10-16)
-- Merged every fin/* (01b, 02b, 03b, 04a, 04b, 06b, 10b, 12a, 14b, 14c, 14d) and rep/* (01c, 08a, 09, 10a, 11a, 11b, 11c, 11e, 14a, 15a, 16a, 16b) branch with --no-ff. Only conflicts were in `docs/PARITY.md` (kept both sides). Merged origin/master (clean).
-- Ran (CARGO_TARGET_DIR=target-wave-4/integ): `cargo fmt --all` (no change); `cargo clippy --workspace --all-targets --locked -- -D warnings` clean; `cargo test --workspace --locked --no-fail-fast`: exit 0, 3619 passed, 0 failed, 304 ignored.
-- Ran: `cargo test -p pr-imaging -p pr-platform-win --locked --no-fail-fast -- --include-ignored`: exit 101. pr-platform-win native WIC tests pass except `wic_icc_transform_failure_carries_the_localized_sentence` (blocked W4-11c OQ1). 31 pr-imaging ignored tests fail: 30 on `todo!()` native seams (embedded_thumbnail 17, thumbnail_cache 9, cache_preview_file 4) plus 1 in preview_service_disk.
-- NOT run: cargo-mutants on the merged tree; ignored tests of other crates; full-file mutation of pixels.rs, decoder.rs, cache_image.rs.
-- Not pushed; the lead pushes and opens the PR.
+## Next steps
+1. Let PR #20 reach green and merge (auto-fix handles CI events); then delete the Wave 4 worktrees/branches
+   (`integ-w4`, `f-W4-*`, `r-W4-*`, `fin/*`, `rep/*`, `wu/W4-03b`, `W4-15a-verify`) and `target-wave-4`/`target-w4ci`.
+2. The main checkout may still hold stray edits an agent left (`crates/pr-imaging/src/service/disk.rs`, `service/mod.rs`,
+   `docs/PARITY.md`); compare with `integration/wave-4` / master before discarding.
+3. P-17 sync patch, then Phase 0 spikes, then Waves 5+6 (contracts workflow, wire + PR, port workflow, PR), 7, 8.
+4. Fix the stale last sentence of AGENTS.md "Disk hygiene" (it still mentions a per-loop-tick disk check; the loop no
+   longer does that).
