@@ -27,23 +27,32 @@ use std::collections::HashMap;
 use std::fmt;
 use std::io;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicI32, AtomicI64, AtomicU64};
-use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicI32, AtomicI64, AtomicU64, Ordering};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
 
-use pr_core::abstractions::{Clock, FileSystem, Log, SourceReader};
+use pr_core::abstractions::{Clock, FileSystem, Log, NullLog, PhysicalSourceReader, SourceReader, SystemClock};
+use pr_core::app_paths::AppPaths;
 use pr_core::caching::lru::BoundedLruCache;
-use pr_core::catalog::types::CatalogEntry;
+use pr_core::catalog::types::{CatalogEntry, is_raw_path};
 use pr_core::diagnostics::diag_options::DiagOptions;
 use pr_core::diagnostics::metrics::ReviewMetrics;
+use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::DecoderBackend;
+use pr_core::settings::perf_options::MAX_IMAGE_CACHE_RAM_PERCENT;
 use pr_core::text::dotnet_path::PathError;
 
 use self::deps::{
     CacheKeyError, DecodeBox, DecodeError, DecodedImageView, DiskCacheStore, ImageCacheKey, ImageDecoder,
-    ImageDecoderFactory, InvalidStoreArgument, PlatformImageCodec, PreloadWindow, PreviewCacheError,
-    PreviewPayloadCodec, SourceBytesCache, SourceBytesError,
+    ImageDecoderFactory, ImageSourceKind, InvalidStoreArgument, KeyOptions, PlatformImageCodec, PreloadWindow,
+    PreviewCacheError, PreviewPayloadCodec, SourceBytesCache, SourceBytesError, normalize_key_path, ram_budget,
 };
+
+/// Locks a service mutex; a poisoned lock is still usable (every critical section here leaves its data consistent:
+/// a panic inside one cannot leave a half-written entry behind).
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(PoisonError::into_inner)
+}
 
 // ---- Constants (C# values; tests pin them) ----------------------------------------------------------------------
 
@@ -145,24 +154,41 @@ impl PreviewError {
     /// C# `catch (OperationCanceledException)`: `Canceled`, `DiskEntry(PreviewCacheError::Canceled)` or
     /// `Decode(DecodeError::Canceled)`.
     pub fn is_canceled(&self) -> bool {
-        todo!("W4-14a")
+        match self {
+            Self::Canceled => true,
+            Self::DiskEntry(error) => matches!(**error, PreviewCacheError::Canceled),
+            Self::Decode(error) => matches!(**error, DecodeError::Canceled),
+            _ => false,
+        }
     }
 
     /// C# `catch (DecoderBusyException)`: `Decode(DecodeError::Busy { .. })`.
     pub fn is_busy(&self) -> bool {
-        todo!("W4-14a")
+        matches!(self, Self::Decode(error) if matches!(**error, DecodeError::Busy { .. }))
     }
 
     /// C# `ex is IOException`: `SourceChanged`, `Io`, `SourceBytes(Io)`, `Key(SourceNoLongerExists)`,
-    /// `Key(InvalidPath(TooLong))`, and `Decode(e)` when `e.is_io_exception()`.
+    /// `Key(InvalidPath(TooLong))`, and `Decode(e)` when `e.is_io_exception()`. `InvalidPath(TooLong)` is the same C#
+    /// `PathTooLongException` (an `IOException`) thrown by `evict_cached_path`'s `Path.GetFullPath`.
     pub fn is_io_exception(&self) -> bool {
-        todo!("W4-14a")
+        match self {
+            Self::SourceChanged { .. } | Self::Io(_) => true,
+            Self::SourceBytes(error) => matches!(error, SourceBytesError::Io(_)),
+            Self::Key(CacheKeyError::SourceNoLongerExists { .. }) => true,
+            Self::Key(CacheKeyError::InvalidPath(PathError::TooLong)) => true,
+            Self::InvalidPath(PathError::TooLong) => true,
+            Self::Decode(error) => error.is_io_exception(),
+            _ => false,
+        }
     }
 
     /// The localized-sentence catalog key and its `{path}` argument (C# `UserFacingError.Localized`), when this error
     /// carries one of its own (`SourceChanged` only; inner errors carry theirs).
     pub fn catalog_key(&self) -> Option<(&'static str, &str)> {
-        todo!("W4-14a")
+        match self {
+            Self::SourceChanged { path, phase } => Some((phase.catalog_key(), path.as_str())),
+            _ => None,
+        }
     }
 }
 
@@ -171,13 +197,40 @@ impl fmt::Display for PreviewError {
     /// dimensions: {path}`, [`Self::RAW_FULL_DECODE_KEY_MESSAGE`], `The operation was canceled.`, else the inner
     /// error's text.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-14a")
+        match self {
+            Self::Canceled => f.write_str("The operation was canceled."),
+            Self::Key(error) => write!(f, "{error}"),
+            Self::InvalidPath(error) => write!(f, "{error}"),
+            Self::Decode(error) => write!(f, "{error}"),
+            Self::SourceBytes(error) => write!(f, "{error}"),
+            Self::Io(error) => write!(f, "{error}"),
+            Self::DiskEntry(error) => write!(f, "{error}"),
+            Self::SourceChanged {
+                path,
+                phase: SourceChangePhase::Decode,
+            } => write!(f, "Image source changed during decode: {path}"),
+            Self::SourceChanged {
+                path,
+                phase: SourceChangePhase::ReadingDimensions,
+            } => write!(f, "Image source changed while reading dimensions: {path}"),
+            Self::RawFullDecodeKey => f.write_str(Self::RAW_FULL_DECODE_KEY_MESSAGE),
+            Self::Spawn(error) => write!(f, "{error}"),
+            Self::Panicked(text) => f.write_str(text),
+        }
     }
 }
 
 impl std::error::Error for PreviewError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        todo!("W4-14a")
+        match self {
+            Self::Key(error) => Some(error),
+            Self::InvalidPath(error) => Some(error),
+            Self::Decode(error) => Some(&**error),
+            Self::SourceBytes(error) => Some(error),
+            Self::Io(error) | Self::Spawn(error) => Some(&**error),
+            Self::DiskEntry(error) => Some(&**error),
+            Self::Canceled | Self::SourceChanged { .. } | Self::RawFullDecodeKey | Self::Panicked(_) => None,
+        }
     }
 }
 
@@ -199,7 +252,20 @@ pub enum PreviewServiceBuildError {
 
 impl fmt::Display for PreviewServiceBuildError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-14a")
+        match self {
+            Self::NoDecoder => f.write_str(
+                "PreviewImageService needs a decoder or a decoder factory (the platform default is wired by the composition root).",
+            ),
+            Self::OriginalDimensionsCapacity(capacity) => write!(
+                f,
+                "Capacity must be positive. (Parameter 'originalDimensionsCapacity') Actual value was {capacity}."
+            ),
+            Self::Capacity(capacity) => {
+                write!(f, "Capacity must be positive. (Parameter 'capacityBytes') Actual value was {capacity}.")
+            }
+            Self::DiskDirectory(error) => write!(f, "{error}"),
+            Self::Spawn(error) => write!(f, "A preview-service background thread could not be started: {error}"),
+        }
     }
 }
 
@@ -236,7 +302,15 @@ pub struct StdThreadSpawner;
 
 impl DecodeThreadSpawner for StdThreadSpawner {
     fn spawn(&self, kind: DecodeThreadKind, job: Box<dyn FnOnce() + Send + 'static>) -> io::Result<()> {
-        todo!("W4-14a")
+        let name = match kind {
+            DecodeThreadKind::Preview => "PhotoReviewRs.PreviewDecode",
+            DecodeThreadKind::Viewer => "PhotoReviewRs.ViewerDecode",
+            DecodeThreadKind::Original => "PhotoReviewRs.OriginalDecode",
+            DecodeThreadKind::PersistWorker => "PhotoReviewRs.PreviewPersist",
+            DecodeThreadKind::StartupCleanup => "PhotoReviewRs.PreviewCacheCleanup",
+        };
+        // The join handle is dropped: the thread is detached (C# `Task.Run` / a dedicated thread nobody joins).
+        std::thread::Builder::new().name(name.to_owned()).spawn(job).map(drop)
     }
 }
 
@@ -318,13 +392,39 @@ impl PreviewServiceConfig {
         platform_codec: Arc<dyn PlatformImageCodec>,
         payload_codec: Arc<dyn PreviewPayloadCodec>,
     ) -> Self {
-        todo!("W4-14a")
+        Self {
+            metrics,
+            is_original_loading_mode,
+            target_decode_box,
+            platform_codec,
+            payload_codec,
+            capacity_bytes: DEFAULT_CAPACITY_BYTES,
+            disk_cache_directory: None,
+            disk_cache_capacity_bytes: DEFAULT_DISK_CACHE_CAPACITY_BYTES,
+            disable_disk_cache_override: None,
+            decoder: None,
+            log: None,
+            current_backend: None,
+            decoder_factory: None,
+            source_bytes_cache: None,
+            original_dimensions_capacity: DEFAULT_ORIGINAL_DIMENSIONS_CAPACITY,
+            cache_ram_percent: None,
+            preload_window: None,
+            source_reader: None,
+            raw_full_decoder: None,
+            is_raw_full_decode_enabled: None,
+            physical_memory_bytes: 0,
+            file_system: None,
+            diag: None,
+            clock: None,
+            spawner: None,
+        }
     }
 
     /// C# private `WidthOnly(targetDecodeWidth)`: `DecodeBox::new(target_decode_width(), 0)` on every read (height
     /// unconstrained). The width-only C# constructor overload is `new(.., width_only(f), ..)`.
     pub fn width_only(target_decode_width: Arc<dyn Fn() -> i32 + Send + Sync>) -> DecodeBoxSource {
-        todo!("W4-14a")
+        Arc::new(move || DecodeBox::new(target_decode_width(), 0))
     }
 }
 
@@ -421,7 +521,9 @@ impl fmt::Debug for CacheClearedSubscription {
 
 impl Drop for CacheClearedSubscription {
     fn drop(&mut self) {
-        todo!("W4-14a: remove `id` from the subscriber list if the service is still alive")
+        if let Some(inner) = self.inner.upgrade() {
+            lock(&inner.cache_cleared).retain(|(id, _)| *id != self.id);
+        }
     }
 }
 
@@ -433,47 +535,160 @@ impl PreviewImageService {
     /// `source_bytes_cache.capacity_bytes()`, then ONE `log.info(line)`; the RAM cache; then W4-14c starts the persist
     /// workers and the startup cleanup (`ServiceInner::start_background`, disk.rs).
     pub fn new(config: PreviewServiceConfig) -> Result<Self, PreviewServiceBuildError> {
-        todo!("W4-14a")
+        let PreviewServiceConfig {
+            metrics,
+            is_original_loading_mode,
+            target_decode_box,
+            platform_codec,
+            payload_codec,
+            capacity_bytes,
+            disk_cache_directory,
+            disk_cache_capacity_bytes,
+            disable_disk_cache_override,
+            decoder,
+            log,
+            current_backend,
+            decoder_factory,
+            source_bytes_cache,
+            original_dimensions_capacity,
+            cache_ram_percent,
+            preload_window,
+            source_reader,
+            raw_full_decoder,
+            is_raw_full_decode_enabled,
+            physical_memory_bytes,
+            file_system,
+            diag,
+            clock,
+            spawner,
+        } = config;
+
+        // C# order: codec, reader, raw decoder, metrics, sources (required ones are non-`Option` fields).
+        let source_reader = source_reader.unwrap_or_else(|| Arc::new(PhysicalSourceReader));
+        let is_raw_full_decode_enabled = is_raw_full_decode_enabled.unwrap_or_else(|| Arc::new(|| false));
+        let current_backend: BackendSource = current_backend.unwrap_or_else(|| Arc::new(|| DecoderBackend::Wpf));
+        // R0002: the Rust app's own cache directory, never the C# app's `%LOCALAPPDATA%\PhotoReview\cache`.
+        let disk_directory = disk_cache_directory.unwrap_or_else(|| AppPaths::from_environment().preview_cache_dir);
+        let log: Arc<dyn Log> = log.unwrap_or_else(|| Arc::new(NullLog));
+        let clock: Arc<dyn Clock> = clock.unwrap_or_else(|| Arc::new(SystemClock));
+        // perf(cache) v4: single-file entries, no ".meta" companion. Creates no file (the first write creates the dir).
+        let disk_store = DiskCacheStore::new(
+            disk_directory.clone(),
+            "*.pv4",
+            disk_cache_capacity_bytes,
+            Some(log.clone()),
+            Some(clock.clone()),
+        )
+        .map_err(PreviewServiceBuildError::DiskDirectory)?;
+        // F-IMG-4 / D10: resolved ONCE; the decode and persist paths only read the stored bool.
+        let diag = diag.unwrap_or_else(DiagOptions::current);
+        let disable_disk_cache =
+            disable_disk_cache_override.unwrap_or(disk_cache_capacity_bytes <= 0 || diag.disable_disk_cache);
+        // C# `_decoder = decoder ?? (factory?.Create(currentBackend()) ?? new WicDirectDecoder(..))`: the WIC default
+        // lives in the composition root (P-22: this crate is OS-free).
+        let decoder: Arc<dyn ImageDecoder> = match (decoder, &decoder_factory) {
+            (Some(decoder), _) => decoder,
+            (None, Some(factory)) => factory.create(current_backend()),
+            (None, None) => return Err(PreviewServiceBuildError::NoDecoder),
+        };
+        let original_dimensions = BoundedLruCache::new(i64::from(original_dimensions_capacity), |_| 1)
+            .map_err(|_| PreviewServiceBuildError::OriginalDimensionsCapacity(original_dimensions_capacity))?;
+        // IMG-11: clamp to the user's share of physical RAM (or half of it without a percent), log what is in effect.
+        let (capacity, budget_line) = resolve_capacity(
+            capacity_bytes,
+            cache_ram_percent,
+            physical_memory_bytes,
+            source_bytes_cache.as_ref().map(|cache| cache.capacity_bytes()),
+            preload_window,
+        );
+        log.info(&budget_line);
+        let cache = BoundedLruCache::new(capacity, |image: &PreviewImage| image.estimated_bytes())
+            .map_err(|_| PreviewServiceBuildError::Capacity(capacity))?;
+
+        let inner = Arc::new(ServiceInner {
+            metrics,
+            is_original_loading_mode,
+            target_decode_box,
+            current_backend,
+            platform_codec,
+            payload_codec,
+            log,
+            fs: file_system.unwrap_or_else(|| Arc::new(PhysicalFileSystem)),
+            source_reader,
+            source_bytes_cache,
+            diag,
+            clock,
+            spawner: spawner.unwrap_or_else(|| Arc::new(StdThreadSpawner)),
+            capacity_bytes: capacity,
+            decoder,
+            decoder_factory,
+            decoders_by_backend: Mutex::new(HashMap::new()),
+            raw_full_decoder,
+            is_raw_full_decode_enabled,
+            cache,
+            original_dimensions,
+            lifecycle_gate: Mutex::new(()),
+            cache_epoch: AtomicI64::new(0),
+            cache_cleared: Mutex::new(Vec::new()),
+            next_listener_id: AtomicU64::new(0),
+            in_flight: Mutex::new(HashMap::new()),
+            viewer_slots: handle::SlotGate::new(VIEWER_DECODE_SLOTS),
+            active_viewer_decodes: AtomicI32::new(0),
+            original_gate: handle::SlotGate::new(1),
+            disk_directory,
+            disable_disk_cache,
+            disk_store,
+            persist: disk::PersistState::new(),
+        });
+        // W4-14c: the persist workers and the startup cleanup.
+        if let Err(error) = inner.start_background() {
+            // Workers that did start drain the (empty) queue and exit instead of holding the state forever.
+            inner.persist.complete();
+            return Err(PreviewServiceBuildError::Spawn(error));
+        }
+        Ok(Self { inner })
     }
 
     /// C# `CapacityBytes`: the effective (post-clamp) RAM budget.
     pub fn capacity_bytes(&self) -> i64 {
-        todo!("W4-14a")
+        self.inner.capacity_bytes
     }
 
     /// C# `DiskDirectory`.
     pub fn disk_directory(&self) -> &Path {
-        todo!("W4-14a")
+        &self.inner.disk_directory
     }
 
     /// C# `DiskStore`.
     pub fn disk_store(&self) -> &DiskCacheStore {
-        todo!("W4-14a")
+        &self.inner.disk_store
     }
 
     /// C# `CacheCount` (also `IPreloadTarget.CacheCount`).
     pub fn cache_count(&self) -> usize {
-        todo!("W4-14a")
+        self.inner.cache.count()
     }
 
     /// C# `CacheBytes` (also `IPreloadTarget.CacheBytes`).
     pub fn cache_bytes(&self) -> i64 {
-        todo!("W4-14a")
+        self.inner.cache.current_size()
     }
 
     /// C# `IsOriginalLoadingMode()`: calls the configured source.
     pub fn is_original_loading_mode(&self) -> bool {
-        todo!("W4-14a")
+        (self.inner.is_original_loading_mode)()
     }
 
     /// C# `ActiveViewerDecodes` (also `IPreloadTarget.ActiveViewerDecodes`): viewer decodes running right now.
     pub fn active_viewer_decodes(&self) -> i32 {
-        todo!("W4-14a")
+        self.inner.active_viewer_decodes.load(Ordering::SeqCst)
     }
 
     /// C# `GetCurrentCacheKey(string path)`: `get_current_cache_key_for_box(path, (target_decode_box)())`.
     pub fn get_current_cache_key(&self, path: &str) -> Result<ImageCacheKey, CacheKeyError> {
-        todo!("W4-14a")
+        // C# evaluation order: the box is the argument of the box overload, so it is read first (even in Original mode).
+        let target_box = (self.inner.target_decode_box)();
+        self.get_current_cache_key_for_box(path, target_box)
     }
 
     /// C# `GetCurrentCacheKey(string path, DecodeBox targetBox)` (P-1 startup): reads the loading mode ONCE; Original =>
@@ -484,36 +699,60 @@ impl PreviewImageService {
         path: &str,
         target_box: DecodeBox,
     ) -> Result<ImageCacheKey, CacheKeyError> {
-        todo!("W4-14a")
+        let is_original = self.is_original_loading_mode();
+        let source_kind = source_kind_for(path);
+        let target_box = if is_original { DecodeBox::UNBOUNDED } else { target_box };
+        // The backend is an argument of `Create`: it is read even when the key then fails (missing file).
+        let options = KeyOptions {
+            orientation_applied: true,
+            backend: (self.inner.current_backend)(),
+            source_kind,
+        };
+        ImageCacheKey::create(self.inner.fs.as_ref(), path, is_original, target_box, options)
     }
 
     /// C# `GetCurrentCacheKey(CatalogEntry entry)` (also `IPreloadTarget`): as above with the entry overload
     /// (`ImageCacheKey::create_for_entry`, no stat when the entry has length and write time); the box is read from the
     /// source only when NOT in Original mode (C# evaluation order: mode, kind, then box).
     pub fn get_current_cache_key_for_entry(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, CacheKeyError> {
-        todo!("W4-14a")
+        let is_original = self.is_original_loading_mode();
+        let source_kind = source_kind_for(entry.path());
+        let target_box = if is_original {
+            DecodeBox::UNBOUNDED
+        } else {
+            (self.inner.target_decode_box)()
+        };
+        let options = KeyOptions {
+            orientation_applied: true,
+            backend: (self.inner.current_backend)(),
+            source_kind,
+        };
+        ImageCacheKey::create_for_entry(self.inner.fs.as_ref(), entry, is_original, target_box, options)
     }
 
     /// C# `TryGetCachedPreview(string path, out image)` (also `IPreloadTarget.TryGetCachedPreview(string)`): builds the
     /// current key; ANY key failure (missing file, bad path) is a quiet miss (`None`), like the C# `catch (IOException)`
     /// / `catch (UnauthorizedAccessException)`. A hit makes the entry most recently used.
     pub fn try_get_cached_preview_path(&self, path: &str) -> Option<PreviewImage> {
-        todo!("W4-14a")
+        // DIVERGENCE (contract open question 3): a blank path is a miss too; C# lets its `ArgumentException` escape.
+        let key = self.get_current_cache_key(path).ok()?;
+        self.try_get_cached_preview(&key)
     }
 
     /// C# `TryGetCachedPreview(ImageCacheKey key, out image)`: RAM cache only; no metrics.
     pub fn try_get_cached_preview(&self, key: &ImageCacheKey) -> Option<PreviewImage> {
-        todo!("W4-14a")
+        self.inner.cache.try_get(key)
     }
 
     /// C# `IPreloadTarget.CachedPreviewBytes(key)`: `estimated_bytes()` of the cached preview, `None` when not cached.
     pub fn cached_preview_bytes(&self, key: &ImageCacheKey) -> Option<i64> {
-        todo!("W4-14a")
+        self.try_get_cached_preview(key).map(|image| image.estimated_bytes())
     }
 
     /// C# `HasInflightPreview(key)`: a load for `(key, current epoch)` is registered.
     pub fn has_inflight_preview(&self, key: &ImageCacheKey) -> bool {
-        todo!("W4-14a")
+        let load_key: LoadKey = (key.clone(), self.inner.current_epoch());
+        lock(&self.inner.in_flight).contains_key(&load_key)
     }
 
     /// C# `EvictCachedPath(path, alsoInvalidate)`: normalizes with the key's own normalization (`normalize_key_path`,
@@ -523,35 +762,70 @@ impl PreviewImageService {
     /// calls `also_invalidate(normalized)`. NO epoch bump (R2-F-02). `also_invalidate` runs under a non-reentrant
     /// mutex: it must not call back into this service.
     pub fn evict_cached_path(&self, path: &str, also_invalidate: Option<&dyn Fn(&str)>) -> Result<(), PreviewError> {
-        todo!("W4-14a")
+        // Trap 1: the key's own normalization (full path + ToUpperInvariant), never a local `to_uppercase`.
+        let normalized = normalize_key_path(path).map_err(PreviewError::InvalidPath)?;
+        // A moved/deleted file must not keep its raw bytes in RAM (per path, no global bump). C# passes `path` as given.
+        if let Some(source_bytes) = &self.inner.source_bytes_cache {
+            source_bytes.evict(Path::new(path)).map_err(PreviewError::SourceBytes)?;
+        }
+        // No epoch bump (R2-F-02): bumping would also drop every OTHER path's in-flight decode.
+        let _gate = lock(&self.inner.lifecycle_gate);
+        self.inner.cache.remove_where(|key| key.path() == normalized);
+        if let Some(also_invalidate) = also_invalidate {
+            also_invalidate(&normalized);
+        }
+        Ok(())
     }
 
     /// C# `CacheCleared += handler` (WP-21, INV-2): `listener` runs on the thread that called [`Self::clear_cache`],
     /// after the RAM cache and the original dimensions were cleared, outside every service lock.
     pub fn subscribe_cache_cleared(&self, listener: CacheClearedListener) -> CacheClearedSubscription {
-        todo!("W4-14a")
+        let id = self.inner.next_listener_id.fetch_add(1, Ordering::SeqCst);
+        lock(&self.inner.cache_cleared).push((id, listener));
+        CacheClearedSubscription {
+            inner: Arc::downgrade(&self.inner),
+            id,
+        }
     }
 
     /// C# `ClearCache()`: under the lifecycle gate bump the epoch (wrapping) and clear the RAM cache; then clear the
     /// original dimensions; then raise `CacheCleared` (snapshot of the subscribers, called in subscription order).
     pub fn clear_cache(&self) {
-        todo!("W4-14a")
+        {
+            let _gate = lock(&self.inner.lifecycle_gate);
+            self.inner.bump_epoch_under_gate();
+            self.inner.cache.clear();
+        }
+        self.inner.original_dimensions.clear();
+        // Snapshot, then call with no lock held: a listener may clear again or unsubscribe (R0003).
+        let listeners: Vec<CacheClearedListener> = lock(&self.inner.cache_cleared)
+            .iter()
+            .map(|(_, listener)| listener.clone())
+            .collect();
+        for listener in listeners {
+            listener();
+        }
     }
 
     /// C# `ClearSourceBytesCache()`.
     pub fn clear_source_bytes_cache(&self) {
-        todo!("W4-14a")
+        if let Some(source_bytes) = &self.inner.source_bytes_cache {
+            source_bytes.clear();
+        }
     }
 
     /// C# `TryGetKnownOriginalDimensions(currentKey, out dimensions)`: lookup under
     /// `ImageCacheKey::create_original(current_key)`; never touches the file.
     pub fn try_get_known_original_dimensions(&self, current_key: &ImageCacheKey) -> Option<(i32, i32)> {
-        todo!("W4-14a")
+        self.inner
+            .original_dimensions
+            .try_get(&ImageCacheKey::create_original(current_key))
     }
 
     /// C# `IsRawFullDecodeRequest(path)`: a RAW full decoder is configured AND enabled now AND the extension is RAW.
     pub fn is_raw_full_decode_request(&self, path: &str) -> bool {
-        todo!("W4-14a")
+        // C# `&&` short-circuit: the enabled source is read only when a RAW full decoder exists.
+        self.inner.raw_full_decoder.is_some() && (self.inner.is_raw_full_decode_enabled)() && is_raw_path(path)
     }
 }
 
@@ -559,27 +833,43 @@ impl Drop for PreviewImageService {
     /// No C# twin (the C# singleton is never disposed): completes the persist queue so the workers drain what is queued
     /// and exit (`disk::PersistState::complete`), without waiting for them.
     fn drop(&mut self) {
-        todo!("W4-14a")
+        self.inner.persist.complete();
     }
 }
 
 impl ServiceInner {
     /// C# `Volatile.Read(ref _cacheEpoch)`.
     pub(crate) fn current_epoch(&self) -> i64 {
-        todo!("W4-14a")
+        self.cache_epoch.load(Ordering::SeqCst)
+    }
+
+    /// C# `_cacheEpoch++` (D3: wrapping). The caller holds `lifecycle_gate`: the epoch is written only under it.
+    pub(crate) fn bump_epoch_under_gate(&self) {
+        let next = self.cache_epoch.load(Ordering::SeqCst).wrapping_add(1);
+        self.cache_epoch.store(next, Ordering::SeqCst);
     }
 
     /// C# `lock (_cacheLifecycleGate) if (cacheEpoch == _cacheEpoch) _cache.Set(key, image)`: publishes only while the
     /// epoch the load started under is still current. Returns whether it was stored.
     pub(crate) fn publish_if_current(&self, key: ImageCacheKey, image: PreviewImage, cache_epoch: i64) -> bool {
-        todo!("W4-14a")
+        // INV-2: the compare and the set are atomic against `clear_cache`'s bump + clear.
+        let _gate = lock(&self.lifecycle_gate);
+        if cache_epoch != self.current_epoch() {
+            return false;
+        }
+        self.cache.set(key, image);
+        true
     }
 }
 
 /// C# `SourceKindFor(path)`: `ImageSourceKind::RAW_PREVIEW` when `pr_core::catalog::types::is_raw_path(path)`, else
 /// `STANDARD`.
 pub fn source_kind_for(path: &str) -> u8 {
-    todo!("W4-14a")
+    if is_raw_path(path) {
+        ImageSourceKind::RAW_PREVIEW
+    } else {
+        ImageSourceKind::STANDARD
+    }
 }
 
 /// C# internal static `ResolveCapacity(requestedBytes, ramPercent, physicalBytes, sourceBytesCapacity, out logLine,
@@ -606,7 +896,54 @@ pub fn resolve_capacity(
     source_bytes_capacity: Option<i64>,
     preload_window: Option<PreloadWindow>,
 ) -> (i64, String) {
-    todo!("W4-14a")
+    let source = source_bytes_capacity.unwrap_or(0);
+    // Trap 8: `None` prints "off", `Some(0)` prints "0 MiB".
+    let source_part = match source_bytes_capacity {
+        None => ", source-bytes cache off".to_owned(),
+        Some(_) => format!(", source-bytes cache {} MiB", source / MIB),
+    };
+    if let Some(requested_percent) = ram_percent
+        && physical_bytes > 0
+    {
+        // Q-R31: the percent floor follows the configured preload window.
+        let window = preload_window.unwrap_or(PreloadWindow::DEFAULT);
+        let percent = ram_budget::clamp_cache_percent(requested_percent, physical_bytes, window);
+        // Cannot fail (physical > 0); an impossible error takes the byte branch instead of panicking.
+        if let Ok(capacity) = ram_budget::preview_bytes_for_percent(percent, physical_bytes, source, window) {
+            let clamp_part = if percent != requested_percent {
+                format!(
+                    " (requested {requested_percent}% clamped to {percent}%; allowed {}-{MAX_IMAGE_CACHE_RAM_PERCENT}%)",
+                    ram_budget::minimum_cache_percent(physical_bytes, window)
+                )
+            } else {
+                String::new()
+            };
+            let line = format!(
+                "Memory budgets: preview cache {} MiB; cache share {percent}% of {} MiB physical RAM = {} MiB for preview + source-bytes{clamp_part}{source_part}.",
+                capacity / MIB,
+                physical_bytes / MIB,
+                ram_budget::bytes_for_percent(percent, physical_bytes) / MIB
+            );
+            return (capacity, line);
+        }
+    }
+
+    let clamped = ram_budget::clamp_preview_to_physical_memory(requested_bytes, physical_bytes, source).max(1);
+    let reason = if physical_bytes <= 0 {
+        " (physical RAM unknown: byte budget used)"
+    } else {
+        ""
+    };
+    let clamp_part = if clamped != requested_bytes {
+        format!(" (clamped from {} MiB to 50% of physical RAM)", requested_bytes / MIB)
+    } else {
+        String::new()
+    };
+    let line = format!(
+        "Memory budgets: preview cache {} MiB{reason}{clamp_part}{source_part}.",
+        clamped / MIB
+    );
+    (clamped, line)
 }
 
 /// White-box red tests (W4-14a): the epoch (INV-2) and the in-flight table are `pub(crate)`, so integration tests cannot
