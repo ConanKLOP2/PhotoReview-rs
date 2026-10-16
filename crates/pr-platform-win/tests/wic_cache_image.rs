@@ -1021,3 +1021,124 @@ fn decode_and_encode_jpeg_error_paths_leak_nothing() {
     assert_eq!(NativePixelMemory::live_count(), live_before);
     assert_eq!(outstanding_on_this_thread(), com_before);
 }
+
+/// Repair round 2: multi-band round trips, and the size/disposed/length guards that run before WIC.
+mod repair_round_2 {
+
+    use pr_imaging::decode_types::DecodeBox;
+    use pr_imaging::pixels::{PixelBuffer, PixelLayout};
+    use pr_platform_win::wic::cache_image::{decode, encode_jpeg, encode_png};
+
+    fn noisy(width: i32, height: i32, layout: PixelLayout) -> PixelBuffer {
+        let mut px = PixelBuffer::allocate(width, height, layout).unwrap();
+        for (i, b) in px.bytes_mut().unwrap().iter_mut().enumerate() {
+            *b = ((i as u64 * 131 + (i as u64 / 251)) % 256) as u8;
+        }
+        px
+    }
+
+    fn meaningful(px: &PixelBuffer) -> Vec<u8> {
+        let mut v = Vec::new();
+        for y in 0..px.height() {
+            let row = px.get_row(y).unwrap();
+            for x in 0..px.width() as usize {
+                v.extend_from_slice(&row[x * 4..x * 4 + 3]);
+            }
+        }
+        v
+    }
+
+    #[test]
+    #[ignore = "native: needs WIC"]
+    fn png_multi_band_opaque_round_trips_exactly() {
+        // 700 x 400 x 3 = 840 000 bytes > BandBytes: 4 bands (rows_per_band = 124), the last one partial.
+        for (w, h) in [
+            (700, 400),
+            (1, 20_000),
+            (3, 30_000),
+            (40_000, 5),
+            (43_691, 2),
+            (43_690, 3),
+            (60_000, 3),
+        ] {
+            let src = noisy(w, h, PixelLayout::Bgr32);
+            let mut out = Vec::new();
+            if let Err(e) = encode_png(&src, &mut out) {
+                panic!("{w}x{h}: {e:?}");
+            }
+            let (dec, info) = decode(&out, Some(PixelLayout::Bgr32), DecodeBox::UNBOUNDED, w, h).unwrap();
+            assert_eq!((info.source_width, info.source_height, info.downscaled), (w, h, false));
+            assert_eq!(meaningful(&dec), meaningful(&src), "{w}x{h}");
+        }
+    }
+
+    #[test]
+    #[ignore = "native: needs WIC"]
+    fn jpeg_multi_band_is_same_as_single_band_image() {
+        // Same image content encoded as one band is impossible for 700x400, so compare JPEG decode against PSNR of a smooth source.
+        let (w, h) = (700, 400);
+        let mut src = PixelBuffer::allocate(w, h, PixelLayout::Bgr32).unwrap();
+        for y in 0..h {
+            let row = src.get_row_mut(y).unwrap();
+            for x in 0..w as usize {
+                row[x * 4] = (x * 255 / 699) as u8;
+                row[x * 4 + 1] = (y * 255 / 399) as u8;
+                row[x * 4 + 2] = 100;
+                row[x * 4 + 3] = 0;
+            }
+        }
+        let mut out = Vec::new();
+        encode_jpeg(&src, &mut out, 95).unwrap();
+        let (dec, _) = decode(&out, Some(PixelLayout::Bgr32), DecodeBox::UNBOUNDED, w, h).unwrap();
+        let (a, b) = (meaningful(&src), meaningful(&dec));
+        let mut worst = 0i32;
+        for (x, y) in a.iter().zip(b.iter()) {
+            worst = worst.max((*x as i32 - *y as i32).abs());
+        }
+        assert!(worst < 16, "worst channel error {worst}");
+    }
+
+    use pr_platform_win::wic::cache_image::EncodeError;
+
+    #[test]
+    fn encode_too_large_buffer_is_rejected_before_wic() {
+        // 2^15 x 2^15 x 4 = 2^32 bytes = u32::MAX + 1: C# `ByteCount > uint.MaxValue` => ArgumentException.
+        let big = PixelBuffer::unallocated_for_tests(32768, 32768, PixelLayout::Bgr32);
+        assert_eq!(big.byte_count(), 1i64 << 32);
+        let mut out = Vec::new();
+        match encode_png(&big, &mut out) {
+            Err(EncodeError::TooLarge { byte_count }) => assert_eq!(byte_count, 1i64 << 32),
+            other => panic!("png: {other:?}"),
+        }
+        match encode_jpeg(&big, &mut out, 90) {
+            Err(EncodeError::TooLarge { byte_count }) => assert_eq!(byte_count, 1i64 << 32),
+            other => panic!("jpeg: {other:?}"),
+        }
+        assert!(out.is_empty());
+        // quality is checked before size
+        assert!(matches!(
+            encode_jpeg(&big, &mut out, 0),
+            Err(EncodeError::QualityOutOfRange { quality: 0 })
+        ));
+        // disposed is checked before size
+        let mut gone = PixelBuffer::unallocated_for_tests(32768, 32768, PixelLayout::Bgr32);
+        gone.dispose();
+        assert!(matches!(encode_png(&gone, &mut out), Err(EncodeError::Disposed)));
+        assert!(matches!(encode_jpeg(&gone, &mut out, 90), Err(EncodeError::Disposed)));
+    }
+
+    use pr_platform_win::wic::cache_image::{CacheImageError, INVALID_DATA_TOO_LARGE};
+
+    #[test]
+    fn decode_payload_longer_than_u32_is_invalid_data_without_touching_memory() {
+        // Never dereferenced: the length guard runs before WIC (UB-free in practice: only the length is read).
+        // SAFETY: none needed for reads, because the slice is never dereferenced: `decode` rejects it on its length alone, before
+        // touching WIC or the memory (a `dangling` pointer with a length below `isize::MAX` only has to be non-null and aligned).
+        let huge: &[u8] =
+            unsafe { std::slice::from_raw_parts(std::ptr::NonNull::<u8>::dangling().as_ptr(), 5usize << 30) };
+        match decode(huge, None, DecodeBox::UNBOUNDED, 0, 0) {
+            Err(CacheImageError::InvalidData(t)) => assert_eq!(t, INVALID_DATA_TOO_LARGE),
+            other => panic!("{other:?}"),
+        }
+    }
+}

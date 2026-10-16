@@ -150,7 +150,11 @@ pub(crate) mod native {
     use windows::Win32::Graphics::Imaging::{IWICBitmap, WICBitmapInterpolationModeFant};
 
     fn wic_error(error: &WicError) -> ScaleError {
-        let hresult = error.hresult();
+        classify_hresult(error.hresult())
+    }
+
+    /// `E_OUTOFMEMORY` => `InsufficientMemory`, every other failing code => `Com` (pure, so it is testable without WIC).
+    fn classify_hresult(hresult: i32) -> ScaleError {
         if hresult == E_OUTOFMEMORY {
             ScaleError::InsufficientMemory { hresult }
         } else {
@@ -201,5 +205,20 @@ pub(crate) mod native {
         // outlives the call; a null rect means the whole image.
         unsafe { scaler.CopyPixels(std::ptr::null(), stride, target) }.map_err(|e| com_error(&e))?;
         Ok(destination)
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn out_of_memory_maps_to_insufficient_memory_and_others_to_com() {
+            assert!(matches!(
+                classify_hresult(E_OUTOFMEMORY),
+                ScaleError::InsufficientMemory { hresult } if hresult == E_OUTOFMEMORY
+            ));
+            let other = 0x8007_0216_u32 as i32;
+            assert!(matches!(classify_hresult(other), ScaleError::Com { hresult } if hresult == other));
+        }
     }
 }
