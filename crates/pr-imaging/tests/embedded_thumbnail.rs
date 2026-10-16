@@ -462,6 +462,22 @@ fn is_acceptable_size_boundaries() {
 }
 
 #[test]
+fn is_acceptable_size_product_does_not_wrap_in_32_bits() {
+    // C#: IsAcceptableSize computes `(long)width * height`. These products wrap to 0, a negative or a small number in
+    // 32 bits; a 32-bit multiply would accept them (and the reader would then try to allocate gigabytes).
+    let rows: [(i32, i32); 5] = [
+        (65_536, 65_536),     // wraps to 0
+        (46_341, 46_341),     // wraps negative
+        (i32::MAX, i32::MAX), // wraps to 1
+        (65_535, 65_535),
+        (1 << 20, 1 << 12), // exactly 2^32: wraps to 0
+    ];
+    for (width, height) in rows {
+        assert!(!is_acceptable_size(width, height), "{width}x{height}");
+    }
+}
+
+#[test]
 fn is_acceptable_size_matches_golden_boundaries() {
     // golden: embedded-thumbnail-size.json (21 cases, pure; the int-range and negative rows)
     let golden: Golden = golden::load("embedded-thumbnail-size");
