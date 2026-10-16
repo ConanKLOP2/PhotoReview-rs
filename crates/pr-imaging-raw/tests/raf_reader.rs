@@ -411,10 +411,14 @@ fn golden_case_bytes(case: &Value) -> Vec<u8> {
                 let size = u16::try_from(r.get("size").and_then(Value::as_u64).unwrap_or(4)).expect("size");
                 out.extend(u16::try_from(i64_of(r, "tag")).expect("tag").to_be_bytes());
                 out.extend(size.to_be_bytes());
+                // Every record occupies 4 + size bytes (the golden `cfa_length` values count the data of size 2 and 3
+                // records too): height and width first when size >= 4, then zero bytes up to `size`.
                 if size >= 4 {
                     out.extend(u16::try_from(i64_of(r, "height")).expect("h").to_be_bytes());
                     out.extend(u16::try_from(i64_of(r, "width")).expect("w").to_be_bytes());
                     out.extend(std::iter::repeat_n(0u8, usize::from(size) - 4));
+                } else {
+                    out.extend(std::iter::repeat_n(0u8, usize::from(size)));
                 }
             }
         } else {
