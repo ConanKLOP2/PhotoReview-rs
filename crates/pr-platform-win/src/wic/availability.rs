@@ -145,6 +145,8 @@ pub mod native {
         }
     }
 
+    // Mutation waiver: skipping `CoUninitialize` here, or leaking/freeing the `MFTEnumEx` array differently, is a pure
+    // resource-balance change that no test can observe; they are non-equivalent but untestable.
     impl Drop for ComApartment {
         fn drop(&mut self) {
             if self.paired {
@@ -179,30 +181,34 @@ pub mod native {
         Guid(out)
     }
 
-    /// C# `ReadString`: ask for the length with `(0, null)`, then read; length 0 or > 4096 or any COM error is `""`.
-    fn read_string(mut getter: impl FnMut(&mut [u16], *mut u32) -> windows_core::Result<()>) -> String {
+    /// C# `ReadString`: ask for the length with `(0, null)` (a null pointer is required: WIC answers `E_INVALIDARG`
+    /// for a dangling non-null one), then read; length 0 or > 4096 or any COM error is `""`.
+    fn read_string(mut getter: impl FnMut(u32, *mut u16, *mut u32) -> HRESULT) -> String {
         let mut length = 0u32;
-        if getter(&mut [], &mut length).is_err() || length == 0 || length > MAX_STRING_CHARS {
+        if getter(0, std::ptr::null_mut(), &mut length).is_err() || length == 0 || length > MAX_STRING_CHARS {
             return String::new();
         }
         let mut buffer = vec![0u16; length as usize];
         let mut actual = 0u32;
-        if getter(&mut buffer, &mut actual).is_err() {
+        if getter(length, buffer.as_mut_ptr(), &mut actual).is_err() {
             return String::new();
         }
-        String::from_utf16_lossy(&buffer).trim_end_matches('\0').to_owned()
+        String::from_utf16_lossy(&buffer).trim_end_matches(' ').to_owned()
     }
 
     fn describe(info: &IWICBitmapCodecInfo) -> Option<DecoderEntry> {
         // SAFETY: `info` is a live COM reference owned by the caller; the out-value is a local.
         let container = unsafe { info.GetContainerFormat() }.ok()?;
-        let friendly_name = read_string(|buf, actual| {
-            // SAFETY: `buf` is a valid writable slice (empty for the length query); `actual` points to a local.
-            unsafe { info.GetFriendlyName(buf, actual) }
+        let raw = info.as_raw();
+        let vtable = Interface::vtable(info);
+        let friendly_name = read_string(|cch, buf, actual| {
+            // SAFETY: `raw` is the live interface pointer; `buf` is null with `cch == 0` (length query) or points to
+            // `cch` writable u16; `actual` points to a local.
+            unsafe { (vtable.base__.GetFriendlyName)(raw, cch, windows_core::PWSTR(buf), actual) }
         });
-        let file_extensions = read_string(|buf, actual| {
+        let file_extensions = read_string(|cch, buf, actual| {
             // SAFETY: as above.
-            unsafe { info.GetFileExtensions(buf, actual) }
+            unsafe { (vtable.GetFileExtensions)(raw, cch, windows_core::PWSTR(buf), actual) }
         });
         Some(DecoderEntry {
             container_format: from_win_guid(&container),

@@ -305,3 +305,42 @@ fn golden_wic_codec_probe_constants_match_textual_guids() {
     );
     assert_eq!(guid_text(&MEDIA_SUBTYPE_HEVC), row["hevc"].as_str().expect("hevc text"));
 }
+
+// Pins the MFT flag set (SYNCMFT|ASYNCMFT|HARDWARE|LOCALMFT|SORTANDFILTER) against |->&/^ mutants.
+#[test]
+fn mft_enum_flags_match_csharp() {
+    assert_eq!(pr_platform_win::wic::availability::MFT_ENUM_FLAGS, 0x57);
+}
+
+// Real strings, not "" (E_INVALIDARG regression for a dangling non-null length-query pointer).
+#[test]
+#[ignore = "native: needs WIC"]
+fn jpeg_entry_has_name_and_extensions() {
+    let list = native::enumerate_decoders().expect("enumeration");
+    let jpeg = list
+        .iter()
+        .find(|d| d.container_format == guid_of(JPEG_TEXT))
+        .expect("jpeg listed");
+    assert!(!jpeg.friendly_name.is_empty());
+    assert!(
+        jpeg.file_extensions.to_lowercase().contains(".jpg"),
+        "{}",
+        jpeg.file_extensions
+    );
+    assert!(!jpeg.friendly_name.contains('\0') && !jpeg.file_extensions.contains('\0'));
+}
+
+// Real MFTEnumEx answers: an unknown subtype has no decoder, H.264 has one on every Windows 10/11.
+#[test]
+#[ignore = "native: needs WIC"]
+fn mf_unknown_subtype_has_no_decoder() {
+    let bogus = guid_of("deadbeef-1234-5678-9abc-def012345678");
+    assert!(!native::has_media_foundation_decoder(&bogus).expect("MFTEnumEx"));
+}
+
+#[test]
+#[ignore = "native: needs WIC"]
+fn mf_h264_decoder_exists_on_windows() {
+    let h264 = guid_of("34363248-0000-0010-8000-00aa00389b71");
+    assert!(native::has_media_foundation_decoder(&h264).expect("MFTEnumEx"));
+}
