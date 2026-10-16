@@ -690,6 +690,8 @@ fn compress8_round_trips_through_decompress8() {
     let library = load_native_library();
     let mut compressor = library.create_compressor().expect("compressor");
     assert_eq!(compressor.set(TjParam::Quality, 92).expect("set quality"), 0);
+    // libjpeg-turbo 3.0 refuses to compress without TJPARAM_SUBSAMP (C# TurboJpegSyntheticFormatTests sets it too).
+    assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp 4:4:4"), 0);
 
     let (width, height) = (64i32, 48i32);
     let pitch = width * 4;
