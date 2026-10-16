@@ -9,7 +9,8 @@
 //!   `RawHeaderError::is_io_failure` there.
 //!
 //! No unsafe, no I/O, no Windows dependency. All sizes keep the C# `int`/`long` width (`i32`/`i64`).
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); the porter removes this line.
+use pr_core::catalog::types::get_extension;
+use pr_core::text::eq_ignore_case;
 
 use crate::contracts::{EmbeddedPreview, ExifBlock};
 
@@ -42,7 +43,15 @@ pub const RAW_EXTENSIONS: [&str; 8] = [".cr2", ".cr3", ".nef", ".arw", ".dng", "
 /// (`pr_core::text::eq_ignore_case`, NOT `to_lowercase`: Unicode folds such as the Kelvin sign must not match).
 #[must_use]
 pub fn is_raw_extension(path: Option<&str>) -> bool {
-    todo!()
+    // A whitespace-only path has no dot, so `get_extension` already gives "" for it; the explicit `None` check covers C# `null`.
+    let Some(path) = path else {
+        return false;
+    };
+    let extension = get_extension(path);
+    !extension.is_empty()
+        && RAW_EXTENSIONS
+            .iter()
+            .any(|candidate| eq_ignore_case(candidate, extension))
 }
 
 /// Structural metadata parsed from a RAW container header (`RawContainerInfo` record).
@@ -84,6 +93,7 @@ pub mod limits {
     /// (`as i32` truncates like the unchecked C# cast; `i64::MIN as i32` is 0 in both languages).
     #[must_use]
     pub fn initial_probe_length(source_length: i64) -> i32 {
-        todo!()
+        // Clamp in i64 first, then narrow like the unchecked C# `(int)` cast.
+        64_i64.min(source_length) as i32
     }
 }
