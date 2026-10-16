@@ -1298,3 +1298,46 @@ fn never_panics_on_random_blocks() {
 // (d) `complete` is reset to true by a later successful read (failure-on-first-block-second-succeeds-complete-stays-false);
 // (e) the skip test uses `>` instead of `>=` (block-offset-equals-length-is-skipped reads at `offset == length`);
 // (f) `to_read` uses `max` instead of `min` (block-length-clamped-to-4-mib and block-4-mib-plus-one-clamped change).
+
+/// Source whose reads at `empty_offset` return an empty slice (C# `span.IsEmpty`); other reads delegate to the inner source.
+struct EmptySliceSource {
+    inner: InMemoryRawHeaderSource,
+    empty_offset: i64,
+}
+
+impl RawHeaderSource for EmptySliceSource {
+    fn length(&self) -> i64 {
+        self.inner.length()
+    }
+
+    fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
+        if offset == self.empty_offset {
+            return Ok(&[]);
+        }
+        self.inner.read(offset, count)
+    }
+}
+
+#[test]
+fn try_read_exif_empty_slice_is_skipped_and_leaves_complete_true() {
+    let tiff = camera_tiff();
+    let info = cr3_info(vec![tiff_block(0, len_i64(&tiff))]);
+    let mut source = EmptySliceSource {
+        inner: InMemoryRawHeaderSource::new(tiff),
+        empty_offset: 0,
+    };
+    let result = read_exif(&mut source, &info);
+    assert!(result.summary.is_none());
+    assert!(result.complete);
+}
+
+#[test]
+fn try_read_exif_empty_slice_block_does_not_stop_later_blocks() {
+    let first = camera_tiff();
+    let second = camera_tiff();
+    let (inner, info) = two_blocks(&first, &second, false);
+    let mut source = EmptySliceSource { inner, empty_offset: 0 };
+    let result = read_exif(&mut source, &info);
+    assert!(result.complete);
+    assert!(result.summary.is_some_and(|s| !s.is_empty()));
+}
