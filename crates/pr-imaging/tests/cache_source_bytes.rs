@@ -18,9 +18,9 @@
 //! - Files live in `pr_test_support::TempRoot`, removed on drop.
 //!
 //! Skipped parts (documented, not silently dropped):
-//! - D41 / P-24: `pr-imaging` has no `pr-l10n` dependency, so the Vietnamese catalog text of the "file changed while
-//!   reading" error and the golden `localized` flag are NOT checked here. The composition root injects that text
-//!   (the D13 pattern); those checks port with that seam.
+//! - D41 / P-24: `pr-imaging` has no `pr-l10n` dependency. The UI sentences come from the injected
+//!   `SourceBytesTexts` (default `EnglishSourceBytesTexts`); the Vietnamese check uses a test double that renders the
+//!   `vi.json` template, and `is_localized` / `describe` are the `SourceBytesError` methods, not the pr-l10n helpers.
 //! - `Caching/SourceBytesCacheGapTests.TryGetRange_CacheMiss_OutValueIsEmptyNotNull`: the Rust `Option` has no
 //!   "empty array, not null" twin. Only the miss check (`Ok(None)`) is kept.
 //! - The C# `Debug.Assert(SynchronizationContext.Current is null)` has no Rust twin (contract trap 11).
@@ -1412,24 +1412,81 @@ mod error_handling_review_caching {
     }
 }
 
-// ---- DecoderErrorLocalizationTests (SourceBytesCache test, English half) ----
+// ---- DecoderErrorLocalizationTests (SourceBytesCache test) ----
 
 mod decoder_error_localization {
     use super::*;
+    use pr_imaging::cache::source_bytes::{EnglishSourceBytesTexts, SourceBytesTexts};
+
+    /// The two cache sentences rendered from `assets/languages/{en,vi}.json` (`{path}` substituted). The language is
+    /// read when the sentence is rendered, so switching it changes an error that already exists (C# `Tr` at display
+    /// time). Stands in for the catalog-backed texts of the composition root (D41).
+    struct CatalogTexts {
+        english: Value,
+        vietnamese: Value,
+        use_vietnamese: AtomicBool,
+    }
+
+    fn load_language(code: &str) -> Value {
+        let path = golden::repo_root()
+            .join("assets")
+            .join("languages")
+            .join(format!("{code}.json"));
+        let text = fs::read_to_string(&path).unwrap_or_else(|e| panic!("read {}: {e}", path.display()));
+        serde_json::from_str(&text).unwrap_or_else(|e| panic!("parse {}: {e}", path.display()))
+    }
+
+    impl CatalogTexts {
+        fn load() -> Self {
+            Self {
+                english: load_language("en"),
+                vietnamese: load_language("vi"),
+                use_vietnamese: AtomicBool::new(false),
+            }
+        }
+
+        fn render(&self, key: &str, path: &str) -> String {
+            let table = if self.use_vietnamese.load(Ordering::SeqCst) {
+                &self.vietnamese
+            } else {
+                &self.english
+            };
+            table[key]
+                .as_str()
+                .unwrap_or_else(|| panic!("language table has no string '{key}'"))
+                .replace("{path}", path)
+        }
+    }
+
+    impl SourceBytesTexts for CatalogTexts {
+        fn file_changed_while_reading(&self, path: &str) -> String {
+            self.render("err.io.fileChangedWhileReading", path)
+        }
+
+        fn unexpected_eof(&self, path: &str) -> String {
+            self.render("err.io.unexpectedEof", path)
+        }
+    }
+
+    /// A cache over `path` whose after-read hook moves the mtime one minute forward (the C# test's hook).
+    fn changing_cache(path: &Path) -> SourceBytesCache {
+        let touched = path.to_path_buf();
+        let cache = SourceBytesCache::new(256 * 1024 * 1024, PHYSICAL_64_GIB, None).expect("cache");
+        cache.set_after_read_for_tests(Some(hook(move || {
+            let _ = move_mtime(&touched, 1);
+        })));
+        cache
+    }
 
     #[test]
     fn source_bytes_cache_file_changed_while_reading_is_localized() {
         // C#: DecoderErrorLocalizationTests.SourceBytesCache_FileChangedWhileReading_IsLocalized
-        // SKIPPED PART (D41 / P-24): the Vietnamese text and the `IsLocalized` flag need the injected user-text seam,
-        // which pr-imaging does not have yet. This test checks the English message and the kind of the inner error.
+        // Rust: `is_localized` / `describe` are the `SourceBytesError` methods (D41: no pr-l10n here); the
+        // Vietnamese sentence comes from injected texts that render `vi.json`.
         let root = TempRoot::new("src-bytes-localized");
         let path = write_file(&root, "big.bin", &[0u8; 1024]);
-        let touched = path.clone();
-        let cache = SourceBytesCache::new(256 * 1024 * 1024, PHYSICAL_64_GIB, None).expect("cache");
-        // Moves the mtime one minute forward between the end of the read and the stat re-check.
-        cache.set_after_read_for_tests(Some(hook(move || {
-            let _ = move_mtime(&touched, 1);
-        })));
+        let texts = Arc::new(CatalogTexts::load());
+        let cache = changing_cache(&path).with_texts(Arc::clone(&texts) as Arc<dyn SourceBytesTexts>);
 
         let err = cache
             .get_or_read(&path)
@@ -1438,11 +1495,160 @@ mod decoder_error_localization {
         let SourceBytesError::Io(inner) = &err else {
             panic!("expected SourceBytesError::Io, got {err:?}");
         };
+        let shown = path.display().to_string();
         assert_eq!(inner.kind(), io::ErrorKind::Other);
-        let text = inner.to_string();
-        assert!(text.starts_with("File changed while reading: "), "{text}");
-        assert!(text.ends_with("big.bin"), "the message names the file: {text}");
-        assert_eq!(err.to_string(), text, "the SourceBytesError Display is transparent");
+        assert_eq!(inner.to_string(), format!("File changed while reading: {shown}"));
+        assert_eq!(
+            err.to_string(),
+            inner.to_string(),
+            "the SourceBytesError Display is transparent"
+        );
+        assert!(err.is_localized());
+        assert_eq!(
+            err.describe(),
+            format!("The file changed while it was being read: {shown}")
+        );
+
+        // InVietnamese: the same error now describes itself in Vietnamese (rendered at display time).
+        texts.use_vietnamese.store(true, Ordering::SeqCst);
+        assert_eq!(err.describe(), format!("Tệp đã thay đổi trong lúc đang đọc: {shown}"));
+        let user_text = err.user_text().expect("a sentence is attached");
+        assert_eq!(user_text(), err.describe());
+        assert_eq!(
+            err.to_string(),
+            format!("File changed while reading: {shown}"),
+            "message stays English"
+        );
+        let debug = format!("{err:?}");
+        assert!(
+            debug.contains("UserFacingIo") && debug.contains("File changed while reading"),
+            "Debug names the payload and its message: {debug}"
+        );
+    }
+
+    #[test]
+    fn default_texts_are_the_english_catalog() {
+        // Rust-only (D41): without `with_texts`, the sentences are the `en.json` templates (C# `Tr` in English).
+        let catalog = CatalogTexts::load();
+        let path = r"C:\x\a.bin";
+        assert_eq!(
+            EnglishSourceBytesTexts.file_changed_while_reading(path),
+            catalog.file_changed_while_reading(path)
+        );
+        assert_eq!(
+            EnglishSourceBytesTexts.unexpected_eof(path),
+            catalog.unexpected_eof(path)
+        );
+
+        let root = TempRoot::new("src-bytes-localized-default");
+        let file = write_file(&root, "big.bin", &[0u8; 64]);
+        let err = changing_cache(&file).get_or_read(&file).expect_err("changed");
+        assert!(err.is_localized());
+        assert_eq!(
+            err.describe(),
+            format!("The file changed while it was being read: {}", file.display())
+        );
+    }
+
+    #[test]
+    fn early_eof_is_localized_unexpected_eof() {
+        // C#: UserFacingError.Localized(new EndOfStreamException(..), () => Tr.ErrIoUnexpectedEof(key.Path)).
+        let root = TempRoot::new("src-bytes-localized-eof");
+        let path = write_file(&root, "short.bin", &[7u8; 100]);
+        let reader = Arc::new(CountingReader::new(|_, _| {
+            boxed(ChunkedStream::new(vec![7u8; 100], 16).ending_after(40))
+        }));
+        let texts = Arc::new(CatalogTexts::load());
+        let cache = new_cache_with(1024, reader).with_texts(Arc::clone(&texts) as Arc<dyn SourceBytesTexts>);
+
+        let err = cache.get_or_read(&path).expect_err("early EOF");
+
+        let shown = path.display().to_string();
+        assert_eq!(err.io_kind(), Some(io::ErrorKind::UnexpectedEof));
+        assert_eq!(err.to_string(), format!("Unexpected EOF while reading {shown}"));
+        assert!(err.is_localized());
+        assert_eq!(
+            err.describe(),
+            format!("The file ended unexpectedly while reading: {shown}")
+        );
+        texts.use_vietnamese.store(true, Ordering::SeqCst);
+        assert_eq!(err.describe(), format!("Tệp kết thúc bất ngờ khi đang đọc: {shown}"));
+    }
+
+    #[test]
+    fn stream_length_mismatch_is_localized_file_changed() {
+        // C#: the first `throw UserFacingError.Localized(new IOException(..))` (stream length != key length).
+        let root = TempRoot::new("src-bytes-localized-length");
+        let path = write_file(&root, "a.bin", &[1u8; 50]);
+        let reader = Arc::new(CountingReader::new(|_, _| {
+            let mut stream = ChunkedStream::new(vec![1u8; 50], 1024);
+            stream.length_override = Some(51);
+            boxed(stream)
+        }));
+        let err = new_cache_with(1024, reader)
+            .get_or_read(&path)
+            .expect_err("length mismatch");
+        assert_eq!(err.io_kind(), Some(io::ErrorKind::Other));
+        assert!(err.is_localized());
+        assert_eq!(
+            err.describe(),
+            format!("The file changed while it was being read: {}", path.display())
+        );
+    }
+
+    #[test]
+    fn other_errors_are_not_localized() {
+        // C# `IsLocalized` is false for FileNotFound / Argument* exceptions: `describe` is the message.
+        let root = TempRoot::new("src-bytes-localized-none");
+        let cache = new_cache(1024);
+        let missing = cache.get_or_read(&root.join("missing.bin")).expect_err("missing");
+        assert!(!missing.is_localized());
+        assert!(missing.user_text().is_none());
+        assert_eq!(missing.describe(), missing.to_string());
+
+        let argument = cache
+            .get_or_read_range(Path::new(" "), 1, 0, 0, 1, VIEWER)
+            .expect_err("blank path");
+        assert!(!argument.is_localized());
+        assert_eq!(argument.describe(), "Invalid argument. (Parameter 'path')");
+
+        let range = cache
+            .get_or_read_range(&root.join("x.bin"), -1, 0, 0, 1, VIEWER)
+            .expect_err("negative length");
+        assert!(!range.is_localized());
+        assert_eq!(
+            range.describe(),
+            "Specified argument was out of the range of valid values. (Parameter 'length')"
+        );
+
+        let plain = SourceBytesError::from(io::Error::other("plain"));
+        assert!(!plain.is_localized());
+        assert_eq!(plain.describe(), "plain");
+    }
+
+    #[test]
+    fn panicking_sentence_falls_back_to_the_message() {
+        // C# `UserFacingError.Describe` swallows an exception of the sentence factory and returns the message.
+        struct Broken;
+        impl SourceBytesTexts for Broken {
+            fn file_changed_while_reading(&self, _: &str) -> String {
+                panic!("catalog broken")
+            }
+            fn unexpected_eof(&self, _: &str) -> String {
+                panic!("catalog broken")
+            }
+        }
+        let root = TempRoot::new("src-bytes-localized-broken");
+        let path = write_file(&root, "big.bin", &[0u8; 64]);
+        let err = changing_cache(&path)
+            .with_texts(Arc::new(Broken))
+            .get_or_read(&path)
+            .expect_err("changed");
+        assert!(err.is_localized());
+        assert_eq!(
+            err.describe(),
+            format!("File changed while reading: {}", path.display())
+        );
     }
 }
 
@@ -1610,7 +1816,9 @@ fn check_bytes(at: &str, bytes: &SourceBytes, want: &Value, returned: &[Option<S
 fn check_error(at: &str, err: &SourceBytesError, want: &Value) {
     let ty = golden::str_of(want, "type");
     let param = want.get("param").and_then(Value::as_str);
-    // The golden `localized` flag is not checked: pr-imaging has no pr-l10n dependency (D41 / P-24).
+    // `localized` <=> the injected UI sentence is attached (D41: `SourceBytesError::is_localized`).
+    let localized = want.get("localized").and_then(Value::as_bool).unwrap_or(false);
+    assert_eq!(err.is_localized(), localized, "{at}: localized ({want}, got {err:?})");
     let same = match (ty, err) {
         ("ArgumentException", SourceBytesError::Argument { param_name }) => Some(*param_name) == param,
         ("ArgumentOutOfRangeException", SourceBytesError::ArgumentOutOfRange { param_name }) => {

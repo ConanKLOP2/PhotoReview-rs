@@ -17,6 +17,7 @@ use std::ffi::{OsStr, OsString};
 use std::fmt;
 use std::fs::{self, Metadata};
 use std::io::{self, SeekFrom};
+use std::panic::{self, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicI32, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock, PoisonError};
@@ -29,6 +30,7 @@ use pr_core::text::dotnet_path::{PathError, get_full_path};
 use pr_core::text::ignore_case_key;
 use pr_core::time::DateTimeUtc;
 
+use crate::decoder_traits::UserText;
 use crate::ram_budget::clamp_source_bytes_to_physical_memory;
 
 /// The bytes the cache hands out. C# `byte[]`: every caller of one cached key gets the SAME allocation
@@ -60,8 +62,11 @@ pub type TestHook = Arc<dyn Fn() + Send + Sync>;
 /// `Clone` because one failed shared read is replayed to every caller that waited on it (C# `Lazy<T>` caches the
 /// exception); the `io::Error` is therefore behind an `Arc`.
 ///
-/// Localization (C# `UserFacingError`) lives on the INNER `io::Error`: apply `pr_l10n::template::{is_localized, describe}`
-/// to `&**e` of `Io(e)`, not to the `SourceBytesError` (its payload is not visible through it).
+/// Localization (C# `UserFacingError`, D41): the "file changed while reading" and "unexpected EOF" errors carry a UI
+/// sentence rendered by the injected [`SourceBytesTexts`]; read it with [`SourceBytesError::is_localized`],
+/// [`SourceBytesError::describe`] or [`SourceBytesError::user_text`]. `pr_l10n::template::is_localized` does NOT see
+/// it (pr-imaging cannot build a `pr_l10n::LocalizedError`); a consumer that needs a pr-l10n error re-wraps the inner
+/// `io::Error` with `pr_l10n::template::localize_io` and the closure from `user_text`.
 #[derive(Debug, Clone)]
 pub enum SourceBytesError {
     Argument { param_name: &'static str },
@@ -77,6 +82,86 @@ impl SourceBytesError {
             Self::Argument { .. } | Self::ArgumentOutOfRange { .. } => None,
         }
     }
+
+    /// The UI sentence attached to the error (C# `UserFacingError.Localized`, D41): only the "file changed while
+    /// reading" and "unexpected EOF" errors carry one. The composition root can hand it to
+    /// `pr_l10n::template::localize_io` (the closure renders in the language current when it is called).
+    pub fn user_text(&self) -> Option<UserText> {
+        match self {
+            Self::Io(e) => user_text_of(e),
+            Self::Argument { .. } | Self::ArgumentOutOfRange { .. } => None,
+        }
+    }
+
+    /// C# `UserFacingError.IsLocalized(ex)`: a UI sentence is attached (see [`Self::user_text`]).
+    pub fn is_localized(&self) -> bool {
+        self.user_text().is_some()
+    }
+
+    /// C# `UserFacingError.Describe(ex)`: the attached sentence, else the `Display` text. A sentence closure that
+    /// panics falls back to the `Display` text (C# swallows the exception).
+    pub fn describe(&self) -> String {
+        match self.user_text() {
+            Some(text) => panic::catch_unwind(AssertUnwindSafe(|| text())).unwrap_or_else(|_| self.to_string()),
+            None => self.to_string(),
+        }
+    }
+}
+
+/// The two localized sentences of the cache (C# `Tr.ErrIoFileChangedWhileReading` / `Tr.ErrIoUnexpectedEof`, catalog
+/// keys `err.io.fileChangedWhileReading` / `err.io.unexpectedEof`, argument `{path}`). Injected instead of a static
+/// `Tr` (D41 / P-24: no `pr-l10n` dependency in pr-imaging; the D13 pattern). The cache stores the texts and the path
+/// in the error's [`UserText`] closure, so a language switch applies at display time.
+pub trait SourceBytesTexts: Send + Sync {
+    /// `err.io.fileChangedWhileReading`: "The file changed while it was being read: {path}".
+    fn file_changed_while_reading(&self, path: &str) -> String;
+    /// `err.io.unexpectedEof`: "The file ended unexpectedly while reading: {path}".
+    fn unexpected_eof(&self, path: &str) -> String;
+}
+
+/// The built-in English catalog (`assets/languages/en.json`): what C# `Tr` renders while the UI language is English.
+/// The default texts of [`SourceBytesCache::new`].
+#[derive(Debug, Clone, Copy, Default)]
+pub struct EnglishSourceBytesTexts;
+
+impl SourceBytesTexts for EnglishSourceBytesTexts {
+    fn file_changed_while_reading(&self, path: &str) -> String {
+        format!("The file changed while it was being read: {path}")
+    }
+
+    fn unexpected_eof(&self, path: &str) -> String {
+        format!("The file ended unexpectedly while reading: {path}")
+    }
+}
+
+/// The payload of a localized `io::Error` (C# `exception.Data["PhotoReview.UserFacingText"]`): `Display` is the
+/// English .NET message, `text` the UI sentence.
+struct UserFacingIo {
+    message: String,
+    text: UserText,
+}
+
+impl fmt::Debug for UserFacingIo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("UserFacingIo")
+            .field("message", &self.message)
+            .finish_non_exhaustive()
+    }
+}
+
+impl fmt::Display for UserFacingIo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.message)
+    }
+}
+
+impl std::error::Error for UserFacingIo {}
+
+/// The sentence of an `io::Error` built by this module (`None` for any other error).
+fn user_text_of(err: &io::Error) -> Option<UserText> {
+    err.get_ref()
+        .and_then(|inner| inner.downcast_ref::<UserFacingIo>())
+        .map(|payload| Arc::clone(&payload.text))
 }
 
 /// `Io(e)`: transparent (`e`'s own text, the English .NET message). `Argument { p }`: `"Invalid argument. (Parameter '{p}')"`.
@@ -165,6 +250,8 @@ pub struct SourceBytesCache {
     after_cache_miss_for_tests: Mutex<Option<TestHook>>,
     /// C# `LastReadManagedThreadId`.
     last_read_thread_id: Mutex<Option<ThreadId>>,
+    /// The localized sentences of the read errors (C# `Tr`, D41). Default [`EnglishSourceBytesTexts`].
+    texts: Arc<dyn SourceBytesTexts>,
 }
 
 impl fmt::Debug for SourceBytesCache {
@@ -209,7 +296,17 @@ impl SourceBytesCache {
             after_read_for_tests: Mutex::new(None),
             after_cache_miss_for_tests: Mutex::new(None),
             last_read_thread_id: Mutex::new(None),
+            texts: Arc::new(EnglishSourceBytesTexts),
         })
+    }
+
+    /// Replaces the localized sentences of the read errors (D41: the composition root passes a catalog-backed
+    /// [`SourceBytesTexts`]; the default is [`EnglishSourceBytesTexts`]). Additive to the C# constructor, which reads the
+    /// ambient `Tr`.
+    #[must_use]
+    pub fn with_texts(mut self, texts: Arc<dyn SourceBytesTexts>) -> Self {
+        self.texts = texts;
+        self
     }
 
     /// C# `CapacityBytes`: the effective (post-clamp) capacity in bytes.
@@ -442,7 +539,7 @@ impl SourceBytesCache {
             .open_source(key.path(), priority, SOURCE_READ_BUFFER_SIZE)?;
         let stream_length = stream.seek(SeekFrom::End(0))?;
         if i64::try_from(stream_length).ok() != Some(key.source_length) {
-            return Err(file_changed_while_reading(key.path()));
+            return Err(file_changed_while_reading(&self.texts, key.path()));
         }
         // `0 <= count <= ARRAY_MAX_LENGTH` and `offset >= 0` hold for every key that reaches here.
         let count =
@@ -461,7 +558,7 @@ impl SourceBytesCache {
             while filled < buffer.len() {
                 let read = stream.read(&mut buffer[filled..])?;
                 if read == 0 {
-                    return Err(unexpected_eof(key.path()));
+                    return Err(unexpected_eof(&self.texts, key.path()));
                 }
                 filled += read;
             }
@@ -471,7 +568,7 @@ impl SourceBytesCache {
         if i64::try_from(current.length).unwrap_or(i64::MAX) != key.source_length
             || current.last_write_utc.ticks() != key.last_write_utc_ticks
         {
-            return Err(file_changed_while_reading(key.path()));
+            return Err(file_changed_while_reading(&self.texts, key.path()));
         }
         if !publish {
             return Ok(bytes);
@@ -692,19 +789,35 @@ fn could_not_find_file(full: &Path) -> SourceBytesError {
     .into()
 }
 
-/// C# `IOException("File changed while reading: {path}")`. The localized sentence (`Tr.ErrIoFileChangedWhileReading`)
-/// is supplied by the composition root (D41 / P-24: no pr-l10n dependency here).
-fn file_changed_while_reading(path: &Path) -> SourceBytesError {
-    io::Error::other(format!("File changed while reading: {}", path.display())).into()
+/// C# `UserFacingError.Localized(new IOException("File changed while reading: {path}"),
+/// () => Tr.ErrIoFileChangedWhileReading(path))`; the sentence comes from the injected texts (D41 / P-24).
+fn file_changed_while_reading(texts: &Arc<dyn SourceBytesTexts>, path: &Path) -> SourceBytesError {
+    let shown = path.display().to_string();
+    let texts = Arc::clone(texts);
+    let argument = shown.clone();
+    localized(
+        io::ErrorKind::Other,
+        format!("File changed while reading: {shown}"),
+        Arc::new(move || texts.file_changed_while_reading(&argument)),
+    )
 }
 
-/// C# `EndOfStreamException("Unexpected EOF while reading {path}")` (localized by the composition root, D41).
-fn unexpected_eof(path: &Path) -> SourceBytesError {
-    io::Error::new(
+/// C# `UserFacingError.Localized(new EndOfStreamException("Unexpected EOF while reading {path}"),
+/// () => Tr.ErrIoUnexpectedEof(path))`.
+fn unexpected_eof(texts: &Arc<dyn SourceBytesTexts>, path: &Path) -> SourceBytesError {
+    let shown = path.display().to_string();
+    let texts = Arc::clone(texts);
+    let argument = shown.clone();
+    localized(
         io::ErrorKind::UnexpectedEof,
-        format!("Unexpected EOF while reading {}", path.display()),
+        format!("Unexpected EOF while reading {shown}"),
+        Arc::new(move || texts.unexpected_eof(&argument)),
     )
-    .into()
+}
+
+/// An `io::Error` of `kind` whose `Display` is the English `message` and which carries the UI sentence `text`.
+fn localized(kind: io::ErrorKind, message: String, text: UserText) -> SourceBytesError {
+    io::Error::new(kind, UserFacingIo { message, text }).into()
 }
 
 /// C# `SourceBytesCachePolicy`: the single decision point for whether the source-bytes cache is enabled. Resolved once
