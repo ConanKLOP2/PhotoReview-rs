@@ -5,7 +5,8 @@
 //! Red tests (W4-15b): they compile against the stub and fail through `todo!()` until the implementation lands.
 //!
 //! Test notes: "order passes" are counted through the marker image (its `get_current_cache_key(entry)` runs once per
-//! examined candidate and order pass, as in C#); `BusyNoted` is the `set_busy_noted_for_tests` seam.
+//! examined candidate and order pass, as in C#; cached from the start, see `BusyTarget::new`); `BusyNoted` is the
+//! `set_busy_noted_for_tests` seam.
 
 mod common;
 
@@ -56,11 +57,15 @@ impl BusyTarget {
             .enumerate()
             .map(|(i, e)| (e.path().to_ascii_uppercase(), i))
             .collect();
+        // DIVERGENCE: the marker starts cached, so every order pass examines it (key lookup) and none dispatches it. In
+        // C# its preload completes synchronously inside the pass; a Rust decode runs on a pool thread, and a marker
+        // still in flight when a navigation rebuilds the order would be skipped as already queued (no pass counted).
+        let marker = entries[MARKER_INDEX].path().to_ascii_uppercase();
         Arc::new(Self {
             fs: Arc::clone(fs),
             entries,
             busy_attempts,
-            cached: Mutex::new(HashSet::new()),
+            cached: Mutex::new(HashSet::from([marker])),
             preloads: Mutex::new(HashMap::new()),
             index_by_path,
             entered: Gate::new(),

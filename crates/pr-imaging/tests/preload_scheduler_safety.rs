@@ -87,9 +87,12 @@ fn headroom_lost_mid_batch_stops_new_starts() {
     let fs = fake_fs();
     let entries = entries(&fs, 8, "image");
     let target = FakeTarget::new(&fs);
-    let probe_target = Arc::clone(&target);
-    let probe = FakeProbe::new(move || probe_target.started().is_empty());
+    // DIVERGENCE: "started" = dispatched (see `count_dispatches`): the decode itself runs on a pool thread.
+    let dispatched = Arc::new(AtomicUsize::new(0));
+    let probe_dispatched = Arc::clone(&dispatched);
+    let probe = FakeProbe::new(move || probe_dispatched.load(Ordering::SeqCst) == 0);
     let scheduler = fixture(&target, &entries, probe, 8);
+    count_dispatches(&scheduler, &dispatched);
     assert!(scheduler.preload_around(0).wait_timeout(Duration::from_secs(5)));
     let started = target.started().len();
     assert!((1..=2).contains(&started), "started {started}");

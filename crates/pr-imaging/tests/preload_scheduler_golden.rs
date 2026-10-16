@@ -251,9 +251,16 @@ fn run_case(case: &Value) -> Vec<String> {
             Ok(())
         });
     }
+    // The oracle's entries carry scan metadata `WithMetadata(1000 + i, ..)`: the length feeds the whole-folder estimate
+    // (`estimatedBytes` of the policy line; the write time is never read by this fake, which keys by path).
     let entries: Arc<[CatalogEntry]> = paths
         .iter()
-        .map(|p| CatalogEntry::new(p.clone()).expect("fixture path"))
+        .enumerate()
+        .map(|(i, p)| {
+            let mut entry = CatalogEntry::new(p.clone()).expect("fixture path");
+            entry.length = Some(1000 + i as i64);
+            entry
+        })
         .collect::<Vec<_>>()
         .into();
     let scheduler = create(&target, &entries, setup);
@@ -317,7 +324,12 @@ fn run_case(case: &Value) -> Vec<String> {
         let examined = std::mem::take(&mut lock(&target.script).examined);
         let preloads = std::mem::take(&mut lock(&target.script).preloads);
         let prefetches = std::mem::take(&mut lock(&target.script).prefetches);
-        let log_lines = log.take_lines();
+        // The oracle's log drops `Preload progress:` lines (contract "Golden package": an enabled log without them).
+        let log_lines: Vec<String> = log
+            .take_lines()
+            .into_iter()
+            .filter(|line| !line.starts_with("info: Preload progress:"))
+            .collect();
         let timer_dues: Vec<u64> = timers.dues()[before_timers..].iter().map(Duration::as_secs).collect();
         let (lifetimes, runs) = scheduler.tracked_lifetime_counts();
         let mut errs = Vec::new();

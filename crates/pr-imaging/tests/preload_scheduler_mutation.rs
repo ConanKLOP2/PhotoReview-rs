@@ -11,7 +11,7 @@
 mod common;
 
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::thread::{self, ThreadId};
 use std::time::Duration;
@@ -446,9 +446,11 @@ fn scheduler_failure_marks_run_exiting() {
     target.set_on_preload(gated(&gate));
     let log = CaptureLog::new();
     // Headroom is fine until the first decode started; the next probe then panics: an unexpected failure in the loop.
-    let probe_target = Arc::clone(&target);
+    // DIVERGENCE: "started" = dispatched (see `count_dispatches`): the decode itself runs on a pool thread.
+    let dispatched = Arc::new(AtomicUsize::new(0));
+    let probe_dispatched = Arc::clone(&dispatched);
     let probe = FakeProbe::new(move || {
-        if probe_target.started().is_empty() {
+        if probe_dispatched.load(Ordering::SeqCst) == 0 {
             true
         } else {
             panic!("probe failed")
@@ -459,6 +461,7 @@ fn scheduler_failure_marks_run_exiting() {
         &entries,
         Setup::new(2, PreloadWindow::new(5, 0)).log(&log).probe(probe),
     );
+    count_dispatches(&scheduler, &dispatched);
 
     let first = scheduler.preload_around(0); // fails after starting one decode, then drains it (gated)
     assert!(!first.is_complete());
@@ -522,9 +525,12 @@ fn headroom_is_rechecked_after_every_queued_decode() {
     let gate = Gate::new();
     let target = FakeTarget::new(&fs);
     target.set_on_preload(gated(&gate));
-    let probe_target = Arc::clone(&target);
-    let probe = FakeProbe::new(move || probe_target.started().is_empty());
+    // DIVERGENCE: "started" = dispatched (see `count_dispatches`): the decode itself runs on a pool thread.
+    let dispatched = Arc::new(AtomicUsize::new(0));
+    let probe_dispatched = Arc::clone(&dispatched);
+    let probe = FakeProbe::new(move || probe_dispatched.load(Ordering::SeqCst) == 0);
     let scheduler = create(&target, &entries, Setup::new(4, PreloadWindow::new(8, 0)).probe(probe));
+    count_dispatches(&scheduler, &dispatched);
 
     let run = scheduler.preload_around(0);
     assert!(target.wait_started_count(1));

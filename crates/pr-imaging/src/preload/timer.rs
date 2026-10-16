@@ -8,11 +8,10 @@
 //! `ManualTime`/`ManualTimer` fakes); production uses [`ThreadTimerFactory`]. See contract open question 2 about
 //! hoisting this seam into `pr_core` if W4-14 needs one too.
 
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
-
 use std::fmt;
-use std::sync::Arc;
-use std::time::Duration;
+use std::sync::{Arc, Condvar, Mutex, PoisonError};
+use std::thread;
+use std::time::{Duration, Instant};
 
 /// The callback a timer runs once when due. It may also run after `dispose` returned when it had already started
 /// (the scheduler guards with a generation number, as C# does).
@@ -42,7 +41,20 @@ pub struct ThreadTimerFactory;
 
 impl OneShotTimerFactory for ThreadTimerFactory {
     fn create_timer(&self, due: Duration, callback: TimerCallback) -> Box<dyn OneShotTimer> {
-        todo!("W4-15b: spawn the waiting thread; no sleep polling (Condvar::wait_timeout until due or disposed)")
+        let state = Arc::new(ThreadTimerState {
+            disposed: Mutex::new(false),
+            wake: Condvar::new(),
+        });
+        let waiter = Arc::clone(&state);
+        // A thread that cannot be started leaves a timer that never fires: the next navigation re-kicks preload anyway.
+        let _ = thread::Builder::new()
+            .name("pr-preload-recheck".to_owned())
+            .spawn(move || {
+                if waiter.wait_until_due(due) {
+                    callback();
+                }
+            });
+        Box::new(ThreadTimer { state })
     }
 }
 
@@ -53,8 +65,38 @@ pub struct ThreadTimer {
 
 /// Shared between the handle and the waiting thread: `disposed` flag under a mutex plus the condition variable.
 struct ThreadTimerState {
-    disposed: std::sync::Mutex<bool>,
-    wake: std::sync::Condvar,
+    disposed: Mutex<bool>,
+    wake: Condvar,
+}
+
+impl ThreadTimerState {
+    /// Waits until `due` elapsed (`true`) or the timer was disposed (`false`). No polling: one timed condition wait.
+    fn wait_until_due(&self, due: Duration) -> bool {
+        let deadline = Instant::now().checked_add(due);
+        let mut disposed = self.disposed.lock().unwrap_or_else(PoisonError::into_inner);
+        loop {
+            if *disposed {
+                return false;
+            }
+            let remaining = match deadline {
+                Some(deadline) => deadline.saturating_duration_since(Instant::now()),
+                None => Duration::MAX,
+            };
+            if remaining.is_zero() {
+                return true;
+            }
+            disposed = self
+                .wake
+                .wait_timeout(disposed, remaining)
+                .unwrap_or_else(PoisonError::into_inner)
+                .0;
+        }
+    }
+
+    fn dispose(&self) {
+        *self.disposed.lock().unwrap_or_else(PoisonError::into_inner) = true;
+        self.wake.notify_all();
+    }
 }
 
 impl fmt::Debug for ThreadTimer {
@@ -65,12 +107,12 @@ impl fmt::Debug for ThreadTimer {
 
 impl OneShotTimer for ThreadTimer {
     fn dispose(&self) {
-        todo!("W4-15b: set disposed under the lock (PoisonError::into_inner), notify_all")
+        self.state.dispose();
     }
 }
 
 impl Drop for ThreadTimer {
     fn drop(&mut self) {
-        todo!("W4-15b: same as dispose (the scheduler drops a replaced timer)")
+        self.state.dispose();
     }
 }

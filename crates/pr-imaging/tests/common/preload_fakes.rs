@@ -833,6 +833,18 @@ pub fn gated_ignoring_cancel(
     }
 }
 
+/// Counts the candidates `scheduler` dispatches, on the dispatching thread (`set_dispatched_for_tests`).
+///
+/// DIVERGENCE (test seam): C# fakes read `Started` synchronously because `PreloadOneAsync` enters the target's
+/// `PreloadAsync` on the dispatching thread before the loop examines the next candidate; Rust decodes on a pool thread
+/// (R0003), so a probe that must react to "a decode was started" reads this counter instead (same point of the loop).
+pub fn count_dispatches(scheduler: &PreloadScheduler, counter: &Arc<AtomicUsize>) {
+    let counter = Arc::clone(counter);
+    scheduler.set_dispatched_for_tests(Some(Arc::new(move |_path: &str| {
+        counter.fetch_add(1, Ordering::SeqCst);
+    })));
+}
+
 /// Waits (guarded) for `run` to complete; `true` when it did.
 pub fn finished(run: &RunHandle) -> bool {
     run.wait_timeout(GUARD)

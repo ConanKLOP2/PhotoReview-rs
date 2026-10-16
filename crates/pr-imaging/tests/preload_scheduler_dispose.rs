@@ -38,14 +38,21 @@ fn dispose_worker_outlives_drain_timeout_warns_and_worker_finishes_cleanly() {
     scheduler.set_dispose_drain_timeout(Duration::from_millis(100));
 
     let run = scheduler.preload_around(0);
-    assert!(target.wait_started(entries[0].path()));
+    let started = first_started(&target);
     scheduler.dispose(); // returns although the decode is still running
-    assert!(!target.is_cached(entries[0].path()), "the decode has not finished yet");
+    assert!(!target.is_cached(&started), "the decode has not finished yet");
     assert!(log.warnings().iter().any(|w| w.contains("did not drain")));
     gate.open();
     assert!(finished(&run), "the abandoned run unwinds");
-    assert!(target.is_cached(entries[0].path()));
+    assert!(target.is_cached(&started));
     assert!(log.errors().is_empty());
+}
+
+/// C# `target.Started` (the first decode entered, whichever image it is). The centre itself is never preloaded (the
+/// viewer decodes it), so the first decode is a neighbour of entry 0.
+fn first_started(target: &FakeTarget) -> String {
+    assert!(target.wait_started_count(1), "a decode started");
+    target.started()[0].clone()
 }
 
 /// C# `PreloadLateDisposalTests` fixture: a decode that ignores cancellation, a 100 ms drain timeout, a null log.
@@ -68,9 +75,9 @@ fn blocked_scheduler() -> (Arc<FakeTarget>, Arc<Gate>, PreloadScheduler, Arc<[Ca
 #[test]
 fn dispose_drains_in_time_no_late_disposal() {
     // C#: PreloadLateDisposalTests.Dispose_DrainsInTime_NoLateDisposal
-    let (target, gate, scheduler, entries) = blocked_scheduler();
+    let (target, gate, scheduler, _entries) = blocked_scheduler();
     let run = scheduler.preload_around(0);
-    assert!(target.wait_started(entries[0].path()));
+    first_started(&target);
     gate.open();
     assert!(finished(&run));
     scheduler.dispose();
@@ -82,9 +89,9 @@ fn dispose_drains_in_time_no_late_disposal() {
 #[test]
 fn dispose_worker_outlives_drain_timeout_late_disposal_completes_after_release() {
     // C#: PreloadLateDisposalTests.Dispose_WorkerOutlivesDrainTimeout_LateDisposalCompletesAfterRelease
-    let (target, gate, scheduler, entries) = blocked_scheduler();
+    let (target, gate, scheduler, _entries) = blocked_scheduler();
     let run = scheduler.preload_around(0);
-    assert!(target.wait_started(entries[0].path()));
+    first_started(&target);
     scheduler.dispose();
     let late = scheduler
         .late_disposal_for_tests()
