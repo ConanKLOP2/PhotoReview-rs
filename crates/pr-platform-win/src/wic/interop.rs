@@ -26,6 +26,7 @@ use std::fs::File;
 use std::io::{self, Cursor, SeekFrom};
 use std::marker::PhantomData;
 use std::ops::Deref;
+use std::os::windows::io::AsRawHandle;
 use std::ptr;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
@@ -219,6 +220,84 @@ pub enum DotnetExceptionKind {
     System,
     /// `System.Exception` (`COR_E_EXCEPTION`).
     Exception,
+    /// `System.TypeLoadException`.
+    TypeLoad,
+    /// `System.Reflection.AmbiguousMatchException`.
+    AmbiguousMatch,
+    /// `System.Reflection.TargetParameterCountException`.
+    TargetParameterCount,
+    /// `System.TypeUnloadedException`.
+    TypeUnloaded,
+    /// `System.Runtime.AmbiguousImplementationException`.
+    AmbiguousImplementation,
+    /// `System.MethodAccessException`.
+    MethodAccess,
+    /// `System.Security.Cryptography.CryptographicException`.
+    Cryptographic,
+    /// `System.ExecutionEngineException`.
+    ExecutionEngine,
+    /// `System.FieldAccessException`.
+    FieldAccess,
+    /// `System.Runtime.Serialization.SerializationException`.
+    Serialization,
+    /// `System.Security.VerificationException`.
+    Verification,
+    /// `System.MissingFieldException`.
+    MissingField,
+    /// `System.MissingMemberException`.
+    MissingMember,
+    /// `System.MulticastNotSupportedException`.
+    MulticastNotSupported,
+    /// `System.RankException`.
+    Rank,
+    /// `System.Threading.SynchronizationLockException`.
+    SynchronizationLock,
+    /// `System.Threading.ThreadInterruptedException`.
+    ThreadInterrupted,
+    /// `System.MemberAccessException`.
+    MemberAccess,
+    /// `System.Threading.ThreadStateException`.
+    ThreadState,
+    /// `System.Threading.ThreadStartException`.
+    ThreadStart,
+    /// `System.Runtime.InteropServices.InvalidComObjectException`.
+    InvalidComObject,
+    /// `System.NotFiniteNumberException` (an `ArithmeticException`).
+    NotFiniteNumber,
+    /// `System.DuplicateWaitObjectException` (an `ArgumentException`).
+    DuplicateWaitObject,
+    /// `System.Threading.ThreadAbortException`.
+    ThreadAbort,
+    /// `System.Runtime.InteropServices.InvalidOleVariantTypeException`.
+    InvalidOleVariantType,
+    /// `System.Resources.MissingManifestResourceException`.
+    MissingManifestResource,
+    /// `System.Runtime.InteropServices.SafeArrayTypeMismatchException`.
+    SafeArrayTypeMismatch,
+    /// `System.TypeInitializationException`.
+    TypeInitialization,
+    /// `System.Runtime.InteropServices.MarshalDirectiveException`.
+    MarshalDirective,
+    /// `System.Runtime.InteropServices.SafeArrayRankMismatchException`.
+    SafeArrayRankMismatch,
+    /// `System.InvalidProgramException`.
+    InvalidProgram,
+    /// `System.DataMisalignedException`.
+    DataMisaligned,
+    /// `System.Diagnostics.Contracts.ContractException`.
+    Contract,
+    /// `System.TypeAccessException`.
+    TypeAccess,
+    /// `System.InsufficientExecutionStackException`.
+    InsufficientExecutionStack,
+    /// `System.ApplicationException`.
+    Application,
+    /// `System.Reflection.InvalidFilterCriteriaException`.
+    InvalidFilterCriteria,
+    /// `System.Reflection.TargetException`.
+    Target,
+    /// `System.Reflection.CustomAttributeFormatException`.
+    CustomAttributeFormat,
 }
 
 impl DotnetExceptionKind {
@@ -260,13 +339,55 @@ impl DotnetExceptionKind {
             Self::Security => "System.Security.SecurityException",
             Self::System => "System.SystemException",
             Self::Exception => "System.Exception",
+            Self::TypeLoad => "System.TypeLoadException",
+            Self::AmbiguousMatch => "System.Reflection.AmbiguousMatchException",
+            Self::TargetParameterCount => "System.Reflection.TargetParameterCountException",
+            Self::TypeUnloaded => "System.TypeUnloadedException",
+            Self::AmbiguousImplementation => "System.Runtime.AmbiguousImplementationException",
+            Self::MethodAccess => "System.MethodAccessException",
+            Self::Cryptographic => "System.Security.Cryptography.CryptographicException",
+            Self::ExecutionEngine => "System.ExecutionEngineException",
+            Self::FieldAccess => "System.FieldAccessException",
+            Self::Serialization => "System.Runtime.Serialization.SerializationException",
+            Self::Verification => "System.Security.VerificationException",
+            Self::MissingField => "System.MissingFieldException",
+            Self::MissingMember => "System.MissingMemberException",
+            Self::MulticastNotSupported => "System.MulticastNotSupportedException",
+            Self::Rank => "System.RankException",
+            Self::SynchronizationLock => "System.Threading.SynchronizationLockException",
+            Self::ThreadInterrupted => "System.Threading.ThreadInterruptedException",
+            Self::MemberAccess => "System.MemberAccessException",
+            Self::ThreadState => "System.Threading.ThreadStateException",
+            Self::ThreadStart => "System.Threading.ThreadStartException",
+            Self::InvalidComObject => "System.Runtime.InteropServices.InvalidComObjectException",
+            Self::NotFiniteNumber => "System.NotFiniteNumberException",
+            Self::DuplicateWaitObject => "System.DuplicateWaitObjectException",
+            Self::ThreadAbort => "System.Threading.ThreadAbortException",
+            Self::InvalidOleVariantType => "System.Runtime.InteropServices.InvalidOleVariantTypeException",
+            Self::MissingManifestResource => "System.Resources.MissingManifestResourceException",
+            Self::SafeArrayTypeMismatch => "System.Runtime.InteropServices.SafeArrayTypeMismatchException",
+            Self::TypeInitialization => "System.TypeInitializationException",
+            Self::MarshalDirective => "System.Runtime.InteropServices.MarshalDirectiveException",
+            Self::SafeArrayRankMismatch => "System.Runtime.InteropServices.SafeArrayRankMismatchException",
+            Self::InvalidProgram => "System.InvalidProgramException",
+            Self::DataMisaligned => "System.DataMisalignedException",
+            Self::Contract => "System.Diagnostics.Contracts.ContractException",
+            Self::TypeAccess => "System.TypeAccessException",
+            Self::InsufficientExecutionStack => "System.InsufficientExecutionStackException",
+            Self::Application => "System.ApplicationException",
+            Self::InvalidFilterCriteria => "System.Reflection.InvalidFilterCriteriaException",
+            Self::Target => "System.Reflection.TargetException",
+            Self::CustomAttributeFormat => "System.Reflection.CustomAttributeFormatException",
         }
     }
 
     /// C# `ex is ArgumentException` (the type or a .NET subclass, e.g. `ArgumentOutOfRangeException`). W4-11c has
     /// `catch (ArgumentException)` arms; the golden's `base_types` pins every `is_*` answer.
     pub fn is_argument(self) -> bool {
-        matches!(self, Self::Argument | Self::ArgumentOutOfRange)
+        matches!(
+            self,
+            Self::Argument | Self::ArgumentOutOfRange | Self::DuplicateWaitObject
+        )
     }
 
     /// C# `ex is IOException` (`FileNotFound`, `DirectoryNotFound`, `PathTooLong`, `EndOfStream`, ... per golden).
@@ -293,9 +414,13 @@ impl DotnetExceptionKind {
         matches!(self, Self::InvalidOperation | Self::ObjectDisposed)
     }
 
-    /// C# `ex is ArithmeticException` (also `OverflowException`, `DivideByZeroException`).
+    /// C# `ex is ArithmeticException` (also `OverflowException`, `DivideByZeroException`,
+    /// `NotFiniteNumberException`).
     pub fn is_arithmetic(self) -> bool {
-        matches!(self, Self::Arithmetic | Self::Overflow | Self::DivideByZero)
+        matches!(
+            self,
+            Self::Arithmetic | Self::Overflow | Self::DivideByZero | Self::NotFiniteNumber
+        )
     }
 }
 
@@ -307,41 +432,86 @@ pub fn exception_kind_for_hresult(hr: i32) -> Option<DotnetExceptionKind> {
     if hr >= 0 {
         return None;
     }
-    // The rows below are exactly the specific types the golden records; every other failing code is a
-    // COMException (CoreCLR's default), e.g. all WINCODEC_ERR_*, STG_E_FILENOTFOUND, E_FAIL, E_UNEXPECTED.
+    // Every failing code that .NET maps to a specific type: the golden rows plus a full sweep of 19 facilities x
+    // 65 536 codes (FACILITY_NULL/RPC/DISPATCH/STORAGE/ITF/WIN32/CONTROL/URT/WINCODEC/D2D/NTSTATUS/SECURITY/SSPI/...)
+    // through `Marshal.GetExceptionForHR(hr, -1)` on .NET 10, repair round 1 of W4-11a. Every other failing code is
+    // a COMException (CoreCLR's default), e.g. all WINCODEC_ERR_*, STG_E_FILENOTFOUND, E_FAIL, E_UNEXPECTED.
     Some(match hr as u32 {
         0x8000_4001 => K::NotImplemented,
         0x8000_4002 => K::InvalidCast,
         0x8000_4003 => K::NullReference,
-        0x8007_0005 => K::UnauthorizedAccess,
-        0x8007_000E => K::OutOfMemory,
-        0x8007_0057 => K::Argument,
+        0x8007_0005 | 0x800A_004B | 0x800A_014F => K::UnauthorizedAccess,
+        0x8007_000E | 0x800A_0007 | 0x800A_7919 => K::OutOfMemory,
+        0x8007_0057 | 0x800A_01C1 | 0x800A_01C2 => K::Argument,
+        0x8007_0459 | 0x8013_1502 => K::ArgumentOutOfRange,
         0x8000_0013 | 0x8013_1622 => K::ObjectDisposed,
-        0x8007_0002 | 0x8007_0015 | 0x8007_0035 | 0x8007_0043 | 0x8007_007E | 0x800A_0035 => K::FileNotFound,
+        0x8007_0002 | 0x8007_0015 | 0x8007_0035 | 0x8007_0043 | 0x8007_007B | 0x8007_007E | 0x8007_0485
+        | 0x8007_0574 | 0x800A_0035 => K::FileNotFound,
         0x8003_0003 | 0x8007_0003 | 0x800A_004C => K::DirectoryNotFound,
-        0x8007_000B | 0x8007_00C1 | 0x8007_0570 => K::BadImageFormat,
-        0x8007_0020 | 0x8007_0021 | 0x8007_03EE | 0x8013_1621 => K::FileLoad,
-        0x8007_0026 => K::EndOfStream,
+        0x8007_000B | 0x8007_00B6 | 0x8007_00C0 | 0x8007_00C1 | 0x8007_03E6 | 0x8007_0482 | 0x8007_0570
+        | 0x8013_1018 | 0x8013_101B | 0x8013_1058 | 0x8013_1107 | 0x8013_110E | 0x8013_1124 | 0x8013_1192
+        | 0x8013_141D => K::BadImageFormat,
+        0x8007_0004 | 0x8007_0020 | 0x8007_0021 | 0x8007_006E | 0x8007_03ED | 0x8007_03EE | 0x8007_045A
+        | 0x8007_0571 | 0x8013_1016 | 0x8013_1040 | 0x8013_1047 | 0x8013_1621 => K::FileLoad,
+        0x8007_0026 | 0x800A_003E => K::EndOfStream,
         0x8007_00CE => K::PathTooLong,
         0x8007_0216 => K::Arithmetic,
-        0x8007_03E9 => K::StackOverflow,
+        0x8007_03E9 | 0x800A_001C => K::StackOverflow,
+        0x800A_0006 | 0x8013_1516 => K::Overflow,
+        0x800A_0009 | 0x8013_1508 => K::IndexOutOfRange,
+        0x8002_0012 | 0x800A_000B => K::DivideByZero,
+        0x800A_0039 | 0x800A_793C | 0x800A_793D | 0x8013_1620 => K::Io,
+        0x800A_0046 | 0x800A_01A3 | 0x8013_141A | 0x8013_141E | 0x8013_1420 | 0x8013_150A => K::Security,
+        0x800A_01B6 | 0x800A_01BD | 0x800A_01CA | 0x800A_01CB | 0x8013_1515 => K::NotSupported,
+        0x800A_01CD | 0x8013_1512 => K::MissingMember,
+        0x8000_000F | 0x8013_1522 => K::TypeLoad,
+        0x8000_211D => K::AmbiguousMatch,
+        0x8002_000E => K::TargetParameterCount,
+        0x8013_1013 => K::TypeUnloaded,
+        0x8013_106A => K::AmbiguousImplementation,
+        0x8013_11E6 | 0x8013_1510 => K::MethodAccess,
+        0x8013_1430 => K::Cryptographic,
         0x8013_1500 => K::Exception,
         0x8013_1501 => K::System,
-        0x8013_1502 => K::ArgumentOutOfRange,
         0x8013_1503 => K::ArrayTypeMismatch,
-        0x8013_1508 => K::IndexOutOfRange,
+        0x8013_1506 => K::ExecutionEngine,
+        0x8013_1507 => K::FieldAccess,
         0x8013_1509 => K::InvalidOperation,
-        0x8013_1513 => K::MissingMethod,
-        0x8013_1515 => K::NotSupported,
-        0x8013_1516 => K::Overflow,
+        0x8013_150C => K::Serialization,
+        0x8013_150D => K::Verification,
+        0x8013_1511 => K::MissingField,
+        0x8013_1513 | 0x8013_153E | 0x8013_1602 | 0x8013_1604 => K::MissingMethod,
+        0x8013_1514 => K::MulticastNotSupported,
+        0x8013_1517 => K::Rank,
+        0x8013_1518 => K::SynchronizationLock,
+        0x8013_1519 => K::ThreadInterrupted,
+        0x8013_151A => K::MemberAccess,
+        0x8013_1520 => K::ThreadState,
         0x8013_1523 => K::EntryPointNotFound,
         0x8013_1524 => K::DllNotFound,
+        0x8013_1525 => K::ThreadStart,
+        0x8013_1527 => K::InvalidComObject,
+        0x8013_1528 => K::NotFiniteNumber,
+        0x8013_1529 => K::DuplicateWaitObject,
+        0x8013_1530 => K::ThreadAbort,
+        0x8013_1531 => K::InvalidOleVariantType,
+        0x8013_1532 => K::MissingManifestResource,
+        0x8013_1533 => K::SafeArrayTypeMismatch,
+        0x8013_1534 => K::TypeInitialization,
+        0x8013_1535 => K::MarshalDirective,
         0x8013_1537 => K::Format,
+        0x8013_1538 => K::SafeArrayRankMismatch,
         0x8013_1539 => K::PlatformNotSupported,
+        0x8013_153A => K::InvalidProgram,
         0x8013_153B => K::OperationCanceled,
-        0x800A_0039 | 0x8013_1620 => K::Io,
-        0x800A_0046 | 0x8013_150A => K::Security,
-        0x8002_0012 => K::DivideByZero,
+        0x8013_1541 => K::DataMisaligned,
+        0x8013_1542 => K::Contract,
+        0x8013_1543 => K::TypeAccess,
+        0x8013_1578 => K::InsufficientExecutionStack,
+        0x8013_1600 => K::Application,
+        0x8013_1601 => K::InvalidFilterCriteria,
+        0x8013_1603 => K::Target,
+        0x8013_1605 => K::CustomAttributeFormat,
         _ => K::Com,
     })
 }
@@ -635,6 +805,16 @@ pub fn create_factory() -> WicResult<Com<IWICImagingFactory>> {
     // SAFETY: `raw` is a local out slot that lives across the call; the proxy writes an owned factory pointer or
     // leaves it null.
     let hr = unsafe { WICCreateImagingFactory_Proxy(WINCODEC_SDK_VERSION1, &mut raw) };
+    // SAFETY: `raw` is what the proxy returned: null or a pointer owning one reference.
+    unsafe { factory_from_proxy(hr, raw) }
+}
+
+/// The tail of [`create_factory`]: check the proxy's result, release a pointer that came back with a failure, wrap
+/// a success. Separate so the release path is unit-tested without a failing proxy.
+///
+/// # Safety
+/// `raw` is null or a valid COM interface pointer owning one reference the caller hands over.
+unsafe fn factory_from_proxy(hr: HRESULT, raw: *mut c_void) -> WicResult<Com<IWICImagingFactory>> {
     if let Err(error) = check_factory_result(hr.0, !raw.is_null()) {
         if !raw.is_null() {
             // SAFETY: a failing HRESULT still returned a pointer: it owns one reference we must give back.
@@ -642,7 +822,7 @@ pub fn create_factory() -> WicResult<Com<IWICImagingFactory>> {
         }
         return Err(error);
     }
-    // SAFETY: `raw` is the non-null factory pointer the proxy returned with S_OK, owning one reference.
+    // SAFETY: `raw` is non-null here (checked above) and owns one reference (this function's contract).
     unsafe { Com::wrap(raw, "IWICImagingFactory") }
 }
 
@@ -751,6 +931,13 @@ pub trait StreamBackend: Send {
     }
     /// `Stream.Flush`.
     fn flush(&mut self) -> io::Result<()>;
+    /// What `Stream.Seek` throws for a target before 0 (or past `i64::MAX`), the position unchanged. Default:
+    /// [`StreamFault::SeekBeforeBegin`] (`MemoryStream`, `COR_E_IO`). `File` overrides it with
+    /// `HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER)` (`0x80070057`, the `IOException.HResult` of .NET `FileStream`).
+    /// Rust addition (repair round 1): the C# stream decides, so the backend does.
+    fn seek_before_begin_fault(&self) -> StreamFault {
+        StreamFault::SeekBeforeBegin
+    }
     /// For the owner to get the concrete backend back after [`ComStream::dispose`] (e.g. the encoded bytes).
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send>;
 }
@@ -758,18 +945,40 @@ pub trait StreamBackend: Send {
 /// A file opened by the caller (C#: `FileStream` with share `ReadWrite | Delete`, W4-11c opens it). `set_len` also
 /// moves the position to the new length when it was beyond it (.NET `FileStream.SetLength`); `flush` is
 /// `Write::flush`, never `sync_all` (C# `Flush()`, not `Flush(true)`).
+///
+/// .NET `FileStream` checks `CanRead`/`CanWrite` before any I/O and throws `NotSupportedException` (also for 0
+/// bytes); a Rust `File` would report `ERROR_ACCESS_DENIED`. So a read/write/set-length on a handle without that
+/// access (`NtQueryInformationFile(FileAccessInformation)`, asked only for 0 bytes or after an access-denied error,
+/// never on the hot path) fails with `ErrorKind::Unsupported`. A seek before 0 is `0x80070057`
+/// ([`StreamBackend::seek_before_begin_fault`]).
 impl StreamBackend for File {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        io::Read::read(self, buf)
+        if buf.is_empty() {
+            return if file_lacks_access(self, FILE_READ_DATA) {
+                Err(not_supported("Stream does not support reading."))
+            } else {
+                Ok(0)
+            };
+        }
+        io::Read::read(self, buf).map_err(|error| refine_access_denied(self, error, FILE_READ_DATA))
     }
     fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
+        if data.is_empty() {
+            return if file_lacks_access(self, FILE_WRITE_DATA | FILE_APPEND_DATA) {
+                Err(not_supported("Stream does not support writing."))
+            } else {
+                Ok(())
+            };
+        }
         io::Write::write_all(self, data)
+            .map_err(|error| refine_access_denied(self, error, FILE_WRITE_DATA | FILE_APPEND_DATA))
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
         io::Seek::seek(self, pos)
     }
     fn set_len(&mut self, len: u64) -> io::Result<()> {
-        File::set_len(self, len)?;
+        File::set_len(self, len)
+            .map_err(|error| refine_access_denied(self, error, FILE_WRITE_DATA | FILE_APPEND_DATA))?;
         let position = io::Seek::stream_position(self)?;
         if position > len {
             io::Seek::seek(self, SeekFrom::Start(len))?;
@@ -782,9 +991,78 @@ impl StreamBackend for File {
     fn flush(&mut self) -> io::Result<()> {
         io::Write::flush(self)
     }
+    fn seek_before_begin_fault(&self) -> StreamFault {
+        StreamFault::Io(io::Error::from_raw_os_error(ERROR_INVALID_PARAMETER))
+    }
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send> {
         self
     }
+}
+
+/// `FILE_READ_DATA` (winnt.h): the handle may read.
+const FILE_READ_DATA: u32 = 0x0001;
+/// `FILE_WRITE_DATA` (winnt.h): the handle may write.
+const FILE_WRITE_DATA: u32 = 0x0002;
+/// `FILE_APPEND_DATA` (winnt.h): the handle may append (.NET `FileAccess.Write` with `FileMode.Append`).
+const FILE_APPEND_DATA: u32 = 0x0004;
+/// `ERROR_ACCESS_DENIED`.
+const ERROR_ACCESS_DENIED: i32 = 5;
+/// `ERROR_INVALID_PARAMETER`: .NET `FileStream` seek before 0 (`IOException`, HResult `0x80070057`).
+const ERROR_INVALID_PARAMETER: i32 = 87;
+/// `ERROR_NEGATIVE_SEEK`: `SetFilePointerEx` to a negative position.
+const ERROR_NEGATIVE_SEEK: i32 = 131;
+/// `ERROR_OPERATION_ABORTED`: .NET `Win32Marshal` turns it into `OperationCanceledException`.
+const ERROR_OPERATION_ABORTED: i32 = 995;
+/// `COR_E_OPERATIONCANCELED`: HRESULT of a C# `OperationCanceledException`.
+const COR_E_OPERATIONCANCELED: i32 = 0x8013_153B_u32 as i32;
+/// `FileAccessInformation` (`FILE_INFORMATION_CLASS`).
+const FILE_ACCESS_INFORMATION_CLASS: i32 = 8;
+
+/// `IO_STATUS_BLOCK` (the status/pointer union is pointer-sized).
+#[repr(C)]
+struct IoStatusBlock {
+    status: usize,
+    information: usize,
+}
+
+/// The access mask the handle was opened with (`FILE_ACCESS_INFORMATION.AccessFlags`), `None` if the query fails.
+fn file_access_mask(file: &File) -> Option<u32> {
+    let mut status = IoStatusBlock {
+        status: 0,
+        information: 0,
+    };
+    let mut access: u32 = 0;
+    // SAFETY: `file` owns a live handle for the call; `status` and `access` are local out slots of the sizes
+    // NtQueryInformationFile writes for FileAccessInformation (an IO_STATUS_BLOCK and one ULONG, length 4).
+    let nt = unsafe {
+        NtQueryInformationFile(
+            file.as_raw_handle(),
+            &mut status,
+            (&mut access as *mut u32).cast(),
+            4,
+            FILE_ACCESS_INFORMATION_CLASS,
+        )
+    };
+    (nt >= 0).then_some(access)
+}
+
+/// The handle provably lacks every right of `rights` (.NET `!CanRead` / `!CanWrite`); `false` when unknown.
+fn file_lacks_access(file: &File, rights: u32) -> bool {
+    file_access_mask(file).is_some_and(|mask| mask & rights == 0)
+}
+
+/// `ERROR_ACCESS_DENIED` on a handle without `rights` -> `ErrorKind::Unsupported` (.NET `NotSupportedException`).
+fn refine_access_denied(file: &File, error: io::Error, rights: u32) -> io::Error {
+    if error.raw_os_error() == Some(ERROR_ACCESS_DENIED) && file_lacks_access(file, rights) {
+        let what = if rights == FILE_READ_DATA { "reading" } else { "writing" };
+        not_supported(&format!("Stream does not support {what}."))
+    } else {
+        error
+    }
+}
+
+fn not_supported(message: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::Unsupported, message.to_owned())
 }
 
 /// A growable memory stream (C# `new MemoryStream()`, the encoders' output, W4-11e).
@@ -864,7 +1142,9 @@ pub enum StreamFault {
     /// `CopyTo`, `Clone`, or a write/set-size on a read-only backend (C# `NotSupportedException`,
     /// `COR_E_NOTSUPPORTED`).
     NotSupported,
-    /// Seek target before 0 (C# `IOException` "before the beginning", `COR_E_IO`); the position is unchanged.
+    /// Seek target before 0 on a memory backend (C# `MemoryStream`: `IOException` "before the beginning",
+    /// `COR_E_IO`); the position is unchanged. A `File` reports [`StreamFault::Io`] with `ERROR_INVALID_PARAMETER`
+    /// instead (.NET `FileStream`), see [`StreamBackend::seek_before_begin_fault`].
     SeekBeforeBegin,
     /// `dwOrigin` not 0/1/2 (C# `ArgumentException` "Invalid seek origin", `E_INVALIDARG`).
     InvalidSeekOrigin(u32),
@@ -875,8 +1155,10 @@ pub enum StreamFault {
     CountOutOfRange(u32),
     /// Any other backend error: `HRESULT_FROM_WIN32(raw_os_error)` when it has an OS code (C# `IOException.HResult`
     /// of a `FileStream` error), else `E_INVALIDARG` for `ErrorKind::InvalidInput` (a .NET `ArgumentException` crossing
-    /// the CCW; W4-11c relies on it), else `COR_E_IO`. (`ErrorKind::Unsupported` never gets here: it is
-    /// [`StreamFault::NotSupported`]; in `Seek`, `InvalidInput` / OS error 131 is [`StreamFault::SeekBeforeBegin`].)
+    /// the CCW; W4-11c relies on it), else `COR_E_IO`. OS error 995 (`ERROR_OPERATION_ABORTED`) is
+    /// `COR_E_OPERATIONCANCELED` (`0x8013153B`), as .NET `Win32Marshal` makes an `OperationCanceledException` of it.
+    /// (`ErrorKind::Unsupported` never gets here: it is [`StreamFault::NotSupported`]; in `Seek`, `InvalidInput` /
+    /// OS error 131 is the backend's [`StreamBackend::seek_before_begin_fault`].)
     Io(io::Error),
 }
 
@@ -891,6 +1173,10 @@ impl StreamFault {
             Self::SizeOutOfRange(_) | Self::CountOutOfRange(_) => COR_E_ARGUMENTOUTOFRANGE,
             Self::Io(error) => {
                 if let Some(code) = error.raw_os_error() {
+                    if code == ERROR_OPERATION_ABORTED {
+                        // .NET `Win32Marshal.GetExceptionForWin32Error(995)`: `OperationCanceledException`.
+                        return COR_E_OPERATIONCANCELED;
+                    }
                     let hr = hresult_from_win32(code as u32);
                     if hr < 0 {
                         return hr;
@@ -913,15 +1199,12 @@ impl StreamFault {
             Self::Io(error)
         }
     }
+}
 
-    /// Backend error of a seek: `InvalidInput` or `ERROR_NEGATIVE_SEEK` (131) -> [`StreamFault::SeekBeforeBegin`].
-    fn from_seek_io(error: io::Error) -> Self {
-        if error.kind() == io::ErrorKind::InvalidInput || error.raw_os_error() == Some(131) {
-            Self::SeekBeforeBegin
-        } else {
-            Self::from_io(error)
-        }
-    }
+/// A backend seek error that means "target before 0 / overflow": `InvalidInput` (`Cursor`, and `File`'s
+/// `ERROR_INVALID_PARAMETER`) or `ERROR_NEGATIVE_SEEK` (131, `SetFilePointerEx`).
+fn is_seek_before_begin(error: &io::Error) -> bool {
+    error.kind() == io::ErrorKind::InvalidInput || error.raw_os_error() == Some(ERROR_NEGATIVE_SEEK)
 }
 
 impl fmt::Display for StreamFault {
@@ -970,8 +1253,16 @@ impl StreamState {
 
     fn seek(&mut self, offset: i64, origin: u32) -> Result<u64, StreamFault> {
         let backend = self.backend()?;
-        let target = seek_from(offset, origin)?;
-        backend.seek(target).map_err(StreamFault::from_seek_io)
+        let target = match seek_from(offset, origin) {
+            Ok(target) => target,
+            Err(StreamFault::SeekBeforeBegin) => return Err(backend.seek_before_begin_fault()),
+            Err(fault) => return Err(fault),
+        };
+        match backend.seek(target) {
+            Ok(position) => Ok(position),
+            Err(error) if is_seek_before_begin(&error) => Err(backend.seek_before_begin_fault()),
+            Err(error) => Err(StreamFault::from_io(error)),
+        }
     }
 
     fn set_size(&mut self, size: u64) -> Result<(), StreamFault> {
@@ -1046,7 +1337,8 @@ impl ISequentialStream_Impl for ComStreamObject_Impl {
             Err(fault) => return HRESULT(state.fail(fault)),
         };
         let read = if count == 0 {
-            Ok(0)
+            // The backend still sees the call: a write-only `FileStream` throws NotSupported even for 0 bytes.
+            state.read(&mut [])
         } else if pv.is_null() {
             return HRESULT(E_POINTER);
         } else {
@@ -1322,4 +1614,100 @@ unsafe extern "system" {
     /// Declared here because the `windows` crate does not export it (it is in `wincodec_proxy.h`, not in the
     /// Windows metadata the crate is generated from).
     fn WICCreateImagingFactory_Proxy(sdk_version: u32, factory: *mut *mut c_void) -> HRESULT;
+}
+
+#[link(name = "ntdll", kind = "raw-dylib")]
+unsafe extern "system" {
+    /// Asks a file handle's granted access (`FileAccessInformation`) for the .NET `CanRead`/`CanWrite` checks of the
+    /// `File` backend; not in the `windows` features this crate enables.
+    fn NtQueryInformationFile(
+        handle: *mut c_void,
+        io_status: *mut IoStatusBlock,
+        information: *mut c_void,
+        length: u32,
+        class: i32,
+    ) -> i32;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use windows::Win32::System::Com::COINIT_APARTMENTTHREADED;
+
+    /// One more reference on `raw` and returns the count, then gives it back (net zero).
+    fn ref_count(raw: *mut c_void) -> u32 {
+        // SAFETY: the callers pass the raw pointer of an `IStream` they keep alive; AddRef/Release are balanced.
+        unsafe {
+            let count = add_ref_raw(raw);
+            release_raw(raw);
+            count
+        }
+    }
+
+    #[test]
+    fn factory_from_proxy_releases_a_pointer_returned_with_a_failure() {
+        let com = ComStream::writable_memory();
+        let stream = com.istream();
+        let raw = stream.as_raw();
+        let before = ref_count(raw);
+        // SAFETY: `raw` is live (held by `stream`); the extra reference is handed over to the call.
+        unsafe { add_ref_raw(raw) };
+        // SAFETY: as above: `raw` owns the reference just added.
+        let result = unsafe { factory_from_proxy(HRESULT(WINCODEC_ERR_NOTINITIALIZED), raw) };
+        assert_eq!(
+            result.err(),
+            Some(WicError::Com {
+                hresult: WINCODEC_ERR_NOTINITIALIZED
+            })
+        );
+        assert_eq!(
+            ref_count(raw),
+            before,
+            "the reference returned with the failure is released"
+        );
+        // A failing HRESULT with no pointer: nothing to release.
+        // SAFETY: null is allowed by the contract.
+        let result = unsafe { factory_from_proxy(HRESULT(E_FAIL), ptr::null_mut()) };
+        assert_eq!(result.err(), Some(WicError::Com { hresult: E_FAIL }));
+        // Success HRESULT with an object that is no factory: NoInterface, the reference is released too.
+        // SAFETY: `raw` is live; the added reference is handed over.
+        unsafe { add_ref_raw(raw) };
+        // SAFETY: as above.
+        let result = unsafe { factory_from_proxy(HRESULT(0), raw) };
+        assert_eq!(
+            result.err(),
+            Some(WicError::NoInterface {
+                interface: "IWICImagingFactory"
+            })
+        );
+        assert_eq!(ref_count(raw), before);
+        // S_OK with null: E_FAIL.
+        // SAFETY: null is allowed by the contract.
+        let result = unsafe { factory_from_proxy(HRESULT(0), ptr::null_mut()) };
+        assert_eq!(result.err(), Some(WicError::Com { hresult: E_FAIL }));
+    }
+
+    #[test]
+    fn apartment_guard_uninitializes_only_what_it_initialized() {
+        std::thread::spawn(|| {
+            // SAFETY: no pointer is passed; changes this fresh thread's apartment only.
+            let hr = unsafe { CoInitializeEx(None, COINIT_MULTITHREADED) };
+            assert_eq!(hr.0, 0, "fresh thread: S_OK");
+            drop(ApartmentGuard { uninitialize: true });
+            // SAFETY: as above.
+            let hr = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED) };
+            assert_eq!(hr.0, 0, "the guard left the MTA, so the thread may enter an STA");
+            drop(ApartmentGuard { uninitialize: false });
+            // SAFETY: as above.
+            let hr = unsafe { CoInitializeEx(None, COINIT_MULTITHREADED) };
+            assert_eq!(
+                hr, RPC_E_CHANGED_MODE,
+                "a guard that did not initialise leaves the STA in place"
+            );
+            // SAFETY: balances the successful STA CoInitializeEx above.
+            unsafe { CoUninitialize() };
+        })
+        .join()
+        .expect("apartment thread");
+    }
 }

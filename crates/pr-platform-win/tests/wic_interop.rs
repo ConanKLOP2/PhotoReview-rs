@@ -1634,3 +1634,651 @@ fn golden_wic_managed_istream_scripts_match_the_csharp_managed_stream() {
         failures.join("\n")
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 1 (verifier findings): .NET sweep of the HRESULT table, FileStream semantics of the `File`
+// backend, and tests that kill the surviving mutants of the write path.
+// ---------------------------------------------------------------------------------------------------------------
+
+/// Every HRESULT in 19 facilities x 65 536 codes for which .NET 10 `Marshal.GetExceptionForHR(hr, -1)` creates a
+/// type other than `COMException` (oracle sweep run by the W4-11a verifier; every other code is a COMException).
+const DOTNET_SPECIFIC_EXCEPTION_TYPES: &str = "
+8000000F System.TypeLoadException
+80000013 System.ObjectDisposedException
+8000211D System.Reflection.AmbiguousMatchException
+80004001 System.NotImplementedException
+80004002 System.InvalidCastException
+80004003 System.NullReferenceException
+8002000E System.Reflection.TargetParameterCountException
+80020012 System.DivideByZeroException
+80030003 System.IO.DirectoryNotFoundException
+80070002 System.IO.FileNotFoundException
+80070003 System.IO.DirectoryNotFoundException
+80070004 System.IO.FileLoadException
+80070005 System.UnauthorizedAccessException
+8007000B System.BadImageFormatException
+8007000E System.OutOfMemoryException
+80070015 System.IO.FileNotFoundException
+80070020 System.IO.FileLoadException
+80070021 System.IO.FileLoadException
+80070026 System.IO.EndOfStreamException
+80070035 System.IO.FileNotFoundException
+80070043 System.IO.FileNotFoundException
+80070057 System.ArgumentException
+8007006E System.IO.FileLoadException
+8007007B System.IO.FileNotFoundException
+8007007E System.IO.FileNotFoundException
+800700B6 System.BadImageFormatException
+800700C0 System.BadImageFormatException
+800700C1 System.BadImageFormatException
+800700CE System.IO.PathTooLongException
+80070216 System.ArithmeticException
+800703E6 System.BadImageFormatException
+800703E9 System.StackOverflowException
+800703ED System.IO.FileLoadException
+800703EE System.IO.FileLoadException
+80070459 System.ArgumentOutOfRangeException
+8007045A System.IO.FileLoadException
+80070482 System.BadImageFormatException
+80070485 System.IO.FileNotFoundException
+80070570 System.BadImageFormatException
+80070571 System.IO.FileLoadException
+80070574 System.IO.FileNotFoundException
+800A0006 System.OverflowException
+800A0007 System.OutOfMemoryException
+800A0009 System.IndexOutOfRangeException
+800A000B System.DivideByZeroException
+800A001C System.StackOverflowException
+800A0035 System.IO.FileNotFoundException
+800A0039 System.IO.IOException
+800A003E System.IO.EndOfStreamException
+800A0046 System.Security.SecurityException
+800A004B System.UnauthorizedAccessException
+800A004C System.IO.DirectoryNotFoundException
+800A014F System.UnauthorizedAccessException
+800A01A3 System.Security.SecurityException
+800A01B6 System.NotSupportedException
+800A01BD System.NotSupportedException
+800A01C1 System.ArgumentException
+800A01C2 System.ArgumentException
+800A01CA System.NotSupportedException
+800A01CB System.NotSupportedException
+800A01CD System.MissingMemberException
+800A7919 System.OutOfMemoryException
+800A793C System.IO.IOException
+800A793D System.IO.IOException
+80131013 System.TypeUnloadedException
+80131016 System.IO.FileLoadException
+80131018 System.BadImageFormatException
+8013101B System.BadImageFormatException
+80131040 System.IO.FileLoadException
+80131047 System.IO.FileLoadException
+80131058 System.BadImageFormatException
+8013106A System.Runtime.AmbiguousImplementationException
+80131107 System.BadImageFormatException
+8013110E System.BadImageFormatException
+80131124 System.BadImageFormatException
+80131192 System.BadImageFormatException
+801311E6 System.MethodAccessException
+8013141A System.Security.SecurityException
+8013141D System.BadImageFormatException
+8013141E System.Security.SecurityException
+80131420 System.Security.SecurityException
+80131430 System.Security.Cryptography.CryptographicException
+80131500 System.Exception
+80131501 System.SystemException
+80131502 System.ArgumentOutOfRangeException
+80131503 System.ArrayTypeMismatchException
+80131506 System.ExecutionEngineException
+80131507 System.FieldAccessException
+80131508 System.IndexOutOfRangeException
+80131509 System.InvalidOperationException
+8013150A System.Security.SecurityException
+8013150C System.Runtime.Serialization.SerializationException
+8013150D System.Security.VerificationException
+80131510 System.MethodAccessException
+80131511 System.MissingFieldException
+80131512 System.MissingMemberException
+80131513 System.MissingMethodException
+80131514 System.MulticastNotSupportedException
+80131515 System.NotSupportedException
+80131516 System.OverflowException
+80131517 System.RankException
+80131518 System.Threading.SynchronizationLockException
+80131519 System.Threading.ThreadInterruptedException
+8013151A System.MemberAccessException
+80131520 System.Threading.ThreadStateException
+80131522 System.TypeLoadException
+80131523 System.EntryPointNotFoundException
+80131524 System.DllNotFoundException
+80131525 System.Threading.ThreadStartException
+80131527 System.Runtime.InteropServices.InvalidComObjectException
+80131528 System.NotFiniteNumberException
+80131529 System.DuplicateWaitObjectException
+80131530 System.Threading.ThreadAbortException
+80131531 System.Runtime.InteropServices.InvalidOleVariantTypeException
+80131532 System.Resources.MissingManifestResourceException
+80131533 System.Runtime.InteropServices.SafeArrayTypeMismatchException
+80131534 System.TypeInitializationException
+80131535 System.Runtime.InteropServices.MarshalDirectiveException
+80131537 System.FormatException
+80131538 System.Runtime.InteropServices.SafeArrayRankMismatchException
+80131539 System.PlatformNotSupportedException
+8013153A System.InvalidProgramException
+8013153B System.OperationCanceledException
+8013153E System.MissingMethodException
+80131541 System.DataMisalignedException
+80131542 System.Diagnostics.Contracts.ContractException
+80131543 System.TypeAccessException
+80131578 System.InsufficientExecutionStackException
+80131600 System.ApplicationException
+80131601 System.Reflection.InvalidFilterCriteriaException
+80131602 System.MissingMethodException
+80131603 System.Reflection.TargetException
+80131604 System.MissingMethodException
+80131605 System.Reflection.CustomAttributeFormatException
+80131620 System.IO.IOException
+80131621 System.IO.FileLoadException
+80131622 System.ObjectDisposedException
+";
+
+/// The 19 facility prefixes the oracle swept (`hr = base | low16`).
+const SWEPT_FACILITIES: [u32; 19] = [
+    0x8000_0000,
+    0x8001_0000,
+    0x8002_0000,
+    0x8003_0000,
+    0x8004_0000,
+    0x8007_0000,
+    0x800A_0000,
+    0x8013_0000,
+    0x8898_0000,
+    0x8899_0000,
+    0xC000_0000,
+    0xC007_0000,
+    0x8008_0000,
+    0x8009_0000,
+    0x800B_0000,
+    0x8010_0000,
+    0x801F_0000,
+    0x8DDD_0000,
+    0x887A_0000,
+];
+
+#[test]
+fn exception_kind_full_facility_sweep_matches_dotnet() {
+    let mut expected = std::collections::HashMap::new();
+    for line in DOTNET_SPECIFIC_EXCEPTION_TYPES.lines().filter(|l| !l.trim().is_empty()) {
+        let (hr, name) = line.split_once(' ').expect("`HRESULT TYPE` line");
+        expected.insert(u32::from_str_radix(hr, 16).expect("hex HRESULT"), name);
+    }
+    assert_eq!(expected.len(), 137);
+    let mut bad = Vec::new();
+    for base in SWEPT_FACILITIES {
+        for low in 0..=0xFFFF_u32 {
+            let hr = base | low;
+            let want = expected
+                .get(&hr)
+                .copied()
+                .unwrap_or("System.Runtime.InteropServices.COMException");
+            let got = exception_kind_for_hresult(hr as i32).map(DotnetExceptionKind::type_name);
+            if got != Some(want) {
+                bad.push(format!("{hr:08X}: rust {got:?}, dotnet {want}"));
+            }
+        }
+    }
+    // Odd codes outside the swept facilities (oracle: all COMException).
+    for hr in [
+        0xFFFF_FFFF_u32,
+        0xA007_0002,
+        0x9007_0002,
+        0xE007_0002,
+        0xC000_0005,
+        0x8000_000B,
+    ] {
+        if exception_kind_for_hresult(hr as i32) != Some(DotnetExceptionKind::Com) {
+            bad.push(format!("{hr:08X}: expected COMException"));
+        }
+    }
+    assert!(bad.is_empty(), "{} mismatches:\n{}", bad.len(), bad.join("\n"));
+}
+
+#[test]
+fn new_exception_kinds_follow_the_dotnet_base_types() {
+    use DotnetExceptionKind as K;
+    let kind = |hr: u32| exception_kind_for_hresult(hr as i32).expect("failing code");
+    // DuplicateWaitObjectException : ArgumentException; NotFiniteNumberException : ArithmeticException.
+    assert_eq!(kind(0x8013_1529), K::DuplicateWaitObject);
+    assert!(K::DuplicateWaitObject.is_argument());
+    assert_eq!(kind(0x8013_1528), K::NotFiniteNumber);
+    assert!(K::NotFiniteNumber.is_arithmetic());
+    // FileLoadException (ERROR_TOO_MANY_OPEN_FILES) and FileNotFoundException (ERROR_INVALID_NAME) are IOExceptions.
+    assert_eq!(kind(0x8007_0004), K::FileLoad);
+    assert!(K::FileLoad.is_io());
+    assert_eq!(kind(0x8007_007B), K::FileNotFound);
+    assert!(K::FileNotFound.is_io());
+    // ERROR_NO_UNICODE_TRANSLATION is an ArgumentOutOfRangeException.
+    assert_eq!(kind(0x8007_0459), K::ArgumentOutOfRange);
+    assert!(K::ArgumentOutOfRange.is_argument());
+    // None of the reflection/threading/interop types is an Argument/IO/NotSupported/InvalidOperation/Arithmetic one.
+    for k in [
+        K::TypeLoad,
+        K::AmbiguousMatch,
+        K::TargetParameterCount,
+        K::TypeUnloaded,
+        K::AmbiguousImplementation,
+        K::MethodAccess,
+        K::Cryptographic,
+        K::ExecutionEngine,
+        K::FieldAccess,
+        K::Serialization,
+        K::Verification,
+        K::MissingField,
+        K::MissingMember,
+        K::MulticastNotSupported,
+        K::Rank,
+        K::SynchronizationLock,
+        K::ThreadInterrupted,
+        K::MemberAccess,
+        K::ThreadState,
+        K::ThreadStart,
+        K::InvalidComObject,
+        K::ThreadAbort,
+        K::InvalidOleVariantType,
+        K::MissingManifestResource,
+        K::SafeArrayTypeMismatch,
+        K::TypeInitialization,
+        K::MarshalDirective,
+        K::SafeArrayRankMismatch,
+        K::InvalidProgram,
+        K::DataMisaligned,
+        K::Contract,
+        K::TypeAccess,
+        K::InsufficientExecutionStack,
+        K::Application,
+        K::InvalidFilterCriteria,
+        K::Target,
+        K::CustomAttributeFormat,
+    ] {
+        assert!(
+            !(k.is_argument() || k.is_io() || k.is_not_supported() || k.is_invalid_operation() || k.is_arithmetic()),
+            "{k:?}"
+        );
+    }
+}
+
+/// A temp file with known content, removed on drop (each test uses its own name).
+struct TempFile(std::path::PathBuf);
+
+impl TempFile {
+    fn new(tag: &str) -> Self {
+        let path = std::env::temp_dir().join(format!("pr-w411a-{tag}-{}.bin", std::process::id()));
+        std::fs::write(&path, [1u8, 2, 3, 4, 5, 6, 7, 8, 9, 10]).expect("write temp file");
+        Self(path)
+    }
+
+    fn open_read(&self) -> std::fs::File {
+        std::fs::File::open(&self.0).expect("open read-only")
+    }
+
+    fn open_write(&self) -> std::fs::File {
+        std::fs::OpenOptions::new()
+            .write(true)
+            .open(&self.0)
+            .expect("open write-only")
+    }
+
+    fn open_read_write(&self) -> std::fs::File {
+        std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&self.0)
+            .expect("open read-write")
+    }
+
+    fn content(&self) -> Vec<u8> {
+        std::fs::read(&self.0).expect("read temp file")
+    }
+}
+
+impl Drop for TempFile {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
+    }
+}
+
+fn hr_of<T>(result: Result<T, StreamFault>) -> Result<T, i32> {
+    result.map_err(|fault| fault.hresult())
+}
+
+#[test]
+fn file_backend_reads_writes_seeks_and_reports_its_length() {
+    let file = TempFile::new("rw-basic");
+    let com = ComStream::from_file(file.open_read_write());
+    let mut buf = [0u8; 4];
+    assert_eq!(hr_of(com.read(&mut buf)), Ok(4));
+    assert_eq!(buf, [1, 2, 3, 4]);
+    assert_eq!(hr_of(com.seek(6, 0)), Ok(6));
+    assert_eq!(hr_of(com.seek(-2, 1)), Ok(4));
+    assert_eq!(hr_of(com.seek(-1, 2)), Ok(9));
+    assert_eq!(com.stat().map(|s| s.cbSize).ok(), Some(10));
+    assert_eq!(hr_of(com.seek(2, 0)), Ok(2));
+    assert_eq!(hr_of(com.write(&[0xAA, 0xBB])), Ok(()));
+    assert_eq!(hr_of(com.seek(0, 1)), Ok(4));
+    assert_eq!(hr_of(com.commit()), Ok(()));
+    assert_eq!(hr_of(com.set_size(12)), Ok(()));
+    assert_eq!(com.stat().map(|s| s.cbSize).ok(), Some(12));
+    // Through the vtable too: Stat and Read of the file.
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    let mut statstg = STATSTG::default();
+    assert_eq!(vt_stat(raw, &mut statstg, 1).0, 0);
+    assert_eq!(statstg.cbSize, 12);
+    let mut byte = [0u8; 3];
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(vt_read(raw, byte.as_mut_ptr().cast(), 3, &mut pcb).0, 0);
+    assert_eq!((pcb, byte), (3, [5, 6, 7]));
+    drop(stream);
+    drop(com);
+    assert_eq!(file.content(), vec![1, 2, 0xAA, 0xBB, 5, 6, 7, 8, 9, 10, 0, 0]);
+}
+
+// .NET FileStream.SetLength: the position is clamped to a shorter length and kept for a longer one.
+#[test]
+fn file_backend_set_len_clamps_or_keeps_the_position() {
+    let file = TempFile::new("setlen");
+    let com = ComStream::from_file(file.open_read_write());
+    assert_eq!(hr_of(com.seek(8, 0)), Ok(8));
+    assert_eq!(hr_of(com.set_size(3)), Ok(()));
+    assert_eq!(hr_of(com.seek(0, 1)), Ok(3));
+    assert_eq!(hr_of(com.seek(8, 0)), Ok(8));
+    assert_eq!(hr_of(com.set_size(20)), Ok(()));
+    assert_eq!(hr_of(com.seek(0, 1)), Ok(8));
+    assert_eq!(hr_of(com.seek(i64::MAX, 0)), Ok(i64::MAX as u64));
+    drop(com);
+    assert_eq!(file.content().len(), 20);
+}
+
+// .NET FileStream.Seek before the beginning: IOException with HResult 0x80070057 (oracle), position unchanged.
+#[test]
+fn file_backend_seek_before_begin_has_the_filestream_hresult() {
+    let file = TempFile::new("seek");
+    let com = ComStream::from_file(file.open_read());
+    assert_eq!(hr_of(com.seek(2, 0)), Ok(2));
+    assert_eq!(hr_of(com.seek(-1, 0)), Err(E_INVALIDARG), "begin -1");
+    assert_eq!(hr_of(com.seek(-5, 1)), Err(E_INVALIDARG), "current -5");
+    assert_eq!(hr_of(com.seek(-20, 2)), Err(E_INVALIDARG), "end -20");
+    assert_eq!(hr_of(com.seek(i64::MAX, 1)), Err(E_INVALIDARG), "current overflow");
+    assert_eq!(hr_of(com.seek(0, 1)), Ok(2));
+    // Through the vtable: the out position is not written on failure.
+    let stream: IStream = com.istream();
+    let mut position = SENTINEL_U64;
+    assert_eq!(vt_seek(stream.as_raw(), -5, 1, &mut position).0, E_INVALIDARG);
+    assert_eq!(position, SENTINEL_U64);
+    // The memory backends keep the MemoryStream HRESULT (COR_E_IO).
+    let memory = ComStream::from_bytes(Arc::from(DATA.as_slice()));
+    assert_eq!(hr_of(memory.seek(-1, 0)), Err(COR_E_IO));
+    assert_eq!(hr_of(memory.seek(-1, 1)), Err(COR_E_IO));
+    assert_eq!(hr_of(memory.seek(-9, 2)), Err(COR_E_IO));
+}
+
+// .NET FileStream opened FileAccess.Read: Write / SetLength throw NotSupportedException, also for 0 bytes.
+#[test]
+fn read_only_file_write_and_set_size_are_not_supported() {
+    let file = TempFile::new("ro");
+    let com = ComStream::from_file(file.open_read());
+    assert_eq!(hr_of(com.write(&[1, 2, 3])), Err(COR_E_NOTSUPPORTED), "write 3");
+    assert_eq!(hr_of(com.write(&[])), Err(COR_E_NOTSUPPORTED), "write 0");
+    assert_eq!(hr_of(com.set_size(3)), Err(COR_E_NOTSUPPORTED), "set_size 3");
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(vt_write(raw, [1u8].as_ptr().cast(), 1, &mut pcb).0, COR_E_NOTSUPPORTED);
+    assert_eq!(vt_write(raw, [1u8].as_ptr().cast(), 0, &mut pcb).0, COR_E_NOTSUPPORTED);
+    assert_eq!(pcb, SENTINEL_U32);
+    assert_eq!(vt_set_size(raw, 3).0, COR_E_NOTSUPPORTED);
+    drop(stream);
+    drop(com);
+    assert_eq!(file.content(), vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+}
+
+// .NET FileStream opened FileAccess.Write: Read throws NotSupportedException, also for 0 bytes.
+#[test]
+fn write_only_file_read_is_not_supported() {
+    let file = TempFile::new("wo");
+    let com = ComStream::from_file(file.open_write());
+    let mut buf = [0u8; 3];
+    assert_eq!(hr_of(com.read(&mut buf)), Err(COR_E_NOTSUPPORTED));
+    assert_eq!(hr_of(com.read(&mut [])), Err(COR_E_NOTSUPPORTED));
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(vt_read(raw, buf.as_mut_ptr().cast(), 3, &mut pcb).0, COR_E_NOTSUPPORTED);
+    assert_eq!(vt_read(raw, buf.as_mut_ptr().cast(), 0, &mut pcb).0, COR_E_NOTSUPPORTED);
+    assert_eq!(pcb, SENTINEL_U32);
+    // Writing still works, and a zero-byte write on a writable file is S_OK.
+    assert_eq!(hr_of(com.write(&[7])), Ok(()));
+    assert_eq!(hr_of(com.write(&[])), Ok(()));
+    drop(stream);
+    drop(com);
+    assert_eq!(file.content()[0], 7);
+}
+
+#[test]
+fn zero_byte_read_of_a_readable_file_is_ok() {
+    let file = TempFile::new("r0");
+    let com = ComStream::from_file(file.open_read());
+    assert_eq!(hr_of(com.read(&mut [])), Ok(0));
+    let stream: IStream = com.istream();
+    let mut pcb = SENTINEL_U32;
+    let mut byte = 0u8;
+    assert_eq!(
+        vt_read(stream.as_raw(), (&mut byte as *mut u8).cast(), 0, &mut pcb).0,
+        0
+    );
+    assert_eq!(pcb, 0);
+}
+
+// .NET Win32Marshal: ERROR_OPERATION_ABORTED (995) is an OperationCanceledException (0x8013153B); every other code
+// is HRESULT_FROM_WIN32 (oracle checked 1..19999). OS error 0 has no failing HRESULT: COR_E_IO.
+#[test]
+fn io_fault_os_codes_map_like_filestream() {
+    assert_eq!(
+        StreamFault::Io(io::Error::from_raw_os_error(995)).hresult(),
+        0x8013_153B_u32 as i32
+    );
+    assert_eq!(
+        StreamFault::Io(io::Error::from_raw_os_error(994)).hresult(),
+        0x8007_03E2_u32 as i32
+    );
+    assert_eq!(
+        StreamFault::Io(io::Error::from_raw_os_error(996)).hresult(),
+        0x8007_03E4_u32 as i32
+    );
+    assert_eq!(StreamFault::Io(io::Error::from_raw_os_error(0)).hresult(), COR_E_IO);
+}
+
+/// Records every backend call; `flush` fails with ERROR_WRITE_FAULT (29) when asked to.
+struct Recorder {
+    log: Arc<std::sync::Mutex<Vec<String>>>,
+    fail_flush: bool,
+}
+
+impl Recorder {
+    fn push(&self, entry: String) {
+        self.log
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .push(entry);
+    }
+}
+
+impl StreamBackend for Recorder {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        self.push(format!("read {}", buf.len()));
+        Ok(0)
+    }
+    fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
+        self.push(format!("write {}", data.len()));
+        Ok(())
+    }
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        self.push(format!("seek {pos:?}"));
+        Ok(0)
+    }
+    fn set_len(&mut self, len: u64) -> io::Result<()> {
+        self.push(format!("set_len {len}"));
+        Ok(())
+    }
+    fn len(&mut self) -> io::Result<u64> {
+        Ok(0)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.push("flush".to_owned());
+        if self.fail_flush {
+            Err(io::Error::from_raw_os_error(29))
+        } else {
+            Ok(())
+        }
+    }
+    fn into_any(self: Box<Self>) -> Box<dyn std::any::Any + Send> {
+        self
+    }
+}
+
+fn recorder(fail_flush: bool) -> (ComStream, Arc<std::sync::Mutex<Vec<String>>>) {
+    let log = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let com = ComStream::new(Box::new(Recorder {
+        log: Arc::clone(&log),
+        fail_flush,
+    }));
+    (com, log)
+}
+
+fn entries(log: &Arc<std::sync::Mutex<Vec<String>>>) -> Vec<String> {
+    std::mem::take(&mut *log.lock().unwrap_or_else(std::sync::PoisonError::into_inner))
+}
+
+#[test]
+fn commit_flushes_the_backend_and_reports_its_failure() {
+    let (com, log) = recorder(false);
+    assert_eq!(hr_of(com.commit()), Ok(()));
+    let stream: IStream = com.istream();
+    assert_eq!(vt_commit(stream.as_raw(), 0).0, 0);
+    assert_eq!(entries(&log), ["flush", "flush"]);
+    let (failing, log) = recorder(true);
+    assert_eq!(hr_of(failing.commit()), Err(0x8007_001D_u32 as i32));
+    let failing_stream: IStream = failing.istream();
+    assert_eq!(vt_commit(failing_stream.as_raw(), 0).0, 0x8007_001D_u32 as i32);
+    assert_eq!(entries(&log), ["flush", "flush"]);
+    assert!(failing.take_last_fault().is_some(), "the failed COM Commit is recorded");
+    drop(failing.dispose());
+    assert_eq!(vt_commit(failing_stream.as_raw(), 0).0, 0, "S_OK after dispose");
+}
+
+#[test]
+fn set_size_of_i64_max_reaches_the_backend_and_above_is_out_of_range() {
+    let (com, log) = recorder(false);
+    assert_eq!(hr_of(com.set_size(i64::MAX as u64)), Ok(()));
+    assert_eq!(hr_of(com.set_size(i64::MAX as u64 + 1)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    let stream: IStream = com.istream();
+    assert_eq!(vt_set_size(stream.as_raw(), i64::MAX as u64).0, 0);
+    assert_eq!(vt_set_size(stream.as_raw(), u64::MAX).0, COR_E_ARGUMENTOUTOFRANGE);
+    let want = format!("set_len {}", i64::MAX);
+    assert_eq!(entries(&log), [want.clone(), want]);
+}
+
+#[test]
+fn zero_byte_read_and_write_reach_the_backend() {
+    let (com, log) = recorder(false);
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(vt_read(raw, ptr::null_mut(), 0, &mut pcb).0, 0);
+    assert_eq!(pcb, 0);
+    assert_eq!(vt_write(raw, ptr::null(), 0, &mut pcb).0, 0);
+    assert_eq!(entries(&log), ["read 0", "write 0"]);
+}
+
+// `cb == i32::MAX` is a valid C# `int`: the call reaches the backend (2 GiB buffer, zero-filled lazily).
+#[test]
+fn read_and_write_with_count_i32_max_are_accepted() {
+    let size = i32::MAX as usize;
+    let Ok(layout) = std::alloc::Layout::from_size_align(size, 1) else {
+        panic!("layout");
+    };
+    // SAFETY: `layout` has a non-zero size.
+    let buffer = unsafe { std::alloc::alloc_zeroed(layout) };
+    if buffer.is_null() {
+        eprintln!("skipped: no 2 GiB of address space for the i32::MAX buffer");
+        return;
+    }
+    let (com, log) = recorder(false);
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    let mut pcb = SENTINEL_U32;
+    let read = vt_read(raw, buffer.cast(), i32::MAX as u32, &mut pcb).0;
+    let write = vt_write(raw, buffer.cast_const().cast(), i32::MAX as u32, &mut pcb).0;
+    // SAFETY: `buffer` was allocated above with `layout` and is no longer used.
+    unsafe { std::alloc::dealloc(buffer, layout) };
+    assert_eq!((read, write, pcb), (0, 0, i32::MAX as u32));
+    assert_eq!(entries(&log), [format!("read {size}"), format!("write {size}")]);
+}
+
+#[test]
+fn stream_backend_is_empty_follows_the_length() {
+    let mut empty: Box<dyn StreamBackend> = Box::new(Cursor::new(Vec::<u8>::new()));
+    assert_eq!(empty.is_empty().ok(), Some(true));
+    let mut full: Box<dyn StreamBackend> = Box::new(Cursor::new(Arc::<[u8]>::from(DATA.as_slice())));
+    assert_eq!(full.is_empty().ok(), Some(false));
+    let file = TempFile::new("empty");
+    let mut on_disk: Box<dyn StreamBackend> = Box::new(file.open_read());
+    assert_eq!(on_disk.len().ok(), Some(10));
+    assert_eq!(on_disk.is_empty().ok(), Some(false));
+}
+
+#[test]
+fn com_as_raw_and_debug_show_the_wrapped_pointer() {
+    let com = ComStream::writable_memory();
+    let stream: IStream = com.istream();
+    let raw = stream.as_raw();
+    // SAFETY: `raw` is live (held by `stream`); the added reference is handed over to `wrap`.
+    let wrapped = unsafe {
+        add_ref_raw(raw);
+        Com::<IStream>::wrap(raw, "IStream")
+    }
+    .expect("an IStream is an IStream");
+    assert_eq!(wrapped.as_raw(), raw);
+    let text = format!("{wrapped:?}");
+    assert!(text.starts_with("Com") && text.contains("raw"), "{text}");
+    assert!(format!("{com:?}").starts_with("ComStream"));
+}
+
+#[test]
+fn stream_fault_display_and_source() {
+    use std::error::Error as _;
+    let faults = [
+        StreamFault::Disposed,
+        StreamFault::NotSupported,
+        StreamFault::SeekBeforeBegin,
+        StreamFault::InvalidSeekOrigin(7),
+        StreamFault::SizeOutOfRange(u64::MAX),
+        StreamFault::CountOutOfRange(u32::MAX),
+        StreamFault::Io(io::Error::other("disk on fire")),
+    ];
+    let texts: Vec<String> = faults.iter().map(ToString::to_string).collect();
+    assert!(texts[0].contains("closed"));
+    assert!(texts[1].contains("not supported"));
+    assert!(texts[2].contains("before the beginning"));
+    assert!(texts[3].contains('7'));
+    assert!(texts[4].contains(&u64::MAX.to_string()));
+    assert!(texts[5].contains(&u32::MAX.to_string()));
+    assert!(texts[6].contains("disk on fire"));
+    for (fault, text) in faults.iter().zip(&texts) {
+        assert_eq!(fault.source().is_some(), matches!(fault, StreamFault::Io(_)), "{text}");
+    }
+    assert_eq!(
+        faults[6].source().map(ToString::to_string).as_deref(),
+        Some("disk on fire")
+    );
+}
