@@ -406,3 +406,12 @@ Split a unit when it has independent concerns: pure logic vs I/O, separate C# cl
 `W<wave>-<n>a`, `b`, ... in the contract; each has its own Owned files, goldens and verifier. Chores (docs, ignore
 files, cleanup, PR bookkeeping) are Haiku sub-agents in the background. Never more than 8 concurrent cargo builds,
 each with its own `CARGO_TARGET_DIR`.
+
+## 14. Dependency-graph scheduling (P-28, 2026-10-16)
+
+From Wave 5 the port workflow does not use tier barriers. The contract writer records `Depends on` per unit; the
+workflow builds the graph, starts a unit as soon as its direct dependencies are merged into the integration branch,
+and an integrator merges finished units continuously (merge, workspace gate, delete the unit's worktree and target
+dir). Barriers stay only where a contract names a shared owner. At most 8 concurrent cargo builds, one target dir per
+unit. A failed unit blocks only its dependents.
+
