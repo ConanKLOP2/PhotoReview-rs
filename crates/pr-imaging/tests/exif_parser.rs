@@ -14,12 +14,12 @@
 //! - `ExifParser_MakeStoredAsOutOfLineUndefined_IsRead`: covered by golden `jpeg-make-undefined-type-7`.
 
 use pr_imaging::exif_parser as ep;
-use pr_imaging::exif_summary::{ExifRational, ExifSummary, RawExifTags, MAX_TEXT_LENGTH};
+use pr_imaging::exif_summary::{ExifRational, ExifSummary, MAX_TEXT_LENGTH, RawExifTags};
 use pr_test_support::golden;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use builder::{add_segment, ascii, full_camera, jpeg_with_app1, rational, short, tiff, u16_bytes, u32_bytes};
-use tiff_bytes::{at, fake_entry, long, t_short, TiffBytes};
+use tiff_bytes::{TiffBytes, at, fake_entry, long, t_short};
 
 /// C# `ExifTestData`: hand-built EXIF/TIFF blocks in either byte order, for the JPEG-level tests.
 mod builder {
@@ -466,7 +466,7 @@ fn huge_entry_count_is_bounded() {
 fn entry_cut_by_end_of_block_is_not_read() {
     // C#: ExifParserTests.EntryCutByEndOfBlockIsNotRead
     let block = tiff(true, &[ascii(ep::TAG_MODEL, "GR")], &[]); // inline value, no data area
-                                                                // Declare a 2nd entry: Make, ASCII, count 2 -- but the block ends 8 bytes into it (its inline value is missing).
+    // Declare a 2nd entry: Make, ASCII, count 2 -- but the block ends 8 bytes into it (its inline value is missing).
     let mut cut = block[..8 + 2 + 12].to_vec();
     cut[8] = 2;
     cut.extend(u16_bytes(ep::TAG_MAKE, true));
@@ -1325,4 +1325,157 @@ fn golden_exif_parser_matches_csharp_oracle() {
         golden.cases.len(),
         failures.join("\n")
     );
+}
+
+// ---------------------------------------------------------------- extra guards (no C# twin; found by manual mutation)
+
+/// SOI plus `prefix` plus a real Exif APP1 segment holding a full camera.
+fn jpeg_with_prefix_then_exif(soi: [u8; 2], prefix: &[u8]) -> Vec<u8> {
+    let (ifd0, exif) = full_camera(true);
+    let mut output = soi.to_vec();
+    output.extend_from_slice(prefix);
+    let mut payload = b"Exif\0\0".to_vec();
+    payload.extend(tiff(true, &ifd0, &exif));
+    add_segment(&mut output, 0xE1, &payload);
+    output
+}
+
+#[test]
+fn find_exif_tiff_block_exif_after_end_of_image_marker_is_not_found() {
+    // No C# twin: pins `0xD9 => empty` of FindExifTiffBlock (EOI is followed by a plausible 2-byte length).
+    let good = jpeg_with_prefix_then_exif([0xFF, 0xD8], &[]);
+    assert!(ep::try_parse_jpeg(&good).is_some());
+
+    let jpeg = jpeg_with_prefix_then_exif([0xFF, 0xD8], &[0xFF, 0xD9, 0x00, 0x02]);
+
+    assert_eq!(ep::try_parse_jpeg(&jpeg), None);
+    assert!(ep::find_exif_tiff_block(&jpeg).is_empty());
+}
+
+#[test]
+fn find_exif_tiff_block_second_signature_byte_must_be_d8() {
+    // No C# twin: pins `jpeg[1] != 0xD8` of FindExifTiffBlock.
+    let jpeg = jpeg_with_prefix_then_exif([0xFF, 0xD9], &[]);
+
+    assert_eq!(ep::try_parse_jpeg(&jpeg), None);
+    assert!(ep::find_exif_tiff_block(&jpeg).is_empty());
+}
+
+#[test]
+fn find_exif_tiff_block_stuffed_byte_in_header_area_is_not_skipped() {
+    // No C# twin: pins `marker == 0x00 => empty` (the walk must not resume after FF 00).
+    let jpeg = jpeg_with_prefix_then_exif([0xFF, 0xD8], &[0xFF, 0x00]);
+    assert_eq!(ep::try_parse_jpeg(&jpeg), None);
+}
+
+#[test]
+fn byte_order_mark_with_foreign_second_letter_and_matching_body_is_rejected() {
+    // No C# twin: the body matches the claimed byte order of the SECOND letter (IM + big-endian, MI + little-endian).
+    let mut big = TiffBytes::new(false, 64)
+        .header(8)
+        .ifd(8, 0, &[t_short(0x0112, 6), at(0x010F, 2, 4, 0x4142_4300)])
+        .to_vec();
+    let mut little = TiffBytes::new(true, 64)
+        .header(8)
+        .ifd(8, 0, &[t_short(0x0112, 6), at(0x010F, 2, 4, ABC_INLINE)])
+        .to_vec();
+    big[0] = b'I'; // "IM"
+    little[0] = b'M'; // "MI"
+
+    for block in [&big, &little] {
+        assert_eq!(ep::try_read_orientation(block), None);
+        assert_eq!(ep::try_parse_tiff_block(block), None);
+    }
+}
+
+#[test]
+fn try_read_orientation_ifd0_offset_of_seven_is_rejected() {
+    // No C# twin: pins `ifd_offset < 8` at its boundary. Big-endian, so byte 7 is the offset's low byte (7): the
+    // count at 7..9 is >= 1792 (capped), and entry 0 at 9 is a valid Orientation entry.
+    let mut entry = vec![0x01, 0x12, 0x00, 0x03, 0, 0, 0, 1, 0x00, 0x06, 0, 0];
+    let block = TiffBytes::new(false, 64).header(7).put(9, &entry).to_vec();
+    assert_eq!(ep::try_read_orientation(&block), None);
+    entry[0] = 0x01;
+    let block = TiffBytes::new(false, 64)
+        .header(8)
+        .put(10, &entry)
+        .put(8, &[0, 1])
+        .to_vec();
+    assert_eq!(
+        ep::try_read_orientation(&block),
+        Some(6),
+        "the same entry at IFD offset 8 is read"
+    );
+}
+
+#[test]
+fn try_parse_tiff_block_ifd0_offset_of_seven_is_rejected() {
+    // No C# twin: pins `ifd_offset < 8` at its boundary for the summary reader (big-endian, Make entry at 9).
+    let entry = [0x01, 0x0F, 0x00, 0x02, 0, 0, 0, 4, b'A', b'B', b'C', 0];
+    let block = TiffBytes::new(false, 64).header(7).put(9, &entry).to_vec();
+    assert_eq!(ep::try_parse_tiff_block(&block), None);
+    let block = TiffBytes::new(false, 64)
+        .header(8)
+        .put(8, &[0, 1])
+        .put(10, &entry)
+        .to_vec();
+    assert_eq!(
+        ep::try_parse_tiff_block(&block).and_then(|s| s.camera_make).as_deref(),
+        Some("ABC")
+    );
+}
+
+#[test]
+fn try_parse_tiff_block_exif_pointer_of_seven_is_skipped_and_the_next_valid_pointer_is_used() {
+    // No C# twin: pins `pointer >= 8` at its boundary. A first pointer of 7 must not claim the "first pointer wins"
+    // slot (the IFD at 7 would be rejected anyway), so the later pointer to the real Exif IFD at 100 is followed.
+    let block = TiffBytes::new(true, 128)
+        .header(40)
+        .ifd(
+            40,
+            0,
+            &[at(0x010F, 2, 4, ABC_INLINE), long(0x8769, 7), long(0x8769, 100)],
+        )
+        .ifd(100, 0, &[t_short(0x8827, 100)])
+        .to_vec();
+
+    let summary = ep::try_parse_tiff_block(&block).expect("Make is read");
+
+    assert_eq!(summary.camera_make.as_deref(), Some("ABC"));
+    assert_eq!(summary.iso, Some(100));
+}
+
+#[test]
+fn try_read_orientation_first_orientation_entry_with_unreadable_value_wins_over_a_later_valid_one() {
+    // No C# twin (golden `orientation-tiff-duplicate-0-then-6-first-wins` covers value 0 only): an unknown type makes
+    // the span unreadable, and the later valid duplicate must NOT be consulted.
+    let block = TiffBytes::new(true, 64)
+        .header(8)
+        .ifd(8, 0, &[at(0x0112, 99, 1, 0), t_short(0x0112, 6)])
+        .to_vec();
+
+    assert_eq!(ep::try_read_orientation(&block), None);
+}
+
+#[test]
+fn try_parse_tiff_block_ifd_is_exif_ignores_make_and_does_not_follow_a_pointer() {
+    // No C# twin: pins the `ifd_is_exif` branch (no IFD0 tags, no pointer), with Make, a pointer and ISO in IFD0.
+    let block = TiffBytes::new(true, 160)
+        .header(8)
+        .ifd(
+            8,
+            0,
+            &[at(0x010F, 2, 4, ABC_INLINE), long(0x8769, 60), t_short(0x8827, 100)],
+        )
+        .ifd(
+            60,
+            0,
+            &[at(0x9003, 2, 4, ABC_INLINE), t_short(0x8827, 200), t_short(0x8827, 300)],
+        )
+        .to_vec();
+
+    let summary = ep::try_parse_tiff_block_with(&block, true).expect("ISO from IFD0");
+
+    assert_eq!(summary.camera_make, None);
+    assert_eq!(summary.iso, Some(100));
 }
