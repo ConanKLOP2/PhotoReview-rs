@@ -1025,3 +1025,76 @@ fn golden_full_decode_gate() {
         assert_eq!(run_case(input), *want, "golden case {}", golden::str_of(input, "name"));
     }
 }
+
+// Repair round 1: kill M21 (grant taken before cancel) and M15 (aging looks at the back preload).
+/// Kills M21 (grant checked before cancel): C# `SemaphoreSlim.Wait(token)` throws on an already-cancelled token even when
+/// the grant is already there, and the catch passes the slot on. Hook drops the holder (grant to this waiter) and cancels
+/// this waiter's token; `enter` must return `Canceled` and the slot must end free.
+#[test]
+fn granted_and_cancelled_before_wait_returns_canceled_and_frees_slot() {
+    let holder: Arc<Mutex<Option<FullDecodeLease>>> = Arc::new(Mutex::new(None));
+    let token = CancelToken::new();
+    let (h2, t2) = (Arc::clone(&holder), token.clone());
+    let gate = FullDecodeGate::with_waiter_queued(
+        2,
+        Arc::new(move |_p| {
+            drop(h2.lock().unwrap().take());
+            t2.cancel();
+            Ok(())
+        }),
+    );
+    *holder.lock().unwrap() = Some(gate.enter(Viewer, &CancelToken::none()).unwrap());
+    let result = gate.enter(Viewer, &token);
+    assert_eq!(result.err(), Some(GateError::Canceled));
+    assert_eq!(gate.slots_available(), 1);
+}
+
+/// Kills M15 (aging looks at the back preload): only the FRONT preload is considered (C# `_preloadQueue.First`).
+#[test]
+fn only_the_front_preload_is_aged() {
+    let (queued_tx, queued_rx) = mpsc::channel::<()>();
+    let queued_tx = Mutex::new(queued_tx);
+    let gate = FullDecodeGate::with_waiter_queued(
+        3,
+        Arc::new(move |_p| {
+            queued_tx.lock().unwrap().send(()).unwrap();
+            Ok(())
+        }),
+    );
+    let order = Arc::new(Mutex::new(Vec::<String>::new()));
+    let (granted_tx, granted_rx) = mpsc::channel::<String>();
+
+    let spawn = |name: &str, pri: SourceReadPriority, hold: Option<mpsc::Receiver<()>>| {
+        let (g, o, gt, n) = (gate.clone(), Arc::clone(&order), granted_tx.clone(), name.to_owned());
+        let h = thread::spawn(move || {
+            let lease = g.enter(pri, &CancelToken::none()).unwrap();
+            lease.mark_worked();
+            o.lock().unwrap().push(n.clone());
+            gt.send(n).unwrap();
+            if let Some(rx) = hold {
+                rx.recv_timeout(BOUND).unwrap();
+            }
+            drop(lease);
+        });
+        queued_rx.recv_timeout(BOUND).expect("queued");
+        h
+    };
+
+    let holder = gate.enter(Viewer, &CancelToken::none()).unwrap();
+    let mut hs = vec![spawn("p1", Preload, None)]; // stamp 0
+    let (v1_tx, v1_rx) = mpsc::channel();
+    hs.push(spawn("v1", Viewer, Some(v1_rx)));
+    holder.mark_worked();
+    drop(holder); // completions 1, p1 not overdue -> v1
+    assert_eq!(granted_rx.recv_timeout(BOUND).unwrap(), "v1");
+    hs.push(spawn("p2", Preload, None)); // stamp 1
+    hs.push(spawn("v2", Viewer, None));
+    hs.push(spawn("v3", Viewer, None));
+    v1_tx.send(()).unwrap();
+    for h in hs {
+        h.join().unwrap();
+    }
+    // c=2: p1 2-0 -> v2; c=3: p1 overdue -> p1; c=4: p2 max(1,3)=3 -> 1 -> v3; then p2.
+    assert_eq!(*order.lock().unwrap(), ["v1", "v2", "p1", "v3", "p2"]);
+    assert_eq!(gate.slots_available(), 1);
+}
