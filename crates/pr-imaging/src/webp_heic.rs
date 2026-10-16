@@ -9,18 +9,17 @@
 //!
 //! REQUIRES the W4-01c amendment A1 (see contract, Open questions 1): `DecodeError::not_supported_localized` and
 //! `DecodeError::missing_codec_localized` (a `UserText` closure riding on the `NotSupported` / `MissingCodec` variants).
-#![allow(unused_variables, dead_code, unused_imports)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 use std::fmt;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 
-use pr_core::abstractions::Log;
+use pr_core::abstractions::{Log, NullLog};
 use pr_core::catalog::types::{WicImageFormat, get_wic_format};
 use pr_core::text::dotnet_path::get_file_name;
 
 use crate::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
-use crate::decoder_traits::{DecodeError, ImageDecoder};
+use crate::decoder_traits::{DecodeError, ImageDecoder, UserText};
 
 /// C# `WicCodecSupport` (lives in `Decoding/Wic/WicCodecAvailability.cs`, which is W4-11b). It is plain data and the
 /// router needs it, so the pure crate owns the type; W4-11b (`pr_platform_win::wic::availability`) produces it and must
@@ -120,7 +119,17 @@ impl WebpHeicRoutingDecoder {
         texts: Arc<dyn WebpHeicTexts>,
         log: Option<Arc<dyn Log>>,
     ) -> Self {
-        todo!()
+        let log: Arc<dyn Log> = log.unwrap_or_else(|| Arc::new(NullLog));
+        Self {
+            inner,
+            wic_decoder,
+            is_enabled,
+            codecs,
+            texts,
+            log,
+            webp_missing_logged: AtomicBool::new(false),
+            heif_missing_logged: AtomicBool::new(false),
+        }
     }
 
     /// C# static `WillRefuse(path, isEnabled, codecs)`: true when `decode` would refuse `path` without reading it.
@@ -133,31 +142,86 @@ impl WebpHeicRoutingDecoder {
         is_enabled: &dyn Fn() -> bool,
         codecs: &dyn Fn() -> WicCodecSupport,
     ) -> bool {
-        todo!()
+        let Some(path) = path else {
+            return false;
+        };
+        let format = get_wic_format(path);
+        if format == WicImageFormat::None {
+            return false;
+        }
+        !is_enabled() || !codecs().supports(format)
     }
 
     /// C# `Route(path)`: `get_wic_format(path)`; `None` -> inner. Else the file name is `get_file_name(path)`; switch off
     /// -> `Err(DecodeError::not_supported_localized(..))` (probe NOT run); else `codecs()` ONCE, missing ->
     /// `Err(self.missing_codec(..))`; else the WIC decoder.
     fn route(&self, path: &str) -> Result<&Arc<dyn ImageDecoder>, DecodeError> {
-        todo!()
+        let format = get_wic_format(path);
+        if format == WicImageFormat::None {
+            return Ok(&self.inner);
+        }
+        let file_name = get_file_name(path).to_string();
+        if !(self.is_enabled)() {
+            let english = format!("WebP/HEIC support is disabled; cannot decode '{file_name}'.");
+            let texts = Arc::clone(&self.texts);
+            let name = file_name;
+            let text: UserText = Arc::new(move || texts.webp_heic_disabled(&name));
+            return Err(DecodeError::not_supported_localized(english, text));
+        }
+        let codecs = (self.codecs)();
+        if !codecs.supports(format) {
+            return Err(self.missing_codec(format, &file_name, &codecs));
+        }
+        Ok(&self.wic_decoder)
     }
 
     /// C# `MissingCodec`: builds the `MissingCodec` refusal and logs ONE warning per format per process.
     fn missing_codec(&self, format: WicImageFormat, file_name: &str, codecs: &WicCodecSupport) -> DecodeError {
-        todo!()
+        let is_webp = format == WicImageFormat::WebP;
+        let prefix = if is_webp {
+            "WebP needs the Windows \"WebP Image Extensions\" (Microsoft Store)"
+        } else {
+            "HEIC/HEIF needs the Windows \"HEIF Image Extensions\" and \"HEVC Video Extensions\" (Microsoft Store)"
+        };
+        let flag = if is_webp {
+            &self.webp_missing_logged
+        } else {
+            &self.heif_missing_logged
+        };
+        if !flag.swap(true, Ordering::SeqCst) {
+            self.log.warn(&format!(
+                "{prefix}; files of this format are skipped until the codec is installed and the app restarted. Probe: {}",
+                codecs.detail
+            ));
+        }
+        let english = format!("{prefix}; cannot decode '{file_name}'.");
+        let texts = Arc::clone(&self.texts);
+        let name = file_name.to_string();
+        let text: UserText = if is_webp {
+            Arc::new(move || texts.webp_codec_missing(&name))
+        } else {
+            Arc::new(move || texts.heif_codec_missing(&name))
+        };
+        DecodeError::missing_codec_localized(english, text)
     }
 }
 
 impl ImageDecoder for WebpHeicRoutingDecoder {
     /// C# `Decode(request)`: `route(request.path)` then forward. Nothing is read before the refusal.
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        todo!()
+        let path = request.path.to_string_lossy();
+        self.route(&path)?.decode(request)
     }
 
     /// C# `ReadInfo(path)`: blank/whitespace path -> `Err(DecodeError::InvalidArgument)` (C#
     /// `ArgumentException.ThrowIfNullOrWhiteSpace`), BEFORE routing; else `route(path)` then forward.
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
-        todo!()
+        if path.chars().all(char::is_whitespace) {
+            return Err(DecodeError::InvalidArgument {
+                message: "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')"
+                    .to_string(),
+            });
+        }
+        self.route(path)?.read_info(path)
     }
 }

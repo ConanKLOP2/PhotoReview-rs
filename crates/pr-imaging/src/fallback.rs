@@ -9,15 +9,12 @@
 //! The C# class throws; here every failure is a [`DecodeError`] (W4-01c) and `IsFallbackable` is a `match` on its variants.
 //! A "null" primary/fallback cannot be expressed (`Arc`), so the C# constructor guards have no Rust twin.
 //!
-//! Stub: every body is `todo!()`; signatures and data types are final. Remove the `#![allow(...)]` line when implemented.
-
-#![allow(unused_variables, dead_code, clippy::unused_self)]
-
 use std::sync::Arc;
 
 use pr_core::abstractions::Log;
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::model::enums::DecoderBackend;
+use pr_core::model::serde_ext::LenientEnum;
 
 use crate::decode_types::{DecodeRequest, DecodedImageView, ImageInfo, PlatformImage, SourceBytes}; // W4-01b
 use crate::decoder_traits::{DecodeError, ImageDecoder}; // W4-01c
@@ -51,7 +48,13 @@ impl FallbackImageDecoder {
         log: Arc<dyn Log>,
         metrics: Option<Arc<ReviewMetrics>>,
     ) -> Self {
-        todo!()
+        Self {
+            primary,
+            primary_backend,
+            fallback,
+            log,
+            metrics,
+        }
     }
 
     /// `IsFallbackable(Exception)`: true exactly for `NotSupported`, `MissingCodec` (a `NotSupportedException` subtype in C#),
@@ -60,7 +63,39 @@ impl FallbackImageDecoder {
     /// (the explicit INV-12 exclusions) and `InvalidOperation`, `InvalidArgument`, `Disposed`, `Io`, `Other` (not whitelisted).
     #[must_use]
     pub fn is_fallbackable(error: &DecodeError) -> bool {
-        todo!()
+        // Exhaustive on purpose: a new `DecodeError` variant must be classified here.
+        match error {
+            DecodeError::WithSourceBytes { error, .. } | DecodeError::Localized { error, .. } => {
+                Self::is_fallbackable(error)
+            }
+            DecodeError::NotSupported { .. }
+            | DecodeError::MissingCodec { .. }
+            | DecodeError::InvalidCast { .. }
+            | DecodeError::Overflow { .. }
+            | DecodeError::Format { .. }
+            | DecodeError::InvalidData { .. }
+            | DecodeError::Com { .. }
+            | DecodeError::DllNotFound { .. }
+            | DecodeError::BadImageFormat { .. }
+            | DecodeError::EntryPointNotFound { .. } => true,
+            DecodeError::FileNotFound { .. }
+            | DecodeError::DirectoryNotFound { .. }
+            | DecodeError::Canceled
+            | DecodeError::OutOfMemory { .. }
+            | DecodeError::MemoryAdmission { .. }
+            | DecodeError::Busy { .. }
+            | DecodeError::InvalidOperation { .. }
+            | DecodeError::InvalidArgument { .. }
+            | DecodeError::Disposed { .. }
+            | DecodeError::Io(_)
+            | DecodeError::Other { .. } => false,
+        }
+    }
+
+    fn record_fallback(&self) {
+        if let Some(metrics) = &self.metrics {
+            metrics.record_decoder_fallback(self.primary_backend);
+        }
     }
 }
 
@@ -75,7 +110,26 @@ impl ImageDecoder for FallbackImageDecoder {
     /// # Errors
     /// The primary's non-fallbackable error, or the fallback's error.
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        todo!()
+        match self.primary.decode(request) {
+            Ok(image) => Ok(relabel_if_needed(image, self.primary_backend)),
+            Err(error) if !Self::is_fallbackable(&error) => Err(error),
+            Err(error) => {
+                self.log.warn(&format!(
+                    "Decoder {} failed for '{}', falling back to {}: {}",
+                    self.primary_backend.name(),
+                    request.path.display(),
+                    FALLBACK_BACKEND.name(),
+                    error.message()
+                ));
+                self.record_fallback();
+                let fallback_request = match (&request.bytes, failure_source_bytes(&error)) {
+                    (None, Some(bytes)) => request.clone().with_bytes(bytes),
+                    _ => request.clone(),
+                };
+                let image = self.fallback.decode(&fallback_request)?;
+                Ok(relabel_if_needed(image, FALLBACK_BACKEND))
+            }
+        }
     }
 
     /// `ReadInfo`: same fallback rule; warning text `"Decoder {primary_backend}.ReadInfo failed for '{path}', falling back
@@ -84,11 +138,34 @@ impl ImageDecoder for FallbackImageDecoder {
     /// # Errors
     /// As [`Self::decode`].
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
-        todo!()
+        match self.primary.read_info(path) {
+            Ok(info) => Ok(info),
+            Err(error) if !Self::is_fallbackable(&error) => Err(error),
+            Err(error) => {
+                self.log.warn(&format!(
+                    "Decoder {}.ReadInfo failed for '{}', falling back to {}: {}",
+                    self.primary_backend.name(),
+                    path,
+                    FALLBACK_BACKEND.name(),
+                    error.message()
+                ));
+                self.record_fallback();
+                self.fallback.read_info(path)
+            }
+        }
     }
 
     // `as_cancellable` is NOT overridden: C# `FallbackImageDecoder` does not implement `ICancellableImageDecoder`
     // (default `None`). See contract open question 1.
+}
+
+/// Returns `image` itself (same `Arc`) when it already reports `backend`, else a relabelled wrapper.
+fn relabel_if_needed(image: Arc<dyn DecodedImageView>, backend: DecoderBackend) -> Arc<dyn DecodedImageView> {
+    if image.actual_backend() == backend {
+        image
+    } else {
+        Arc::new(BackendRelabeledImage::new(image, backend))
+    }
 }
 
 /// C# `DecodedImageWithBackend`: every property of `inner` except `actual_backend`, which is `actual_backend`.
@@ -108,48 +185,48 @@ impl std::fmt::Debug for BackendRelabeledImage {
 impl BackendRelabeledImage {
     #[must_use]
     pub fn new(inner: Arc<dyn DecodedImageView>, actual_backend: DecoderBackend) -> Self {
-        todo!()
+        Self { inner, actual_backend }
     }
 }
 
 impl DecodedImageView for BackendRelabeledImage {
     fn pixel_width(&self) -> i32 {
-        todo!()
+        self.inner.pixel_width()
     }
     fn pixel_height(&self) -> i32 {
-        todo!()
+        self.inner.pixel_height()
     }
     fn downscaled(&self) -> bool {
-        todo!()
+        self.inner.downscaled()
     }
     fn orientation(&self) -> i32 {
-        todo!()
+        self.inner.orientation()
     }
     fn estimated_bytes(&self) -> i64 {
-        todo!()
+        self.inner.estimated_bytes()
     }
     fn platform_image(&self) -> &PlatformImage {
-        todo!()
+        self.inner.platform_image()
     }
     fn actual_backend(&self) -> DecoderBackend {
-        todo!()
+        self.actual_backend
     }
     fn original_width(&self) -> i32 {
-        todo!()
+        self.inner.original_width()
     }
     fn original_height(&self) -> i32 {
-        todo!()
+        self.inner.original_height()
     }
     fn exif(&self) -> Option<&crate::exif_summary::ExifSummary> {
-        todo!()
+        self.inner.exif()
     }
     fn is_degraded_fallback(&self) -> bool {
-        todo!()
+        self.inner.is_degraded_fallback()
     }
 }
 
 /// `DecodeFailureSourceBytes.TryGet(ex, out bytes)` for a [`DecodeError`]: the whole source file the failing decoder had
-/// already read, if it attached it. Needs the W4-01c addition described in the contract (Problem 1); `todo!()` until then.
+/// already read, if it attached it.
 fn failure_source_bytes(error: &DecodeError) -> Option<SourceBytes> {
-    todo!()
+    error.source_bytes().cloned()
 }

@@ -9,7 +9,6 @@
 //!   definition of correct.
 //!
 //! PARITY: I-18 (orientation baked into pixels).
-#![allow(unused_variables, dead_code)] // D11: removed with the last `todo!()`.
 
 /// EXIF IFD0 orientation tag (274) inside a JPEG APP1 block: the WIC metadata query that reads it.
 pub const EXIF_ORIENTATION_QUERY: &str = "/app1/ifd/{ushort=274}";
@@ -46,12 +45,19 @@ impl OrientationTransform {
 
 /// True for the orientations (5 to 8) that rotate by 90 degrees and so swap width and height. C#: `IsTransposed`.
 pub fn is_transposed(orientation: i32) -> bool {
-    todo!("(5..=8).contains(&orientation)")
+    (5..=8).contains(&orientation)
 }
 
 /// The orientation itself when it is a valid EXIF value (1 to 8); 1 (normal) for anything else. C#: `Normalize`.
 pub fn normalize(orientation: i32) -> i32 {
-    todo!("1..=8 kept, else 1")
+    if (1..=8).contains(&orientation) { orientation } else { 1 }
+}
+
+/// A query answer that is a valid orientation (1..=8), or `None`.
+fn valid_orientation(value: Option<i64>) -> Option<i32> {
+    value
+        .filter(|v| (1..=8).contains(v))
+        .and_then(|v| i32::try_from(v).ok())
 }
 
 /// Reads the orientation through a metadata query function (C# `ReadFromWic(Func<string, object?>)`).
@@ -61,17 +67,42 @@ pub fn normalize(orientation: i32) -> i32 {
 /// C#: ask [`EXIF_ORIENTATION_QUERY`]; only when that value is not in 1..=8 ask [`WINDOWS_ORIENTATION_QUERY`]; a final
 /// value outside 1..=8, an absent tag or `Err(QueryFailed)` from EITHER query gives 1. The second query is never asked
 /// when the first yields a valid value.
-pub fn read_from_wic<F>(query: F) -> i32
+pub fn read_from_wic<F>(mut query: F) -> i32
 where
     F: FnMut(&str) -> Result<Option<i64>, QueryFailed>,
 {
-    todo!("two queries, EXIF first, any Err => 1")
+    let exif = match query(EXIF_ORIENTATION_QUERY) {
+        Ok(value) => value,
+        Err(QueryFailed) => return 1,
+    };
+    if let Some(orientation) = valid_orientation(exif) {
+        return orientation;
+    }
+    let windows = match query(WINDOWS_ORIENTATION_QUERY) {
+        Ok(value) => value,
+        Err(QueryFailed) => return 1,
+    };
+    valid_orientation(windows).unwrap_or(1)
 }
 
 /// The transform table (C# `WpfExifOrientation.CreateTransform`): 2 flip-h; 3 rot 180; 4 flip-v; 5 flip-h then rot 270;
 /// 6 rot 90; 7 flip-h then rot 90; 8 rot 270; 1 and every other value the identity.
 pub fn create_transform(orientation: i32) -> OrientationTransform {
-    todo!("table")
+    let (flip_horizontal, flip_vertical, rotate_clockwise_degrees) = match orientation {
+        2 => (true, false, 0),
+        3 => (false, false, 180),
+        4 => (false, true, 0),
+        5 => (true, false, 270),
+        6 => (false, false, 90),
+        7 => (true, false, 90),
+        8 => (false, false, 270),
+        _ => return OrientationTransform::IDENTITY,
+    };
+    OrientationTransform {
+        flip_horizontal,
+        flip_vertical,
+        rotate_clockwise_degrees,
+    }
 }
 
 /// Destination `(x, y)` of source pixel `(x, y)` in a `width` x `height` image after the EXIF orientation
@@ -79,10 +110,26 @@ pub fn create_transform(orientation: i32) -> OrientationTransform {
 /// 5 `(y, x)`, 6 `(h-1-y, x)`, 7 `(h-1-y, w-1-x)`, 8 `(y, w-1-x)`; 1 and invalid values map to `(x, y)`.
 /// Preconditions: `x < width`, `y < height`.
 pub fn map_pixel(orientation: i32, x: u32, y: u32, width: u32, height: u32) -> (u32, u32) {
-    todo!("table")
+    debug_assert!(x < width && y < height, "pixel ({x},{y}) outside {width}x{height}");
+    let mirrored_x = width - 1 - x;
+    let mirrored_y = height - 1 - y;
+    match orientation {
+        2 => (mirrored_x, y),
+        3 => (mirrored_x, mirrored_y),
+        4 => (x, mirrored_y),
+        5 => (y, x),
+        6 => (mirrored_y, x),
+        7 => (mirrored_y, mirrored_x),
+        8 => (y, mirrored_x),
+        _ => (x, y),
+    }
 }
 
 /// `(width, height)` after the orientation: swapped for [`is_transposed`] values, unchanged otherwise.
 pub fn oriented_size(orientation: i32, width: u32, height: u32) -> (u32, u32) {
-    todo!("swap when transposed")
+    if is_transposed(orientation) {
+        (height, width)
+    } else {
+        (width, height)
+    }
 }

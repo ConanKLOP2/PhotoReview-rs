@@ -8,8 +8,6 @@
 //! No threads, no clock, no globals: every input is a parameter, so the run loop (`queue.rs`) and the scheduler shell
 //! (W4-15b) share one definition and the golden `preload-policy` pins it against .NET.
 
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
-
 use std::time::Duration;
 
 use pr_core::abstractions::{MemoryProbe, MemorySnapshot};
@@ -90,7 +88,7 @@ pub enum PreloadOutcome {
 /// C# `ForgetUnlessFailed`: `true` when the path must LEAVE the run's queued set (everything but `Failed`), so a later
 /// order pass (user turned back, preview evicted meanwhile) can queue it again.
 pub fn forget_unless_failed(outcome: PreloadOutcome) -> bool {
-    todo!("W4-15a: outcome != Failed")
+    outcome != PreloadOutcome::Failed
 }
 
 /// Verdict of one memory re-check (C# private enum `ResumeVerdict`).
@@ -110,10 +108,13 @@ pub enum ResumeVerdict {
 /// trailing white U+0009..U+000D/U+0020, one leading `+`/`-`, ASCII digits, trailing NULs) and `0 <= n <= 16`; anything
 /// else (incl. `None`, `""`, `"1.5"`, `"2147483648"`, `"-1"`) is `None`. `"-0"` is `Some(0)`.
 ///
-/// Same accepted set as `pr_core::diagnostics::diag_options` (private `parse_preload_workers`); see contract open
-/// question 1 (share it instead of duplicating).
+/// Amendment A4: delegates to `pr_core::diagnostics::diag_options::parse_preload_workers` (the same C# rule, read by
+/// `DiagOptions`), so one parser is golden-tested twice (`diag-options` and `preload-policy`). Its upper bound is
+/// [`MAX_DIAG_WORKERS`] (the golden `constants` case pins both).
 pub fn parse_diag_workers(value: Option<&str>) -> Option<i32> {
-    todo!("W4-15a: see the doc comment; golden `preload-policy` section `parse-diag-workers`")
+    value
+        .and_then(pr_core::diagnostics::diag_options::parse_preload_workers)
+        .and_then(|n| i32::try_from(n).ok())
 }
 
 /// C# `internal static bool InPreloadWindow(int index, int center, (int Direction, int Lead) shape, PreloadWindow window)`:
@@ -121,7 +122,13 @@ pub fn parse_diag_workers(value: Option<&str>) -> Option<i32> {
 /// (unchecked `int`: `wrapping_*`); `ahead > 0` => `ahead <= lead + forward` (wrapping add); `ahead < 0` =>
 /// `-ahead <= backward` (wrapping neg); `ahead == 0` (the current image) => `false`.
 pub fn in_preload_window(index: i32, center: i32, shape: Shape, window: PreloadWindow) -> bool {
-    todo!("W4-15a: golden section `in-preload-window`")
+    let sign: i32 = if shape.direction < 0 { -1 } else { 1 };
+    let ahead = sign.wrapping_mul(index.wrapping_sub(center));
+    if ahead > 0 {
+        ahead <= shape.lead.wrapping_add(window.forward)
+    } else {
+        ahead < 0 && ahead.wrapping_neg() <= window.backward
+    }
 }
 
 /// C# private `IsStillWanted(int index)` with the centre and shape passed in: `ahead = direction * (index - center)`
@@ -129,38 +136,65 @@ pub fn in_preload_window(index: i32, center: i32, shape: Shape, window: PreloadW
 /// image: the viewer's own decode handles it); otherwise `lead == 0 || ahead > 0` (during a burst an image behind the
 /// user is no longer wanted).
 pub fn is_still_wanted(index: i32, center: i32, shape: Shape) -> bool {
-    todo!("W4-15a: golden section `is-still-wanted`")
+    let ahead = shape.direction.wrapping_mul(index.wrapping_sub(center));
+    if ahead == 0 {
+        return false;
+    }
+    // `ahead > 0` and `ahead >= 0` agree here (`ahead == 0` returned above): equivalent mutant, accepted.
+    shape.lead == 0 || ahead > 0
 }
 
 /// C# field initializer `Math.Max(2, Environment.ProcessorCount / 3)`: concurrent preload decodes allowed to START while
 /// a viewer decode runs (fast link). Integer division truncates.
 pub fn viewer_busy_worker_limit(processor_count: i32) -> i32 {
-    todo!("W4-15a: max(2, processor_count / 3)")
+    2.max(processor_count / 3)
 }
 
 /// C# loop body: `ActiveViewerDecodes > 0 ? (slowLink ? 1 : Math.Min(workers, viewerBusyLimit)) : workers` with
 /// `slowLink = decodeMillisecondsEwma > 200` (strict: exactly 200 is NOT slow). `ActiveViewerDecodes` is read once per
 /// pass by the caller.
 pub fn worker_limit(workers: i32, active_viewer_decodes: i32, decode_ms_ewma: f64, viewer_busy_limit: i32) -> i32 {
-    todo!("W4-15a: see the doc comment; unit tests in tests/preload_policy.rs (no golden section)")
+    if active_viewer_decodes > 0 {
+        if decode_ms_ewma > SLOW_LINK_DECODE_MS_THRESHOLD {
+            SLOW_LINK_VIEWER_BUSY_WORKER_LIMIT
+        } else {
+            workers.min(viewer_busy_limit)
+        }
+    } else {
+        workers
+    }
 }
 
 /// C# `internal static TimeSpan ResumeCheckDelay(int check)`: `ResumeCheckBaseDelay * Math.Pow(2, Math.Min(check, 16))`
 /// capped at [`RESUME_CHECK_MAX_DELAY`] (`delay < max ? delay : max`). `TimeSpan * double` rounds to whole ticks
 /// (100 ns); for `check < 0` the factor is fractional (`-1` => 1 s; not reachable from the scheduler, pinned anyway).
 pub fn resume_check_delay(check: i32) -> Duration {
-    todo!("W4-15a: golden section `resume-check-delay`")
+    const NANOS_PER_TICK: u64 = 100;
+    let base_ticks = (RESUME_CHECK_BASE_DELAY.as_nanos() / u128::from(NANOS_PER_TICK)) as f64;
+    // .NET `TimeSpan * double`: `Math.Round(ticks * factor)` (half to even), then a whole number of ticks. The factor
+    // is `Math.Pow(2, min(check, 16))`, exact for every integer exponent (0 for very negative ones).
+    let ticks = (base_ticks * 2_f64.powi(check.min(16))).round_ties_even();
+    let max_ticks = (RESUME_CHECK_MAX_DELAY.as_nanos() / u128::from(NANOS_PER_TICK)) as f64;
+    // `<` vs `<=` is unobservable: at `ticks == max_ticks` both arms give 30 s (and 2 s * 2^k is never exactly 30 s).
+    if ticks < max_ticks {
+        // 0 <= ticks < 300_000_000: the conversion is exact.
+        Duration::from_nanos(ticks as u64 * NANOS_PER_TICK)
+    } else {
+        RESUME_CHECK_MAX_DELAY
+    }
 }
 
 /// C# `Math.Max(0, MemoryLoadLimit - ResumeLoadMargin)`: the load limit the re-check probes with.
 pub fn resume_max_load(memory_load_limit: f64) -> f64 {
-    todo!("W4-15a: f64::max(0.0, limit - RESUME_LOAD_MARGIN) with the C# Math.Max NaN rule (NaN in => NaN out)")
+    let lowered = memory_load_limit - RESUME_LOAD_MARGIN;
+    // .NET `Math.Max` propagates NaN; Rust `f64::max` would return the other operand.
+    if lowered.is_nan() { lowered } else { lowered.max(0.0) }
 }
 
 /// C# `cacheBytes >= fullFolderThresholdBytes * WholeFolderCacheFillLimit`: `long >= long * double` is a DOUBLE
 /// comparison (both sides converted to `f64`; inclusive). Used by the whole-folder stop and by the resume verdict.
 pub fn fill_limit_reached(cache_bytes: i64, full_folder_threshold_bytes: i64) -> bool {
-    todo!("W4-15a: (cache_bytes as f64) >= (threshold as f64) * WHOLE_FOLDER_CACHE_FILL_LIMIT")
+    (cache_bytes as f64) >= (full_folder_threshold_bytes as f64) * WHOLE_FOLDER_CACHE_FILL_LIMIT
 }
 
 /// C# `EvaluateResume()`, called OUTSIDE the scheduler gate. Order and laziness are observable (fakes count probe
@@ -169,7 +203,19 @@ pub fn fill_limit_reached(cache_bytes: i64, full_folder_threshold_bytes: i64) ->
 /// => `NotYet` (no probe call); (3) `probe.has_headroom(resume_max_load(options.memory_load_limit),
 /// options.reserve_bytes)` => `Resume`, else `NotYet`.
 pub fn evaluate_resume(options: &PreloadOptions, target: &dyn PreloadTarget, probe: &dyn MemoryProbe) -> ResumeVerdict {
-    todo!("W4-15a: see the doc comment")
+    if options.full_folder_threshold_bytes > 0
+        && fill_limit_reached(target.cache_bytes(), options.full_folder_threshold_bytes)
+    {
+        return ResumeVerdict::CacheFull;
+    }
+    if target.active_viewer_decodes() > 0 {
+        return ResumeVerdict::NotYet;
+    }
+    if probe.has_headroom(resume_max_load(options.memory_load_limit), options.reserve_bytes) {
+        ResumeVerdict::Resume
+    } else {
+        ResumeVerdict::NotYet
+    }
 }
 
 /// C# `struct HeadroomProbeState` + `HasPreloadHeadroomCached` (IMG-03): `GlobalMemoryStatusEx` is a syscall, so the
@@ -192,7 +238,13 @@ impl HeadroomProbeState {
     /// `memory_probe.has_headroom(options.memory_load_limit, options.reserve_bytes)`) when the doc rule says so, then
     /// stores `value`, `tick = now_ms`, `checked = true`, `decode_queued_since_check = false`; returns `value`.
     pub fn has_headroom_cached(&mut self, now_ms: i64, probe: impl FnOnce() -> bool) -> bool {
-        todo!("W4-15a: see the struct doc")
+        if !self.checked || self.decode_queued_since_check || now_ms.wrapping_sub(self.tick) > HEADROOM_RECHECK_MS {
+            self.value = probe();
+            self.tick = now_ms;
+            self.checked = true;
+            self.decode_queued_since_check = false;
+        }
+        self.value
     }
 }
 
@@ -210,11 +262,30 @@ pub const MSG_DRAIN_TIMEOUT: &str =
 /// `Dispose` saw a lifetime task fail with a non-cancellation exception (Error, with the exception).
 pub const MSG_FAILED_DURING_DISPOSAL: &str = "Preload scheduler failed during disposal";
 
-/// C# `measured?.ToString("F0", CultureInfo.InvariantCulture)`: .NET Core 3.0+ "F0" rounds the EXACT decimal value of
-/// the double half AWAY from zero (`0.5` => `"1"`, `2.5` => `"3"`, `-0.5` => `"-1"`), where Rust `format!("{:.0}")`
-/// rounds half to even (`"2"` for 2.5). Negative values that round to zero print `"-0"`. No group separators.
+/// C# `measured?.ToString("F0", CultureInfo.InvariantCulture)`. The golden section `f0` (generated by .NET) is the
+/// authority: .NET formats the EXACT binary value and an exact tie rounds half to EVEN (`0.5` => `"0"`, `2.5` => `"2"`,
+/// `3.5` => `"4"`, `1234567.5` => `"1234568"`), like Rust `format!("{:.0}")`; values above 2^53 print every integer
+/// digit. Negative values that round to zero print `"-0"` (also `-0.0`). No group separators. NaN and the infinities
+/// use the invariant symbols (`NaN`, `Infinity`, `-Infinity`); a measured mean is never one of them.
 pub fn format_f0_invariant(value: f64) -> String {
-    todo!("W4-15a: golden section `f0`")
+    if value.is_nan() {
+        "NaN".to_owned()
+    } else if value.is_infinite() {
+        // `> 0.0` vs `>= 0.0` is unobservable for an infinite value (equivalent mutant, accepted).
+        if value > 0.0 { "Infinity" } else { "-Infinity" }.to_owned()
+    } else {
+        format!("{value:.0}")
+    }
+}
+
+/// Text of an optional snapshot field: C# interpolates a null `ulong?`/`uint?` as the empty string.
+fn optional_text<T: ToString>(value: Option<T>) -> String {
+    value.map(|v| v.to_string()).unwrap_or_default()
+}
+
+/// .NET `bool.ToString()`.
+fn dotnet_bool(value: bool) -> &'static str {
+    if value { "True" } else { "False" }
 }
 
 /// The Info line written when the order is (re)built:
@@ -232,13 +303,27 @@ pub fn format_policy_log(
     center: i32,
     shape: Shape,
 ) -> String {
-    todo!("W4-15a: golden section `policy-log`")
+    let measured = measured_mean_bytes.map_or_else(|| "none".to_owned(), format_f0_invariant);
+    format!(
+        "Preload policy: images={images} box={}x{} measuredMeanBytes={measured} estimatedBytes={estimated_bytes} \
+         capacityBytes={capacity_bytes} wholeFolder={} center={center} direction={} lead={}",
+        decode_box.width,
+        decode_box.height,
+        dotnet_bool(whole_folder),
+        shape.direction,
+        shape.lead,
+    )
 }
 
 /// `Preload paused for memory: queued={q} cacheCount={c} cacheBytes={b} availableBytes={a} loadPercent={p}` where a
 /// missing snapshot prints EMPTY values (`availableBytes= loadPercent=`), as C# interpolates a null `ulong?`/`uint?`.
 pub fn format_paused_log(queued: usize, cache_count: i32, cache_bytes: i64, memory: Option<MemorySnapshot>) -> String {
-    todo!("W4-15a: golden section `paused-log`")
+    format!(
+        "Preload paused for memory: queued={queued} cacheCount={cache_count} cacheBytes={cache_bytes} \
+         availableBytes={} loadPercent={}",
+        optional_text(memory.map(|m| m.available_bytes)),
+        optional_text(memory.map(|m| m.load_percent)),
+    )
 }
 
 /// `Preload progress: queued={q} active={a} cacheCount={c} cacheBytes={b} availableBytes={x}` (x empty when no snapshot).
@@ -249,41 +334,45 @@ pub fn format_progress_log(
     cache_bytes: i64,
     memory: Option<MemorySnapshot>,
 ) -> String {
-    todo!("W4-15a: golden section `progress-log`")
+    format!(
+        "Preload progress: queued={queued} active={active} cacheCount={cache_count} cacheBytes={cache_bytes} \
+         availableBytes={}",
+        optional_text(memory.map(|m| m.available_bytes)),
+    )
 }
 
 /// `Preload resumed after memory pause: center={center}`.
 pub fn format_resumed_log(center: i32) -> String {
-    todo!("W4-15a")
+    format!("Preload resumed after memory pause: center={center}")
 }
 
 /// `Preload stays paused: cache at its fill limit (cacheBytes={cache_bytes})`.
 pub fn format_stays_paused_log(cache_bytes: i64) -> String {
-    todo!("W4-15a")
+    format!("Preload stays paused: cache at its fill limit (cacheBytes={cache_bytes})")
 }
 
 /// `Preload skipped, cannot stat: {path}` (Warn; candidate key lookup failed with an I/O error).
 pub fn format_skipped_cannot_stat(path: &str) -> String {
-    todo!("W4-15a")
+    format!("Preload skipped, cannot stat: {path}")
 }
 
 /// `Preload deferred, decoder busy: {path}` (Info, the FIRST busy of a path only).
 pub fn format_deferred_busy(path: &str) -> String {
-    todo!("W4-15a")
+    format!("Preload deferred, decoder busy: {path}")
 }
 
 /// `Preload deferred again, decoder busy: {path}` (C# `Debug.WriteLine`, debugger only: never the log).
 pub fn format_deferred_busy_again(path: &str) -> String {
-    todo!("W4-15a")
+    format!("Preload deferred again, decoder busy: {path}")
 }
 
 /// `Preload failed: {path}` (Error, with the error).
 pub fn format_preload_failed(path: &str) -> String {
-    todo!("W4-15a")
+    format!("Preload failed: {path}")
 }
 
 /// `Preload cancelled by another source: {path} ({message})` (Warn; RV-I14). `message` is the error's `Display`
 /// (`DecodeError::Canceled` => `"The operation was canceled."`, .NET's default `OperationCanceledException.Message`).
 pub fn format_foreign_cancel(path: &str, message: &str) -> String {
-    todo!("W4-15a")
+    format!("Preload cancelled by another source: {path} ({message})")
 }
