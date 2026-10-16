@@ -99,6 +99,11 @@ pub enum DecodeError {
         error: Box<DecodeError>,
         bytes: DecodeFailureSourceBytes,
     },
+    /// A UI sentence attached to any other variant (C# `UserFacingError.Localized(exception, text)` works on every
+    /// exception type: `InvalidDataException`, `FileNotFoundException`, `IOException`, `ArgumentException`...). Transparent
+    /// like `WithSourceBytes`: every predicate and the message delegate to `error`; only [`DecodeError::describe`] and
+    /// [`DecodeError::kind`] look at the wrapper. Build it with [`DecodeError::with_user_text`].
+    Localized { error: Box<DecodeError>, text: UserText },
 }
 
 impl fmt::Debug for DecodeError {
@@ -106,6 +111,7 @@ impl fmt::Debug for DecodeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::WithSourceBytes { error, .. } => f.debug_tuple("WithSourceBytes").field(error).finish(),
+            Self::Localized { error, .. } => f.debug_tuple("Localized").field(error).finish(),
             other => f
                 .debug_struct(other.variant_name())
                 .field("message", &other.message())
@@ -175,6 +181,43 @@ impl DecodeError {
         }
     }
 
+    /// C# `UserFacingError.Localized(exception, text)` for ANY variant: `NotSupported`/`MissingCodec` store the text in
+    /// their field, `WithSourceBytes` keeps its place outermost, any other variant is wrapped in
+    /// [`DecodeError::Localized`]. A second call replaces the first text (C# `Data[key] = text`).
+    #[must_use]
+    pub fn with_user_text(self, text: UserText) -> Self {
+        match self {
+            Self::NotSupported { message, .. } => Self::NotSupported {
+                message,
+                user_text: Some(text),
+            },
+            Self::MissingCodec { message, .. } => Self::MissingCodec {
+                message,
+                user_text: Some(text),
+            },
+            Self::WithSourceBytes { error, bytes } => Self::WithSourceBytes {
+                error: Box::new(error.with_user_text(text)),
+                bytes,
+            },
+            Self::Localized { error, .. } => Self::Localized { error, text },
+            other => Self::Localized {
+                error: Box::new(other),
+                text,
+            },
+        }
+    }
+
+    /// The attached UI sentence closure, if any (outermost wins).
+    #[must_use]
+    pub fn user_text(&self) -> Option<&UserText> {
+        match self {
+            Self::NotSupported { user_text, .. } | Self::MissingCodec { user_text, .. } => user_text.as_ref(),
+            Self::Localized { text, .. } => Some(text),
+            Self::WithSourceBytes { error, .. } => error.user_text(),
+            _ => None,
+        }
+    }
+
     /// Attaches the whole source file (A2). Replaces bytes attached earlier, as C# `Exception.Data[key] = value`
     /// does. Only a fallbackable failure may be wrapped (C# TurboJpeg rule); the caller decides, this does not check.
     #[must_use]
@@ -195,6 +238,7 @@ impl DecodeError {
     pub fn source_bytes(&self) -> Option<&SourceBytes> {
         match self {
             Self::WithSourceBytes { error, bytes } => bytes.try_get().or_else(|| error.source_bytes()),
+            Self::Localized { error, .. } => error.source_bytes(),
             _ => None,
         }
     }
@@ -203,7 +247,7 @@ impl DecodeError {
     #[must_use]
     pub fn kind(&self) -> &DecodeError {
         match self {
-            Self::WithSourceBytes { error, .. } => error.kind(),
+            Self::WithSourceBytes { error, .. } | Self::Localized { error, .. } => error.kind(),
             other => other,
         }
     }
@@ -211,38 +255,26 @@ impl DecodeError {
     /// True when a UI sentence is attached (A1). Inspect with [`DecodeError::describe`] for the text itself.
     #[must_use]
     pub fn is_localized(&self) -> bool {
-        match self {
-            Self::NotSupported { user_text, .. } | Self::MissingCodec { user_text, .. } => user_text.is_some(),
-            Self::WithSourceBytes { error, .. } => error.is_localized(),
-            _ => false,
-        }
+        self.user_text().is_some()
     }
 
     /// The text a user sees (A1, C# `UserFacingError.Describe`): the closure's result when one is attached, else
     /// [`DecodeError::message`]. A closure that panics falls back to the message instead of unwinding the caller.
     #[must_use]
     pub fn describe(&self) -> String {
-        match self {
-            Self::NotSupported {
-                message,
-                user_text: Some(text),
-            }
-            | Self::MissingCodec {
-                message,
-                user_text: Some(text),
-            } => {
+        match self.user_text() {
+            Some(text) => {
                 let text: &UserText = text;
-                panic::catch_unwind(AssertUnwindSafe(|| text())).unwrap_or_else(|_| message.clone())
+                panic::catch_unwind(AssertUnwindSafe(|| text())).unwrap_or_else(|_| self.message())
             }
-            Self::WithSourceBytes { error, .. } => error.describe(),
-            other => other.message(),
+            None => self.message(),
         }
     }
 
     /// The C# `Exception.Message`.
     pub fn message(&self) -> String {
         match self {
-            Self::WithSourceBytes { error, .. } => error.message(),
+            Self::WithSourceBytes { error, .. } | Self::Localized { error, .. } => error.message(),
             Self::Canceled => "The operation was canceled.".to_owned(),
             Self::Io(error) => error.to_string(),
             Self::Busy { message }
@@ -271,7 +303,7 @@ impl DecodeError {
     /// `DirectoryNotFound` and `Io`. Handlers that treat "failed read/decode" as "cannot show this image" use it.
     pub fn is_io_exception(&self) -> bool {
         match self {
-            Self::WithSourceBytes { error, .. } => error.is_io_exception(),
+            Self::WithSourceBytes { error, .. } | Self::Localized { error, .. } => error.is_io_exception(),
             _ => matches!(
                 self,
                 Self::MemoryAdmission { .. } | Self::FileNotFound { .. } | Self::DirectoryNotFound { .. } | Self::Io(_)
@@ -282,7 +314,7 @@ impl DecodeError {
     /// C# `ex is NotSupportedException`: true for `NotSupported` and `MissingCodec`.
     pub fn is_not_supported(&self) -> bool {
         match self {
-            Self::WithSourceBytes { error, .. } => error.is_not_supported(),
+            Self::WithSourceBytes { error, .. } | Self::Localized { error, .. } => error.is_not_supported(),
             _ => matches!(self, Self::NotSupported { .. } | Self::MissingCodec { .. }),
         }
     }
@@ -312,6 +344,7 @@ impl DecodeError {
             Self::Io(_) => "Io",
             Self::Other { .. } => "Other",
             Self::WithSourceBytes { .. } => "WithSourceBytes",
+            Self::Localized { .. } => "Localized",
         }
     }
 }
@@ -326,7 +359,7 @@ impl std::error::Error for DecodeError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Self::Io(error) => Some(error),
-            Self::WithSourceBytes { error, .. } => error.source(),
+            Self::WithSourceBytes { error, .. } | Self::Localized { error, .. } => error.source(),
             _ => None,
         }
     }

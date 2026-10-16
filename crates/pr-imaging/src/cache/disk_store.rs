@@ -659,7 +659,9 @@ pub fn is_cache_entry_failure(error: &DecodeError) -> bool {
         | DecodeError::EntryPointNotFound { .. }
         | DecodeError::Other { .. } => false,
         // Transparent wrapper (A2): the C# exception is the wrapped one.
-        DecodeError::WithSourceBytes { error, .. } => is_cache_entry_failure(error),
+        DecodeError::WithSourceBytes { error, .. } | DecodeError::Localized { error, .. } => {
+            is_cache_entry_failure(error)
+        }
     }
 }
 

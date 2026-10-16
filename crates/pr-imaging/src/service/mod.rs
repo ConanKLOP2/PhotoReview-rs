@@ -1369,7 +1369,16 @@ impl PreloadTarget for PreviewImageService {
 /// `WithSourceBytes` wrapper is peeled ([`DecodeError::kind`]): a preload never needs the attached bytes. `Io(e)` becomes
 /// `io::Error::new(e.kind(), e.to_string())`.
 fn rebuild_decode_error(error: &DecodeError) -> DecodeError {
-    match error.kind() {
+    let rebuilt = rebuild_decode_error_kind(error.kind());
+    // The UI sentence (C# `Exception.Data`) survives the rebuild for every variant.
+    match error.user_text() {
+        Some(text) => rebuilt.with_user_text(Arc::clone(text)),
+        None => rebuilt,
+    }
+}
+
+fn rebuild_decode_error_kind(error: &DecodeError) -> DecodeError {
+    match error {
         DecodeError::Busy { message } => DecodeError::Busy {
             message: message.clone(),
         },
@@ -1433,7 +1442,7 @@ fn rebuild_decode_error(error: &DecodeError) -> DecodeError {
             message: message.clone(),
         },
         // `kind()` never returns the wrapper; the arm keeps the match total without a panic path.
-        wrapped @ DecodeError::WithSourceBytes { .. } => DecodeError::Other {
+        wrapped @ (DecodeError::WithSourceBytes { .. } | DecodeError::Localized { .. }) => DecodeError::Other {
             message: wrapped.message(),
         },
     }

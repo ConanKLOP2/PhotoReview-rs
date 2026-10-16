@@ -65,7 +65,9 @@ impl FallbackImageDecoder {
     pub fn is_fallbackable(error: &DecodeError) -> bool {
         // Exhaustive on purpose: a new `DecodeError` variant must be classified here.
         match error {
-            DecodeError::WithSourceBytes { error, .. } => Self::is_fallbackable(error),
+            DecodeError::WithSourceBytes { error, .. } | DecodeError::Localized { error, .. } => {
+                Self::is_fallbackable(error)
+            }
             DecodeError::NotSupported { .. }
             | DecodeError::MissingCodec { .. }
             | DecodeError::InvalidCast { .. }

@@ -284,7 +284,9 @@ fn variant_name(error: &DecodeError) -> &'static str {
         DecodeError::Disposed { .. } => "Disposed",
         DecodeError::Io(_) => "Io",
         DecodeError::Other { .. } => "Other",
-        DecodeError::WithSourceBytes { .. } => unreachable!("kind() peels the source-bytes wrapper"),
+        DecodeError::WithSourceBytes { .. } | DecodeError::Localized { .. } => {
+            unreachable!("kind() peels the wrappers")
+        }
     }
 }
 
