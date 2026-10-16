@@ -52,8 +52,8 @@ use super::exif_reader::{
     read_orientation,
 };
 use super::interop::{
-    Com, ComStream, DotnetExceptionKind, StreamBackend, WicError, create_bitmap_flip_rotator, create_bitmap_scaler,
-    create_color_context, create_color_transformer, create_decoder_from_stream, create_factory,
+    Com, ComStream, DotnetExceptionKind, StreamBackend, StreamFault, WicError, create_bitmap_flip_rotator,
+    create_bitmap_scaler, create_color_context, create_color_transformer, create_decoder_from_stream, create_factory,
     create_format_converter, get_frame, get_metadata_query_reader, guids,
 };
 
@@ -595,10 +595,19 @@ impl StreamBackend for SourceStreamBackend {
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
+    /// The C# source is a .NET `FileStream` (`PhysicalSourceReader`): a seek before 0 (or past `i64::MAX`, which
+    /// wraps negative in .NET) throws `IOException` with HResult `HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER)`
+    /// (`0x80070057`, checked against .NET 10), not the `MemoryStream` `COR_E_IO` default. Repair round 3.
+    fn seek_before_begin_fault(&self) -> StreamFault {
+        StreamFault::Io(io::Error::from_raw_os_error(ERROR_INVALID_PARAMETER))
+    }
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send> {
         self
     }
 }
+
+/// `ERROR_INVALID_PARAMETER`: what .NET `FileStream.Seek` reports for a target before 0.
+const ERROR_INVALID_PARAMETER: i32 = 87;
 
 // ---------------------------------------------------------------------------------------------------------------
 // Pure decisions (all `pub` so the integration tests can reach them; C# `internal` + InternalsVisibleTo)
@@ -992,9 +1001,15 @@ fn read_color_contexts(
     let contexts = read_color_contexts_with(
         || {
             let mut count = 0u32;
-            // SAFETY: `frame` is live; the empty slice passes cCount = 0 with a dangling non-null pointer that WIC
-            // never dereferences for a zero count (T8); `count` is a valid, writable local.
-            unsafe { frame.GetColorContexts(&mut [], &raw mut count) }.map_err(|e| com_error(&e))?;
+            // T8: C# passes `IntPtr.Zero`. The `windows` wrapper would pass an empty slice's dangling NON-null pointer,
+            // which some codecs (JPEG XR) refuse with E_INVALIDARG (the colour contexts were then silently skipped), so
+            // the raw vtable entry is called with a null array.
+            // SAFETY: `frame` is a live interface pointer and `vtable` its own vtable; cCount = 0 with a null array is
+            // the documented count query; `count` is a valid, writable local.
+            let hr = unsafe {
+                (Interface::vtable(frame).GetColorContexts)(frame.as_raw(), 0, std::ptr::null_mut(), &raw mut count)
+            };
+            hr.ok().map_err(|e| com_error(&e))?;
             Ok(count)
         },
         || create_color_context(factory).map_err(|e| decode_error_from_wic(&e)),

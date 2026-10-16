@@ -1529,3 +1529,110 @@ fn decode_and_read_info_read_each_source_byte_from_disk_once() {
         assert_eq!(read_info, length, "{name}: read_info disk bytes");
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 3 (verifier finding: JPEG XR + ICC was not converted to sRGB)
+// ---------------------------------------------------------------------------------------------------------------
+
+/// Writes a 16x16 JPEG XR (WIC WMP encoder, 24bppBGR, uniform `bgr`) to `path`, with `profile` embedded as its colour
+/// context when given. The WIC encoder stands in for a committed fixture (the oracle has no JPEG XR case).
+fn write_jxr(path: &Path, bgr: [u8; 3], profile: Option<&Path>) {
+    use pr_platform_win::wic::interop::create_factory;
+    use windows::Win32::Foundation::GENERIC_WRITE;
+    use windows::Win32::Graphics::Imaging::{
+        GUID_ContainerFormatWmp, GUID_WICPixelFormat24bppBGR, WICBitmapEncoderNoCache,
+    };
+    use windows::core::HSTRING;
+    const SIDE: u32 = 16;
+    let factory = create_factory().expect("factory");
+    let pixels: Vec<u8> = bgr.iter().copied().cycle().take((SIDE * SIDE * 3) as usize).collect();
+    // SAFETY: every interface below is live for the block; the pointers passed are locals or `pixels`, which outlives
+    // the `WritePixels` call and holds exactly `SIDE` rows of `SIDE * 3` bytes.
+    unsafe {
+        let stream = factory.CreateStream().expect("stream");
+        stream
+            .InitializeFromFilename(&HSTRING::from(path.as_os_str()), GENERIC_WRITE.0)
+            .expect("file stream");
+        let encoder = factory
+            .CreateEncoder(&GUID_ContainerFormatWmp, std::ptr::null())
+            .expect("JPEG XR encoder");
+        encoder
+            .Initialize(&stream, WICBitmapEncoderNoCache)
+            .expect("encoder init");
+        let mut frame = None;
+        let mut bag = None;
+        encoder.CreateNewFrame(&mut frame, &mut bag).expect("frame");
+        let frame = frame.expect("frame");
+        frame.Initialize(bag.as_ref()).expect("frame init");
+        frame.SetSize(SIDE, SIDE).expect("size");
+        let mut format = GUID_WICPixelFormat24bppBGR;
+        frame.SetPixelFormat(&mut format).expect("format");
+        assert_eq!(format, GUID_WICPixelFormat24bppBGR, "the WMP encoder takes 24bppBGR");
+        if let Some(profile) = profile {
+            let context = factory.CreateColorContext().expect("context");
+            context
+                .InitializeFromFilename(&HSTRING::from(profile.as_os_str()))
+                .expect("profile");
+            frame.SetColorContexts(&[Some(context)]).expect("set colour contexts");
+        }
+        frame.WritePixels(SIDE, SIDE * 3, &pixels).expect("pixels");
+        frame.Commit().expect("frame commit");
+        encoder.Commit().expect("encoder commit");
+    }
+}
+
+fn first_pixel(view: &dyn DecodedImageView) -> [u8; 4] {
+    let pixels = view.platform_image().as_pixels().expect("pixels");
+    let bytes = pixels.bytes().expect("live buffer");
+    [bytes[0], bytes[1], bytes[2], bytes[3]]
+}
+
+// Verifier finding (repair round 3): the colour-context count query passed a dangling non-null array, which the JPEG XR
+// codec refuses with E_INVALIDARG; that fault reads as "no colour context", so a Display P3 JPEG XR decoded untransformed.
+// C# passes `IntPtr.Zero` and converts it to sRGB. The profiled file must now decode differently from the same pixels
+// without a profile (P3 -> sRGB moves an orange well beyond rounding), on the file path and from bytes.
+#[test]
+#[ignore = "native: needs WIC"]
+fn jpeg_xr_with_display_p3_profile_is_transformed_to_srgb() {
+    let root = TempRoot::new("wic-decoder-jxr");
+    let plain = root.join("plain.jxr");
+    let profiled = root.join("p3.jxr");
+    let profile = golden::repo_root()
+        .join("tests")
+        .join("fixtures")
+        .join("ColorProfiles")
+        .join("DisplayP3-v4.icc");
+    let orange = [40u8, 120, 220];
+    write_jxr(&plain, orange, None);
+    write_jxr(&profiled, orange, Some(&profile));
+    let decoder = physical_decoder();
+    let untagged = first_pixel(
+        &*decoder
+            .decode(&DecodeRequest::new(plain.clone(), 0))
+            .expect("plain JXR"),
+    );
+    for (b, o) in untagged[..3].iter().zip(orange) {
+        assert!(
+            b.abs_diff(o) <= 3,
+            "untagged JXR keeps its pixels: {untagged:?} vs {orange:?}"
+        );
+    }
+    let from_file = first_pixel(
+        &*decoder
+            .decode(&DecodeRequest::new(profiled.clone(), 0))
+            .expect("P3 JXR"),
+    );
+    let from_bytes =
+        first_pixel(&*decode_bytes(&decoder, &profiled, fs::read(&profiled).expect("bytes")).expect("P3 JXR bytes"));
+    assert_eq!(from_file, from_bytes, "file and bytes decode alike");
+    let moved = from_file[..3]
+        .iter()
+        .zip(&untagged[..3])
+        .map(|(a, b)| a.abs_diff(*b))
+        .max()
+        .unwrap_or(0);
+    assert!(
+        moved >= 8,
+        "P3 JXR is converted to sRGB: {from_file:?} vs untagged {untagged:?}"
+    );
+}
