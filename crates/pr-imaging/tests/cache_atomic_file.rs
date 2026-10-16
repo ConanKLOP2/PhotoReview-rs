@@ -562,3 +562,134 @@ fn atomic_write_error_display_and_source() {
     assert_eq!(io_error.to_string(), "boom");
     assert_eq!(io_error.source().unwrap().to_string(), "boom");
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Repair round 3: long paths (C# `Path.GetFullPath` makes any path long-path capable; `MoveFileExW` alone is not)
+// ---------------------------------------------------------------------------------------------------------------------
+
+fn tmp_count_in(dir: &Path) -> usize {
+    tmp_files(dir)
+}
+
+fn long_dir(base: &Path, total: usize) -> PathBuf {
+    let mut p = base.to_path_buf();
+    let mut i = 0;
+    while p.as_os_str().len() < total {
+        p.push(format!("segment_{i:03}_xxxxxxxxxxxxxxxxxxxxxxxx"));
+        i += 1;
+    }
+    p
+}
+
+fn write_abc(path: &Path) -> Result<(), AtomicWriteError> {
+    write_atomic(path, |w: &mut dyn Write| w.write_all(b"abc"), None, &CancelToken::new())
+}
+
+/// Removes a folder created relative to the current directory when dropped (also when the test fails).
+struct RelativeCleanup(PathBuf);
+
+impl Drop for RelativeCleanup {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+
+#[test]
+fn write_atomic_long_absolute_path_is_published() {
+    let root = TempRoot::new("w408a-long");
+    let dir = long_dir(root.path(), 270);
+    let cache = dir.join("c.bin");
+
+    write_abc(&cache).expect("write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+    assert_eq!(tmp_count_in(&dir), 0);
+}
+
+#[cfg(windows)]
+#[test]
+fn write_atomic_long_verbatim_path_is_published() {
+    let root = TempRoot::new("w408a-long-verbatim");
+    let dir = long_dir(root.path(), 270);
+    let cache = PathBuf::from(format!("{}{}", VERBATIM_PREFIX, dir.display())).join("c.bin");
+
+    write_abc(&cache).expect("write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+}
+
+// Destination below 260 units, destination plus `.<32 hex>.tmp` at or over it.
+#[test]
+fn write_atomic_only_the_temp_name_pushes_the_path_over_260() {
+    let root = TempRoot::new("w408a-long-temp");
+    let dir = long_dir(root.path(), 200);
+    let name_len = 240usize.saturating_sub(dir.as_os_str().len() + 1).max(1);
+    let cache = dir.join("n".repeat(name_len));
+
+    write_abc(&cache).expect("write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+    assert_eq!(tmp_count_in(&dir), 0);
+}
+
+// C# `Path.GetFullPath` resolves a relative path against the current directory before any long-path handling. Folders
+// are created under the current directory (the package folder under `cargo test`); no `set_current_dir` (process-wide).
+#[test]
+fn write_atomic_relative_path_of_260_plus_units_is_published() {
+    let top = format!("w408a_rel_long_{}", std::process::id());
+    let _cleanup = RelativeCleanup(PathBuf::from(&top));
+    let dir = long_dir(Path::new(&top), 270);
+    let cache = dir.join("c.bin");
+    assert!(cache.is_relative() && cache.as_os_str().len() >= 260);
+
+    write_abc(&cache).expect("write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+    assert_eq!(tmp_count_in(&dir), 0);
+}
+
+// The relative text is short, only the absolute form (current directory + relative) is over the limit.
+#[test]
+fn write_atomic_short_relative_path_with_long_absolute_form_is_published() {
+    let cwd = std::env::current_dir().expect("cwd");
+    let top = format!("w408a_rel_abs_{}", std::process::id());
+    let _cleanup = RelativeCleanup(PathBuf::from(&top));
+    // Aim at an absolute form of about 275 units while the relative text stays at most 259.
+    let wanted_relative = 275usize.saturating_sub(cwd.as_os_str().len() + 1);
+    let dir = long_dir(Path::new(&top), wanted_relative.max(top.len() + 1));
+    let cache = dir.join("c.bin");
+    assert!(cache.as_os_str().len() < 260);
+    assert!(
+        cwd.join(&cache).as_os_str().len() >= 260,
+        "cwd is too short for this test"
+    );
+
+    write_abc(&cache).expect("write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"abc");
+    assert_eq!(tmp_count_in(&dir), 0);
+}
+
+// Overwrite of an existing entry on the long relative path (rename-over, not only create).
+#[test]
+fn write_atomic_relative_long_path_replaces_existing_entry() {
+    let top = format!("w408a_rel_repl_{}", std::process::id());
+    let _cleanup = RelativeCleanup(PathBuf::from(&top));
+    let dir = long_dir(Path::new(&top), 270);
+    let cache = dir.join("c.bin");
+
+    write_abc(&cache).expect("first write");
+    write_atomic(
+        &cache,
+        |w: &mut dyn Write| w.write_all(b"zz"),
+        None,
+        &CancelToken::new(),
+    )
+    .expect("second write");
+
+    assert_eq!(fs::read(&cache).unwrap(), b"zz");
+    assert_eq!(tmp_count_in(&dir), 0);
+}
+
+#[cfg(windows)]
+const VERBATIM_PREFIX: &str = r"\\?\";

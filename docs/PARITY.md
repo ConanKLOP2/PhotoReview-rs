@@ -416,7 +416,7 @@ Units merged with a FAIL verdict or surviving mutants; treat as Partial until fi
 
 - W4-01c: `DecodeError` variants other than NotSupported/MissingCodec lack `user_text` (localized text lost vs `UserFacingError.Localized`).
 - W4-16a: `PixelBufferError::OutOfMemory` Display text vs .NET (a later commit may fix it; verify not re-run). W4-16b: mutants M21 (dealloc path), M14 (Opaque accept) survive.
-- W4-08a: relative path of 260+ chars fails with NotFound in `write_atomic`.
+- W4-08a: FIXED on rep/W4-08a (relative or long-absolute paths now resolved with `std::path::absolute` before the verbatim path prefix in `rename_over`; tests `write_atomic_*relative*`). Mutants (cargo-mutants, atomic_file.rs): all caught except the 2 non-Windows twins `rename_over`/`open_create_new` (cfg(not(windows)), unreachable here).
 - W4-09: panicking `Log::error` wedges the prune thread; panicking `BeforeClearPruneScheduledForTests` hook clears the flag (C# keeps it scheduled).
 - W4-10a: SourceBytesCache file-changed / unexpected-EOF errors not localized (D41).
 - W4-11a: growable memory backend does not map lengths above 0x7FFFFFC7 to E_OUTOFMEMORY. W4-11b: mfplat.dll static import (fails on Windows N). W4-11c: JPEG XR + ICC not converted to sRGB (dangling slice in GetColorContexts count query, decoder.rs:997); SourceStreamBackend seek-before-begin HRESULT. W4-11e: `com_is_entry_failure` misses 0x80131539 / 0x80131605; mutant cache_image.rs:579 alive. W4-11d: D5 lone-surrogate divergence (documented).
