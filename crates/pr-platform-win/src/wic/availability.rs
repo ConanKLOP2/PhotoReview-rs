@@ -193,7 +193,7 @@ pub mod native {
         if getter(length, buffer.as_mut_ptr(), &mut actual).is_err() {
             return String::new();
         }
-        String::from_utf16_lossy(&buffer).trim_end_matches(' ').to_owned()
+        String::from_utf16_lossy(&buffer).trim_end_matches('\0').to_owned()
     }
 
     fn describe(info: &IWICBitmapCodecInfo) -> Option<DecoderEntry> {
@@ -334,7 +334,7 @@ pub mod native {
 
         #[test]
         fn reads_and_trims_trailing_nul() {
-            assert_eq!(read_string(fake(4, HRESULT(0), "ab  ", HRESULT(0))), "ab");
+            assert_eq!(read_string(fake(4, HRESULT(0), "ab\0\0", HRESULT(0))), "ab");
         }
 
         #[test]
