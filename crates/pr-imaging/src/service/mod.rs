@@ -608,3 +608,163 @@ pub fn resolve_capacity(
 ) -> (i64, String) {
     todo!("W4-14a")
 }
+
+/// White-box red tests (W4-14a): the epoch (INV-2) and the in-flight table are `pub(crate)`, so integration tests cannot
+/// reach them. The public-API twins live in `tests/preview_service_state.rs`.
+#[cfg(test)]
+mod white_box_tests {
+    use super::*;
+    use crate::decode_types::{DecodeRequest, DecodedImage, DecodedImageOptions, ImageInfo, PixelLease, PlatformImage};
+    use crate::pixels::{PixelBuffer, PixelLayout};
+    use pr_core::abstractions::NullLog;
+    use pr_test_support::TempRoot;
+
+    /// Decoder that is never asked to decode: the white-box tests build keys and publish images only.
+    #[derive(Debug)]
+    struct NullDecoder;
+
+    impl ImageDecoder for NullDecoder {
+        fn decode(&self, _request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+            Err(DecodeError::InvalidOperation {
+                message: "NullDecoder was asked to decode".to_owned(),
+            })
+        }
+
+        fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+            Err(DecodeError::InvalidOperation {
+                message: "NullDecoder was asked to read info".to_owned(),
+            })
+        }
+    }
+
+    #[derive(Debug)]
+    struct NullCodec;
+
+    impl PlatformImageCodec for NullCodec {
+        fn name(&self) -> &'static str {
+            "null"
+        }
+
+        fn image_from_pixels(&self, _pixels: PixelBuffer) -> Result<PlatformImage, DecodeError> {
+            Err(DecodeError::InvalidOperation {
+                message: "NullCodec".to_owned(),
+            })
+        }
+
+        fn to_pixels<'a>(&self, _platform_image: &'a PlatformImage) -> Result<PixelLease<'a>, DecodeError> {
+            Err(DecodeError::InvalidOperation {
+                message: "NullCodec".to_owned(),
+            })
+        }
+    }
+
+    #[derive(Debug)]
+    struct NullPayloadCodec;
+
+    impl PreviewPayloadCodec for NullPayloadCodec {
+        fn encode_jpeg(&self, _pixels: &PixelBuffer, _quality: i32, _out: &mut dyn io::Write) -> io::Result<()> {
+            Err(io::Error::other("NullPayloadCodec"))
+        }
+
+        fn decode_jpeg(
+            &self,
+            _payload: &[u8],
+            _layout: PixelLayout,
+            _expected_width: i32,
+            _expected_height: i32,
+        ) -> Result<PixelBuffer, PreviewCacheError> {
+            Err(PreviewCacheError::InvalidData("NullPayloadCodec".to_owned()))
+        }
+    }
+
+    fn service(root: &TempRoot) -> PreviewImageService {
+        let mut config = PreviewServiceConfig::new(
+            Arc::new(ReviewMetrics::new()),
+            Arc::new(|| false),
+            Arc::new(|| DecodeBox::new(512, 512)),
+            Arc::new(NullCodec),
+            Arc::new(NullPayloadCodec),
+        );
+        config.capacity_bytes = 64 * 1024 * 1024;
+        config.disk_cache_directory = Some(root.path().to_path_buf());
+        config.disable_disk_cache_override = Some(true);
+        config.decoder = Some(Arc::new(NullDecoder));
+        config.physical_memory_bytes = 32 * 1024 * 1024 * 1024;
+        config.log = Some(Arc::new(NullLog));
+        PreviewImageService::new(config).expect("the service builds")
+    }
+
+    fn source(root: &TempRoot) -> String {
+        let path = root.join("a.jpg");
+        std::fs::write(&path, [1u8, 2, 3, 4]).expect("write source file");
+        path.to_string_lossy().into_owned()
+    }
+
+    fn image() -> PreviewImage {
+        let pixels = PixelBuffer::allocate(4, 4, PixelLayout::Bgr32).expect("test buffer");
+        let options = DecodedImageOptions {
+            downscaled: false,
+            orientation: 1,
+            actual_backend: DecoderBackend::Wpf,
+            original_width: 0,
+            original_height: 0,
+            exif: None,
+            is_degraded_fallback: false,
+        };
+        let image = DecodedImage::new(PlatformImage::Pixels(Arc::new(pixels)), 4, 4, 64, options).expect("test image");
+        Arc::new(image)
+    }
+
+    // Rust-only: INV-2, a publish that started under the epoch before clear_cache is refused, the current epoch publishes.
+    #[test]
+    fn clear_cache_bumps_the_epoch_so_publish_if_current_refuses_the_old_epoch() {
+        let root = TempRoot::new("preview-white-box-epoch");
+        let path = source(&root);
+        let service = service(&root);
+        let key = service.get_current_cache_key(&path).expect("key");
+        let old_epoch = service.inner.current_epoch();
+
+        service.clear_cache();
+
+        assert!(!service.inner.publish_if_current(key.clone(), image(), old_epoch));
+        assert_eq!(service.cache_count(), 0);
+        let current = service.inner.current_epoch();
+        assert!(service.inner.publish_if_current(key, image(), current));
+        assert_eq!(service.cache_count(), 1);
+    }
+
+    // Rust-only: INV-2 (R2-F-02), evicting one path never bumps the epoch, so no other path's in-flight decode is dropped.
+    #[test]
+    fn evict_cached_path_does_not_bump_the_epoch() {
+        let root = TempRoot::new("preview-white-box-evict-epoch");
+        let path = source(&root);
+        let service = service(&root);
+        let before = service.inner.current_epoch();
+
+        service.evict_cached_path(&path, None).expect("evict");
+
+        assert_eq!(service.inner.current_epoch(), before);
+    }
+
+    // Rust-only: an in-flight load is registered under (key, epoch); after a clear the old epoch no longer counts.
+    #[test]
+    fn has_inflight_preview_is_keyed_by_the_current_epoch() {
+        let root = TempRoot::new("preview-white-box-inflight");
+        let path = source(&root);
+        let service = service(&root);
+        let key = service.get_current_cache_key(&path).expect("key");
+        let epoch = service.inner.current_epoch();
+        let cell = Arc::new(handle::LoadCell::new());
+        service
+            .inner
+            .in_flight
+            .lock()
+            .expect("in-flight table")
+            .insert((key.clone(), epoch), cell);
+        assert!(service.has_inflight_preview(&key));
+
+        service.clear_cache();
+
+        assert!(!service.has_inflight_preview(&key));
+    }
+}
