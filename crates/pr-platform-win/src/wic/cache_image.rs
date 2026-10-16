@@ -178,12 +178,28 @@ pub struct WicCacheImageInfo {
 pub enum CacheImageError {
     /// `InvalidDataException` with one of the four fixed texts of the C# (see [`INVALID_DATA_*`] constants).
     InvalidData(&'static str),
-    /// A WIC failure other than `E_OUTOFMEMORY` (C# raw `COMException`): a damaged payload. `hresult` is signed.
+    /// A WIC failure other than `E_OUTOFMEMORY` (C# type from `Marshal.GetExceptionForHR`, usually `COMException`: a damaged payload; see [`com_is_entry_failure`]). `hresult` is signed.
     Com { hresult: i32 },
     /// `E_OUTOFMEMORY` from WIC (C# `InsufficientMemoryException`): not a damaged entry, the entry is kept.
     InsufficientMemory { hresult: i32 },
     /// The destination buffer could not be allocated or described.
     Pixels(PixelBufferError),
+}
+
+/// `DiskCacheStore.IsCacheEntryFailure` for a raw WIC failure: C# decides on the .NET type `Marshal.GetExceptionForHR`
+/// makes of the HRESULT. True only for `COMException`, `IOException` (and subclasses), `UnauthorizedAccess`,
+/// `NotSupported`, `Format`, `InvalidData`, `Argument` (and subclasses), `InvalidOperation` (and subclasses), `Overflow`
+/// and `InvalidCast`. False for e.g. `ArithmeticException` (0x80070216), `NotImplementedException` (E_NOTIMPL),
+/// `NullReferenceException` (E_POINTER) and `OutOfMemoryException`: those propagate and the entry is kept.
+pub fn com_is_entry_failure(hresult: i32) -> bool {
+    use super::interop::{DotnetExceptionKind as K, exception_kind_for_hresult};
+    let kind = exception_kind_for_hresult(hresult).unwrap_or(K::Com);
+    matches!(
+        kind,
+        K::Com | K::UnauthorizedAccess | K::NotSupported | K::Format | K::InvalidCast | K::Overflow
+    ) || kind.is_io()
+        || kind.is_argument()
+        || kind.is_invalid_operation()
 }
 
 /// "Cache entry payload is empty."
@@ -214,7 +230,8 @@ impl CacheImageError {
     /// error propagates).
     pub fn is_entry_failure(&self) -> bool {
         match self {
-            Self::InvalidData(_) | Self::Com { .. } => true,
+            Self::InvalidData(_) => true,
+            Self::Com { hresult } => com_is_entry_failure(*hresult),
             Self::InsufficientMemory { .. } => false,
             Self::Pixels(error) => !matches!(error, PixelBufferError::OutOfMemory { .. }),
         }
@@ -406,6 +423,27 @@ pub fn encode_jpeg(pixels: &PixelBuffer, output: &mut dyn Write, quality: i32) -
 pub fn encode_png(pixels: &PixelBuffer, output: &mut dyn Write) -> Result<(), EncodeError> {
     validate_pixels(pixels)?;
     native::encode(pixels, output, &CONTAINER_FORMAT_PNG, 0)
+}
+
+/// `WINCODEC_ERR_STREAMWRITE` (`0x88982F71`) as the signed HRESULT: what the C# PNG encoder throws (`COMException`,
+/// "Failed to write to the stream") when the output stream's `Write` fails.
+pub const WINCODEC_ERR_STREAMWRITE: i32 = 0x8898_2F71_u32 as i32;
+
+/// Outcome of the final copy of the encoded bytes to the caller's `output`, as C# observes a failing output stream
+/// (probed against the baseline d92d6aae):
+/// * JPEG: WIC's JPEG encoder swallows the stream failure and `EncodeJpeg` RETURNS NORMALLY (the output stays empty or
+///   truncated) => `Ok(())`. DIVERGENCE kept on purpose for parity; the caller's atomic temp file is the safety net.
+/// * PNG: `COMException` 0x88982F71 => `Com { WINCODEC_ERR_STREAMWRITE }` (an entry failure in C#).
+///
+/// C# streams while encoding (a mid-way failure leaves a partial write); Rust writes all or nothing (contract note 10).
+pub fn finish_output(is_jpeg: bool, written: std::io::Result<()>) -> Result<(), EncodeError> {
+    match written {
+        Ok(()) => Ok(()),
+        Err(_) if is_jpeg => Ok(()),
+        Err(_) => Err(EncodeError::Com {
+            hresult: WINCODEC_ERR_STREAMWRITE,
+        }),
+    }
 }
 
 /// The managed checks of C# `Encode` after the quality range: disposed, then `byte_count > u32::MAX`.
@@ -765,6 +803,9 @@ pub(crate) mod native {
             .into_any()
             .downcast::<Cursor<Vec<u8>>>()
             .map_err(|_| EncodeError::Com { hresult: E_FAIL })?;
-        output.write_all(payload.get_ref()).map_err(EncodeError::Io)
+        super::finish_output(
+            *container == super::CONTAINER_FORMAT_JPEG,
+            output.write_all(payload.get_ref()),
+        )
     }
 }

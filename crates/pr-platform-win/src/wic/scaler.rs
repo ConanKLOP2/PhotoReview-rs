@@ -29,7 +29,7 @@ pub enum ScaleError {
     /// WIC reported `E_OUTOFMEMORY` (`InsufficientMemoryException`, an `OutOfMemoryException`): the caller's "too large for
     /// the available memory" verdict applies, never a raw COM error.
     InsufficientMemory { hresult: i32 },
-    /// Any other WIC failure (C# raw `COMException`); `hresult` is signed.
+    /// Any other WIC failure (C# `Marshal.GetExceptionForHR` type, see [`ScaleError::dotnet_kind`]); `hresult` is signed.
     Com { hresult: i32 },
     /// The destination buffer could not be allocated or read (same-size copy path included).
     Pixels(PixelBufferError),
@@ -52,6 +52,22 @@ impl fmt::Display for ScaleError {
 }
 
 impl std::error::Error for ScaleError {}
+
+impl ScaleError {
+    /// The .NET exception type C# throws for a raw WIC failure: `Marshal.GetExceptionForHR` maps the HRESULT, so a `Com`
+    /// error is not always a `COMException` (0x80070216 gives `ArithmeticException`, E_NOTIMPL `NotImplementedException`,
+    /// E_POINTER `NullReferenceException`). `None` for the variants that are not a raw WIC failure.
+    pub fn dotnet_kind(&self) -> Option<crate::wic::interop::DotnetExceptionKind> {
+        match self {
+            Self::Com { hresult } => Some(
+                crate::wic::interop::exception_kind_for_hresult(*hresult)
+                    .unwrap_or(crate::wic::interop::DotnetExceptionKind::Com),
+            ),
+            Self::InsufficientMemory { .. } => Some(crate::wic::interop::DotnetExceptionKind::OutOfMemory),
+            _ => None,
+        }
+    }
+}
 
 /// Which way [`resize`] produces the result.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
