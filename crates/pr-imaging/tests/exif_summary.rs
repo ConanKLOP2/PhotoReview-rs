@@ -549,6 +549,35 @@ fn clean_text_trims_after_the_cap_not_before_it() {
     assert_eq!(clean(&format!("{}a", " ".repeat(70))), None);
 }
 
+#[test]
+fn clean_text_stops_at_the_first_character_that_does_not_fit_the_cap() {
+    // Extra (no C# twin): C# stops at the cap; a later narrower char must not be appended after a dropped wide one.
+    assert_eq!(clean(&format!("{}\u{1F600}b", "a".repeat(63))), Some("a".repeat(63)));
+    assert_eq!(
+        clean(&format!("{}\u{1F600}b", "a".repeat(62))),
+        Some(format!("{}\u{1F600}", "a".repeat(62)))
+    );
+}
+
+#[test]
+fn parse_date_accepts_the_last_day_of_every_month_and_rejects_the_day_after() {
+    // Extra (no C# twin): kills day-count mutants per month (golden cases only cover a few months).
+    let days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    for (index, last) in days.iter().enumerate() {
+        let month = index + 1;
+        let ok = format!("2024:{month:02}:{last:02} 23:59:59");
+        let bad = format!("2024:{month:02}:{:02} 00:00:00", last + 1);
+        assert!(ExifSummary::parse_date(Some(&ok)).is_some(), "{ok}");
+        assert_eq!(ExifSummary::parse_date(Some(&bad)), None, "{bad}");
+    }
+    assert_eq!(ExifSummary::parse_date(Some("2023:02:29 00:00:00")), None);
+    assert_eq!(ExifSummary::parse_date(Some("1900:02:29 00:00:00")), None);
+    assert!(ExifSummary::parse_date(Some("2000:02:29 00:00:00")).is_some());
+    assert_eq!(ExifSummary::parse_date(Some("2024:13:01 00:00:00")), None);
+    assert_eq!(ExifSummary::parse_date(Some("2024:00:01 00:00:00")), None);
+    assert_eq!(ExifSummary::parse_date(Some("2024:01:00 00:00:00")), None);
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Extra robustness and round-trip tests (no C# twin)
 // ---------------------------------------------------------------------------------------------------------------------
