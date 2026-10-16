@@ -300,6 +300,8 @@ mod win32 {
     pub(super) const LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR: u32 = 0x0000_0100;
     /// `LOAD_LIBRARY_SEARCH_DEFAULT_DIRS`: application dir + System32 + AddDllDirectory dirs; never cwd or `PATH`.
     pub(super) const LOAD_LIBRARY_SEARCH_DEFAULT_DIRS: u32 = 0x0000_1000;
+    /// The `LoadLibraryExW` flags (C# AssemblyDirectory): never 0, which would mean the default search order (T1).
+    pub(super) const LOAD_FLAGS: u32 = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
     /// `ERROR_FILE_NOT_FOUND`, `ERROR_PATH_NOT_FOUND`, `ERROR_MOD_NOT_FOUND`: map to `DllNotFound`.
     pub(super) const ERROR_FILE_NOT_FOUND: i32 = 2;
     pub(super) const ERROR_PATH_NOT_FOUND: i32 = 3;
@@ -373,7 +375,7 @@ impl TurboJpegLibrary {
         }
         wide.push(0);
 
-        let flags = win32::LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | win32::LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+        let flags = win32::LOAD_FLAGS;
         // SAFETY: `wide` is a NUL-terminated UTF-16 string that lives for the whole call; the reserved `hFile`
         // argument must be NULL; the flags restrict the search to the DLL's folder and the safe default dirs.
         let module = unsafe { win32::LoadLibraryExW(wide.as_ptr(), std::ptr::null_mut(), flags) };
@@ -759,7 +761,8 @@ impl TurboJpegHandle {
     /// 1. closed/invalid handle, missing exports -> `Err` as above; `pitch <= 0` -> `Err(InvalidArgument)`;
     /// 2. `tj3DecompressHeader` on the SAME `jpeg` slice; a non-zero return is returned as `Ok(code)` unchanged
     ///    (the native error string stays readable through `error_message`);
-    /// 3. `w = scaled(JpegWidth)`, `h = scaled(JpegHeight)` with the remembered factor; `pitch < w * bytes_per_pixel`
+    /// 3. `w = scaled(JpegWidth)`, `h = scaled(JpegHeight)` with the remembered factor (`ONE` when `tj3Get(Lossless)`
+    ///    is non-zero: libjpeg-turbo ignores scaling for lossless JPEGs); `pitch < w * bytes_per_pixel`
     ///    or `dst.len() < pitch * h` (all in `i64`) -> `Err(InvalidArgument)` and NO native decode;
     /// 4. otherwise the native call; `Ok` is its return (0 / -1).
     pub fn decompress8(
@@ -802,10 +805,19 @@ impl TurboJpegHandle {
                 tj3_get(self.ptr(), TjParam::JpegHeight.as_i32()),
             )
         };
-        let (Some(width), Some(height)) = (self.scaling.scaled(jpeg_width), self.scaling.scaled(jpeg_height)) else {
+        // SAFETY: as above (`int tj3Get(tjhandle, int)`, no pointer arguments).
+        let lossless = unsafe { tj3_get(self.ptr(), TjParam::Lossless.as_i32()) };
+        // libjpeg-turbo 3.0 ignores the scaling factor for a lossless JPEG (tj3SetScalingFactor still returned 0), so
+        // tj3Decompress8 writes the FULL size: bound it with ONE. Any non-zero value (1, or -1 = unknown) takes the
+        // conservative full size; ONE is never smaller than a downscaled size.
+        let scaling = if lossless != 0 {
+            TjScalingFactor::ONE
+        } else {
+            self.scaling
+        };
+        let (Some(width), Some(height)) = (scaling.scaled(jpeg_width), scaling.scaled(jpeg_height)) else {
             return Err(invalid_argument(format!(
-                "TurboJPEG scaling factor {} has no scaled size.",
-                self.scaling
+                "TurboJPEG scaling factor {scaling} has no scaled size."
             )));
         };
         if width <= 0 || height <= 0 {
@@ -832,7 +844,8 @@ impl TurboJpegHandle {
         // SAFETY: live, not destroyed handle used by this thread only; `jpeg` pointer/length from one live slice that
         // libjpeg-turbo only reads; `dst` is a live exclusive slice of at least `pitch * height` bytes, where `height`
         // rows of at most `pitch` bytes (`pitch >= width * bytes_per_pixel`) is exactly what tj3Decompress8 writes for
-        // the header of THIS `jpeg` at the scaling factor the instance holds (`self.scaling` mirrors it); `library`
+        // the header of THIS `jpeg` at the scaling factor libjpeg-turbo applies (`self.scaling` mirrors the instance's
+        // factor, and a lossless image, for which libjpeg-turbo ignores it, is bounded at full size); `library`
         // keeps the module loaded; signature `int tj3Decompress8(tjhandle, const unsigned char *, size_t, unsigned
         // char *, int, int)` from `turbojpeg.h` 3.0.
         let code = unsafe {
@@ -944,6 +957,8 @@ impl TurboJpegHandle {
                 // SAFETY: `jpeg_buf` was allocated by this module's tj3Compress8 and is freed once, here, after the
                 // copy above; `void tj3Free(void *)` from `turbojpeg.h` 3.0.
                 unsafe { tj3_free(jpeg_buf.cast()) };
+                #[cfg(test)]
+                tests::FREED.with(|freed| freed.set(freed.get() + 1));
             }
         }
         result
@@ -959,3 +974,65 @@ impl Drop for TurboJpegHandle {
 
 /// The cache behind [`TurboJpegLibrary::shared`].
 static SHARED: OnceLock<Result<Arc<TurboJpegLibrary>, NativeError>> = OnceLock::new();
+
+#[cfg(test)]
+mod tests {
+    //! In-crate tests for private details the integration tests cannot observe: the loader flags and the
+    //! `tj3Free` of the `compress8` output buffer.
+
+    use super::*;
+    use std::cell::Cell;
+
+    thread_local! {
+        /// Number of `tj3Free` calls `compress8` made on this thread.
+        pub(super) static FREED: Cell<usize> = const { Cell::new(0) };
+    }
+
+    /// `<repo>/native/x64/turbojpeg.dll` (absolute, no `..` components: the loader wants a fully qualified path).
+    fn native_dll_path() -> PathBuf {
+        let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let repo = manifest
+            .parent()
+            .and_then(Path::parent)
+            .expect("crates/<name> sits two levels below the repository root");
+        repo.join("native").join("x64").join(DLL_NAME)
+    }
+
+    // Trap T1: 0 would mean the default search order (working directory, PATH); the exact flags are the C#
+    // AssemblyDirectory equivalent.
+    #[cfg(windows)]
+    #[test]
+    fn load_flags_restrict_the_search_to_the_dll_folder_and_the_safe_default_dirs() {
+        assert_eq!(win32::LOAD_FLAGS, 0x0000_1100);
+        assert_eq!(win32::LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR, 0x0000_0100);
+        assert_eq!(win32::LOAD_LIBRARY_SEARCH_DEFAULT_DIRS, 0x0000_1000);
+    }
+
+    #[test]
+    #[ignore = "native: needs turbojpeg.dll"]
+    fn compress8_frees_the_library_allocated_output_exactly_once() {
+        let path = native_dll_path();
+        assert!(
+            path.is_file(),
+            "missing {}: run tools/fetch-native.ps1 first",
+            path.display()
+        );
+        let library = TurboJpegLibrary::load(&path).expect("load turbojpeg.dll");
+        let mut compressor = library.create_compressor().expect("compressor");
+        assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp"), 0);
+        assert_eq!(compressor.set(TjParam::Quality, 90).expect("set quality"), 0);
+        let (width, height) = (16i32, 8i32);
+        let src = vec![0x80u8; (width * 3 * height) as usize];
+
+        let before = FREED.with(Cell::get);
+        let jpeg = compressor
+            .compress8(&src, width, width * 3, height, TjPixelFormat::Rgb)
+            .expect("compress");
+        assert!(jpeg.starts_with(&[0xFF, 0xD8]), "output is a JPEG");
+        assert_eq!(
+            FREED.with(Cell::get) - before,
+            1,
+            "the output buffer is released through tj3Free once"
+        );
+    }
+}

@@ -765,3 +765,215 @@ fn compressor_init_message_is_distinct_from_the_decompressor_message() {
     assert_ne!(COMPRESSOR_INIT_FAILED_MESSAGE, INIT_FAILED_MESSAGE);
     assert!(COMPRESSOR_INIT_FAILED_MESSAGE.contains("compressor"));
 }
+
+// ---- Rust-only: repair round 1 (verifier findings) ----
+
+/// A lossless (`TJPARAM_LOSSLESS = 1`) BGRA JPEG of `width` x `height` from the pinned DLL.
+fn lossless_jpeg(library: &Arc<TurboJpegLibrary>, width: i32, height: i32) -> Vec<u8> {
+    let mut compressor = library.create_compressor().expect("compressor");
+    assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp"), 0);
+    assert_eq!(compressor.set(TjParam::Quality, 90).expect("set quality"), 0);
+    assert_eq!(compressor.set(TjParam::Lossless, 1).expect("set lossless"), 0);
+    let pitch = width * 4;
+    let src: Vec<u8> = (0..(pitch * height) as usize).map(|i| (i * 7 % 251) as u8).collect();
+    compressor
+        .compress8(&src, width, pitch, height, TjPixelFormat::Bgra)
+        .expect("compress lossless")
+}
+
+// Rust-only: libjpeg-turbo 3.0 ignores the scaling factor for a lossless JPEG although tj3SetScalingFactor returns 0,
+// so the guard must bound the destination at FULL size (C# CalculateOutputBuffer has this hole; contract Semantics 8).
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn decompress8_bounds_a_lossless_jpeg_at_full_size_despite_a_remembered_scaling_factor() {
+    let library = load_native_library();
+    let (width, height) = (64i32, 48i32);
+    let jpeg = lossless_jpeg(&library, width, height);
+    let mut decoder = library.create_decompressor().expect("decompressor");
+    assert_eq!(decoder.decompress_header(&jpeg).expect("header"), 0);
+    assert_eq!(decoder.get(TjParam::Lossless).expect("lossless"), 1);
+    assert_eq!(
+        decoder.set_scaling_factor(TjScalingFactor::new(1, 8)).expect("scaling"),
+        0
+    );
+
+    // The 1/8 size (8x6 BGRA) inside one larger allocation: the tail is a sentinel that must stay untouched.
+    let small_pitch = 8 * 4;
+    let small = (small_pitch * 6) as usize;
+    let mut backing = vec![0xCDu8; (width * 4 * height) as usize + 4096];
+    let result = {
+        let (dst, _) = backing.split_at_mut(small);
+        decoder.decompress8(&jpeg, dst, small_pitch, TjPixelFormat::Bgra)
+    };
+    assert!(
+        matches!(result, Err(NativeError::InvalidArgument { .. })),
+        "a 1/8-sized destination is refused for a lossless JPEG, got {result:?}"
+    );
+    assert!(
+        backing[small..].iter().all(|&b| b == 0xCD),
+        "nothing was written past the slice"
+    );
+
+    // The full size decodes (the remembered 1/8 is ignored by libjpeg-turbo and by the guard).
+    let pitch = width * 4;
+    let mut dst = vec![0u8; (pitch * height) as usize];
+    assert_eq!(
+        decoder
+            .decompress8(&jpeg, &mut dst, pitch, TjPixelFormat::Bgra)
+            .expect("decode"),
+        0
+    );
+}
+
+fn assert_compress_refused(result: Result<Vec<u8>, NativeError>, needle: &str) {
+    match result {
+        Err(NativeError::InvalidArgument { message }) => assert!(message.contains(needle), "{message}"),
+        other => panic!("expected InvalidArgument containing {needle:?}, got {other:?}"),
+    }
+}
+
+// Rust-only: compress8 refuses a zero or negative width, pitch or height, each one on its own.
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn compress8_refuses_non_positive_sizes_one_at_a_time() {
+    let library = load_native_library();
+    let mut compressor = library.create_compressor().expect("compressor");
+    assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp"), 0);
+    assert_eq!(compressor.set(TjParam::Quality, 90).expect("set quality"), 0);
+    let src = vec![0u8; 64 * 4 * 48];
+    for (width, pitch, height) in [
+        (0, 256, 48),
+        (64, 0, 48),
+        (64, 256, 0),
+        (-1, 256, 48),
+        (64, -4, 48),
+        (64, 256, -1),
+    ] {
+        assert_compress_refused(
+            compressor.compress8(&src, width, pitch, height, TjPixelFormat::Bgra),
+            "must be positive",
+        );
+    }
+    // The valid neighbour of those rows compresses.
+    assert!(compressor.compress8(&src, 64, 256, 48, TjPixelFormat::Bgra).is_ok());
+}
+
+// Rust-only: a source pitch below width * pixel size is refused (tj3Compress8 itself would accept it).
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn compress8_refuses_a_pitch_below_width_times_pixel_size() {
+    let library = load_native_library();
+    let mut compressor = library.create_compressor().expect("compressor");
+    assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp"), 0);
+    assert_eq!(compressor.set(TjParam::Quality, 90).expect("set quality"), 0);
+    let src = vec![0u8; 16 * 3 * 8];
+    // 16 RGB pixels = 48 bytes per row; 47 is one byte short (and larger than 16 + 3 and 16 / 3).
+    assert_compress_refused(
+        compressor.compress8(&src, 16, 47, 8, TjPixelFormat::Rgb),
+        "smaller than one",
+    );
+    assert!(compressor.compress8(&src, 16, 48, 8, TjPixelFormat::Rgb).is_ok());
+    assert!(compressor.compress8(&src, 16, 49, 7, TjPixelFormat::Rgb).is_ok());
+}
+
+// Rust-only: a source slice shorter than pitch * height is refused before tj3Compress8 reads past it.
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn compress8_refuses_a_source_one_byte_short() {
+    let library = load_native_library();
+    let mut compressor = library.create_compressor().expect("compressor");
+    assert_eq!(compressor.set(TjParam::Subsamp, 0).expect("set subsamp"), 0);
+    assert_eq!(compressor.set(TjParam::Quality, 90).expect("set quality"), 0);
+    // One allocation, so even a broken guard never reads outside the test's memory.
+    let backing = vec![0x40u8; 16 * 3 * 8 * 2];
+    let required = 16 * 3 * 8; // 384 (pitch + height = 56, pitch / height = 6)
+    assert_compress_refused(
+        compressor.compress8(&backing[..required - 1], 16, 48, 8, TjPixelFormat::Rgb),
+        "too small",
+    );
+    assert!(
+        compressor
+            .compress8(&backing[..required], 16, 48, 8, TjPixelFormat::Rgb)
+            .is_ok()
+    );
+}
+
+// Rust-only: dropping the last Arc of a library unloads the module (FreeLibrary): a loaded DLL file cannot be
+// deleted on Windows, an unloaded one can.
+#[cfg(windows)]
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn dropping_the_last_library_reference_unloads_the_module() {
+    let source = native_dll_path();
+    assert!(
+        source.is_file(),
+        "missing {}: run tools/fetch-native.ps1 first",
+        source.display()
+    );
+    let root = TempRoot::new("turbo-native-unload");
+    let copy = root.join(DLL_NAME);
+    std::fs::copy(&source, &copy).expect("copy turbojpeg.dll");
+
+    let library = TurboJpegLibrary::load(&copy).expect("load the copy");
+    assert_eq!(library.path(), copy.as_path());
+    assert!(std::fs::remove_file(&copy).is_err(), "a loaded module's file is locked");
+    drop(library);
+    std::fs::remove_file(&copy).expect("after the last Arc is dropped the module is unloaded");
+}
+
+// Rust-only: Display writes the message (what C# ex.Message is), for every variant.
+#[test]
+fn native_error_display_is_the_message() {
+    let errors = [
+        NativeError::DllNotFound {
+            message: "dll".to_owned(),
+        },
+        NativeError::BadImageFormat {
+            message: "image".to_owned(),
+        },
+        NativeError::EntryPointNotFound {
+            message: "entry".to_owned(),
+        },
+        NativeError::InvalidOperation {
+            message: "operation".to_owned(),
+        },
+        NativeError::Disposed {
+            message: "disposed".to_owned(),
+        },
+        NativeError::InvalidArgument {
+            message: "argument".to_owned(),
+        },
+    ];
+    for error in errors {
+        assert_eq!(error.to_string(), error.message());
+        assert!(!error.to_string().is_empty());
+    }
+}
+
+// Rust-only: the Debug output names the type and its state (never empty).
+#[test]
+fn handle_debug_shows_its_state() {
+    let mut handle = TurboJpegHandle::from_raw(0x1234, false);
+    handle.set_handle_as_invalid();
+    let text = format!("{handle:?}");
+    for needle in [
+        "TurboJpegHandle",
+        "4660",
+        "owns: false",
+        "closed: true",
+        "destroy_seam: false",
+        "scaling",
+    ] {
+        assert!(text.contains(needle), "{needle} missing from {text}");
+    }
+}
+
+#[test]
+#[ignore = "native: needs turbojpeg.dll"]
+fn library_debug_shows_the_path_and_the_resolved_exports() {
+    let library = load_native_library();
+    let text = format!("{library:?}");
+    for needle in ["TurboJpegLibrary", DLL_NAME, "tj3Init", "tj3Decompress8", "tj3Free"] {
+        assert!(text.contains(needle), "{needle} missing from {text}");
+    }
+}
