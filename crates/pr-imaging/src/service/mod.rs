@@ -734,7 +734,9 @@ impl PreviewImageService {
     /// current key; ANY key failure (missing file, bad path) is a quiet miss (`None`), like the C# `catch (IOException)`
     /// / `catch (UnauthorizedAccessException)`. A hit makes the entry most recently used.
     pub fn try_get_cached_preview_path(&self, path: &str) -> Option<PreviewImage> {
-        // DIVERGENCE (contract open question 3): a blank path is a miss too; C# lets its `ArgumentException` escape.
+        // DIVERGENCE (contract open question 3): every `CacheKeyError` is a miss, including the ones C# lets escape as
+        // `ArgumentException`: a blank path (empty or only spaces) and a path with a NUL or another character
+        // `Path.GetFullPath` / `new FileInfo` rejects (`CacheKeyError::InvalidPath(PathError::Argument)`).
         let key = self.get_current_cache_key(path).ok()?;
         self.try_get_cached_preview(&key)
     }

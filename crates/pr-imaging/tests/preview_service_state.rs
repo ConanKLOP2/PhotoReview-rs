@@ -20,11 +20,18 @@ use pr_core::catalog::types::{CatalogEntry, RAW_EXTENSIONS};
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::model::enums::DecoderBackend;
 use pr_core::time::DateTimeUtc;
-use pr_imaging::cache::source_bytes::SourceBytesCache;
+use std::error::Error as _;
+
+use pr_core::text::dotnet_path::PathError;
+use pr_imaging::cache::preview_file::PreviewCacheError;
+use pr_imaging::cache::source_bytes::{SourceBytesCache, SourceBytesError};
+use pr_imaging::cache_key::CacheKeyError;
 use pr_imaging::cache_key::{ImageSourceKind, normalize_key_path};
 use pr_imaging::decode_types::DecodeBox;
+use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::preload_order::PreloadWindow;
 use pr_imaging::ram_budget::{bytes_for_percent, clamp_cache_percent, minimum_cache_percent};
+use pr_imaging::service::SourceChangePhase;
 use pr_imaging::service::handle::PreviewHandle;
 use pr_imaging::service::{
     PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError, PreviewServiceConfig, resolve_capacity,
@@ -644,6 +651,163 @@ fn source_kind_for_every_raw_extension() {
     for near_miss in ["x.dngx", "x.dng.", "x.tif", "x.heic", "README", "x.webp", "x.jpg"] {
         assert_eq!(source_kind_for(near_miss), ImageSourceKind::STANDARD, "{near_miss}");
     }
+}
+
+// Rust-only: a path `Path.GetFullPath` rejects (NUL, only spaces) is a quiet miss too (the same DIVERGENCE as the blank
+// path: C# lets the `ArgumentException` escape).
+#[test]
+fn try_get_cached_preview_path_invalid_characters_are_a_miss() {
+    let root = TempRoot::new("preview-state-nul-lookup");
+    let service = service_with(base_config(root.path(), FakeDecoder::new()));
+
+    assert!(service.try_get_cached_preview_path("a\0b.jpg").is_none());
+    assert!(service.try_get_cached_preview_path("   ").is_none());
+}
+
+// C# `ClearSourceBytesCache()`: forwards to the injected source-bytes cache, which is empty afterwards.
+#[test]
+fn clear_source_bytes_cache_empties_the_injected_source_bytes_cache() {
+    let root = TempRoot::new("preview-state-clear-source-bytes");
+    let path = file_in(&root, "a.jpg");
+    let source = Arc::new(SourceBytesCache::new(64 * 1024 * 1024, PHYSICAL_32_GIB, None).expect("source-bytes cache"));
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.source_bytes_cache = Some(source.clone());
+    let service = service_with(config);
+    source
+        .get_or_read(std::path::Path::new(&path))
+        .expect("read the source");
+    assert_eq!(source.count(), 1);
+
+    service.clear_source_bytes_cache();
+
+    assert_eq!(source.count(), 0);
+    assert_eq!(source.current_size(), 0);
+}
+
+// Rust-only: without a source-bytes cache the clear is a no-op (C# `_sourceBytesCache?.Clear()`).
+#[test]
+fn clear_source_bytes_cache_without_a_cache_is_a_no_op() {
+    let root = TempRoot::new("preview-state-clear-no-source-bytes");
+    let service = service_with(base_config(root.path(), FakeDecoder::new()));
+
+    service.clear_source_bytes_cache();
+
+    assert_eq!(service.cache_count(), 0);
+}
+
+// ---- PreviewError predicates (C# `catch` filters) -------------------------------------------------------------------
+
+fn decode(error: DecodeError) -> PreviewError {
+    PreviewError::Decode(Arc::new(error))
+}
+
+// C# `catch (OperationCanceledException)`: own cancel, a canceled disk read and a canceled decoder; nothing else.
+#[test]
+fn preview_error_is_canceled_matches_every_canceled_shape() {
+    assert!(PreviewError::Canceled.is_canceled());
+    assert!(PreviewError::DiskEntry(Arc::new(PreviewCacheError::Canceled)).is_canceled());
+    assert!(decode(DecodeError::Canceled).is_canceled());
+
+    assert!(
+        !decode(DecodeError::Format {
+            message: "bad".to_owned()
+        })
+        .is_canceled()
+    );
+    assert!(!PreviewError::DiskEntry(Arc::new(PreviewCacheError::InvalidData("bad".to_owned()))).is_canceled());
+    assert!(!PreviewError::RawFullDecodeKey.is_canceled());
+}
+
+// C# `catch (DecoderBusyException)`: only a busy decoder.
+#[test]
+fn preview_error_is_busy_only_for_a_busy_decoder() {
+    assert!(
+        decode(DecodeError::Busy {
+            message: "full".to_owned()
+        })
+        .is_busy()
+    );
+
+    assert!(!decode(DecodeError::Canceled).is_busy());
+    assert!(
+        !decode(DecodeError::Format {
+            message: "bad".to_owned()
+        })
+        .is_busy()
+    );
+    assert!(!PreviewError::Canceled.is_busy());
+    assert!(!PreviewError::Panicked("boom".to_owned()).is_busy());
+}
+
+// C# `ex is IOException`: every IOException shape is true, the argument and non-IO shapes next to them are false.
+#[test]
+fn preview_error_is_io_exception_matches_the_csharp_io_exception_family() {
+    let io = || Arc::new(std::io::Error::other("disk"));
+    assert!(PreviewError::Io(io()).is_io_exception());
+    assert!(
+        PreviewError::SourceChanged {
+            path: "a.jpg".to_owned(),
+            phase: SourceChangePhase::Decode,
+        }
+        .is_io_exception()
+    );
+    assert!(PreviewError::SourceBytes(SourceBytesError::Io(io())).is_io_exception());
+    assert!(
+        !PreviewError::SourceBytes(SourceBytesError::Argument { param_name: "path" }).is_io_exception(),
+        "ArgumentException is not an IOException"
+    );
+    assert!(
+        PreviewError::Key(CacheKeyError::SourceNoLongerExists {
+            full_name: "a.jpg".to_owned(),
+        })
+        .is_io_exception()
+    );
+    assert!(PreviewError::Key(CacheKeyError::InvalidPath(PathError::TooLong)).is_io_exception());
+    assert!(!PreviewError::Key(CacheKeyError::InvalidPath(PathError::Argument)).is_io_exception());
+    assert!(PreviewError::InvalidPath(PathError::TooLong).is_io_exception());
+    assert!(!PreviewError::InvalidPath(PathError::Argument).is_io_exception());
+    assert!(
+        decode(DecodeError::FileNotFound {
+            message: "gone".to_owned()
+        })
+        .is_io_exception()
+    );
+    assert!(
+        decode(DecodeError::MemoryAdmission {
+            message: "big".to_owned()
+        })
+        .is_io_exception()
+    );
+    assert!(
+        !decode(DecodeError::Format {
+            message: "bad".to_owned()
+        })
+        .is_io_exception()
+    );
+    assert!(!PreviewError::Canceled.is_io_exception());
+}
+
+// `std::error::Error::source`: a wrapping variant exposes its inner error, the leaf variants have none.
+#[test]
+fn preview_error_source_is_the_wrapped_error() {
+    let key = PreviewError::Key(CacheKeyError::InvalidPath(PathError::TooLong));
+    let inner = key.source().expect("Key wraps the key error");
+    assert_eq!(inner.to_string(), PathError::TooLong.to_string());
+
+    let decode_error = decode(DecodeError::Format {
+        message: "bad header".to_owned(),
+    });
+    assert_eq!(
+        decode_error.source().map(ToString::to_string).as_deref(),
+        Some("bad header")
+    );
+
+    let io = PreviewError::Io(Arc::new(std::io::Error::other("disk gone")));
+    assert_eq!(io.source().map(ToString::to_string).as_deref(), Some("disk gone"));
+
+    assert!(PreviewError::Canceled.source().is_none());
+    assert!(PreviewError::RawFullDecodeKey.source().is_none());
+    assert!(PreviewError::Panicked("boom".to_owned()).source().is_none());
 }
 
 // ---- golden checks --------------------------------------------------------------------------------------------------
