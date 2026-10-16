@@ -32,10 +32,12 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Barrier, Mutex, PoisonError};
+use std::sync::{Arc, Barrier, Mutex, OnceLock, PoisonError, Weak, mpsc};
 use std::thread;
+use std::time::Duration;
 
 use pr_core::abstractions::Log;
+use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::model::enums::DecoderBackend;
 use pr_core::model::serde_ext::LenientEnum;
 use pr_imaging::decode_types::{
@@ -554,6 +556,84 @@ fn factory_unregistered_backend_warns_through_the_injected_log_and_gives_wpf() {
         "the warning goes through the injected log: {:?}",
         log.entries()
     );
+}
+
+// Rust-only (no C# twin): the contract passes `metrics` to every fallback wrapper (`new FallbackImageDecoder(..., _metrics)`).
+#[test]
+fn factory_passes_metrics_to_the_fallback_wrapper() {
+    let metrics = Arc::new(ReviewMetrics::new());
+    let factory = build_default(
+        vec![
+            (DecoderBackend::Wpf, returning(&Marker::ok("wpf"))),
+            (DecoderBackend::TurboJpeg, returning(&Marker::failing("turbo"))),
+        ],
+        DecoderFactoryOptions {
+            metrics: Some(Arc::clone(&metrics)),
+            ..DecoderFactoryOptions::default()
+        },
+    );
+
+    let decoded = factory
+        .create(DecoderBackend::TurboJpeg)
+        .decode(&DecodeRequest::new(PATH, 0))
+        .unwrap_or_else(|error| panic!("the Wpf slot serves the failed primary: {error}"));
+
+    assert_eq!(served_by(&*decoded), "wpf");
+    assert_eq!(
+        metrics.snapshot().decoder_fallback_count(),
+        1,
+        "the fallback is counted in the injected metrics"
+    );
+}
+
+// Rust-only: contract note 4. The map lock is not held while a provider or decorator runs: a decorator that creates ANOTHER
+// backend (as the App's routing decorator may) must not deadlock (C# `ConcurrentDictionary` + `Lazy` allows it).
+#[test]
+fn decorator_may_create_another_backend_without_deadlock() {
+    let slot: Arc<OnceLock<Weak<DefaultImageDecoderFactory>>> = Arc::new(OnceLock::new());
+    let seen_wpf: Arc<Mutex<Option<Arc<dyn ImageDecoder>>>> = Arc::new(Mutex::new(None));
+    let (slot_in, seen_in) = (Arc::clone(&slot), Arc::clone(&seen_wpf));
+    let decorator: DecoderDecorator = Arc::new(
+        move |backend: DecoderBackend, decoder: Arc<dyn ImageDecoder>| -> Arc<dyn ImageDecoder> {
+            if backend == DecoderBackend::WicDirect {
+                let factory = slot_in.get().and_then(Weak::upgrade).expect("factory is alive");
+                *seen_in.lock().unwrap_or_else(PoisonError::into_inner) = Some(factory.create(DecoderBackend::Wpf));
+            }
+            decoder
+        },
+    );
+    let factory = Arc::new(build_default(
+        vec![
+            (DecoderBackend::Wpf, returning(&Marker::ok("wpf"))),
+            (DecoderBackend::WicDirect, returning(&Marker::ok("wic"))),
+        ],
+        DecoderFactoryOptions {
+            decoder_decorator: Some(decorator),
+            ..DecoderFactoryOptions::default()
+        },
+    ));
+    assert!(slot.set(Arc::downgrade(&factory)).is_ok());
+
+    let (sender, receiver) = mpsc::channel();
+    let worker = Arc::clone(&factory);
+    thread::spawn(move || {
+        let created = worker.create(DecoderBackend::WicDirect);
+        let _ = sender.send(created);
+    });
+    let wic = receiver
+        .recv_timeout(Duration::from_secs(20))
+        .unwrap_or_else(|_| panic!("create(WicDirect) deadlocked: the map lock is held during the build"));
+
+    let inner_wpf = seen_wpf
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .clone()
+        .expect("the decorator created the Wpf backend");
+    assert!(
+        Arc::ptr_eq(&inner_wpf, &factory.create(DecoderBackend::Wpf)),
+        "the nested create is cached like any other"
+    );
+    assert!(Arc::ptr_eq(&wic, &factory.create(DecoderBackend::WicDirect)));
 }
 
 // ---- golden decoder-factory (21 cases) ----
