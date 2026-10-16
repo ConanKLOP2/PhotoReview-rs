@@ -1711,3 +1711,75 @@ fn all_tiff_corpus_files_arw_subset_every_listed_preview_lies_inside_file_and_st
         }
     }
 }
+
+// A SubIFD pointer of 0 is skipped WITHOUT consuming one of the 64 IFD slots (C#: `ifdOffset <= 0 || !visited.Add` -> continue).
+// Kills the `||` -> `&&` mutant at arw.rs `ifd_offset <= 0 || !visited.insert(..)`.
+#[test]
+fn zero_subifd_pointer_does_not_consume_an_ifd_slot() {
+    let jpeg = create_minimal_jpeg(640, 480);
+    let sub_base = 300usize;
+    let jpeg_at = sub_base + 63 * 30;
+    let mut f = TiffBytes::new(true, jpeg_at + jpeg.len()).header(8);
+    f = f.ifd(8, 0, &[at(0x014A, 4, 64, 40)]);
+    f = f.u32(40, 0);
+    for i in 1..64usize {
+        f = f.u32(40 + i * 4, u32::try_from(sub_base + (i - 1) * 30).unwrap());
+    }
+    for i in 0..63usize {
+        let pos = sub_base + i * 30;
+        if i == 62 {
+            f = f.ifd(
+                pos,
+                0,
+                &[
+                    long(0x0201, u32::try_from(jpeg_at).unwrap()),
+                    long(0x0202, u32::try_from(jpeg.len()).unwrap()),
+                ],
+            );
+        } else {
+            f = f.ifd(pos, 0, &[short(0x0100, 10), short(0x0101, 10)]);
+        }
+    }
+    f = f.put(jpeg_at, &jpeg);
+    let mut src = InMemoryRawHeaderSource::new(f.into_vec());
+    let info = ArwContainerReader.read(&mut src, &CancelToken::none()).unwrap();
+    assert_eq!(info.previews.len(), 1, "63rd sub IFD must be read: {:?}", info.previews);
+}
+
+/// Cancels the shared token on the read with index `at`.
+struct CancelOnReadSource {
+    inner: InMemoryRawHeaderSource,
+    token: CancelToken,
+    calls: usize,
+    at: usize,
+}
+
+impl RawHeaderSource for CancelOnReadSource {
+    fn length(&self) -> i64 {
+        self.inner.length()
+    }
+
+    fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
+        let call = self.calls;
+        self.calls += 1;
+        if call == self.at {
+            self.token.cancel();
+        }
+        self.inner.read(offset, count)
+    }
+}
+
+// A last IFD with next=0 must not enqueue another IFD (C#: `if (nextIfdOffset > 0) Enqueue`), so a cancel during it is not observed.
+// Kills the `>` -> `>=` mutant at arw.rs `if next_ifd > 0`.
+#[test]
+fn cancel_during_last_ifd_with_zero_next_is_not_observed() {
+    let token = CancelToken::new();
+    let mut src = CancelOnReadSource {
+        inner: InMemoryRawHeaderSource::new(build_tiff(true, None, 1, 42)),
+        token: token.clone(),
+        calls: 0,
+        at: 1,
+    };
+    let r = ArwContainerReader.read(&mut src, &token);
+    assert!(r.is_ok(), "{r:?}");
+}
