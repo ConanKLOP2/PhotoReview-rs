@@ -76,6 +76,14 @@ fn interpolate(rgb: &[u8], corners: [usize; 4], channel: usize, fx: f64, fy: f64
     value.clamp(0.0, 255.0) as u8
 }
 
+/// One source pixel -> BGRA (alpha 255).
+fn swap_pixel(src: &[u8], dst: &mut [u8], green: usize, blue: usize) {
+    dst[0] = src[blue];
+    dst[1] = src[green];
+    dst[2] = src[0];
+    dst[3] = u8::MAX;
+}
+
 /// C# `Convert`: channel swap at equal size, alpha 255. Pixel count is `rgb.len() / channels`, not `sw * sh`.
 fn convert(rgb: &[u8], bgra: &mut [u8], channels: usize, cancel: &CancelToken) -> Result<(), ResampleError> {
     let pixel_count = rgb.len() / channels;
@@ -87,16 +95,17 @@ fn convert(rgb: &[u8], bgra: &mut [u8], channels: usize, cancel: &CancelToken) -
     let (green, blue) = channel_offsets(channels);
     let mut first = 0;
     while first < pixel_count {
-        // Checked before the block's first pixel, so a cancelled token fails before anything is written (index 0 included).
-        cancel.check()?;
         let last = std::cmp::min(first + CONVERT_CHECK_STRIDE, pixel_count);
         let source = &rgb[first * channels..last * channels];
         let target = &mut bgra[first * 4..last * 4];
-        for (src, dst) in source.chunks_exact(channels).zip(target.chunks_exact_mut(4)) {
-            dst[0] = src[blue];
-            dst[1] = src[green];
-            dst[2] = src[0];
-            dst[3] = u8::MAX;
+        let mut pairs = source.chunks_exact(channels).zip(target.chunks_exact_mut(4));
+        // C# order: the block's first pixel is written, THEN the token is tested (index & 0x3FFFF == 0), then the rest.
+        if let Some((src, dst)) = pairs.next() {
+            swap_pixel(src, dst, green, blue);
+        }
+        cancel.check()?;
+        for (src, dst) in pairs {
+            swap_pixel(src, dst, green, blue);
         }
         first = last;
     }
@@ -303,8 +312,8 @@ pub fn select_path(source_width: i32, source_height: i32, target_width: i32, tar
 /// Errors, in order: unsupported `channels` -> `InvalidData("LibRaw returned an unsupported processed image format.")`; Rust-only
 /// argument checks (see the contract, "Different"): a non-positive size or a slice shorter than the geometry -> `InvalidData`
 /// (C# would throw `IndexOutOfRangeException` / `ArgumentOutOfRangeException` / `DivideByZeroException` there; callers validate
-/// with [`validate_source_length`] first). Cancellation: [`ResamplePath::Convert`] checks the token before pixel 0 and then every
-/// 262144 pixels (so a cancelled token always fails, even for 1 pixel); the other two check after each finished target row.
+/// with [`validate_source_length`] first). Cancellation: [`ResamplePath::Convert`] writes pixel 0, then tests the token, then again after
+/// every 262144 pixels (so a cancelled token always fails, even for 1 pixel, but pixel 0 is already written); the other two check after each finished target row.
 #[allow(clippy::too_many_arguments)]
 pub fn resize(
     rgb: &[u8],
@@ -319,6 +328,11 @@ pub fn resize(
     if !is_supported_channel_count(channels) {
         return Err(unsupported_format());
     }
+    let path = select_path(source_width, source_height, target_width, target_height);
+    // C# `Convert` ignores the geometry entirely (equal sizes, even 0x0 or negative): it never reaches the guard below.
+    if path == ResamplePath::Convert {
+        return convert(rgb, bgra, channels as usize, cancel);
+    }
     if source_width <= 0 || source_height <= 0 || target_width <= 0 || target_height <= 0 {
         return Err(ResampleError::InvalidData(format!(
             "Invalid RAW resize dimensions {source_width}x{source_height} -> {target_width}x{target_height}."
@@ -331,19 +345,12 @@ pub fn resize(
         target_height: target_height as usize,
         channels: channels as usize,
     };
-    match select_path(source_width, source_height, target_width, target_height) {
-        // `convert` checks the BGRA length itself (its pixel count comes from `rgb.len()`).
-        ResamplePath::Convert => convert(rgb, bgra, geometry.channels, cancel),
-        ResamplePath::BoxAverage => {
-            check_source_length(rgb, source_width, source_height, channels)?;
-            check_target_length(target_width, target_height, bgra)?;
-            box_average(rgb, geometry, bgra, cancel)
-        }
-        ResamplePath::Bilinear => {
-            check_source_length(rgb, source_width, source_height, channels)?;
-            check_target_length(target_width, target_height, bgra)?;
-            bilinear(rgb, geometry, bgra, cancel)
-        }
+    check_source_length(rgb, source_width, source_height, channels)?;
+    check_target_length(target_width, target_height, bgra)?;
+    if path == ResamplePath::BoxAverage {
+        box_average(rgb, geometry, bgra, cancel)
+    } else {
+        bilinear(rgb, geometry, bgra, cancel)
     }
 }
 
