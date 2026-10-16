@@ -18,7 +18,8 @@
 //!   `Cached` (`finish_cached`), `Busy` or `Failed` as the test needs.
 //! - `DiagWorkerEnvironmentVariable_OverridesTheOption`, the `Preload*` tests of other units and the calibration
 //!   `Sampler_NeedsMinimumSamples_AndRestartsOnBoxChange` are not here (W4-15b, W4-06b).
-//! - Only the pause-line perf event is not observable; the snapshot-cost rule is pinned by counting snapshot calls.
+//! - The pause-line perf event is observed through a process-wide `PerfListener`; the snapshot-cost rule is pinned by
+//!   counting snapshot calls.
 
 use std::collections::{HashMap, HashSet};
 use std::io;
@@ -27,6 +28,7 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 use pr_core::abstractions::{MemoryProbe, MemorySnapshot};
 use pr_core::catalog::types::CatalogEntry;
+use pr_core::diagnostics::perf::{PerfEvent, PerfListener, PerfValue, PhotoReviewPerf};
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache_key::{ImageCacheKey, KeyOptions};
@@ -34,7 +36,7 @@ use pr_imaging::decode_types::DecodeBox;
 use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::preload::policy::{PreloadOutcome, Shape};
 use pr_imaging::preload::queue::{Candidate, PassInputs, QueueStep, RunQueue};
-use pr_imaging::preload::target::{KeyError, PreloadTarget};
+use pr_imaging::preload::target::{DelegateMemoryProbe, KeyError, PreloadTarget};
 use pr_imaging::preload_backoff::{PreloadBusyBackoff, PreviewSizeSampler};
 use pr_imaging::preload_order::{PreloadOptions, PreloadWindow};
 use pr_test_support::{FakeFileSystem, LogLevel, RecordingLog};
@@ -1249,4 +1251,89 @@ fn queue_error_displays_and_sources_the_escaping_error() {
     assert_eq!(error.to_string(), "malformed path");
     let source = std::error::Error::source(&error).expect("the escaping error is the source");
     assert_eq!(source.to_string(), "malformed path");
+}
+
+// ---- repair round 2: the pause perf event and the Debug impls ---------------------------------------------------------
+
+/// Records the `PreloadPaused` payloads delivered while subscribed (process-wide listener: other tests of this binary
+/// may emit too, so the assertions look for the distinctive values of their own scenario).
+#[derive(Default)]
+struct PausedEvents(Mutex<Vec<(i64, i64)>>);
+
+impl PerfListener for PausedEvents {
+    fn on_event_written(&self, event: &PerfEvent) {
+        if event.name != "PreloadPaused" {
+            return;
+        }
+        if let [PerfValue::Int(load), PerfValue::Int(available_mb)] = event.payload.as_slice() {
+            self.0
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .push((*load, *available_mb));
+        }
+    }
+}
+
+/// One paused step with perf on and the log off; returns the payloads seen while subscribed.
+fn paused_perf_payloads(snapshot: Option<MemorySnapshot>) -> Vec<(i64, i64)> {
+    let mut probe = FakeProbe::new(Headroom::Fixed(false));
+    probe.snapshot = snapshot;
+    let mut harness = Harness::new(5, options(PreloadWindow::new(3, 0), false, 2), probe, KEY_BOX);
+    harness.log = RecordingLog::with_enabled(false);
+    harness.perf_enabled = true;
+    let mut queue = harness.queue(2);
+    assert!(queue.refresh(&harness.ctx(), inputs(0, 0)).expect("refresh"));
+
+    let events = Arc::new(PausedEvents::default());
+    let subscription = PhotoReviewPerf::log().subscribe(Arc::clone(&events) as Arc<dyn PerfListener>);
+    let step = queue.next(&harness.ctx(), true, &CancelToken::new()).expect("next");
+    drop(subscription);
+
+    assert_eq!(step, QueueStep::Paused);
+    events.0.lock().unwrap_or_else(PoisonError::into_inner).clone()
+}
+
+// C# `PhotoReviewPerf.Log.PreloadPaused(memory is { } m ? (int)m.LoadPercent : -1, memory is { } a ?
+// (long)(a.AvailableBytes / (1024 * 1024)) : -1)` (PreloadScheduler.cs d92d6aae, the pause branch): the perf event is
+// written when the trace is on even with the plain log off, with the load and the whole MiB available.
+#[test]
+fn pause_perf_event_carries_the_load_and_the_available_mib() {
+    // 7000 MiB plus 123 bytes: the truncating division drops the remainder.
+    let snapshot = MemorySnapshot {
+        load_percent: 91,
+        available_bytes: 7000 * 1024 * 1024 + 123,
+    };
+    let seen = paused_perf_payloads(Some(snapshot));
+    assert!(seen.contains(&(91, 7000)), "{seen:?}");
+}
+
+// Same branch without a snapshot (the probe could not read the memory status): both payload fields are -1.
+#[test]
+fn pause_perf_event_without_a_snapshot_is_minus_one_twice() {
+    let seen = paused_perf_payloads(None);
+    assert!(seen.contains(&(-1, -1)), "{seen:?}");
+}
+
+// The Debug impls name their type and the fields the shell logs while debugging (non-exhaustive by design).
+#[test]
+fn debug_impls_name_the_type_and_its_scalar_fields() {
+    let harness = Harness::new(
+        3,
+        options(PreloadWindow::new(1, 0), false, 2),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let queue = harness.queue(2);
+
+    let context = format!("{:?}", harness.ctx());
+    assert!(context.starts_with("QueueContext {"), "{context}");
+    assert!(context.contains("perf_enabled: false"), "{context}");
+
+    let run = format!("{queue:?}");
+    assert!(run.starts_with("RunQueue {"), "{run}");
+    assert!(run.contains("entries: 3"), "{run}");
+    assert!(run.contains("seen_version: -1"), "{run}");
+
+    let probe = format!("{:?}", DelegateMemoryProbe::new(|_| true));
+    assert!(probe.starts_with("DelegateMemoryProbe"), "{probe}");
 }

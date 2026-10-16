@@ -129,7 +129,7 @@ impl Error for QueueError {
 }
 
 /// The index of the order is outside the entries snapshot (C# `IndexOutOfRangeException` from `entries[order.Current]`;
-/// unreachable: `build_preload_order` only yields indices in `0..entries.len()`).
+/// unreachable: `build_preload_order` only yields indices in `0..entries.len()`, so its `Display` text has no test).
 #[derive(Debug)]
 struct IndexOutOfRange(i32);
 
