@@ -37,7 +37,10 @@ use pr_core::catalog::types::CatalogEntry;
 use pr_core::diagnostics::diag_options::DiagOptions;
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::model::enums::DecoderBackend;
+use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::PathError;
+
+use crate::preload::target::{KeyError, PreloadTarget};
 
 use self::deps::{
     CacheKeyError, DecodeBox, DecodeError, DecodedImageView, DiskCacheStore, ImageCacheKey, ImageDecoder,
@@ -607,4 +610,64 @@ pub fn resolve_capacity(
     preload_window: Option<PreloadWindow>,
 ) -> (i64, String) {
     todo!("W4-14a")
+}
+
+// ---- PreloadTarget adapter (W4-14d; contract semantics 13 of W4-14a) ------------------------------------------------
+
+/// C# `IPreloadTarget` implemented by `PreviewImageService`: an ADAPTER over the inherent methods, not a pure
+/// delegation (the trait is blocking and maps errors by kind, see `preload` below). Stub: every body is `todo!()`
+/// until the W4-14d porter lands it; `tests/preview_service_preload.rs` pins the behaviour.
+impl PreloadTarget for PreviewImageService {
+    /// C# `TryGetCachedPreview(string path)`: `try_get_cached_preview_path(path).is_some()`.
+    fn try_get_cached_preview_for_path(&self, path: &str) -> bool {
+        todo!("W4-14d: try_get_cached_preview_path(path).is_some()")
+    }
+
+    /// C# `TryGetCachedPreview(ImageCacheKey key)`: `try_get_cached_preview(key).is_some()`.
+    fn try_get_cached_preview(&self, key: &ImageCacheKey) -> bool {
+        todo!("W4-14d: try_get_cached_preview(key).is_some()")
+    }
+
+    /// C# `PreloadAsync(path, ct)` awaited: a cancelled token is `Err(DecodeError::Canceled)` before any work; otherwise
+    /// `get_preview_path(path).wait()` (the token is NOT passed on), `Ok(_) -> Ok(())`, and each error mapped by kind
+    /// (semantics 13: `Canceled`, `Busy` (same message), `Decode(d)` rebuilt variant by variant, `Io` via
+    /// `io::Error::new(kind, text)`, other `is_io_exception()` errors as `Io`, the rest keep their message).
+    fn preload(&self, path: &str, cancel: &CancelToken) -> Result<(), DecodeError> {
+        todo!("W4-14d: see the doc comment (semantics 13)")
+    }
+
+    /// C# `GetCurrentCacheKey(string path)`: `get_current_cache_key(path)` with `CacheKeyError` mapped by `KeyError::from`.
+    fn get_current_cache_key_for_path(&self, path: &str) -> Result<ImageCacheKey, KeyError> {
+        todo!("W4-14d: get_current_cache_key(path).map_err(KeyError::from)")
+    }
+
+    /// C# `GetCurrentCacheKey(CatalogEntry entry)`: `get_current_cache_key_for_entry(entry)` mapped by `KeyError::from`.
+    fn get_current_cache_key(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, KeyError> {
+        todo!("W4-14d: get_current_cache_key_for_entry(entry).map_err(KeyError::from)")
+    }
+
+    /// C# `CacheCount`: `cache_count() as i32`, saturating.
+    fn cache_count(&self) -> i32 {
+        todo!("W4-14d: saturating cache_count() as i32")
+    }
+
+    /// C# `CacheBytes`: `cache_bytes()`.
+    fn cache_bytes(&self) -> i64 {
+        todo!("W4-14d: cache_bytes()")
+    }
+
+    /// C# `ActiveViewerDecodes`: `active_viewer_decodes()`.
+    fn active_viewer_decodes(&self) -> i32 {
+        todo!("W4-14d: active_viewer_decodes()")
+    }
+
+    /// C# `CachedPreviewBytes(key)`: `cached_preview_bytes(key)`.
+    fn cached_preview_bytes(&self, key: &ImageCacheKey) -> Option<i64> {
+        todo!("W4-14d: cached_preview_bytes(key)")
+    }
+
+    /// C# `HasDiskCachedPreview(key)`: `has_disk_cached_preview(key)` (W4-14c).
+    fn has_disk_cached_preview(&self, key: &ImageCacheKey) -> bool {
+        todo!("W4-14d: has_disk_cached_preview(key)")
+    }
 }
