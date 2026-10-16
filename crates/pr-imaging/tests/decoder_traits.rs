@@ -317,11 +317,144 @@ fn describe_falls_back_to_the_message_when_the_closure_panics() {
 }
 
 #[test]
-fn only_codec_refusals_can_be_localized() {
+fn refusals_and_plain_errors_are_not_localized_until_text_is_attached() {
     assert!(!DecodeError::busy().is_localized());
     assert!(!DecodeError::memory_admission().is_localized());
     assert!(!DecodeError::Canceled.is_localized());
+    assert!(DecodeError::busy().user_text().is_none());
     assert_eq!(DecodeError::busy().describe(), DECODER_BUSY_MESSAGE);
+}
+
+fn text(s: &'static str) -> UserText {
+    Arc::new(move || s.to_owned())
+}
+
+// C#: UserFacingError.Localized (any exception type: TurboJpegDecoder InvalidDataException/FileNotFoundException/
+// ArgumentException/InvalidOperationException, RawDecoder IOException, SourceBytesCache EndOfStreamException)
+#[test]
+fn with_user_text_localizes_every_variant_and_keeps_type_predicates_and_message() {
+    let cases: Vec<(DecodeError, bool, bool)> = vec![
+        (DecodeError::Busy { message: "m".into() }, false, false),
+        (DecodeError::MemoryAdmission { message: "m".into() }, true, false),
+        (DecodeError::FileNotFound { message: "m".into() }, true, false),
+        (DecodeError::DirectoryNotFound { message: "m".into() }, true, false),
+        (DecodeError::Canceled, false, false),
+        (DecodeError::OutOfMemory { message: "m".into() }, false, false),
+        (DecodeError::InvalidCast { message: "m".into() }, false, false),
+        (DecodeError::Overflow { message: "m".into() }, false, false),
+        (DecodeError::Format { message: "m".into() }, false, false),
+        (DecodeError::InvalidData { message: "m".into() }, false, false),
+        (
+            DecodeError::Com {
+                hresult: -1,
+                message: "m".into(),
+            },
+            false,
+            false,
+        ),
+        (DecodeError::DllNotFound { message: "m".into() }, false, false),
+        (DecodeError::BadImageFormat { message: "m".into() }, false, false),
+        (DecodeError::EntryPointNotFound { message: "m".into() }, false, false),
+        (DecodeError::InvalidOperation { message: "m".into() }, false, false),
+        (DecodeError::InvalidArgument { message: "m".into() }, false, false),
+        (DecodeError::Disposed { message: "m".into() }, false, false),
+        (DecodeError::Io(io::Error::other("m")), true, false),
+        (DecodeError::Other { message: "m".into() }, false, false),
+        (
+            DecodeError::NotSupported {
+                message: "m".into(),
+                user_text: None,
+            },
+            false,
+            true,
+        ),
+        (DecodeError::missing_codec_with("m"), false, true),
+    ];
+    for (error, io_exception, not_supported) in cases {
+        let name = format!("{error:?}");
+        let before = error.message();
+        let kind_name = format!("{:?}", error.kind());
+        let localized = error.with_user_text(text("Địa phương"));
+        assert!(localized.is_localized(), "{name}");
+        assert_eq!(localized.describe(), "Địa phương", "{name}");
+        assert_eq!(localized.message(), before, "{name}: English message unchanged");
+        assert_eq!(localized.to_string(), before, "{name}");
+        assert_eq!(localized.is_io_exception(), io_exception, "{name}");
+        assert_eq!(localized.is_not_supported(), not_supported, "{name}");
+        assert_eq!(
+            format!("{:?}", localized.kind()),
+            kind_name,
+            "{name}: kind() peels the wrapper"
+        );
+    }
+}
+
+#[test]
+fn localized_wrapper_second_call_replaces_the_text() {
+    let error = DecodeError::InvalidData { message: "m".into() }
+        .with_user_text(text("one"))
+        .with_user_text(text("two"));
+    assert_eq!(error.describe(), "two");
+    assert!(
+        matches!(
+            &error,
+            DecodeError::Localized { error, .. } if matches!(**error, DecodeError::InvalidData { .. })
+        ),
+        "replaced in place, not nested"
+    );
+    let codec = DecodeError::missing_codec_localized("m", text("one")).with_user_text(text("two"));
+    assert!(matches!(codec, DecodeError::MissingCodec { .. }), "stays unwrapped");
+    assert_eq!(codec.describe(), "two");
+}
+
+#[test]
+fn localized_closure_is_lazy_and_a_panic_falls_back_to_the_message_for_wrapped_variants() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&calls);
+    let lazy: UserText = Arc::new(move || {
+        counter.fetch_add(1, Ordering::SeqCst);
+        "t".to_owned()
+    });
+    let error = DecodeError::FileNotFound {
+        message: "english".into(),
+    }
+    .with_user_text(lazy);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(error.describe(), "t");
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let boom: UserText = Arc::new(|| panic!("closure failed"));
+    let error = DecodeError::InvalidData {
+        message: "english".into(),
+    }
+    .with_user_text(boom);
+    assert_eq!(error.describe(), "english");
+}
+
+#[test]
+fn text_and_source_bytes_wrappers_compose_in_either_order() {
+    let bytes: Arc<[u8]> = Arc::from(vec![1u8, 2, 3]);
+    let a = DecodeError::InvalidData { message: "m".into() }
+        .with_user_text(text("loc"))
+        .attach_source_bytes(bytes.clone());
+    let b = DecodeError::InvalidData { message: "m".into() }
+        .attach_source_bytes(bytes.clone())
+        .with_user_text(text("loc"));
+    for error in [a, b] {
+        assert_eq!(error.describe(), "loc");
+        assert_eq!(error.message(), "m");
+        assert!(error.source_bytes().is_some());
+        assert!(matches!(error.kind(), DecodeError::InvalidData { .. }));
+        assert!(error.is_localized());
+    }
+}
+
+#[test]
+fn debug_and_source_delegate_through_the_text_wrapper() {
+    use std::error::Error;
+    let error = DecodeError::Io(io::Error::new(io::ErrorKind::PermissionDenied, "denied")).with_user_text(text("loc"));
+    assert!(error.source().is_some());
+    let shown = format!("{error:?}");
+    assert!(shown.contains("Localized") && shown.contains("denied"), "got {shown}");
 }
 
 #[test]
@@ -430,4 +563,15 @@ fn nested_wrapper_falls_back_to_inner_bytes() {
         bytes: DecodeFailureSourceBytes::none(),
     };
     assert_eq!(outer.source_bytes().map(|b| b.to_vec()), Some(vec![7, 8]));
+}
+
+#[test]
+fn localized_wrapper_over_source_bytes_still_exposes_the_bytes() {
+    let inner: Arc<[u8]> = Arc::from(vec![5u8, 6]);
+    let error = DecodeError::Localized {
+        error: Box::new(DecodeError::InvalidData { message: "m".into() }.attach_source_bytes(inner)),
+        text: text("loc"),
+    };
+    assert_eq!(error.source_bytes().map(|b| b.to_vec()), Some(vec![5, 6]));
+    assert_eq!(error.describe(), "loc");
 }
