@@ -40,7 +40,10 @@ use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::DecoderBackend;
 use pr_core::settings::perf_options::MAX_IMAGE_CACHE_RAM_PERCENT;
+use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::PathError;
+
+use crate::preload::target::{KeyError, PreloadTarget};
 
 use self::deps::{
     CacheKeyError, DecodeBox, DecodeError, DecodedImageView, DiskCacheStore, ImageCacheKey, ImageDecoder,
@@ -1293,5 +1296,205 @@ mod white_box_tests {
         let service = service(&root);
         service.inner.active_viewer_decodes.store(3, Ordering::SeqCst);
         assert_eq!(service.active_viewer_decodes(), 3);
+    }
+}
+
+// ---- PreloadTarget adapter (W4-14d; contract semantics 13 of W4-14a) ------------------------------------------------
+
+/// C# `IPreloadTarget` implemented by `PreviewImageService`: an ADAPTER over the inherent methods, not a pure
+/// delegation (the trait is blocking and maps errors by kind, see [`preview_error_to_decode_error`]). Where a trait
+/// method and an inherent method share a name the call is written `PreviewImageService::name(self, ..)`, so the
+/// inherent (W4-14a/b/c) body is always the one called.
+impl PreloadTarget for PreviewImageService {
+    /// C# `TryGetCachedPreview(string path)`: `try_get_cached_preview_path(path).is_some()`.
+    fn try_get_cached_preview_for_path(&self, path: &str) -> bool {
+        self.try_get_cached_preview_path(path).is_some()
+    }
+
+    /// C# `TryGetCachedPreview(ImageCacheKey key)`: `try_get_cached_preview(key).is_some()`.
+    fn try_get_cached_preview(&self, key: &ImageCacheKey) -> bool {
+        PreviewImageService::try_get_cached_preview(self, key).is_some()
+    }
+
+    /// C# `PreloadAsync(path, ct)` awaited: a cancelled token is `Err(DecodeError::Canceled)` before any work; otherwise
+    /// `get_preview_path(path).wait()` (the token is NOT passed on, as C# `GetPreviewAsync(path)`), `Ok(_) -> Ok(())`,
+    /// and each error mapped by kind ([`preview_error_to_decode_error`]).
+    fn preload(&self, path: &str, cancel: &CancelToken) -> Result<(), DecodeError> {
+        if cancel.is_canceled() {
+            return Err(DecodeError::Canceled);
+        }
+        match self.get_preview_path(path).wait() {
+            Ok(_) => Ok(()),
+            Err(error) => Err(preview_error_to_decode_error(&error)),
+        }
+    }
+
+    /// C# `GetCurrentCacheKey(string path)`.
+    fn get_current_cache_key_for_path(&self, path: &str) -> Result<ImageCacheKey, KeyError> {
+        PreviewImageService::get_current_cache_key(self, path).map_err(KeyError::from)
+    }
+
+    /// C# `GetCurrentCacheKey(CatalogEntry entry)`.
+    fn get_current_cache_key(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, KeyError> {
+        self.get_current_cache_key_for_entry(entry).map_err(KeyError::from)
+    }
+
+    /// C# `CacheCount`: `cache_count() as i32`, saturating.
+    fn cache_count(&self) -> i32 {
+        i32::try_from(PreviewImageService::cache_count(self)).unwrap_or(i32::MAX)
+    }
+
+    /// C# `CacheBytes`.
+    fn cache_bytes(&self) -> i64 {
+        PreviewImageService::cache_bytes(self)
+    }
+
+    /// C# `ActiveViewerDecodes`.
+    fn active_viewer_decodes(&self) -> i32 {
+        PreviewImageService::active_viewer_decodes(self)
+    }
+
+    /// C# `CachedPreviewBytes(key)`.
+    fn cached_preview_bytes(&self, key: &ImageCacheKey) -> Option<i64> {
+        PreviewImageService::cached_preview_bytes(self, key)
+    }
+
+    /// C# `HasDiskCachedPreview(key)` (W4-14c).
+    fn has_disk_cached_preview(&self, key: &ImageCacheKey) -> bool {
+        PreviewImageService::has_disk_cached_preview(self, key)
+    }
+}
+
+/// Rebuilds a [`DecodeError`] variant by variant (`DecodeError` is not `Clone`: it holds an `io::Error`). A
+/// `WithSourceBytes` wrapper is peeled ([`DecodeError::kind`]): a preload never needs the attached bytes. `Io(e)` becomes
+/// `io::Error::new(e.kind(), e.to_string())`.
+fn rebuild_decode_error(error: &DecodeError) -> DecodeError {
+    match error.kind() {
+        DecodeError::Busy { message } => DecodeError::Busy {
+            message: message.clone(),
+        },
+        DecodeError::MemoryAdmission { message } => DecodeError::MemoryAdmission {
+            message: message.clone(),
+        },
+        DecodeError::MissingCodec { message, user_text } => DecodeError::MissingCodec {
+            message: message.clone(),
+            user_text: user_text.clone(),
+        },
+        DecodeError::FileNotFound { message } => DecodeError::FileNotFound {
+            message: message.clone(),
+        },
+        DecodeError::DirectoryNotFound { message } => DecodeError::DirectoryNotFound {
+            message: message.clone(),
+        },
+        DecodeError::Canceled => DecodeError::Canceled,
+        DecodeError::OutOfMemory { message } => DecodeError::OutOfMemory {
+            message: message.clone(),
+        },
+        DecodeError::NotSupported { message, user_text } => DecodeError::NotSupported {
+            message: message.clone(),
+            user_text: user_text.clone(),
+        },
+        DecodeError::InvalidCast { message } => DecodeError::InvalidCast {
+            message: message.clone(),
+        },
+        DecodeError::Overflow { message } => DecodeError::Overflow {
+            message: message.clone(),
+        },
+        DecodeError::Format { message } => DecodeError::Format {
+            message: message.clone(),
+        },
+        DecodeError::InvalidData { message } => DecodeError::InvalidData {
+            message: message.clone(),
+        },
+        DecodeError::Com { hresult, message } => DecodeError::Com {
+            hresult: *hresult,
+            message: message.clone(),
+        },
+        DecodeError::DllNotFound { message } => DecodeError::DllNotFound {
+            message: message.clone(),
+        },
+        DecodeError::BadImageFormat { message } => DecodeError::BadImageFormat {
+            message: message.clone(),
+        },
+        DecodeError::EntryPointNotFound { message } => DecodeError::EntryPointNotFound {
+            message: message.clone(),
+        },
+        DecodeError::InvalidOperation { message } => DecodeError::InvalidOperation {
+            message: message.clone(),
+        },
+        DecodeError::InvalidArgument { message } => DecodeError::InvalidArgument {
+            message: message.clone(),
+        },
+        DecodeError::Disposed { message } => DecodeError::Disposed {
+            message: message.clone(),
+        },
+        DecodeError::Io(io_error) => DecodeError::Io(io::Error::new(io_error.kind(), io_error.to_string())),
+        DecodeError::Other { message } => DecodeError::Other {
+            message: message.clone(),
+        },
+        // `kind()` never returns the wrapper; the arm keeps the match total without a panic path.
+        wrapped @ DecodeError::WithSourceBytes { .. } => DecodeError::Other {
+            message: wrapped.message(),
+        },
+    }
+}
+
+/// Maps the service's [`PreviewError`] to the blocking trait's [`DecodeError`] by kind, so the scheduler's catch arms
+/// (W4-15b: `Busy`, `Canceled`, `MissingCodec`, `Io`, anything else) still match (semantics 13 of W4-14a):
+/// `is_canceled()` -> `Canceled`; `is_busy()` -> `Busy` (same message); `Decode(d)` -> the same variant and message;
+/// every other `is_io_exception()` error -> `Io` with the `Display` text; `RawFullDecodeKey` -> `InvalidOperation`;
+/// argument errors -> `InvalidArgument`; `DiskEntry(OutOfMemory)` -> `OutOfMemory`; the rest -> `Other` (their message).
+fn preview_error_to_decode_error(error: &PreviewError) -> DecodeError {
+    if error.is_canceled() {
+        return DecodeError::Canceled;
+    }
+    let message = error.to_string();
+    if error.is_busy() {
+        return DecodeError::Busy { message };
+    }
+    match error {
+        PreviewError::Decode(inner) => rebuild_decode_error(inner),
+        PreviewError::RawFullDecodeKey => DecodeError::InvalidOperation { message },
+        PreviewError::DiskEntry(inner) => match &**inner {
+            PreviewCacheError::OutOfMemory(_) => DecodeError::OutOfMemory { message },
+            _ => DecodeError::Other { message },
+        },
+        _ if error.is_io_exception() => {
+            let kind = match error {
+                PreviewError::Io(inner) => inner.kind(),
+                PreviewError::SourceBytes(inner) => inner.io_kind().unwrap_or(io::ErrorKind::Other),
+                PreviewError::Key(CacheKeyError::SourceNoLongerExists { .. }) => io::ErrorKind::NotFound,
+                _ => io::ErrorKind::Other,
+            };
+            DecodeError::Io(io::Error::new(kind, message))
+        }
+        PreviewError::Key(CacheKeyError::InvalidPath(PathError::Argument))
+        | PreviewError::InvalidPath(PathError::Argument)
+        | PreviewError::SourceBytes(_) => DecodeError::InvalidArgument { message },
+        PreviewError::InvalidPath(PathError::TooLong) => DecodeError::Io(io::Error::other(message)),
+        _ => DecodeError::Other { message },
+    }
+}
+
+#[cfg(test)]
+mod preload_adapter_tests {
+    use super::*;
+
+    // No C# twin: `DecodeError` is not `Clone`, so the adapter rebuilds it; kind and message must survive.
+    #[test]
+    fn rebuild_decode_error_keeps_variant_and_message() {
+        let busy = rebuild_decode_error(&DecodeError::busy_with("queue full"));
+        assert!(matches!(&busy, DecodeError::Busy { message } if message == "queue full"));
+        let canceled = rebuild_decode_error(&DecodeError::Canceled);
+        assert!(matches!(canceled, DecodeError::Canceled));
+        let missing = rebuild_decode_error(&DecodeError::missing_codec_with("no codec"));
+        assert!(matches!(&missing, DecodeError::MissingCodec { message, .. } if message == "no codec"));
+        let io_error = rebuild_decode_error(&DecodeError::Io(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "denied",
+        )));
+        assert!(
+            matches!(&io_error, DecodeError::Io(e) if e.kind() == io::ErrorKind::PermissionDenied && e.to_string() == "denied")
+        );
     }
 }
