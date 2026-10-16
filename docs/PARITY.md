@@ -415,7 +415,7 @@ Two settings are saved and repaired but nothing in the app reads them at runtime
 Units merged with a FAIL verdict or surviving mutants; treat as Partial until fixed. Not fixed in the integration.
 
 - W4-01c: `DecodeError` variants other than NotSupported/MissingCodec lack `user_text` (localized text lost vs `UserFacingError.Localized`).
-- W4-16a: `PixelBufferError::OutOfMemory` Display text vs .NET (a later commit may fix it; verify not re-run). W4-16b: mutants M21 (dealloc path), M14 (Opaque accept) survive.
+- W4-16a: repaired (rep/W4-16a): `OutOfMemory` Display now the .NET default text; re-run mutation of `pixels.rs` incomplete (10 of 152 tested, all caught, 0 missed; machine too loaded). W4-16b: mutants M21 (dealloc path), M14 (Opaque accept) survive.
 - W4-08a: relative path of 260+ chars fails with NotFound in `write_atomic`.
 - W4-09: panicking `Log::error` wedges the prune thread; panicking `BeforeClearPruneScheduledForTests` hook clears the flag (C# keeps it scheduled).
 - W4-10a: SourceBytesCache file-changed / unexpected-EOF errors not localized (D41).
