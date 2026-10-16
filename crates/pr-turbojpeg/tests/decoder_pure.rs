@@ -153,6 +153,7 @@ fn decoder_with(
     memory: Arc<dyn pr_imaging::memory_headroom::MemoryInfoSource>,
     scaler: Arc<dyn FineScaler>,
 ) -> TurboJpegDecoder {
+    serialize_pixel_memory();
     TurboJpegDecoder::new(Arc::new(RecordingCodec::default()), scaler, memory, factory, english())
 }
 
@@ -299,11 +300,10 @@ fn walk(jpeg: &[u8]) -> (Vec<Value>, usize, bool) {
     let mut offset = 2usize;
     let mut segments = Vec::new();
     loop {
-        let before = offset;
         match try_read_segment(jpeg, &mut offset) {
             SegmentStep::Segment { marker, payload } => segments.push(serde_json::json!({
                 "marker": marker,
-                "payload_offset": before + 4,
+                "payload_offset": payload.as_ptr() as i64 - jpeg.as_ptr() as i64,
                 "payload_length": payload.len(),
                 "offset_after": offset,
             })),
@@ -313,13 +313,13 @@ fn walk(jpeg: &[u8]) -> (Vec<Value>, usize, bool) {
 }
 
 /// `read-all-bytes` rows: the stream reports `reported_length`, holds `content_length` bytes, and returns at most
-/// `chunk` bytes per read (0 = unlimited). The content is `i % 251`. The golden records `length`, the SHA-256 of what
+/// `chunk` bytes per read (0 = unlimited). The content is `(i * 7 + 3) as u8` (oracle). The golden records `length`, the SHA-256 of what
 /// was read, and the read count. A reported length above the limit is refused before any read.
 fn check_read_all_bytes_row(case: &Value, name: &str) -> Option<String> {
     let content_length = golden::i64_of(case, "content_length") as usize;
     let reported = golden::i64_of(case, "reported_length");
     let chunk = golden::i64_of(case, "chunk") as usize;
-    let content: Vec<u8> = (0..content_length).map(|i| (i % 251) as u8).collect();
+    let content: Vec<u8> = (0..content_length).map(|i| (i * 7 + 3) as u8).collect();
     let mut reader = CountingReader::new(content, chunk);
     let result = read_all_bytes(&mut reader, reported);
     if let Some(error) = case.get("error") {
@@ -728,31 +728,165 @@ fn first_exif_app1_wins_even_when_too_short() {
     assert_eq!(read_exif_orientation(&jpeg), 1);
 }
 
+/// Reference walker written from ITU T.81 B.1.1.2 (C# `JpegHeaderOracleTests.Oracle`): fill bytes, stuffed `FF 00`,
+/// parameterless markers, EOI/SOS end the header area; the first Exif-headed APP1 wins (even with an empty TIFF).
+fn header_oracle(j: &[u8]) -> (bool, Option<Vec<u8>>) {
+    if j.len() < 4 || j[0] != 0xFF || j[1] != 0xD8 {
+        return (false, None);
+    }
+    let (mut has_icc, mut exif): (bool, Option<Vec<u8>>) = (false, None);
+    let mut i = 2usize;
+    while i < j.len() {
+        if j[i] != 0xFF {
+            break;
+        }
+        while i + 1 < j.len() && j[i + 1] == 0xFF {
+            i += 1;
+        }
+        if i + 1 >= j.len() {
+            break;
+        }
+        let m = j[i + 1];
+        i += 2;
+        if m == 0x00 || m == 0xD9 || m == 0xDA {
+            break;
+        }
+        if m == 0x01 || (0xD0..=0xD8).contains(&m) {
+            continue;
+        }
+        if i + 2 > j.len() {
+            break;
+        }
+        let len = (usize::from(j[i]) << 8) | usize::from(j[i + 1]);
+        if len < 2 || i + len > j.len() {
+            break;
+        }
+        let payload = &j[i + 2..i + len];
+        i += len;
+        if m == 0xE2 && payload.len() >= 12 && payload[..12] == pr_turbojpeg::decoder::ICC_SIGNATURE {
+            has_icc = true;
+        }
+        if m == 0xE1 && exif.is_none() && payload.len() >= 6 && payload[..6] == pr_turbojpeg::decoder::EXIF_SIGNATURE {
+            exif = Some(payload[6..].to_vec());
+        }
+    }
+    (has_icc, exif)
+}
+
+fn random_bytes(rng: &mut XorShift, below: u64) -> Vec<u8> {
+    let len = rng.below(below) as usize;
+    rng.fill(len)
+}
+
+/// C# `BuildHeader(Random)`: 0..8 items from the 14 kinds of header content.
+fn random_header(rng: &mut XorShift) -> Vec<u8> {
+    let mut bytes = vec![0xFF, 0xD8];
+    let items = rng.below(8);
+    for _ in 0..items {
+        match rng.below(14) {
+            0 => bytes.extend(segment(0xE2, &pr_turbojpeg::decoder::ICC_SIGNATURE)),
+            1 => {
+                let mut payload = pr_turbojpeg::decoder::ICC_SIGNATURE.to_vec();
+                payload.extend(random_bytes(rng, 9));
+                bytes.extend(segment(0xE2, &payload));
+            }
+            2 => {
+                let tiff = tiff_orientation(rng.below(11) as u8);
+                bytes.extend(exif_segment(&tiff));
+            }
+            3 => {
+                let mut payload = pr_turbojpeg::decoder::EXIF_SIGNATURE.to_vec();
+                payload.extend(random_bytes(rng, 10));
+                bytes.extend(segment(0xE1, &payload));
+            }
+            4 => bytes.extend(segment(0xE1, b"http://ns.adobe.com/xap/1.0/\0")),
+            5 => bytes.extend(segment(0xE0, &random_bytes(rng, 20))),
+            6 => bytes.extend([0xFF, 0xD0 + rng.below(8) as u8]),
+            7 => bytes.extend([0xFF, 0x01]),
+            8 => bytes.extend([0xFF, 0xFF]),
+            9 => bytes.extend([0xFF, 0x00]),
+            10 => bytes.extend([0xFF, 0xD9]),
+            11 => bytes.extend([0xFF, 0xD8]),
+            12 => {
+                let marker = 0xC0 + rng.below(0x3F) as u8;
+                bytes.extend(segment(marker, &random_bytes(rng, 30)));
+            }
+            _ => bytes.extend([0xFF, 0xDA, 0, 2]),
+        }
+    }
+    bytes
+}
+
+/// A small mutation (flip, truncate or insert a byte) in the spirit of C# `JpegBytes.Mutate`.
+fn mutate_header(rng: &mut XorShift, mut jpeg: Vec<u8>) -> Vec<u8> {
+    for _ in 0..=rng.below(3) {
+        if jpeg.is_empty() {
+            break;
+        }
+        let at = rng.below(jpeg.len() as u64) as usize;
+        match rng.below(3) {
+            0 => jpeg[at] = rng.next_u8(),
+            1 => jpeg.truncate(at),
+            _ => jpeg.insert(at, if rng.below(2) == 0 { 0xFF } else { rng.next_u8() }),
+        }
+    }
+    jpeg
+}
+
 #[test]
 fn all_walkers_agree_with_reference_oracle_on_random_headers() {
-    // C#: JpegHeaderOracleTests.AllWalkers_AgreeWithReferenceOracle (60 000 headers, keep the vacuity guards: some hit
-    // ICC, some hit EXIF, some need more data). ICC probe = scan_header(j, true, false).has_icc.
+    // C#: JpegHeaderOracleTests.AllWalkers_AgreeWithReferenceOracle (60 000 headers, vacuity guards kept).
+    // ICC probe = scan_header(j, true, false).has_icc; the Exif block is compared with the oracle, with the combined
+    // scan and with pr_imaging's find_exif_tiff_block; the orientation with try_read_orientation of the oracle's block.
     let mut rng = XorShift::new(0x0A11_0B01);
-    let (mut icc_hits, mut exif_hits, mut more_hits) = (0usize, 0usize, 0usize);
-    for _ in 0..60_000 {
-        let mut jpeg = vec![0xFF, 0xD8];
-        let segments = rng.below(4);
-        for _ in 0..segments {
-            let marker = [0xE0u8, 0xE1, 0xE2, 0xDB][rng.below(4) as usize];
-            let payload_len = rng.below(24) as usize;
-            let payload = rng.fill(payload_len);
-            jpeg.extend(segment(marker, &payload));
-        }
+    let (mut icc_hits, mut exif_hits, mut orientation_hits, mut more_hits) = (0usize, 0usize, 0usize, 0usize);
+    for iteration in 0..60_000 {
+        let mut jpeg = random_header(&mut rng);
         if rng.below(2) == 0 {
-            jpeg.extend_from_slice(&[0xFF, 0xDA, 0x00, 0x02]);
+            jpeg = mutate_header(&mut rng, jpeg);
         }
-        let icc = scan_header(&jpeg, true, false).has_icc;
-        let exif = !scan_header(&jpeg, false, true).exif_tiff.is_empty();
-        icc_hits += usize::from(icc);
-        exif_hits += usize::from(exif);
+        let (expected_icc, expected_exif) = header_oracle(&jpeg);
+        let context = format!("iteration {iteration}: {jpeg:02X?}");
+
+        assert_eq!(
+            scan_header(&jpeg, true, false).has_icc,
+            expected_icc,
+            "ICC mismatch, {context}"
+        );
+        assert_eq!(
+            scan_header(&jpeg, true, true).has_icc,
+            expected_icc,
+            "ICC mismatch (combined), {context}"
+        );
+        let found = scan_header(&jpeg, false, true).exif_tiff;
+        assert_eq!(
+            found,
+            expected_exif.as_deref().unwrap_or(&[]),
+            "Exif block mismatch, {context}"
+        );
+        assert_eq!(
+            exif_parser::find_exif_tiff_block(&jpeg),
+            expected_exif.as_deref().unwrap_or(&[]),
+            "ExifParser block mismatch, {context}"
+        );
+        let orientation = expected_exif
+            .as_deref()
+            .map_or(1, |tiff| exif_parser::try_read_orientation(tiff).map_or(1, i32::from));
+        assert_eq!(
+            read_exif_orientation(&jpeg),
+            orientation,
+            "orientation mismatch, {context}"
+        );
+
+        icc_hits += usize::from(expected_icc);
+        exif_hits += usize::from(expected_exif.is_some());
+        orientation_hits += usize::from(orientation != 1);
         more_hits += usize::from(header_needs_more_data(&jpeg));
     }
-    assert!(icc_hits > 0 && exif_hits > 0 && more_hits > 0, "vacuity guard");
+    assert!(icc_hits > 2_000, "ICC positives: {icc_hits}");
+    assert!(exif_hits > 2_000, "Exif block positives: {exif_hits}");
+    assert!(orientation_hits > 1_000, "orientation positives: {orientation_hits}");
+    assert!(more_hits > 0, "needs-more-data positives: {more_hits}");
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -895,7 +1029,8 @@ fn file_sharing_open_handles_do_not_block_the_decode_read() {
     let temp = TempRoot::new("tj-writer");
     let path = write_under(temp.path(), "w.jpg", &fixture_bytes("turbojpeg/parity-8x8.jpg"));
     let mut writer = OpenOptions::new().write(true).open(&path).expect("writer");
-    writer.write_all(&[0]).expect("write");
+    // A write handle stays open; the shared read must not be blocked by it.
+    writer.flush().expect("flush");
     let decoder = pure_decoder(factory_of(ok_fake), memory(1 << 36, 0));
     let result = decoder.read_info(path.to_str().expect("utf8 path"));
     assert!(result.is_ok(), "{result:?}");
@@ -1034,8 +1169,8 @@ fn out_of_range_orientation_value_is_treated_as_normal_in_pure_reads() {
     let jpeg = jpeg_shell(&[exif_segment(&tiff_orientation(9))]);
     assert_eq!(
         read_exif_orientation(&jpeg),
-        9,
-        "the raw value is reported, never normalised"
+        1,
+        "an orientation outside 1..8 reads as normal (the raw value only survives a source_orientation override)"
     );
 }
 
@@ -1082,6 +1217,8 @@ fn set_scaling_factor_failure_decodes_at_full_size_and_fine_scales() {
     let decoder = decoder_with(
         factory_of(|| FakeDecompressor {
             scale_code: 1,
+            width: 64,
+            height: 48,
             ..FakeDecompressor::default()
         }),
         memory(1 << 36, 0),
@@ -1241,8 +1378,17 @@ fn native_entry_point_not_found_propagates_unchanged_from_header_and_from_scan_l
 #[test]
 fn fine_scaler_out_of_memory_is_a_memory_admission_with_the_scaled_size_and_no_live_buffer() {
     // Rust-only (contract "New Rust tests"): OutOfMemory from the scaler -> MemoryAdmission naming the SCALED size.
+    serialize_pixel_memory();
     let before = NativePixelMemory::live_count();
-    let decoder = decoder_with(factory_of(ok_fake), memory(1 << 36, 0), oom_scaler());
+    let decoder = decoder_with(
+        factory_of(|| FakeDecompressor {
+            width: 64,
+            height: 48,
+            ..FakeDecompressor::default()
+        }),
+        memory(1 << 36, 0),
+        oom_scaler(),
+    );
     let request = DecodeRequest::with_box("o.jpg", pr_imaging::decode_types::DecodeBox::new(4, 4))
         .with_bytes(fixture_bytes("turbojpeg/parity-64x48.jpg").into());
     let error = decode_error(&decoder, &request);
@@ -1288,6 +1434,7 @@ fn parallel_decodes_match_the_serial_reference() {
 fn exactly_one_pixel_buffer_is_alive_after_a_successful_decode_and_none_after_a_failure() {
     // C#: TurboJpegPixelBufferLifetimeTests.Decode_HoldsExactlyOneBuffer_AllOrientationsAndFineScale (pure half, fake
     // decompressor and blank scaler). The count is the process-wide NativePixelMemory counter (W4-16b).
+    serialize_pixel_memory();
     let start = NativePixelMemory::live_count();
     let decoder = decoder_with(factory_of(ok_fake), memory(1 << 36, 0), blank_scaler());
     let request = DecodeRequest::with_box("l.jpg", pr_imaging::decode_types::DecodeBox::new(4, 4))
@@ -1337,6 +1484,7 @@ fn codec_throwing_frees_the_buffer() {
             }
         }
     }
+    serialize_pixel_memory();
     let start = NativePixelMemory::live_count();
     let decoder = TurboJpegDecoder::new(
         Arc::new(FailingCodec),
@@ -1353,6 +1501,7 @@ fn codec_throwing_frees_the_buffer() {
 #[test]
 fn icc_profile_falls_back_without_allocating() {
     // C#: TurboJpegPixelBufferLifetimeTests.IccProfile_FallsBackWithoutAllocating (pure)
+    serialize_pixel_memory();
     let start = NativePixelMemory::live_count();
     let decoder = pure_decoder(factory_of(ok_fake), memory(1 << 36, 0));
     let jpeg = jpeg_shell(&[icc_segment(12)]);
@@ -1363,6 +1512,7 @@ fn icc_profile_falls_back_without_allocating() {
 #[test]
 fn huge_claimed_size_is_admission_refusal_not_overflow_and_allocates_nothing() {
     // C#: TurboJpegPixelBufferLifetimeTests.HugeClaimedSize_IsAdmissionRefusal_NotOverflow_AndAllocatesNothing (pure)
+    serialize_pixel_memory();
     let start = NativePixelMemory::live_count();
     let mem = memory(1 << 30, 0);
     let decoder = pure_decoder(

@@ -77,20 +77,43 @@ fn source_of(case: &Value, temp: &TempRoot) -> Source {
             .and_then(Value::as_u64)
             .map(|n| vec![0u8; n as usize])
     };
-    if source.get("missing").is_some() {
+    // Oracle `W514bSource`: `null` source = no bytes, no file; `missing`, `missing_dir`, `path` (a literal, also blank) and
+    // `directory` produce a path and no bytes.
+    if source.is_null() {
         return Source {
             bytes: None,
-            path: temp.join("missing.jpg"),
+            path: std::path::PathBuf::new(),
         };
     }
-    if source.get("missing_dir").is_some() {
+    if let Some(name) = source.get("missing").and_then(Value::as_str) {
+        return Source {
+            bytes: None,
+            path: temp.join(name),
+        };
+    }
+    if let Some(name) = source.get("missing_dir").and_then(Value::as_str) {
+        return Source {
+            bytes: None,
+            path: temp.join("no-such-dir").join(name),
+        };
+    }
+    if let Some(literal) = source.get("path").and_then(Value::as_str) {
+        return Source {
+            bytes: None,
+            path: std::path::PathBuf::from(literal),
+        };
+    }
+    if source.get("directory").is_some() {
         return Source {
             bytes: None,
             path: temp.path().to_path_buf(),
         };
     }
     let bytes = base.map(|b| apply_transforms(b, &transforms));
-    let label = case["path"].as_str().unwrap_or("source.jpg");
+    let label = case["path"]
+        .as_str()
+        .filter(|label| !label.is_empty())
+        .unwrap_or("source.jpg");
     let path = match &bytes {
         Some(b) => write_under(temp.path(), label, b),
         None => std::path::PathBuf::new(),
@@ -127,14 +150,29 @@ fn check_decode_row(case: &Value, exact: bool) -> Option<String> {
     if let Some(orientation) = case.get("source_orientation").and_then(Value::as_i64) {
         request = request.with_source_orientation(orientation as i32);
     }
-    if golden::str_of(case, "from") == "bytes" {
-        let bytes = source.bytes.clone().unwrap_or_default();
-        request = request.with_bytes(bytes.into());
+    // GOLDEN DEFECT (reported to the lead): the oracle harness passes `bytes is null ? null : new ReadOnlyMemory<byte>(bytes)`,
+    // which C# types as a non-nullable `ReadOnlyMemory<byte>`: a null array becomes an EMPTY caller buffer. So every row
+    // without bytes (all `from: file` rows, `none`) was recorded as "not a valid JPEG: <path>". To compare with the golden
+    // exactly as recorded, the request carries the same (empty) buffer; the real file reads are checked separately by
+    // `file_row_agrees_with_bytes` below.
+    let is_file = golden::str_of(case, "from") == "file";
+    let recorded_bytes = if is_file {
+        Vec::new()
+    } else {
+        source.bytes.clone().unwrap_or_default()
+    };
+    request = request.with_bytes(recorded_bytes.into());
+    if !is_file {
         request.path = std::path::PathBuf::from(case["path"].as_str().unwrap_or(""));
     }
     let consulted = mem.reads.load(Ordering::SeqCst) as i64;
     let result = decoder.decode(&request);
     let consulted_now = mem.reads.load(Ordering::SeqCst) as i64;
+    if is_file {
+        if let Some(problem) = file_row_agrees_with_bytes(&name, case, &decoder, &source, &request) {
+            return Some(problem);
+        }
+    }
     let _ = consulted;
     if let Some(error) = case.get("error").filter(|e| !e.is_null()) {
         return match result {
@@ -258,8 +296,8 @@ fn turbojpeg_read_info_golden_rows_match_csharp() {
                 }
             }
             (Err(actual), Some(error)) => {
-                if csharp_type(&actual) != golden::str_of(error, "type") {
-                    mismatches.push(format!("{name}: type {}", csharp_type(&actual)));
+                if csharp_type(actual.kind()) != golden::str_of(error, "type") {
+                    mismatches.push(format!("{name}: type {}", csharp_type(actual.kind())));
                 }
             }
             (other, _) => mismatches.push(format!("{name}: {other:?}")),
@@ -300,7 +338,7 @@ fn read_info_file_of_exactly_the_three_signature_bytes_fails_as_a_broken_header(
     let temp = TempRoot::new("tj-sig3");
     let path = write_under(temp.path(), "sig.jpg", &hex("FFD8FF"));
     let error = decoder.read_info(path.to_str().expect("utf8")).expect_err("broken");
-    assert!(matches!(error, DecodeError::InvalidData { .. }), "{error:?}");
+    assert!(matches!(error.kind(), DecodeError::InvalidData { .. }), "{error:?}");
 }
 
 #[test]
@@ -403,10 +441,8 @@ fn decode_sof_declaring_a_zero_width_is_rejected_as_an_invalid_data_fault() {
         .decode(&DecodeRequest::new("z.jpg", 0).with_bytes(jpeg.into()))
         .err()
         .expect("zero width");
-    assert!(
-        error.to_string().starts_with(messages::INVALID_DIMENSIONS_PREFIX),
-        "{error}"
-    );
+    // The native header parse itself refuses a zero width ("Empty JPEG image", golden `zero-width`); C# only asserts the type.
+    assert!(matches!(error.kind(), DecodeError::InvalidData { .. }), "{error:?}");
 }
 
 #[test]
@@ -526,6 +562,7 @@ fn huge_declared_size_on_small_machine_is_refused_before_allocation() {
     let Some(decoder) = native_decoder_with(memory(64 * 1024 * 1024, 0)) else {
         return;
     };
+    serialize_pixel_memory();
     let before = NativePixelMemory::live_count();
     let jpeg = apply_transforms(
         fixture_bytes("turbojpeg/parity-8x8.jpg"),
@@ -743,6 +780,8 @@ fn box_decodes_fit_the_box_like_decode_box_fit() {
             .expect("info");
         let transposed = matches!(info.orientation, 5..=8);
         let (w, h) = decode_box.fit_stored(info.pixel_width, info.pixel_height, transposed);
+        // The fit is on the stored grid; the oriented image has the axes swapped.
+        let (w, h) = if transposed { (h, w) } else { (w, h) };
         assert_eq!(
             (image.pixel_width(), image.pixel_height()),
             (w, h),
@@ -842,6 +881,7 @@ fn decode_refuses_a_huge_pixel_request_without_a_fallback_chain() {
     let Some(decoder) = native_decoder_with(memory(1 << 30, 0)) else {
         return;
     };
+    serialize_pixel_memory();
     let before = NativePixelMemory::live_count();
     let jpeg = apply_transforms(
         fixture_bytes("turbojpeg/parity-8x8.jpg"),
@@ -858,6 +898,7 @@ fn corrupt_jpeg_does_not_leak_a_pixel_buffer() {
     let Some(decoder) = native_decoder_with(memory(1 << 36, 0)) else {
         return;
     };
+    serialize_pixel_memory();
     let before = NativePixelMemory::live_count();
     let jpeg = apply_transforms(
         fixture_bytes("turbojpeg/gradient-256x256.jpg"),
@@ -874,6 +915,7 @@ fn decode_holds_exactly_one_buffer_for_all_orientations_and_fine_scale() {
     let Some(decoder) = native_decoder_with(memory(1 << 36, 0)) else {
         return;
     };
+    serialize_pixel_memory();
     let before = NativePixelMemory::live_count();
     for orientation in 1..=8u64 {
         let jpeg = apply_transforms(
@@ -979,4 +1021,92 @@ fn parallel_native_decodes_match_the_serial_reference() {
 /// The B,G,R bytes of a decoded image (the pixel comparison of the concurrency test).
 fn bgr_bytes_of(image: &Arc<dyn DecodedImageView>) -> Vec<u8> {
     bgr_bytes(image.platform_image().as_pixels().expect("pixels"))
+}
+
+/// What the poisoned golden rows cannot say: the REAL file read. For a `from: file` row whose bytes are known the decode
+/// by path must agree with the decode of the same bytes in memory (same outcome class, same image facts, and the
+/// fallbackable failure of the file path carries the file); path-only rows (missing file/dir, directory, blank) must
+/// fail with the localized not-found / no-source verdicts of semantics 2.
+fn file_row_agrees_with_bytes(
+    name: &str,
+    case: &Value,
+    decoder: &pr_turbojpeg::decoder::TurboJpegDecoder,
+    source: &Source,
+    in_memory: &DecodeRequest,
+) -> Option<String> {
+    let src = &case["source"];
+    let mut by_path = DecodeRequest::with_box(source.path.clone(), in_memory.decode_box())
+        .with_apply_orientation(in_memory.apply_orientation);
+    by_path.source_orientation = in_memory.source_orientation;
+    if src.get("missing").is_some() || src.get("missing_dir").is_some() || src.get("directory").is_some() {
+        return match decoder.decode(&by_path) {
+            Err(DecodeError::FileNotFound { .. }) => None,
+            Err(other) if matches!(other.kind(), DecodeError::FileNotFound { .. }) && other.is_localized() => None,
+            other => Some(format!(
+                "{name}: path-only source should be a localized FileNotFound, got {:?}",
+                other.map(|_| "ok")
+            )),
+        };
+    }
+    if let Some(literal) = src.get("path").and_then(Value::as_str) {
+        if literal.trim().is_empty() {
+            return match decoder.decode(&by_path) {
+                Err(error) if matches!(error.kind(), DecodeError::InvalidArgument { .. }) && error.is_localized() => {
+                    None
+                }
+                other => Some(format!(
+                    "{name}: blank path should be a localized no-source error, got {:?}",
+                    other.map(|_| "ok")
+                )),
+            };
+        }
+    }
+    let bytes = source.bytes.as_ref()?;
+    // 128 MiB zero files: the same verdict, no need to decode the buffer twice.
+    let via_bytes = decoder.decode(&by_path.clone().with_bytes(bytes.clone().into()));
+    let via_file = decoder.decode(&by_path);
+    match (via_file, via_bytes) {
+        (Ok(file), Ok(memory)) => {
+            let facts = |image: &std::sync::Arc<dyn pr_imaging::decode_types::DecodedImageView>| {
+                (
+                    image.pixel_width(),
+                    image.pixel_height(),
+                    image.estimated_bytes(),
+                    image.downscaled(),
+                    image.orientation(),
+                    image.original_width(),
+                    image.original_height(),
+                )
+            };
+            if facts(&file) != facts(&memory) {
+                return Some(format!(
+                    "{name}: file {:?} vs memory {:?}",
+                    facts(&file),
+                    facts(&memory)
+                ));
+            }
+            None
+        }
+        (Err(file), Err(memory)) => {
+            if csharp_type(file.kind()) != csharp_type(memory.kind())
+                || FallbackImageDecoder::is_fallbackable(&file) != FallbackImageDecoder::is_fallbackable(&memory)
+            {
+                return Some(format!("{name}: file error {file:?} vs memory error {memory:?}"));
+            }
+            // A source refused by the pre-read guard (too large for memory) was never read, so it carries nothing.
+            let never_read = file.message().starts_with("JPEG source is too large");
+            if FallbackImageDecoder::is_fallbackable(&file)
+                && !never_read
+                && file.source_bytes().map(|b| b.len()) != Some(bytes.len())
+            {
+                return Some(format!("{name}: a fallbackable file failure must carry the file bytes"));
+            }
+            None
+        }
+        (file, memory) => Some(format!(
+            "{name}: file outcome {:?} vs memory outcome {:?}",
+            file.map(|_| "ok"),
+            memory.map(|_| "ok")
+        )),
+    }
 }

@@ -8,9 +8,10 @@
 //! Each test binary includes this module with `mod support;` and uses a different subset, hence the allow below.
 #![allow(dead_code, unused_imports)]
 
+use std::cell::RefCell;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use pr_imaging::decode_types::ImageInfo;
 use pr_imaging::decode_types::{PixelLease, PlatformImage};
@@ -25,6 +26,27 @@ use pr_turbojpeg::decoder::{
 };
 use pr_turbojpeg::native::{TjParam, TjPixelFormat, TjScalingFactor, TurboJpegLibrary};
 use serde_json::Value;
+
+/// `NativePixelMemory::live_count()` is process-wide: tests that count it must not run next to a test that allocates
+/// pixel buffers. Every decoder builder below calls this, which holds one lock until the test thread ends.
+static PIXEL_MEMORY_LOCK: Mutex<()> = Mutex::new(());
+
+thread_local! {
+    static PIXEL_MEMORY_GUARD: RefCell<Option<MutexGuard<'static, ()>>> = const { RefCell::new(None) };
+}
+
+pub fn serialize_pixel_memory() {
+    PIXEL_MEMORY_GUARD.with(|held| {
+        let mut held = held.borrow_mut();
+        if held.is_none() {
+            *held = Some(
+                PIXEL_MEMORY_LOCK
+                    .lock()
+                    .unwrap_or_else(|poisoned| poisoned.into_inner()),
+            );
+        }
+    });
+}
 
 /// Decodes a hex string (upper or lower case, no separators) into bytes.
 pub fn hex(text: &str) -> Vec<u8> {
@@ -504,6 +526,7 @@ pub fn failing_factory(error: fn() -> DecodeError) -> Arc<dyn DecompressorFactor
 
 /// A decoder over fakes (no DLL, no WIC): the pure half of the tests.
 pub fn pure_decoder(factory: Arc<dyn DecompressorFactory>, memory: Arc<dyn MemoryInfoSource>) -> TurboJpegDecoder {
+    serialize_pixel_memory();
     TurboJpegDecoder::new(
         Arc::new(RecordingCodec::default()),
         no_scaler(),
@@ -537,6 +560,7 @@ pub fn wic_scaler() -> Arc<dyn FineScaler> {
 /// cannot be loaded: the native tests then degrade like the C# availability probe instead of failing (contract "Native
 /// tests"). Production uses `TurboJpegDecoder::native`; tests never rely on the exe-folder search.
 pub fn native_decoder_with(memory: Arc<dyn MemoryInfoSource>) -> Option<TurboJpegDecoder> {
+    serialize_pixel_memory();
     let path = native_dll_path();
     match TurboJpegLibrary::load(&path) {
         Ok(library) => Some(TurboJpegDecoder::new(
