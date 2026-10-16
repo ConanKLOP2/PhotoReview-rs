@@ -86,7 +86,7 @@ pub(crate) fn as_string(value: Option<&QueryValue>) -> Option<String> {
 
 /// `ExifQueryInterpreter.AsInteger`: scalar byte/u16/i16/u32/i32 widened to `i64`; non-empty arrays of
 /// u16/u32/i16/i32 give element 0; everything else `None`.
-pub(crate) fn as_integer(value: Option<&QueryValue>) -> Option<i64> {
+pub fn as_integer(value: Option<&QueryValue>) -> Option<i64> {
     todo!("W4-04b")
 }
 
