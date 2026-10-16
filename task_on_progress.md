@@ -67,7 +67,8 @@
 
 
 ## Wave 4 integration (branch `integration/wave-4`, 2026-10-16)
-- Merged units: see docs/PARITY.md and docs/MULTI-AGENT-PLAN.md section 15. 11 units blocked, not merged.
-- Merged origin/master into the branch (docs only, no conflicts).
-- Gate (CARGO_TARGET_DIR=target-wave-4/integ): results recorded in the PR body; test failures are `todo!()` stubs of unmerged units.
-- Not run: `--include-ignored` native tests, mutation runs beyond those in unit verdicts, nothing for blocked units.
+- Merged every fin/* (01b, 02b, 03b, 04a, 04b, 06b, 10b, 12a, 14b, 14c, 14d) and rep/* (01c, 08a, 09, 10a, 11a, 11b, 11c, 11e, 14a, 15a, 16a, 16b) branch with --no-ff. Only conflicts were in `docs/PARITY.md` (kept both sides). Merged origin/master (clean).
+- Ran (CARGO_TARGET_DIR=target-wave-4/integ): `cargo fmt --all` (no change); `cargo clippy --workspace --all-targets --locked -- -D warnings` clean; `cargo test --workspace --locked --no-fail-fast`: exit 0, 3619 passed, 0 failed, 304 ignored.
+- Ran: `cargo test -p pr-imaging -p pr-platform-win --locked --no-fail-fast -- --include-ignored`: exit 101. pr-platform-win native WIC tests pass except `wic_icc_transform_failure_carries_the_localized_sentence` (blocked W4-11c OQ1). 31 pr-imaging ignored tests fail: 30 on `todo!()` native seams (embedded_thumbnail 17, thumbnail_cache 9, cache_preview_file 4) plus 1 in preview_service_disk.
+- NOT run: cargo-mutants on the merged tree; ignored tests of other crates; full-file mutation of pixels.rs, decoder.rs, cache_image.rs.
+- Not pushed; the lead pushes and opens the PR.

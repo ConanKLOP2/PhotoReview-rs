@@ -105,4 +105,4 @@ Fixtures synced by `tools/sync-from-csharp.ps1` at `d92d6aae` (never hand-edited
 
 ## Wave 4 (imaging)
 
-Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b, 09, 10a, 11a-e, 12b/c, 14a, 15a/b, 16a/b) are listed in `docs/PARITY.md` per row (name and case count). Goldens for unmerged units (W4-01b, 02b, 03b, 04a/b, 06b, 10b, 12a, 14b/c/d) exist as contracts only; their consuming tests fail on `todo!()` until the unit merges. No pre-existing golden changed.
+Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b, 09, 10a, 11a-e, 12b/c, 14a, 15a/b, 16a/b) are listed in `docs/PARITY.md` per row (name and case count). All Wave 4 units are now merged. Goldens `embedded-thumbnail-read` (native hash), `thumbnail-disk-decode` and the W4-11e native twins are only exercised by native tests that still hit `todo!()` seams (see PARITY.md "Wave 4 final status"). No pre-existing golden changed.
