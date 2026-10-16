@@ -9,8 +9,6 @@
 //! first on the caller's thread and then on the run's own thread. It never waits, never starts a worker and never
 //! touches the scheduler's locks; the shell (W4-15b) owns workers, the running set, wake-ups, cancellation and exit.
 
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
-
 use std::collections::HashSet;
 use std::error::Error;
 use std::fmt;
@@ -18,16 +16,21 @@ use std::sync::Arc;
 
 use pr_core::abstractions::{Log, MemoryProbe};
 use pr_core::catalog::types::CatalogEntry;
+use pr_core::diagnostics::perf::PhotoReviewPerf;
 use pr_core::sync::CancelToken;
+use pr_core::text::ignore_case_key;
 
 use crate::cache_key::ImageCacheKey; // W4-01a
 use crate::decode_types::DecodeBox; // W4-01b
 use crate::preload_backoff::{PreloadBusyBackoff, PreviewSizeSampler}; // W4-06b
-use crate::preload_order::PreloadOptions; // W4-05b
-use crate::ram_budget::FolderEstimateCache; // W4-07a (pub(crate))
+use crate::preload_order::{PreloadOptions, build_preload_order}; // W4-05b
+use crate::ram_budget::{FolderEstimateCache, should_preload_whole_folder_estimate}; // W4-07a (pub(crate))
 
-use super::policy::{HeadroomProbeState, PreloadOutcome, Shape};
-use super::target::PreloadTarget;
+use super::policy::{
+    HeadroomProbeState, PreloadOutcome, Shape, fill_limit_reached, forget_unless_failed, format_paused_log,
+    format_policy_log, format_skipped_cannot_stat, in_preload_window,
+};
+use super::target::{KeyError, PreloadTarget};
 
 /// What the loop reads at the top of every pass (C# `Interlocked.Read(ref _preloadPriorityVersion)`,
 /// `Volatile.Read(ref _preloadCenter)` and `CurrentShape()`), passed in by the shell. Read order matters: the wake
@@ -115,15 +118,28 @@ pub struct QueueError(pub Box<dyn Error + Send + Sync>);
 
 impl fmt::Display for QueueError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-15a: the inner error's Display")
+        fmt::Display::fmt(&self.0, f)
     }
 }
 
 impl Error for QueueError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        todo!("W4-15a: the inner error")
+        Some(self.0.as_ref())
     }
 }
+
+/// The index of the order is outside the entries snapshot (C# `IndexOutOfRangeException` from `entries[order.Current]`;
+/// unreachable: `build_preload_order` only yields indices in `0..entries.len()`).
+#[derive(Debug)]
+struct IndexOutOfRange(i32);
+
+impl fmt::Display for IndexOutOfRange {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "preload order index {} is outside the entries snapshot", self.0)
+    }
+}
+
+impl Error for IndexOutOfRange {}
 
 /// The per-run state of C# `RunPreloadSchedulerAsync` that is about WHAT to preload (not about workers).
 pub struct RunQueue {
@@ -170,7 +186,23 @@ impl RunQueue {
     /// `seen_calibrated = false`, `seen_whole_folder = false`, `order_center = 0`, no order, nothing queued, headroom
     /// never probed, not paused.
     pub fn new(entries: Arc<[CatalogEntry]>, workers: i32) -> Self {
-        todo!("W4-15a: see the doc comment")
+        Self {
+            entries,
+            workers,
+            queued: HashSet::new(),
+            seen_version: -1,
+            seen_shape: Shape::INITIAL,
+            seen_box: DecodeBox::UNBOUNDED,
+            seen_calibrated: false,
+            seen_whole_folder: false,
+            estimate_cache: FolderEstimateCache::new(),
+            order_center: 0,
+            order: None,
+            pending: None,
+            examined_since_yield: 0,
+            headroom: HeadroomProbeState::default(),
+            paused: false,
+        }
     }
 
     /// The snapshot this run iterates.
@@ -189,7 +221,58 @@ impl RunQueue {
     /// `seen_whole_folder`, `order_center = center`. A pending caller-thread candidate is dropped with the old order.
     /// Returns `Ok(true)` when rebuilt.
     pub fn refresh(&mut self, ctx: &QueueContext<'_>, inputs: PassInputs) -> Result<bool, QueueError> {
-        todo!("W4-15a: see the doc comment")
+        let calibrated = ctx.sizes.mean_bytes(self.seen_box).is_some();
+        if inputs.version == self.seen_version && inputs.shape == self.seen_shape && calibrated == self.seen_calibrated
+        {
+            return Ok(false);
+        }
+
+        // C# `order?.Dispose()`: the old order (and a candidate held back from it) is gone.
+        self.order = None;
+        self.pending = None;
+        ctx.busy_backoff.begin_pass();
+        let center = inputs.center;
+        let shape = inputs.shape;
+        let decode_box = self.current_box(ctx, center)?;
+        let measured = ctx.sizes.mean_bytes(decode_box);
+        let estimated = self.estimate_cache.get_or_compute(&self.entries, decode_box, measured);
+        let whole_folder = should_preload_whole_folder_estimate(
+            estimated,
+            ctx.options.full_folder_threshold_bytes,
+            ctx.memory_probe,
+            ctx.options.reserve_bytes,
+            ctx.options.memory_load_limit,
+        )
+        .map_err(|error| QueueError(Box::new(error)))?;
+        if ctx.log.enabled() {
+            ctx.log.info(&format_policy_log(
+                self.entries.len(),
+                decode_box,
+                measured,
+                estimated,
+                ctx.options.full_folder_threshold_bytes,
+                whole_folder,
+                center,
+                shape,
+            ));
+        }
+        let count = i32::try_from(self.entries.len()).unwrap_or(i32::MAX);
+        let order = build_preload_order(
+            center,
+            count,
+            whole_folder,
+            shape.direction,
+            shape.lead,
+            ctx.options.window,
+        );
+        self.order = Some(order.into_iter());
+        self.seen_version = inputs.version;
+        self.seen_shape = shape;
+        self.seen_box = decode_box;
+        self.seen_calibrated = measured.is_some();
+        self.seen_whole_folder = whole_folder;
+        self.order_center = center;
+        Ok(true)
     }
 
     /// One candidate (C# lines 561-640 minus the worker start). Order of checks, each observable by a test:
@@ -216,12 +299,122 @@ impl RunQueue {
         on_caller_thread: bool,
         cancel: &CancelToken,
     ) -> Result<QueueStep, QueueError> {
-        todo!("W4-15a: see the doc comment")
+        // 1. The held-back candidate resumes after the C# yield, i.e. at the headroom check (steps 2 and 3 already ran).
+        let (index, resumed) = match self.pending.take() {
+            Some(index) => (index, true),
+            None => match self.order.as_mut().and_then(Iterator::next) {
+                Some(index) => (index, false),
+                None => return Ok(QueueStep::Exhausted),
+            },
+        };
+        let window = ctx.options.window;
+        if !resumed {
+            // 2. C# `ThrowIfCancellationRequested` right after `MoveNext`: the candidate is consumed.
+            if cancel.is_canceled() {
+                return Ok(QueueStep::Canceled);
+            }
+            // 3. perf(Q-R26): only the window is examined on the caller's thread.
+            if on_caller_thread && !in_preload_window(index, self.order_center, self.seen_shape, window) {
+                self.pending = Some(index);
+                return Ok(QueueStep::LeaveCallerThread);
+            }
+        }
+
+        // 4. IMG-03: cached headroom probe.
+        let probe = ctx.memory_probe;
+        let options = ctx.options;
+        let now = (ctx.clock_ms)();
+        if !self.headroom.has_headroom_cached(now, || {
+            probe.has_headroom(options.memory_load_limit, options.reserve_bytes)
+        }) {
+            self.log_pause(ctx);
+            self.paused = true;
+            return Ok(QueueStep::Paused);
+        }
+
+        // 5. Whole folder: beyond the window, stop once the cache is nearly full.
+        if self.seen_whole_folder
+            && fill_limit_reached(ctx.target.cache_bytes(), options.full_folder_threshold_bytes)
+            && !in_preload_window(index, self.order_center, self.seen_shape, window)
+        {
+            return Ok(QueueStep::FillLimitStop);
+        }
+
+        let entries = Arc::clone(&self.entries);
+        let entry = usize::try_from(index)
+            .ok()
+            .and_then(|i| entries.get(i))
+            .ok_or_else(|| QueueError(Box::new(IndexOutOfRange(index))))?;
+        let path = entry.path();
+        // 6. Already in flight, or failed in this run.
+        let queued_key = ignore_case_key(path);
+        if self.queued.contains(&queued_key) {
+            return Ok(QueueStep::Skipped);
+        }
+        // 7. The key from the scan's metadata (no stat); only I/O failures are caught.
+        let key = match ctx.target.get_current_cache_key(entry) {
+            Ok(key) => key,
+            Err(KeyError::Io(_)) => {
+                ctx.log.warn(&format_skipped_cannot_stat(path));
+                return Ok(QueueStep::Skipped);
+            }
+            Err(KeyError::Other(error)) => return Err(QueueError(error)),
+        };
+        // 8. Decoded by another route (viewer): its busy history no longer applies.
+        if ctx.target.try_get_cached_preview(&key) {
+            ctx.busy_backoff.record_success(path);
+            return Ok(QueueStep::Skipped);
+        }
+        // 9. Busy recently: not retried on every order rebuild.
+        if ctx.busy_backoff.should_skip(path, &key) {
+            return Ok(QueueStep::Skipped);
+        }
+        // 10. Dispatch.
+        self.queued.insert(queued_key);
+        self.headroom.decode_queued_since_check = true;
+        self.examined_since_yield = self.examined_since_yield.wrapping_add(1);
+        let batch_yield = self.examined_since_yield >= self.workers;
+        if batch_yield {
+            self.examined_since_yield = 0;
+        }
+        Ok(QueueStep::Dispatch(Candidate {
+            index,
+            path: path.to_owned(),
+            key,
+            batch_yield,
+        }))
+    }
+
+    /// The pause line and the perf event of step 4. The memory snapshot is a syscall in production: taken only when
+    /// the log or the perf trace will use it.
+    fn log_pause(&self, ctx: &QueueContext<'_>) {
+        let log_enabled = ctx.log.enabled();
+        let memory = if log_enabled || ctx.perf_enabled {
+            ctx.memory_probe.get_snapshot()
+        } else {
+            None
+        };
+        if log_enabled {
+            ctx.log.info(&format_paused_log(
+                self.queued.len(),
+                ctx.target.cache_count(),
+                ctx.target.cache_bytes(),
+                memory,
+            ));
+        }
+        if ctx.perf_enabled {
+            // C# `(int)m.LoadPercent` and `(long)(a.AvailableBytes / (1024 * 1024))`: unchecked casts.
+            let load_percent = memory.map_or(-1, |m| m.load_percent as i32);
+            let available_mb = memory.map_or(-1, |m| (m.available_bytes / (1024 * 1024)) as i64);
+            PhotoReviewPerf::log().preload_paused(load_percent, available_mb);
+        }
     }
 
     /// A worker of this run finished (or a dispatch completed inline): C# `ForgetUnlessFailed(queued, path, outcome)`.
     pub fn on_finished(&mut self, path: &str, outcome: PreloadOutcome) {
-        todo!("W4-15a: remove ignore_case_key(path) unless Failed")
+        if forget_unless_failed(outcome) {
+            self.queued.remove(&ignore_case_key(path));
+        }
     }
 
     /// C# `paused`: this run stopped for memory headroom.
@@ -253,13 +446,20 @@ impl RunQueue {
     /// C# line 644: `(sizes.mean_bytes(seen_box).is_some()) != seen_calibrated`. The shell takes one more pass instead
     /// of exiting when this is true, the run is not paused and nothing is running (Q-R17).
     pub fn calibration_changed(&self, sizes: &PreviewSizeSampler) -> bool {
-        todo!("W4-15a: see the doc comment")
+        sizes.mean_bytes(self.seen_box).is_some() != self.seen_calibrated
     }
 
     /// C# `CurrentBox(entries, center)`: `DecodeBox::UNBOUNDED` when `center` is outside `0..entries.len()`; else the
     /// `target_box()` of `target.get_current_cache_key(&entries[center])` (no stat: the scan's metadata); `Err(Io)` =>
     /// `UNBOUNDED` (no log); `Err(Other)` => `Err(QueueError)`.
     fn current_box(&self, ctx: &QueueContext<'_>, center: i32) -> Result<DecodeBox, QueueError> {
-        todo!("W4-15a: see the doc comment")
+        let Some(entry) = usize::try_from(center).ok().and_then(|i| self.entries.get(i)) else {
+            return Ok(DecodeBox::UNBOUNDED);
+        };
+        match ctx.target.get_current_cache_key(entry) {
+            Ok(key) => Ok(key.target_box()),
+            Err(KeyError::Io(_)) => Ok(DecodeBox::UNBOUNDED),
+            Err(KeyError::Other(error)) => Err(QueueError(error)),
+        }
     }
 }

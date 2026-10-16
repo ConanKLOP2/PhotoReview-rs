@@ -10,8 +10,6 @@
 //! `PreloadScheduler::preload_around` (the UI thread in the app). All other methods may be called on any thread,
 //! including the UI thread, and must be cheap (a RAM-cache lookup, or a key built from the scan's metadata).
 
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
-
 use std::error::Error;
 use std::fmt;
 use std::io;
@@ -19,6 +17,7 @@ use std::io;
 use pr_core::abstractions::{MemoryProbe, MemorySnapshot};
 use pr_core::catalog::types::CatalogEntry;
 use pr_core::sync::CancelToken;
+use pr_core::text::dotnet_path::PathError;
 
 use crate::cache_key::{CacheKeyError, ImageCacheKey}; // W4-01a
 use crate::decoder_traits::DecodeError; // W4-01c
@@ -41,13 +40,19 @@ pub enum KeyError {
 
 impl fmt::Display for KeyError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-15a: Io => the io::Error's Display; Other => the inner error's Display")
+        match self {
+            KeyError::Io(error) => fmt::Display::fmt(error, f),
+            KeyError::Other(error) => fmt::Display::fmt(error, f),
+        }
     }
 }
 
 impl Error for KeyError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        todo!("W4-15a: the wrapped error")
+        match self {
+            KeyError::Io(error) => Some(error),
+            KeyError::Other(error) => Some(error.as_ref()),
+        }
     }
 }
 
@@ -62,7 +67,12 @@ impl From<CacheKeyError> for KeyError {
     /// `IOException`s => [`KeyError::Io`] (via `From<CacheKeyError> for io::Error`, W4-01a); `InvalidPath(Argument)`
     /// (C# `ArgumentException`) => [`KeyError::Other`].
     fn from(error: CacheKeyError) -> Self {
-        todo!("W4-15a: map by variant, see the doc comment")
+        match error {
+            CacheKeyError::InvalidPath(PathError::Argument) => KeyError::Other(Box::new(error)),
+            CacheKeyError::SourceNoLongerExists { .. } | CacheKeyError::InvalidPath(PathError::TooLong) => {
+                KeyError::Io(io::Error::from(error))
+            }
+        }
     }
 }
 
@@ -108,13 +118,13 @@ pub trait PreloadTarget: Send + Sync {
 
     /// C# `CachedPreviewBytes(ImageCacheKey)` (default `None`): decoded size of the cached preview for `key`, `None`
     /// when not cached. Feeds the measured whole-folder estimate (Q-R17, `PreviewSizeSampler`).
-    fn cached_preview_bytes(&self, key: &ImageCacheKey) -> Option<i64> {
+    fn cached_preview_bytes(&self, _key: &ImageCacheKey) -> Option<i64> {
         None
     }
 
     /// C# `HasDiskCachedPreview(ImageCacheKey)` (default `false`): the on-disk preview cache holds `key`, so a decode
     /// reads that instead of the original and the source-bytes prefetch is skipped.
-    fn has_disk_cached_preview(&self, key: &ImageCacheKey) -> bool {
+    fn has_disk_cached_preview(&self, _key: &ImageCacheKey) -> bool {
         false
     }
 }
@@ -142,12 +152,15 @@ impl fmt::Debug for DelegateMemoryProbe {
 
 impl MemoryProbe for DelegateMemoryProbe {
     /// `has_headroom(maximum_load)`; `reserve_bytes` is ignored (as in C#).
-    fn has_headroom(&self, maximum_load: f64, reserve_bytes: i64) -> bool {
-        todo!("W4-15a: (self.has_headroom)(maximum_load)")
+    fn has_headroom(&self, maximum_load: f64, _reserve_bytes: i64) -> bool {
+        (self.has_headroom)(maximum_load)
     }
 
     /// Always `Some(MemorySnapshot { load_percent: 50, available_bytes: 16 * 1024 * 1024 * 1024 })`.
     fn get_snapshot(&self) -> Option<MemorySnapshot> {
-        todo!("W4-15a: the constant snapshot")
+        Some(MemorySnapshot {
+            load_percent: 50,
+            available_bytes: 16 * 1024 * 1024 * 1024,
+        })
     }
 }
