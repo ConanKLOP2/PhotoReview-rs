@@ -107,7 +107,7 @@ pub mod native {
     use std::io;
 
     use windows::Win32::Graphics::Imaging::{IWICBitmapCodecInfo, IWICImagingFactory};
-    use windows::Win32::Media::MediaFoundation::{IMFActivate, MFT_ENUM_FLAG, MFT_REGISTER_TYPE_INFO, MFTEnumEx};
+    use windows::Win32::Media::MediaFoundation::{IMFActivate, MFT_REGISTER_TYPE_INFO};
     use windows::Win32::System::Com::{
         COINIT_MULTITHREADED, CoInitializeEx, CoTaskMemFree, CoUninitialize, IEnumUnknown,
     };
@@ -129,6 +129,48 @@ pub mod native {
     #[link(name = "windowscodecs", kind = "raw-dylib")]
     unsafe extern "system" {
         fn WICCreateImagingFactory_Proxy(sdk_version: u32, factory: *mut *mut c_void) -> HRESULT;
+    }
+
+    // `kernel32` is on every Windows; `mfplat.dll` is NOT (Windows N editions without the Media Feature Pack), so it is
+    // loaded lazily like C# `[LibraryImport("mfplat.dll")]` (a missing DLL is a `DllNotFoundException` at the first call,
+    // which `probe` turns into "probe failed", never a process that cannot start).
+    #[link(name = "kernel32", kind = "raw-dylib")]
+    unsafe extern "system" {
+        fn LoadLibraryW(file_name: *const u16) -> *mut c_void;
+        fn GetProcAddress(module: *mut c_void, proc_name: *const u8) -> *mut c_void;
+        fn GetLastError() -> u32;
+    }
+
+    /// `MFTEnumEx` (mfapi.h).
+    type MftEnumExFn = unsafe extern "system" fn(
+        category: GUID,
+        flags: u32,
+        input_type: *const MFT_REGISTER_TYPE_INFO,
+        output_type: *const MFT_REGISTER_TYPE_INFO,
+        activates: *mut *mut Option<IMFActivate>,
+        count: *mut u32,
+    ) -> HRESULT;
+
+    /// Loads `dll` and resolves `MFTEnumEx`; a missing library or entry point is an `Err` (C# `DllNotFoundException` /
+    /// `EntryPointNotFoundException`).
+    fn load_mft_enum_ex(dll: &str) -> io::Result<MftEnumExFn> {
+        let wide: Vec<u16> = dll.encode_utf16().chain(std::iter::once(0)).collect();
+        // SAFETY: `wide` is a NUL-terminated UTF-16 string that outlives the call.
+        let module = unsafe { LoadLibraryW(wide.as_ptr()) };
+        if module.is_null() {
+            // SAFETY: plain FFI call without arguments.
+            let code = unsafe { GetLastError() };
+            return Err(io::Error::other(format!("Unable to load DLL '{dll}': 0x{code:08X}")));
+        }
+        // SAFETY: `module` is a live module handle (never unloaded here); the name is a NUL-terminated ASCII string.
+        let proc = unsafe { GetProcAddress(module, c"MFTEnumEx".as_ptr().cast()) };
+        if proc.is_null() {
+            return Err(io::Error::other(format!(
+                "Unable to find an entry point named 'MFTEnumEx' in '{dll}'"
+            )));
+        }
+        // SAFETY: `MFTEnumEx` has exactly the signature of `MftEnumExFn` (mfapi.h).
+        Ok(unsafe { std::mem::transmute::<*mut c_void, MftEnumExFn>(proc) })
     }
 
     /// Makes sure COM is initialised on this thread for the lifetime of the guard (a bare Rust thread has no
@@ -272,6 +314,7 @@ pub mod native {
     /// { MFMediaType_Video, subtype }, null)`; a failed HRESULT is an `Err`; every returned `IMFActivate` is released
     /// and the array freed with `CoTaskMemFree`; the answer is `count > 0`. No `MFStartup` (C# parity).
     pub fn has_media_foundation_decoder(video_subtype: &Guid) -> io::Result<bool> {
+        let mft_enum_ex = load_mft_enum_ex("mfplat.dll")?;
         let _apartment = ComApartment::enter();
 
         let input = MFT_REGISTER_TYPE_INFO {
@@ -281,17 +324,19 @@ pub mod native {
         let mut activates: *mut Option<IMFActivate> = std::ptr::null_mut();
         let mut count = 0u32;
         // SAFETY: `input` outlives the call; both out-pointers are locals; the output type is null (any).
-        let result = unsafe {
-            MFTEnumEx(
+        let hr = unsafe {
+            mft_enum_ex(
                 to_win_guid(&MFT_CATEGORY_VIDEO_DECODER),
-                MFT_ENUM_FLAG(MFT_ENUM_FLAGS as i32),
-                Some(&input),
-                None,
+                MFT_ENUM_FLAGS,
+                &input,
+                std::ptr::null(),
                 &mut activates,
                 &mut count,
             )
         };
-        result.map_err(|e| com_error("MFTEnumEx", &e))?;
+        if hr.0 < 0 {
+            return Err(com_error("MFTEnumEx", &windows_core::Error::from(hr)));
+        }
 
         if !activates.is_null() {
             for i in 0..count as usize {
@@ -304,6 +349,31 @@ pub mod native {
         }
         Ok(count > 0)
     }
+
+    #[cfg(test)]
+    mod load_tests {
+        use super::*;
+
+        // C#: DllNotFoundException("mfplat") is caught by Probe as "probe failed" (Windows N has no mfplat.dll).
+        #[test]
+        fn missing_library_is_an_err_not_a_crash() {
+            let e = load_mft_enum_ex("pr_no_such_library_w4_11b.dll").expect_err("must fail");
+            assert!(e.to_string().contains("pr_no_such_library_w4_11b.dll"));
+        }
+
+        #[test]
+        fn library_without_the_entry_point_is_an_err() {
+            let e = load_mft_enum_ex("kernel32.dll").expect_err("must fail");
+            assert!(e.to_string().contains("MFTEnumEx"));
+        }
+
+        #[test]
+        fn real_mfplat_resolves() {
+            // Present on every desktop Windows except N editions without the Media Feature Pack.
+            assert!(load_mft_enum_ex("mfplat.dll").is_ok());
+        }
+    }
+
     #[cfg(test)]
     mod read_string_tests {
         use super::*;

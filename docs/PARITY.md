@@ -419,7 +419,7 @@ Units merged with a FAIL verdict or surviving mutants; treat as Partial until fi
 - W4-08a: relative path of 260+ chars fails with NotFound in `write_atomic`.
 - W4-09: panicking `Log::error` wedges the prune thread; panicking `BeforeClearPruneScheduledForTests` hook clears the flag (C# keeps it scheduled).
 - W4-10a: SourceBytesCache file-changed / unexpected-EOF errors not localized (D41).
-- W4-11a: growable memory backend does not map lengths above 0x7FFFFFC7 to E_OUTOFMEMORY. W4-11b: mfplat.dll static import (fails on Windows N). W4-11c: JPEG XR + ICC not converted to sRGB (dangling slice in GetColorContexts count query, decoder.rs:997); SourceStreamBackend seek-before-begin HRESULT. W4-11e: `com_is_entry_failure` misses 0x80131539 / 0x80131605; mutant cache_image.rs:579 alive. W4-11d: D5 lone-surrogate divergence (documented).
+- W4-11a: growable memory backend does not map lengths above 0x7FFFFFC7 to E_OUTOFMEMORY. W4-11b: fixed in rep/W4-11b (mfplat.dll now loaded lazily, Err on Windows N). W4-11c: JPEG XR + ICC not converted to sRGB (dangling slice in GetColorContexts count query, decoder.rs:997); SourceStreamBackend seek-before-begin HRESULT. W4-11e: `com_is_entry_failure` misses 0x80131539 / 0x80131605; mutant cache_image.rs:579 alive. W4-11d: D5 lone-surrogate divergence (documented).
 - W4-14a: surviving mutants M01-M04, M09, M14, M20 and the Drop persist-queue case. W4-15a: mutation gate incomplete (8 of 194), amendment A4 not applied.
 - `exif_query::as_integer` made `pub` in the integration (9d3e989; W4-04b amendment A3 may conflict trivially).
 - Not merged (blocked): W4-01b, 02b, 03b, 04a, 04b, 06b, 10b, 12a, 14b, 14c, 14d. Tests that panic on their `todo!()` stubs stay red until those merge.
