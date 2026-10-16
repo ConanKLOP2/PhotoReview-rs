@@ -1471,7 +1471,6 @@ fn preview_error_to_decode_error(error: &PreviewError) -> DecodeError {
         PreviewError::Key(CacheKeyError::InvalidPath(PathError::Argument))
         | PreviewError::InvalidPath(PathError::Argument)
         | PreviewError::SourceBytes(_) => DecodeError::InvalidArgument { message },
-        PreviewError::InvalidPath(PathError::TooLong) => DecodeError::Io(io::Error::other(message)),
         _ => DecodeError::Other { message },
     }
 }
@@ -1496,5 +1495,150 @@ mod preload_adapter_tests {
         assert!(
             matches!(&io_error, DecodeError::Io(e) if e.kind() == io::ErrorKind::PermissionDenied && e.to_string() == "denied")
         );
+    }
+
+    fn mapped(error: PreviewError) -> DecodeError {
+        preview_error_to_decode_error(&error)
+    }
+
+    // No C# twin (the C# adapter lets the exception escape unchanged): the scheduler's catch arms are chosen by kind, so
+    // each family of `PreviewError` must land on the `DecodeError` variant the matching C# catch would see.
+    #[test]
+    fn preview_error_mapping_canceled_forms_are_canceled() {
+        assert!(matches!(mapped(PreviewError::Canceled), DecodeError::Canceled));
+        assert!(matches!(
+            mapped(PreviewError::Decode(Arc::new(DecodeError::Canceled))),
+            DecodeError::Canceled
+        ));
+        assert!(matches!(
+            mapped(PreviewError::DiskEntry(Arc::new(PreviewCacheError::Canceled))),
+            DecodeError::Canceled
+        ));
+    }
+
+    #[test]
+    fn preview_error_mapping_busy_keeps_message() {
+        let mapped = mapped(PreviewError::Decode(Arc::new(DecodeError::busy_with("queue full"))));
+        assert!(matches!(&mapped, DecodeError::Busy { message } if message == "queue full"));
+    }
+
+    #[test]
+    fn preview_error_mapping_decode_variants_are_preserved() {
+        let missing = mapped(PreviewError::Decode(Arc::new(DecodeError::missing_codec_with(
+            "no codec",
+        ))));
+        assert!(matches!(&missing, DecodeError::MissingCodec { message, .. } if message == "no codec"));
+        let not_found = mapped(PreviewError::Decode(Arc::new(DecodeError::FileNotFound {
+            message: "gone".to_owned(),
+        })));
+        assert!(matches!(&not_found, DecodeError::FileNotFound { message } if message == "gone"));
+        let format = mapped(PreviewError::Decode(Arc::new(DecodeError::Format {
+            message: "bad".to_owned(),
+        })));
+        assert!(matches!(&format, DecodeError::Format { message } if message == "bad"));
+        let wrapped = mapped(PreviewError::Decode(Arc::new(DecodeError::WithSourceBytes {
+            error: Box::new(DecodeError::InvalidData {
+                message: "corrupt".to_owned(),
+            }),
+            bytes: crate::decode_types::DecodeFailureSourceBytes::none(),
+        })));
+        assert!(matches!(&wrapped, DecodeError::InvalidData { message } if message == "corrupt"));
+    }
+
+    #[test]
+    fn preview_error_mapping_io_family_is_io_with_kind() {
+        let io_error = mapped(PreviewError::Io(Arc::new(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "denied",
+        ))));
+        assert!(
+            matches!(&io_error, DecodeError::Io(e) if e.kind() == io::ErrorKind::PermissionDenied && e.to_string() == "denied")
+        );
+        let changed = mapped(PreviewError::SourceChanged {
+            path: "a.jpg".to_owned(),
+            phase: SourceChangePhase::Decode,
+        });
+        assert!(matches!(&changed, DecodeError::Io(e) if e.to_string() == "Image source changed during decode: a.jpg"));
+        let gone = mapped(PreviewError::Key(CacheKeyError::SourceNoLongerExists {
+            full_name: "a.jpg".to_owned(),
+        }));
+        assert!(matches!(&gone, DecodeError::Io(e) if e.kind() == io::ErrorKind::NotFound));
+        let too_long = mapped(PreviewError::InvalidPath(PathError::TooLong));
+        assert!(matches!(&too_long, DecodeError::Io(_)));
+        let key_too_long = mapped(PreviewError::Key(CacheKeyError::InvalidPath(PathError::TooLong)));
+        assert!(matches!(&key_too_long, DecodeError::Io(_)));
+        let bytes_io = mapped(PreviewError::SourceBytes(SourceBytesError::Io(Arc::new(
+            io::Error::new(io::ErrorKind::UnexpectedEof, "eof"),
+        ))));
+        assert!(matches!(&bytes_io, DecodeError::Io(e) if e.kind() == io::ErrorKind::UnexpectedEof));
+    }
+
+    #[test]
+    fn preview_error_mapping_argument_and_other_families() {
+        let blank = mapped(PreviewError::Key(CacheKeyError::InvalidPath(PathError::Argument)));
+        assert!(matches!(&blank, DecodeError::InvalidArgument { .. }));
+        let blank_path = mapped(PreviewError::InvalidPath(PathError::Argument));
+        assert!(matches!(&blank_path, DecodeError::InvalidArgument { .. }));
+        let bytes_arg = mapped(PreviewError::SourceBytes(SourceBytesError::Argument {
+            param_name: "path",
+        }));
+        assert!(matches!(&bytes_arg, DecodeError::InvalidArgument { message } if message.contains("path")));
+        let raw = mapped(PreviewError::RawFullDecodeKey);
+        assert!(
+            matches!(&raw, DecodeError::InvalidOperation { message } if message == PreviewError::RAW_FULL_DECODE_KEY_MESSAGE)
+        );
+        let oom = mapped(PreviewError::DiskEntry(Arc::new(PreviewCacheError::OutOfMemory(
+            "no memory".to_owned(),
+        ))));
+        assert!(matches!(&oom, DecodeError::OutOfMemory { message } if message.contains("no memory")));
+        let other_disk = mapped(PreviewError::DiskEntry(Arc::new(PreviewCacheError::InvalidData(
+            "x".to_owned(),
+        ))));
+        assert!(matches!(&other_disk, DecodeError::Other { .. }));
+        let panicked = mapped(PreviewError::Panicked("boom".to_owned()));
+        assert!(matches!(&panicked, DecodeError::Other { message } if message.contains("boom")));
+        let spawn = mapped(PreviewError::Spawn(Arc::new(io::Error::other("no thread"))));
+        assert!(matches!(&spawn, DecodeError::Other { .. }));
+    }
+
+    // No C# twin: every variant survives the rebuild with its message (DecodeError is not Clone).
+    #[test]
+    fn rebuild_decode_error_covers_every_variant() {
+        let m = || "m".to_owned();
+        for error in [
+            DecodeError::MemoryAdmission { message: m() },
+            DecodeError::DirectoryNotFound { message: m() },
+            DecodeError::OutOfMemory { message: m() },
+            DecodeError::NotSupported {
+                message: m(),
+                user_text: None,
+            },
+            DecodeError::InvalidCast { message: m() },
+            DecodeError::Overflow { message: m() },
+            DecodeError::Com {
+                hresult: -5,
+                message: m(),
+            },
+            DecodeError::DllNotFound { message: m() },
+            DecodeError::BadImageFormat { message: m() },
+            DecodeError::EntryPointNotFound { message: m() },
+            DecodeError::InvalidOperation { message: m() },
+            DecodeError::InvalidArgument { message: m() },
+            DecodeError::Disposed { message: m() },
+            DecodeError::Other { message: m() },
+        ] {
+            let rebuilt = rebuild_decode_error(&error);
+            assert_eq!(
+                std::mem::discriminant(&rebuilt),
+                std::mem::discriminant(&error),
+                "{error:?}"
+            );
+            assert_eq!(rebuilt.to_string(), error.to_string());
+        }
+        let com = rebuild_decode_error(&DecodeError::Com {
+            hresult: -5,
+            message: m(),
+        });
+        assert!(matches!(com, DecodeError::Com { hresult: -5, .. }));
     }
 }
