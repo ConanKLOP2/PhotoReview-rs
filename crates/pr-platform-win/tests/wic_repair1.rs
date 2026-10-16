@@ -203,3 +203,30 @@ fn scale_error_display_texts() {
     );
     assert!(ScaleError::TooLarge { byte_count: 5 }.to_string().contains("5 bytes"));
 }
+
+// ---- repair round 2 (W4-11e) ----
+
+const PLATFORM_NOT_SUPPORTED: i32 = 0x8013_1539_u32 as i32;
+const CUSTOM_ATTRIBUTE_FORMAT: i32 = 0x8013_1605_u32 as i32;
+
+#[test]
+fn com_hresult_of_dotnet_subclasses_of_whitelisted_types_is_an_entry_failure() {
+    // .NET 10 oracle: 0x80131539 = PlatformNotSupportedException (is NotSupportedException), 0x80131605 =
+    // CustomAttributeFormatException (is FormatException); both match DiskCacheStore.IsCacheEntryFailure.
+    for hr in [PLATFORM_NOT_SUPPORTED, CUSTOM_ATTRIBUTE_FORMAT] {
+        assert!(com_is_entry_failure(hr), "{hr:#x}");
+        assert!(CacheImageError::Com { hresult: hr }.is_entry_failure(), "{hr:#x}");
+    }
+}
+
+#[test]
+fn payload_len_limit_is_u32_max_inclusive() {
+    use pr_platform_win::wic::cache_image::check_payload_len;
+    assert!(check_payload_len(0).is_ok());
+    assert!(check_payload_len(u32::MAX as usize).is_ok());
+    assert_eq!(
+        check_payload_len(u32::MAX as usize + 1),
+        Err(CacheImageError::InvalidData(INVALID_DATA_TOO_LARGE))
+    );
+    assert!(check_payload_len(usize::MAX).is_err());
+}

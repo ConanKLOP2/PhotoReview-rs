@@ -194,10 +194,13 @@ pub enum CacheImageError {
 pub fn com_is_entry_failure(hresult: i32) -> bool {
     use super::interop::{DotnetExceptionKind as K, exception_kind_for_hresult};
     let kind = exception_kind_for_hresult(hresult).unwrap_or(K::Com);
+    // `NotSupportedException` includes `PlatformNotSupportedException` (0x80131539); `FormatException` includes
+    // `CustomAttributeFormatException` (0x80131605). Both verified against the .NET 10 oracle.
     matches!(
         kind,
-        K::Com | K::UnauthorizedAccess | K::NotSupported | K::Format | K::InvalidCast | K::Overflow
-    ) || kind.is_io()
+        K::Com | K::UnauthorizedAccess | K::Format | K::CustomAttributeFormat | K::InvalidCast | K::Overflow
+    ) || kind.is_not_supported()
+        || kind.is_io()
         || kind.is_argument()
         || kind.is_invalid_operation()
 }
@@ -236,6 +239,15 @@ impl CacheImageError {
             Self::Pixels(error) => !matches!(error, PixelBufferError::OutOfMemory { .. }),
         }
     }
+}
+
+/// WIC's memory stream takes a 32-bit length; a payload longer than `u32::MAX` bytes is not a cache entry (C# spans are
+/// `int`, so C# cannot even express it). Exactly `u32::MAX` is accepted.
+pub fn check_payload_len(len: usize) -> Result<(), CacheImageError> {
+    if len as u64 > u64::from(u32::MAX) {
+        return Err(CacheImageError::InvalidData(INVALID_DATA_TOO_LARGE));
+    }
+    Ok(())
 }
 
 /// The managed part of C# `Decode` that runs after `frame.GetSize` / `GetPixelFormat`, in the C# order:
@@ -511,11 +523,10 @@ pub fn decode(
 
 pub(crate) mod native {
     use super::{
-        CacheImageError, DPI, DecodeBox, E_FAIL, EncodeError, EncodePath, IMAGE_QUALITY_PROPERTY,
-        INVALID_DATA_TOO_LARGE, PROPBAG2_TYPE_DATA, PixelBuffer, PixelLayout, VENDOR_MICROSOFT, VT_R4,
-        WIC_BITMAP_ENCODER_NO_CACHE, WicCacheImageInfo, bgrx32_to_bgr24, guid_from_windows, guid_to_windows,
-        image_quality_value, is_out_of_memory, plan_decode, plan_encode_path, rows_per_band, source_format,
-        target_layout,
+        CacheImageError, DPI, DecodeBox, E_FAIL, EncodeError, EncodePath, IMAGE_QUALITY_PROPERTY, PROPBAG2_TYPE_DATA,
+        PixelBuffer, PixelLayout, VENDOR_MICROSOFT, VT_R4, WIC_BITMAP_ENCODER_NO_CACHE, WicCacheImageInfo,
+        bgrx32_to_bgr24, check_payload_len, guid_from_windows, guid_to_windows, image_quality_value, is_out_of_memory,
+        plan_decode, plan_encode_path, rows_per_band, source_format, target_layout,
     };
     use crate::wic::interop::{self, Com, ComStream, WicError};
     use pr_core::catalog::explorer_types::Guid;
@@ -575,10 +586,7 @@ pub(crate) mod native {
         expected_width: i32,
         expected_height: i32,
     ) -> Result<(PixelBuffer, WicCacheImageInfo), CacheImageError> {
-        // WIC's memory stream takes a 32-bit length; a payload this large is not a cache entry (C# spans are `int`).
-        if encoded.len() > u32::MAX as usize {
-            return Err(CacheImageError::InvalidData(INVALID_DATA_TOO_LARGE));
-        }
+        check_payload_len(encoded.len())?;
         // Locals drop in reverse order of declaration: converter, scaler, frame, decoder, stream, factory.
         let factory = interop::create_factory().map_err(|e| decode_error(&e))?;
         let stream = interop::create_stream(&factory).map_err(|e| decode_error(&e))?;
