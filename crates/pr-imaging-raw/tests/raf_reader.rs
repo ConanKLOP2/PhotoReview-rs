@@ -1558,3 +1558,60 @@ fn magic_is_exactly_sixteen_bytes_with_trailing_space() {
     assert_eq!(MAGIC[15], 0x20);
     assert_eq!(&MAGIC, b"FUJIFILMCCD-RAW ");
 }
+
+/// A zero-filled RAF image of `len` bytes with the magic and the CFA pointer pair (offset 92, length 96) set.
+fn raf_with_cfa_pointers(len: usize, cfa_offset: u32, cfa_length: u32) -> Vec<u8> {
+    let mut bytes = vec![0u8; len];
+    bytes[..16].copy_from_slice(&MAGIC);
+    bytes[92..96].copy_from_slice(&cfa_offset.to_be_bytes());
+    bytes[96..100].copy_from_slice(&cfa_length.to_be_bytes());
+    bytes
+}
+
+// C# ReadCfaSize: `cfaOffset == 0` means "no CFA header" even when the length is large and the file start would parse.
+#[test]
+fn cfa_offset_zero_is_no_cfa() {
+    // A 0x0100 record at byte 19541: a mutant that walks from the file start (count = 0x0100..., 256 records) finds it.
+    let mut bytes = raf_with_cfa_pointers(30000, 0, 30000);
+    bytes[19541..19545].copy_from_slice(&[0x01, 0x00, 0x00, 0x04]);
+    bytes[19545..19549].copy_from_slice(&[0, 100, 0, 200]);
+    assert_eq!(size_of(&read_ok(&bytes)), (0, 0));
+}
+
+/// Records every `read(offset, count)` call and forwards to an in-memory source.
+#[derive(Debug)]
+struct LoggingSource {
+    inner: InMemoryRawHeaderSource,
+    calls: Vec<(i64, i32)>,
+}
+
+impl RawHeaderSource for LoggingSource {
+    fn length(&self) -> i64 {
+        self.inner.length()
+    }
+
+    fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
+        self.calls.push((offset, count));
+        self.inner.read(offset, count)
+    }
+}
+
+// C# ReadCfaSize: the CFA bytes are read only when `cfaLength >= 4` (4 is read, 3 is not).
+#[test]
+fn cfa_length_boundary_read_pattern() {
+    for (cfa_length, expect_read) in [(3u32, false), (4, true)] {
+        let mut source = LoggingSource {
+            inner: InMemoryRawHeaderSource::new(raf_with_cfa_pointers(400, 200, cfa_length)),
+            calls: Vec::new(),
+        };
+        let result = RafContainerReader::new().read(&mut source, &CancelToken::new());
+        assert!(result.is_ok(), "length {cfa_length}: {result:?}");
+        let wanted = (200i64, i32::try_from(cfa_length).expect("small"));
+        assert_eq!(
+            source.calls.contains(&wanted),
+            expect_read,
+            "length {cfa_length}: {:?}",
+            source.calls
+        );
+    }
+}
