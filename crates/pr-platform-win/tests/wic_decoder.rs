@@ -1022,3 +1022,92 @@ fn source_stream_backend_starts_at_the_source_position() {
     assert_eq!(backend.read(&mut two).expect("read"), 2);
     assert_eq!(two, [7, 6]);
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 2 (verifier mutants on SourceStreamBackend: read_inner_at position, partial-copy fault, i64 seek cap)
+// ---------------------------------------------------------------------------------------------------------------
+
+fn ramp() -> Vec<u8> {
+    (0u8..64).collect()
+}
+
+// Kills `position + read` -> `position * read` in `read_inner_at`: the remembered source position after a direct
+// read must be its end, otherwise a later direct read at `position * read` skips its seek and returns wrong bytes.
+#[test]
+fn source_stream_backend_direct_read_after_direct_read_returns_the_target_bytes() {
+    let mut backend = SourceStreamBackend::with_buffer_size(Box::new(std::io::Cursor::new(ramp())), 4);
+    assert_eq!(read_exact_at(&mut backend, 2, 8), (2u8..10).collect::<Vec<_>>());
+    assert_eq!(
+        read_exact_at(&mut backend, 16, 8),
+        (16u8..24).collect::<Vec<_>>(),
+        "bytes at 16"
+    );
+    assert_eq!(
+        read_exact_at(&mut backend, 24, 8),
+        (24u8..32).collect::<Vec<_>>(),
+        "sequential direct read"
+    );
+}
+
+/// A source whose first read succeeds and every later read fails.
+struct FailsAfterFirstRead {
+    inner: std::io::Cursor<Vec<u8>>,
+    reads: usize,
+}
+
+impl std::io::Read for FailsAfterFirstRead {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.reads += 1;
+        if self.reads > 1 {
+            return Err(std::io::Error::other("disk fault"));
+        }
+        std::io::Read::read(&mut self.inner, buf)
+    }
+}
+
+impl std::io::Seek for FailsAfterFirstRead {
+    fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
+        std::io::Seek::seek(&mut self.inner, pos)
+    }
+}
+
+// Kills the `copied > 0` guard mutants in `read`: a read that copies the rest of the window and then meets a source
+// fault reports the copied bytes; with nothing copied the fault surfaces.
+#[test]
+fn source_stream_backend_fault_after_a_partial_window_copy_reports_the_copied_bytes() {
+    let source = FailsAfterFirstRead {
+        inner: std::io::Cursor::new(ramp()),
+        reads: 0,
+    };
+    let mut backend = SourceStreamBackend::with_buffer_size(Box::new(source), 4);
+    let mut head = [0u8; 2];
+    assert_eq!(backend.read(&mut head).expect("first read fills the window"), 2);
+    assert_eq!(head, [0, 1]);
+    let mut rest = [0u8; 3];
+    assert_eq!(backend.read(&mut rest).expect("the two window bytes are reported"), 2);
+    assert_eq!(&rest[..2], &[2, 3]);
+    let mut more = [0u8; 1];
+    let error = backend.read(&mut more).expect_err("nothing copied: the fault surfaces");
+    assert_eq!(error.to_string(), "disk fault");
+}
+
+// Kills the `i64::try_from(target).is_ok()` guard -> `true` mutant in `seek`: a target past `i64::MAX` is refused
+// with `InvalidInput` and the position is unchanged; `i64::MAX` itself is accepted.
+#[test]
+fn source_stream_backend_seek_past_i64_max_is_refused() {
+    let mut backend = SourceStreamBackend::with_buffer_size(Box::new(std::io::Cursor::new(ramp())), 4);
+    backend.seek(SeekFrom::Start(10)).expect("seek 10");
+    let error = backend.seek(SeekFrom::Current(i64::MAX)).expect_err("past i64::MAX");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    let error = backend.seek(SeekFrom::Start(u64::MAX)).expect_err("u64::MAX");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    let error = backend
+        .seek(SeekFrom::Start(i64::MAX as u64 + 1))
+        .expect_err("i64::MAX + 1");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    assert_eq!(backend.seek(SeekFrom::Current(0)).expect("position"), 10);
+    assert_eq!(
+        backend.seek(SeekFrom::Start(i64::MAX as u64)).expect("i64::MAX"),
+        i64::MAX as u64
+    );
+}
