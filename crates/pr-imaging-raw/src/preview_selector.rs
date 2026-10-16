@@ -11,11 +11,6 @@
 //!
 //! No unsafe, no I/O except through the injected header source. NEVER panics on hostile input: every index into data that
 //! came from a source or a payload is bounds-checked (`get`, `try_into`, the `pr_imaging::tiff` readers).
-//!
-//! ASSUMED sibling names (the lead reconciles the `use` lines at merge, nothing else changes):
-//! `crate::contracts::{EmbeddedPreview, EmbeddedPreviewKind, PreviewColorSpace, RawHeaderError, RawHeaderSource}` (W5-01b)
-//! and `crate::formats::limits::{MAX_JPEG_MARKER_SEGMENTS, MAX_JPEG_FILL_BYTES}` (W5-01a, both `i32`).
-#![allow(unused_variables, unused_imports, dead_code)] // D11: stub bodies are todo!(); the porter removes this line with the last todo!().
 
 use pr_imaging::decode_types::DecodeBox;
 
@@ -70,7 +65,7 @@ pub fn select_preview(
     request_box: DecodeBox,
     orientation: i32,
 ) -> Result<Option<EmbeddedPreview>, RawHeaderError> {
-    todo!("W5-11b: select_preview_resolved(..).map(|s| s.chosen)")
+    select_preview_resolved(source, previews, request_box, orientation).map(|s| s.chosen)
 }
 
 /// `PreviewSelector.SelectPreview(.., out resolvedPreviews)`. Steps (the order of reads is observable through the budget):
@@ -86,68 +81,184 @@ pub fn select_preview_resolved(
     request_box: DecodeBox,
     orientation: i32,
 ) -> Result<PreviewSelection, RawHeaderError> {
-    todo!("W5-11b")
+    let mut state = previews.to_vec();
+    let idx = select_preview_core(source, &mut state, request_box, orientation)?;
+    if let Some(i) = idx {
+        if state[i].kind == EmbeddedPreviewKind::Jpeg {
+            let resolved = resolve_color_space(source, &state[i])?;
+            state[i] = resolved;
+        }
+    }
+    let chosen = idx.map(|i| state[i].clone());
+    Ok(PreviewSelection {
+        chosen,
+        resolved_previews: state,
+    })
+}
+
+/// Index of the best candidate by `(score, length)`; ties go to the first in `order` (strict `>`).
+fn best_of(state: &[EmbeddedPreview], order: &[usize]) -> Option<usize> {
+    let mut best: Option<usize> = None;
+    for &i in order {
+        let key = (score(&state[i]), state[i].length);
+        match best {
+            Some(b) if key <= (score(&state[b]), state[b].length) => {}
+            _ => best = Some(i),
+        }
+    }
+    best
 }
 
 /// C# `SelectPreviewCore`. Returns the INDEX of the chosen preview in `state` (every walked preview has already been
 /// written back into `state[i]`), `None` for an empty list.
-///
-/// * empty -> `None`; no JPEG preview -> index 0 (unreachable while [`EmbeddedPreviewKind`] has one variant, keep the
-///   branch so a second variant ports 1:1); exactly one JPEG -> [`resolve_dimensions`] on it and return it (no box test).
-/// * several: JPEG candidates in `state` order, stable-sorted by `length` DESCENDING; [`resolve_dimensions`] on EVERY one in
-///   that order (known sizes cost nothing), writing each result back to its `state` slot.
-/// * `request_box.is_unbounded()` -> best by (`score`, `length`) descending, ties -> first in the length-descending order.
-/// * else candidates where the visible sides cover the box (sides swapped when `pr_imaging::orientation::is_transposed`),
-///   one-axis boxes test one axis; smallest by (`score`, `length`) ascending, ties -> first; none fit -> as unbounded.
 fn select_preview_core(
     source: &mut dyn RawHeaderSource,
     state: &mut [EmbeddedPreview],
     request_box: DecodeBox,
     orientation: i32,
 ) -> Result<Option<usize>, RawHeaderError> {
-    todo!("W5-11b")
+    if state.is_empty() {
+        return Ok(None);
+    }
+    let mut jpeg: Vec<usize> = (0..state.len())
+        .filter(|&i| state[i].kind == EmbeddedPreviewKind::Jpeg)
+        .collect();
+    if jpeg.is_empty() {
+        return Ok(Some(0));
+    }
+    if jpeg.len() == 1 {
+        let i = jpeg[0];
+        let resolved = resolve_dimensions(source, &state[i])?;
+        state[i] = resolved;
+        return Ok(Some(i));
+    }
+    // Stable sort by length descending: equal lengths keep input order. No early stop: every candidate is resolved.
+    jpeg.sort_by(|&a, &b| state[b].length.cmp(&state[a].length));
+    for &i in &jpeg {
+        let resolved = resolve_dimensions(source, &state[i])?;
+        state[i] = resolved;
+    }
+
+    if request_box.is_unbounded() {
+        return Ok(best_of(state, &jpeg));
+    }
+
+    let transposed = pr_imaging::orientation::is_transposed(orientation);
+    let (req_w, req_h) = (request_box.width, request_box.height);
+    let mut smallest: Option<usize> = None;
+    for &i in &jpeg {
+        let p = &state[i];
+        let (vis_w, vis_h) = if transposed {
+            (p.height, p.width)
+        } else {
+            (p.width, p.height)
+        };
+        let fits = if req_w > 0 && req_h > 0 {
+            vis_w >= req_w && vis_h >= req_h
+        } else if req_w > 0 {
+            vis_w >= req_w
+        } else if req_h > 0 {
+            vis_h >= req_h
+        } else {
+            true
+        };
+        if !fits {
+            continue;
+        }
+        let key = (score(p), p.length);
+        match smallest {
+            Some(b) if key >= (score(&state[b]), state[b].length) => {}
+            _ => smallest = Some(i),
+        }
+    }
+    if smallest.is_some() {
+        return Ok(smallest);
+    }
+    Ok(best_of(state, &jpeg))
 }
 
 /// C# `Score`: `(tier, value)` compared lexicographically. Known size (`width > 0 && height > 0`): tier 1 when
 /// `max(width, height) >= 1000`, else 0, value = `width * height` in `i64`. Unknown size: `(0, if length <= 0 { 0 } else
 /// { length.wrapping_mul(4) })` (wraps for lengths above `i64::MAX / 4`, e.g. `i64::MAX` scores `(0, -4)`; keep it).
 fn score(preview: &EmbeddedPreview) -> (i32, i64) {
-    todo!("W5-11b")
+    if preview.width > 0 && preview.height > 0 {
+        let area = i64::from(preview.width) * i64::from(preview.height);
+        let tier = i32::from(preview.width.max(preview.height) >= VIEWABLE_PREVIEW_LONG_SIDE);
+        return (tier, area);
+    }
+    let value = if preview.length <= 0 {
+        0
+    } else {
+        preview.length.wrapping_mul(UNKNOWN_AREA_PER_BYTE)
+    };
+    (0, value)
 }
 
 /// C# `ResolveDimensions`. Returns `preview` unchanged when `header_resolved` or both sides are positive, or when
-/// `offset < 0 || offset >= source.length() || length < 4`. Otherwise walks (`walk_jpeg_header(.., need_frame = true)`):
-/// * `Ok(walk)` -> a copy with `width`/`height` from the frame when present (else kept), `color_space` from the walk when
-///   not `Unknown` (else kept), `header_resolved = true`. ALSO when no frame was found (lossless/truncated): the colour
-///   space the walk saw is final.
-/// * `Err(InvalidData { io: None, .. })` (budget exhausted, past end, unreadable range) -> `preview` unchanged and NOT
-///   marked resolved, so a later call may retry.
-/// * any other `Err` (an I/O failure; also `ArgumentOutOfRange`/`Canceled`, which C# does not catch) -> propagated.
+/// `offset < 0 || offset >= source.length() || length < 4`. Otherwise walks (`need_frame = true`); a non-I/O
+/// `InvalidData` leaves the preview unchanged and NOT marked resolved, any other error propagates.
 fn resolve_dimensions(
     source: &mut dyn RawHeaderSource,
     preview: &EmbeddedPreview,
 ) -> Result<EmbeddedPreview, RawHeaderError> {
-    todo!("W5-11b")
+    if preview.header_resolved || (preview.width > 0 && preview.height > 0) {
+        return Ok(preview.clone());
+    }
+    if preview.offset < 0 || preview.offset >= source.length() || preview.length < 4 {
+        return Ok(preview.clone());
+    }
+    match walk_jpeg_header(source, preview.offset, preview.length, true) {
+        Ok(walk) => {
+            let mut result = preview.clone();
+            if let Some((w, h)) = walk.frame {
+                result.width = w;
+                result.height = h;
+            }
+            if walk.color_space != PreviewColorSpace::Unknown {
+                result.color_space = walk.color_space;
+            }
+            result.header_resolved = true;
+            Ok(result)
+        }
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(preview.clone()),
+        Err(e) => Err(e),
+    }
 }
 
 /// C# `ResolveColorSpace` (only for the CHOSEN preview): returns it unchanged when `header_resolved`, `color_space !=
-/// Unknown`, `offset < 0 || offset >= source.length()` or `length < 4`. Otherwise `walk_jpeg_header(.., need_frame =
-/// false)` (stops at the frame header) and returns a copy with the colour space (kept when the walk found none) and
-/// `header_resolved = true`. Same error mapping as [`resolve_dimensions`]: non-I/O `InvalidData` -> unchanged, the rest
-/// propagates.
+/// Unknown`, `offset < 0 || offset >= source.length()` or `length < 4`. Otherwise a colour-space-only walk and a copy with
+/// the colour space (kept when the walk found none) and `header_resolved = true`. Same error mapping as
+/// [`resolve_dimensions`].
 fn resolve_color_space(
     source: &mut dyn RawHeaderSource,
     preview: &EmbeddedPreview,
 ) -> Result<EmbeddedPreview, RawHeaderError> {
-    todo!("W5-11b")
+    if preview.header_resolved
+        || preview.color_space != PreviewColorSpace::Unknown
+        || preview.offset < 0
+        || preview.offset >= source.length()
+        || preview.length < 4
+    {
+        return Ok(preview.clone());
+    }
+    match walk_jpeg_header(source, preview.offset, preview.length, false) {
+        Ok(walk) => {
+            let mut result = preview.clone();
+            if walk.color_space != PreviewColorSpace::Unknown {
+                result.color_space = walk.color_space;
+            }
+            result.header_resolved = true;
+            Ok(result)
+        }
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(preview.clone()),
+        Err(e) => Err(e),
+    }
 }
 
 /// `PreviewSelector.TryReadJpegFrame(source, offset, length, out width, out height, out colorSpace)`: `Ok(Some(frame))` when
 /// the range `[offset, offset + length)` starts with SOI and its first frame header is SOF0/1/2 with non-zero size.
-/// `Ok(None)` for everything else that is not an error (no SOI, lossless/arithmetic/hierarchical frame, malformed or
-/// truncated segment, segment cap, fill cap, `length < 4`, `offset` outside the source). Does NOT check the sample
-/// precision (unlike the W5-02b `JpegMarkerProbe`). Unlike the probe it does NOT swallow source errors: budget exhaustion
-/// and I/O failures are `Err` (callers such as `reconcile_jpeg_size` and [`resolve_dimensions`] decide).
+/// `Ok(None)` for everything else that is not an error. Does NOT check the sample precision and does NOT swallow source
+/// errors.
 ///
 /// # Errors
 /// Whatever `source.read` returns.
@@ -156,13 +267,16 @@ pub fn try_read_jpeg_frame(
     offset: i64,
     length: i64,
 ) -> Result<Option<JpegFrame>, RawHeaderError> {
-    todo!("W5-11b: walk_jpeg_header(.., true) then map frame + color_space")
+    let walk = walk_jpeg_header(source, offset, length, true)?;
+    Ok(walk.frame.map(|(width, height)| JpegFrame {
+        width,
+        height,
+        color_space: walk.color_space,
+    }))
 }
 
 /// C# private `WalkJpeg(source, offset, length, needFrame, ..)`, public here so integration tests and the golden can see
-/// the colour space of a walk that found no frame. The loop is the spec (see the contract, "Semantics" 8):
-/// range check, SOI, then up to `MAX_JPEG_MARKER_SEGMENTS` iterations with the fill-byte / standalone / terminator /
-/// length / SOF / APP1 rules. `need_frame == false` stops at the first frame-header marker (colour-space-only walk).
+/// the colour space of a walk that found no frame. `need_frame == false` stops at the first frame-header marker.
 ///
 /// # Errors
 /// Whatever `source.read` returns.
@@ -172,39 +286,161 @@ pub fn walk_jpeg_header(
     length: i64,
     need_frame: bool,
 ) -> Result<JpegHeaderWalk, RawHeaderError> {
-    todo!("W5-11b")
+    let mut color_space = PreviewColorSpace::Unknown;
+    if length < 4 || offset < 0 || offset >= source.length() {
+        return Ok(JpegHeaderWalk {
+            frame: None,
+            color_space,
+        });
+    }
+    // Unchecked C# `long` arithmetic: the sum may wrap.
+    let end = offset.wrapping_add(length).min(source.length());
+    if end.wrapping_sub(offset) < 4 || source.read(offset, 2)? != [0xFF, 0xD8] {
+        return Ok(JpegHeaderWalk {
+            frame: None,
+            color_space,
+        });
+    }
+
+    let mut frame: Option<(i32, i32)> = None;
+    let mut pos = offset + 2;
+    let mut fill_bytes: i32 = 0;
+    let mut segment: i32 = 0;
+    while segment < MAX_JPEG_MARKER_SEGMENTS && pos + 4 <= end {
+        let head: [u8; 4] = match source.read(pos, 4)?.try_into() {
+            Ok(h) => h,
+            Err(_) => break,
+        };
+        if head[0] != 0xFF {
+            break;
+        }
+        let marker = head[1];
+        if marker == 0xFF {
+            // Fill byte: does not consume a segment iteration.
+            fill_bytes += 1;
+            if fill_bytes > MAX_JPEG_FILL_BYTES {
+                break;
+            }
+            pos += 1;
+            continue;
+        }
+        fill_bytes = 0;
+        if marker == 0x00 || marker == 0xDA || marker == 0xD9 {
+            break;
+        }
+        if marker == 0x01 || (0xD0..=0xD8).contains(&marker) {
+            pos += 2;
+            segment += 1;
+            continue;
+        }
+        let seg_len = (i32::from(head[2]) << 8) | i32::from(head[3]);
+        if seg_len < 2 || pos + 2 + i64::from(seg_len) > end {
+            break;
+        }
+        let payload_len = seg_len - 2;
+        if (0xC0..=0xCF).contains(&marker) && !matches!(marker, 0xC4 | 0xC8 | 0xCC) {
+            if !need_frame || marker > 0xC2 || payload_len < 5 {
+                break;
+            }
+            let bytes = source.read(pos + 4, 5)?;
+            if let Some(&[_, h1, h0, w1, w0]) = bytes.first_chunk::<5>() {
+                let height = (i32::from(h1) << 8) | i32::from(h0);
+                let width = (i32::from(w1) << 8) | i32::from(w0);
+                if width > 0 && height > 0 {
+                    frame = Some((width, height));
+                }
+            }
+            break;
+        }
+        if marker == 0xE1 && payload_len >= 14 && color_space == PreviewColorSpace::Unknown {
+            let payload = source.read(pos + 4, payload_len)?;
+            if is_adobe_rgb_exif(payload) {
+                color_space = PreviewColorSpace::AdobeRgb;
+                if !need_frame {
+                    break;
+                }
+            }
+        }
+        pos += 2 + i64::from(seg_len);
+        segment += 1;
+    }
+    Ok(JpegHeaderWalk { frame, color_space })
 }
 
-/// C# `IsAdobeRgbExif` (`internal`; `pub` + `#[doc(hidden)]` here because integration tests and the fuzz twin call it, and
-/// W4's lesson: cross-crate/test symbols are `pub` from the start). True when `payload` ("Exif\0\0" + TIFF) has
-/// IFD0 -> 0x8769 (LONG x 1) -> Exif IFD -> 0xA005 (LONG x 1) -> Interop IFD -> 0x0001 ASCII, count 4, inline `"R03\0"`.
-/// Anything malformed is `false`; never panics.
+/// C# `IsAdobeRgbExif` (`internal`; `pub` + `#[doc(hidden)]` here because integration tests and the fuzz twin call it).
+/// True when `payload` ("Exif\0\0" + TIFF) has IFD0 -> 0x8769 (LONG x 1) -> Exif IFD -> 0xA005 (LONG x 1) -> Interop IFD ->
+/// 0x0001 ASCII, count 4, inline `"R03\0"`. Anything malformed is `false`; never panics.
 #[doc(hidden)]
 #[must_use]
 pub fn is_adobe_rgb_exif(payload: &[u8]) -> bool {
-    todo!("W5-11b")
+    if payload.len() < 14 || !payload.starts_with(b"Exif\0\0") {
+        return false;
+    }
+    let tiff = &payload[6..];
+    let little = match (tiff[0], tiff[1]) {
+        (b'I', b'I') => true,
+        (b'M', b'M') => false,
+        _ => return false,
+    };
+    if read_u16_at(tiff, 2, little) != 42 {
+        return false;
+    }
+    let ifd0 = i64::from(read_u32_at(tiff, 4, little));
+    let Some(exif_ifd) = try_find_long_entry(tiff, ifd0, 0x8769, little) else {
+        return false;
+    };
+    let Some(interop_ifd) = try_find_long_entry(tiff, exif_ifd, 0xA005, little) else {
+        return false;
+    };
+    let Some(entry) = try_find_entry(tiff, interop_ifd, 0x0001, little) else {
+        return false;
+    };
+    read_u16_at(tiff, entry + 2, little) == 2
+        && read_u32_at(tiff, entry + 4, little) == 4
+        && entry + 12 <= tiff.len() as i64
+        && usize::try_from(entry + 8)
+            .ok()
+            .and_then(|s| tiff.get(s..s + 4))
+            .is_some_and(|b| b == b"R03\0")
 }
 
 /// C# `TryFindLongEntry`: the entry for `tag` in the IFD at `ifd_offset` must be type 4 (LONG) with count 1; returns its
 /// value (the pointed-to IFD offset, `u32` widened to `i64`).
 fn try_find_long_entry(tiff: &[u8], ifd_offset: i64, tag: u16, little: bool) -> Option<i64> {
-    todo!("W5-11b")
+    let entry = try_find_entry(tiff, ifd_offset, tag, little)?;
+    if read_u16_at(tiff, entry + 2, little) != 4 || read_u32_at(tiff, entry + 4, little) != 1 {
+        return None;
+    }
+    Some(i64::from(read_u32_at(tiff, entry + 8, little)))
 }
 
 /// C# `TryFindEntry`: `ifd_offset < 8 || ifd_offset + 2 > tiff.len()` -> `None`; scans the `count` (u16) entries, `None` as
 /// soon as one entry would end past `tiff.len()`, otherwise the offset of the FIRST entry with `tag`.
 fn try_find_entry(tiff: &[u8], ifd_offset: i64, tag: u16, little: bool) -> Option<i64> {
-    todo!("W5-11b")
+    let len = tiff.len() as i64;
+    if ifd_offset < 8 || ifd_offset + 2 > len {
+        return None;
+    }
+    let count = read_u16_at(tiff, ifd_offset, little);
+    for i in 0..i64::from(count) {
+        let entry = ifd_offset + 2 + 12 * i;
+        if entry + 12 > len {
+            return None;
+        }
+        if read_u16_at(tiff, entry, little) == tag {
+            return Some(entry);
+        }
+    }
+    None
 }
 
 /// `TiffStructure.ReadU16` at an `i64` offset that the callers already bounds-checked (a value that does not fit `i32` is
-/// outside any real payload and reads as 0, like the shared reader's out-of-range fallback). Use
-/// `pr_imaging::tiff::read_u16`.
+/// outside any real payload and reads as 0, like the shared reader's out-of-range fallback).
 fn read_u16_at(data: &[u8], offset: i64, little: bool) -> u16 {
-    todo!("W5-11b")
+    pr_imaging::tiff::read_u16(data, i32::try_from(offset).unwrap_or(i32::MAX), little)
 }
 
 /// As [`read_u16_at`] for `pr_imaging::tiff::read_u32`.
 fn read_u32_at(data: &[u8], offset: i64, little: bool) -> u32 {
-    todo!("W5-11b")
+    pr_imaging::tiff::read_u32(data, i32::try_from(offset).unwrap_or(i32::MAX), little)
 }
