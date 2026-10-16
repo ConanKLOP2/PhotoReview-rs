@@ -1,4 +1,4 @@
-//! Red tests for W4-11d `WicExifReader` (`crates/pr-platform-win/src/wic/exif_reader.rs`).
+﻿//! Red tests for W4-11d `WicExifReader` (`crates/pr-platform-win/src/wic/exif_reader.rs`).
 //!
 //! Port of the C# tests at baseline d92d6aae:
 //! * `tests/PhotoReview.Imaging.Tests/Decoding/WicMetadataIndependenceTests.cs`
@@ -977,4 +977,92 @@ fn decode_png_without_exif_container_has_no_exif() {
 
     assert_eq!(root, None);
     assert_eq!(read.exif, None);
+}
+
+// --- Repair round 1: mutants missed by the first verifier (raw reads, clear, trait-level orientation) ---
+mod repair_round_1 {
+    use pr_core::catalog::explorer_types::Guid;
+    use pr_imaging::exif_query::{JPEG_IFD_ROOT, TIFF_IFD_ROOT};
+    use pr_platform_win::wic::exif_reader::{
+        CONTAINER_FORMAT_JPEG, CONTAINER_FORMAT_TIFF, DecoderContainer, FrameMetadata, HResult, MetadataQueryReader,
+        PROP_VARIANT_DATA_OFFSET, PROP_VARIANT_SIZE, PropVariant, RawMemory, VariantMemory, exif_ifd_root_of,
+        read_frame_metadata, read_orientation,
+    };
+
+    struct FixedContainer(Guid);
+    impl DecoderContainer for FixedContainer {
+        fn container_format(&self) -> Result<Guid, HResult> {
+            Ok(self.0)
+        }
+    }
+
+    #[test]
+    fn exif_ifd_root_of_maps_jpeg_and_tiff() {
+        assert_eq!(
+            exif_ifd_root_of(&FixedContainer(CONTAINER_FORMAT_JPEG)),
+            Some(JPEG_IFD_ROOT)
+        );
+        assert_eq!(
+            exif_ifd_root_of(&FixedContainer(CONTAINER_FORMAT_TIFF)),
+            Some(TIFF_IFD_ROOT)
+        );
+    }
+
+    /// Answers the orientation query with VT_UI2 = 6 and the given HRESULT (S_OK, S_FALSE or a failure).
+    struct OrientationReader(HResult);
+    impl MetadataQueryReader for OrientationReader {
+        fn get_metadata_by_name(&self, name: &str, value: &mut PropVariant) -> HResult {
+            if name == "/app1/ifd/{ushort=274}" {
+                let pointer = value.as_mut_ptr();
+                // SAFETY: `pointer` addresses the 24-byte PROPVARIANT buffer; offsets 0..2 (vt) and 8..10 (value) are inside it.
+                unsafe {
+                    *pointer = 18; // vt = VT_UI2 (18)
+                    *pointer.add(PROP_VARIANT_DATA_OFFSET) = 6;
+                }
+                return self.0;
+            }
+            -1
+        }
+    }
+    struct OrientationFrame(HResult);
+    impl FrameMetadata for OrientationFrame {
+        type Reader = OrientationReader;
+        fn metadata_query_reader(&self) -> Result<OrientationReader, HResult> {
+            Ok(OrientationReader(self.0))
+        }
+    }
+
+    #[test]
+    fn read_orientation_through_reader_ok_and_s_false_and_failure() {
+        assert_eq!(read_orientation(&OrientationFrame(0)), 6);
+        assert_eq!(read_orientation(&OrientationFrame(1)), 6);
+        assert_eq!(read_orientation(&OrientationFrame(-1)), 1);
+        assert_eq!(read_frame_metadata(&OrientationFrame(0), true, None).orientation, 6);
+    }
+
+    #[test]
+    fn clear_zeroes() {
+        let mut bytes = [0u8; PROP_VARIANT_SIZE];
+        bytes[0] = 2;
+        bytes[8] = 7;
+        let mut variant = PropVariant::from_bytes(bytes);
+        variant.clear();
+        assert_eq!(variant.as_bytes(), &[0u8; PROP_VARIANT_SIZE]);
+    }
+
+    #[test]
+    fn raw_memory_reads() {
+        // SAFETY: every address passed below comes from a live local that is read inside its length.
+        let memory = unsafe { RawMemory::new() };
+        let ansi = b"Canon\0";
+        assert_eq!(memory.utf8_z(ansi.as_ptr() as usize), "Canon");
+        let wide: Vec<u16> = "Ab\u{e9}\0xyz".encode_utf16().collect();
+        assert_eq!(memory.utf16_z(wide.as_ptr() as usize), "Ab\u{e9}");
+        let u16s = [0x1234u16, 9];
+        assert_eq!(memory.u16_at(u16s.as_ptr() as usize), 0x1234);
+        let u32s = [0xDEAD_BEEFu32];
+        assert_eq!(memory.u32_at(u32s.as_ptr() as usize), 0xDEAD_BEEF);
+        let u64s = [0x0123_4567_89AB_CDEFu64];
+        assert_eq!(memory.u64_at(u64s.as_ptr() as usize), 0x0123_4567_89AB_CDEF);
+    }
 }
