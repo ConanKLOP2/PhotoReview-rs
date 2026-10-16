@@ -65,3 +65,9 @@
   `#[ignore]`d tests (journal 19, compaction 15, reconcile 2, startup_recovery 6, INV-6 equivalence 5) not run with `--include-ignored`.
 - C# moved past `d92d6aae` (external editors): NOT ported; P-17, patch WU W2-S1 after Wave 3.
 
+
+## Wave 4 integration (branch `integration/wave-4`, 2026-10-16)
+- Merged units: see docs/PARITY.md and docs/MULTI-AGENT-PLAN.md section 15. 11 units blocked, not merged.
+- Merged origin/master into the branch (docs only, no conflicts).
+- Gate (CARGO_TARGET_DIR=target-wave-4/integ): results recorded in the PR body; test failures are `todo!()` stubs of unmerged units.
+- Not run: `--include-ignored` native tests, mutation runs beyond those in unit verdicts, nothing for blocked units.

@@ -415,3 +415,13 @@ and an integrator merges finished units continuously (merge, workspace gate, del
 dir). Barriers stay only where a contract names a shared owner. At most 8 concurrent cargo builds, one target dir per
 unit. A failed unit blocks only its dependents.
 
+
+## 15. Lessons from Wave 4 (2026-10-16)
+
+- **Result:** 11 (imaging core) + 6 (cache/IO) + 5 (WIC) + 3 (service/preload) units merged on `integration/wave-4`; 11 units blocked and not merged (W4-01b, 02b, 03b, 04a, 04b, 06b, 10b, 12a, 14b, 14c, 14d).
+- **Blocked units leave red tests:** merged tests depend on `todo!()` stubs of unmerged units (decode_types, exif_summary, exif_query, preload_backoff, service/disk). The workspace test gate cannot be green until the blocked units land; contracts must state "test red until unit Y merges", and the integration order should merge the foundation units (W4-01b, W4-04a/b, W4-06b) first.
+- **FAIL verdicts merged anyway:** several units merged with FAIL verdicts or unfinished mutation runs (W4-15a 8 of 194 mutants). Mutation budget remains the bottleneck (same as Wave 3).
+- **PARITY.md conflicts again:** every integrator resolved by hand and left duplicate or stale Todo rows. The lead should own this file, or rows should be generated from per-unit status files.
+- **Cross-unit visibility:** `pub(crate)` helper (`exif_query::as_integer`) used by another crate broke `pr-platform-win`; contracts must list cross-crate symbols as `pub` up front.
+- **Verifier hygiene:** one verifier deleted other units' `%TEMP%/cargo-mutants-*` dirs; verifiers must use a unique temp dir. W4-15a-verify worktree and target dirs still need manual cleanup.
+- **Merge messages:** conflicted merges lacked the Co-Authored-By trailer.

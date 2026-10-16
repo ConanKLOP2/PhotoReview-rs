@@ -102,3 +102,7 @@ Rules (docs/MULTI-AGENT-PLAN.md §4):
 | `partial-cleanup` | W3-08 `remove_if_partial` / `is_same_file` | 26 cases: 17 cleanup, 9 same-file |
 
 Fixtures synced by `tools/sync-from-csharp.ps1` at `d92d6aae` (never hand-edited, P-15): `operations-legacy.jsonl`, `journal-older-build/*.jsonl`, `config-v1.json`, `config-v2.json`.
+
+## Wave 4 (imaging)
+
+Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b, 09, 10a, 11a-e, 12b/c, 14a, 15a/b, 16a/b) are listed in `docs/PARITY.md` per row (name and case count). Goldens for unmerged units (W4-01b, 02b, 03b, 04a/b, 06b, 10b, 12a, 14b/c/d) exist as contracts only; their consuming tests fail on `todo!()` until the unit merges. No pre-existing golden changed.
