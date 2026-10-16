@@ -119,6 +119,8 @@ version = "0.1.0"
 dependencies = [
  "pr-core",
  "pr-imaging",
+ "pr-test-support",
+ "serde_json",
  "windows",
  "windows-core",
 ]
