@@ -10,9 +10,6 @@
 //! by W4-11c/W4-11d. Tests of this file use a fake backend; the real-WIC differential tests are `#[ignore = "native"]`.
 //!
 //! Target path: `crates/pr-imaging/src/embedded_thumbnail.rs` (lead adds `pub mod embedded_thumbnail;`).
-// Porter: delete the next line when the bodies are filled in.
-#![allow(unused_variables, dead_code, clippy::todo)]
-#![allow(unused_imports)] // D11: the bodies use them; remove with the last `todo!()`.
 
 use std::fmt;
 use std::path::Path;
@@ -22,7 +19,11 @@ use pr_core::model::enums::DecoderBackend;
 
 use crate::decode_types::{DecodedImage, DecodedImageOptions};
 use crate::decoder_traits::PlatformImageCodec;
-use crate::pixels::{PixelBuffer, PixelLayout};
+use crate::orientation::is_transposed;
+use crate::pixels::{PixelBuffer, PixelLayout, apply_orientation};
+
+/// Read-ahead for the shared open (C# `FileStreamOptions` buffer, sequential scan; INV-8).
+const SHARED_READ_BUFFER: usize = 64 * 1024;
 
 /// EXIF thumbnails are about 160x120; anything above this many pixels is treated as corrupt
 /// (C# `MaxThumbnailPixels`, 4 MP = 16 MB of BGRA).
@@ -133,5 +134,72 @@ pub fn try_read(
     backend: &dyn EmbeddedThumbnailBackend,
     codec: &dyn PlatformImageCodec,
 ) -> Result<Option<DecodedImage>, BlankPath> {
-    todo!("W4-02b")
+    // C# ArgumentException.ThrowIfNullOrWhiteSpace(path) runs before the try block: a blank path is the caller's bug.
+    if path.to_string_lossy().trim().is_empty() {
+        return Err(BlankPath);
+    }
+    Ok(read_thumbnail(path, fs, backend, codec))
+}
+
+/// Every step after the blank-path check. Any failure is `None`; the frame (and with it the shared stream) is dropped
+/// when this returns, before the caller sees the result (contract note 3).
+fn read_thumbnail(
+    path: &Path,
+    fs: &dyn FileSystem,
+    backend: &dyn EmbeddedThumbnailBackend,
+    codec: &dyn PlatformImageCodec,
+) -> Option<DecodedImage> {
+    let stream = fs.open_read_shared(path, SHARED_READ_BUFFER).ok()?;
+    let mut frame = backend.open(stream).ok()??;
+
+    // Main size first: a side above i32::MAX is refused before the thumbnail is even fetched.
+    let (main_width, main_height) = frame.main_size().ok()?;
+    let main_width = i32::try_from(main_width).ok()?;
+    let main_height = i32::try_from(main_height).ok()?;
+
+    let mut bitmap = frame.thumbnail()?;
+    let (thumb_width, thumb_height) = bitmap.size().ok()?;
+    let thumb_width = i32::try_from(thumb_width).ok()?;
+    let thumb_height = i32::try_from(thumb_height).ok()?;
+    // The size gate precedes every allocation (C# MaxThumbnailPixels; WIC refuses big thumbnails anyway).
+    if !is_acceptable_size(thumb_width, thumb_height) {
+        return None;
+    }
+
+    let mut pixels = PixelBuffer::allocate(thumb_width, thumb_height, PixelLayout::Pbgra32).ok()?;
+    let stride = usize::try_from(thumb_width).ok()? * 4;
+    bitmap.copy_pbgra(pixels.bytes_mut().ok()?, stride).ok()?;
+
+    // Read after the copy, like C#. Infallible on the backend side (1 on any failure).
+    let orientation = frame.orientation();
+    let oriented = apply_orientation(pixels, orientation).ok()?;
+
+    let transposed = is_transposed(orientation);
+    let (original_width, original_height) = if transposed {
+        (main_height, main_width)
+    } else {
+        (main_width, main_height)
+    };
+    let pixel_width = oriented.width();
+    let pixel_height = oriented.height();
+    let estimated_bytes = oriented.byte_count();
+    let platform_image = codec.image_from_pixels(oriented).ok()?;
+
+    DecodedImage::new(
+        platform_image,
+        pixel_width,
+        pixel_height,
+        estimated_bytes,
+        DecodedImageOptions {
+            downscaled: true,
+            orientation,
+            // Deliberately the WPF label (cache identity, PARITY D-07); never WicDirect.
+            actual_backend: DecoderBackend::Wpf,
+            original_width,
+            original_height,
+            exif: None,
+            is_degraded_fallback: false,
+        },
+    )
+    .ok()
 }
