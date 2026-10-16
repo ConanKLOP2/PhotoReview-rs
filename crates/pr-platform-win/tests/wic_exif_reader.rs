@@ -16,6 +16,7 @@
 
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use pr_core::catalog::explorer_types::Guid;
 use pr_imaging::exif_query::{JPEG_IFD_ROOT, QueryValue, TIFF_IFD_ROOT};
@@ -27,8 +28,16 @@ use pr_platform_win::wic::exif_reader::{
     MetadataRead, PROP_VARIANT_SIZE, PropVariant, VT_VECTOR, VariantMemory, decode_variant,
     exif_ifd_root_for_container, exif_ifd_root_of, read_frame_metadata, read_metadata_values,
 };
+use pr_platform_win::wic::interop::{
+    Com, ComStream, create_decoder_from_stream, create_factory, get_frame, get_metadata_query_reader,
+};
 use pr_test_support::golden;
 use serde_json::{Value, json};
+use windows::Win32::Graphics::Imaging::{
+    IWICBitmapDecoder, IWICBitmapFrameDecode, IWICMetadataQueryReader, WICDecodeMetadataCacheOnDemand,
+};
+use windows::Win32::System::Com::StructuredStorage::PROPVARIANT;
+use windows::core::PCWSTR;
 
 /// `E_FAIL`, the HRESULT of a failing COM call.
 const E_FAIL: HResult = 0x8000_4005u32 as i32;
@@ -240,7 +249,9 @@ fn describe(value: Option<QueryValue>) -> (Value, Value) {
         Some(QueryValue::U16s(v)) => (json!("u16[]"), json!(v.iter().map(u16::to_string).collect::<Vec<_>>())),
         Some(QueryValue::U32s(v)) => (json!("u32[]"), json!(v.iter().map(u32::to_string).collect::<Vec<_>>())),
         Some(QueryValue::I64s(v)) => (json!("i64[]"), json!(v.iter().map(i64::to_string).collect::<Vec<_>>())),
-        Some(QueryValue::U64s(v)) => (json!("u64[]"), json!(v.iter().map(u64::to_string).collect::<Vec<_>>())),
+        // The oracle labels BOTH `long[]` and `ulong[]` vectors "i64[]" (values stay unsigned for the UI8 vector), so
+        // `U64s` is printed with the same label to compare exactly what the golden holds.
+        Some(QueryValue::U64s(v)) => (json!("i64[]"), json!(v.iter().map(u64::to_string).collect::<Vec<_>>())),
         Some(other) => panic!("unexpected decode result {other:?}"),
     }
 }
@@ -369,28 +380,193 @@ impl DecoderContainer for FakeDecoder {
     }
 }
 
+/// `IWICMetadataQueryReader` of the W4-11a wrapper as a [`MetadataQueryReader`].
+struct NativeReader(Com<IWICMetadataQueryReader>);
+
+impl MetadataQueryReader for NativeReader {
+    fn get_metadata_by_name(&self, name: &str, value: &mut PropVariant) -> HResult {
+        let wide: Vec<u16> = name.encode_utf16().chain(std::iter::once(0)).collect();
+        // SAFETY: `wide` is NUL-terminated and outlives the call; `value` is a live 24-byte, 8-byte aligned buffer, the
+        // size and alignment of a PROPVARIANT, that the callee fills.
+        let result = unsafe {
+            self.0
+                .GetMetadataByName(PCWSTR(wide.as_ptr()), value.as_mut_ptr().cast::<PROPVARIANT>())
+        };
+        match result {
+            Ok(()) => 0,
+            Err(error) => error.code().0,
+        }
+    }
+}
+
+/// A frame of the W4-11a wrapper as a [`FrameMetadata`].
+struct NativeFrame(Com<IWICBitmapFrameDecode>);
+
+impl FrameMetadata for NativeFrame {
+    type Reader = NativeReader;
+
+    fn metadata_query_reader(&self) -> Result<NativeReader, HResult> {
+        get_metadata_query_reader(&self.0)
+            .map(NativeReader)
+            .map_err(|error| error.hresult())
+    }
+}
+
+/// A decoder of the W4-11a wrapper as a [`DecoderContainer`].
+struct NativeDecoder(Com<IWICBitmapDecoder>);
+
+impl DecoderContainer for NativeDecoder {
+    fn container_format(&self) -> Result<Guid, HResult> {
+        // SAFETY: plain COM call on a live decoder interface, no pointers passed.
+        let guid = unsafe { self.0.GetContainerFormat() }.map_err(|error| error.code().0)?;
+        // .NET `Guid.ToByteArray()` order: the first three fields little endian, the last eight bytes as they are.
+        let mut bytes = [0u8; 16];
+        bytes[..4].copy_from_slice(&guid.data1.to_le_bytes());
+        bytes[4..6].copy_from_slice(&guid.data2.to_le_bytes());
+        bytes[6..8].copy_from_slice(&guid.data3.to_le_bytes());
+        bytes[8..].copy_from_slice(&guid.data4);
+        Ok(Guid(bytes))
+    }
+}
+
 /// Native read of frame 0 of `bytes` through the W4-11a wrappers: `exif_ifd_root_of` once, then
 /// `read_frame_metadata(frame, true, root)` for the same frame. Returns the root and the read.
-fn read_frame0_native(_bytes: &[u8]) -> (Option<&'static str>, MetadataRead) {
-    todo!(
-        "W4-11d porter: W4-11a create_factory, create_decoder_from_stream(ComStream::from_bytes), get_frame(0); \
-         adapters implement DecoderContainer / FrameMetadata over the wrappers; then exif_ifd_root_of + read_frame_metadata"
-    )
+fn read_frame0_native(bytes: &[u8]) -> (Option<&'static str>, MetadataRead) {
+    let factory = create_factory().expect("WIC factory");
+    let stream = ComStream::from_bytes(Arc::from(bytes));
+    let decoder = create_decoder_from_stream(&factory, &stream.istream(), WICDecodeMetadataCacheOnDemand)
+        .expect("decoder from stream");
+    let frame = get_frame(&decoder, 0).expect("frame 0");
+    let decoder = NativeDecoder(decoder);
+    let root = exif_ifd_root_of(&decoder);
+    let read = read_frame_metadata(&NativeFrame(frame), true, root);
+    (root, read)
+}
+
+/// Appends one JPEG segment `FF <marker> <length> <payload>`.
+fn jpeg_segment(out: &mut Vec<u8>, marker: u8, payload: &[u8]) {
+    out.extend_from_slice(&[0xFF, marker]);
+    out.extend_from_slice(&u16::try_from(payload.len() + 2).expect("segment length").to_be_bytes());
+    out.extend_from_slice(payload);
+}
+
+/// A little-endian TIFF/EXIF block: IFD0 with Make (ASCII) and Orientation = 6 (the APP1 payload after `Exif\0\0`).
+fn exif_block_with_make(make: &str) -> Vec<u8> {
+    let mut text = make.as_bytes().to_vec();
+    text.push(0);
+    let mut out = vec![b'I', b'I', 42, 0, 8, 0, 0, 0];
+    out.extend_from_slice(&2u16.to_le_bytes());
+    // Make (0x010F), ASCII (2), count, offset 38 = 8 + 2 + 2 * 12 + 4.
+    out.extend_from_slice(&0x010Fu16.to_le_bytes());
+    out.extend_from_slice(&2u16.to_le_bytes());
+    out.extend_from_slice(&u32::try_from(text.len()).expect("make length").to_le_bytes());
+    out.extend_from_slice(&38u32.to_le_bytes());
+    // Orientation (0x0112), SHORT (3), count 1, value 6.
+    out.extend_from_slice(&0x0112u16.to_le_bytes());
+    out.extend_from_slice(&3u16.to_le_bytes());
+    out.extend_from_slice(&1u32.to_le_bytes());
+    out.extend_from_slice(&[6, 0, 0, 0]);
+    out.extend_from_slice(&0u32.to_le_bytes());
+    out.extend_from_slice(&text);
+    out
 }
 
 /// A JFIF JPEG with an APP1 EXIF block whose IFD0 Make is `make` and whose orientation is 6 (contract open question 4).
-fn jpeg_with_make(_make: &str) -> Vec<u8> {
-    todo!("W4-11d porter: hand-built JFIF + APP1 bytes (Make, orientation 6), or a W4-03a fixture builder")
+/// The image is a valid 1x1 baseline grayscale JPEG (all-ones quantisation table, one-code Huffman tables).
+fn jpeg_with_make(make: &str) -> Vec<u8> {
+    let mut out = vec![0xFF, 0xD8];
+    let mut app1 = b"Exif\0\0".to_vec();
+    app1.extend_from_slice(&exif_block_with_make(make));
+    jpeg_segment(&mut out, 0xE1, &app1);
+    let mut dqt = vec![0u8];
+    dqt.extend_from_slice(&[1u8; 64]);
+    jpeg_segment(&mut out, 0xDB, &dqt);
+    jpeg_segment(&mut out, 0xC0, &[8, 0, 1, 0, 1, 1, 1, 0x11, 0]);
+    for class_and_id in [0x00u8, 0x10] {
+        let mut dht = vec![class_and_id, 1];
+        dht.extend_from_slice(&[0u8; 15]);
+        dht.push(0);
+        jpeg_segment(&mut out, 0xC4, &dht);
+    }
+    jpeg_segment(&mut out, 0xDA, &[1, 1, 0x00, 0, 63, 0]);
+    out.push(0x3F);
+    out.extend_from_slice(&[0xFF, 0xD9]);
+    out
 }
 
-/// A little-endian TIFF whose IFD0 Make is `make`.
-fn tiff_with_make(_make: &str) -> Vec<u8> {
-    todo!("W4-11d porter: hand-built TIFF bytes with IFD0 Make")
+/// A little-endian 1x1 grayscale TIFF whose IFD0 Make is `make`.
+fn tiff_with_make(make: &str) -> Vec<u8> {
+    let mut text = make.as_bytes().to_vec();
+    text.push(0);
+    const ENTRIES: u32 = 10;
+    let make_offset = 8 + 2 + ENTRIES * 12 + 4;
+    let pixel_offset = make_offset + u32::try_from(text.len()).expect("make length");
+    let entry = |tag: u16, kind: u16, count: u32, value: u32| -> Vec<u8> {
+        let mut e = Vec::new();
+        e.extend_from_slice(&tag.to_le_bytes());
+        e.extend_from_slice(&kind.to_le_bytes());
+        e.extend_from_slice(&count.to_le_bytes());
+        e.extend_from_slice(&value.to_le_bytes());
+        e
+    };
+    let mut out = vec![b'I', b'I', 42, 0, 8, 0, 0, 0];
+    out.extend_from_slice(&u16::try_from(ENTRIES).expect("entries").to_le_bytes());
+    out.extend(entry(256, 4, 1, 1)); // ImageWidth
+    out.extend(entry(257, 4, 1, 1)); // ImageLength
+    out.extend(entry(258, 3, 1, 8)); // BitsPerSample
+    out.extend(entry(259, 3, 1, 1)); // Compression: none
+    out.extend(entry(262, 3, 1, 1)); // Photometric: BlackIsZero
+    out.extend(entry(
+        271,
+        2,
+        u32::try_from(text.len()).expect("make length"),
+        make_offset,
+    )); // Make
+    out.extend(entry(273, 4, 1, pixel_offset)); // StripOffsets
+    out.extend(entry(277, 3, 1, 1)); // SamplesPerPixel
+    out.extend(entry(278, 4, 1, 1)); // RowsPerStrip
+    out.extend(entry(279, 4, 1, 1)); // StripByteCounts
+    out.extend_from_slice(&0u32.to_le_bytes());
+    out.extend_from_slice(&text);
+    out.push(0x80);
+    out
 }
 
-/// A minimal PNG (no EXIF container).
+/// A minimal 1x1 grayscale PNG (no EXIF container).
 fn png_bytes() -> Vec<u8> {
-    todo!("W4-11d porter: a minimal PNG, or a W4-03a fixture builder")
+    fn crc32(data: &[u8]) -> u32 {
+        let mut crc = 0xFFFF_FFFFu32;
+        for &byte in data {
+            crc ^= u32::from(byte);
+            for _ in 0..8 {
+                crc = if crc & 1 != 0 {
+                    (crc >> 1) ^ 0xEDB8_8320
+                } else {
+                    crc >> 1
+                };
+            }
+        }
+        !crc
+    }
+    fn chunk(out: &mut Vec<u8>, kind: &[u8; 4], data: &[u8]) {
+        out.extend_from_slice(&u32::try_from(data.len()).expect("chunk length").to_be_bytes());
+        let mut body = kind.to_vec();
+        body.extend_from_slice(data);
+        out.extend_from_slice(&body);
+        out.extend_from_slice(&crc32(&body).to_be_bytes());
+    }
+    let mut out = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+    chunk(&mut out, b"IHDR", &[0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0, 0, 0]);
+    // zlib: header, one stored block holding the filter byte and one pixel, Adler-32 of [0, 0] = 0x00030001.
+    chunk(
+        &mut out,
+        b"IDAT",
+        &[
+            0x78, 0x01, 0x01, 0x02, 0x00, 0xFD, 0xFF, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01,
+        ],
+    );
+    chunk(&mut out, b"IEND", &[]);
+    out
 }
 
 // ---------------------------------------------------------------------------------------------------------------
