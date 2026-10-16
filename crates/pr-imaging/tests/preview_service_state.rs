@@ -1018,3 +1018,222 @@ fn current_cache_key_for_entry_matches_every_preview_current_key_golden_case() {
         failures.join("\n")
     );
 }
+
+// ---- repair 2: public behaviour pinned (constants, texts, spawner, RAW full-decode switch) ---------------------------
+
+// C# constructor defaults: `capacityBytes = 16L * 1024 * 1024 * 1024`, `diskCacheCapacityBytes = 4L * 1024 * 1024 * 1024`.
+#[test]
+fn default_capacities_are_16_gib_ram_and_4_gib_disk() {
+    use pr_imaging::service::{
+        DEFAULT_CAPACITY_BYTES, DEFAULT_DISK_CACHE_CAPACITY_BYTES, DEFAULT_ORIGINAL_DIMENSIONS_CAPACITY,
+        VIEWER_DECODE_SLOTS,
+    };
+    assert_eq!(DEFAULT_CAPACITY_BYTES, 17_179_869_184);
+    assert_eq!(DEFAULT_DISK_CACHE_CAPACITY_BYTES, 4_294_967_296);
+    assert_eq!(DEFAULT_ORIGINAL_DIMENSIONS_CAPACITY, 200_000);
+    assert_eq!(VIEWER_DECODE_SLOTS, 2);
+
+    let config = PreviewServiceConfig::new(
+        Arc::new(ReviewMetrics::new()),
+        Arc::new(|| false),
+        Arc::new(|| DecodeBox::new(512, 512)),
+        Arc::new(support::preview_service::PixelsCodec),
+        Arc::new(support::preview_service::FakePayloadCodec),
+    );
+    assert_eq!(config.capacity_bytes, 17_179_869_184);
+    assert_eq!(config.disk_cache_capacity_bytes, 4_294_967_296);
+}
+
+// C# `UserFacingError.Localized` keys of the two "source changed" sentences.
+#[test]
+fn source_change_phase_catalog_keys() {
+    assert_eq!(
+        SourceChangePhase::Decode.catalog_key(),
+        "err.io.sourceChangedDuringDecode"
+    );
+    assert_eq!(
+        SourceChangePhase::ReadingDimensions.catalog_key(),
+        "err.io.sourceChangedReadingDimensions"
+    );
+}
+
+#[test]
+fn preview_error_catalog_key_only_for_source_changed() {
+    let decode_phase = PreviewError::SourceChanged {
+        path: "C:\\x\\a.jpg".to_owned(),
+        phase: SourceChangePhase::Decode,
+    };
+    assert_eq!(
+        decode_phase.catalog_key(),
+        Some(("err.io.sourceChangedDuringDecode", "C:\\x\\a.jpg"))
+    );
+    let dims = PreviewError::SourceChanged {
+        path: "b.nef".to_owned(),
+        phase: SourceChangePhase::ReadingDimensions,
+    };
+    assert_eq!(
+        dims.catalog_key(),
+        Some(("err.io.sourceChangedReadingDimensions", "b.nef"))
+    );
+    assert_eq!(PreviewError::Canceled.catalog_key(), None);
+    assert_eq!(PreviewError::RawFullDecodeKey.catalog_key(), None);
+    assert_eq!(PreviewError::Panicked("boom".to_owned()).catalog_key(), None);
+}
+
+// C# `Exception.Message` texts of the errors this service throws itself; inner errors keep their own text.
+#[test]
+fn preview_error_display_is_the_csharp_message() {
+    assert_eq!(PreviewError::Canceled.to_string(), "The operation was canceled.");
+    assert_eq!(
+        PreviewError::SourceChanged {
+            path: "C:\\p\\a.jpg".to_owned(),
+            phase: SourceChangePhase::Decode
+        }
+        .to_string(),
+        "Image source changed during decode: C:\\p\\a.jpg"
+    );
+    assert_eq!(
+        PreviewError::SourceChanged {
+            path: "C:\\p\\a.nef".to_owned(),
+            phase: SourceChangePhase::ReadingDimensions
+        }
+        .to_string(),
+        "Image source changed while reading dimensions: C:\\p\\a.nef"
+    );
+    assert_eq!(
+        PreviewError::RawFullDecodeKey.to_string(),
+        "DecodeAndCache never handles RawFullDecode keys; use DecodeOriginalAsync."
+    );
+    assert_eq!(
+        PreviewError::RawFullDecodeKey.to_string(),
+        PreviewError::RAW_FULL_DECODE_KEY_MESSAGE
+    );
+    assert_eq!(
+        PreviewError::Panicked("worker panicked".to_owned()).to_string(),
+        "worker panicked"
+    );
+    assert_eq!(
+        PreviewError::Io(Arc::new(std::io::Error::other("disk gone"))).to_string(),
+        "disk gone"
+    );
+    assert_eq!(
+        PreviewError::Spawn(Arc::new(std::io::Error::other("no threads"))).to_string(),
+        "no threads"
+    );
+    let inner = DecodeError::InvalidOperation {
+        message: "inner text".to_owned(),
+    };
+    let expected = inner.to_string();
+    assert!(!expected.is_empty());
+    assert_eq!(decode(inner).to_string(), expected);
+    assert_eq!(
+        PreviewError::InvalidPath(PathError::TooLong).to_string(),
+        PathError::TooLong.to_string()
+    );
+}
+
+#[test]
+fn preview_service_build_error_display_texts() {
+    assert_eq!(
+        PreviewServiceBuildError::NoDecoder.to_string(),
+        "PreviewImageService needs a decoder or a decoder factory (the platform default is wired by the composition root)."
+    );
+    assert_eq!(
+        PreviewServiceBuildError::OriginalDimensionsCapacity(0).to_string(),
+        "Capacity must be positive. (Parameter 'originalDimensionsCapacity') Actual value was 0."
+    );
+    assert_eq!(
+        PreviewServiceBuildError::Capacity(-1).to_string(),
+        "Capacity must be positive. (Parameter 'capacityBytes') Actual value was -1."
+    );
+    assert_eq!(
+        PreviewServiceBuildError::Spawn(std::io::Error::other("no threads")).to_string(),
+        "A preview-service background thread could not be started: no threads"
+    );
+}
+
+// C# `BoundedLruCache` constructor: `originalDimensionsCapacity <= 0` throws; the Rust build reports the value.
+#[test]
+fn original_dimensions_capacity_zero_is_a_build_error() {
+    let root = TempRoot::new("preview-state-dims-capacity");
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.original_dimensions_capacity = 0;
+
+    match PreviewImageService::new(config) {
+        Err(error @ PreviewServiceBuildError::OriginalDimensionsCapacity(0)) => {
+            assert!(error.to_string().contains("Actual value was 0."), "{error}");
+        }
+        other => panic!("expected OriginalDimensionsCapacity(0), got {:?}", other.map(|_| ())),
+    }
+}
+
+// Contract semantics 11: one named, detached thread per job; the job really runs.
+#[test]
+fn std_thread_spawner_runs_the_job_on_a_named_thread() {
+    use pr_imaging::service::{DecodeThreadKind, DecodeThreadSpawner, StdThreadSpawner};
+    let cases = [
+        (DecodeThreadKind::Preview, "PhotoReviewRs.PreviewDecode"),
+        (DecodeThreadKind::Viewer, "PhotoReviewRs.ViewerDecode"),
+        (DecodeThreadKind::Original, "PhotoReviewRs.OriginalDecode"),
+        (DecodeThreadKind::PersistWorker, "PhotoReviewRs.PreviewPersist"),
+        (DecodeThreadKind::StartupCleanup, "PhotoReviewRs.PreviewCacheCleanup"),
+    ];
+    for (kind, expected) in cases {
+        let (sender, receiver) = std::sync::mpsc::channel();
+        StdThreadSpawner
+            .spawn(
+                kind,
+                Box::new(move || {
+                    let name = std::thread::current().name().map(str::to_owned);
+                    let _ = sender.send(name);
+                }),
+            )
+            .expect("spawn");
+        let name = receiver.recv_timeout(TIMEOUT).expect("the job ran");
+        assert_eq!(name.as_deref(), Some(expected), "{kind:?}");
+    }
+}
+
+// C# `IsRawFullDecodeRequest`: `_rawFullDecoder != null && _isRawFullDecodeEnabled() && IsRawPath(path)`.
+#[test]
+fn is_raw_full_decode_request_needs_decoder_switch_and_raw_extension() {
+    let root = TempRoot::new("preview-state-raw-full");
+    let build = |raw_decoder: bool, enabled: bool, calls: Arc<AtomicUsize>| {
+        let mut config = base_config(root.path(), FakeDecoder::new());
+        if raw_decoder {
+            config.raw_full_decoder = Some(FakeDecoder::new());
+        }
+        config.is_raw_full_decode_enabled = Some(Arc::new(move || {
+            calls.fetch_add(1, Ordering::SeqCst);
+            enabled
+        }));
+        service_with(config)
+    };
+
+    let calls = Arc::new(AtomicUsize::new(0));
+    let service = build(true, true, calls.clone());
+    assert!(service.is_raw_full_decode_request("C:\\p\\a.NEF"));
+    assert!(service.is_raw_full_decode_request("C:\\p\\a.dng"));
+    assert!(!service.is_raw_full_decode_request("C:\\p\\a.jpg"));
+    assert_eq!(calls.load(Ordering::SeqCst), 3);
+
+    let calls = Arc::new(AtomicUsize::new(0));
+    let service = build(true, false, calls.clone());
+    assert!(!service.is_raw_full_decode_request("C:\\p\\a.nef"));
+    assert!(!service.is_raw_full_decode_request("C:\\p\\a.jpg"));
+
+    // No RAW full decoder: false, and the enabled source is never read (C# `&&` short-circuit).
+    let calls = Arc::new(AtomicUsize::new(0));
+    let service = build(false, true, calls.clone());
+    assert!(!service.is_raw_full_decode_request("C:\\p\\a.nef"));
+    assert!(!service.is_raw_full_decode_request("C:\\p\\a.jpg"));
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
+
+// C# `ActiveViewerDecodes` starts at 0 (no viewer decode runs on a fresh service).
+#[test]
+fn active_viewer_decodes_is_zero_on_a_fresh_service() {
+    let root = TempRoot::new("preview-state-active-viewer");
+    let service = service_with(base_config(root.path(), FakeDecoder::new()));
+    assert_eq!(service.active_viewer_decodes(), 0);
+}

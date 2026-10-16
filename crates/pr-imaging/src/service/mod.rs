@@ -1106,4 +1106,192 @@ mod white_box_tests {
 
         assert!(!service.has_inflight_preview(&key));
     }
+
+    // ---- repair 2: the cache seeded white-box with a local `DecodedImageView` (no W4-01b / W4-14b body needed) ----
+
+    /// A cached preview whose `estimated_bytes` is chosen by the test.
+    struct FakeImage {
+        platform: PlatformImage,
+        bytes: i64,
+    }
+
+    impl DecodedImageView for FakeImage {
+        fn pixel_width(&self) -> i32 {
+            4
+        }
+        fn pixel_height(&self) -> i32 {
+            4
+        }
+        fn downscaled(&self) -> bool {
+            false
+        }
+        fn orientation(&self) -> i32 {
+            1
+        }
+        fn estimated_bytes(&self) -> i64 {
+            self.bytes
+        }
+        fn platform_image(&self) -> &PlatformImage {
+            &self.platform
+        }
+    }
+
+    fn fake(bytes: i64) -> PreviewImage {
+        let pixels = PixelBuffer::allocate(4, 4, PixelLayout::Bgr32).expect("test buffer");
+        Arc::new(FakeImage {
+            platform: PlatformImage::Pixels(Arc::new(pixels)),
+            bytes,
+        })
+    }
+
+    fn file(root: &TempRoot, name: &str) -> String {
+        let path = root.join(name);
+        std::fs::write(&path, [1u8, 2, 3, 4]).expect("write source file");
+        path.to_string_lossy().into_owned()
+    }
+
+    fn publish(service: &PreviewImageService, key: &ImageCacheKey, image: &PreviewImage) {
+        let epoch = service.inner.current_epoch();
+        assert!(service.inner.publish_if_current(key.clone(), image.clone(), epoch));
+    }
+
+    // C# `CacheCount` / `CacheBytes` / `TryGetCachedPreview` x2 / `IPreloadTarget.CachedPreviewBytes` over a seeded cache.
+    #[test]
+    fn seeded_cache_reports_count_bytes_and_hits() {
+        let root = TempRoot::new("preview-white-box-reads");
+        let path_a = file(&root, "a.jpg");
+        let path_b = file(&root, "b.jpg");
+        let service = service(&root);
+        let key_a = service.get_current_cache_key(&path_a).expect("key a");
+        let key_b = service.get_current_cache_key(&path_b).expect("key b");
+        let other_box = service
+            .get_current_cache_key_for_box(&path_a, DecodeBox::new(300, 200))
+            .expect("key a, other box");
+        let image_a = fake(100);
+        let image_b = fake(250);
+        assert_eq!(service.cache_count(), 0);
+        assert_eq!(service.cache_bytes(), 0);
+
+        publish(&service, &key_a, &image_a);
+        publish(&service, &key_b, &image_b);
+
+        assert_eq!(service.cache_count(), 2);
+        assert_eq!(service.cache_bytes(), 350);
+        let hit = service.try_get_cached_preview(&key_a).expect("a is cached");
+        assert!(Arc::ptr_eq(&hit, &image_a));
+        let hit = service
+            .try_get_cached_preview_path(&path_b)
+            .expect("b is cached by path");
+        assert!(Arc::ptr_eq(&hit, &image_b));
+        assert_eq!(service.cached_preview_bytes(&key_a), Some(100));
+        assert_eq!(service.cached_preview_bytes(&key_b), Some(250));
+        assert!(service.try_get_cached_preview(&other_box).is_none());
+        assert_eq!(service.cached_preview_bytes(&other_box), None);
+    }
+
+    // C# `EvictCachedPath`: only the evicted path's entries go (every box), the callback gets the normalized path once,
+    // the epoch and the original dimensions are kept.
+    #[test]
+    fn evict_cached_path_removes_only_that_paths_entries_and_calls_back() {
+        let root = TempRoot::new("preview-white-box-evict");
+        let path_a = file(&root, "a.jpg");
+        let path_b = file(&root, "b.jpg");
+        let service = service(&root);
+        let key_a = service.get_current_cache_key(&path_a).expect("key a");
+        let key_a_small = service
+            .get_current_cache_key_for_box(&path_a, DecodeBox::new(128, 128))
+            .expect("key a, small box");
+        let key_b = service.get_current_cache_key(&path_b).expect("key b");
+        let image_b = fake(70);
+        publish(&service, &key_a, &fake(10));
+        publish(&service, &key_a_small, &fake(20));
+        publish(&service, &key_b, &image_b);
+        service
+            .inner
+            .original_dimensions
+            .set(ImageCacheKey::create_original(&key_a), (6000, 4000));
+        let epoch = service.inner.current_epoch();
+        let seen = Mutex::new(Vec::<String>::new());
+        let callback = |normalized: &str| lock(&seen).push(normalized.to_owned());
+
+        service
+            .evict_cached_path(&path_a.to_lowercase(), Some(&callback))
+            .expect("evict");
+
+        assert_eq!(service.cache_count(), 1);
+        assert_eq!(service.cache_bytes(), 70);
+        assert!(service.try_get_cached_preview(&key_a).is_none());
+        assert!(service.try_get_cached_preview(&key_a_small).is_none());
+        let kept = service.try_get_cached_preview(&key_b).expect("b is kept");
+        assert!(Arc::ptr_eq(&kept, &image_b));
+        assert_eq!(*lock(&seen), vec![key_a.path().to_owned()]);
+        assert_eq!(service.inner.current_epoch(), epoch);
+        assert_eq!(service.try_get_known_original_dimensions(&key_a), Some((6000, 4000)));
+    }
+
+    // C# `TryGetKnownOriginalDimensions`: looked up under `ImageCacheKey.CreateOriginal(currentKey)`; cleared by
+    // `ClearCache`.
+    #[test]
+    fn known_original_dimensions_are_read_under_the_original_key() {
+        let root = TempRoot::new("preview-white-box-dims");
+        let path_a = file(&root, "a.jpg");
+        let path_b = file(&root, "b.jpg");
+        let service = service(&root);
+        let key_a = service.get_current_cache_key(&path_a).expect("key a");
+        let key_b = service.get_current_cache_key(&path_b).expect("key b");
+        assert_eq!(service.try_get_known_original_dimensions(&key_a), None);
+
+        service
+            .inner
+            .original_dimensions
+            .set(ImageCacheKey::create_original(&key_a), (6000, 4000));
+
+        assert_eq!(service.try_get_known_original_dimensions(&key_a), Some((6000, 4000)));
+        assert_eq!(service.try_get_known_original_dimensions(&key_b), None);
+        service.clear_cache();
+        assert_eq!(service.try_get_known_original_dimensions(&key_a), None);
+    }
+
+    // INV-2 with a local image: publish under the current epoch stores, every clear bumps by one and empties the cache,
+    // an old epoch is refused, and the epoch wraps at `i64::MAX` (D3).
+    #[test]
+    fn publish_if_current_and_clear_cache_follow_the_epoch() {
+        let root = TempRoot::new("preview-white-box-epoch-fake");
+        let path = file(&root, "a.jpg");
+        let service = service(&root);
+        let key = service.get_current_cache_key(&path).expect("key");
+        assert_eq!(service.inner.current_epoch(), 0);
+
+        assert!(service.inner.publish_if_current(key.clone(), fake(40), 0));
+        assert_eq!(service.cache_count(), 1);
+        assert_eq!(service.cache_bytes(), 40);
+        assert!(!service.inner.publish_if_current(key.clone(), fake(40), 1));
+        assert!(!service.inner.publish_if_current(key.clone(), fake(40), -1));
+
+        service.clear_cache();
+        assert_eq!(service.inner.current_epoch(), 1);
+        assert_eq!(service.cache_count(), 0);
+        assert_eq!(service.cache_bytes(), 0);
+        assert!(!service.inner.publish_if_current(key.clone(), fake(40), 0));
+        assert_eq!(service.cache_count(), 0);
+
+        service.clear_cache();
+        assert_eq!(service.inner.current_epoch(), 2);
+        assert!(service.inner.publish_if_current(key.clone(), fake(40), 2));
+        assert_eq!(service.cache_count(), 1);
+
+        service.inner.cache_epoch.store(i64::MAX, Ordering::SeqCst);
+        service.clear_cache();
+        assert_eq!(service.inner.current_epoch(), i64::MIN);
+        assert_eq!(service.cache_count(), 0);
+    }
+
+    // C# `ActiveViewerDecodes` reads the counter W4-14b maintains.
+    #[test]
+    fn active_viewer_decodes_reads_the_counter() {
+        let root = TempRoot::new("preview-white-box-active");
+        let service = service(&root);
+        service.inner.active_viewer_decodes.store(3, Ordering::SeqCst);
+        assert_eq!(service.active_viewer_decodes(), 3);
+    }
 }
