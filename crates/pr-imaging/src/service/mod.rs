@@ -907,6 +907,8 @@ pub fn resolve_capacity(
         None => ", source-bytes cache off".to_owned(),
         Some(_) => format!(", source-bytes cache {} MiB", source / MIB),
     };
+    // Mutation note: `physical_bytes >= 0` is an equivalent mutant (0 bytes makes `preview_bytes_for_percent` fail,
+    // which falls through to the byte branch below, the same result as C#).
     if let Some(requested_percent) = ram_percent
         && physical_bytes > 0
     {
@@ -1296,6 +1298,129 @@ mod white_box_tests {
         let service = service(&root);
         service.inner.active_viewer_decodes.store(3, Ordering::SeqCst);
         assert_eq!(service.active_viewer_decodes(), 3);
+    }
+
+    /// How long a gated action is given to (wrongly) run while the test holds the lifecycle gate.
+    const GATE_PROBE: Duration = Duration::from_millis(500);
+
+    /// Runs `action` on a helper thread and returns the channel its result arrives on, once the helper is running.
+    fn on_helper<T: Send + 'static>(action: impl FnOnce() -> T + Send + 'static) -> std::sync::mpsc::Receiver<T> {
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let (started_sender, started) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let _ = started_sender.send(());
+            let _ = sender.send(action());
+        });
+        started
+            .recv_timeout(Duration::from_secs(10))
+            .expect("the helper thread started");
+        receiver
+    }
+
+    // INV-2: the epoch compare of `publish_if_current` happens under the lifecycle gate. A publisher that started under
+    // epoch 0 and reaches the gate while a clear holds it must see the bumped epoch afterwards and refuse (a compare
+    // before taking the gate, or no gate at all, would store the stale image).
+    #[test]
+    fn publish_if_current_compares_the_epoch_under_the_lifecycle_gate() {
+        let root = TempRoot::new("preview-white-box-publish-gate");
+        let path = file(&root, "a.jpg");
+        let service = Arc::new(service(&root));
+        let key = service.get_current_cache_key(&path).expect("key");
+        let gate = lock(&service.inner.lifecycle_gate);
+        let worker = service.clone();
+        let published = on_helper(move || worker.inner.publish_if_current(key, fake(10), 0));
+
+        // Time for the publisher to reach the gate (a compare before the gate has seen epoch 0 by then).
+        assert!(
+            published.recv_timeout(GATE_PROBE).is_err(),
+            "publish ran without the gate"
+        );
+        // What `clear_cache` does under the gate.
+        service.inner.bump_epoch_under_gate();
+        service.inner.cache.clear();
+        drop(gate);
+
+        let stored = published
+            .recv_timeout(Duration::from_secs(10))
+            .expect("publish returned");
+        assert!(!stored, "a publish of the old epoch was stored after the clear");
+        assert_eq!(service.cache_count(), 0);
+    }
+
+    // INV-2: `clear_cache` bumps the epoch and empties the RAM cache only under the lifecycle gate.
+    #[test]
+    fn clear_cache_bumps_and_clears_under_the_lifecycle_gate() {
+        let root = TempRoot::new("preview-white-box-clear-gate");
+        let path = file(&root, "a.jpg");
+        let service = Arc::new(service(&root));
+        let key = service.get_current_cache_key(&path).expect("key");
+        publish(&service, &key, &fake(10));
+        let gate = lock(&service.inner.lifecycle_gate);
+        let worker = service.clone();
+        let cleared = on_helper(move || worker.clear_cache());
+
+        assert!(
+            cleared.recv_timeout(GATE_PROBE).is_err(),
+            "clear_cache ran without the gate"
+        );
+        assert_eq!(service.inner.current_epoch(), 0);
+        assert_eq!(service.cache_count(), 1);
+        drop(gate);
+
+        cleared
+            .recv_timeout(Duration::from_secs(10))
+            .expect("clear_cache returned");
+        assert_eq!(service.inner.current_epoch(), 1);
+        assert_eq!(service.cache_count(), 0);
+    }
+
+    // C# `EvictCachedPath`: the removal and the `alsoInvalidate` callback run inside the lifecycle lock.
+    #[test]
+    fn evict_cached_path_removes_and_calls_back_under_the_lifecycle_gate() {
+        let root = TempRoot::new("preview-white-box-evict-gate");
+        let path = file(&root, "a.jpg");
+        let service = Arc::new(service(&root));
+        let key = service.get_current_cache_key(&path).expect("key");
+        publish(&service, &key, &fake(10));
+        let calls = Arc::new(AtomicI32::new(0));
+        let gate = lock(&service.inner.lifecycle_gate);
+        let worker = service.clone();
+        let counter = calls.clone();
+        let evicted = on_helper(move || {
+            let callback = |_: &str| {
+                counter.fetch_add(1, Ordering::SeqCst);
+            };
+            worker.evict_cached_path(&path, Some(&callback)).is_ok()
+        });
+
+        assert!(evicted.recv_timeout(GATE_PROBE).is_err(), "evict ran without the gate");
+        assert_eq!(service.cache_count(), 1);
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
+        drop(gate);
+
+        assert!(evicted.recv_timeout(Duration::from_secs(10)).expect("evict returned"));
+        assert_eq!(service.cache_count(), 0);
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+    }
+
+    // Semantics 12 (no C# twin): dropping the service completes the persist queue, so the persist workers drain it, exit
+    // and release the shared state. Without the `complete()` the workers would block in `pop` forever and keep it alive.
+    #[test]
+    fn dropping_the_service_completes_the_persist_queue_so_the_workers_release_the_state() {
+        let root = TempRoot::new("preview-white-box-drop");
+        let service = service(&root);
+        let state = Arc::downgrade(&service.inner);
+
+        drop(service);
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(10);
+        while state.upgrade().is_some() && std::time::Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert!(
+            state.upgrade().is_none(),
+            "the persist workers still hold the service state 10 s after the drop"
+        );
     }
 }
 

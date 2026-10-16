@@ -34,14 +34,15 @@ use pr_imaging::ram_budget::{bytes_for_percent, clamp_cache_percent, minimum_cac
 use pr_imaging::service::SourceChangePhase;
 use pr_imaging::service::handle::PreviewHandle;
 use pr_imaging::service::{
-    PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError, PreviewServiceConfig, resolve_capacity,
-    source_kind_for,
+    DecodeThreadKind, DecodeThreadSpawner, PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError,
+    PreviewServiceConfig, StdThreadSpawner, resolve_capacity, source_kind_for,
 };
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};
 use pr_test_support::{LogLevel, RecordingLog, TempRoot};
 use serde_json::Value;
 use support::preview_service::{
-    CountingFactory, FakeDecoder, GIB, NeverDecoder, PHYSICAL_32_GIB, TIMEOUT, box_source, config as base_config, lock,
+    CountingFactory, FakeDecoder, GIB, MIB, NeverDecoder, PHYSICAL_32_GIB, TIMEOUT, box_source, config as base_config,
+    lock,
 };
 
 // ---- helpers --------------------------------------------------------------------------------------------------------
@@ -1170,7 +1171,6 @@ fn original_dimensions_capacity_zero_is_a_build_error() {
 // Contract semantics 11: one named, detached thread per job; the job really runs.
 #[test]
 fn std_thread_spawner_runs_the_job_on_a_named_thread() {
-    use pr_imaging::service::{DecodeThreadKind, DecodeThreadSpawner, StdThreadSpawner};
     let cases = [
         (DecodeThreadKind::Preview, "PhotoReviewRs.PreviewDecode"),
         (DecodeThreadKind::Viewer, "PhotoReviewRs.ViewerDecode"),
@@ -1236,4 +1236,233 @@ fn active_viewer_decodes_is_zero_on_a_fresh_service() {
     let root = TempRoot::new("preview-state-active-viewer");
     let service = service_with(base_config(root.path(), FakeDecoder::new()));
     assert_eq!(service.active_viewer_decodes(), 0);
+}
+
+// ---- repair 3: mutation killers (open verdict of the first pass: surviving mutants and the Drop persist-queue case) ----
+
+/// The `disable_disk_cache` value the service resolved, read from its `Debug` output (the field is private).
+fn disk_cache_disabled(service: &PreviewImageService) -> bool {
+    let text = format!("{service:?}");
+    if text.contains("disable_disk_cache: true") {
+        true
+    } else if text.contains("disable_disk_cache: false") {
+        false
+    } else {
+        panic!("Debug output without the disk switch: {text}")
+    }
+}
+
+// C# `_disableDiskCache = disableDiskCacheOverride ?? (diskCacheCapacityBytes <= 0 || PHOTOREVIEW_DIAG_DISABLE_DISKCACHE)`
+// (D10, F-IMG-4, trap 8: `Some(false)` beats a zero capacity and the diagnostic switch).
+#[test]
+fn disk_cache_switch_follows_override_then_capacity_then_diagnostic_variable() {
+    use pr_core::diagnostics::diag_options::DiagOptions;
+    let root = TempRoot::new("preview-state-disk-switch");
+    // (override, disk capacity, diagnostic switch, expected "disabled")
+    let cases = [
+        (None, 4 * GIB, false, false),
+        (None, 1, false, false),
+        (None, 0, false, true),
+        (None, -1, false, true),
+        (None, 4 * GIB, true, true),
+        (None, 0, true, true),
+        (Some(false), 0, true, false),
+        (Some(false), 4 * GIB, false, false),
+        (Some(true), 4 * GIB, false, true),
+    ];
+    for (index, (override_value, capacity, diag_disable, expected)) in cases.into_iter().enumerate() {
+        let dir = root.join(format!("case-{index}"));
+        let mut config = base_config(&dir, FakeDecoder::new());
+        config.disable_disk_cache_override = override_value;
+        config.disk_cache_capacity_bytes = capacity;
+        config.diag = Some(Arc::new(DiagOptions {
+            disable_disk_cache: diag_disable,
+            ..DiagOptions::default()
+        }));
+        let service = service_with(config);
+        if !expected {
+            // The startup cleanup runs while the disk cache is on: let it finish before the directory goes away.
+            assert!(service.wait_startup_cleanup(TIMEOUT), "case {index}: startup cleanup");
+        }
+
+        assert_eq!(
+            disk_cache_disabled(&service),
+            expected,
+            "case {index}: override {override_value:?}, capacity {capacity}, diag {diag_disable}"
+        );
+    }
+}
+
+// C# `DiskDirectory`: the configured directory, else the app's own cache directory (R0002: `PhotoReviewRs\cache`).
+#[test]
+fn disk_directory_is_the_configured_one_or_the_app_cache_directory() {
+    let root = TempRoot::new("preview-state-disk-dir");
+    let configured = root.join("previews");
+    let service = service_with(base_config(&configured, FakeDecoder::new()));
+    assert_eq!(service.disk_directory(), configured.as_path());
+
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.disk_cache_directory = None;
+    // Disabled: nothing is written to (or cleaned in) the real app cache directory.
+    config.disable_disk_cache_override = Some(true);
+    let service = service_with(config);
+    assert_eq!(
+        service.disk_directory(),
+        pr_core::app_paths::AppPaths::from_environment()
+            .preview_cache_dir
+            .as_path()
+    );
+}
+
+// The `Debug` impls name their type and the effective values (no C# twin; a `Debug` that prints nothing hides them).
+#[test]
+fn debug_output_names_the_type_and_the_effective_values() {
+    let root = TempRoot::new("preview-state-debug");
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.capacity_bytes = 3 * MIB;
+    let config_text = format!("{config:?}");
+    assert!(config_text.starts_with("PreviewServiceConfig"), "{config_text}");
+    assert!(config_text.contains("capacity_bytes: 3145728"), "{config_text}");
+    assert!(
+        config_text.contains("disk_cache_capacity_bytes: 4294967296"),
+        "{config_text}"
+    );
+
+    let service = service_with(config);
+    let service_text = format!("{service:?}");
+    assert!(service_text.starts_with("PreviewImageService"), "{service_text}");
+    assert!(service_text.contains("capacity_bytes: 3145728"), "{service_text}");
+
+    let first = service.subscribe_cache_cleared(Arc::new(|| {}));
+    let second = service.subscribe_cache_cleared(Arc::new(|| {}));
+    let first_text = format!("{first:?}");
+    let second_text = format!("{second:?}");
+    assert!(first_text.starts_with("CacheClearedSubscription"), "{first_text}");
+    assert_ne!(first_text, second_text, "each subscription has its own id");
+}
+
+// C# `CacheCleared` is a multicast delegate: handlers run in subscription order; dropping one subscription removes only
+// that handler (trap 10: a `Vec`, not a `HashMap`).
+#[test]
+fn cache_cleared_listeners_run_in_subscription_order_and_unsubscribe_one_by_one() {
+    let root = TempRoot::new("preview-state-listener-order");
+    let service = service_with(base_config(root.path(), FakeDecoder::new()));
+    let order = Arc::new(Mutex::new(Vec::<u32>::new()));
+    let mut subscriptions = Vec::new();
+    for tag in 1..=4u32 {
+        let sink = order.clone();
+        subscriptions.push(service.subscribe_cache_cleared(Arc::new(move || lock(&sink).push(tag))));
+    }
+
+    service.clear_cache();
+    assert_eq!(*lock(&order), vec![1, 2, 3, 4]);
+
+    lock(&order).clear();
+    let third = subscriptions.remove(2);
+    drop(third);
+    service.clear_cache();
+    assert_eq!(*lock(&order), vec![1, 2, 4]);
+}
+
+// R0003 / semantics 7: the listeners run with no service lock held, so a listener may subscribe, unsubscribe or clear
+// again. Run on a helper thread with the hang guard: a lock held across the call would deadlock.
+#[test]
+fn cache_cleared_listener_may_reenter_the_service() {
+    let root = TempRoot::new("preview-state-listener-reentry");
+    let service = Arc::new(service_with(base_config(root.path(), FakeDecoder::new())));
+    let calls = Arc::new(AtomicUsize::new(0));
+    let weak = Arc::downgrade(&service);
+    let counter = calls.clone();
+    let subscription = service.subscribe_cache_cleared(Arc::new(move || {
+        let call = counter.fetch_add(1, Ordering::SeqCst);
+        if call == 0
+            && let Some(service) = weak.upgrade()
+        {
+            let extra = service.subscribe_cache_cleared(Arc::new(|| {}));
+            drop(extra);
+            service.clear_cache();
+        }
+    }));
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let worker = service.clone();
+    std::thread::spawn(move || {
+        worker.clear_cache();
+        let _ = sender.send(());
+    });
+
+    if receiver.recv_timeout(TIMEOUT).is_err() {
+        // A deadlocked helper still holds the listener lock: dropping the subscription would block this thread too.
+        std::mem::forget(subscription);
+        std::mem::forget(service);
+        panic!("clear_cache with a re-entrant listener did not finish within {TIMEOUT:?}");
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+    drop(subscription);
+}
+
+// C# `EvictCachedPath`: `_sourceBytesCache?.Evict(path)` (a moved/deleted file must not keep its raw bytes in RAM).
+#[test]
+fn evict_cached_path_also_evicts_the_source_bytes_of_that_path_only() {
+    let root = TempRoot::new("preview-state-evict-source-bytes");
+    let evicted = file_in(&root, "a.jpg");
+    let kept = file_in(&root, "b.jpg");
+    let source = Arc::new(SourceBytesCache::new(64 * 1024 * 1024, PHYSICAL_32_GIB, None).expect("source-bytes cache"));
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.source_bytes_cache = Some(source.clone());
+    let service = service_with(config);
+    source.get_or_read(std::path::Path::new(&evicted)).expect("read a");
+    source.get_or_read(std::path::Path::new(&kept)).expect("read b");
+    assert_eq!(source.count(), 2);
+
+    service.evict_cached_path(&evicted, None).expect("evict");
+
+    assert_eq!(source.count(), 1);
+}
+
+/// Starts the first persist worker (and reports when its job returned), then refuses every later thread.
+struct FailSecondSpawner {
+    started: Mutex<usize>,
+    finished: Mutex<Option<std::sync::mpsc::Sender<()>>>,
+}
+
+impl DecodeThreadSpawner for FailSecondSpawner {
+    fn spawn(&self, kind: DecodeThreadKind, job: Box<dyn FnOnce() + Send + 'static>) -> std::io::Result<()> {
+        let mut started = lock(&self.started);
+        *started += 1;
+        if *started > 1 {
+            return Err(std::io::Error::other("no more threads"));
+        }
+        let sender = lock(&self.finished).take().expect("one sender");
+        StdThreadSpawner.spawn(
+            kind,
+            Box::new(move || {
+                job();
+                let _ = sender.send(());
+            }),
+        )
+    }
+}
+
+// A background thread that cannot start fails the build with `Spawn`, and the worker that did start is told to finish
+// (the persist queue is completed) instead of blocking forever with the service state.
+#[test]
+fn new_with_a_failing_spawner_is_a_spawn_error_and_the_started_worker_exits() {
+    let root = TempRoot::new("preview-state-spawn-fail");
+    let (sender, receiver) = std::sync::mpsc::channel();
+    let spawner = Arc::new(FailSecondSpawner {
+        started: Mutex::new(0),
+        finished: Mutex::new(Some(sender)),
+    });
+    let mut config = base_config(root.path(), FakeDecoder::new());
+    config.spawner = Some(spawner);
+
+    match PreviewImageService::new(config) {
+        Err(error @ PreviewServiceBuildError::Spawn(_)) => {
+            assert!(error.to_string().ends_with("no more threads"), "{error}");
+        }
+        other => panic!("expected Spawn, got {:?}", other.map(|_| ())),
+    }
+    receiver
+        .recv_timeout(TIMEOUT)
+        .expect("the started persist worker exited");
 }
