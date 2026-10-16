@@ -9,7 +9,8 @@
 //! - [`Com`]: an owned, counted COM reference (C# `WicCom.Wrap/WrapOrNull/Release/OutstandingOnThisThread`),
 //!   which also turns the `windows` crate's "S_OK with a null out object" error (HRESULT 0) into C#'s `E_FAIL`;
 //! - the `WicComExtensions` helpers (one function per C# extension method);
-//! - [`create_factory`] / [`check_factory_result`] (`WICCreateImagingFactory_Proxy`, no `CoInitialize` needed);
+//! - [`create_factory`] / [`check_factory_result`] (`WICCreateImagingFactory_Proxy`, after
+//!   [`ensure_com_initialized`] puts the thread in the MTA);
 //! - [`ComStream`]: the COM `IStream` over a Rust stream (C# `ManagedIStream`);
 //! - [`exception_kind_for_hresult`]: which .NET exception `Marshal.GetExceptionForHR(hr, -1)` makes of a failing
 //!   HRESULT. Every C# WIC call throws through that mapping, and the fallback whitelist (W4-12b, INV-12) decides on
@@ -17,23 +18,23 @@
 //!
 //! All `unsafe` of the WIC port lives in `pr_platform_win::wic`; every block carries a `// SAFETY:` comment.
 
-// Stub: bodies are todo!() until W4-11a is ported; the porter removes this line.
-#![allow(dead_code, unused_variables, clippy::missing_safety_doc)]
-
 use std::any::Any;
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::ffi::c_void;
 use std::fmt;
 use std::fs::File;
 use std::io::{self, Cursor, SeekFrom};
 use std::marker::PhantomData;
 use std::ops::Deref;
-use std::sync::{Arc, Mutex};
+use std::ptr;
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
+use windows::Win32::Foundation::RPC_E_CHANGED_MODE;
 use windows::Win32::System::Com::{
-    ISequentialStream_Impl, IStream, IStream_Impl, LOCKTYPE, STATFLAG, STATSTG, STGC, STREAM_SEEK,
+    COINIT_MULTITHREADED, CoInitializeEx, CoUninitialize, ISequentialStream_Impl, IStream, IStream_Impl, LOCKTYPE,
+    STATFLAG, STATSTG, STGC, STREAM_SEEK,
 };
-use windows_core::{ComObject, HRESULT, Interface, implement};
+use windows_core::{ComObject, HRESULT, IUnknown, IUnknown_Vtbl, Interface, implement};
 
 pub use windows::Win32::Graphics::Imaging::{
     IWICBitmapDecoder, IWICBitmapFlipRotator, IWICBitmapFrameDecode, IWICBitmapScaler, IWICBitmapSource,
@@ -223,33 +224,78 @@ pub enum DotnetExceptionKind {
 impl DotnetExceptionKind {
     /// The .NET `Type.FullName` (what the golden records), e.g. `"System.Runtime.InteropServices.COMException"`.
     pub fn type_name(self) -> &'static str {
-        todo!("W4-11a: one arm per variant")
+        match self {
+            Self::Com => "System.Runtime.InteropServices.COMException",
+            Self::OutOfMemory => "System.OutOfMemoryException",
+            Self::Argument => "System.ArgumentException",
+            Self::ArgumentOutOfRange => "System.ArgumentOutOfRangeException",
+            Self::InvalidCast => "System.InvalidCastException",
+            Self::NullReference => "System.NullReferenceException",
+            Self::NotImplemented => "System.NotImplementedException",
+            Self::NotSupported => "System.NotSupportedException",
+            Self::InvalidOperation => "System.InvalidOperationException",
+            Self::UnauthorizedAccess => "System.UnauthorizedAccessException",
+            Self::FileNotFound => "System.IO.FileNotFoundException",
+            Self::DirectoryNotFound => "System.IO.DirectoryNotFoundException",
+            Self::DriveNotFound => "System.IO.DriveNotFoundException",
+            Self::PathTooLong => "System.IO.PathTooLongException",
+            Self::EndOfStream => "System.IO.EndOfStreamException",
+            Self::Io => "System.IO.IOException",
+            Self::FileLoad => "System.IO.FileLoadException",
+            Self::OperationCanceled => "System.OperationCanceledException",
+            Self::Overflow => "System.OverflowException",
+            Self::Arithmetic => "System.ArithmeticException",
+            Self::DivideByZero => "System.DivideByZeroException",
+            Self::Format => "System.FormatException",
+            Self::IndexOutOfRange => "System.IndexOutOfRangeException",
+            Self::ArrayTypeMismatch => "System.ArrayTypeMismatchException",
+            Self::BadImageFormat => "System.BadImageFormatException",
+            Self::DllNotFound => "System.DllNotFoundException",
+            Self::EntryPointNotFound => "System.EntryPointNotFoundException",
+            Self::MissingMethod => "System.MissingMethodException",
+            Self::ObjectDisposed => "System.ObjectDisposedException",
+            Self::Timeout => "System.TimeoutException",
+            Self::PlatformNotSupported => "System.PlatformNotSupportedException",
+            Self::StackOverflow => "System.StackOverflowException",
+            Self::Security => "System.Security.SecurityException",
+            Self::System => "System.SystemException",
+            Self::Exception => "System.Exception",
+        }
     }
 
     /// C# `ex is ArgumentException` (the type or a .NET subclass, e.g. `ArgumentOutOfRangeException`). W4-11c has
     /// `catch (ArgumentException)` arms; the golden's `base_types` pins every `is_*` answer.
     pub fn is_argument(self) -> bool {
-        todo!("W4-11a")
+        matches!(self, Self::Argument | Self::ArgumentOutOfRange)
     }
 
     /// C# `ex is IOException` (`FileNotFound`, `DirectoryNotFound`, `PathTooLong`, `EndOfStream`, ... per golden).
     pub fn is_io(self) -> bool {
-        todo!("W4-11a")
+        matches!(
+            self,
+            Self::Io
+                | Self::FileNotFound
+                | Self::DirectoryNotFound
+                | Self::DriveNotFound
+                | Self::PathTooLong
+                | Self::EndOfStream
+                | Self::FileLoad
+        )
     }
 
     /// C# `ex is NotSupportedException` (also `PlatformNotSupportedException`).
     pub fn is_not_supported(self) -> bool {
-        todo!("W4-11a")
+        matches!(self, Self::NotSupported | Self::PlatformNotSupported)
     }
 
     /// C# `ex is InvalidOperationException` (also `ObjectDisposedException`).
     pub fn is_invalid_operation(self) -> bool {
-        todo!("W4-11a")
+        matches!(self, Self::InvalidOperation | Self::ObjectDisposed)
     }
 
     /// C# `ex is ArithmeticException` (also `OverflowException`, `DivideByZeroException`).
     pub fn is_arithmetic(self) -> bool {
-        todo!("W4-11a")
+        matches!(self, Self::Arithmetic | Self::Overflow | Self::DivideByZero)
     }
 }
 
@@ -257,7 +303,47 @@ impl DotnetExceptionKind {
 /// exception kind. Table-driven (CoreCLR `rexcep.h` order: first matching row wins); the golden
 /// `wic-hresult-exception` is the authority, every HRESULT in it must map exactly.
 pub fn exception_kind_for_hresult(hr: i32) -> Option<DotnetExceptionKind> {
-    todo!("W4-11a: table from the golden; unknown failing codes -> Com")
+    use DotnetExceptionKind as K;
+    if hr >= 0 {
+        return None;
+    }
+    // The rows below are exactly the specific types the golden records; every other failing code is a
+    // COMException (CoreCLR's default), e.g. all WINCODEC_ERR_*, STG_E_FILENOTFOUND, E_FAIL, E_UNEXPECTED.
+    Some(match hr as u32 {
+        0x8000_4001 => K::NotImplemented,
+        0x8000_4002 => K::InvalidCast,
+        0x8000_4003 => K::NullReference,
+        0x8007_0005 => K::UnauthorizedAccess,
+        0x8007_000E => K::OutOfMemory,
+        0x8007_0057 => K::Argument,
+        0x8000_0013 | 0x8013_1622 => K::ObjectDisposed,
+        0x8007_0002 | 0x8007_0015 | 0x8007_0035 | 0x8007_0043 | 0x8007_007E | 0x800A_0035 => K::FileNotFound,
+        0x8003_0003 | 0x8007_0003 | 0x800A_004C => K::DirectoryNotFound,
+        0x8007_000B | 0x8007_00C1 | 0x8007_0570 => K::BadImageFormat,
+        0x8007_0020 | 0x8007_0021 | 0x8007_03EE | 0x8013_1621 => K::FileLoad,
+        0x8007_0026 => K::EndOfStream,
+        0x8007_00CE => K::PathTooLong,
+        0x8007_0216 => K::Arithmetic,
+        0x8007_03E9 => K::StackOverflow,
+        0x8013_1500 => K::Exception,
+        0x8013_1501 => K::System,
+        0x8013_1502 => K::ArgumentOutOfRange,
+        0x8013_1503 => K::ArrayTypeMismatch,
+        0x8013_1508 => K::IndexOutOfRange,
+        0x8013_1509 => K::InvalidOperation,
+        0x8013_1513 => K::MissingMethod,
+        0x8013_1515 => K::NotSupported,
+        0x8013_1516 => K::Overflow,
+        0x8013_1523 => K::EntryPointNotFound,
+        0x8013_1524 => K::DllNotFound,
+        0x8013_1537 => K::Format,
+        0x8013_1539 => K::PlatformNotSupported,
+        0x8013_153B => K::OperationCanceled,
+        0x800A_0039 | 0x8013_1620 => K::Io,
+        0x800A_0046 | 0x8013_150A => K::Security,
+        0x8002_0012 => K::DivideByZero,
+        _ => K::Com,
+    })
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -285,28 +371,42 @@ pub enum WicError {
 impl WicError {
     /// `Exception.HResult` of the C# exception: `hresult`, or `E_NOINTERFACE` for [`WicError::NoInterface`].
     pub fn hresult(&self) -> i32 {
-        todo!("W4-11a")
+        match self {
+            Self::Com { hresult } => *hresult,
+            Self::NoInterface { .. } => E_NOINTERFACE,
+        }
     }
 
     /// The .NET exception type C# would throw: `exception_kind_for_hresult(hresult)` (a failing code always maps; a
     /// non-failing code, impossible by construction, gives [`DotnetExceptionKind::Com`], never a panic),
     /// [`DotnetExceptionKind::InvalidCast`] for [`WicError::NoInterface`].
     pub fn exception_kind(&self) -> DotnetExceptionKind {
-        todo!("W4-11a")
+        match self {
+            Self::Com { hresult } => exception_kind_for_hresult(*hresult).unwrap_or(DotnetExceptionKind::Com),
+            Self::NoInterface { .. } => DotnetExceptionKind::InvalidCast,
+        }
     }
 
     /// From a `windows` crate error: its `code()`, except code 0 (the crate's `Error::empty()`, returned when a
     /// method succeeded with a null out object) which becomes `E_FAIL` like C# `WicCom.Wrap`. Never reads the
     /// error's message (it may carry a stale thread `IErrorInfo`; C# passes `-1` to ignore it).
     pub fn from_windows(error: &windows_core::Error) -> Self {
-        todo!("W4-11a")
+        let code = error.code().0;
+        Self::Com {
+            hresult: if code == 0 { E_FAIL } else { code },
+        }
     }
 }
 
 impl fmt::Display for WicError {
     /// `Com`: `"WIC call failed (0x{hresult:08X})"`; `NoInterface`: the C# `InvalidCastException` message.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-11a")
+        match self {
+            Self::Com { hresult } => write!(f, "WIC call failed (0x{:08X})", *hresult as u32),
+            Self::NoInterface { interface } => {
+                write!(f, "The COM object does not implement {interface} (E_NOINTERFACE).")
+            }
+        }
     }
 }
 
@@ -333,7 +433,7 @@ thread_local! {
 /// `WicCom.OutstandingOnThisThread`: [`Com`] values created on this thread and not yet dropped. Back to its
 /// starting value after every complete call chain (the lifetime-balance tests of W4-11c..e assert it).
 pub fn outstanding_on_this_thread() -> i32 {
-    todo!("W4-11a")
+    OUTSTANDING.with(Cell::get)
 }
 
 /// One owned, counted COM reference (C# wrapper from `WicCom.Wrap<T>`, released by `WicCom.Release`). Dropping it
@@ -346,6 +446,15 @@ pub struct Com<T: Interface> {
 }
 
 impl<T: Interface> Com<T> {
+    /// Takes ownership of an interface reference and counts it on this thread.
+    fn counted(inner: T) -> Self {
+        OUTSTANDING.with(|c| c.set(c.get().wrapping_add(1)));
+        Self {
+            inner,
+            _per_thread: PhantomData,
+        }
+    }
+
     /// `WicCom.Wrap<T>(nint)`: takes over ONE reference of `raw`. Null -> `Err(Com { E_FAIL })`. Otherwise
     /// `QueryInterface(T::IID)`; on failure `Err(NoInterface { interface })` and nothing is left referenced. The
     /// reference passed in is always released before returning (the wrapper holds the one the QI added).
@@ -353,7 +462,12 @@ impl<T: Interface> Com<T> {
     /// # Safety
     /// `raw` is null or a valid COM interface pointer that owns one reference the caller hands over.
     pub unsafe fn wrap(raw: *mut c_void, interface: &'static str) -> WicResult<Self> {
-        todo!("W4-11a")
+        // SAFETY: the caller's contract for `raw` is the one `wrap_or_none` requires; it is passed on unchanged.
+        match unsafe { Self::wrap_or_none(raw, interface) } {
+            Ok(Some(com)) => Ok(com),
+            Ok(None) => Err(WicError::Com { hresult: E_FAIL }),
+            Err(error) => Err(error),
+        }
     }
 
     /// `WicCom.WrapOrNull<T>`: like [`Com::wrap`] but null -> `Ok(None)` (optional out object, e.g. a thumbnail).
@@ -361,24 +475,43 @@ impl<T: Interface> Com<T> {
     /// # Safety
     /// As [`Com::wrap`].
     pub unsafe fn wrap_or_none(raw: *mut c_void, interface: &'static str) -> WicResult<Option<Self>> {
-        todo!("W4-11a")
+        if raw.is_null() {
+            return Ok(None);
+        }
+        // SAFETY: `raw` is a non-null COM interface pointer owning one reference the caller hands over (the
+        // function's contract); `IUnknown` takes over exactly that reference and releases it when dropped below.
+        let unknown = unsafe { IUnknown::from_raw(raw) };
+        // QueryInterface; the result is checked with a pattern, never turned into a thrown error (C# `is`).
+        let cast = unknown.cast::<T>();
+        drop(unknown);
+        match cast {
+            Ok(inner) => Ok(Some(Self::counted(inner))),
+            Err(_) => Err(WicError::NoInterface { interface }),
+        }
     }
 
     /// Counts an interface the `windows` crate returned from an out-object method: `Ok(t)` -> counted `Com`;
     /// `Err` with code 0 (S_OK + null) -> `E_FAIL`; any other `Err` -> `Com { code }`.
     pub fn adopt(result: windows_core::Result<T>) -> WicResult<Self> {
-        todo!("W4-11a")
+        match result {
+            Ok(inner) => Ok(Self::counted(inner)),
+            Err(error) => Err(WicError::from_windows(&error)),
+        }
     }
 
     /// Like [`Com::adopt`] for an OPTIONAL out object: `Err` with code 0 (S_OK + null) -> `Ok(None)`.
     pub fn adopt_optional(result: windows_core::Result<T>) -> WicResult<Option<Self>> {
-        todo!("W4-11a")
+        match result {
+            Ok(inner) => Ok(Some(Self::counted(inner))),
+            Err(error) if error.code().0 == 0 => Ok(None),
+            Err(error) => Err(WicError::from_windows(&error)),
+        }
     }
 
     /// C# `obj is U` on a generated wrapper: a `QueryInterface`. Any failure (E_NOINTERFACE or other) is `None`,
     /// never an error. A success is a new counted [`Com`].
     pub fn query<U: Interface>(&self) -> Option<Com<U>> {
-        todo!("W4-11a")
+        self.inner.cast::<U>().ok().map(Com::counted)
     }
 
     /// The raw interface pointer (borrowed; no reference is added).
@@ -403,7 +536,7 @@ impl<T: Interface> Deref for Com<T> {
 impl<T: Interface> Drop for Com<T> {
     /// Releases the reference (the inner `T` drop) and decrements the thread counter.
     fn drop(&mut self) {
-        // Stub: the counter decrement is part of the port.
+        OUTSTANDING.with(|c| c.set(c.get().wrapping_sub(1)));
     }
 }
 
@@ -419,7 +552,12 @@ impl<T: Interface> fmt::Debug for Com<T> {
 /// `raw` is a valid, non-null COM interface pointer.
 #[doc(hidden)]
 pub unsafe fn add_ref_raw(raw: *mut c_void) -> u32 {
-    todo!("W4-11a")
+    // SAFETY: `raw` is a live COM interface pointer (contract): its first word points to a vtable that starts with
+    // the three IUnknown slots, valid while the object lives.
+    unsafe {
+        let vtable = *(raw as *const *const IUnknown_Vtbl);
+        ((*vtable).AddRef)(raw)
+    }
 }
 
 /// Test seam (C# tests call `Marshal.Release`): releases one reference, returns the remaining count.
@@ -428,19 +566,63 @@ pub unsafe fn add_ref_raw(raw: *mut c_void) -> u32 {
 /// `raw` is a valid, non-null COM interface pointer on which the caller owns one reference.
 #[doc(hidden)]
 pub unsafe fn release_raw(raw: *mut c_void) -> u32 {
-    todo!("W4-11a")
+    // SAFETY: `raw` is a live COM interface pointer on which the caller owns one reference (contract); the vtable
+    // read happens before the Release that may destroy the object.
+    unsafe {
+        let vtable = *(raw as *const *const IUnknown_Vtbl);
+        ((*vtable).Release)(raw)
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
 // Factory
 // ---------------------------------------------------------------------------------------------------------------
 
+/// The per-thread `CoInitializeEx` record: `CoUninitialize` at thread exit when this module initialised COM.
+struct ApartmentGuard {
+    uninitialize: bool,
+}
+
+impl Drop for ApartmentGuard {
+    fn drop(&mut self) {
+        if self.uninitialize {
+            // SAFETY: balances the successful (S_OK/S_FALSE) CoInitializeEx this guard recorded on this thread;
+            // thread-local destructors run on the owning thread.
+            unsafe { CoUninitialize() };
+        }
+    }
+}
+
+thread_local! {
+    /// `Some` once `ensure_com_initialized` succeeded on this thread.
+    static APARTMENT: RefCell<Option<ApartmentGuard>> = const { RefCell::new(None) };
+}
+
 /// Puts the calling thread in the COM multithreaded apartment once (thread-local guard), as the CLR has already
 /// done for every thread a C# WIC call runs on: `CoInitializeEx(None, COINIT_MULTITHREADED)`; `S_OK`/`S_FALSE` ->
 /// `CoUninitialize` in the guard's `Drop` at thread exit; `RPC_E_CHANGED_MODE` (already STA, e.g. the UI thread) ->
 /// `Ok` with nothing to undo; any other failure -> `Err(Com { hr })`, retried on the next call. Rust addition.
 pub fn ensure_com_initialized() -> WicResult<()> {
-    todo!("W4-11a")
+    APARTMENT
+        .try_with(|slot| {
+            let mut slot = slot.borrow_mut();
+            if slot.is_some() {
+                return Ok(());
+            }
+            // SAFETY: no pointer is passed (reserved = NULL); the call only changes this thread's apartment state.
+            let hr = unsafe { CoInitializeEx(None, COINIT_MULTITHREADED) };
+            if hr.0 >= 0 {
+                *slot = Some(ApartmentGuard { uninitialize: true });
+                Ok(())
+            } else if hr == RPC_E_CHANGED_MODE {
+                *slot = Some(ApartmentGuard { uninitialize: false });
+                Ok(())
+            } else {
+                Err(WicError::Com { hresult: hr.0 })
+            }
+        })
+        // The thread is shutting down (its thread-locals are being destroyed): report CO_E_NOTINITIALIZED-like failure.
+        .unwrap_or(Err(WicError::Com { hresult: E_FAIL }))
 }
 
 /// `WicDirectDecoder.CreateFactory` / `WicImageEncoder.CreateFactory`: [`ensure_com_initialized`], then
@@ -448,13 +630,32 @@ pub fn ensure_com_initialized() -> WicResult<()> {
 /// A failing HRESULT or a null factory goes through [`check_factory_result`]; a pointer returned together with a
 /// failing HRESULT is released (no leak); success is wrapped with [`Com::wrap`].
 pub fn create_factory() -> WicResult<Com<IWICImagingFactory>> {
-    todo!("W4-11a")
+    ensure_com_initialized()?;
+    let mut raw: *mut c_void = ptr::null_mut();
+    // SAFETY: `raw` is a local out slot that lives across the call; the proxy writes an owned factory pointer or
+    // leaves it null.
+    let hr = unsafe { WICCreateImagingFactory_Proxy(WINCODEC_SDK_VERSION1, &mut raw) };
+    if let Err(error) = check_factory_result(hr.0, !raw.is_null()) {
+        if !raw.is_null() {
+            // SAFETY: a failing HRESULT still returned a pointer: it owns one reference we must give back.
+            unsafe { release_raw(raw) };
+        }
+        return Err(error);
+    }
+    // SAFETY: `raw` is the non-null factory pointer the proxy returned with S_OK, owning one reference.
+    unsafe { Com::wrap(raw, "IWICImagingFactory") }
 }
 
 /// `WicDirectDecoder.ThrowIfFactoryFailed(hr, factoryCreated)`: `hr < 0` -> `Err(Com { hr })` (even when a factory
 /// came back); `hr >= 0` without a factory -> `Err(Com { E_FAIL })`; else `Ok(())`.
 pub fn check_factory_result(hr: i32, factory_created: bool) -> WicResult<()> {
-    todo!("W4-11a")
+    if hr < 0 {
+        Err(WicError::Com { hresult: hr })
+    } else if !factory_created {
+        Err(WicError::Com { hresult: E_FAIL })
+    } else {
+        Ok(())
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -467,53 +668,64 @@ pub fn create_decoder_from_stream(
     stream: &IStream,
     options: WICDecodeOptions,
 ) -> WicResult<Com<IWICBitmapDecoder>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` and `stream` are live interfaces borrowed for the call; the vendor GUID pointer is NULL,
+    // which WIC documents as "no preferred vendor".
+    Com::adopt(unsafe { factory.CreateDecoderFromStream(stream, ptr::null(), options) })
 }
 
 /// `IWICImagingFactory::CreateFormatConverter`.
 pub fn create_format_converter(factory: &IWICImagingFactory) -> WicResult<Com<IWICFormatConverter>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateFormatConverter() })
 }
 
 /// `IWICImagingFactory::CreateBitmapScaler`.
 pub fn create_bitmap_scaler(factory: &IWICImagingFactory) -> WicResult<Com<IWICBitmapScaler>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateBitmapScaler() })
 }
 
 /// `IWICImagingFactory::CreateBitmapFlipRotator`.
 pub fn create_bitmap_flip_rotator(factory: &IWICImagingFactory) -> WicResult<Com<IWICBitmapFlipRotator>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateBitmapFlipRotator() })
 }
 
 /// `IWICImagingFactory::CreateStream`.
 pub fn create_stream(factory: &IWICImagingFactory) -> WicResult<Com<IWICStream>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateStream() })
 }
 
 /// `IWICImagingFactory::CreateColorContext`.
 pub fn create_color_context(factory: &IWICImagingFactory) -> WicResult<Com<IWICColorContext>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateColorContext() })
 }
 
 /// `IWICImagingFactory::CreateColorTransformer`.
 pub fn create_color_transformer(factory: &IWICImagingFactory) -> WicResult<Com<IWICColorTransform>> {
-    todo!("W4-11a")
+    // SAFETY: `factory` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { factory.CreateColorTransformer() })
 }
 
 /// `IWICBitmapDecoder::GetFrame(index)`.
 pub fn get_frame(decoder: &IWICBitmapDecoder, index: u32) -> WicResult<Com<IWICBitmapFrameDecode>> {
-    todo!("W4-11a")
+    // SAFETY: `decoder` is a live interface borrowed for the call; the index is checked by WIC.
+    Com::adopt(unsafe { decoder.GetFrame(index) })
 }
 
 /// `IWICBitmapFrameDecode::GetMetadataQueryReader`.
 pub fn get_metadata_query_reader(frame: &IWICBitmapFrameDecode) -> WicResult<Com<IWICMetadataQueryReader>> {
-    todo!("W4-11a")
+    // SAFETY: `frame` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt(unsafe { frame.GetMetadataQueryReader() })
 }
 
 /// `IWICBitmapFrameDecode::GetThumbnail`: the embedded thumbnail; `Ok(None)` when the codec returns S_OK without
 /// an object. A failing HRESULT (e.g. `WINCODEC_ERR_CODECNOTHUMBNAIL`) is `Err` as in C#.
 pub fn get_thumbnail(frame: &IWICBitmapFrameDecode) -> WicResult<Option<Com<IWICBitmapSource>>> {
-    todo!("W4-11a")
+    // SAFETY: `frame` is a live interface borrowed for the call; no other pointer is passed.
+    Com::adopt_optional(unsafe { frame.GetThumbnail() })
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -548,22 +760,27 @@ pub trait StreamBackend: Send {
 /// `Write::flush`, never `sync_all` (C# `Flush()`, not `Flush(true)`).
 impl StreamBackend for File {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        todo!("W4-11a")
+        io::Read::read(self, buf)
     }
     fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
-        todo!("W4-11a")
+        io::Write::write_all(self, data)
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        todo!("W4-11a")
+        io::Seek::seek(self, pos)
     }
     fn set_len(&mut self, len: u64) -> io::Result<()> {
-        todo!("W4-11a")
+        File::set_len(self, len)?;
+        let position = io::Seek::stream_position(self)?;
+        if position > len {
+            io::Seek::seek(self, SeekFrom::Start(len))?;
+        }
+        Ok(())
     }
     fn len(&mut self) -> io::Result<u64> {
-        todo!("W4-11a")
+        Ok(self.metadata()?.len())
     }
     fn flush(&mut self) -> io::Result<()> {
-        todo!("W4-11a")
+        io::Write::flush(self)
     }
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send> {
         self
@@ -573,22 +790,33 @@ impl StreamBackend for File {
 /// A growable memory stream (C# `new MemoryStream()`, the encoders' output, W4-11e).
 impl StreamBackend for Cursor<Vec<u8>> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        todo!("W4-11a")
+        io::Read::read(self, buf)
     }
     fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
-        todo!("W4-11a")
+        io::Write::write_all(self, data)
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        todo!("W4-11a")
+        io::Seek::seek(self, pos)
     }
     fn set_len(&mut self, len: u64) -> io::Result<()> {
-        todo!("W4-11a: grow with zeros / truncate; clamp the position to the new length (MemoryStream.SetLength)")
+        let new_len = usize::try_from(len).map_err(|_| io::Error::from(io::ErrorKind::InvalidInput))?;
+        let bytes = self.get_mut();
+        if new_len > bytes.len() {
+            bytes
+                .try_reserve(new_len - bytes.len())
+                .map_err(|_| io::Error::from(io::ErrorKind::OutOfMemory))?;
+        }
+        bytes.resize(new_len, 0);
+        if self.position() > len {
+            self.set_position(len);
+        }
+        Ok(())
     }
     fn len(&mut self) -> io::Result<u64> {
-        todo!("W4-11a")
+        Ok(self.get_ref().len() as u64)
     }
     fn flush(&mut self) -> io::Result<()> {
-        todo!("W4-11a")
+        Ok(())
     }
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send> {
         self
@@ -599,22 +827,28 @@ impl StreamBackend for Cursor<Vec<u8>> {
 /// write and set-length fail with `ErrorKind::Unsupported` (C# `NotSupportedException`).
 impl StreamBackend for Cursor<Arc<[u8]>> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        todo!("W4-11a")
+        io::Read::read(self, buf)
     }
-    fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
-        todo!("W4-11a")
+    fn write_all(&mut self, _data: &[u8]) -> io::Result<()> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "Stream does not support writing.",
+        ))
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        todo!("W4-11a")
+        io::Seek::seek(self, pos)
     }
-    fn set_len(&mut self, len: u64) -> io::Result<()> {
-        todo!("W4-11a")
+    fn set_len(&mut self, _len: u64) -> io::Result<()> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "Stream does not support writing.",
+        ))
     }
     fn len(&mut self) -> io::Result<u64> {
-        todo!("W4-11a")
+        Ok(self.get_ref().len() as u64)
     }
     fn flush(&mut self) -> io::Result<()> {
-        todo!("W4-11a")
+        Ok(())
     }
     fn into_any(self: Box<Self>) -> Box<dyn Any + Send> {
         self
@@ -649,22 +883,130 @@ pub enum StreamFault {
 impl StreamFault {
     /// The HRESULT the COM caller receives.
     pub fn hresult(&self) -> i32 {
-        todo!("W4-11a")
+        match self {
+            Self::Disposed => COR_E_OBJECTDISPOSED,
+            Self::NotSupported => COR_E_NOTSUPPORTED,
+            Self::SeekBeforeBegin => COR_E_IO,
+            Self::InvalidSeekOrigin(_) => E_INVALIDARG,
+            Self::SizeOutOfRange(_) | Self::CountOutOfRange(_) => COR_E_ARGUMENTOUTOFRANGE,
+            Self::Io(error) => {
+                if let Some(code) = error.raw_os_error() {
+                    let hr = hresult_from_win32(code as u32);
+                    if hr < 0 {
+                        return hr;
+                    }
+                }
+                if error.kind() == io::ErrorKind::InvalidInput {
+                    E_INVALIDARG
+                } else {
+                    COR_E_IO
+                }
+            }
+        }
+    }
+
+    /// Backend error of any op: `Unsupported` -> [`StreamFault::NotSupported`], else [`StreamFault::Io`].
+    fn from_io(error: io::Error) -> Self {
+        if error.kind() == io::ErrorKind::Unsupported {
+            Self::NotSupported
+        } else {
+            Self::Io(error)
+        }
+    }
+
+    /// Backend error of a seek: `InvalidInput` or `ERROR_NEGATIVE_SEEK` (131) -> [`StreamFault::SeekBeforeBegin`].
+    fn from_seek_io(error: io::Error) -> Self {
+        if error.kind() == io::ErrorKind::InvalidInput || error.raw_os_error() == Some(131) {
+            Self::SeekBeforeBegin
+        } else {
+            Self::from_io(error)
+        }
     }
 }
 
 impl fmt::Display for StreamFault {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W4-11a")
+        match self {
+            Self::Disposed => f.write_str("Cannot access a closed Stream."),
+            Self::NotSupported => f.write_str("Specified method is not supported."),
+            Self::SeekBeforeBegin => {
+                f.write_str("An attempt was made to move the position before the beginning of the stream.")
+            }
+            Self::InvalidSeekOrigin(origin) => write!(f, "Invalid seek origin ({origin})."),
+            Self::SizeOutOfRange(size) => write!(f, "Stream length {size} is out of range."),
+            Self::CountOutOfRange(count) => write!(f, "Byte count {count} is out of range."),
+            Self::Io(error) => write!(f, "Stream I/O failed: {error}"),
+        }
     }
 }
 
-impl std::error::Error for StreamFault {}
+impl std::error::Error for StreamFault {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Io(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 /// Shared state of the COM object: the backend (`None` once disposed) and the last fault a COM call returned.
 struct StreamState {
     backend: Option<Box<dyn StreamBackend>>,
     last_fault: Option<StreamFault>,
+}
+
+impl StreamState {
+    fn backend(&mut self) -> Result<&mut Box<dyn StreamBackend>, StreamFault> {
+        self.backend.as_mut().ok_or(StreamFault::Disposed)
+    }
+
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize, StreamFault> {
+        self.backend()?.read(buf).map_err(StreamFault::from_io)
+    }
+
+    fn write(&mut self, data: &[u8]) -> Result<(), StreamFault> {
+        self.backend()?.write_all(data).map_err(StreamFault::from_io)
+    }
+
+    fn seek(&mut self, offset: i64, origin: u32) -> Result<u64, StreamFault> {
+        let backend = self.backend()?;
+        let target = seek_from(offset, origin)?;
+        backend.seek(target).map_err(StreamFault::from_seek_io)
+    }
+
+    fn set_size(&mut self, size: u64) -> Result<(), StreamFault> {
+        let backend = self.backend()?;
+        if size > i64::MAX as u64 {
+            return Err(StreamFault::SizeOutOfRange(size));
+        }
+        backend.set_len(size).map_err(StreamFault::from_io)
+    }
+
+    fn commit(&mut self) -> Result<(), StreamFault> {
+        match self.backend.as_mut() {
+            Some(backend) => backend.flush().map_err(StreamFault::from_io),
+            None => Ok(()),
+        }
+    }
+
+    fn length(&mut self) -> Result<u64, StreamFault> {
+        self.backend()?.len().map_err(StreamFault::from_io)
+    }
+
+    /// Records a failed COM call's fault and returns its HRESULT.
+    fn fail(&mut self, fault: StreamFault) -> i32 {
+        let hr = fault.hresult();
+        self.last_fault = Some(fault);
+        hr
+    }
+}
+
+/// `E_POINTER`: a null buffer/out pointer the call needs (Rust-only guard, never reached through WIC).
+const E_POINTER: i32 = 0x8000_4003_u32 as i32;
+
+/// The `Err` of an `IStream_Impl` shim: carries only the code (never the thread's `IErrorInfo`).
+fn com_error(hr: i32) -> windows_core::Error {
+    windows_core::Error::from_hresult(HRESULT(hr))
 }
 
 /// The COM object (`#[implement(IStream)]`). Its `IStream`/`ISequentialStream` methods call the safe
@@ -675,75 +1017,182 @@ struct ComStreamObject {
     state: Mutex<StreamState>,
 }
 
+impl ComStreamObject {
+    fn lock(&self) -> MutexGuard<'_, StreamState> {
+        self.state.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+}
+
+/// `cb` above `i32::MAX` is a negative C# `int`: `ArgumentOutOfRangeException`.
+fn check_count(cb: u32) -> Result<usize, StreamFault> {
+    if cb > i32::MAX as u32 {
+        Err(StreamFault::CountOutOfRange(cb))
+    } else {
+        Ok(cb as usize)
+    }
+}
+
 impl ISequentialStream_Impl for ComStreamObject_Impl {
     /// C# `Read(byte* pv, int cb, nint pcbRead)`: disposed, then `cb > i32::MAX` (`COR_E_ARGUMENTOUTOFRANGE`); one
     /// backend read into `pv[..cb]`; `*pcbRead = n` when not null; S_OK also for a short read or 0 at end (C# never
     /// returns S_FALSE).
     fn Read(&self, pv: *mut c_void, cb: u32, pcbread: *mut u32) -> HRESULT {
-        todo!("W4-11a: SAFETY per pointer")
+        let mut state = self.lock();
+        if state.backend.is_none() {
+            return HRESULT(state.fail(StreamFault::Disposed));
+        }
+        let count = match check_count(cb) {
+            Ok(count) => count,
+            Err(fault) => return HRESULT(state.fail(fault)),
+        };
+        let read = if count == 0 {
+            Ok(0)
+        } else if pv.is_null() {
+            return HRESULT(E_POINTER);
+        } else {
+            // SAFETY: `pv` is non-null and, by the IStream::Read contract, points to a caller buffer of at least
+            // `cb` writable bytes that stays valid for the duration of this call (C# `new Span<byte>(pv, cb)`).
+            let buf = unsafe { std::slice::from_raw_parts_mut(pv.cast::<u8>(), count) };
+            state.read(buf)
+        };
+        match read {
+            Ok(n) => {
+                if !pcbread.is_null() {
+                    // SAFETY: `pcbread` is non-null and points to the caller's ULONG out slot (IStream::Read contract).
+                    unsafe { pcbread.write(n as u32) };
+                }
+                HRESULT(0)
+            }
+            Err(fault) => HRESULT(state.fail(fault)),
+        }
     }
 
     /// C# `Write`: disposed, then `cb > i32::MAX` (`COR_E_ARGUMENTOUTOFRANGE`, before the read-only check); writes all
     /// `cb` bytes; `*pcbWritten = cb` when not null.
     fn Write(&self, pv: *const c_void, cb: u32, pcbwritten: *mut u32) -> HRESULT {
-        todo!("W4-11a: SAFETY per pointer")
+        let mut state = self.lock();
+        if state.backend.is_none() {
+            return HRESULT(state.fail(StreamFault::Disposed));
+        }
+        let count = match check_count(cb) {
+            Ok(count) => count,
+            Err(fault) => return HRESULT(state.fail(fault)),
+        };
+        let written = if count == 0 {
+            state.write(&[])
+        } else if pv.is_null() {
+            return HRESULT(E_POINTER);
+        } else {
+            // SAFETY: `pv` is non-null and, by the IStream::Write contract, points to `cb` readable bytes that stay
+            // valid for the duration of this call (C# `new ReadOnlySpan<byte>(pv, cb)`).
+            let data = unsafe { std::slice::from_raw_parts(pv.cast::<u8>(), count) };
+            state.write(data)
+        };
+        match written {
+            Ok(()) => {
+                if !pcbwritten.is_null() {
+                    // SAFETY: `pcbwritten` is non-null and points to the caller's ULONG out slot (IStream::Write
+                    // contract).
+                    unsafe { pcbwritten.write(cb) };
+                }
+                HRESULT(0)
+            }
+            Err(fault) => HRESULT(state.fail(fault)),
+        }
     }
 }
 
 impl IStream_Impl for ComStreamObject_Impl {
     /// C# `Seek(dlibMove, dwOrigin, plibNewPosition)`: `*plibNewPosition` = new absolute position when not null.
     fn Seek(&self, dlibmove: i64, dworigin: STREAM_SEEK, plibnewposition: *mut u64) -> windows_core::Result<()> {
-        todo!("W4-11a")
+        let mut state = self.lock();
+        match state.seek(dlibmove, dworigin.0) {
+            Ok(position) => {
+                if !plibnewposition.is_null() {
+                    // SAFETY: `plibnewposition` is non-null and points to the caller's ULARGE_INTEGER out slot
+                    // (IStream::Seek contract); written only on success.
+                    unsafe { plibnewposition.write(position) };
+                }
+                Ok(())
+            }
+            Err(fault) => Err(com_error(state.fail(fault))),
+        }
     }
 
     /// C# `SetSize` -> `Stream.SetLength`.
     fn SetSize(&self, libnewsize: u64) -> windows_core::Result<()> {
-        todo!("W4-11a")
+        let mut state = self.lock();
+        match state.set_size(libnewsize) {
+            Ok(()) => Ok(()),
+            Err(fault) => Err(com_error(state.fail(fault))),
+        }
     }
 
     /// C# `CopyTo`: always `NotSupported` (also after dispose).
     fn CopyTo(
         &self,
-        pstm: windows_core::Ref<IStream>,
-        cb: u64,
-        pcbread: *mut u64,
-        pcbwritten: *mut u64,
+        _pstm: windows_core::Ref<IStream>,
+        _cb: u64,
+        _pcbread: *mut u64,
+        _pcbwritten: *mut u64,
     ) -> windows_core::Result<()> {
-        todo!("W4-11a")
+        Err(com_error(self.lock().fail(StreamFault::NotSupported)))
     }
 
     /// C# `Commit`: flushes; S_OK after dispose (WIC may commit after the owner disposed).
-    fn Commit(&self, grfcommitflags: &STGC) -> windows_core::Result<()> {
-        todo!("W4-11a")
+    fn Commit(&self, _grfcommitflags: &STGC) -> windows_core::Result<()> {
+        let mut state = self.lock();
+        match state.commit() {
+            Ok(()) => Ok(()),
+            Err(fault) => Err(com_error(state.fail(fault))),
+        }
     }
 
     /// C# `Revert`: no-op, S_OK (also after dispose).
     fn Revert(&self) -> windows_core::Result<()> {
-        todo!("W4-11a")
+        Ok(())
     }
 
     /// C# `LockRegion`: no-op, S_OK (also after dispose).
-    fn LockRegion(&self, liboffset: u64, cb: u64, dwlocktype: &LOCKTYPE) -> windows_core::Result<()> {
-        todo!("W4-11a")
+    fn LockRegion(&self, _liboffset: u64, _cb: u64, _dwlocktype: &LOCKTYPE) -> windows_core::Result<()> {
+        Ok(())
     }
 
     /// C# `UnlockRegion`: no-op, S_OK (also after dispose).
-    fn UnlockRegion(&self, liboffset: u64, cb: u64, dwlocktype: u32) -> windows_core::Result<()> {
-        todo!("W4-11a")
+    fn UnlockRegion(&self, _liboffset: u64, _cb: u64, _dwlocktype: u32) -> windows_core::Result<()> {
+        Ok(())
     }
 
     /// C# `Stat`: `type = STGTY_STREAM (2)`, `cbSize = length`, everything else 0 (name pointer null, `grfMode` 0 =
     /// `STGM_READ`); the flag is ignored. Zero all 80 bytes first (padding 12..16 is pinned by the golden), then
     /// write the fields. Errors are built with `Error::from_hresult` (never `Error::new` / `From<HRESULT>`).
-    fn Stat(&self, pstatstg: *mut STATSTG, grfstatflag: &STATFLAG) -> windows_core::Result<()> {
-        todo!("W4-11a")
+    fn Stat(&self, pstatstg: *mut STATSTG, _grfstatflag: &STATFLAG) -> windows_core::Result<()> {
+        let mut state = self.lock();
+        let length = match state.length() {
+            Ok(length) => length,
+            Err(fault) => return Err(com_error(state.fail(fault))),
+        };
+        if pstatstg.is_null() {
+            return Err(com_error(E_POINTER));
+        }
+        // SAFETY: `pstatstg` is non-null and points to the caller's writable STATSTG (IStream::Stat contract);
+        // zeroing every byte (padding included) and then writing two fields in place stays inside that struct.
+        unsafe {
+            ptr::write_bytes(pstatstg, 0, 1);
+            ptr::addr_of_mut!((*pstatstg).r#type).write(STGTY_STREAM);
+            ptr::addr_of_mut!((*pstatstg).cbSize).write(length);
+        }
+        Ok(())
     }
 
     /// C# `Clone`: always `NotSupported`.
     fn Clone(&self) -> windows_core::Result<IStream> {
-        todo!("W4-11a")
+        Err(com_error(self.lock().fail(StreamFault::NotSupported)))
     }
 }
+
+/// `STGTY_STREAM`: the `STATSTG.type` of a stream.
+const STGTY_STREAM: u32 = 2;
 
 /// C# `ManagedIStream`: a COM `IStream` over a [`StreamBackend`], handed to WIC with [`ComStream::istream`].
 /// The owner keeps the `ComStream`; dropping it disposes the backend (C# `using var stream = new ManagedIStream(..)`)
@@ -755,7 +1204,14 @@ pub struct ComStream {
 impl ComStream {
     /// `new ManagedIStream(stream)`.
     pub fn new(backend: Box<dyn StreamBackend>) -> Self {
-        todo!("W4-11a")
+        Self {
+            object: ComObject::new(ComStreamObject {
+                state: Mutex::new(StreamState {
+                    backend: Some(backend),
+                    last_fault: None,
+                }),
+            }),
+        }
     }
 
     /// Over an open file.
@@ -775,54 +1231,59 @@ impl ComStream {
 
     /// The `IStream` interface for WIC (adds a COM reference).
     pub fn istream(&self) -> IStream {
-        todo!("W4-11a")
+        self.object.to_interface()
     }
 
     /// `Read` without the pointers: bytes read.
     pub fn read(&self, buf: &mut [u8]) -> Result<usize, StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().read(buf)
     }
 
     /// `Write` without the pointers.
     pub fn write(&self, data: &[u8]) -> Result<(), StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().write(data)
     }
 
     /// `Seek(offset, origin)` with the raw `STREAM_SEEK` origin (0 set, 1 current, 2 end): the new position.
     pub fn seek(&self, offset: i64, origin: u32) -> Result<u64, StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().seek(offset, origin)
     }
 
     /// `SetSize`.
     pub fn set_size(&self, size: u64) -> Result<(), StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().set_size(size)
     }
 
     /// `Commit`: flush; `Ok` when disposed.
     pub fn commit(&self) -> Result<(), StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().commit()
     }
 
     /// `Stat`.
     pub fn stat(&self) -> Result<STATSTG, StreamFault> {
-        todo!("W4-11a")
+        let length = self.object.lock().length()?;
+        Ok(STATSTG {
+            r#type: STGTY_STREAM,
+            cbSize: length,
+            ..STATSTG::default()
+        })
     }
 
     /// `Dispose`: drops the stream from the COM object and returns it (`None` if already disposed).
     pub fn dispose(&self) -> Option<Box<dyn StreamBackend>> {
-        todo!("W4-11a")
+        self.object.lock().backend.take()
     }
 
     /// The fault of the last failed COM call on this stream (cleared by the read), so W4-11c can report the real
     /// `io::Error` when WIC turns a stream failure into its own HRESULT. Rust addition, see open questions.
     pub fn take_last_fault(&self) -> Option<StreamFault> {
-        todo!("W4-11a")
+        self.object.lock().last_fault.take()
     }
 }
 
 impl Drop for ComStream {
     fn drop(&mut self) {
-        // Stub: the port calls `self.dispose()` here.
+        drop(self.dispose());
     }
 }
 
@@ -836,12 +1297,23 @@ impl fmt::Debug for ComStream {
 /// negative offset is [`StreamFault::SeekBeforeBegin`]), 1 -> `Current`, 2 -> `End`, anything else ->
 /// [`StreamFault::InvalidSeekOrigin`]. Pure; tested without COM.
 pub fn seek_from(offset: i64, origin: u32) -> Result<SeekFrom, StreamFault> {
-    todo!("W4-11a")
+    match origin {
+        0 => u64::try_from(offset)
+            .map(SeekFrom::Start)
+            .map_err(|_| StreamFault::SeekBeforeBegin),
+        1 => Ok(SeekFrom::Current(offset)),
+        2 => Ok(SeekFrom::End(offset)),
+        other => Err(StreamFault::InvalidSeekOrigin(other)),
+    }
 }
 
 /// `HRESULT_FROM_WIN32`: `0` stays `0`, a positive Win32 code `c` becomes `0x8007_0000 | (c & 0xFFFF)`.
 pub fn hresult_from_win32(code: u32) -> i32 {
-    todo!("W4-11a")
+    if code as i32 <= 0 {
+        code as i32
+    } else {
+        ((code & 0xFFFF) | 0x8007_0000) as i32
+    }
 }
 
 // `raw-dylib`: no import library needed.

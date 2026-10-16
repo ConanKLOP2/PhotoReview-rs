@@ -1591,7 +1591,8 @@ fn run_istream_script(case: &Value) -> Vec<String> {
         }
         if let (Some(golden_stat), Some(got)) = (expected.get("stat_bytes"), stat_bytes) {
             let hex: String = got.iter().map(|b| format!("{b:02x}")).collect();
-            if golden::str_of(expected, "stat_bytes") != hex {
+            // The golden writes upper-case hex (C# `Convert.ToHexString`); the bytes are what is compared.
+            if !golden::str_of(expected, "stat_bytes").eq_ignore_ascii_case(&hex) {
                 failures.push(format!("{label}: stat_bytes golden {golden_stat}, port {hex}"));
             }
         }
