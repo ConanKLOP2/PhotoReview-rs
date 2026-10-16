@@ -1087,6 +1087,16 @@ fn format_of(name: &str) -> RawFormat {
     }
 }
 
+/// Golden i64 that may be a JSON number or, for values beyond 2^53 (`i64::MAX`, `i64::MIN`), a decimal string.
+fn wide_i64_of(case: &Value, key: &str) -> i64 {
+    match case[key].as_str() {
+        Some(text) => text
+            .parse()
+            .unwrap_or_else(|_| panic!("golden '{key}' is not an i64: {case}")),
+        None => i64_of(case, key),
+    }
+}
+
 fn blocks_of(blocks: &Value) -> Vec<ExifBlock> {
     blocks
         .as_array()
@@ -1094,8 +1104,8 @@ fn blocks_of(blocks: &Value) -> Vec<ExifBlock> {
         .iter()
         .map(|b| {
             ExifBlock::with_ifd_is_exif(
-                i64_of(b, "offset"),
-                i64_of(b, "length"),
+                wide_i64_of(b, "offset"),
+                wide_i64_of(b, "length"),
                 bool_of(b, "is_tiff"),
                 bool_of(b, "ifd_is_exif"),
             )
