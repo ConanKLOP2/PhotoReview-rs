@@ -95,7 +95,9 @@ impl fmt::Display for PixelBufferError {
                     "Unknown pixel layout. (Parameter 'layout')\nActual value was {value}."
                 )
             }
-            Self::OutOfMemory { byte_count } => write!(f, "Insufficient memory for {byte_count} bytes of pixels."),
+            // .NET `OutOfMemoryException` default message (from `NativeMemory.AlignedAlloc`); the byte count is data of
+            // the variant, not part of the text.
+            Self::OutOfMemory { .. } => f.write_str("Insufficient memory to continue the execution of the program."),
             Self::Disposed => f.write_str(
                 "Cannot access a disposed object.\r\nObject name: 'PhotoReview.Imaging.Pixels.PixelBuffer'.",
             ),

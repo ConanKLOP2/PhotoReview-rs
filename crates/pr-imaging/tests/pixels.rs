@@ -1122,7 +1122,10 @@ fn error_texts_match_dotnet() {
         e(PixelBufferError::RowOutOfRange { y: 5, height: 5 }),
         "y ('5') must be less than '5'. (Parameter 'y')\nActual value was 5."
     );
-    assert!(e(PixelBufferError::OutOfMemory { byte_count: 123 }).contains("123"));
+    assert_eq!(
+        e(PixelBufferError::OutOfMemory { byte_count: 123 }),
+        "Insufficient memory to continue the execution of the program."
+    );
     assert!(e(PixelBufferError::Disposed).contains("disposed"));
 }
 
