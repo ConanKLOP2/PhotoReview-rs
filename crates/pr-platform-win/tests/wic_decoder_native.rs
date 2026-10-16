@@ -952,18 +952,54 @@ fn no_exif_gives_null() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn partial_exif_keeps_present_tags() {
-    let row = decode_row("exif-jpeg-make");
-    check_decode(&row);
+    // C# `ExifTestData.EncodeJpegWithPartialExif`: only Make (IFD0) and ISO (EXIF IFD) are written; every other tag
+    // is absent (the per-tag "not found" path). Rust has no WPF encoder, so the same two tags go into an APP1 segment
+    // spliced into a committed baseline JPEG.
     let view = physical_decoder()
-        .decode(&DecodeRequest::new(fixture("jpeg-make-32x24.jpg"), 0))
+        .decode(
+            &DecodeRequest::with_box("p.jpg", DecodeBox::new(32, 32)).with_bytes(Arc::from(jpeg_with_partial_exif())),
+        )
         .expect("decodes");
     let exif = view.exif().expect("EXIF present");
-    assert_eq!(
-        exif.camera_model.as_deref(),
-        Some("Model"),
-        "the model tag present in the file is kept"
-    );
-    assert!(exif.lens_model.is_none(), "absent tags stay absent");
+    assert_eq!(exif.camera_make.as_deref(), Some("FUJIFILM"));
+    assert_eq!(exif.iso, Some(3200));
+    assert!(exif.camera_model.is_none(), "absent model stays absent");
+    assert!(exif.lens_model.is_none(), "absent lens stays absent");
+    assert!(exif.exposure_time.is_none(), "absent exposure stays absent");
+}
+
+/// `plain-64x48.jpg` with an APP1 EXIF segment (big-endian TIFF) holding only IFD0 Make = "FUJIFILM" and EXIF IFD
+/// ISOSpeedRatings = 3200, inserted after the JFIF APP0 segment.
+fn jpeg_with_partial_exif() -> Vec<u8> {
+    let mut tiff = Vec::new();
+    tiff.extend_from_slice(b"MM\x00\x2A\x00\x00\x00\x08");
+    // IFD0 at 8: 2 entries (Make -> offset 38, ExifIFD pointer -> 48), next IFD 0; ends at 38.
+    tiff.extend_from_slice(&2u16.to_be_bytes());
+    tiff.extend_from_slice(&[0x01, 0x0F, 0x00, 0x02, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 38]);
+    tiff.extend_from_slice(&[0x87, 0x69, 0x00, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 48]);
+    tiff.extend_from_slice(&0u32.to_be_bytes());
+    tiff.extend_from_slice(b"FUJIFILM\x00\x00");
+    assert_eq!(tiff.len(), 48);
+    // EXIF IFD at 48: ISOSpeedRatings (0x8827, SHORT) = 3200, next IFD 0.
+    tiff.extend_from_slice(&1u16.to_be_bytes());
+    tiff.extend_from_slice(&[0x88, 0x27, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x0C, 0x80, 0x00, 0x00]);
+    tiff.extend_from_slice(&0u32.to_be_bytes());
+
+    let mut payload = b"Exif\x00\x00".to_vec();
+    payload.extend_from_slice(&tiff);
+    let base = fs::read(fixture("plain-64x48.jpg")).expect("fixture");
+    assert_eq!(&base[..2], &[0xFF, 0xD8], "SOI");
+    let insert_at = if base[2..4] == [0xFF, 0xE0] {
+        4 + usize::from(u16::from_be_bytes([base[4], base[5]]))
+    } else {
+        2
+    };
+    let mut jpeg = base[..insert_at].to_vec();
+    jpeg.extend_from_slice(&[0xFF, 0xE1]);
+    jpeg.extend_from_slice(&u16::try_from(payload.len() + 2).expect("segment length").to_be_bytes());
+    jpeg.extend_from_slice(&payload);
+    jpeg.extend_from_slice(&base[insert_at..]);
+    jpeg
 }
 
 // C#: DecoderExifTests.PngHasNoExif
@@ -1263,16 +1299,23 @@ fn read_info_agrees_with_decode_when_exif_is_beyond_64_kb() {
         let view = decoder
             .decode(&DecodeRequest::new(path.clone(), 0))
             .unwrap_or_else(|e| panic!("{segments} segments: decode {e}"));
+        assert_eq!(view.orientation(), 6, "{segments} segments: decode orientation");
+        assert_eq!(info.orientation, view.orientation(), "{segments} segments: orientation");
+        // C#: (decoded.OriginalWidth, OriginalHeight) == (info.Width, info.Height), both in display orientation.
         assert_eq!(
-            (info.pixel_width, info.pixel_height),
-            (view.pixel_width(), view.pixel_height()),
+            (view.original_width(), view.original_height()),
+            (info.width(), info.height()),
             "{segments} segments"
         );
-        assert_eq!(info.orientation, view.orientation(), "{segments} segments: orientation");
         assert_eq!(
-            (info.pixel_width, info.pixel_height, info.orientation),
-            (120, 80, 6),
-            "{segments} segments"
+            (info.width(), info.height()),
+            (80, 120),
+            "{segments} segments: displayed size"
+        );
+        assert_eq!(
+            (info.pixel_width, info.pixel_height),
+            (120, 80),
+            "{segments} segments: stored size"
         );
     }
 }
@@ -1418,4 +1461,71 @@ fn mutated_images_deep_run() {
         3000,
         &["plain-64x48.jpg", "orient-6-120x80.jpg", "jpeg-make-32x24.jpg"],
     );
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 1: disk reads (AGENTS priority 1, read each file once)
+// ---------------------------------------------------------------------------------------------------------------
+
+/// `File` that counts the bytes it reads from disk.
+struct CountingFile(File, Arc<std::sync::atomic::AtomicU64>);
+
+impl Read for CountingFile {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let read = self.0.read(buf)?;
+        self.1.fetch_add(read as u64, std::sync::atomic::Ordering::SeqCst);
+        Ok(read)
+    }
+}
+
+impl Seek for CountingFile {
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        self.0.seek(pos)
+    }
+}
+
+/// The `PhysicalSourceReader` shape (a `BufReader` of the requested size over the file) with a disk-byte counter.
+#[derive(Default)]
+struct CountingReader(Arc<std::sync::atomic::AtomicU64>);
+
+impl SourceReader for CountingReader {
+    fn open_source(
+        &self,
+        path: &Path,
+        _priority: SourceReadPriority,
+        buffer_size: usize,
+    ) -> io::Result<Box<dyn ReadSeek>> {
+        Ok(Box::new(io::BufReader::with_capacity(
+            buffer_size.max(1),
+            CountingFile(File::open(path)?, Arc::clone(&self.0)),
+        )))
+    }
+}
+
+// Verifier finding: the .NET oracle (GetProcessIoCounters ReadTransferCount at d92d6aae, PhysicalSourceReader) reads
+// exactly the file length on Decode and on ReadInfo for these fixtures (45921, 4174, 468 and 828 bytes).
+#[test]
+#[ignore = "native: needs WIC"]
+fn decode_and_read_info_read_each_source_byte_from_disk_once() {
+    for name in [
+        "gradient-800x600.jpg",
+        "orient-6-120x80.jpg",
+        "gradient-64x48-bgra32.png",
+        "tiff-make-32x24.tif",
+    ] {
+        let path = fixture(name);
+        let length = fs::metadata(&path).expect("fixture").len();
+        let reader = Arc::new(CountingReader::default());
+        let decoder = WicDirectDecoder::new(
+            PixelBufferImageCodec::shared(),
+            Some(Arc::clone(&reader) as Arc<dyn SourceReader>),
+            memory(),
+        );
+        decoder.decode(&DecodeRequest::new(path.clone(), 0)).expect("decodes");
+        let decoded = reader.0.swap(0, std::sync::atomic::Ordering::SeqCst);
+        decoder.read_info(&path.to_string_lossy()).expect("read_info");
+        let read_info = reader.0.load(std::sync::atomic::Ordering::SeqCst);
+        assert_eq!(decoded, length, "{name}: decode disk bytes");
+        assert_eq!(read_info, length, "{name}: read_info disk bytes");
+    }
 }

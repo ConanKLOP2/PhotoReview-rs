@@ -17,6 +17,8 @@
 
 use std::cell::Cell;
 use std::fs;
+use std::io::SeekFrom;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use pr_core::session::store::sha256;
@@ -24,13 +26,14 @@ use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::fallback::FallbackImageDecoder;
 use pr_imaging::memory_headroom::{GUARD_THRESHOLD_BYTES, MemoryInfo, MemoryInfoSource};
 use pr_platform_win::wic::decoder::{
-    DECODER_LABEL, ICC_TRANSFORM_FAILED_PREFIX, OPAQUE_PIXEL_FORMATS, SRGB_EXIF_COLOR_SPACE, as_invalid_data,
-    color_chain_failure, copy_pixels_guarded, decode_error_from_wic, ensure_output_fits, icc_transform_failed,
-    is_color_metadata_fault, is_opaque_format, map_to_transform_options, native_reduction_is_useful,
-    output_byte_length, output_too_large, relabel_invalid_argument, select_source_color_context, to_int_size,
+    DECODER_LABEL, ICC_TRANSFORM_FAILED_PREFIX, OPAQUE_PIXEL_FORMATS, SRGB_EXIF_COLOR_SPACE, SourceStreamBackend,
+    as_invalid_data, color_chain_failure, copy_pixels_guarded, decode_error_from_wic, ensure_output_fits,
+    icc_transform_failed, is_color_metadata_fault, is_opaque_format, map_to_transform_options,
+    native_reduction_is_useful, output_byte_length, output_too_large, relabel_invalid_argument,
+    select_source_color_context, to_int_size,
 };
 use pr_platform_win::wic::interop::{
-    COR_E_IO, COR_E_NOTSUPPORTED, E_INVALIDARG, E_NOINTERFACE, WicError, hresult_from_win32,
+    COR_E_IO, COR_E_NOTSUPPORTED, E_INVALIDARG, E_NOINTERFACE, StreamBackend, WicError, hresult_from_win32,
 };
 use pr_test_support::golden;
 use serde_json::Value;
@@ -820,4 +823,202 @@ fn wic_icc_transform_failure_carries_the_localized_sentence() {
         DecodeError::NotSupported { user_text, .. } => assert!(user_text.is_some(), "localized sentence attached"),
         other => panic!("expected NotSupported, got {other:?}"),
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 1 (verifier findings): every decode_error_from_wic arm, and the SourceStreamBackend contract
+// ---------------------------------------------------------------------------------------------------------------
+
+/// Oracle: .NET 10 `Marshal.GetExceptionForHR(hr, -1)` types (verifier sweep); each row pins one arm of
+/// `decode_error_from_wic` and its INV-12 fallback verdict (C# `FallbackImageDecoder.IsFallbackable`).
+#[test]
+fn decode_error_from_wic_every_arm_matches_the_dotnet_type() {
+    let rows: [(u32, &str, bool); 13] = [
+        (0x8013_1516, "Overflow", true),
+        (0x8013_1537, "Format", true),
+        (0x8007_000B, "BadImageFormat", true),
+        (0x8013_1524, "DllNotFound", true),
+        (0x8013_1523, "EntryPointNotFound", true),
+        (0x8013_1509, "InvalidOperation", false),
+        (0x8013_1622, "Disposed", false),
+        (0x8013_153B, "Canceled", false),
+        (0x8007_0002, "FileNotFound", false),
+        (0x8007_0003, "DirectoryNotFound", false),
+        (0x8013_1620, "Io", false),
+        (0x8007_0026, "Io", false),
+        (0x8007_00CE, "Io", false),
+    ];
+    for (hr, variant, fallbackable) in rows {
+        let error = decode_error_from_wic(&WicError::Com { hresult: hr as i32 });
+        let got = match &error {
+            DecodeError::Overflow { .. } => "Overflow",
+            DecodeError::Format { .. } => "Format",
+            DecodeError::BadImageFormat { .. } => "BadImageFormat",
+            DecodeError::DllNotFound { .. } => "DllNotFound",
+            DecodeError::EntryPointNotFound { .. } => "EntryPointNotFound",
+            DecodeError::InvalidOperation { .. } => "InvalidOperation",
+            DecodeError::Disposed { .. } => "Disposed",
+            DecodeError::Canceled => "Canceled",
+            DecodeError::FileNotFound { .. } => "FileNotFound",
+            DecodeError::DirectoryNotFound { .. } => "DirectoryNotFound",
+            DecodeError::Io(_) => "Io",
+            _ => "Other",
+        };
+        assert_eq!(got, variant, "{hr:08X}");
+        assert_eq!(FallbackImageDecoder::is_fallbackable(&error), fallbackable, "{hr:08X}");
+    }
+}
+
+/// `Read` that counts the bytes the source hands out (the disk reads of a `FileStream`).
+struct CountingSource {
+    inner: std::io::Cursor<Vec<u8>>,
+    bytes: Arc<AtomicUsize>,
+    reads: Arc<AtomicUsize>,
+}
+
+impl std::io::Read for CountingSource {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let read = std::io::Read::read(&mut self.inner, buf)?;
+        self.bytes.fetch_add(read, Ordering::SeqCst);
+        self.reads.fetch_add(1, Ordering::SeqCst);
+        Ok(read)
+    }
+}
+
+impl std::io::Seek for CountingSource {
+    fn seek(&mut self, pos: std::io::SeekFrom) -> std::io::Result<u64> {
+        std::io::Seek::seek(&mut self.inner, pos)
+    }
+}
+
+/// A backend over `data` read through a `BufReader` of `capacity` (the `PhysicalSourceReader` shape), plus the
+/// (bytes, reads) counters of the underlying source.
+fn counted_backend(
+    data: Vec<u8>,
+    capacity: usize,
+    window: usize,
+) -> (SourceStreamBackend, Arc<AtomicUsize>, Arc<AtomicUsize>) {
+    let bytes = Arc::new(AtomicUsize::new(0));
+    let reads = Arc::new(AtomicUsize::new(0));
+    let source = CountingSource {
+        inner: std::io::Cursor::new(data),
+        bytes: Arc::clone(&bytes),
+        reads: Arc::clone(&reads),
+    };
+    let reader = std::io::BufReader::with_capacity(capacity, source);
+    (
+        SourceStreamBackend::with_buffer_size(Box::new(reader), window),
+        bytes,
+        reads,
+    )
+}
+
+fn read_exact_at(backend: &mut SourceStreamBackend, position: u64, len: usize) -> Vec<u8> {
+    backend.seek(SeekFrom::Start(position)).expect("seek");
+    let mut out = vec![0u8; len];
+    let read = backend.read(&mut out).expect("read");
+    out.truncate(read);
+    out
+}
+
+// Verifier finding (AGENTS priority 1, read each file once): C# `FileStream` keeps its buffer on `Length` and on seeks
+// that stay inside it, so a source below the buffer size is read from disk exactly once whatever WIC seeks.
+#[test]
+fn source_stream_backend_reads_a_small_source_once_whatever_the_seeks() {
+    let data: Vec<u8> = (0..200u32).map(|i| i as u8).collect();
+    let (mut backend, bytes, reads) = counted_backend(data.clone(), 256, 256);
+    assert_eq!(backend.len().expect("len"), 200);
+    assert_eq!(read_exact_at(&mut backend, 0, 10), data[0..10].to_vec());
+    assert_eq!(backend.len().expect("len"), 200);
+    assert_eq!(read_exact_at(&mut backend, 150, 20), data[150..170].to_vec());
+    assert_eq!(read_exact_at(&mut backend, 4, 4), data[4..8].to_vec());
+    backend.seek(SeekFrom::End(-5)).expect("seek end");
+    let mut tail = [0u8; 16];
+    assert_eq!(backend.read(&mut tail).expect("tail"), 5);
+    assert_eq!(&tail[..5], &data[195..200]);
+    assert_eq!(backend.read(&mut tail).expect("eof"), 0);
+    backend.seek(SeekFrom::Current(-100)).expect("seek back");
+    assert_eq!(read_exact_at(&mut backend, 100, 3), data[100..103].to_vec());
+    assert_eq!(
+        bytes.load(Ordering::SeqCst),
+        200,
+        "every byte read from the source once"
+    );
+    // One fill; the other source calls are the two end-of-stream probes (0 bytes each).
+    assert_eq!(reads.load(Ordering::SeqCst), 3);
+}
+
+#[test]
+fn source_stream_backend_larger_source_refills_and_large_reads_go_direct() {
+    let data: Vec<u8> = (0..1000u32).map(|i| (i % 251) as u8).collect();
+    let (mut backend, bytes, _) = counted_backend(data.clone(), 64, 64);
+    assert_eq!(read_exact_at(&mut backend, 0, 10), data[0..10].to_vec());
+    assert_eq!(
+        read_exact_at(&mut backend, 60, 10),
+        data[60..70].to_vec(),
+        "straddles the window"
+    );
+    assert_eq!(
+        read_exact_at(&mut backend, 500, 300),
+        data[500..800].to_vec(),
+        "direct read"
+    );
+    assert_eq!(
+        read_exact_at(&mut backend, 990, 50),
+        data[990..1000].to_vec(),
+        "short at the end"
+    );
+    assert!(
+        bytes.load(Ordering::SeqCst) <= 64 + 64 + 300 + 10,
+        "no source byte read twice here: {}",
+        bytes.load(Ordering::SeqCst)
+    );
+}
+
+#[test]
+fn source_stream_backend_seek_before_begin_fails_and_keeps_the_position() {
+    let (mut backend, _, _) = counted_backend(vec![1, 2, 3, 4], 16, 16);
+    backend.seek(SeekFrom::Start(2)).expect("seek");
+    let error = backend.seek(SeekFrom::Current(-3)).expect_err("before begin");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    let error = backend.seek(SeekFrom::End(-5)).expect_err("before begin");
+    assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
+    let mut one = [0u8; 1];
+    assert_eq!(backend.read(&mut one).expect("read"), 1);
+    assert_eq!(one[0], 3, "position unchanged by the failed seeks");
+    assert_eq!(backend.seek(SeekFrom::Start(10)).expect("past the end"), 10);
+    assert_eq!(backend.read(&mut one).expect("eof"), 0);
+}
+
+// Verifier finding: C# `NotSupportedException` of a read-only stream; `Length` keeps the position.
+#[test]
+fn source_stream_backend_len_keeps_position_and_is_read_only() {
+    let mut backend = SourceStreamBackend::new(Box::new(std::io::Cursor::new(vec![1u8, 2, 3, 4, 5, 6, 7])));
+    backend.seek(SeekFrom::Start(3)).expect("seek");
+    assert_eq!(backend.len().expect("len"), 7);
+    let mut one = [0u8; 1];
+    assert_eq!(backend.read(&mut one).expect("read"), 1);
+    assert_eq!(one[0], 4, "position kept after len");
+    let error = backend.write_all(&[1]).expect_err("read-only");
+    assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    assert_eq!(error.to_string(), "Stream does not support writing.");
+    let error = backend.set_len(1).expect_err("read-only");
+    assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+    assert_eq!(error.to_string(), "Stream does not support writing.");
+    assert!(backend.flush().is_ok());
+}
+
+#[test]
+fn source_stream_backend_starts_at_the_source_position() {
+    let mut cursor = std::io::Cursor::new(vec![9u8, 8, 7, 6]);
+    cursor.set_position(2);
+    let mut backend = SourceStreamBackend::new(Box::new(cursor));
+    assert_eq!(
+        backend.len().expect("len"),
+        4,
+        "len first must not move the logical position"
+    );
+    let mut two = [0u8; 2];
+    assert_eq!(backend.read(&mut two).expect("read"), 2);
+    assert_eq!(two, [7, 6]);
 }

@@ -349,7 +349,10 @@ impl ImageDecoder for WicDirectDecoder {
                 let source =
                     self.source_reader
                         .open_source(&request.path, request.priority, DECODE_SOURCE_BUFFER_SIZE)?;
-                ComStream::new(Box::new(SourceStreamBackend::new(source)))
+                ComStream::new(Box::new(SourceStreamBackend::with_buffer_size(
+                    source,
+                    DECODE_SOURCE_BUFFER_SIZE,
+                )))
             }
         };
         let result = self
@@ -371,7 +374,10 @@ impl ImageDecoder for WicDirectDecoder {
             SourceReadPriority::Viewer,
             READ_INFO_SOURCE_BUFFER_SIZE,
         )?;
-        let stream = ComStream::new(Box::new(SourceStreamBackend::new(source)));
+        let stream = ComStream::new(Box::new(SourceStreamBackend::with_buffer_size(
+            source,
+            READ_INFO_SOURCE_BUFFER_SIZE,
+        )));
         let result = Self::read_info_core(&stream).map_err(|e| relabel_invalid_argument(e, DECODER_LABEL));
         drop(stream);
         result
@@ -397,16 +403,124 @@ fn blank_argument(parameter: &str) -> DecodeError {
 
 /// The opened source as a W4-11a [`StreamBackend`] (C# hands the `Stream` from `ISourceReader.OpenSource` to
 /// `ManagedIStream`). Read-only: `write_all` / `set_len` fail with `ErrorKind::Unsupported` (C# `NotSupportedException`
-/// from a read-only `FileStream`/`MemoryStream`). `len` = seek to end and back (the position is unchanged).
+/// from a read-only `FileStream`/`MemoryStream`).
+///
+/// Disk reads (AGENTS priority 1: read each file once). Like the .NET `FileStream` C# reads through, the backend keeps
+/// its own read window of `buffer_size` bytes and serves every seek and read that stays inside it without touching
+/// the source; `len` asks the source for its end without dropping the window. (A `BufReader` drops its buffer on
+/// every `seek`, and WIC seeks constantly, so forwarding seeks made a decode read the file 4x to 13x.) The logical
+/// position lives here; the source is only moved when a read has to fetch outside the window. At most one source
+/// read per call (C# calls `Stream.Read` once per `IStream::Read`, and `FileStream` does at most one more fetch).
 pub struct SourceStreamBackend {
     inner: Box<dyn ReadSeek>,
+    /// Window capacity (C# `FileStream` `bufferSize`).
+    buffer_size: usize,
+    /// The bytes at `[window_start, window_start + window.len())` of the source.
+    window: Vec<u8>,
+    window_start: u64,
+    /// Logical stream position; `None` until first needed (then the source's own position).
+    position: Option<u64>,
+    /// Where the source currently is; `None` when unknown (after a failed source call).
+    inner_position: Option<u64>,
 }
 
 impl SourceStreamBackend {
-    /// Wraps the stream returned by `SourceReader::open_source`.
+    /// Wraps the stream returned by `SourceReader::open_source` with the decode window
+    /// ([`DECODE_SOURCE_BUFFER_SIZE`]).
     #[must_use]
     pub fn new(inner: Box<dyn ReadSeek>) -> Self {
-        Self { inner }
+        Self::with_buffer_size(inner, DECODE_SOURCE_BUFFER_SIZE)
+    }
+
+    /// Wraps `inner` with a read window of `buffer_size` bytes (the size the source was opened with; 0 counts as 1).
+    #[must_use]
+    pub fn with_buffer_size(inner: Box<dyn ReadSeek>, buffer_size: usize) -> Self {
+        Self {
+            inner,
+            buffer_size: buffer_size.max(1),
+            window: Vec::new(),
+            window_start: 0,
+            position: None,
+            inner_position: None,
+        }
+    }
+
+    /// The logical position (the source's own position the first time).
+    fn position(&mut self) -> io::Result<u64> {
+        if let Some(position) = self.position {
+            return Ok(position);
+        }
+        let position = self.inner.stream_position()?;
+        self.position = Some(position);
+        self.inner_position = Some(position);
+        Ok(position)
+    }
+
+    /// The window bytes from `position` on (empty when `position` is outside the window).
+    fn buffered_from(&self, position: u64) -> &[u8] {
+        position
+            .checked_sub(self.window_start)
+            .and_then(|offset| usize::try_from(offset).ok())
+            .and_then(|offset| self.window.get(offset..))
+            .unwrap_or(&[])
+    }
+
+    /// Moves the source to `target` unless it is already there.
+    fn move_inner_to(&mut self, target: u64) -> io::Result<()> {
+        if self.inner_position != Some(target) {
+            self.inner_position = None;
+            self.inner.seek(SeekFrom::Start(target))?;
+            self.inner_position = Some(target);
+        }
+        Ok(())
+    }
+
+    /// One source read at `position` into `out` (the source is moved there first if needed).
+    fn read_inner_at(&mut self, position: u64, out: &mut [u8]) -> io::Result<usize> {
+        self.move_inner_to(position)?;
+        match self.inner.read(out) {
+            Ok(read) => {
+                self.inner_position = Some(position + read as u64);
+                Ok(read)
+            }
+            Err(error) => {
+                self.inner_position = None;
+                Err(error)
+            }
+        }
+    }
+
+    /// Fetches the source from `position` on: straight into `out` when it is at least a window long (.NET
+    /// `FileStream` does the same) or the source has nothing left, else one window refill (sized to what is left of the source, so a source reader
+    /// that buffers itself never fetches more than this window holds) and a copy out of it.
+    fn fetch(&mut self, position: u64, out: &mut [u8]) -> io::Result<usize> {
+        if out.len() >= self.buffer_size {
+            return self.read_inner_at(position, out);
+        }
+        let remaining = self.len()?.saturating_sub(position);
+        if remaining == 0 {
+            // At (or past) the end: ask the source directly (normally 0 bytes) and keep the window for later seeks.
+            return self.read_inner_at(position, out);
+        }
+        let chunk = usize::try_from(remaining).map_or(self.buffer_size, |r| r.min(self.buffer_size));
+        let mut window = std::mem::take(&mut self.window);
+        window.clear();
+        window.resize(chunk, 0);
+        let read = self.read_inner_at(position, &mut window);
+        let read = match read {
+            Ok(read) => read,
+            Err(error) => {
+                window.clear();
+                self.window = window;
+                return Err(error);
+            }
+        };
+        window.truncate(read);
+        self.window = window;
+        self.window_start = position;
+        let copied = read.min(out.len());
+        out[..copied].copy_from_slice(&self.window[..copied]);
+        Ok(copied)
     }
 }
 
@@ -421,21 +535,61 @@ const READ_ONLY_STREAM_MESSAGE: &str = "Stream does not support writing.";
 
 impl StreamBackend for SourceStreamBackend {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        self.inner.read(buf)
+        if buf.is_empty() {
+            return Ok(0);
+        }
+        let position = self.position()?;
+        let buffered = self.buffered_from(position);
+        let copied = buffered.len().min(buf.len());
+        buf[..copied].copy_from_slice(&buffered[..copied]);
+        self.position = Some(position + copied as u64);
+        if copied == buf.len() {
+            return Ok(copied);
+        }
+        // One more fetch from the source for the rest; a failure after a partial copy reports the copied bytes
+        // (the next call meets the error again).
+        match self.fetch(position + copied as u64, &mut buf[copied..]) {
+            Ok(fetched) => {
+                self.position = Some(position + (copied + fetched) as u64);
+                Ok(copied + fetched)
+            }
+            Err(_) if copied > 0 => Ok(copied),
+            Err(error) => Err(error),
+        }
     }
     fn write_all(&mut self, _data: &[u8]) -> io::Result<()> {
         Err(io::Error::new(io::ErrorKind::Unsupported, READ_ONLY_STREAM_MESSAGE))
     }
+    /// Moves the logical position only (no source I/O, the window is kept). A target before 0 (or past `i64::MAX`)
+    /// fails with `InvalidInput` and leaves the position unchanged (the W4-11a seek-before-begin fault).
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        self.inner.seek(pos)
+        let target = match pos {
+            SeekFrom::Start(offset) => i128::from(offset),
+            SeekFrom::Current(delta) => i128::from(self.position()?) + i128::from(delta),
+            SeekFrom::End(delta) => i128::from(self.len()?) + i128::from(delta),
+        };
+        match u64::try_from(target) {
+            Ok(target) if i64::try_from(target).is_ok() => {
+                self.position = Some(target);
+                Ok(target)
+            }
+            _ => Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "invalid seek to a negative or overflowing position",
+            )),
+        }
     }
     fn set_len(&mut self, _len: u64) -> io::Result<()> {
         Err(io::Error::new(io::ErrorKind::Unsupported, READ_ONLY_STREAM_MESSAGE))
     }
+    /// The source's current end (asked each time, like .NET `FileStream.Length`); the logical position and the window
+    /// are unchanged.
     fn len(&mut self) -> io::Result<u64> {
-        let position = self.inner.stream_position()?;
+        // Pin the logical position before the source moves (the first call reads it from the source).
+        self.position()?;
+        self.inner_position = None;
         let end = self.inner.seek(SeekFrom::End(0))?;
-        self.inner.seek(SeekFrom::Start(position))?;
+        self.inner_position = Some(end);
         Ok(end)
     }
     fn flush(&mut self) -> io::Result<()> {
@@ -835,15 +989,40 @@ fn read_color_contexts(
     factory: &IWICImagingFactory,
     frame: &IWICBitmapFrameDecode,
 ) -> Result<Option<Vec<Option<Com<IWICColorContext>>>>, DecodeError> {
-    let mut count = 0u32;
-    // SAFETY: `frame` is live; the empty slice passes cCount = 0 with a dangling non-null pointer that WIC never
-    // dereferences for a zero count (T8); `count` is a valid, writable local.
-    let counted = unsafe { frame.GetColorContexts(&mut [], &raw mut count) }.map_err(|e| com_error(&e));
-    match counted {
-        Ok(()) => {}
+    let contexts = read_color_contexts_with(
+        || {
+            let mut count = 0u32;
+            // SAFETY: `frame` is live; the empty slice passes cCount = 0 with a dangling non-null pointer that WIC
+            // never dereferences for a zero count (T8); `count` is a valid, writable local.
+            unsafe { frame.GetColorContexts(&mut [], &raw mut count) }.map_err(|e| com_error(&e))?;
+            Ok(count)
+        },
+        || create_color_context(factory).map_err(|e| decode_error_from_wic(&e)),
+        |contexts: &[Com<IWICColorContext>]| {
+            let mut slots: Vec<Option<IWICColorContext>> = contexts.iter().map(|c| Some((**c).clone())).collect();
+            let mut actual = 0u32;
+            // SAFETY: `frame` is live; `slots` holds live, initialised-by-us colour contexts that WIC fills in place
+            // (it does not replace the pointers); `actual` is a valid, writable local.
+            unsafe { frame.GetColorContexts(&mut slots, &raw mut actual) }.map_err(|e| com_error(&e))
+        },
+    )?;
+    Ok(contexts.map(|contexts| contexts.into_iter().map(Some).collect()))
+}
+
+/// The decisions of C# `ReadColorContexts` over three seams (the WIC calls in production, closures in the tests):
+/// `count_query` (a [`is_color_metadata_fault`] -> `Ok(None)`, anything else propagates); `0` -> `Ok(None)` without
+/// creating anything; `create` once per context; `fill` over all of them. A metadata fault in `create` or `fill`
+/// drops every context made so far and gives `Ok(None)`; any other error drops them and propagates.
+fn read_color_contexts_with<C>(
+    count_query: impl FnOnce() -> Result<u32, DecodeError>,
+    mut create: impl FnMut() -> Result<C, DecodeError>,
+    fill: impl FnOnce(&[C]) -> Result<(), DecodeError>,
+) -> Result<Option<Vec<C>>, DecodeError> {
+    let count = match count_query() {
+        Ok(count) => count,
         Err(fault) if is_color_metadata_fault(&fault) => return Ok(None),
         Err(other) => return Err(other),
-    }
+    };
     if count == 0 {
         return Ok(None);
     }
@@ -852,15 +1031,10 @@ fn read_color_contexts(
     let filled = (|| {
         let mut contexts = Vec::with_capacity(count as usize);
         for _ in 0..count {
-            contexts.push(create_color_context(factory).map_err(|e| decode_error_from_wic(&e))?);
+            contexts.push(create()?);
         }
-        let mut slots: Vec<Option<IWICColorContext>> = contexts.iter().map(|c| Some((**c).clone())).collect();
-        let mut actual = 0u32;
-        // SAFETY: `frame` is live; `slots` holds `count` live, initialised-by-us colour contexts that WIC fills in
-        // place (it does not replace the pointers); `actual` is a valid, writable local.
-        unsafe { frame.GetColorContexts(&mut slots, &raw mut actual) }.map_err(|e| com_error(&e))?;
-        drop(slots);
-        Ok(contexts.into_iter().map(Some).collect::<Vec<_>>())
+        fill(&contexts)?;
+        Ok(contexts)
     })();
     match filled {
         Ok(contexts) => Ok(Some(contexts)),
@@ -1018,4 +1192,175 @@ fn dotnet_guid(guid: &GUID) -> DotnetGuid {
     bytes[6..8].copy_from_slice(&guid.data3.to_le_bytes());
     bytes[8..16].copy_from_slice(&guid.data4);
     DotnetGuid(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn com_fault() -> DecodeError {
+        DecodeError::Com {
+            hresult: 0x8898_2F04_u32 as i32,
+            message: "com".into(),
+        }
+    }
+
+    fn argument_fault() -> DecodeError {
+        DecodeError::InvalidArgument { message: "arg".into() }
+    }
+
+    fn out_of_memory() -> DecodeError {
+        DecodeError::OutOfMemory { message: "oom".into() }
+    }
+
+    // C#: WicDirectFaultInjectionTests.ReadColorContexts_CountQueryFails_IsUntaggedSrgb (both caught types)
+    #[test]
+    fn count_query_metadata_fault_is_untagged() {
+        for fault in [com_fault, argument_fault] {
+            let mut created = 0;
+            let result = read_color_contexts_with(
+                || Err(fault()),
+                || {
+                    created += 1;
+                    Ok(())
+                },
+                |_| Ok(()),
+            );
+            assert!(matches!(result, Ok(None)));
+            assert_eq!(created, 0);
+        }
+    }
+
+    // C#: WicDirectFaultInjectionTests.ReadColorContexts_UnexpectedFault_Propagates (count query)
+    #[test]
+    fn count_query_other_fault_propagates() {
+        let result = read_color_contexts_with(|| Err(out_of_memory()), || Ok(()), |_| Ok(()));
+        assert!(matches!(result, Err(DecodeError::OutOfMemory { .. })));
+        let result = read_color_contexts_with(
+            || Err(DecodeError::InvalidCast { message: "cast".into() }),
+            || Ok(()),
+            |_| Ok(()),
+        );
+        assert!(matches!(result, Err(DecodeError::InvalidCast { .. })));
+    }
+
+    #[test]
+    fn zero_contexts_create_nothing() {
+        let mut created = 0;
+        let mut filled = false;
+        let result = read_color_contexts_with(
+            || Ok(0),
+            || {
+                created += 1;
+                Ok(())
+            },
+            |_| {
+                filled = true;
+                Ok(())
+            },
+        );
+        assert!(matches!(result, Ok(None)));
+        assert_eq!((created, filled), (0, false));
+    }
+
+    #[test]
+    fn every_context_is_created_and_filled() {
+        let mut next = 0u32;
+        let mut seen = Vec::new();
+        let result = read_color_contexts_with(
+            || Ok(3),
+            || {
+                next += 1;
+                Ok(next)
+            },
+            |contexts| {
+                seen.extend_from_slice(contexts);
+                Ok(())
+            },
+        );
+        assert_eq!(result.ok().flatten(), Some(vec![1, 2, 3]));
+        assert_eq!(seen, vec![1, 2, 3]);
+    }
+
+    // C#: WicDirectFaultInjectionTests.ReadColorContexts_SecondQueryOrContextCreationFails_IsUntaggedSrgb
+    #[test]
+    fn creation_or_fill_metadata_fault_is_untagged() {
+        for fault in [com_fault, argument_fault] {
+            let mut made = 0;
+            let result = read_color_contexts_with(
+                || Ok(2),
+                || {
+                    made += 1;
+                    if made == 2 { Err(fault()) } else { Ok(made) }
+                },
+                |_| Ok(()),
+            );
+            assert!(matches!(result, Ok(None)), "creation");
+            let result = read_color_contexts_with(|| Ok(2), || Ok(0u8), |_| Err(fault()));
+            assert!(matches!(result, Ok(None)), "fill");
+        }
+    }
+
+    // C#: WicDirectFaultInjectionTests.ReadColorContexts_UnexpectedFault_Propagates (creation and fill)
+    #[test]
+    fn creation_or_fill_other_fault_propagates() {
+        let result = read_color_contexts_with(|| Ok(2), || Err::<u8, _>(out_of_memory()), |_| Ok(()));
+        assert!(matches!(result, Err(DecodeError::OutOfMemory { .. })), "creation");
+        let result = read_color_contexts_with(|| Ok(2), || Ok(0u8), |_| Err(out_of_memory()));
+        assert!(matches!(result, Err(DecodeError::OutOfMemory { .. })), "fill");
+    }
+
+    fn fixture_bytes(name: &str) -> Arc<[u8]> {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../tests/fixtures/wic-direct")
+            .join(name);
+        Arc::from(std::fs::read(path).expect("fixture"))
+    }
+
+    /// `GetExifColorSpace` returns the context's own value (the EXIF branch of the colour selection), for sRGB (1)
+    /// and Adobe RGB (2).
+    #[test]
+    #[ignore = "native: needs WIC"]
+    fn exif_color_space_reads_the_context_value() {
+        let factory = create_factory().expect("factory");
+        for value in [1u32, 2] {
+            let context = create_color_context(&factory).expect("context");
+            // SAFETY: `context` is a live, freshly created colour context.
+            unsafe { context.InitializeFromExifColorSpace(value) }.expect("initialize");
+            assert_eq!(context_type(&context).expect("type"), WICColorContextExifColorSpace);
+            assert_eq!(exif_color_space(&context).expect("value"), value);
+        }
+    }
+
+    /// C# `ColorTransformChain.IsActive` after a build over the Display P3 JPEG: the copy guard then reports a COM
+    /// failure of the (lazy) transform as the fallbackable ICC `NotSupported` (WicIccDiagnosticsTests).
+    #[test]
+    #[ignore = "native: needs WIC"]
+    fn color_chain_over_a_profiled_frame_is_active() {
+        let stream = ComStream::from_bytes(fixture_bytes("icc-p3-64x48.jpg"));
+        let factory = create_factory().expect("factory");
+        let decoder =
+            create_decoder_from_stream(&factory, &stream.istream(), WICDecodeMetadataCacheOnDemand).expect("decoder");
+        let frame = get_frame(&decoder, 0).expect("frame");
+        let contexts = read_color_contexts(&factory, &frame)
+            .expect("contexts")
+            .expect("tagged");
+        let chosen = select_source_color_context(&contexts, |c| context_type(c), |c| exif_color_space(c))
+            .expect("select")
+            .expect("a profile is chosen");
+        let profile = contexts[chosen].as_ref().expect("context");
+        let source: IWICBitmapSource = frame.cast().expect("source view");
+        assert!(!ColorTransformChain::default().is_active());
+        let mut chain = ColorTransformChain::default();
+        let output = chain.build(&factory, &source, profile, true).expect("chain");
+        assert!(chain.is_active());
+        let error = copy_pixels_guarded(|| Err(com_fault()), chain.is_active()).expect_err("copy fails");
+        assert!(
+            matches!(error.kind(), DecodeError::NotSupported { .. })
+                && error.message().starts_with(ICC_TRANSFORM_FAILED_PREFIX),
+            "{error:?}"
+        );
+        drop(output);
+        drop(chain);
+    }
 }
