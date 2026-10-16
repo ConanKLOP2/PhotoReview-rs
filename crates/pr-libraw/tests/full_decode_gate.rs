@@ -1049,6 +1049,85 @@ fn granted_and_cancelled_before_wait_returns_canceled_and_frees_slot() {
     assert_eq!(gate.slots_available(), 1);
 }
 
+// Repair round 2: kill M17 (a racing grant on a failing waiter frees the slot instead of passing it to the next waiter).
+/// Shared setup for the two M17 killers: a holder viewer lease; a preload queues behind it (hook `Ok`); a viewer then
+/// enters and its hook drops the holder (the slot is granted to that viewer, the viewer lane is preferred) and then fails
+/// via `fail`. C# `Enter` catch: `if (waiter.Granted) ReleaseLocked();` hands the slot to the queued preload, which must be
+/// granted within [`BOUND`]. Returns the viewer's `enter` outcome.
+fn racing_grant_on_failed_viewer_passes_slot_to_queued_preload(
+    fail: impl Fn(&CancelToken) -> Result<(), String> + Send + Sync + 'static,
+) -> Result<FullDecodeLease, GateError> {
+    let holder: Arc<Mutex<Option<FullDecodeLease>>> = Arc::new(Mutex::new(None));
+    let viewer_token = CancelToken::new();
+    let (queued_tx, queued_rx) = mpsc::channel::<()>();
+    let queued_tx = Mutex::new(queued_tx);
+    let (hook_holder, hook_token) = (Arc::clone(&holder), viewer_token.clone());
+    let gate = FullDecodeGate::with_waiter_queued(
+        2,
+        Arc::new(move |priority| {
+            if priority == Preload {
+                lock(&queued_tx).send(()).expect("test alive");
+                return Ok(());
+            }
+            drop(lock(&hook_holder).take());
+            fail(&hook_token)
+        }),
+    );
+    *lock(&holder) = Some(
+        gate.enter(Viewer, &CancelToken::none())
+            .expect("the free slot is granted"),
+    );
+
+    let preload_token = CancelToken::new();
+    let (granted_tx, granted_rx) = mpsc::channel::<bool>();
+    let (preload_gate, preload_cancel) = (gate.clone(), preload_token.clone());
+    let preload = thread::spawn(move || {
+        let lease = preload_gate.enter(Preload, &preload_cancel);
+        let _ = granted_tx.send(lease.is_ok());
+        drop(lease);
+    });
+    queued_rx.recv_timeout(BOUND).expect("the preload queued");
+    assert_eq!(gate.queued_preloads(), 1);
+
+    let outcome = gate.enter(Viewer, &viewer_token);
+
+    let granted = granted_rx.recv_timeout(BOUND);
+    if granted.is_err() {
+        preload_token.cancel(); // unblock the stuck preload before failing
+    }
+    assert_eq!(
+        granted,
+        Ok(true),
+        "the queued preload must receive the slot the failing viewer was granted"
+    );
+    preload.join().expect("preload thread");
+    assert_eq!(
+        (gate.slots_available(), gate.queued_viewers(), gate.queued_preloads()),
+        (1, 0, 0)
+    );
+    outcome
+}
+
+#[test]
+fn racing_grant_on_hook_failed_viewer_is_passed_to_the_next_queued_waiter() {
+    let outcome = racing_grant_on_failed_viewer_passes_slot_to_queued_preload(|_token| Err("seam".to_owned()));
+    assert_eq!(
+        outcome.err(),
+        Some(GateError::WaiterHook {
+            message: "seam".to_owned()
+        })
+    );
+}
+
+#[test]
+fn racing_grant_on_cancelled_viewer_is_passed_to_the_next_queued_waiter() {
+    let outcome = racing_grant_on_failed_viewer_passes_slot_to_queued_preload(|token| {
+        token.cancel();
+        Ok(())
+    });
+    assert_eq!(outcome.err(), Some(GateError::Canceled));
+}
+
 /// Kills M15 (aging looks at the back preload): only the FRONT preload is considered (C# `_preloadQueue.First`).
 #[test]
 fn only_the_front_preload_is_aged() {
