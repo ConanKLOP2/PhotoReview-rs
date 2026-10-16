@@ -637,3 +637,56 @@ fn delegate_probe_snapshot_is_the_constant_fifty_percent_and_sixteen_gib() {
     assert_eq!(snapshot.load_percent, 50);
     assert_eq!(snapshot.available_bytes, 16 * 1024 * 1024 * 1024);
 }
+
+// ---- repair round 1 -------------------------------------------------------------------------------------------------
+
+// .NET invariant "F0" of the non-finite doubles: `NaN`, `Infinity`, `-Infinity` (the sign is kept).
+#[test]
+fn format_f0_invariant_prints_the_invariant_non_finite_symbols() {
+    assert_eq!(policy::format_f0_invariant(f64::INFINITY), "Infinity");
+    assert_eq!(policy::format_f0_invariant(f64::NEG_INFINITY), "-Infinity");
+    assert_eq!(policy::format_f0_invariant(f64::NAN), "NaN");
+    assert_eq!(policy::format_f0_invariant(f64::MAX).len(), 309);
+    assert_eq!(policy::format_f0_invariant(-f64::MAX).len(), 310);
+}
+
+// `From<io::Error>` keeps the I/O error (and its kind): the scheduler's I/O arm catches it.
+#[test]
+fn key_error_from_io_error_is_io_with_the_same_error() {
+    let error = KeyError::from(std::io::Error::new(
+        std::io::ErrorKind::PermissionDenied,
+        "access denied",
+    ));
+    match &error {
+        KeyError::Io(inner) => {
+            assert_eq!(inner.kind(), std::io::ErrorKind::PermissionDenied);
+            assert_eq!(inner.to_string(), "access denied");
+        }
+        KeyError::Other(other) => panic!("expected Io, got Other({other})"),
+    }
+}
+
+// KeyError shows the wrapped error's text and exposes it as its source (both variants).
+#[test]
+fn key_error_displays_and_sources_the_wrapped_error() {
+    let io = KeyError::Io(std::io::Error::new(std::io::ErrorKind::NotFound, "file vanished"));
+    assert_eq!(io.to_string(), "file vanished");
+    let source = std::error::Error::source(&io).expect("the io error is the source");
+    assert_eq!(source.to_string(), "file vanished");
+
+    let other = KeyError::Other("malformed path".into());
+    assert_eq!(other.to_string(), "malformed path");
+    let source = std::error::Error::source(&other).expect("the wrapped error is the source");
+    assert_eq!(source.to_string(), "malformed path");
+
+    let argument = KeyError::from(CacheKeyError::InvalidPath(PathError::Argument));
+    let expected = CacheKeyError::InvalidPath(PathError::Argument).to_string();
+    assert_eq!(argument.to_string(), expected);
+    let missing = KeyError::from(CacheKeyError::SourceNoLongerExists {
+        full_name: r"C:\gone.jpg".to_owned(),
+    });
+    match missing {
+        KeyError::Io(inner) => assert_eq!(inner.kind(), std::io::ErrorKind::NotFound),
+        KeyError::Other(other) => panic!("expected Io, got Other({other})"),
+    }
+}

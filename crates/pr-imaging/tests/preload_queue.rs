@@ -1106,3 +1106,147 @@ fn pending_caller_candidate_is_dropped_when_the_order_is_rebuilt_queue() {
     assert!(queue.refresh(&harness.ctx(), inputs(1, 5)).expect("refresh"));
     assert_eq!(next_candidate(&harness, &mut queue).index, 6);
 }
+
+// ---- repair round 1: observable state the shell reads (batch yield, paused flag, queued count, entries) ---------------
+
+/// Dispatches every candidate of one fresh pass around image 0 (window forward 8 of 10 images, unlimited headroom,
+/// nothing finished) and returns the `batch_yield` flags in order.
+fn batch_yields(workers: i32) -> Vec<bool> {
+    let harness = Harness::new(
+        10,
+        options(PreloadWindow::new(8, 0), false, 4),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let mut queue = harness.queue(workers);
+    let cancel = CancelToken::new();
+    assert!(queue.refresh(&harness.ctx(), inputs(0, 0)).expect("refresh"));
+    let mut flags = Vec::new();
+    loop {
+        match queue.next(&harness.ctx(), true, &cancel).expect("next") {
+            QueueStep::Dispatch(candidate) => flags.push(candidate.batch_yield),
+            QueueStep::Exhausted => return flags,
+            other => panic!("unexpected step {other:?}"),
+        }
+    }
+}
+
+// C# `++examinedSinceYield >= workers` (PreloadScheduler.cs d92d6aae): one yield (and progress line) per `workers`
+// dispatches; with `workers <= 0` every dispatch yields.
+#[test]
+fn batch_yield_comes_after_every_workers_dispatches() {
+    assert_eq!(
+        batch_yields(3),
+        vec![false, false, true, false, false, true, false, false]
+    );
+    assert_eq!(batch_yields(1), vec![true; 8]);
+    assert_eq!(batch_yields(0), vec![true; 8]);
+    assert_eq!(batch_yields(-1), vec![true; 8]);
+}
+
+// C# `paused` is only set by the headroom check: a run that drained its order is not paused (the shell's exit check
+// arms the memory re-check only for a paused run).
+#[test]
+fn drained_run_is_not_paused() {
+    let harness = Harness::new(
+        6,
+        options(PreloadWindow::new(3, 0), false, 2),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let mut queue = harness.queue(2);
+    assert!(!queue.is_paused(), "a fresh run is not paused");
+    assert!(queue.refresh(&harness.ctx(), inputs(0, 0)).expect("refresh"));
+
+    let (seen, end) = harness.drain(&mut queue, true);
+
+    assert_eq!(indices(&seen), vec![1, 2, 3]);
+    assert_eq!(end, QueueStep::Exhausted);
+    assert!(!queue.is_paused());
+}
+
+// C# `queued.Count` (pause/progress lines): in-flight paths count; `ForgetUnlessFailed` removes them ignoring case,
+// except after `Failed`.
+#[test]
+fn queued_count_tracks_in_flight_and_failed_paths() {
+    let harness = Harness::new(
+        8,
+        options(PreloadWindow::new(4, 0), false, 8),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let mut queue = harness.queue(8);
+    assert_eq!(queue.queued_count(), 0);
+    assert!(queue.refresh(&harness.ctx(), inputs(0, 0)).expect("refresh"));
+
+    let first = next_candidate(&harness, &mut queue);
+    let second = next_candidate(&harness, &mut queue);
+    let third = next_candidate(&harness, &mut queue);
+    assert_eq!(queue.queued_count(), 3);
+
+    queue.on_finished(&first.path.to_uppercase(), PreloadOutcome::Cached);
+    assert_eq!(queue.queued_count(), 2, "forgotten ignoring case");
+    queue.on_finished(&second.path, PreloadOutcome::Failed);
+    assert_eq!(queue.queued_count(), 2, "a failed path stays queued");
+    queue.on_finished(&third.path, PreloadOutcome::Busy);
+    assert_eq!(queue.queued_count(), 1, "a busy path is forgotten");
+    queue.on_finished(&third.path, PreloadOutcome::Superseded);
+    assert_eq!(queue.queued_count(), 1);
+}
+
+// The snapshot the run iterates is the one it was created with (identity feeds the folder estimate cache).
+#[test]
+fn entries_is_the_snapshot_the_run_was_created_with() {
+    let harness = Harness::new(
+        4,
+        options(PreloadWindow::new(3, 0), false, 2),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let queue = harness.queue(2);
+    assert!(Arc::ptr_eq(queue.entries(), &harness.entries));
+    assert_eq!(queue.entries().len(), 4);
+}
+
+// C# `IPreloadTarget` default interface members: `ActiveViewerDecodes => 0`, `CachedPreviewBytes => null`,
+// `HasDiskCachedPreview => false` (the fake target keeps all three defaults).
+#[test]
+fn preload_target_defaults_match_the_csharp_default_members() {
+    let harness = Harness::new(
+        2,
+        options(PreloadWindow::new(1, 0), false, 1),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    let key = harness
+        .target
+        .get_current_cache_key(&harness.entries[1])
+        .expect("key from metadata");
+    harness.target.mark_cached(1);
+
+    assert_eq!(harness.target.active_viewer_decodes(), 0);
+    assert_eq!(harness.target.cached_preview_bytes(&key), None);
+    assert!(!harness.target.has_disk_cached_preview(&key));
+}
+
+// QueueError carries the escaping error's text (the exception of "Preload scheduler failed") and exposes it as source.
+#[test]
+fn queue_error_displays_and_sources_the_escaping_error() {
+    let mut harness = Harness::new(
+        6,
+        options(PreloadWindow::new(3, 0), false, 2),
+        FakeProbe::new(Headroom::Fixed(true)),
+        KEY_BOX,
+    );
+    harness.target.key_failures.insert(1, KeyFailure::Other);
+    let mut queue = harness.queue(2);
+    assert!(queue.refresh(&harness.ctx(), inputs(0, 0)).expect("refresh"));
+
+    let error = queue
+        .next(&harness.ctx(), true, &CancelToken::new())
+        .expect_err("a non-I/O key error escapes");
+
+    assert_eq!(error.to_string(), "malformed path");
+    let source = std::error::Error::source(&error).expect("the escaping error is the source");
+    assert_eq!(source.to_string(), "malformed path");
+}
