@@ -172,6 +172,108 @@ fn directory_name(path: &Path) -> Option<&Path> {
     path.parent().filter(|p| !p.as_os_str().is_empty())
 }
 
+/// Plain paths of 260+ UTF-16 units need the verbatim prefix for `MoveFileExW` (`C:\x` -> `\\?\C:\x`, `\\server\share\x`
+/// -> `\\?\UNC\server\share\x`, what .NET's path normalisation does). Shorter paths and `\\?\`, `\\.\` or other forms
+/// pass through unchanged.
+#[cfg(windows)]
+fn extend_long_path(mut units: Vec<u16>) -> Vec<u16> {
+    const MAX_SHORT_PATH: usize = 260;
+    let bs = u16::from(b'\\');
+    let drive_rooted = units.len() >= 3 && units[1] == u16::from(b':') && units[2] == bs;
+    // `\\server\share...` but not `\\?\...`, `\\.\...` or `\\\...`.
+    let plain_unc = units.len() >= 3
+        && units[0] == bs
+        && units[1] == bs
+        && units[2] != bs
+        && units[2] != u16::from(b'?')
+        && units[2] != u16::from(b'.');
+    if units.len() >= MAX_SHORT_PATH && drive_rooted {
+        let mut extended: Vec<u16> = r"\\?\".encode_utf16().collect();
+        extended.append(&mut units);
+        extended
+    } else if units.len() >= MAX_SHORT_PATH && plain_unc {
+        let mut extended: Vec<u16> = r"\\?\UNC\".encode_utf16().collect();
+        extended.extend_from_slice(&units[2..]);
+        extended
+    } else {
+        units
+    }
+}
+
+#[cfg(all(test, windows))]
+mod long_path_tests {
+    use super::extend_long_path;
+
+    fn pad(prefix: &str, total: usize) -> Vec<u16> {
+        let mut text = prefix.to_string();
+        while text.encode_utf16().count() < total {
+            text.push('x');
+        }
+        text.encode_utf16().collect()
+    }
+
+    fn text(units: &[u16]) -> String {
+        String::from_utf16(units).expect("utf16")
+    }
+
+    #[test]
+    fn drive_path_gets_prefix_from_260_units() {
+        let at_limit = pad(r"C:\a\", 260);
+        let expected = format!(r"\\?\{}", text(&at_limit));
+        assert_eq!(text(&extend_long_path(at_limit)), expected);
+    }
+
+    #[test]
+    fn drive_path_below_260_units_is_unchanged() {
+        let short = pad(r"C:\a\", 259);
+        assert_eq!(extend_long_path(short.clone()), short);
+    }
+
+    #[test]
+    fn unc_path_gets_unc_prefix_from_260_units() {
+        let at_limit = pad(r"\\server\share\a\", 260);
+        let expected = format!(r"\\?\UNC\{}", &text(&at_limit)[2..]);
+        assert_eq!(text(&extend_long_path(at_limit)), expected);
+    }
+
+    #[test]
+    fn unc_path_below_260_units_is_unchanged() {
+        let short = pad(r"\\server\share\a\", 259);
+        assert_eq!(extend_long_path(short.clone()), short);
+    }
+
+    #[test]
+    fn verbatim_device_and_triple_backslash_paths_are_unchanged() {
+        for prefix in [
+            r"\\?\C:\a\",
+            r"\\?\UNC\server\share\",
+            r"\\.\C:\a\",
+            r"\\\server\share\",
+        ] {
+            let long = pad(prefix, 300);
+            assert_eq!(extend_long_path(long.clone()), long, "{prefix}");
+        }
+    }
+
+    #[test]
+    fn other_long_forms_are_unchanged() {
+        for prefix in [r"C:a\", r"\", r"a\"] {
+            let long = pad(prefix, 300);
+            assert_eq!(extend_long_path(long.clone()), long, "{prefix}");
+        }
+    }
+
+    #[test]
+    fn minimal_unc_and_degenerate_inputs() {
+        assert!(extend_long_path(Vec::new()).is_empty());
+        let two: Vec<u16> = r"\\".encode_utf16().collect();
+        assert_eq!(extend_long_path(two.clone()), two);
+        let long_unc_one_char_server = pad(r"\\s", 300);
+        let expected = format!(r"\\?\UNC\{}", &text(&long_unc_one_char_server)[2..]);
+        assert_eq!(text(&extend_long_path(long_unc_one_char_server)), expected);
+    }
+}
+
 /// `File.Move(temp, target, overwrite: true)`: `MoveFileExW(MOVEFILE_REPLACE_EXISTING)`, which is denied while another
 /// handle has the target open (even with delete sharing). std's `fs::rename` uses POSIX replace semantics on current
 /// toolchains and would silently succeed there.
@@ -179,40 +281,20 @@ fn directory_name(path: &Path) -> Option<&Path> {
 fn rename_over(from: &Path, to: &Path) -> io::Result<()> {
     use std::os::windows::ffi::OsStrExt;
     const MOVEFILE_REPLACE_EXISTING: u32 = 0x1;
-    const MAX_SHORT_PATH: usize = 260;
-
     #[link(name = "kernel32")]
     unsafe extern "system" {
         fn MoveFileExW(existing: *const u16, new: *const u16, flags: u32) -> i32;
     }
 
-    /// `\\server\share...` but not `\\?\...`, `\\.\...` or `\\\...`.
-    fn is_plain_unc(units: &[u16]) -> bool {
-        let bs = u16::from(b'\\');
-        units.len() >= 3
-            && units[0] == bs
-            && units[1] == bs
-            && units[2] != bs
-            && units[2] != u16::from(b'?')
-            && units[2] != u16::from(b'.')
-    }
-
+    /// UTF-16 for `MoveFileExW`. Like .NET's `Path.GetFullPath`, the path is made absolute first (a relative path is
+    /// resolved against the current directory, also when only its absolute form is long) and a plain path of 260+
+    /// units gets the verbatim prefix. `\\?\` and `\\.\` paths pass through `absolute` unchanged.
     fn wide(path: &Path) -> io::Result<Vec<u16>> {
-        let mut units: Vec<u16> = path.as_os_str().encode_wide().collect();
-        if units.contains(&0) {
+        if path.as_os_str().encode_wide().any(|unit| unit == 0) {
             return Err(io::Error::new(io::ErrorKind::InvalidInput, "path contains a NUL"));
         }
-        let drive_rooted = units.len() >= 3 && units[1] == u16::from(b':') && units[2] == u16::from(b'\\');
-        if units.len() >= MAX_SHORT_PATH && drive_rooted {
-            let mut extended: Vec<u16> = r"\\?\".encode_utf16().collect();
-            extended.append(&mut units);
-            units = extended;
-        } else if units.len() >= MAX_SHORT_PATH && is_plain_unc(&units) {
-            // \\server\share\x -> \\?\UNC\server\share\x (what C# Path normalisation does)
-            let mut extended: Vec<u16> = r"\\?\UNC\".encode_utf16().collect();
-            extended.extend_from_slice(&units[2..]);
-            units = extended;
-        }
+        let absolute = std::path::absolute(path)?;
+        let mut units = extend_long_path(absolute.as_os_str().encode_wide().collect());
         units.push(0);
         Ok(units)
     }
@@ -253,19 +335,18 @@ fn open_create_new(path: &Path) -> io::Result<fs::File> {
 
 /// C# `DiskCacheStore.TryDelete(path, log)` as used by the cleanup: `false` when the file does not exist; deletes it
 /// and returns `!exists` afterwards; an I/O or permission error is logged as `"Delete failed: {path}"` with the error
-/// (`log.error`) and returns `false`. W4-09 owns the public twin; if it lands first this private copy is replaced by
+/// (`log.error`) and (nothing is returned). W4-09 owns the public twin; if it lands first this private copy is replaced by
 /// a call to it (no behaviour change).
-fn try_delete(path: &Path, log: Option<&dyn Log>) -> bool {
+fn try_delete(path: &Path, log: Option<&dyn Log>) {
     if !path.exists() {
-        return false;
+        return;
     }
     match fs::remove_file(path) {
-        Ok(()) => !path.exists(),
+        Ok(()) => {}
         Err(e) => {
             if let Some(log) = log {
                 log.error(&format!("Delete failed: {}", path.display()), Some(&e));
             }
-            false
         }
     }
 }
