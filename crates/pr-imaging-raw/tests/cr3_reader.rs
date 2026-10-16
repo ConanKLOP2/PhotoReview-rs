@@ -479,6 +479,8 @@ struct FaultSource {
     inner: InMemoryRawHeaderSource,
     trigger: Option<(Trigger, Fault)>,
     reads: Vec<(i64, i32)>,
+    /// The fault fires once (the doc of [`Trigger::Offset`] says "the FIRST read at this exact offset").
+    fired: bool,
 }
 
 impl FaultSource {
@@ -487,6 +489,7 @@ impl FaultSource {
             inner: InMemoryRawHeaderSource::new(file.to_vec()),
             trigger,
             reads: Vec::new(),
+            fired: false,
         }
     }
 }
@@ -498,12 +501,14 @@ impl RawHeaderSource for FaultSource {
 
     fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
         self.reads.push((offset, count));
-        let hit = match self.trigger {
-            Some((Trigger::Nth(k), _)) => self.reads.len() - 1 == k,
-            Some((Trigger::Offset(o), _)) => offset == o,
-            None => false,
-        };
+        let hit = !self.fired
+            && match self.trigger {
+                Some((Trigger::Nth(k), _)) => self.reads.len() - 1 == k,
+                Some((Trigger::Offset(o), _)) => offset == o,
+                None => false,
+            };
         if hit {
+            self.fired = true;
             let fault = self.trigger.map(|(_, f)| f).unwrap_or(Fault::Invalid);
             return Err(match fault {
                 Fault::Io => RawHeaderError::invalid_data_io("injected I/O failure", io::Error::other("injected")),
@@ -2511,7 +2516,11 @@ fn failing_source_at_every_read_index_returns_err_not_panic() {
             ),
             Ok(_) => panic!("read {k}: an injected I/O failure must not be swallowed"),
         }
-        let in_probe = offset >= track_offset && offset < track_offset + i64::try_from(track_len).expect("fits");
+        // The canon layout ends with the bare track JPEG, so the top-level scan reads a box header at `track_offset` as the LAST read of a
+        // clean run (a hostile-looking size, `None`): that read is not the probe's and propagates.
+        let in_probe = k + 1 != reads.len()
+            && offset >= track_offset
+            && offset < track_offset + i64::try_from(track_len).expect("fits");
         let mut plain = FaultSource::new(&file, Some((Trigger::Nth(k), Fault::Invalid)));
         match Cr3ContainerReader.read(&mut plain, &CancelToken::none()) {
             Ok(info) => {
