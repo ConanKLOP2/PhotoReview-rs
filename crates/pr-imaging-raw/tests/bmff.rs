@@ -940,3 +940,35 @@ fn fuzz_bmff_box_navigator_fails_only_cleanly() {
         }
     }
 }
+
+// Kills the `limit - current >= 8` mutant: no header read once the parent payload is exhausted,
+// even when a valid sibling box follows the parent in the file.
+#[test]
+fn read_child_boxes_issues_no_read_past_the_parent_payload() {
+    let mut file = vec![0, 0, 0, 8, b'f', b'r', b'e', b'e'];
+    file.extend_from_slice(&[0, 0, 0, 8, b's', b'i', b'b', b'l']);
+    file.extend_from_slice(&[0u8; 64]);
+    let mut source = RecordingSource {
+        inner: src(file),
+        reads: Vec::new(),
+    };
+    let parent = BmffBox::new("moov", 0, 8, 0, 8);
+    let kids = read_child_boxes(&mut source, &parent, 0).unwrap();
+    assert_eq!(kids.len(), 1);
+    assert_eq!(source.reads, vec![(0, 8)], "only the child header may be read");
+}
+
+#[test]
+fn read_child_boxes_issues_no_read_for_fewer_than_eight_trailing_bytes() {
+    let mut file = vec![0, 0, 0, 8, b'f', b'r', b'e', b'e'];
+    file.extend_from_slice(&[0u8; 7]);
+    file.extend_from_slice(&[0, 0, 0, 8, b's', b'i', b'b', b'l']);
+    let mut source = RecordingSource {
+        inner: src(file),
+        reads: Vec::new(),
+    };
+    let parent = BmffBox::new("moov", 0, 15, 0, 15);
+    let kids = read_child_boxes(&mut source, &parent, 0).unwrap();
+    assert_eq!(kids.len(), 1);
+    assert_eq!(source.reads, vec![(0, 8)]);
+}
