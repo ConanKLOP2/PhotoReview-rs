@@ -403,19 +403,23 @@ fn start_prune_loop(inner: &Arc<StoreInner>) {
 
 /// The body of the C# `Task.Run` lambda in `RunPruneLoop` (contract semantics 6).
 fn run_prune_loop(inner: &Arc<StoreInner>) {
-    loop {
-        inner.prune_pending.store(false, Ordering::SeqCst);
-        // Any failure (I/O, access, or a panic) costs only this pass: one escaping the loop would leave
-        // `prune_scheduled` true forever and the cache would never be pruned again.
-        match catch_unwind(AssertUnwindSafe(|| inner.run_prune_pass())) {
-            Ok(Ok(())) => {}
-            Ok(Err(error)) => inner.log_prune_failure(&error),
-            Err(payload) => inner.log_prune_failure(&io::Error::other(panic_message(payload.as_ref()))),
+    // C# `try { do { .. } while (pending) } finally { .. }`: the only thing that can escape the loop is a panic of
+    // the log itself while it reports `Prune failed` (C# `_log.Error` throwing inside the `catch`).
+    let loop_outcome = catch_unwind(AssertUnwindSafe(|| {
+        loop {
+            inner.prune_pending.store(false, Ordering::SeqCst);
+            // Any failure (I/O, access, or a panic) costs only this pass: one escaping the loop would leave
+            // `prune_scheduled` true forever and the cache would never be pruned again.
+            match catch_unwind(AssertUnwindSafe(|| inner.run_prune_pass())) {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => inner.log_prune_failure(&error),
+                Err(payload) => inner.log_prune_failure(&io::Error::other(panic_message(payload.as_ref()))),
+            }
+            if !inner.prune_pending.load(Ordering::SeqCst) {
+                break;
+            }
         }
-        if !inner.prune_pending.load(Ordering::SeqCst) {
-            break;
-        }
-    }
+    }));
 
     // C# `finally`: the test hook, then clear the scheduled flag. No lock is held while the hook runs.
     let hook = inner
@@ -423,14 +427,22 @@ fn run_prune_loop(inner: &Arc<StoreInner>) {
         .lock()
         .unwrap_or_else(PoisonError::into_inner)
         .clone();
-    if let Some(hook) = hook {
-        // A panicking hook must not skip the flag reset below.
-        let _ = catch_unwind(AssertUnwindSafe(|| hook()));
+    let hook_panicked = hook.is_some_and(|hook| catch_unwind(AssertUnwindSafe(|| hook())).is_err());
+    if hook_panicked {
+        // C#: a hook that throws inside the `finally` skips the `Interlocked.Exchange` that follows it, so the store
+        // stays scheduled and the task faults (unobserved: the exception is dropped, not rethrown). Test seam only.
+        return;
     }
     inner.prune_scheduled.store(false, Ordering::SeqCst);
     {
         let _guard = inner.idle_lock.lock().unwrap_or_else(PoisonError::into_inner);
         inner.idle.notify_all();
+    }
+
+    // C#: a log panic escaped the loop; after the `finally` the task faults (unobserved, so the panic is dropped
+    // here, never resumed) and the exit-window re-check below is skipped.
+    if loop_outcome.is_err() {
+        return;
     }
 
     // A prune requested right before or during the clearing of the flag is serviced by a new loop.
