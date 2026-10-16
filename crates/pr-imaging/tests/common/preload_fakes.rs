@@ -372,6 +372,8 @@ impl ManualTimers {
 pub type PreloadHook = Arc<dyn Fn(&str, &CancelToken) -> Result<(), DecodeError> + Send + Sync>;
 /// C# `KeyFailure`: `Some` makes `get_current_cache_key(entry)` fail for that path.
 pub type KeyFailureHook = Arc<dyn Fn(&str) -> Option<KeyError> + Send + Sync>;
+/// Called with the key's path on every `try_get_cached_preview(key)` (may panic: C# a throwing `TryGetCachedPreview`).
+pub type CachedLookupHook = Arc<dyn Fn(&str) + Send + Sync>;
 
 /// Fake preview cache. Keys are built like the real target (`ImageCacheKey::create` over the fake file system), so
 /// the warmed-key set holds the same identities the scheduler compares.
@@ -388,6 +390,7 @@ pub struct FakeTarget {
     key_calls: Mutex<HashMap<String, usize>>,
     on_preload: Mutex<Option<PreloadHook>>,
     key_failure: Mutex<Option<KeyFailureHook>>,
+    cached_lookup: Mutex<Option<CachedLookupHook>>,
     active_viewer: AtomicI32,
     bytes: AtomicI64,
 }
@@ -407,6 +410,7 @@ impl FakeTarget {
             key_calls: Mutex::new(HashMap::new()),
             on_preload: Mutex::new(None),
             key_failure: Mutex::new(None),
+            cached_lookup: Mutex::new(None),
             active_viewer: AtomicI32::new(0),
             bytes: AtomicI64::new(0),
         })
@@ -420,6 +424,11 @@ impl FakeTarget {
     /// C# `KeyFailure`.
     pub fn set_key_failure(&self, hook: impl Fn(&str) -> Option<KeyError> + Send + Sync + 'static) {
         *lock(&self.key_failure) = Some(Arc::new(hook));
+    }
+
+    /// Runs `hook(key.path())` at the start of every `try_get_cached_preview(key)`.
+    pub fn set_on_cached_lookup(&self, hook: impl Fn(&str) + Send + Sync + 'static) {
+        *lock(&self.cached_lookup) = Some(Arc::new(hook));
     }
 
     /// C# `HasDiskCachedPreview` (settable): the on-disk preview cache holds `path`.
@@ -538,6 +547,10 @@ impl PreloadTarget for FakeTarget {
     }
 
     fn try_get_cached_preview(&self, key: &ImageCacheKey) -> bool {
+        let hook = lock(&self.cached_lookup).clone();
+        if let Some(hook) = hook {
+            hook(key.path());
+        }
         lock(&self.cached).contains(key)
     }
 

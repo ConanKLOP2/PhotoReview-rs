@@ -40,7 +40,13 @@ struct InMemoryTarget {
     entries: Arc<[CatalogEntry]>,
     cached: Mutex<HashSet<String>>,
     preloaded: AtomicUsize,
+    /// A decode of this (upper-case) path waits on the gate, ignoring cancellation.
+    gated: Mutex<Option<(String, Arc<Gate>)>>,
+    /// Called on every `get_current_cache_key(entry)` with the path; `Some` fails the lookup.
+    key_hook: Mutex<Option<KeyHook>>,
 }
+
+type KeyHook = Arc<dyn Fn(&str) -> Option<KeyError> + Send + Sync>;
 
 impl InMemoryTarget {
     fn new(decode_box: DecodeBox, preview_bytes: Option<i64>, cache_bytes_per_image: i64) -> Arc<Self> {
@@ -60,6 +66,8 @@ impl InMemoryTarget {
             entries,
             cached: Mutex::new(HashSet::new()),
             preloaded: AtomicUsize::new(0),
+            gated: Mutex::new(None),
+            key_hook: Mutex::new(None),
         })
     }
 
@@ -90,6 +98,12 @@ impl PreloadTarget for InMemoryTarget {
 
     fn preload(&self, path: &str, _cancel: &CancelToken) -> Result<(), DecodeError> {
         self.preloaded.fetch_add(1, Ordering::SeqCst);
+        let gate = lock(&self.gated).clone();
+        if let Some((gated_path, gate)) = gate {
+            if gated_path.eq_ignore_ascii_case(path) {
+                gate.wait(None);
+            }
+        }
         let entry = self
             .entries
             .iter()
@@ -110,6 +124,10 @@ impl PreloadTarget for InMemoryTarget {
     }
 
     fn get_current_cache_key(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, KeyError> {
+        let hook = lock(&self.key_hook).clone();
+        if let Some(error) = hook.and_then(|hook| hook(entry.path())) {
+            return Err(error);
+        }
         Ok(self.key_of(entry))
     }
 
@@ -235,5 +253,52 @@ fn whole_folder_stops_at_cache_fill_limit() {
     assert!(
         (FORWARD_LOOKAHEAD as usize..=limit + 4).contains(&count),
         "preloaded {count}, limit {limit} (+ in-flight workers)"
+    );
+}
+
+#[test]
+fn calibration_completed_by_another_lifetime_during_the_last_pass_takes_one_more_pass() {
+    // C# line 644 (Q-R17): `if (!paused && running.Count == 0 && (_sizes.MeanBytes(seenBox) is not null) != seenCalibrated)
+    // continue;`. The sampler is shared by every lifetime: here the 8th sample (MINIMUM_SAMPLES) comes from a draining
+    // older run while the new run's only pass examines its window, so the window runs out uncalibrated and the extra
+    // pass finds the whole folder affordable (200 x 100 KB x 1.25 = 25 MB < 100 MB; the box bound says 800 MB).
+    let target = InMemoryTarget::new(box_1000(), Some(100_000), 0);
+    let entries = Arc::clone(&target.entries);
+    let eighth = entries[8].path().to_owned();
+    let gate = Gate::new();
+    *lock(&target.gated) = Some((eighth.clone(), Arc::clone(&gate)));
+    let scheduler = calibration_scheduler(
+        &target,
+        Setup::new(8, PreloadWindow::new(8, 0)).full_folder_threshold(BUDGET),
+    );
+    // Lifetime 1: img-1..img-7 decode and sample, img-8 is held.
+    let first = scheduler.preload_around(0);
+    while target.preloaded_count() < 8 {
+        assert!(!first.is_complete(), "the first run waits for img-8");
+        std::thread::yield_now();
+    }
+    scheduler.cancel();
+    // Lifetime 2: while its pass examines img-8 (the last window candidate), release img-8 and wait until the first run
+    // drained (its sample is recorded before its report); img-8's key then fails, so the window runs out.
+    let draining = first.clone();
+    let release = Arc::clone(&gate);
+    let eighth_hook = eighth.clone();
+    *lock(&target.key_hook) = Some(Arc::new(move |path: &str| {
+        if !path.eq_ignore_ascii_case(&eighth_hook) {
+            return None;
+        }
+        release.open();
+        assert!(draining.wait_timeout(GUARD), "the first run drained");
+        Some(KeyError::from(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "gone",
+        )))
+    }));
+    let second = scheduler.preload_around(0);
+    assert!(finished(&second));
+    assert_eq!(
+        IMAGE_COUNT - 1,
+        target.preloaded_count(),
+        "the extra pass preloaded the rest of the folder"
     );
 }

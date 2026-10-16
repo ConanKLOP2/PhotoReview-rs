@@ -116,3 +116,82 @@ impl Drop for ThreadTimer {
         self.state.dispose();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::mpsc;
+
+    use super::*;
+
+    const GUARD: Duration = Duration::from_secs(10);
+
+    /// A callback that sends the name of the thread it ran on.
+    fn signalling() -> (TimerCallback, mpsc::Receiver<Option<String>>) {
+        let (tx, rx) = mpsc::channel();
+        let tx = Mutex::new(tx);
+        let callback: TimerCallback = Arc::new(move || {
+            let name = thread::current().name().map(str::to_owned);
+            let _ = tx.lock().unwrap_or_else(PoisonError::into_inner).send(name);
+        });
+        (callback, rx)
+    }
+
+    /// Waits (guarded) until only `callback` itself holds it: the timer thread ended and dropped its clone.
+    fn wait_released(callback: &TimerCallback) -> bool {
+        let deadline = Instant::now() + GUARD;
+        while Arc::strong_count(callback) > 1 {
+            if Instant::now() >= deadline {
+                return false;
+            }
+            thread::yield_now();
+        }
+        true
+    }
+
+    #[test]
+    fn a_due_timer_calls_back_once_on_the_recheck_thread() {
+        let (callback, fired) = signalling();
+        let _timer = ThreadTimerFactory.create_timer(Duration::from_millis(1), Arc::clone(&callback));
+        assert_eq!(fired.recv_timeout(GUARD), Ok(Some("pr-preload-recheck".to_owned())));
+        assert!(wait_released(&callback));
+        assert!(fired.try_recv().is_err(), "a one-shot timer fires once");
+    }
+
+    #[test]
+    fn a_disposed_timer_ends_its_thread_without_calling_back() {
+        let (callback, fired) = signalling();
+        let timer = ThreadTimerFactory.create_timer(Duration::from_secs(3600), Arc::clone(&callback));
+        timer.dispose();
+        timer.dispose(); // idempotent
+        assert!(wait_released(&callback), "the waiting thread ended at once");
+        assert!(fired.try_recv().is_err());
+    }
+
+    #[test]
+    fn dropping_the_timer_disposes_it() {
+        let (callback, fired) = signalling();
+        let timer = ThreadTimerFactory.create_timer(Duration::from_secs(3600), Arc::clone(&callback));
+        drop(timer);
+        assert!(wait_released(&callback), "the waiting thread ended at once");
+        assert!(fired.try_recv().is_err());
+    }
+
+    #[test]
+    fn wait_until_due_reports_due_or_disposed() {
+        let state = ThreadTimerState {
+            disposed: Mutex::new(false),
+            wake: Condvar::new(),
+        };
+        assert!(state.wait_until_due(Duration::ZERO));
+        assert!(state.wait_until_due(Duration::from_millis(2)));
+        state.dispose();
+        // On a helper thread: a dispose that did nothing must fail the test, not block it for an hour.
+        let state = Arc::new(state);
+        let waiter = Arc::clone(&state);
+        let (tx, rx) = mpsc::channel();
+        thread::spawn(move || {
+            let _ = tx.send(waiter.wait_until_due(Duration::from_secs(3600)));
+        });
+        assert_eq!(rx.recv_timeout(GUARD), Ok(false));
+    }
+}

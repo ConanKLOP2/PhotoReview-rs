@@ -5,8 +5,8 @@
 
 mod common;
 
-use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Condvar, Mutex};
+use std::time::{Duration, Instant};
 
 use common::preload_fakes::*;
 use pr_core::diagnostics::metrics::ReviewMetrics;
@@ -16,34 +16,72 @@ use pr_imaging::preload_order::PreloadWindow;
 
 const IMAGE_COUNT: usize = 40;
 
-/// Counts the decodes in flight (C# `GatedTarget._inFlight` / `_maxConcurrent`) while each one waits on `gate`.
-fn counting_target(
-    fs: &Arc<pr_test_support::FakeFileSystem>,
-    gate: &Arc<Gate>,
-) -> (Arc<FakeTarget>, Arc<AtomicUsize>, Arc<AtomicUsize>) {
-    let target = FakeTarget::new(fs);
-    let in_flight = Arc::new(AtomicUsize::new(0));
-    let max_concurrent = Arc::new(AtomicUsize::new(0));
-    let gate = Arc::clone(gate);
-    let in_flight_hook = Arc::clone(&in_flight);
-    let max_hook = Arc::clone(&max_concurrent);
-    target.set_on_preload(move |path: &str, token: &CancelToken| -> Result<(), DecodeError> {
-        let now = in_flight_hook.fetch_add(1, Ordering::SeqCst) + 1;
-        max_hook.fetch_max(now, Ordering::SeqCst);
-        let result = gated(&gate)(path, token);
-        in_flight_hook.fetch_sub(1, Ordering::SeqCst);
-        result
-    });
-    (target, in_flight, max_concurrent)
+/// The decodes in flight and the most seen at once (C# `GatedTarget._inFlight` / `_maxConcurrent`), with a condition
+/// variable so a test can wait for the maximum itself (not only for `started`, which the fake target records BEFORE the
+/// counting hook runs).
+#[derive(Default)]
+struct Concurrency {
+    counts: Mutex<(usize, usize)>,
+    changed: Condvar,
 }
 
+impl Concurrency {
+    fn enter(&self) {
+        let mut counts = lock(&self.counts);
+        counts.0 += 1;
+        counts.1 = counts.1.max(counts.0);
+        self.changed.notify_all();
+    }
+
+    fn leave(&self) {
+        lock(&self.counts).0 -= 1;
+        self.changed.notify_all();
+    }
+
+    fn max(&self) -> usize {
+        lock(&self.counts).1
+    }
+
+    /// Waits (guarded) until at least `count` decodes were in flight at once; `true` when they were.
+    fn wait_max_at_least(&self, count: usize) -> bool {
+        let deadline = Instant::now() + GUARD;
+        let mut counts = lock(&self.counts);
+        while counts.1 < count {
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                return false;
+            }
+            counts = self
+                .changed
+                .wait_timeout(counts, remaining.min(Duration::from_millis(50)))
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .0;
+        }
+        true
+    }
+}
+
+/// Counts the decodes in flight while each one waits on `gate`.
+fn counting_target(fs: &Arc<pr_test_support::FakeFileSystem>, gate: &Arc<Gate>) -> (Arc<FakeTarget>, Arc<Concurrency>) {
+    let target = FakeTarget::new(fs);
+    let concurrency = Arc::new(Concurrency::default());
+    let gate = Arc::clone(gate);
+    let hook = Arc::clone(&concurrency);
+    target.set_on_preload(move |path: &str, token: &CancelToken| -> Result<(), DecodeError> {
+        hook.enter();
+        let result = gated(&gate)(path, token);
+        hook.leave();
+        result
+    });
+    (target, concurrency)
+}
 #[test]
 fn slow_link_viewer_decode_in_flight_caps_preload_to_one() {
     // C#: PreloadSlowLinkViewerPriorityTests.SlowLink_ViewerDecodeInFlight_CapsPreloadToOne
     let fs = fake_fs();
     let entries = entries(&fs, IMAGE_COUNT, "img");
     let gate = Gate::new();
-    let (target, _in_flight, max_concurrent) = counting_target(&fs, &gate);
+    let (target, concurrency) = counting_target(&fs, &gate);
     target.set_active_viewer(1);
     // Pushes DecodeMillisecondsEwma past SlowLinkDecodeMsThreshold (200 ms): one sample sets the EWMA to that value.
     let metrics = Arc::new(ReviewMetrics::new());
@@ -59,9 +97,13 @@ fn slow_link_viewer_decode_in_flight_caps_preload_to_one() {
     let lifetime = scheduler.preload_around(0);
     assert!(target.wait_started_count(1), "first preload decode to start");
     assert!(
-        max_concurrent.load(Ordering::SeqCst) <= 1,
+        concurrency.wait_max_at_least(1),
+        "the first decode entered the counting hook"
+    );
+    assert!(
+        concurrency.max() <= 1,
         "expected at most 1 concurrent preload decode while a viewer decode is in flight on a slow link, saw {}",
-        max_concurrent.load(Ordering::SeqCst)
+        concurrency.max()
     );
     assert!(
         !target.started().is_empty(),
@@ -77,7 +119,7 @@ fn fast_link_viewer_decode_in_flight_uses_the_wider_limit() {
     let fs = fake_fs();
     let entries = entries(&fs, IMAGE_COUNT, "img");
     let gate = Gate::new();
-    let (target, _in_flight, max_concurrent) = counting_target(&fs, &gate);
+    let (target, concurrency) = counting_target(&fs, &gate);
     target.set_active_viewer(1);
     // no samples: DecodeMillisecondsEwma stays 0 (not a slow link)
     let scheduler = create(
@@ -88,10 +130,11 @@ fn fast_link_viewer_decode_in_flight_uses_the_wider_limit() {
 
     let lifetime = scheduler.preload_around(0);
     assert!(target.wait_started_count(2), "at least 2 concurrent preload decodes");
+    // DIVERGENCE (test race fix): the fake records `started` before the counting hook runs, so wait for the maximum.
     assert!(
-        max_concurrent.load(Ordering::SeqCst) >= 2,
+        concurrency.wait_max_at_least(2),
         "expected the existing viewer-busy limit to still allow >=2 concurrent preload decodes, saw {}",
-        max_concurrent.load(Ordering::SeqCst)
+        concurrency.max()
     );
     gate.open();
     assert!(finished(&lifetime));

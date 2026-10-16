@@ -295,3 +295,51 @@ fn memory_pause_resumed_run_pauses_again_backoff_continues() {
     assert_eq!(2, p.time.created());
     assert_eq!(resume_check_delay(1), p.time.dues()[1]); // 4 s, not back to 2 s
 }
+
+#[test]
+fn stale_recheck_callback_neither_probes_nor_resumes() {
+    // C# OnResumeCheck: `if (_disposed || generation != _resumeGeneration) return;` before anything else.
+    let p = paused_run(false, 0);
+    p.scheduler.notify_navigation(5); // retires re-check 0
+    assert!(p.time.is_disposed(0));
+    p.probe.set_load(0.50);
+    let probes = p.probe.limits().len();
+    p.time.fire(0);
+    assert_eq!(probes, p.probe.limits().len(), "a stale re-check does not probe");
+    assert!(p.scheduler.resumed_run_for_tests().is_none());
+    assert_eq!(1, p.time.created());
+}
+
+#[test]
+fn navigation_during_a_not_yet_probe_arms_no_new_recheck() {
+    // C# OnResumeCheck, NotYet arm: re-armed only `if (!_disposed && generation == _resumeGeneration)`.
+    let p = paused_run(false, 0);
+    let weak = Arc::downgrade(&p.scheduler);
+    p.probe.set_answer(move |maximum_load| {
+        if maximum_load < PAUSE_LIMIT {
+            if let Some(scheduler) = weak.upgrade() {
+                scheduler.notify_navigation(5);
+            }
+        }
+        false
+    });
+    p.time.fire(p.time.pending_index().expect("a pending re-check"));
+    assert_eq!(0, p.scheduler.resumes_for_tests());
+    assert_eq!(1, p.time.created(), "the superseded re-check is not re-armed");
+    assert!(p.time.pending_index().is_none());
+}
+
+#[test]
+fn a_duplicate_callback_after_a_resume_keeps_the_resumed_run() {
+    let p = paused_run(false, 0);
+    p.probe.set_load(0.50);
+    p.time.fire(0);
+    let resumed = p.scheduler.resumed_run_for_tests().expect("the re-check resumed a run");
+    assert!(finished(&resumed));
+    p.time.fire(0); // late duplicate: stale generation
+    let still = p
+        .scheduler
+        .resumed_run_for_tests()
+        .expect("still the first resumed run");
+    assert!(still.same_run(&resumed));
+}

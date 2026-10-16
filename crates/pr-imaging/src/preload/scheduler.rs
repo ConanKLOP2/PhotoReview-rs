@@ -810,27 +810,32 @@ impl Shared {
             phase: Phase::Top,
             seen_wake: 0,
             limit: 0,
-            finished: false,
         };
         if let Drive::Done = run.drive(true) {
             return;
         }
+        // The run is handed over through a cell so that a thread that cannot be started leaves it here.
+        let cell = Arc::new(Mutex::new(Some(run)));
+        let handed = Arc::clone(&cell);
         let spawned = thread::Builder::new().name("pr-preload-run".to_owned()).spawn(move || {
-            let mut run = run;
-            run.drive(false);
+            let taken = lock(&handed).take();
+            if let Some(mut run) = taken {
+                run.drive(false);
+            }
         });
         if let Err(error) = spawned {
-            // The closure (and the run) was dropped: its drop guard drained and completed it on this thread.
+            // No run thread: finish the run here rather than leave its handle pending forever.
             self.log.error(MSG_SCHEDULER_FAILED, Some(&error));
+            let taken = lock(&cell).take();
+            if let Some(mut run) = taken {
+                run.drive(false);
+            }
         }
     }
 
     /// C# `PreloadOneAsync` checks done the moment the item holds its slot: already cached (another task decoded it
     /// while this one waited) => `Cached`; no longer wanted => `Superseded`; `None` = go on with the decode.
-    fn short_circuit(&self, candidate: &Candidate, slot: i32, enqueued_at: i64) -> Option<PreloadOutcome> {
-        let perf_log = PhotoReviewPerf::log();
-        let perf_on = perf_log.is_enabled();
-        let started = Instant::now();
+    fn short_circuit(&self, candidate: &Candidate, start: &SlotStart) -> Option<PreloadOutcome> {
         let outcome = if self.target.try_get_cached_preview(&candidate.key) {
             Some((PreloadOutcome::Cached, "skipped"))
         } else {
@@ -843,45 +848,33 @@ impl Shared {
             }
         };
         let (outcome, kind) = outcome?;
-        if perf_on {
-            let queue_wait_ms = perf::ms(enqueued_at);
-            let elapsed = started.elapsed().as_secs_f64() * 1000.0;
-            perf_log.preload_item(slot, &perf::path_id(&candidate.path), queue_wait_ms, kind, elapsed);
-        }
+        start.perf_item(&candidate.path, kind, start.elapsed_ms());
         Some(outcome)
     }
 
     /// C# `PreloadOneAsync` body after the checks (prefetch, decode, fresh key, warmed keys, size sample, error arms).
     /// Runs on a pool thread.
-    fn preload_one(&self, candidate: &Candidate, slot: i32, enqueued_at: i64, cancel: &CancelToken) -> WorkerEnd {
-        let perf_log = PhotoReviewPerf::log();
-        let perf_on = perf_log.is_enabled();
-        let started = Instant::now();
+    fn preload_one(&self, candidate: &Candidate, start: &SlotStart, cancel: &CancelToken) -> WorkerEnd {
         let path = candidate.path.as_str();
-        let perf_item = |kind: &str| {
-            if perf_on {
-                let elapsed = started.elapsed().as_secs_f64() * 1000.0;
-                perf_log.preload_item(slot, &perf::path_id(path), perf::ms(enqueued_at), kind, elapsed);
-            }
-        };
-        let attempt = panic::catch_unwind(AssertUnwindSafe(|| self.decode_item(candidate, cancel, perf_on)))
+        let attempt = panic::catch_unwind(AssertUnwindSafe(|| self.decode_item(candidate, cancel, start)))
             .unwrap_or_else(|payload| Err(ItemError::Panic(PanicError(panic_message(payload.as_ref())))));
         match attempt {
-            Ok((hit, source_read)) => {
-                perf_item(if source_read {
+            Ok(decoded) => {
+                let kind = if decoded.source_read {
                     "decoded"
-                } else if hit {
+                } else if decoded.hit {
                     "hit"
                 } else {
                     "miss"
-                });
-                WorkerEnd::Done(if hit {
+                };
+                start.perf_item(path, kind, decoded.elapsed_ms);
+                WorkerEnd::Done(if decoded.hit {
                     PreloadOutcome::Cached
                 } else {
                     PreloadOutcome::Failed
                 })
             }
-            Err(ItemError::Decode(error)) => self.decode_failed(candidate, error, cancel, perf_item),
+            Err(ItemError::Decode(error)) => self.decode_failed(candidate, error, cancel, start),
             Err(ItemError::Key(error)) => {
                 self.log.error(&policy::format_preload_failed(path), Some(&error));
                 WorkerEnd::Done(PreloadOutcome::Failed)
@@ -893,14 +886,15 @@ impl Shared {
         }
     }
 
-    /// The decode of one item: `Ok((hit, source_read))`.
+    /// The decode of one item.
     fn decode_item(
         &self,
         candidate: &Candidate,
         cancel: &CancelToken,
-        perf_on: bool,
-    ) -> Result<(bool, bool), ItemError> {
+        start: &SlotStart,
+    ) -> Result<Decoded, ItemError> {
         let path = candidate.path.as_str();
+        let perf_on = start.perf_on;
         // A preview already in the disk cache decodes from there: prefetching the source would be a read nobody uses.
         if !is_raw_path(path) {
             if let Some(prefetch) = &self.prefetch_source_bytes {
@@ -916,6 +910,8 @@ impl Shared {
             0
         };
         self.target.preload(path, cancel).map_err(ItemError::Decode)?;
+        // C# `stopwatch.Stop()` right after `PreloadAsync`: the fresh key and the bookkeeping are not timed.
+        let elapsed_ms = start.elapsed_ms();
         // INV-1: the identity the decode actually stored can differ from the pre-decode key (the source changed).
         let fresh = self
             .target
@@ -940,7 +936,11 @@ impl Shared {
         if hit {
             self.busy_backoff.record_success(path);
         }
-        Ok((hit, source_read))
+        Ok(Decoded {
+            hit,
+            source_read,
+            elapsed_ms,
+        })
     }
 
     /// The decode error arms, one per C# catch, in C# order.
@@ -949,11 +949,12 @@ impl Shared {
         candidate: &Candidate,
         error: DecodeError,
         cancel: &CancelToken,
-        perf_item: impl Fn(&str),
+        start: &SlotStart,
     ) -> WorkerEnd {
         let path = candidate.path.as_str();
         match error.kind() {
             DecodeError::Busy { .. } => {
+                let elapsed_ms = start.elapsed_ms();
                 // Not a failure: the decoder's bounded queue was full. The first busy of a path is worth one Info line;
                 // repeats (C# Debug.WriteLine, debugger only) are not logged.
                 if self.busy_backoff.note_busy(path, &candidate.key) == 1 {
@@ -965,7 +966,7 @@ impl Shared {
                         return WorkerEnd::Faulted(panic_message(payload.as_ref()));
                     }
                 }
-                perf_item("busy");
+                start.perf_item(path, "busy", elapsed_ms);
                 WorkerEnd::Done(PreloadOutcome::Busy)
             }
             kind if kind.is_io_exception() => {
@@ -1117,6 +1118,48 @@ impl Shared {
     }
 }
 
+/// The moment an item got its slot (C# the lines right after `await _preloadSlots.WaitAsync(ct)`): its slot number, the
+/// perf queue wait measured from the dispatch up to now (C# `queueWaitMs`), and the start of the item's own stopwatch.
+struct SlotStart {
+    slot: i32,
+    perf_on: bool,
+    queue_wait_ms: f64,
+    started: Instant,
+}
+
+impl SlotStart {
+    /// `perf_on` and `enqueued_at` are read at dispatch (C# `perf` / `perfEnqueue` before the wait).
+    fn now(slot: i32, perf_on: bool, enqueued_at: i64) -> Self {
+        Self {
+            slot,
+            perf_on,
+            queue_wait_ms: if perf_on { perf::ms(enqueued_at) } else { 0.0 },
+            started: Instant::now(),
+        }
+    }
+
+    /// C# `stopwatch.Elapsed.TotalMilliseconds`.
+    fn elapsed_ms(&self) -> f64 {
+        self.started.elapsed().as_secs_f64() * 1000.0
+    }
+
+    /// C# `PhotoReviewPerf.Log.PreloadItem(slot, pathId, queueWaitMs, kind, ms)` when tracing.
+    fn perf_item(&self, path: &str, kind: &str, elapsed_ms: f64) {
+        if self.perf_on {
+            PhotoReviewPerf::log().preload_item(self.slot, &perf::path_id(path), self.queue_wait_ms, kind, elapsed_ms);
+        }
+    }
+}
+
+/// A decode that ran to the end (C# the `try` body after `PreloadAsync`).
+struct Decoded {
+    hit: bool,
+    /// `metrics.snapshot().source_reads` grew during the item (tracing only).
+    source_read: bool,
+    /// C# `stopwatch` stopped right after `PreloadAsync`.
+    elapsed_ms: f64,
+}
+
 /// Why one item's decode did not complete (one variant per C# catch family).
 enum ItemError {
     Decode(DecodeError),
@@ -1168,7 +1211,6 @@ struct RunLoop {
     phase: Phase,
     seen_wake: u64,
     limit: i32,
-    finished: bool,
 }
 
 impl RunLoop {
@@ -1181,9 +1223,7 @@ impl RunLoop {
                         self.phase = Phase::Drain;
                         continue;
                     }
-                    if self.absorb_reports() {
-                        continue;
-                    }
+                    self.absorb_reports();
                     match catch(|| self.top()) {
                         Ok(()) => self.phase = Phase::Inner { check_cancel: false },
                         Err(error) => self.fail(error.as_ref()),
@@ -1272,7 +1312,7 @@ impl RunLoop {
                 QueueStep::Skipped => {}
                 QueueStep::Dispatch(candidate) => {
                     let batch_yield = candidate.batch_yield;
-                    self.dispatch(candidate)?;
+                    self.dispatch(candidate);
                     if batch_yield {
                         if shared.log.enabled() {
                             let memory = shared.memory_probe.get_snapshot();
@@ -1299,73 +1339,86 @@ impl RunLoop {
         Ok(InnerEnd::Break)
     }
 
-    /// Hands one candidate to the worker pool (contract W4/W5).
-    fn dispatch(&mut self, candidate: Candidate) -> Result<(), CallbackError> {
+    /// Hands one candidate to the worker pool (contract W3/W4/W5).
+    fn dispatch(&mut self, candidate: Candidate) {
         let shared = Arc::clone(&self.shared);
         let hook = lock(&shared.seams).dispatched_on.clone();
         if let Some(hook) = hook {
             hook(&candidate.path);
         }
-        let enqueued_at = if PhotoReviewPerf::log().is_enabled() {
-            perf::timestamp()
-        } else {
-            0
-        };
+        // C# `perf` / `perfEnqueue`, read before `WaitAsync`.
+        let perf_on = PhotoReviewPerf::log().is_enabled();
+        let enqueued_at = if perf_on { perf::timestamp() } else { 0 };
         let worker_id = self.next_worker_id;
         self.next_worker_id += 1;
-        match shared.pool.try_reserve() {
-            Some(reservation) => {
-                // A free slot: the two short-circuit checks run inline (C# a synchronously completed item).
-                let slot = reservation.slot;
-                match catch(|| Ok(shared.short_circuit(&candidate, slot, enqueued_at))) {
-                    Ok(Some(outcome)) => {
-                        shared.pool.release(reservation);
-                        self.queue.on_finished(&candidate.path, outcome);
-                    }
-                    Ok(None) => {
-                        self.running.insert(worker_id, candidate.path.clone());
-                        let job = self.job(worker_id, candidate, enqueued_at, false);
-                        shared.pool.start_reserved(reservation, job);
-                    }
-                    Err(error) => {
-                        shared.pool.release(reservation);
-                        return Err(error);
-                    }
-                }
+        if self.lifetime.token.is_canceled() {
+            // W3, C# `WaitAsync(ct)` with an already cancelled token: a cancelled task even when a slot is free. The item
+            // never reaches the checks, the prefetch or the decode; its report ends the loop.
+            self.running.insert(worker_id, candidate.path.clone());
+            self.report_now(worker_id, candidate.path, WorkerEnd::Canceled);
+            return;
+        }
+        let Some(reservation) = shared.pool.try_reserve() else {
+            self.running.insert(worker_id, candidate.path.clone());
+            let job = self.job(worker_id, candidate, perf_on, enqueued_at, true);
+            shared.pool.enqueue(job);
+            return;
+        };
+        // A free slot: the two short-circuit checks run inline (C# a synchronously completed item).
+        let start = SlotStart::now(reservation.slot, perf_on, enqueued_at);
+        match panic::catch_unwind(AssertUnwindSafe(|| shared.short_circuit(&candidate, &start))) {
+            Ok(Some(outcome)) => {
+                shared.pool.release(reservation);
+                self.queue.on_finished(&candidate.path, outcome);
             }
-            None => {
+            Ok(None) => {
                 self.running.insert(worker_id, candidate.path.clone());
-                let job = self.job(worker_id, candidate, enqueued_at, true);
-                shared.pool.enqueue(job);
+                let job = self.job(worker_id, candidate, perf_on, enqueued_at, false);
+                shared.pool.start_reserved(reservation, job);
+            }
+            Err(payload) => {
+                // C# a faulted item task (its `finally` released the slot): it joins `running` and the pass goes on; the
+                // run fails when the loop takes this report.
+                shared.pool.release(reservation);
+                self.running.insert(worker_id, candidate.path.clone());
+                self.report_now(
+                    worker_id,
+                    candidate.path,
+                    WorkerEnd::Faulted(panic_message(payload.as_ref())),
+                );
             }
         }
-        Ok(())
+    }
+
+    /// Queues the report of an item that ended on the dispatching thread without a pool job.
+    fn report_now(&self, worker_id: u64, path: String, end: WorkerEnd) {
+        self.shared
+            .events
+            .report(self.run_id, Finished { worker_id, path, end });
     }
 
     /// The pool job of one item. `checks` = run the short-circuit checks first (the item waited for its slot).
-    fn job(&self, worker_id: u64, candidate: Candidate, enqueued_at: i64, checks: bool) -> Job {
+    fn job(&self, worker_id: u64, candidate: Candidate, perf_on: bool, enqueued_at: i64, checks: bool) -> Job {
         let shared = Arc::clone(&self.shared);
         let token = self.lifetime.token.clone();
         let path = candidate.path.clone();
         let run = Box::new(move |slot: i32| {
+            let start = SlotStart::now(slot, perf_on, enqueued_at);
             // D04 perf (W8): preload work is not tied to a navigation.
-            let perf_on = PhotoReviewPerf::log().is_enabled();
             let previous = PhotoReviewPerf::nav_context();
             if perf_on {
                 PhotoReviewPerf::set_nav_context(-1);
             }
             let end = if checks {
-                match panic::catch_unwind(AssertUnwindSafe(|| shared.short_circuit(&candidate, slot, enqueued_at))) {
+                match panic::catch_unwind(AssertUnwindSafe(|| shared.short_circuit(&candidate, &start))) {
                     Ok(Some(outcome)) => WorkerEnd::Done(outcome),
-                    Ok(None) => shared.preload_one(&candidate, slot, enqueued_at, &token),
+                    Ok(None) => shared.preload_one(&candidate, &start, &token),
                     Err(payload) => WorkerEnd::Faulted(panic_message(payload.as_ref())),
                 }
             } else {
-                shared.preload_one(&candidate, slot, enqueued_at, &token)
+                shared.preload_one(&candidate, &start, &token)
             };
-            if perf_on {
-                PhotoReviewPerf::set_nav_context(previous);
-            }
+            PhotoReviewPerf::set_nav_context(previous);
             end
         });
         let reporter = Arc::clone(&self.shared);
@@ -1373,7 +1426,7 @@ impl RunLoop {
         let report = Box::new(move |end: WorkerEnd| {
             reporter.events.report(run_id, Finished { worker_id, path, end });
         });
-        Job::new(self.lifetime.id, run, report)
+        Job::new(&self.lifetime, run, report)
     }
 
     /// After the inner loop (C# lines 642-653): one more pass for a fresh calibration, exit, or wait.
@@ -1402,17 +1455,13 @@ impl RunLoop {
         Ok(())
     }
 
-    /// Applies every report that already arrived before the pass reads its inputs, so a worker that finished while the
-    /// run was busy leaves the queued set before the next order pass examines its path (C# items that complete
-    /// synchronously never stay queued). `true` when a report ended the loop (cancelled or faulted worker).
-    fn absorb_reports(&mut self) -> bool {
-        while let Some(finished) = self.shared.events.try_take(self.run_id) {
+    /// Applies every `Done` report that already arrived before the pass reads its inputs, so a worker that finished while
+    /// the run was busy leaves the queued set before the next order pass examines its path (C# items that complete
+    /// synchronously never stay queued). A cancelled or faulted report stays queued: the wait takes it and ends the loop.
+    fn absorb_reports(&mut self) {
+        while let Some(finished) = self.shared.events.try_take_done(self.run_id) {
             self.apply(finished);
-            if self.phase != Phase::Top {
-                return true;
-            }
         }
-        false
     }
 
     /// Applies a worker's report (contract semantics 7).
@@ -1450,22 +1499,187 @@ impl RunLoop {
 
     /// The run is over: forget its report queue and complete its handle (after the drain).
     fn finish(&mut self) {
-        if self.finished {
-            return;
-        }
-        self.finished = true;
         self.shared.events.remove_run(self.run_id);
         self.handle.complete();
     }
 }
 
-impl Drop for RunLoop {
-    fn drop(&mut self) {
-        // A run that never reached its end (its thread could not be started): never leave the handle pending.
-        if !self.finished {
-            self.shared.mark_run_exiting(self.run_id);
-            self.drain();
-            self.finish();
+#[cfg(test)]
+mod tests {
+    //! In-crate guards: they run before the integration test binaries (`cargo test` runs the lib's unit tests first), so
+    //! a run that would loop forever on the caller's thread fails here within the guard instead of hanging a later
+    //! binary.
+
+    use std::sync::mpsc;
+
+    use pr_test_support::FakeFileSystem;
+
+    use super::*;
+    use crate::cache_key::KeyOptions;
+    use crate::preload::target::DelegateMemoryProbe;
+
+    const GUARD: Duration = Duration::from_secs(10);
+
+    /// A synchronous in-memory target over a fake file system: every decode succeeds at once.
+    struct Target {
+        fs: FakeFileSystem,
+        cached: Mutex<HashSet<ImageCacheKey>>,
+        started: Mutex<Vec<String>>,
+    }
+
+    impl Target {
+        fn key(&self, path: &str) -> Result<ImageCacheKey, KeyError> {
+            Ok(ImageCacheKey::create(
+                &self.fs,
+                path,
+                false,
+                DecodeBox::new(100, 100),
+                KeyOptions::default(),
+            )?)
         }
+    }
+
+    impl PreloadTarget for Target {
+        fn try_get_cached_preview_for_path(&self, path: &str) -> bool {
+            self.key(path).is_ok_and(|key| lock(&self.cached).contains(&key))
+        }
+
+        fn try_get_cached_preview(&self, key: &ImageCacheKey) -> bool {
+            lock(&self.cached).contains(key)
+        }
+
+        fn preload(&self, path: &str, _cancel: &CancelToken) -> Result<(), DecodeError> {
+            lock(&self.started).push(path.to_owned());
+            if let Ok(key) = self.key(path) {
+                lock(&self.cached).insert(key);
+            }
+            Ok(())
+        }
+
+        fn get_current_cache_key_for_path(&self, path: &str) -> Result<ImageCacheKey, KeyError> {
+            self.key(path)
+        }
+
+        fn get_current_cache_key(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, KeyError> {
+            self.key(entry.path())
+        }
+
+        fn cache_count(&self) -> i32 {
+            i32::try_from(lock(&self.cached).len()).unwrap_or(i32::MAX)
+        }
+
+        fn cache_bytes(&self) -> i64 {
+            0
+        }
+    }
+
+    /// Records error lines as `message :: error`.
+    #[derive(Default)]
+    struct Errors(Mutex<Vec<String>>);
+
+    impl Log for Errors {
+        fn enabled(&self) -> bool {
+            false
+        }
+
+        fn info(&self, _message: &str) {}
+
+        fn warn(&self, _message: &str) {}
+
+        fn error(&self, message: &str, error: Option<&(dyn Error + 'static)>) {
+            let line = match error {
+                Some(error) => format!("{message} :: {error}"),
+                None => message.to_owned(),
+            };
+            lock(&self.0).push(line);
+        }
+    }
+
+    fn scheduler(count: usize, probe: Arc<dyn MemoryProbe>) -> (Arc<PreloadScheduler>, Arc<Target>, Arc<Errors>) {
+        let fs = FakeFileSystem::new();
+        let entries: Vec<CatalogEntry> = (0..count)
+            .filter_map(|i| {
+                let path = format!("C:\\preload-unit\\img-{i}.jpg");
+                fs.add_file(&path, b"image");
+                CatalogEntry::new(path).ok()
+            })
+            .collect();
+        let entries: Arc<[CatalogEntry]> = entries.into();
+        let target = Arc::new(Target {
+            fs,
+            cached: Mutex::new(HashSet::new()),
+            started: Mutex::new(Vec::new()),
+        });
+        let errors = Arc::new(Errors::default());
+        let options = PreloadOptions {
+            worker_count: 2,
+            full_folder_threshold_bytes: -1,
+            window: PreloadWindow::new(3, 1),
+            ..PreloadOptions::default()
+        };
+        let scheduler = PreloadScheduler::new(
+            Arc::clone(&target) as Arc<dyn PreloadTarget>,
+            Arc::new(ReviewMetrics::new()),
+            Arc::new(move || -> Result<Arc<[CatalogEntry]>, CallbackError> { Ok(Arc::clone(&entries)) }),
+            probe,
+            PreloadSchedulerDeps {
+                options: Some(options),
+                log: Some(Arc::clone(&errors) as Arc<dyn Log>),
+                env_lookup: Some(Arc::new(|_: &str| None)),
+                ..PreloadSchedulerDeps::default()
+            },
+        );
+        (Arc::new(scheduler), target, errors)
+    }
+
+    /// Kicks on a helper thread: `None` when `preload_around` did not return within the guard.
+    fn kick(scheduler: &Arc<PreloadScheduler>, center: i32) -> Option<RunHandle> {
+        let (tx, rx) = mpsc::channel();
+        let kicker = Arc::clone(scheduler);
+        thread::spawn(move || {
+            let _ = tx.send(kicker.preload_around(center));
+        });
+        rx.recv_timeout(GUARD).ok()
+    }
+
+    #[test]
+    fn a_caught_panic_displays_its_message() {
+        assert_eq!(PanicError("probe exploded".to_owned()).to_string(), "probe exploded");
+        let error = catch::<()>(|| panic!("kick exploded")).err().map(|e| e.to_string());
+        assert_eq!(error.as_deref(), Some("kick exploded"));
+    }
+
+    #[test]
+    fn a_kick_returns_and_its_run_preloads_the_window() {
+        let (scheduler, target, errors) = scheduler(8, Arc::new(DelegateMemoryProbe::new(|_| true)));
+        let run = kick(&scheduler, 3).expect("preload_around returned within the guard");
+        assert!(run.wait_timeout(GUARD), "the run completed");
+        let mut started = lock(&target.started).clone();
+        started.sort();
+        assert_eq!(
+            started,
+            [
+                "C:\\preload-unit\\img-2.jpg",
+                "C:\\preload-unit\\img-4.jpg",
+                "C:\\preload-unit\\img-5.jpg",
+                "C:\\preload-unit\\img-6.jpg"
+            ]
+        );
+        assert!(lock(&errors.0).is_empty());
+        // Everything cached now: the next kick ends at once.
+        let again = kick(&scheduler, 3).expect("preload_around returned within the guard");
+        assert!(again.wait_timeout(GUARD));
+        assert_eq!(lock(&target.started).len(), 4);
+    }
+
+    #[test]
+    fn a_failing_pass_logs_once_and_completes() {
+        let probe = Arc::new(DelegateMemoryProbe::new(|_| panic!("probe exploded")));
+        let (scheduler, target, errors) = scheduler(8, probe);
+        let run = kick(&scheduler, 3).expect("preload_around returned within the guard");
+        assert!(run.wait_timeout(GUARD), "the failed run completed");
+        assert_eq!(*lock(&errors.0), [format!("{MSG_SCHEDULER_FAILED} :: probe exploded")]);
+        assert!(lock(&target.started).is_empty());
+        assert!(scheduler.is_idle());
     }
 }
