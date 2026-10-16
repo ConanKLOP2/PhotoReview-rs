@@ -4,10 +4,6 @@
 //! Pure data and pure arithmetic: no I/O, no unsafe, no Windows types. The decoder traits are W4-01c, orientation maths is W4-02a.
 //! C# exceptions of this unit (`ArgumentOutOfRangeException`, `ArgumentException` from the `DecodedImage` constructor) become
 //! [`DecodedImageError`]; "null" arguments cannot occur in Rust.
-//!
-//! Stub: every body is `todo!()`; signatures and data types are final. Remove the `#![allow(...)]` line when implemented.
-
-#![allow(unused_variables, dead_code, clippy::unused_self)]
 
 use std::any::Any;
 use std::fmt;
@@ -51,14 +47,44 @@ impl DecodeBox {
     /// All products in `i64` (sizes up to `i32::MAX`).
     #[must_use]
     pub fn fit(&self, source_width: i32, source_height: i32) -> (i32, i32) {
-        todo!()
+        if self.is_unbounded() || source_width <= 0 || source_height <= 0 {
+            return (source_width, source_height);
+        }
+        let width_exceeds = self.width > 0 && source_width > self.width;
+        let height_exceeds = self.height > 0 && source_height > self.height;
+        if !width_exceeds && !height_exceeds {
+            return (source_width, source_height);
+        }
+
+        let box_width = i64::from(self.width);
+        let box_height = i64::from(self.height);
+        let sw = i64::from(source_width);
+        let sh = i64::from(source_height);
+        // Tie (equal ratios) takes the width branch: `<=`.
+        let width_constrains = self.height <= 0 || (self.width > 0 && box_width * sh <= box_height * sw);
+        let (w, h) = if width_constrains {
+            (box_width, (sh * box_width / sw).max(1))
+        } else {
+            ((sw * box_height / sh).max(1), box_height)
+        };
+        (to_i32_saturating(w), to_i32_saturating(h))
     }
 
     /// `FitStored`: `transposed` (EXIF 5-8) fits against the rotated size and swaps the result back.
     #[must_use]
     pub fn fit_stored(&self, raw_width: i32, raw_height: i32, transposed: bool) -> (i32, i32) {
-        todo!()
+        if transposed {
+            let (displayed_w, displayed_h) = self.fit(raw_height, raw_width);
+            (displayed_h, displayed_w)
+        } else {
+            self.fit(raw_width, raw_height)
+        }
     }
+}
+
+/// The fit results are always `<= source` here, so this never saturates in practice; it only replaces an unchecked `as` cast.
+fn to_i32_saturating(value: i64) -> i32 {
+    i32::try_from(value).unwrap_or(i32::MAX)
 }
 
 /// `DecodeRequest`. Construct with [`DecodeRequest::new`] (width-only, the C# primary constructor with defaults) or
@@ -86,50 +112,70 @@ impl DecodeRequest {
     /// `priority = Viewer`, `source_orientation = None`.
     #[must_use]
     pub fn new(path: impl Into<PathBuf>, target_width: i32) -> Self {
-        todo!()
+        Self {
+            path: path.into(),
+            target_width,
+            apply_orientation: true,
+            bytes: None,
+            target_height: 0,
+            priority: SourceReadPriority::Viewer,
+            source_orientation: None,
+        }
     }
 
     /// `new DecodeRequest(path, box, ...)`: width and height come from the box; the other defaults as in [`Self::new`].
     #[must_use]
     pub fn with_box(path: impl Into<PathBuf>, decode_box: DecodeBox) -> Self {
-        todo!()
+        Self {
+            target_height: decode_box.height,
+            ..Self::new(path, decode_box.width)
+        }
     }
 
     #[must_use]
     pub fn with_target_height(self, target_height: i32) -> Self {
-        todo!()
+        Self { target_height, ..self }
     }
 
     #[must_use]
     pub fn with_apply_orientation(self, apply_orientation: bool) -> Self {
-        todo!()
+        Self {
+            apply_orientation,
+            ..self
+        }
     }
 
     #[must_use]
     pub fn with_bytes(self, bytes: SourceBytes) -> Self {
-        todo!()
+        Self {
+            bytes: Some(bytes),
+            ..self
+        }
     }
 
     #[must_use]
     pub fn with_priority(self, priority: SourceReadPriority) -> Self {
-        todo!()
+        Self { priority, ..self }
     }
 
     #[must_use]
     pub fn with_source_orientation(self, orientation: i32) -> Self {
-        todo!()
+        Self {
+            source_orientation: Some(orientation),
+            ..self
+        }
     }
 
     /// `Box`: `DecodeBox { width: target_width, height: target_height }` (no clamping).
     #[must_use]
     pub fn decode_box(&self) -> DecodeBox {
-        todo!()
+        DecodeBox::new(self.target_width, self.target_height)
     }
 
     /// `IsDownscaleRequested`: `target_width > 0 || target_height > 0`.
     #[must_use]
     pub fn is_downscale_requested(&self) -> bool {
-        todo!()
+        self.target_width > 0 || self.target_height > 0
     }
 }
 
@@ -165,13 +211,21 @@ impl ImageInfo {
     /// Displayed width: `pixel_height` when the orientation is 5..=8, else `pixel_width`.
     #[must_use]
     pub const fn width(&self) -> i32 {
-        todo!()
+        if matches!(self.orientation, 5..=8) {
+            self.pixel_height
+        } else {
+            self.pixel_width
+        }
     }
 
     /// Displayed height: `pixel_width` when the orientation is 5..=8, else `pixel_height`.
     #[must_use]
     pub const fn height(&self) -> i32 {
-        todo!()
+        if matches!(self.orientation, 5..=8) {
+            self.pixel_width
+        } else {
+            self.pixel_height
+        }
     }
 }
 
@@ -186,13 +240,19 @@ impl PlatformImage {
     /// The pixel buffer when this is `Pixels`.
     #[must_use]
     pub fn as_pixels(&self) -> Option<&Arc<PixelBuffer>> {
-        todo!()
+        match self {
+            Self::Pixels(buffer) => Some(buffer),
+            Self::Opaque(_) => None,
+        }
     }
 }
 
 impl fmt::Debug for PlatformImage {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Pixels(buffer) => f.debug_tuple("Pixels").field(buffer).finish(),
+            Self::Opaque(_) => f.write_str("Opaque(..)"),
+        }
     }
 }
 
@@ -245,7 +305,9 @@ pub trait DecodedImageView: Send + Sync {
 /// `DecodedImageSize.HasKnownOriginal`: `!downscaled || original_width > pixel_width || original_height > pixel_height`.
 #[must_use]
 pub fn has_known_original(image: &dyn DecodedImageView) -> bool {
-    todo!()
+    !image.downscaled()
+        || image.original_width() > image.pixel_width()
+        || image.original_height() > image.pixel_height()
 }
 
 /// Why a [`DecodedImage`] could not be built (C# constructor guards).
@@ -264,7 +326,16 @@ pub enum DecodedImageError {
 impl fmt::Display for DecodedImageError {
     /// Text mirrors the C# messages (the mismatch one is `Pixel size {w}x{h} does not match the {bw}x{bh} pixel buffer.`).
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::PixelWidthTooSmall(width) => write!(f, "Pixel width must be at least 1, got {width}."),
+            Self::PixelHeightTooSmall(height) => write!(f, "Pixel height must be at least 1, got {height}."),
+            Self::NegativeEstimatedBytes(bytes) => write!(f, "Estimated bytes must not be negative, got {bytes}."),
+            Self::PixelBufferSizeMismatch { declared, buffer } => write!(
+                f,
+                "Pixel size {}x{} does not match the {}x{} pixel buffer.",
+                declared.0, declared.1, buffer.0, buffer.1
+            ),
+        }
     }
 }
 
@@ -287,7 +358,15 @@ pub struct DecodedImageOptions {
 impl Default for DecodedImageOptions {
     /// `downscaled: false, orientation: 1, actual_backend: WicDirect, original_*: 0, exif: None, is_degraded_fallback: false`.
     fn default() -> Self {
-        todo!()
+        Self {
+            downscaled: false,
+            orientation: 1,
+            actual_backend: DecoderBackend::WicDirect,
+            original_width: 0,
+            original_height: 0,
+            exif: None,
+            is_degraded_fallback: false,
+        }
     }
 }
 
@@ -319,49 +398,100 @@ impl DecodedImage {
         estimated_bytes: i64,
         options: DecodedImageOptions,
     ) -> Result<Self, DecodedImageError> {
-        todo!()
+        if pixel_width < 1 {
+            return Err(DecodedImageError::PixelWidthTooSmall(pixel_width));
+        }
+        if pixel_height < 1 {
+            return Err(DecodedImageError::PixelHeightTooSmall(pixel_height));
+        }
+        if estimated_bytes < 0 {
+            return Err(DecodedImageError::NegativeEstimatedBytes(estimated_bytes));
+        }
+        if let Some(buffer) = platform_image.as_pixels() {
+            let buffer_size = (buffer.width(), buffer.height());
+            if buffer_size != (pixel_width, pixel_height) {
+                return Err(DecodedImageError::PixelBufferSizeMismatch {
+                    declared: (pixel_width, pixel_height),
+                    buffer: buffer_size,
+                });
+            }
+        }
+
+        Ok(Self {
+            platform_image,
+            pixel_width,
+            pixel_height,
+            estimated_bytes,
+            downscaled: options.downscaled,
+            orientation: options.orientation,
+            actual_backend: options.actual_backend,
+            original_width: if options.original_width > 0 {
+                options.original_width
+            } else {
+                pixel_width
+            },
+            original_height: if options.original_height > 0 {
+                options.original_height
+            } else {
+                pixel_height
+            },
+            exif: options.exif,
+            is_degraded_fallback: options.is_degraded_fallback,
+        })
     }
 }
 
 impl fmt::Debug for DecodedImage {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("DecodedImage")
+            .field("platform_image", &self.platform_image)
+            .field("pixel_width", &self.pixel_width)
+            .field("pixel_height", &self.pixel_height)
+            .field("estimated_bytes", &self.estimated_bytes)
+            .field("downscaled", &self.downscaled)
+            .field("orientation", &self.orientation)
+            .field("actual_backend", &self.actual_backend)
+            .field("original_width", &self.original_width)
+            .field("original_height", &self.original_height)
+            .field("has_exif", &self.exif.is_some())
+            .field("is_degraded_fallback", &self.is_degraded_fallback)
+            .finish()
     }
 }
 
 impl DecodedImageView for DecodedImage {
     fn pixel_width(&self) -> i32 {
-        todo!()
+        self.pixel_width
     }
     fn pixel_height(&self) -> i32 {
-        todo!()
+        self.pixel_height
     }
     fn downscaled(&self) -> bool {
-        todo!()
+        self.downscaled
     }
     fn orientation(&self) -> i32 {
-        todo!()
+        self.orientation
     }
     fn estimated_bytes(&self) -> i64 {
-        todo!()
+        self.estimated_bytes
     }
     fn platform_image(&self) -> &PlatformImage {
-        todo!()
+        &self.platform_image
     }
     fn actual_backend(&self) -> DecoderBackend {
-        todo!()
+        self.actual_backend
     }
     fn original_width(&self) -> i32 {
-        todo!()
+        self.original_width
     }
     fn original_height(&self) -> i32 {
-        todo!()
+        self.original_height
     }
     fn exif(&self) -> Option<&ExifSummary> {
-        todo!()
+        self.exif.as_ref()
     }
     fn is_degraded_fallback(&self) -> bool {
-        todo!()
+        self.is_degraded_fallback
     }
 }
 
@@ -381,37 +511,50 @@ impl<'a> PixelLease<'a> {
     /// `default(PixelLease)`: no pixels, `is_owned() == false`.
     #[must_use]
     pub fn empty() -> Self {
-        todo!()
+        Self {
+            inner: PixelLeaseInner::Empty,
+        }
     }
 
     /// `new PixelLease(pixels, owned: false)`.
     #[must_use]
     pub fn borrowed(pixels: &'a PixelBuffer) -> Self {
-        todo!()
+        Self {
+            inner: PixelLeaseInner::Borrowed(pixels),
+        }
     }
 
     /// `new PixelLease(pixels, owned: true)`.
     #[must_use]
     pub fn owned_buffer(pixels: PixelBuffer) -> Self {
-        todo!()
+        Self {
+            inner: PixelLeaseInner::Owned(pixels),
+        }
     }
 
     /// `Pixels`; `None` only for `empty()`.
     #[must_use]
     pub fn pixels(&self) -> Option<&PixelBuffer> {
-        todo!()
+        match &self.inner {
+            PixelLeaseInner::Empty => None,
+            PixelLeaseInner::Borrowed(pixels) => Some(pixels),
+            PixelLeaseInner::Owned(pixels) => Some(pixels),
+        }
     }
 
     /// `Owned`.
     #[must_use]
     pub fn is_owned(&self) -> bool {
-        todo!()
+        matches!(self.inner, PixelLeaseInner::Owned(_))
     }
 }
 
 impl fmt::Debug for PixelLease<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("PixelLease")
+            .field("has_pixels", &self.pixels().is_some())
+            .field("owned", &self.is_owned())
+            .finish()
     }
 }
 
