@@ -265,6 +265,33 @@ fn read_empty_arrays_are_ignored_without_throwing() {
     assert_eq!(summary.f_number, None);
 }
 
+// Mutation kill (no C# twin): an empty string at ANY level of the date chain stops it (note 2), so the next level is
+// not used even though it holds a valid date.
+#[test]
+fn read_date_empty_string_at_any_level_stops_the_chain() {
+    let valid = text("2022:03:03 12:01:20");
+    let digitized_empty = read_tags(
+        JPEG_IFD_ROOT,
+        &[
+            (true, TAG_DATE_TIME_DIGITIZED, text("")),
+            (false, TAG_DATE_TIME, valid.clone()),
+            (false, TAG_MAKE, text("Canon")),
+        ],
+    )
+    .expect("summary");
+    assert_eq!(digitized_empty.date_taken, None);
+    let original_empty = read_tags(
+        JPEG_IFD_ROOT,
+        &[
+            (true, TAG_DATE_TIME_ORIGINAL, text("")),
+            (true, TAG_DATE_TIME_DIGITIZED, valid),
+            (false, TAG_MAKE, text("Canon")),
+        ],
+    )
+    .expect("summary");
+    assert_eq!(original_empty.date_taken, None);
+}
+
 // C#: ExifMetadataMutationGapTests.Read_NullQuery_Throws has no Rust twin: `read` takes a `&dyn Fn`, which cannot be null
 // (type system).
 
