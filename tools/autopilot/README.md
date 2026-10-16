@@ -7,7 +7,7 @@ memory. Rules that the agents follow are in `AGENTS.md` ("Pull requests", "Disk 
 ## Files
 | File | Purpose |
 |---|---|
-| `loop-prompt.md` | The prompt of the 15-minute overnight loop (one tick = disk check, PR hygiene, drive the next step of the plan) |
+| `loop-prompt.md` | The prompt of the 15-minute overnight loop (one tick = PR hygiene, drive the next step of the plan; no disk cleanup step, see AGENTS.md "Disk hygiene" for the rules agents follow) |
 | `workflows/waveN-contracts.js` | Contract Writer workflow: writers (Sonnet/Opus) per unit, reviewer, wiring (stubs, oracle goldens, PR). Wave 3 and 4 versions; Wave 2 was `wave2-missing-contracts.js` |
 | `workflows/waveN-port.js` | Port workflow: red tests (Haiku), implement, adversarial verify (mutation), repair, integrate per tier, finish. Wave 2/3/4 versions |
 | `workflows/wave4-finish.js`, `wave2-repair.js` | Follow-ups: merge units that were "blocked" by tier stubs, repair FAIL verdicts, gate |
