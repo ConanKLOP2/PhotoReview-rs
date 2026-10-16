@@ -223,8 +223,9 @@ pub fn compute_exif_block(
     })();
     match grown {
         Ok(length) => Ok(ExifBlock::new(0, length, true)),
-        Err(e) if e.is_io_failure() => Err(e),
-        Err(_) => Ok(ExifBlock::new(0, default_len, true)),
+        // C# catches only InvalidDataException without an I/O cause; Canceled/ArgumentOutOfRange propagate.
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(ExifBlock::new(0, default_len, true)),
+        Err(e) => Err(e),
     }
 }
 
@@ -481,7 +482,7 @@ where
             Ok(())
         }
         Ok(None) => Ok(()),
-        Err(e) if !e.is_io_failure() => Ok(()),
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(()),
         Err(e) => Err(e),
     }
 }
