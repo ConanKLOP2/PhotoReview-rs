@@ -14,7 +14,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Barrier, Mutex, OnceLock, PoisonError, mpsc};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use pr_core::abstractions::{Clock, Log};
 use pr_core::sync::CancelToken;
@@ -395,7 +395,6 @@ fn prune_directory_tolerates_missing_directory() {
 
 #[cfg(windows)]
 #[test]
-#[ignore = "needs W4-08a: cache::atomic_file::write_atomic is still todo!() on integration/wave-4"]
 fn write_atomically_produces_only_the_final_file() {
     // C#: DiskCacheStoreTests.WriteAtomicallyAsyncProducesOnlyTheFinalFile
     // The C# test decodes a real PNG; here a fake encoder writes fixed bytes and the pixel overload is used. The real
@@ -1104,7 +1103,6 @@ fn write_atomically_invalid_image_throws() {
 
 #[cfg(windows)]
 #[test]
-#[ignore = "needs W4-08a: cache::atomic_file::write_atomic is still todo!() on integration/wave-4"]
 fn write_atomically_writes_a_decodable_png() {
     // C#: DiskCacheStoreMutationTests.WriteAtomicallyAsync_WritesADecodablePng
     // The decode-back half (PngBitmapDecoder) is W4-11e's; here the fake encoder's bytes must be the file's content
@@ -1213,6 +1211,124 @@ fn missing_directory_finishes_quietly() {
 
     assert!(store.wait_for_prune(Duration::from_secs(3)));
     assert!(log.entries().is_empty(), "{:?}", log.entries());
+}
+
+// ---- C# exception paths of RunPruneLoop (no C# test; behaviour read from DiskCacheStore.cs at d92d6aae) ---------
+
+/// A log whose `error` panics for messages starting with `prefix` (a C# `ILog.Error` that throws).
+struct PanickingLog {
+    prefix: &'static str,
+    calls: AtomicUsize,
+}
+
+impl Log for PanickingLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+
+    fn info(&self, _message: &str) {}
+
+    fn warn(&self, _message: &str) {}
+
+    fn error(&self, message: &str, _error: Option<&(dyn std::error::Error + 'static)>) {
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        assert!(!message.starts_with(self.prefix), "log failed: {message}");
+    }
+}
+
+#[test]
+fn log_panic_while_reporting_a_failed_pass_does_not_wedge_the_store() {
+    // C#: `_log.Error("Prune failed: ..")` throwing inside the catch escapes the do/while; the `finally` still clears
+    // `_pruneScheduled`, so the store is idle and a later SchedulePrune starts a fresh loop.
+    let root = TempRoot::new("DiskCacheLogPanic");
+    let dir = dir_of(&root, "wedge");
+    let log = Arc::new(PanickingLog {
+        prefix: "Prune failed",
+        calls: AtomicUsize::new(0),
+    });
+    let store = DiskCacheStore::new(dir, "a\0b", 1, Some(log.clone() as Arc<dyn Log>), None).expect("store");
+
+    store.schedule_prune();
+    assert!(store.wait_for_prune(WAIT), "a panicking log left the store scheduled");
+    assert_eq!(store.full_scan_count(), 1);
+    assert_eq!(log.calls.load(Ordering::SeqCst), 1);
+
+    store.schedule_prune();
+    assert!(store.wait_for_prune(WAIT));
+    assert_eq!(
+        store.full_scan_count(),
+        2,
+        "the second request was swallowed as pending"
+    );
+    assert_eq!(log.calls.load(Ordering::SeqCst), 2);
+}
+
+#[test]
+fn log_panic_skips_the_exit_window_recheck() {
+    // C#: after a throwing log the `finally` runs (hook, flag cleared) and the task faults: the exit-window re-check
+    // after the `finally` never runs, so a request made by the hook stays pending and no second loop starts.
+    let root = TempRoot::new("DiskCacheLogPanic");
+    let dir = dir_of(&root, "window");
+    let log = Arc::new(PanickingLog {
+        prefix: "Prune failed",
+        calls: AtomicUsize::new(0),
+    });
+    let store = Arc::new(DiskCacheStore::new(dir, "a\0b", 1, Some(log.clone() as Arc<dyn Log>), None).expect("store"));
+    let hook_calls = Arc::new(AtomicUsize::new(0));
+    let hook_store = Arc::clone(&store);
+    let hook_counter = Arc::clone(&hook_calls);
+    let hook: Arc<dyn Fn() + Send + Sync> = Arc::new(move || {
+        if hook_counter.fetch_add(1, Ordering::SeqCst) == 0 {
+            hook_store.schedule_prune(); // scheduled is still set: this only marks a pending request
+        }
+    });
+    store.set_before_clear_prune_scheduled_for_tests(Some(hook));
+
+    store.schedule_prune();
+    // The pending request is never serviced, so every wait runs to its bound; it reports "not scheduled" once the
+    // `finally` has cleared the flag. Short bounded waits, repeated until then (at most WAIT in all).
+    let deadline = Instant::now() + WAIT;
+    while !store.wait_for_prune(Duration::from_millis(100)) {
+        assert!(
+            Instant::now() < deadline,
+            "the scheduled flag was not cleared by the finally"
+        );
+    }
+    // A (wrongly) restarted loop would run its pass, log and hook within this extra bound.
+    let _ = store.wait_for_prune(Duration::from_millis(300));
+    store.set_before_clear_prune_scheduled_for_tests(None); // break the store <-> hook cycle
+
+    assert_eq!(hook_calls.load(Ordering::SeqCst), 1, "a second loop ran");
+    assert_eq!(store.full_scan_count(), 1, "a second loop ran");
+    assert_eq!(log.calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn panicking_test_hook_leaves_the_store_scheduled() {
+    // C#: `BeforeClearPruneScheduledForTests` throwing inside the `finally` skips `Interlocked.Exchange(ref
+    // _pruneScheduled, 0)`: the store stays scheduled, a later SchedulePrune only marks pending and runs nothing.
+    let root = TempRoot::new("DiskCacheHookPanic");
+    let dir = dir_of(&root, "hook");
+    let store = DiskCacheStore::new(dir, "*.pv4", 1, None, None).expect("store");
+    let (ran_tx, ran_rx) = mpsc::channel::<()>();
+    let ran_tx = Mutex::new(ran_tx);
+    let hook: Arc<dyn Fn() + Send + Sync> = Arc::new(move || {
+        let _ = ran_tx.lock().unwrap_or_else(PoisonError::into_inner).send(());
+        panic!("hook failed");
+    });
+    store.set_before_clear_prune_scheduled_for_tests(Some(hook));
+
+    store.schedule_prune();
+    ran_rx.recv_timeout(WAIT).expect("the hook ran");
+    assert!(
+        !store.wait_for_prune(Duration::from_millis(200)),
+        "the flag was cleared after a panicking hook"
+    );
+
+    store.schedule_prune();
+    assert!(!store.wait_for_prune(Duration::from_millis(200)));
+    assert!(ran_rx.try_recv().is_err(), "a new loop started");
+    assert_eq!(store.full_scan_count(), 1);
 }
 
 #[cfg(windows)]
