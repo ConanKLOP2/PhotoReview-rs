@@ -415,7 +415,7 @@ Two settings are saved and repaired but nothing in the app reads them at runtime
 Units merged with a FAIL verdict or surviving mutants; treat as Partial until fixed. Not fixed in the integration.
 
 - W4-01c: FIXED (rep/W4-01c): `DecodeError::with_user_text` / `Localized` wrapper localizes every variant (C# `UserFacingError.Localized` works on any exception type); `describe`, `is_localized`, `user_text` cover all variants and `rebuild_decode_error` keeps the text.
-- W4-16a: repaired (rep/W4-16a): `OutOfMemory` Display now the .NET default text; re-run mutation of `pixels.rs` incomplete (10 of 152 tested, all caught, 0 missed; machine too loaded). W4-16b: mutants M21 (dealloc path), M14 (Opaque accept) survive.
+- W4-16a: repaired (rep/W4-16a): `OutOfMemory` Display now the .NET default text; re-run mutation of `pixels.rs` incomplete (10 of 152 tested, all caught, 0 missed; machine too loaded). W4-16b: repaired on `rep/W4-16b` (M21 dealloc path killed by a counting global allocator test, M14 Opaque accept killed by `to_pixels_accepts_a_pixel_buffer_held_as_an_opaque_platform_image`; no behaviour difference with C# d92d6aae found).
 - W4-08a: FIXED on rep/W4-08a (relative or long-absolute paths now resolved with `std::path::absolute` before the verbatim path prefix in `rename_over`; tests `write_atomic_*relative*`). Mutants (cargo-mutants, atomic_file.rs): all caught except the 2 non-Windows twins `rename_over`/`open_create_new` (cfg(not(windows)), unreachable here).
 - W4-09: panicking `Log::error` wedges the prune thread; panicking `BeforeClearPruneScheduledForTests` hook clears the flag (C# keeps it scheduled).
 - W4-10a: SourceBytesCache file-changed / unexpected-EOF errors not localized (D41).

@@ -6,9 +6,11 @@
 //! The live count is process-wide and the test harness runs tests on several threads: every test that allocates holds
 //! [`guard`], so counts read as deltas are exact. Helpers never take the guard (no re-entrant locking).
 
+use std::alloc::{GlobalAlloc, Layout, System};
 use std::fmt::Write as _;
 use std::io::{Cursor, Read, Seek};
 use std::ptr;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use pr_imaging::decode_types::{PlatformImage, SourceBytes};
@@ -19,6 +21,54 @@ use pr_imaging::pixel_memory::{
 use pr_imaging::pixels::{PixelBuffer, PixelLayout};
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};
 use serde_json::Value;
+
+/// Counts allocations and frees of 64-byte aligned blocks of one distinctive size, so a test can see that the block
+/// really goes back to the allocator (the live count alone is bookkeeping and would not notice a skipped `dealloc`).
+struct CountingAllocator;
+
+/// Size of the blocks [`CountingAllocator`] watches; no other test or runtime allocation uses it.
+const WATCHED_SIZE: usize = 777_777;
+static WATCHED_ALLOCS: AtomicUsize = AtomicUsize::new(0);
+static WATCHED_FREES: AtomicUsize = AtomicUsize::new(0);
+
+fn is_watched(layout: &Layout) -> bool {
+    layout.align() == ALIGNMENT && layout.size() == WATCHED_SIZE
+}
+
+// SAFETY: every method forwards to `System` unchanged (same layout, same pointer); only atomic counters are touched.
+unsafe impl GlobalAlloc for CountingAllocator {
+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        if is_watched(&layout) {
+            WATCHED_ALLOCS.fetch_add(1, Ordering::SeqCst);
+        }
+        // SAFETY: the caller's `GlobalAlloc::alloc` contract is passed through to `System` untouched.
+        unsafe { System.alloc(layout) }
+    }
+
+    unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
+        if is_watched(&layout) {
+            WATCHED_ALLOCS.fetch_add(1, Ordering::SeqCst);
+        }
+        // SAFETY: the caller's `GlobalAlloc::alloc_zeroed` contract is passed through to `System` untouched.
+        unsafe { System.alloc_zeroed(layout) }
+    }
+
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+        if is_watched(&layout) {
+            WATCHED_FREES.fetch_add(1, Ordering::SeqCst);
+        }
+        // SAFETY: `ptr` and `layout` are exactly what the caller got from this allocator.
+        unsafe { System.dealloc(ptr, layout) }
+    }
+
+    unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
+        // SAFETY: the caller's `GlobalAlloc::realloc` contract is passed through to `System` untouched.
+        unsafe { System.realloc(ptr, layout, new_size) }
+    }
+}
+
+#[global_allocator]
+static ALLOCATOR: CountingAllocator = CountingAllocator;
 
 /// Serialises every test that allocates (the live count is shared by the whole test binary).
 static GUARD: Mutex<()> = Mutex::new(());
@@ -705,4 +755,70 @@ fn after_dispose_block_is_invalid_with_null_pointer_by_contract() {
     assert_eq!(memory.address(), 0);
     assert!(memory.as_mut_ptr().is_null());
     assert_eq!(memory.byte_count(), 4096);
+}
+
+// Kills "the block is never handed back to the allocator" (dealloc skipped, count still decremented): the live count
+// is bookkeeping, the counting global allocator sees the real `dealloc`. Rust-only (C# has no allocator hook).
+#[test]
+fn dispose_and_drop_hand_the_block_back_to_the_allocator_exactly_once() {
+    let _guard = guard();
+    let size = i64::try_from(WATCHED_SIZE).expect("fits");
+    let (allocs, frees) = (
+        WATCHED_ALLOCS.load(Ordering::SeqCst),
+        WATCHED_FREES.load(Ordering::SeqCst),
+    );
+
+    let block = NativePixelMemory::allocate(size).expect("watched size allocates");
+    assert_eq!(WATCHED_ALLOCS.load(Ordering::SeqCst), allocs + 1);
+    assert_eq!(WATCHED_FREES.load(Ordering::SeqCst), frees, "nothing freed while alive");
+
+    block.dispose();
+    assert_eq!(
+        WATCHED_FREES.load(Ordering::SeqCst),
+        frees + 1,
+        "dispose frees the block"
+    );
+    block.dispose();
+    drop(block);
+    assert_eq!(
+        WATCHED_FREES.load(Ordering::SeqCst),
+        frees + 1,
+        "dispose then drop frees once"
+    );
+
+    let forgotten = NativePixelMemory::allocate(size).expect("watched size allocates");
+    drop(forgotten);
+    assert_eq!(
+        WATCHED_FREES.load(Ordering::SeqCst),
+        frees + 2,
+        "drop frees a block that was never disposed"
+    );
+    assert_eq!(WATCHED_ALLOCS.load(Ordering::SeqCst), allocs + 2);
+}
+
+// Kills "the Opaque arm refuses (or accepts) everything": a PixelBuffer wrapped as an opaque platform image is still a
+// PixelBuffer (C# `platformImage is PixelBuffer`), a disposed one is refused as Disposed, a foreign one as InvalidArgument.
+#[test]
+fn to_pixels_accepts_a_pixel_buffer_held_as_an_opaque_platform_image() {
+    let _guard = guard();
+    let codec = PixelBufferImageCodec::INSTANCE;
+
+    let shared = Arc::new(small_buffer());
+    let image = PlatformImage::Opaque(Arc::clone(&shared) as Arc<dyn std::any::Any + Send + Sync>);
+    let lease = codec.to_pixels(&image).expect("an opaque PixelBuffer is lent");
+    assert!(!lease.is_owned());
+    assert!(ptr::eq(lease.pixels().expect("lent pixels"), &*shared));
+    drop(lease);
+    assert!(!shared.is_disposed());
+
+    let mut dead = small_buffer();
+    dead.dispose();
+    let image = PlatformImage::Opaque(Arc::new(dead));
+    assert!(matches!(codec.to_pixels(&image), Err(DecodeError::Disposed { .. })));
+
+    let foreign = PlatformImage::Opaque(Arc::new(42_u32));
+    assert!(matches!(
+        codec.to_pixels(&foreign),
+        Err(DecodeError::InvalidArgument { .. })
+    ));
 }
