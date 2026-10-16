@@ -304,4 +304,59 @@ pub mod native {
         }
         Ok(count > 0)
     }
+    #[cfg(test)]
+    mod read_string_tests {
+        use super::*;
+
+        fn fake(
+            len: u32,
+            len_hr: HRESULT,
+            text: &'static str,
+            read_hr: HRESULT,
+        ) -> impl FnMut(u32, *mut u16, *mut u32) -> HRESULT {
+            move |cch, buf, actual| {
+                if cch == 0 {
+                    assert!(buf.is_null());
+                    // SAFETY: test-only; `actual` points to the caller's local.
+                    unsafe { *actual = len };
+                    return len_hr;
+                }
+                let units: Vec<u16> = text.encode_utf16().collect();
+                for (k, u) in units.iter().enumerate().take(cch as usize) {
+                    // SAFETY: test-only; `buf` holds `cch` writable u16.
+                    unsafe { *buf.add(k) = *u };
+                }
+                // SAFETY: test-only; `actual` points to the caller's local.
+                unsafe { *actual = cch };
+                read_hr
+            }
+        }
+
+        #[test]
+        fn reads_and_trims_trailing_nul() {
+            assert_eq!(read_string(fake(4, HRESULT(0), "ab  ", HRESULT(0))), "ab");
+        }
+
+        #[test]
+        fn zero_length_is_empty() {
+            assert_eq!(read_string(fake(0, HRESULT(0), "x", HRESULT(0))), "");
+        }
+
+        #[test]
+        fn length_query_error_is_empty_even_with_valid_length() {
+            assert_eq!(read_string(fake(1, HRESULT(-1), "x", HRESULT(0))), "");
+        }
+
+        #[test]
+        fn read_error_is_empty() {
+            assert_eq!(read_string(fake(1, HRESULT(0), "x", HRESULT(-1))), "");
+        }
+
+        #[test]
+        fn boundary_4096_is_read_4097_is_empty() {
+            let text: &'static str = Box::leak("a".repeat(4096).into_boxed_str());
+            assert_eq!(read_string(fake(4096, HRESULT(0), text, HRESULT(0))).len(), 4096);
+            assert_eq!(read_string(fake(4097, HRESULT(0), text, HRESULT(0))), "");
+        }
+    }
 }
