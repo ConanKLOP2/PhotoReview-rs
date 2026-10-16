@@ -1640,7 +1640,7 @@ fn golden_wic_managed_istream_scripts_match_the_csharp_managed_stream() {
 // backend, and tests that kill the surviving mutants of the write path.
 // ---------------------------------------------------------------------------------------------------------------
 
-/// Every HRESULT in 19 facilities x 65 536 codes for which .NET 10 `Marshal.GetExceptionForHR(hr, -1)` creates a
+/// Every HRESULT in 20 facilities x 65 536 codes for which .NET 10 `Marshal.GetExceptionForHR(hr, -1)` creates a
 /// type other than `COMException` (oracle sweep run by the W4-11a verifier; every other code is a COMException).
 const DOTNET_SPECIFIC_EXCEPTION_TYPES: &str = "
 8000000F System.TypeLoadException
@@ -1684,6 +1684,13 @@ const DOTNET_SPECIFIC_EXCEPTION_TYPES: &str = "
 80070570 System.BadImageFormatException
 80070571 System.IO.FileLoadException
 80070574 System.IO.FileNotFoundException
+800C0004 System.IO.FileNotFoundException
+800C0005 System.IO.FileNotFoundException
+800C0006 System.IO.FileNotFoundException
+800C0007 System.IO.FileNotFoundException
+800C0008 System.IO.FileNotFoundException
+800C000B System.IO.FileNotFoundException
+800C000D System.IO.FileNotFoundException
 800A0006 System.OverflowException
 800A0007 System.OutOfMemoryException
 800A0009 System.IndexOutOfRangeException
@@ -1782,8 +1789,10 @@ const DOTNET_SPECIFIC_EXCEPTION_TYPES: &str = "
 80131622 System.ObjectDisposedException
 ";
 
-/// The 19 facility prefixes the oracle swept (`hr = base | low16`).
-const SWEPT_FACILITIES: [u32; 19] = [
+/// Facility prefixes the oracle swept in full (`hr = base | low16`); round 2 adds FACILITY_INTERNET (0x800C, the
+/// INET_E_* codes .NET maps to FileNotFoundException).
+const SWEPT_FACILITIES: [u32; 20] = [
+    0x800C_0000,
     0x8000_0000,
     0x8001_0000,
     0x8002_0000,
@@ -1812,7 +1821,7 @@ fn exception_kind_full_facility_sweep_matches_dotnet() {
         let (hr, name) = line.split_once(' ').expect("`HRESULT TYPE` line");
         expected.insert(u32::from_str_radix(hr, 16).expect("hex HRESULT"), name);
     }
-    assert_eq!(expected.len(), 137);
+    assert_eq!(expected.len(), 144);
     let mut bad = Vec::new();
     for base in SWEPT_FACILITIES {
         for low in 0..=0xFFFF_u32 {
@@ -2265,6 +2274,7 @@ fn stream_fault_display_and_source() {
         StreamFault::SizeOutOfRange(u64::MAX),
         StreamFault::CountOutOfRange(u32::MAX),
         StreamFault::Io(io::Error::other("disk on fire")),
+        StreamFault::SeekOutOfRange(i64::MIN),
     ];
     let texts: Vec<String> = faults.iter().map(ToString::to_string).collect();
     assert!(texts[0].contains("closed"));
@@ -2274,6 +2284,7 @@ fn stream_fault_display_and_source() {
     assert!(texts[4].contains(&u64::MAX.to_string()));
     assert!(texts[5].contains(&u32::MAX.to_string()));
     assert!(texts[6].contains("disk on fire"));
+    assert!(texts[7].contains(&i64::MIN.to_string()));
     for (fault, text) in faults.iter().zip(&texts) {
         assert_eq!(fault.source().is_some(), matches!(fault, StreamFault::Io(_)), "{text}");
     }
@@ -2281,4 +2292,195 @@ fn stream_fault_display_and_source() {
         faults[6].source().map(ToString::to_string).as_deref(),
         Some("disk on fire")
     );
+    assert_eq!(faults[7].hresult(), COR_E_ARGUMENTOUTOFRANGE);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 2 (verifier findings): .NET `MemoryStream` int.MaxValue limits, `FileStream.SetLength` too big,
+// INET_E_* -> FileNotFoundException (table above). Expected values from the .NET 10 oracle.
+// ---------------------------------------------------------------------------------------------------------------
+
+const FOUR: [u8; 4] = [1, 2, 3, 4];
+
+/// Read-only memory stream over 4 bytes, position 1.
+fn read_only_at_1() -> ComStream {
+    let s = ComStream::from_bytes(Arc::from(&FOUR[..]));
+    assert_eq!(s.seek(1, 0).ok(), Some(1));
+    s
+}
+
+/// Growable memory stream holding 4 bytes, position 1.
+fn growable_at_1() -> ComStream {
+    let s = ComStream::writable_memory();
+    assert!(s.write(&FOUR).is_ok());
+    assert_eq!(s.seek(1, 0).ok(), Some(1));
+    s
+}
+
+/// `MemoryStream.Seek`: a target above int.MaxValue is `ArgumentOutOfRangeException` (0x80131502), position kept;
+/// exactly int.MaxValue is allowed.
+#[test]
+fn memory_seek_above_int_max_is_out_of_range_and_keeps_the_position() {
+    for (name, s) in [("read-only", read_only_at_1()), ("growable", growable_at_1())] {
+        for (offset, origin) in [
+            (2_147_483_648_i64, 0_u32),
+            (3_000_000_000, 0),
+            (i64::MAX, 0),
+            (2_147_483_647, 1),
+            (4_294_967_296, 1),
+            (i64::MAX, 1),
+            (2_147_483_644, 2),
+            (i64::MAX, 2),
+        ] {
+            assert_eq!(
+                hr_of(s.seek(offset, origin)),
+                Err(COR_E_ARGUMENTOUTOFRANGE),
+                "{name} {offset} {origin}"
+            );
+            assert_eq!(s.seek(0, 1).ok(), Some(1), "{name}: position kept");
+        }
+        // The edges that are still in range.
+        assert_eq!(s.seek(2_147_483_646, 1).ok(), Some(2_147_483_647), "{name}");
+        assert_eq!(s.seek(2_147_483_643, 2).ok(), Some(2_147_483_647), "{name}");
+        assert_eq!(s.seek(2_147_483_647, 0).ok(), Some(2_147_483_647), "{name}");
+        // From int.MaxValue, any positive move is out of range; a negative one is fine.
+        assert_eq!(hr_of(s.seek(1, 1)), Err(COR_E_ARGUMENTOUTOFRANGE), "{name}");
+        assert_eq!(s.seek(-2_147_483_647, 1).ok(), Some(0), "{name}");
+        // Before the beginning stays COR_E_IO.
+        assert_eq!(hr_of(s.seek(-4_294_967_291, 1)), Err(COR_E_IO), "{name}");
+        assert_eq!(hr_of(s.seek(i64::MIN, 1)), Err(COR_E_IO), "{name}");
+        assert_eq!(hr_of(s.seek(-5, 2)), Err(COR_E_IO), "{name}");
+        assert_eq!(s.seek(0, 1).ok(), Some(0), "{name}");
+    }
+}
+
+#[test]
+fn memory_seek_out_of_range_via_vtable() {
+    let s = read_only_at_1();
+    let stream: IStream = s.istream();
+    let mut new_pos = SENTINEL_U64;
+    assert_eq!(
+        vt_seek(stream.as_raw(), 2_147_483_648, 0, &mut new_pos).0,
+        COR_E_ARGUMENTOUTOFRANGE
+    );
+    assert_eq!(new_pos, SENTINEL_U64, "not written on failure");
+    assert!(matches!(
+        s.take_last_fault(),
+        Some(StreamFault::SeekOutOfRange(2_147_483_648))
+    ));
+}
+
+/// `MemoryStream.SetLength`: the range check (> int.MaxValue) comes before the writable check.
+#[test]
+fn memory_set_size_above_int_max_is_out_of_range_before_not_supported() {
+    let ro = read_only_at_1();
+    assert_eq!(hr_of(ro.set_size(2_147_483_648)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    assert_eq!(hr_of(ro.set_size(i64::MAX as u64)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    assert_eq!(hr_of(ro.set_size(2_147_483_647)), Err(COR_E_NOTSUPPORTED));
+    assert_eq!(hr_of(ro.set_size(0)), Err(COR_E_NOTSUPPORTED));
+    let grow = growable_at_1();
+    assert_eq!(hr_of(grow.set_size(2_147_483_648)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    assert_eq!(hr_of(grow.set_size(1 << 40)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    assert_eq!(
+        grow.stat().map(|st| st.cbSize).ok(),
+        Some(4),
+        "nothing allocated or changed"
+    );
+    assert_eq!(grow.seek(0, 1).ok(), Some(1));
+    assert!(grow.take_last_fault().is_none(), "safe calls do not record");
+    let stream: IStream = grow.istream();
+    assert_eq!(vt_set_size(stream.as_raw(), 2_147_483_648).0, COR_E_ARGUMENTOUTOFRANGE);
+    assert!(matches!(
+        grow.take_last_fault(),
+        Some(StreamFault::SizeOutOfRange(2_147_483_648))
+    ));
+    // In range still works (shrink keeps the position rule).
+    assert_eq!(hr_of(grow.set_size(2)), Ok(()));
+    assert_eq!(grow.stat().map(|st| st.cbSize).ok(), Some(2));
+}
+
+/// `MemoryStream.Write`: `position + count` above int.MaxValue is `IOException` "Stream was too long" (COR_E_IO),
+/// length and position unchanged, nothing allocated.
+#[test]
+fn growable_write_past_int_max_is_io_without_allocating() {
+    let s = growable_at_1();
+    assert_eq!(s.seek(2_147_483_647, 0).ok(), Some(2_147_483_647));
+    assert_eq!(hr_of(s.write(&[1])), Err(COR_E_IO));
+    assert_eq!(s.stat().map(|st| st.cbSize).ok(), Some(4));
+    assert_eq!(s.seek(0, 1).ok(), Some(2_147_483_647));
+    assert_eq!(s.seek(2_147_483_000, 0).ok(), Some(2_147_483_000));
+    assert_eq!(hr_of(s.write(&[0u8; 648])), Err(COR_E_IO), "one byte past int.MaxValue");
+    assert_eq!(s.stat().map(|st| st.cbSize).ok(), Some(4));
+    assert_eq!(s.seek(2_147_483_645, 0).ok(), Some(2_147_483_645));
+    let stream: IStream = s.istream();
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(vt_write(stream.as_raw(), FOUR.as_ptr().cast(), 4, &mut pcb).0, COR_E_IO);
+    assert_eq!(pcb, SENTINEL_U32);
+    assert_eq!(s.stat().map(|st| st.cbSize).ok(), Some(4));
+}
+
+/// `MemoryStream.Write` past the end zero-fills the gap; a 0-byte write past the end still sets the length.
+#[test]
+fn growable_write_past_the_end_zero_fills_and_sets_the_length() {
+    let s = growable_at_1();
+    assert_eq!(s.seek(6, 0).ok(), Some(6));
+    assert_eq!(hr_of(s.write(&[9, 9])), Ok(()));
+    assert_eq!(s.seek(0, 1).ok(), Some(8));
+    assert_eq!(s.seek(10, 0).ok(), Some(10));
+    assert_eq!(hr_of(s.write(&[])), Ok(()));
+    assert_eq!(s.stat().map(|st| st.cbSize).ok(), Some(10));
+    assert_eq!(s.seek(1, 0).ok(), Some(1));
+    assert_eq!(hr_of(s.write(&[7])), Ok(()), "overwrite inside");
+    let Some(backend) = s.dispose() else {
+        panic!("backend");
+    };
+    let Ok(cursor) = backend.into_any().downcast::<Cursor<Vec<u8>>>() else {
+        panic!("Cursor<Vec<u8>>");
+    };
+    assert_eq!(cursor.into_inner(), [1, 7, 3, 4, 0, 0, 9, 9, 0, 0]);
+}
+
+/// .NET `FileStream.SetLength` too big for NTFS: `ArgumentOutOfRangeException` (RandomAccess.SetFileLength maps
+/// ERROR_INVALID_PARAMETER); huge Seek Current/End stays `0x80070057`, position kept.
+#[test]
+fn file_set_size_too_big_is_out_of_range_and_huge_seek_is_invalid_parameter() {
+    let file = TempFile::new("too-big");
+    let s = ComStream::from_file(file.open_read_write());
+    for size in [1u64 << 44, 1u64 << 62, i64::MAX as u64] {
+        assert_eq!(hr_of(s.set_size(size)), Err(COR_E_ARGUMENTOUTOFRANGE), "{size}");
+        assert!(s.take_last_fault().is_none(), "safe calls do not record");
+    }
+    assert_eq!(s.seek(5, 0).ok(), Some(5));
+    assert_eq!(hr_of(s.seek(i64::MAX, 1)), Err(E_INVALIDARG));
+    assert_eq!(hr_of(s.seek(i64::MAX, 2)), Err(E_INVALIDARG));
+    assert_eq!(s.seek(0, 1).ok(), Some(5));
+    assert_eq!(s.stat().map(|st| st.cbSize).ok(), Some(10));
+    drop(s);
+    assert_eq!(file.content(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+}
+
+#[test]
+fn inet_codes_are_file_not_found() {
+    for hr in [
+        0x800C_0004_u32,
+        0x800C_0005,
+        0x800C_0006,
+        0x800C_0007,
+        0x800C_0008,
+        0x800C_000B,
+        0x800C_000D,
+    ] {
+        assert_eq!(
+            exception_kind_for_hresult(hr as i32),
+            Some(DotnetExceptionKind::FileNotFound),
+            "{hr:08X}"
+        );
+    }
+    for hr in [0x800C_0003_u32, 0x800C_0009, 0x800C_000A, 0x800C_000C, 0x800C_000E] {
+        assert_eq!(
+            exception_kind_for_hresult(hr as i32),
+            Some(DotnetExceptionKind::Com),
+            "{hr:08X}"
+        );
+    }
 }

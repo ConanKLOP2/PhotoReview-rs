@@ -432,7 +432,7 @@ pub fn exception_kind_for_hresult(hr: i32) -> Option<DotnetExceptionKind> {
     if hr >= 0 {
         return None;
     }
-    // Every failing code that .NET maps to a specific type: the golden rows plus a full sweep of 19 facilities x
+    // Every failing code that .NET maps to a specific type: the golden rows plus a full sweep of 19 (round 2: 37) facilities x
     // 65 536 codes (FACILITY_NULL/RPC/DISPATCH/STORAGE/ITF/WIN32/CONTROL/URT/WINCODEC/D2D/NTSTATUS/SECURITY/SSPI/...)
     // through `Marshal.GetExceptionForHR(hr, -1)` on .NET 10, repair round 1 of W4-11a. Every other failing code is
     // a COMException (CoreCLR's default), e.g. all WINCODEC_ERR_*, STG_E_FILENOTFOUND, E_FAIL, E_UNEXPECTED.
@@ -447,6 +447,9 @@ pub fn exception_kind_for_hresult(hr: i32) -> Option<DotnetExceptionKind> {
         0x8000_0013 | 0x8013_1622 => K::ObjectDisposed,
         0x8007_0002 | 0x8007_0015 | 0x8007_0035 | 0x8007_0043 | 0x8007_007B | 0x8007_007E | 0x8007_0485
         | 0x8007_0574 | 0x800A_0035 => K::FileNotFound,
+        // INET_E_* (FACILITY_INTERNET 0x0C): CoreCLR maps these "resource not found / cannot connect" codes to
+        // FileNotFoundException too (repair round 2: 2.67M-code oracle sweep, 37 facilities).
+        0x800C_0004..=0x800C_0008 | 0x800C_000B | 0x800C_000D => K::FileNotFound,
         0x8003_0003 | 0x8007_0003 | 0x800A_004C => K::DirectoryNotFound,
         0x8007_000B | 0x8007_00B6 | 0x8007_00C0 | 0x8007_00C1 | 0x8007_03E6 | 0x8007_0482 | 0x8007_0570
         | 0x8013_1018 | 0x8013_101B | 0x8013_1058 | 0x8013_1107 | 0x8013_110E | 0x8013_1124 | 0x8013_1192
@@ -977,8 +980,15 @@ impl StreamBackend for File {
         io::Seek::seek(self, pos)
     }
     fn set_len(&mut self, len: u64) -> io::Result<()> {
-        File::set_len(self, len)
-            .map_err(|error| refine_access_denied(self, error, FILE_WRITE_DATA | FILE_APPEND_DATA))?;
+        File::set_len(self, len).map_err(|error| {
+            if error.raw_os_error() == Some(ERROR_INVALID_PARAMETER) {
+                // .NET `RandomAccess.SetFileLength`: ERROR_INVALID_PARAMETER -> ArgumentOutOfRangeException
+                // ("file length too big", e.g. 2^44 on NTFS).
+                argument_out_of_range("The file length is too big.")
+            } else {
+                refine_access_denied(self, error, FILE_WRITE_DATA | FILE_APPEND_DATA)
+            }
+        })?;
         let position = io::Seek::stream_position(self)?;
         if position > len {
             io::Seek::seek(self, SeekFrom::Start(len))?;
@@ -1065,26 +1075,117 @@ fn not_supported(message: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Unsupported, message.to_owned())
 }
 
-/// A growable memory stream (C# `new MemoryStream()`, the encoders' output, W4-11e).
+/// Payload of a backend `io::Error` that stands for a .NET `ArgumentOutOfRangeException` (memory seek/set-length
+/// above `int.MaxValue`, `FileStream.SetLength` too big). [`StreamState`] turns it into
+/// [`StreamFault::SeekOutOfRange`] / [`StreamFault::SizeOutOfRange`] (`COR_E_ARGUMENTOUTOFRANGE`).
+#[derive(Debug)]
+struct ArgumentOutOfRange(&'static str);
+
+impl fmt::Display for ArgumentOutOfRange {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.0)
+    }
+}
+
+impl std::error::Error for ArgumentOutOfRange {}
+
+fn argument_out_of_range(message: &'static str) -> io::Error {
+    io::Error::other(ArgumentOutOfRange(message))
+}
+
+fn is_argument_out_of_range(error: &io::Error) -> bool {
+    error.get_ref().is_some_and(|inner| inner.is::<ArgumentOutOfRange>())
+}
+
+/// `ERROR_OUTOFMEMORY`: `HRESULT_FROM_WIN32(14)` is `E_OUTOFMEMORY` (`0x8007000E`), the HResult of the
+/// `OutOfMemoryException` a `MemoryStream` throws when its buffer cannot grow.
+const ERROR_OUTOFMEMORY: i32 = 14;
+
+/// .NET `MemoryStream.MemStreamMaxLength` (`int.MaxValue`): no position or length above it.
+const MEM_STREAM_MAX_LENGTH: i64 = i32::MAX as i64;
+
+/// .NET `MemoryStream.Seek` (`SeekCore`, `_origin` 0) from `position` in a stream of `length` bytes: `offset >
+/// int.MaxValue - base` -> `ArgumentOutOfRangeException` (position kept); a target before 0 -> `InvalidInput`
+/// (`IOException` "before the beginning", via [`StreamBackend::seek_before_begin_fault`]); a target past the end
+/// is allowed.
+fn memory_seek_target(position: u64, length: u64, pos: SeekFrom) -> io::Result<u64> {
+    let (base, offset) = match pos {
+        SeekFrom::Start(offset) => (0, i64::try_from(offset).unwrap_or(i64::MAX)),
+        SeekFrom::Current(offset) => (i64::try_from(position).unwrap_or(i64::MAX), offset),
+        SeekFrom::End(offset) => (i64::try_from(length).unwrap_or(i64::MAX), offset),
+    };
+    if offset > MEM_STREAM_MAX_LENGTH - base {
+        return Err(argument_out_of_range(
+            "Stream length must be non-negative and less than 2^31 - 1 - origin.",
+        ));
+    }
+    match base.checked_add(offset).map(u64::try_from) {
+        Some(Ok(target)) => Ok(target),
+        _ => Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "An attempt was made to move the position before the beginning of the stream.",
+        )),
+    }
+}
+
+/// .NET `MemoryStream.SetLength` range check, which runs BEFORE the writable check: above `int.MaxValue` ->
+/// `ArgumentOutOfRangeException`, nothing allocated.
+fn check_memory_length(len: u64) -> io::Result<usize> {
+    if len > MEM_STREAM_MAX_LENGTH as u64 {
+        return Err(argument_out_of_range(
+            "Stream length must be non-negative and less than 2^31 - 1 - origin.",
+        ));
+    }
+    usize::try_from(len).map_err(|_| argument_out_of_range("Stream length is out of range."))
+}
+
+/// Grows `bytes` to `new_len` zero bytes without aborting on allocation failure (`ERROR_OUTOFMEMORY`).
+fn grow_zeroed(bytes: &mut Vec<u8>, new_len: usize) -> io::Result<()> {
+    if new_len > bytes.len() {
+        bytes
+            .try_reserve(new_len - bytes.len())
+            .map_err(|_| io::Error::from_raw_os_error(ERROR_OUTOFMEMORY))?;
+        bytes.resize(new_len, 0);
+    }
+    Ok(())
+}
+
+/// A growable memory stream (C# `new MemoryStream()`, the encoders' output, W4-11e). Seek, write and set-length
+/// follow .NET `MemoryStream`: no position or length above `int.MaxValue`.
 impl StreamBackend for Cursor<Vec<u8>> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         io::Read::read(self, buf)
     }
+    /// .NET `MemoryStream.Write`: `position + count` above `int.MaxValue` -> `IOException` "Stream was too long"
+    /// (`COR_E_IO`), nothing changed; past the end the gap is zero-filled and the length becomes `position + count`
+    /// (also for 0 bytes); a buffer that cannot grow -> `E_OUTOFMEMORY`, never an abort.
     fn write_all(&mut self, data: &[u8]) -> io::Result<()> {
-        io::Write::write_all(self, data)
+        let start = self.position();
+        let end = match start.checked_add(data.len() as u64) {
+            Some(end) if end <= MEM_STREAM_MAX_LENGTH as u64 => end,
+            _ => return Err(io::Error::other("Stream was too long.")),
+        };
+        let (Ok(start_index), Ok(end_index)) = (usize::try_from(start), usize::try_from(end)) else {
+            return Err(io::Error::other("Stream was too long."));
+        };
+        let bytes = self.get_mut();
+        grow_zeroed(bytes, end_index)?;
+        if let Some(target) = bytes.get_mut(start_index..end_index) {
+            target.copy_from_slice(data);
+        }
+        self.set_position(end);
+        Ok(())
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        io::Seek::seek(self, pos)
+        let target = memory_seek_target(self.position(), self.get_ref().len() as u64, pos)?;
+        self.set_position(target);
+        Ok(target)
     }
     fn set_len(&mut self, len: u64) -> io::Result<()> {
-        let new_len = usize::try_from(len).map_err(|_| io::Error::from(io::ErrorKind::InvalidInput))?;
+        let new_len = check_memory_length(len)?;
         let bytes = self.get_mut();
-        if new_len > bytes.len() {
-            bytes
-                .try_reserve(new_len - bytes.len())
-                .map_err(|_| io::Error::from(io::ErrorKind::OutOfMemory))?;
-        }
-        bytes.resize(new_len, 0);
+        grow_zeroed(bytes, new_len)?;
+        bytes.truncate(new_len);
         if self.position() > len {
             self.set_position(len);
         }
@@ -1102,7 +1203,8 @@ impl StreamBackend for Cursor<Vec<u8>> {
 }
 
 /// Read-only bytes (C# `new MemoryStream(bytes, writable: false)` / `ReadOnlyMemoryStreamFactory`, W4-16b):
-/// write and set-length fail with `ErrorKind::Unsupported` (C# `NotSupportedException`).
+/// write and set-length fail with `ErrorKind::Unsupported` (C# `NotSupportedException`); seek follows .NET
+/// `MemoryStream` (no target above `int.MaxValue`).
 impl StreamBackend for Cursor<Arc<[u8]>> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         io::Read::read(self, buf)
@@ -1114,9 +1216,14 @@ impl StreamBackend for Cursor<Arc<[u8]>> {
         ))
     }
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        io::Seek::seek(self, pos)
+        let target = memory_seek_target(self.position(), self.get_ref().len() as u64, pos)?;
+        self.set_position(target);
+        Ok(target)
     }
-    fn set_len(&mut self, _len: u64) -> io::Result<()> {
+    /// .NET `MemoryStream.SetLength`: the range check (above `int.MaxValue` -> `ArgumentOutOfRangeException`)
+    /// comes before the writable check (`NotSupportedException`).
+    fn set_len(&mut self, len: u64) -> io::Result<()> {
+        check_memory_length(len)?;
         Err(io::Error::new(
             io::ErrorKind::Unsupported,
             "Stream does not support writing.",
@@ -1148,8 +1255,14 @@ pub enum StreamFault {
     SeekBeforeBegin,
     /// `dwOrigin` not 0/1/2 (C# `ArgumentException` "Invalid seek origin", `E_INVALIDARG`).
     InvalidSeekOrigin(u32),
-    /// `SetSize` above `i64::MAX` (C# `long` parameter is negative: `ArgumentOutOfRangeException`).
+    /// `SetSize` above `i64::MAX` (C# `long` parameter is negative: `ArgumentOutOfRangeException`), or a length the
+    /// backend's range check refuses (`MemoryStream.SetLength` above `int.MaxValue`, `FileStream.SetLength` too big
+    /// for the file system).
     SizeOutOfRange(u64),
+    /// `Seek` offset whose target is above `int.MaxValue` on a memory backend (.NET `MemoryStream.Seek`:
+    /// `ArgumentOutOfRangeException`, `COR_E_ARGUMENTOUTOFRANGE`); the position is unchanged. Rust addition (repair
+    /// round 2 of W4-11a), carries the `dlibMove` offset.
+    SeekOutOfRange(i64),
     /// `Read`/`Write` with `cb > i32::MAX` (C# `int cb` is negative: `new Span<byte>(pv, cb)` throws
     /// `ArgumentOutOfRangeException`, `COR_E_ARGUMENTOUTOFRANGE`); `pv` is not touched.
     CountOutOfRange(u32),
@@ -1170,7 +1283,7 @@ impl StreamFault {
             Self::NotSupported => COR_E_NOTSUPPORTED,
             Self::SeekBeforeBegin => COR_E_IO,
             Self::InvalidSeekOrigin(_) => E_INVALIDARG,
-            Self::SizeOutOfRange(_) | Self::CountOutOfRange(_) => COR_E_ARGUMENTOUTOFRANGE,
+            Self::SizeOutOfRange(_) | Self::SeekOutOfRange(_) | Self::CountOutOfRange(_) => COR_E_ARGUMENTOUTOFRANGE,
             Self::Io(error) => {
                 if let Some(code) = error.raw_os_error() {
                     if code == ERROR_OPERATION_ABORTED {
@@ -1217,6 +1330,7 @@ impl fmt::Display for StreamFault {
             }
             Self::InvalidSeekOrigin(origin) => write!(f, "Invalid seek origin ({origin})."),
             Self::SizeOutOfRange(size) => write!(f, "Stream length {size} is out of range."),
+            Self::SeekOutOfRange(offset) => write!(f, "Seek offset {offset} is out of range."),
             Self::CountOutOfRange(count) => write!(f, "Byte count {count} is out of range."),
             Self::Io(error) => write!(f, "Stream I/O failed: {error}"),
         }
@@ -1261,6 +1375,7 @@ impl StreamState {
         match backend.seek(target) {
             Ok(position) => Ok(position),
             Err(error) if is_seek_before_begin(&error) => Err(backend.seek_before_begin_fault()),
+            Err(error) if is_argument_out_of_range(&error) => Err(StreamFault::SeekOutOfRange(offset)),
             Err(error) => Err(StreamFault::from_io(error)),
         }
     }
@@ -1270,7 +1385,13 @@ impl StreamState {
         if size > i64::MAX as u64 {
             return Err(StreamFault::SizeOutOfRange(size));
         }
-        backend.set_len(size).map_err(StreamFault::from_io)
+        backend.set_len(size).map_err(|error| {
+            if is_argument_out_of_range(&error) {
+                StreamFault::SizeOutOfRange(size)
+            } else {
+                StreamFault::from_io(error)
+            }
+        })
     }
 
     fn commit(&mut self) -> Result<(), StreamFault> {
