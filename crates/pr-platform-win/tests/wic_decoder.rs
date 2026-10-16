@@ -1111,3 +1111,28 @@ fn source_stream_backend_seek_past_i64_max_is_refused() {
         i64::MAX as u64
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 3 (verifier finding: SourceStreamBackend seek-before-begin HRESULT)
+// ---------------------------------------------------------------------------------------------------------------
+
+// Oracle (.NET 10, `new FileStream(path, Open, Read, ReadWrite | Delete, 1 MiB, SequentialScan)`, the C#
+// `PhysicalSourceReader` stream): `Seek(-1, Begin)`, `Seek(-5, Current)`, `Seek(-101, End)` on 100 bytes and
+// `Seek(long.MaxValue, End)` all throw `IOException` HResult 0x80070057 and keep the position; the COM caller (WIC) sees
+// that HRESULT. The memory default (`COR_E_IO`) was wrong for the file source.
+#[test]
+fn source_stream_backend_seek_before_begin_is_the_filestream_hresult() {
+    use pr_platform_win::wic::interop::ComStream;
+    let backend = SourceStreamBackend::new(Box::new(std::io::Cursor::new(vec![0u8; 100])));
+    assert_eq!(backend.seek_before_begin_fault().hresult(), E_INVALIDARG);
+    assert_eq!(E_INVALIDARG, hresult_from_win32(87));
+    let stream = ComStream::new(Box::new(backend));
+    assert_eq!(stream.seek(2, 0).expect("seek 2"), 2);
+    for (offset, origin) in [(-1i64, 0u32), (-5, 1), (-101, 2), (i64::MAX, 2)] {
+        let fault = stream.seek(offset, origin).expect_err("before begin");
+        assert_eq!(fault.hresult(), E_INVALIDARG, "Seek({offset}, {origin})");
+        assert_ne!(fault.hresult(), COR_E_IO);
+    }
+    assert_eq!(stream.seek(0, 1).expect("position"), 2, "position kept");
+    assert_eq!(stream.seek(i64::MAX, 0).expect("i64::MAX"), i64::MAX as u64);
+}
