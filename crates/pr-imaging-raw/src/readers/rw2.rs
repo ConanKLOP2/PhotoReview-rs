@@ -9,9 +9,6 @@
 //! Reads only through the bounded [`RawHeaderSource`]: never the whole file, never past `MAX_HEADER_BYTES`. A hostile file
 //! is an `Err` (invalid data) or a result with fewer fields; nothing here may panic, overflow or loop (INV-12 spirit: a RAW
 //! container error never falls back to another decoder).
-// Temporary (D11): the stub has `todo!()` bodies. The porter removes this line with the last `todo!()`.
-#![allow(unused_imports, unused_variables, dead_code)]
-
 use pr_core::sync::CancelToken;
 use pr_core::text::eq_ignore_case;
 use pr_imaging::exif_parser::try_read_orientation_from_jpeg;
@@ -76,33 +73,45 @@ impl Rw2ContainerReader {
 /// Pure; exposed for exact-value tests of the boundaries (equal borders, `i32::MAX`, `i32::MAX + 1`, negative left).
 #[must_use]
 pub fn image_extent(start: Option<i64>, end: Option<i64>, size_tag: Option<i64>) -> i32 {
-    todo!()
+    let max = i64::from(i32::MAX);
+    if let (Some(s), Some(e)) = (start, end) {
+        if s >= 0 && e > s && e <= max {
+            return i32::try_from(e - s).unwrap_or(0);
+        }
+    }
+    match size_tag {
+        Some(t) if t > 0 && t <= max => i32::try_from(t).unwrap_or(0),
+        _ => 0,
+    }
 }
 
 /// IFD0 Orientation as the reader accepts it: `Some(1..=8)` for a value inside that range, else `None` (the JPEG EXIF fallback
 /// then applies). `value` is the `ReadTagValue` result for tag 0x0112 (negative values are possible).
 #[must_use]
 pub fn ifd0_orientation(value: Option<i64>) -> Option<i32> {
-    todo!()
+    match value {
+        Some(v) if (1..=8).contains(&v) => i32::try_from(v).ok(),
+        _ => None,
+    }
 }
 
 /// How many bytes of the preview JPEG the EXIF block declares: `min(jpeg_length, DEFAULT_EXIF_BLOCK_BYTES)`.
 #[must_use]
 pub fn exif_block_length(jpeg_length: i64) -> i64 {
-    todo!()
+    jpeg_length.min(i64::from(DEFAULT_EXIF_BLOCK_BYTES))
 }
 
 /// Bytes to read from the start of the preview for the orientation fallback:
 /// `min(min(jpeg_length, DEFAULT_EXIF_BLOCK_BYTES), file_length - jpeg_offset)` (C# `exifLength`; `<= 0` means "do not read").
 #[must_use]
 pub fn exif_read_length(jpeg_length: i64, jpeg_offset: i64, file_length: i64) -> i64 {
-    todo!()
+    exif_block_length(jpeg_length).min(file_length.saturating_sub(jpeg_offset))
 }
 
 impl RawContainerReader for Rw2ContainerReader {
     /// C# `CanRead`: extension `.rw2` (`OrdinalIgnoreCase`), at least 4 bytes, bytes `49 49 55 00`. Pure, never panics.
     fn can_read(&self, first_64_bytes: &[u8], extension: &str) -> bool {
-        todo!()
+        eq_ignore_case(extension, RW2_EXTENSION) && first_64_bytes.starts_with(&[0x49, 0x49, 0x55, 0x00])
     }
 
     /// C# `Read`. Errors are `RawHeaderError` invalid-data values: `source.length() < 16` => [`TOO_SHORT_MESSAGE`]; header not
@@ -113,6 +122,70 @@ impl RawContainerReader for Rw2ContainerReader {
     /// as `read_tag_value` issues them; then, only when the JPEG entry passes, `read(offset, 2)` and, only when IFD0 has no
     /// usable orientation, `read(offset, exif_read_length)`.
     fn read(&self, source: &mut dyn RawHeaderSource, token: &CancelToken) -> Result<RawContainerInfo, RawHeaderError> {
-        todo!()
+        let _ = token;
+        let file_length = source.length();
+        if file_length < MIN_FILE_BYTES {
+            return Err(RawHeaderError::invalid_data(TOO_SHORT_MESSAGE));
+        }
+
+        let header = try_read_header(source.read(0, 16)?);
+        let (little_endian, ifd0_offset) = match header {
+            Some(h) if h.little_endian && h.magic == RW2_MAGIC => (true, h.ifd0_offset),
+            _ => return Err(RawHeaderError::invalid_data(INVALID_HEADER_MESSAGE)),
+        };
+
+        let entries = read_ifd_entries(source, i64::from(ifd0_offset), little_endian)?.entries;
+
+        let sensor_width_tag = read_tag_value(source, &entries, TAG_SENSOR_WIDTH, little_endian)?;
+        let sensor_height_tag = read_tag_value(source, &entries, TAG_SENSOR_HEIGHT, little_endian)?;
+        let top = read_tag_value(source, &entries, TAG_TOP_BORDER, little_endian)?;
+        let left = read_tag_value(source, &entries, TAG_LEFT_BORDER, little_endian)?;
+        let bottom = read_tag_value(source, &entries, TAG_BOTTOM_BORDER, little_endian)?;
+        let right = read_tag_value(source, &entries, TAG_RIGHT_BORDER, little_endian)?;
+        let ifd0_orient = ifd0_orientation(read_tag_value(source, &entries, TAG_ORIENTATION, little_endian)?);
+
+        let sensor_width = image_extent(left, right, sensor_width_tag);
+        let sensor_height = image_extent(top, bottom, sensor_height_tag);
+
+        let mut previews = Vec::new();
+        let mut exif_blocks = Vec::new();
+        let mut jpeg_orientation: Option<i32> = None;
+
+        if let Some(entry) = try_get_entry(&entries, TAG_JPG_FROM_RAW) {
+            if entry.count > 4 {
+                let offset = i64::from(entry.value_or_offset);
+                let length = i64::from(entry.count);
+                if is_range_in_file(offset, length, file_length) && source.read(offset, 2)? == [0xFF, 0xD8] {
+                    previews.push(EmbeddedPreview::new(
+                        0,
+                        offset,
+                        length,
+                        EmbeddedPreviewKind::Jpeg,
+                        0,
+                        0,
+                        PreviewColorSpace::Unknown,
+                    ));
+                    exif_blocks.push(ExifBlock::new(offset, exif_block_length(length), false));
+                    if ifd0_orient.is_none() {
+                        let n = exif_read_length(length, offset, file_length);
+                        if n > 0 {
+                            if let Ok(count) = i32::try_from(n) {
+                                jpeg_orientation =
+                                    try_read_orientation_from_jpeg(source.read(offset, count)?).map(i32::from);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(RawContainerInfo {
+            format: RawFormat::Rw2,
+            sensor_width,
+            sensor_height,
+            orientation: ifd0_orient.or(jpeg_orientation).unwrap_or(1),
+            previews,
+            exif_blocks,
+        })
     }
 }
