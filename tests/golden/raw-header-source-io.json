@@ -1,0 +1,1107 @@
+{
+  "generator": "oracle-cs raw-header-source-io",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "chunked-reads-fill-one-block",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 200000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 100,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 100,
+          "last": 109,
+          "sum": 1045,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65531,
+          "count": 20,
+          "ok": true,
+          "len": 20,
+          "first": 20,
+          "last": 39,
+          "sum": 590,
+          "total_bytes_read": 131072
+        },
+        {
+          "op": "read",
+          "offset": 150000,
+          "count": 40,
+          "ok": true,
+          "len": 40,
+          "first": 153,
+          "last": 192,
+          "sum": 6900,
+          "total_bytes_read": 196608
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 198
+    },
+    {
+      "name": "one-byte-chunks-small-stream",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 100,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 100,
+          "ok": true,
+          "len": 100,
+          "first": 0,
+          "last": 99,
+          "sum": 4950,
+          "total_bytes_read": 100
+        },
+        {
+          "op": "read",
+          "offset": 99,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 99,
+          "last": 99,
+          "sum": 99,
+          "total_bytes_read": 100
+        },
+        {
+          "op": "read",
+          "offset": 50,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 100
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 100
+    },
+    {
+      "name": "exact-block-size-stream",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 65536,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 65536,
+          "ok": true,
+          "len": 65536,
+          "first": 0,
+          "last": 24,
+          "sum": 8189175,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65535,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 24,
+          "last": 24,
+          "sum": 24,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65536,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65535,
+          "count": 2,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 65535, count: 2, length: 65536).",
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 1
+    },
+    {
+      "name": "zero-length-stream",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 0,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 0, count: 1, length: 0).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 1,
+          "count": 0,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 1, count: 0, length: 0).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": -1,
+          "count": 0,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "inner": null,
+          "message": "Offset and count must be non-negative. (Parameter 'offset')",
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "short-stream-single-block",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 131072,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65546,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65546,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 5
+    },
+    {
+      "name": "short-stream-multi-block-crossing",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 131072,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 65528,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65528,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 8,
+          "ok": true,
+          "len": 8,
+          "first": 0,
+          "last": 7,
+          "sum": 28,
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 5
+    },
+    {
+      "name": "short-stream-empty-last-block",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 65537,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65536,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65535,
+          "count": 2,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 65536.",
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 3
+    },
+    {
+      "name": "stream-empty-but-declared-nonzero",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 10,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Unexpected EOF while reading block at 0.",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 1
+    },
+    {
+      "name": "io-fault-first-read",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 1000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 0: disk",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 0: disk",
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 2
+    },
+    {
+      "name": "io-fault-on-second-block-of-multi-block-read",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 196608,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 65526,
+          "count": 20,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 65536: disk",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65526,
+          "count": 20,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 65536: disk",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 131072,
+          "count": 8,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 131072: disk",
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 4
+    },
+    {
+      "name": "io-fault-after-cached-block-still-serves-cache",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 131072,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65536,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 65536: disk",
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 5,
+          "count": 5,
+          "ok": true,
+          "len": 5,
+          "first": 5,
+          "last": 9,
+          "sum": 35,
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 2
+    },
+    {
+      "name": "io-fault-with-partial-chunks",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 131072,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 65536
+        },
+        {
+          "op": "read",
+          "offset": 65536,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "IOException",
+          "message": "Unable to read RAW header block at 65536: disk",
+          "total_bytes_read": 65536
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 71
+    },
+    {
+      "name": "disposed-fault-inner-type",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 1000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "ObjectDisposedException",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 8,
+          "count": 4,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "ObjectDisposedException",
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 2
+    },
+    {
+      "name": "dispose-drops-the-cache",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 1000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 1000
+        },
+        {
+          "op": "dispose",
+          "stream_disposed": true
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "ObjectDisposedException",
+          "total_bytes_read": 1000
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 1000
+        },
+        {
+          "op": "dispose",
+          "stream_disposed": true
+        },
+        {
+          "op": "read",
+          "offset": 900,
+          "count": 100,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": "ObjectDisposedException",
+          "total_bytes_read": 1000
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 1
+    },
+    {
+      "name": "dispose-then-argument-checks-come-first",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 1000,
+      "steps": [
+        {
+          "op": "dispose",
+          "stream_disposed": true
+        },
+        {
+          "op": "read",
+          "offset": -1,
+          "count": 1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "inner": null,
+          "message": "Offset and count must be non-negative. (Parameter 'offset')",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": -1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "inner": null,
+          "message": "Offset and count must be non-negative. (Parameter 'offset')",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 990,
+          "count": 11,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 990, count: 11, length: 1000).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 8388609,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 0, count: 8388609, length: 1000).",
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "argument-and-range-messages",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 100,
+      "steps": [
+        {
+          "op": "read",
+          "offset": -1,
+          "count": 1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "inner": null,
+          "message": "Offset and count must be non-negative. (Parameter 'offset')",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": -1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "inner": null,
+          "message": "Offset and count must be non-negative. (Parameter 'offset')",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 95,
+          "count": 10,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 95, count: 10, length: 100).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 100,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 100, count: 1, length: 100).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 100,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 9223372036854775807,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 9223372036854775807, count: 1, length: 100).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 2147483647,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 0, count: 2147483647, length: 100).",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 1,
+          "count": 2147483647,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "Attempted to read past end of stream (offset: 1, count: 2147483647, length: 100).",
+          "total_bytes_read": 0
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "over-max-header-bytes-checked-before-the-range-or-allocation",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 20971520,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 8388609,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "RAW header read of 8388609 bytes exceeds hard limit of 8388608 bytes.",
+          "total_bytes_read": 0
+        },
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 8388608,
+          "ok": true,
+          "len": 8388608,
+          "first": 0,
+          "last": 187,
+          "sum": 1048570078,
+          "total_bytes_read": 8388608
+        },
+        {
+          "op": "read",
+          "offset": 8388608,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "RAW header read exceeded hard limit of 8388608 bytes.",
+          "total_bytes_read": 8388608
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 128
+    },
+    {
+      "name": "budget-exhausted-message",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 9437184,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 8257536,
+          "ok": true,
+          "len": 8257536,
+          "first": 0,
+          "last": 137,
+          "sum": 1032184203,
+          "total_bytes_read": 8257536
+        },
+        {
+          "op": "read",
+          "offset": 8257536,
+          "count": 196608,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "RAW header read exceeded hard limit of 8388608 bytes.",
+          "total_bytes_read": 8388608
+        },
+        {
+          "op": "read",
+          "offset": 8257536,
+          "count": 131072,
+          "ok": true,
+          "len": 131072,
+          "first": 138,
+          "last": 187,
+          "sum": 16385875,
+          "total_bytes_read": 8388608
+        },
+        {
+          "op": "read",
+          "offset": 8388608,
+          "count": 16,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "inner": null,
+          "message": "RAW header read exceeded hard limit of 8388608 bytes.",
+          "total_bytes_read": 8388608
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 128
+    },
+    {
+      "name": "multi-block-reads-of-different-sizes",
+      "ctor_error": null,
+      "open_source": null,
+      "length": 196608,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 65436,
+          "count": 65736,
+          "ok": true,
+          "len": 65736,
+          "first": 176,
+          "last": 149,
+          "sum": 8216025,
+          "total_bytes_read": 196608
+        },
+        {
+          "op": "read",
+          "offset": 65526,
+          "count": 20,
+          "ok": true,
+          "len": 20,
+          "first": 15,
+          "last": 34,
+          "sum": 490,
+          "total_bytes_read": 196608
+        },
+        {
+          "op": "read",
+          "offset": 131067,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 45,
+          "last": 54,
+          "sum": 495,
+          "total_bytes_read": 196608
+        },
+        {
+          "op": "read",
+          "offset": 10,
+          "count": 131122,
+          "ok": true,
+          "len": 131122,
+          "first": 10,
+          "last": 109,
+          "sum": 16383700,
+          "total_bytes_read": 196608
+        },
+        {
+          "op": "read",
+          "offset": 65486,
+          "count": 100,
+          "ok": true,
+          "len": 100,
+          "first": 226,
+          "last": 74,
+          "sum": 8725,
+          "total_bytes_read": 196608
+        },
+        {
+          "op": "read",
+          "offset": 131022,
+          "count": 100,
+          "ok": true,
+          "len": 100,
+          "first": 0,
+          "last": 99,
+          "sum": 4950,
+          "total_bytes_read": 196608
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 3
+    },
+    {
+      "name": "length-fault-stream-ctor-disposes-the-stream",
+      "ctor_error": "IOException",
+      "ctor_message": "no length",
+      "open_source": null,
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "length-fault-path-ctor-disposes-the-stream",
+      "ctor_error": "IOException",
+      "ctor_message": "no length",
+      "open_source": {
+        "path": "x.dng",
+        "priority": "Viewer",
+        "buffer_size": 65536
+      },
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "path-ctor-viewer-priority-and-block-size-buffer",
+      "ctor_error": null,
+      "open_source": {
+        "path": "C:\\raw\\a.dng",
+        "priority": "Viewer",
+        "buffer_size": 65536
+      },
+      "length": 1000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 16,
+          "ok": true,
+          "len": 16,
+          "first": 0,
+          "last": 15,
+          "sum": 120,
+          "total_bytes_read": 1000
+        },
+        {
+          "op": "read",
+          "offset": 990,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 237,
+          "last": 246,
+          "sum": 2415,
+          "total_bytes_read": 1000
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 1
+    },
+    {
+      "name": "path-ctor-preload-priority",
+      "ctor_error": null,
+      "open_source": {
+        "path": "D:\\x\\b.cr3",
+        "priority": "Preload",
+        "buffer_size": 65536
+      },
+      "length": 70000,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 65530,
+          "count": 20,
+          "ok": true,
+          "len": 20,
+          "first": 19,
+          "last": 38,
+          "sum": 570,
+          "total_bytes_read": 70000
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 2
+    },
+    {
+      "name": "path-ctor-default-priority-is-viewer",
+      "ctor_error": null,
+      "open_source": {
+        "path": "c.nef",
+        "priority": "Viewer",
+        "buffer_size": 65536
+      },
+      "length": 10,
+      "steps": [],
+      "stream_disposed": true,
+      "stream_reads": 0
+    },
+    {
+      "name": "path-ctor-empty-path",
+      "ctor_error": "ArgumentException",
+      "open_source": null,
+      "stream_disposed": false,
+      "stream_reads": 0
+    },
+    {
+      "name": "path-ctor-whitespace-path",
+      "ctor_error": "ArgumentException",
+      "open_source": null,
+      "stream_disposed": false,
+      "stream_reads": 0
+    },
+    {
+      "name": "path-ctor-path-with-surrounding-spaces-is-passed-unchanged",
+      "ctor_error": null,
+      "open_source": {
+        "path": " a b.dng ",
+        "priority": "Viewer",
+        "buffer_size": 65536
+      },
+      "length": 10,
+      "steps": [
+        {
+          "op": "read",
+          "offset": 0,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 0,
+          "last": 9,
+          "sum": 45,
+          "total_bytes_read": 10
+        }
+      ],
+      "stream_disposed": true,
+      "stream_reads": 1
+    }
+  ]
+}

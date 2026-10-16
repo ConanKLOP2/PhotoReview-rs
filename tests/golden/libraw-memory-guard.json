@@ -1,0 +1,1808 @@
+{
+  "generator": "oracle-cs libraw-memory-guard",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "constants-all",
+      "op": "constants",
+      "values": {
+        "WorkingImageBytesPerPixel": 8,
+        "RgbOutputBytesPerPixel": 3,
+        "BitmapBytesPerPixel": 4,
+        "BayerRawBytesPerPixel": 2,
+        "LinearRawBytesPerPixel": 8,
+        "FloatRawBytesPerPixel": 24
+      }
+    },
+    {
+      "name": "is-bayer-c-1-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c-1-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c-1-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c-1-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c0-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c0-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c0-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c0-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c1-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c1-f1",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c1-f2492765332",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c1-f4294967295",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c2-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c2-f1",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c2-f2492765332",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c2-f4294967295",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c3-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c3-f1",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c3-f2492765332",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c3-f4294967295",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c4-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c4-f1",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c4-f2492765332",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c4-f4294967295",
+      "op": "is-bayer",
+      "value": true
+    },
+    {
+      "name": "is-bayer-c5-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c5-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c5-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c5-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c6-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c6-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c6-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c6-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c7-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c7-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c7-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c7-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c2147483647-f0",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c2147483647-f1",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c2147483647-f2492765332",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "is-bayer-c2147483647-f4294967295",
+      "op": "is-bayer",
+      "value": false
+    },
+    {
+      "name": "classify-n0-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n0-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n1-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n2-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n3-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n4-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n5-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n5-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n5-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n5-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n5-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n5-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n5-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n5-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n6-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n6-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n6-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n7-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n7-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n7-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n8-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n8-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n8-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n9-none",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-mosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-nomosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-four",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-mosaic4",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-mosaic5",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-mosaic0",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n9-mosaicneg",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-none",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-mosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-nomosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-four",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-mosaic4",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-mosaic5",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-mosaic0",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n10-mosaicneg",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-none",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-mosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-nomosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-four",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-mosaic4",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-mosaic5",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-mosaic0",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n11-mosaicneg",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-none",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-mosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-nomosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-four",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-mosaic4",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-mosaic5",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-mosaic0",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n12-mosaicneg",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n13-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n13-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n14-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n15-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n16-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n16-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n16-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n16-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n16-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n16-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n16-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n16-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n17-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n17-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n17-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n18-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n18-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n19-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n19-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n19-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n19-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n19-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n19-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n19-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n19-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n20-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n20-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n21-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-none",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-nomosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-four",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-mosaic5",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-mosaic0",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n22-mosaicneg",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n23-none",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-mosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-nomosaic",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-four",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-mosaic4",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-mosaic5",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-mosaic0",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n23-mosaicneg",
+      "op": "classify",
+      "family": "Float"
+    },
+    {
+      "name": "classify-n24-none",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n24-mosaic",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n24-nomosaic",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n24-four",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n24-mosaic4",
+      "op": "classify",
+      "family": "Bayer"
+    },
+    {
+      "name": "classify-n24-mosaic5",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n24-mosaic0",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "classify-n24-mosaicneg",
+      "op": "classify",
+      "family": "Linear"
+    },
+    {
+      "name": "estimate-100mp-bounded-raw-eq-Bayer",
+      "op": "estimate",
+      "bytes": 1321790400
+    },
+    {
+      "name": "estimate-100mp-bounded-raw-eq-Linear",
+      "op": "estimate",
+      "bytes": 1927310400
+    },
+    {
+      "name": "estimate-100mp-bounded-raw-eq-Float",
+      "op": "estimate",
+      "bytes": 3542030400
+    },
+    {
+      "name": "estimate-100mp-full-size-Bayer",
+      "op": "estimate",
+      "bytes": 1715640000
+    },
+    {
+      "name": "estimate-100mp-full-size-Linear",
+      "op": "estimate",
+      "bytes": 2321160000
+    },
+    {
+      "name": "estimate-100mp-full-size-Float",
+      "op": "estimate",
+      "bytes": 3935880000
+    },
+    {
+      "name": "estimate-crop-sensor-larger-Bayer",
+      "op": "estimate",
+      "bytes": 134064000
+    },
+    {
+      "name": "estimate-crop-sensor-larger-Linear",
+      "op": "estimate",
+      "bytes": 206136000
+    },
+    {
+      "name": "estimate-crop-sensor-larger-Float",
+      "op": "estimate",
+      "bytes": 398328000
+    },
+    {
+      "name": "estimate-sensor-smaller-than-output-Bayer",
+      "op": "estimate",
+      "bytes": 152172000
+    },
+    {
+      "name": "estimate-sensor-smaller-than-output-Linear",
+      "op": "estimate",
+      "bytes": 212172000
+    },
+    {
+      "name": "estimate-sensor-smaller-than-output-Float",
+      "op": "estimate",
+      "bytes": 372172000
+    },
+    {
+      "name": "estimate-48mp-Bayer",
+      "op": "estimate",
+      "bytes": 633830400
+    },
+    {
+      "name": "estimate-48mp-Linear",
+      "op": "estimate",
+      "bytes": 921830400
+    },
+    {
+      "name": "estimate-48mp-Float",
+      "op": "estimate",
+      "bytes": 1689830400
+    },
+    {
+      "name": "estimate-raw-unknown-Bayer",
+      "op": "estimate",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-raw-unknown-Linear",
+      "op": "estimate",
+      "bytes": 465830400
+    },
+    {
+      "name": "estimate-raw-unknown-Float",
+      "op": "estimate",
+      "bytes": 849830400
+    },
+    {
+      "name": "estimate-raw-width-only-Bayer",
+      "op": "estimate",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-raw-width-only-Linear",
+      "op": "estimate",
+      "bytes": 465830400
+    },
+    {
+      "name": "estimate-raw-width-only-Float",
+      "op": "estimate",
+      "bytes": 849830400
+    },
+    {
+      "name": "estimate-raw-height-only-Bayer",
+      "op": "estimate",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-raw-height-only-Linear",
+      "op": "estimate",
+      "bytes": 465830400
+    },
+    {
+      "name": "estimate-raw-height-only-Float",
+      "op": "estimate",
+      "bytes": 849830400
+    },
+    {
+      "name": "estimate-raw-negative-Bayer",
+      "op": "estimate",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-raw-negative-Linear",
+      "op": "estimate",
+      "bytes": 465830400
+    },
+    {
+      "name": "estimate-raw-negative-Float",
+      "op": "estimate",
+      "bytes": 849830400
+    },
+    {
+      "name": "estimate-raw-w-negative-h-pos-Bayer",
+      "op": "estimate",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-raw-w-negative-h-pos-Linear",
+      "op": "estimate",
+      "bytes": 465830400
+    },
+    {
+      "name": "estimate-raw-w-negative-h-pos-Float",
+      "op": "estimate",
+      "bytes": 849830400
+    },
+    {
+      "name": "estimate-raw-one-pixel-Bayer",
+      "op": "estimate",
+      "bytes": 273830402
+    },
+    {
+      "name": "estimate-raw-one-pixel-Linear",
+      "op": "estimate",
+      "bytes": 273830408
+    },
+    {
+      "name": "estimate-raw-one-pixel-Float",
+      "op": "estimate",
+      "bytes": 273830424
+    },
+    {
+      "name": "estimate-target-zero-Bayer",
+      "op": "estimate",
+      "bytes": 312000000
+    },
+    {
+      "name": "estimate-target-zero-Linear",
+      "op": "estimate",
+      "bytes": 456000000
+    },
+    {
+      "name": "estimate-target-zero-Float",
+      "op": "estimate",
+      "bytes": 840000000
+    },
+    {
+      "name": "estimate-target-width-zero-Bayer",
+      "op": "estimate",
+      "bytes": 312000000
+    },
+    {
+      "name": "estimate-target-width-zero-Linear",
+      "op": "estimate",
+      "bytes": 456000000
+    },
+    {
+      "name": "estimate-target-width-zero-Float",
+      "op": "estimate",
+      "bytes": 840000000
+    },
+    {
+      "name": "estimate-target-negative-Bayer",
+      "op": "estimate",
+      "bytes": 312000000
+    },
+    {
+      "name": "estimate-target-negative-Linear",
+      "op": "estimate",
+      "bytes": 456000000
+    },
+    {
+      "name": "estimate-target-negative-Float",
+      "op": "estimate",
+      "bytes": 840000000
+    },
+    {
+      "name": "estimate-target-one-negative-Bayer",
+      "op": "estimate",
+      "bytes": 312000000
+    },
+    {
+      "name": "estimate-target-one-negative-Linear",
+      "op": "estimate",
+      "bytes": 456000000
+    },
+    {
+      "name": "estimate-target-one-negative-Float",
+      "op": "estimate",
+      "bytes": 840000000
+    },
+    {
+      "name": "estimate-1x1-Bayer",
+      "op": "estimate",
+      "bytes": 17
+    },
+    {
+      "name": "estimate-1x1-Linear",
+      "op": "estimate",
+      "bytes": 23
+    },
+    {
+      "name": "estimate-1x1-Float",
+      "op": "estimate",
+      "bytes": 39
+    },
+    {
+      "name": "estimate-1x1-all-zero-Bayer",
+      "op": "estimate",
+      "bytes": 13
+    },
+    {
+      "name": "estimate-1x1-all-zero-Linear",
+      "op": "estimate",
+      "bytes": 19
+    },
+    {
+      "name": "estimate-1x1-all-zero-Float",
+      "op": "estimate",
+      "bytes": 35
+    },
+    {
+      "name": "estimate-width-zero-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-zero-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-zero-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-zero-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-zero-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-zero-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-negative-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-negative-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-negative-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-negative-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-negative-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-height-negative-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-both-negative-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-both-negative-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-both-negative-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-min-int-Bayer",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-min-int-Linear",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-width-min-int-Float",
+      "op": "estimate",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-int-max-all-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-all-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-all-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-source-only-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-source-only-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-source-only-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-w-1-Bayer",
+      "op": "estimate",
+      "bytes": 27917287411
+    },
+    {
+      "name": "estimate-int-max-w-1-Linear",
+      "op": "estimate",
+      "bytes": 40802189293
+    },
+    {
+      "name": "estimate-int-max-w-1-Float",
+      "op": "estimate",
+      "bytes": 75161927645
+    },
+    {
+      "name": "estimate-int-max-w-1-target-max-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-w-1-target-max-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-int-max-w-1-target-max-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-below-saturation-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-below-saturation-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-below-saturation-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-raw-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-raw-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-large-near-saturation-raw-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-raw-max-only-Bayer",
+      "op": "estimate",
+      "bytes": 9223372028264842718
+    },
+    {
+      "name": "estimate-raw-max-only-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-raw-max-only-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-target-max-only-Bayer",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-target-max-only-Linear",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-target-max-only-Float",
+      "op": "estimate",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-target-max-wide-Bayer",
+      "op": "estimate",
+      "bytes": 8589935888
+    },
+    {
+      "name": "estimate-target-max-wide-Linear",
+      "op": "estimate",
+      "bytes": 8589936488
+    },
+    {
+      "name": "estimate-target-max-wide-Float",
+      "op": "estimate",
+      "bytes": 8589938088
+    },
+    {
+      "name": "estimate-50k-square-Bayer",
+      "op": "estimate",
+      "bytes": 32509830400
+    },
+    {
+      "name": "estimate-50k-square-Linear",
+      "op": "estimate",
+      "bytes": 47509830400
+    },
+    {
+      "name": "estimate-50k-square-Float",
+      "op": "estimate",
+      "bytes": 87509830400
+    },
+    {
+      "name": "estimate-200mp-sensor-Bayer",
+      "op": "estimate",
+      "bytes": 2609830400
+    },
+    {
+      "name": "estimate-200mp-sensor-Linear",
+      "op": "estimate",
+      "bytes": 3809830400
+    },
+    {
+      "name": "estimate-200mp-sensor-Float",
+      "op": "estimate",
+      "bytes": 7009830400
+    },
+    {
+      "name": "estimate-float-crossing-i64-Bayer",
+      "op": "estimate",
+      "bytes": 3432000000004
+    },
+    {
+      "name": "estimate-float-crossing-i64-Linear",
+      "op": "estimate",
+      "bytes": 5016000000004
+    },
+    {
+      "name": "estimate-float-crossing-i64-Float",
+      "op": "estimate",
+      "bytes": 9240000000004
+    },
+    {
+      "name": "estimate-float-just-below-i64-Bayer",
+      "op": "estimate",
+      "bytes": 3425760000004
+    },
+    {
+      "name": "estimate-float-just-below-i64-Linear",
+      "op": "estimate",
+      "bytes": 5006880000004
+    },
+    {
+      "name": "estimate-float-just-below-i64-Float",
+      "op": "estimate",
+      "bytes": 9223200000004
+    },
+    {
+      "name": "estimate-defaults-100mp-full",
+      "op": "estimate-defaults",
+      "bytes": 1715640000
+    },
+    {
+      "name": "estimate-defaults-bounded",
+      "op": "estimate-defaults",
+      "bytes": 321830400
+    },
+    {
+      "name": "estimate-defaults-invalid-0-10",
+      "op": "estimate-defaults",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-defaults-invalid-10-0",
+      "op": "estimate-defaults",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-defaults-invalid-neg-10",
+      "op": "estimate-defaults",
+      "bytes": 0
+    },
+    {
+      "name": "estimate-defaults-absurd",
+      "op": "estimate-defaults",
+      "bytes": 9223372036854775807
+    },
+    {
+      "name": "estimate-defaults-target-negative",
+      "op": "estimate-defaults",
+      "bytes": 130000
+    }
+  ]
+}

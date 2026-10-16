@@ -12,3 +12,6 @@ tools/oracle-cs/obj/
 .claude/worktrees/
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
+
+# Wave 5: RAW sample corpus (fetched by a ported tools/fetch-raw-samples.ps1, never committed; P-29)
+/tests/fixtures/raw-corpus/

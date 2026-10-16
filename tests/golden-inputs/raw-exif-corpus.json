@@ -1,0 +1,1 @@
+{ "note": "corpus_dir (optional) overrides env PHOTOREVIEW_RAW_CORPUS_DIR; no directory means zero cases" }

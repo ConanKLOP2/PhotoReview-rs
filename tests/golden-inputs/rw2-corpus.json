@@ -1,0 +1,19 @@
+{
+ "cases": [
+  {
+   "name": "gf1-4x3",
+   "file": "Panasonic - DMC-GF1 - 4_3.rw2",
+   "sha256": "c660fac3f9e4a3e03c1496db62abbe50a73ed3bd6a11056c41badf87cd0b7841"
+  },
+  {
+   "name": "gh5-1x1",
+   "file": "Panasonic - DC-GH5 - 1_1.RW2",
+   "sha256": "464b0cfc9c8960d632aba83f8b2f6d021c8e9bece1d18902e3b64eb2f1c6b0cf"
+  },
+  {
+   "name": "s1-3x2",
+   "file": "Panasonic - DC-S1 - 3_2.RW2",
+   "sha256": "45309a096d6010281e2fa310e6ec2fe1bcc02947fa37b1a2414cfc7377ce4ac6"
+  }
+ ]
+}

@@ -1,0 +1,294 @@
+{
+ "cases": [
+  {
+   "name": "native-version",
+   "op": "version"
+  },
+  {
+   "name": "native-format-error-table",
+   "op": "format-error",
+   "codes": [
+    0,
+    -1,
+    -2,
+    -3,
+    -4,
+    -5,
+    -6,
+    -7,
+    -8,
+    -9,
+    -10,
+    -100007,
+    -100008,
+    -100009,
+    -100010,
+    -100011,
+    -100012,
+    -100013,
+    -100014,
+    1,
+    2,
+    12,
+    9999,
+    -2147483648
+   ]
+  },
+  {
+   "name": "native-failure--100008",
+   "op": "failure",
+   "code": -100008,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb--100008",
+   "op": "failure",
+   "code": -100008,
+   "thumbnail": true
+  },
+  {
+   "name": "native-failure--100009",
+   "op": "failure",
+   "code": -100009,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb--100009",
+   "op": "failure",
+   "code": -100009,
+   "thumbnail": true
+  },
+  {
+   "name": "native-failure--2",
+   "op": "failure",
+   "code": -2,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb--2",
+   "op": "failure",
+   "code": -2,
+   "thumbnail": true
+  },
+  {
+   "name": "native-failure--1",
+   "op": "failure",
+   "code": -1,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb--1",
+   "op": "failure",
+   "code": -1,
+   "thumbnail": true
+  },
+  {
+   "name": "native-failure-1",
+   "op": "failure",
+   "code": 1,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb-1",
+   "op": "failure",
+   "code": 1,
+   "thumbnail": true
+  },
+  {
+   "name": "native-failure-0",
+   "op": "failure",
+   "code": 0,
+   "operation": "unpack RAW data"
+  },
+  {
+   "name": "native-failure-thumb-0",
+   "op": "failure",
+   "code": 0,
+   "thumbnail": true
+  },
+  {
+   "name": "native-check-result-0",
+   "op": "check-result",
+   "code": 0,
+   "operation": "op"
+  },
+  {
+   "name": "native-check-result--100002",
+   "op": "check-result",
+   "code": -100002,
+   "operation": "op"
+  },
+  {
+   "name": "native-check-result-1",
+   "op": "check-result",
+   "code": 1,
+   "operation": "process RAW data"
+  },
+  {
+   "name": "native-check-result--100007",
+   "op": "check-result",
+   "code": -100007,
+   "operation": "open RAW file"
+  },
+  {
+   "name": "native-check-result-12",
+   "op": "check-result",
+   "code": 12,
+   "operation": "open RAW file"
+  },
+  {
+   "name": "native-open-success-once",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    0
+   ]
+  },
+  {
+   "name": "native-open-io-short-no-retry",
+   "op": "open-retry",
+   "path": "C:\\short.cr3",
+   "codes": [
+    -100009
+   ]
+  },
+  {
+   "name": "native-open-io-long-retries",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100009,
+    0
+   ]
+  },
+  {
+   "name": "native-open-retry-fails-original-error",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100009,
+    -100001
+   ]
+  },
+  {
+   "name": "native-open-retry-io-again",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100009,
+    -100009
+   ]
+  },
+  {
+   "name": "native-open-non-io-long-no-retry",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100001
+   ]
+  },
+  {
+   "name": "native-open-memory-long-no-retry",
+   "op": "open-retry",
+   "path": "C:\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100007
+   ]
+  },
+  {
+   "name": "native-open-io-relative-long-no-retry",
+   "op": "open-retry",
+   "path": "photos\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100009
+   ]
+  },
+  {
+   "name": "native-open-io-unc-long-retries",
+   "op": "open-retry",
+   "path": "\\\\server\\share\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.cr3",
+   "codes": [
+    -100009,
+    0
+   ]
+  },
+  {
+   "name": "native-junk-read-info",
+   "op": "junk",
+   "call": "read-info",
+   "file_name": "junk.cr2",
+   "seed": 1234,
+   "length": 8192
+  },
+  {
+   "name": "native-missing-read-info",
+   "op": "missing-file",
+   "call": "read-info",
+   "path": "Z:\\definitely-missing\\file.orf"
+  },
+  {
+   "name": "native-junk-thumbnail",
+   "op": "junk",
+   "call": "thumbnail",
+   "file_name": "junk.nef",
+   "seed": 1234,
+   "length": 8192
+  },
+  {
+   "name": "native-missing-thumbnail",
+   "op": "missing-file",
+   "call": "thumbnail",
+   "path": "Z:\\definitely-missing\\file.orf"
+  },
+  {
+   "name": "native-junk-decode",
+   "op": "junk",
+   "call": "decode",
+   "file_name": "junk.cr2",
+   "seed": 1234,
+   "length": 8192
+  },
+  {
+   "name": "native-missing-decode",
+   "op": "missing-file",
+   "call": "decode",
+   "path": "Z:\\definitely-missing\\file.orf"
+  },
+  {
+   "name": "native-junk-empty-file",
+   "op": "junk",
+   "call": "read-info",
+   "file_name": "empty.cr2",
+   "seed": 1,
+   "length": 0
+  },
+  {
+   "name": "corpus",
+   "op": "corpus",
+   "corpus_dir_env": "PHOTOREVIEW_RAW_CORPUS_DIR",
+   "extensions": [
+    ".cr2",
+    ".cr3",
+    ".nef",
+    ".arw",
+    ".dng",
+    ".raf",
+    ".orf",
+    ".rw2"
+   ],
+   "boxes": [
+    [
+     320,
+     240
+    ],
+    [
+     0,
+     0
+    ]
+   ],
+   "from_bytes": [
+    "Canon - EOS 350D - RAW (3_2).CR2"
+   ]
+  }
+ ]
+}

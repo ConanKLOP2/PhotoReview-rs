@@ -1,0 +1,6020 @@
+{
+  "generator": "oracle-cs turbojpeg-decode",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "environment",
+      "os_version": "10.0.26300.0",
+      "windowscodecs_version": "10.0.26100.9711 (WinBuild.160101.0800)",
+      "turbojpeg_sha256": "E9BDEC69FA2008EAF557CB68BD483E62A350B740A1588497D14AC157A0DD583D",
+      "turbojpeg_version": "0,3,0,0"
+    },
+    {
+      "name": "sig-3-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8FF"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to decompress header: Premature end of JPEG file",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The JPEG header could not be read: Premature end of JPEG file",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-0",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": ""
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-1",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FF"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-2",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-3",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD800"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-4",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "00D8FF"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-signature-5",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FF00FF"
+      },
+      "path": "sig.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: sig.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: sig.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "non-jpeg-bytes-without-path",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "01020304"
+      },
+      "path": "",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: memory buffer",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: memory buffer",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "non-jpeg-bytes-with-path",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "01020304"
+      },
+      "path": "some-photo.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: some-photo.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: some-photo.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-source-blank-path",
+      "from": "none",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": null,
+      "path": "",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: memory buffer",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: memory buffer",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-source-whitespace-path",
+      "from": "none",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": null,
+      "path": "   ",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG:    ",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG:    ",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "missing-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "missing": "does-not-exist.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\does-not-exist.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\does-not-exist.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "missing-directory",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "missing_dir": "x.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\no-such-dir\\x.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\no-such-dir\\x.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "text-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/text.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\text.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\text.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "empty-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/empty.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\empty.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\empty.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "bad-precision",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "bad_precision"
+          }
+        ]
+      },
+      "path": "g.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to decompress header: Unsupported JPEG data precision 3",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The JPEG header could not be read: Unsupported JPEG data precision 3",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "truncated-6-10-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "truncate",
+            "num": 6,
+            "den": 10
+          }
+        ]
+      },
+      "path": "cut.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Premature end of JPEG file",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Premature end of JPEG file",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "truncated-6-10-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "truncate",
+            "num": 6,
+            "den": 10
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\truncated-6-10-file.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\truncated-6-10-file.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "truncated-400x300-30",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/truncated-400x300-30.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\truncated-400x300-30.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\truncated-400x300-30.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "header-garbage",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/header-garbage.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\header-garbage.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\header-garbage.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-sof",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "hex": "FFD8FFE000041122FFC40002FFD9"
+      },
+      "path": "nosof.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "Invalid image dimensions reported by TurboJPEG: -1x-1",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The decoder reported invalid image dimensions: -1x-1",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "zero-width",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 0,
+            "height": 48
+          }
+        ]
+      },
+      "path": "zero.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to decompress header: Empty JPEG image (DNL not supported)",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The JPEG header could not be read: Empty JPEG image (DNL not supported)",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "corrupt-entropy-256",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/gradient-256x256.jpg",
+        "transforms": [
+          {
+            "op": "destroy_entropy_from_half"
+          }
+        ]
+      },
+      "path": "corrupt.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Corrupt JPEG data: premature end of data segment",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Corrupt JPEG data: premature end of data segment",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "guard-exact-threshold",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4096
+          }
+        ]
+      },
+      "path": "t.jpg",
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "message": "TurboJPEG output dimensions are too large for the available memory: 8192x4096 (134217728 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The decoded image would be too large: 8192x4096 (134217728 bytes).",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 1
+    },
+    {
+      "name": "guard-just-below-threshold",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4095
+          }
+        ]
+      },
+      "path": "t.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Corrupt JPEG data: premature end of data segment",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Corrupt JPEG data: premature end of data segment",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "guard-downscale-huge",
+      "from": "bytes",
+      "box": [
+        2000,
+        2000
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 20000,
+            "height": 20000
+          }
+        ]
+      },
+      "path": "t.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Corrupt JPEG data: premature end of data segment",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Corrupt JPEG data: premature end of data segment",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "guard-impossible-size",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 32768,
+            "height": 16384
+          }
+        ]
+      },
+      "path": "t.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG output dimensions are too large: 32768x16384 (2147483648 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The decoded image would be too large: 32768x16384 (2147483648 bytes).",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "guard-huge-small-machine",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 20000,
+            "height": 20000
+          }
+        ]
+      },
+      "path": "bomb.jpg",
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "message": "TurboJPEG output dimensions are too large for the available memory: 20000x20000 (1600000000 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The decoded image would be too large: 20000x20000 (1600000000 bytes).",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 1
+    },
+    {
+      "name": "guard-legit-108mp",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 17179869184,
+        "load": 4294967296
+      },
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 12000,
+            "height": 9000
+          }
+        ]
+      },
+      "path": "big.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Corrupt JPEG data: premature end of data segment",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Corrupt JPEG data: premature end of data segment",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 1
+    },
+    {
+      "name": "guard-sof0-patch-8192x4096",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg",
+        "transforms": [
+          {
+            "op": "claim_size",
+            "width": 8192,
+            "height": 4096
+          }
+        ]
+      },
+      "path": "bomb.jpg",
+      "error": {
+        "type": "PhotoReview.Imaging.Decoding.DecoderMemoryAdmissionException",
+        "message": "TurboJPEG output dimensions are too large for the available memory: 8192x4096 (134217728 bytes).",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The decoded image would be too large: 8192x4096 (134217728 bytes).",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 1
+    },
+    {
+      "name": "huge-65500",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\huge-65500.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\huge-65500.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "huge-65500-small-machine",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 1073741824,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\huge-65500.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\huge-65500.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "source-at-threshold",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "zero_file": 134217728
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\source-at-threshold.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\source-at-threshold.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "source-below-threshold",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 67108864,
+        "load": 0
+      },
+      "source": {
+        "zero_file": 134217727
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\source-below-threshold.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\source-below-threshold.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "progressive-64-scans",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "progressive_gray": 0
+      },
+      "path": "p.jpg",
+      "ok": {
+        "pixel_width": 8,
+        "pixel_height": 8,
+        "buffer_layout": "Bgr32",
+        "estimated_bytes": 256,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "TurboJpeg",
+        "original_width": 8,
+        "original_height": 8,
+        "exif_null": true,
+        "exif_encoded": "",
+        "bgr_sha256": "FA7B78CC215DF21D7CE54D8C3C6637C326DAB95C10FBC12263101365973F4268",
+        "x_bytes_all_ff": true,
+        "samples": [
+          [
+            1,
+            1,
+            128,
+            128,
+            128
+          ],
+          [
+            3,
+            1,
+            128,
+            128,
+            128
+          ],
+          [
+            5,
+            1,
+            128,
+            128,
+            128
+          ],
+          [
+            7,
+            1,
+            128,
+            128,
+            128
+          ],
+          [
+            1,
+            3,
+            128,
+            128,
+            128
+          ],
+          [
+            3,
+            3,
+            128,
+            128,
+            128
+          ],
+          [
+            5,
+            3,
+            128,
+            128,
+            128
+          ],
+          [
+            7,
+            3,
+            128,
+            128,
+            128
+          ],
+          [
+            1,
+            5,
+            128,
+            128,
+            128
+          ],
+          [
+            3,
+            5,
+            128,
+            128,
+            128
+          ],
+          [
+            5,
+            5,
+            128,
+            128,
+            128
+          ],
+          [
+            7,
+            5,
+            128,
+            128,
+            128
+          ],
+          [
+            1,
+            7,
+            128,
+            128,
+            128
+          ],
+          [
+            3,
+            7,
+            128,
+            128,
+            128
+          ],
+          [
+            5,
+            7,
+            128,
+            128,
+            128
+          ],
+          [
+            7,
+            7,
+            128,
+            128,
+            128
+          ]
+        ]
+      },
+      "consulted": 0
+    },
+    {
+      "name": "progressive-512-scans",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "progressive_gray": 7
+      },
+      "path": "p512.jpg",
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG decompression failed: Progressive JPEG image has more than 500 scans",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image could not be decoded: Progressive JPEG image has more than 500 scans",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "icc-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/icc-p3-64x48.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\icc-p3-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\icc-p3-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "icc-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/icc-p3-64x48.jpg"
+      },
+      "path": "icc.jpg",
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "Embedded ICC profile detected in JPEG; falling back to WIC/WPF.",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The JPEG has an embedded ICC color profile, so another decoder is used to keep colors accurate.",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x1-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x1-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x1-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-1x17-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-1x17.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-1x17-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-1x17-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-17x1-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-17x1.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-17x1-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-17x1-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-8x8-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-8x8.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-8x8-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-8x8-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-33x31-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-33x31.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-33x31-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-33x31-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-64x48-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-64x48-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-64x48-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-100x75-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-100x75.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-100x75-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-100x75-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-257x129-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-257x129.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-257x129-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-257x129-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-400x300-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-400x300-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-400x300-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o2",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 2
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o2.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o2.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o3",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o4",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 4
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o4.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o4.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o5",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o5.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o5.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o7",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 7
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o7.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o7.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "full-640x480-o8",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-640x480.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\full-640x480-o8.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\full-640x480-o8.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o1-w200",
+      "from": "file",
+      "box": [
+        200,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o1-w200.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o1-w200.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o1-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o1-w100.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o1-w100.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o3-w200",
+      "from": "file",
+      "box": [
+        200,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o3-w200.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o3-w200.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o3-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o3-w100.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o3-w100.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o6-w150",
+      "from": "file",
+      "box": [
+        150,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o6-w150.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o6-w150.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o6-w75",
+      "from": "file",
+      "box": [
+        75,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o6-w75.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o6-w75.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o8-w150",
+      "from": "file",
+      "box": [
+        150,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o8-w150.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o8-w150.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exact-dct-400x300-o8-w75",
+      "from": "file",
+      "box": [
+        75,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\exact-dct-400x300-o8-w75.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\exact-dct-400x300-o8-w75.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o1-w130",
+      "from": "file",
+      "box": [
+        130,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o1-w130.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o1-w130.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o1-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o1-w40.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o1-w40.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o6-w100",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o6-w100.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o6-w100.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o6-w130",
+      "from": "file",
+      "box": [
+        130,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o6-w130.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o6-w130.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o5-w77",
+      "from": "file",
+      "box": [
+        77,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o5-w77.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o5-w77.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o3-w399",
+      "from": "file",
+      "box": [
+        399,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 3
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o3-w399.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o3-w399.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-400x300-o8-w11",
+      "from": "file",
+      "box": [
+        11,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-400x300.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 8
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\fine-400x300-o8-w11.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\fine-400x300-o8-w11.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "fine-tall-10x1000-box-10x999",
+      "from": "file",
+      "box": [
+        10,
+        999
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/tall-10x1000.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\turbojpeg\\tall-10x1000.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\turbojpeg\\tall-10x1000.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "output-format-64x48-o1-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 1
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\output-format-64x48-o1-w40.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\output-format-64x48-o1-w40.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "output-format-64x48-o6-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\output-format-64x48-o6-w40.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\output-format-64x48-o6-w40.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "output-format-64x48-o5-w40",
+      "from": "file",
+      "box": [
+        40,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 5
+          }
+        ]
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\output-format-64x48-o5-w40.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\output-format-64x48-o5-w40.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "output-format-64x48-o6-w0",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/parity-64x48.jpg",
+        "transforms": [
+          {
+            "op": "set_orientation",
+            "value": 6
+          }
+        ]
+      },
+      "fine_scale": false,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\output-format-64x48-o6-w0.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\output-format-64x48-o6-w0.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-landscape-height",
+      "from": "file",
+      "box": [
+        400,
+        200
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-landscape-width",
+      "from": "file",
+      "box": [
+        100,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-height-only",
+      "from": "file",
+      "box": [
+        0,
+        100
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-square-300",
+      "from": "file",
+      "box": [
+        300,
+        300
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-exact-eighth",
+      "from": "file",
+      "box": [
+        100,
+        75
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\gradient-800x600.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-tiny-not-upscaled",
+      "from": "file",
+      "box": [
+        1000,
+        1000
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-equal-size",
+      "from": "file",
+      "box": [
+        64,
+        48
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-one-px-less",
+      "from": "file",
+      "box": [
+        63,
+        48
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-flat-64x1",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/flat-64x1.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\flat-64x1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\flat-64x1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-flat-1x64",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/flat-1x64.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\flat-1x64.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\flat-1x64.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-short-64x3",
+      "from": "file",
+      "box": [
+        16,
+        16
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/short-64x3.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\short-64x3.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\short-64x3.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-narrow-3x64",
+      "from": "file",
+      "box": [
+        16,
+        16
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/narrow-3x64.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\narrow-3x64.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\narrow-3x64.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-rot6-64x48",
+      "from": "file",
+      "box": [
+        24,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-rot6-64x1",
+      "from": "file",
+      "box": [
+        1,
+        32
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x1.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-rot6-64x48-wide",
+      "from": "file",
+      "box": [
+        32,
+        24
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "box-from-bytes",
+      "from": "bytes",
+      "box": [
+        300,
+        300
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/gradient-800x600.jpg"
+      },
+      "path": "mem.jpg",
+      "fine_scale": true,
+      "ok": {
+        "pixel_width": 300,
+        "pixel_height": 225,
+        "buffer_layout": "Bgr32",
+        "estimated_bytes": 270000,
+        "downscaled": true,
+        "orientation": 1,
+        "actual_backend": "TurboJpeg",
+        "original_width": 800,
+        "original_height": 600,
+        "exif_null": true,
+        "exif_encoded": "",
+        "bgr_sha256": "C2DBB8989E94C9D7CEFBBCD25F4EDA33FD7B48D3344C8543162EA2FC2A0E22C0",
+        "x_bytes_all_ff": null,
+        "samples": [
+          [
+            37,
+            28,
+            178,
+            32,
+            34
+          ],
+          [
+            112,
+            28,
+            126,
+            34,
+            93
+          ],
+          [
+            187,
+            28,
+            78,
+            32,
+            155
+          ],
+          [
+            262,
+            28,
+            179,
+            31,
+            225
+          ],
+          [
+            37,
+            84,
+            141,
+            95,
+            31
+          ],
+          [
+            112,
+            84,
+            113,
+            98,
+            96
+          ],
+          [
+            187,
+            84,
+            115,
+            96,
+            159
+          ],
+          [
+            262,
+            84,
+            140,
+            95,
+            222
+          ],
+          [
+            37,
+            140,
+            112,
+            160,
+            30
+          ],
+          [
+            112,
+            140,
+            136,
+            157,
+            95
+          ],
+          [
+            187,
+            140,
+            142,
+            158,
+            157
+          ],
+          [
+            262,
+            140,
+            111,
+            159,
+            223
+          ],
+          [
+            37,
+            196,
+            81,
+            222,
+            29
+          ],
+          [
+            112,
+            196,
+            132,
+            220,
+            96
+          ],
+          [
+            187,
+            196,
+            176,
+            223,
+            161
+          ],
+          [
+            262,
+            196,
+            79,
+            221,
+            222
+          ]
+        ]
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-0-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-0-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-0-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-0-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-1-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-1-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-1-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-1-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-2-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-2-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-2-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-2-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-3-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-3-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-3-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-3-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-4-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-4-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-4-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-4-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-5-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-5-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-5-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-5-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-6-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-6-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-6-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-6-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-7-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-7-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-7-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-7-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-8-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-8-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-8-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-8-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-9-120x80",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/orient-9-120x80.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\orient-9-120x80.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\orient-9-120x80.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "rot6-no-apply",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "rot6-no-apply-box",
+      "from": "file",
+      "box": [
+        32,
+        32
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "fine_scale": true,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "rot6-source-orientation-ignored-without-apply",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": false,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": 3,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "plain-source-orientation-6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "source_orientation": 6,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "memory-override-3-over-exif-6",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o6.jpg"
+      },
+      "path": "memory.jpg",
+      "source_orientation": 3,
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "buffer_layout": "Bgr32",
+        "estimated_bytes": 12288,
+        "downscaled": false,
+        "orientation": 3,
+        "actual_backend": "TurboJpeg",
+        "original_width": 64,
+        "original_height": 48,
+        "exif_null": false,
+        "exif_encoded": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000",
+        "bgr_sha256": "5F60B51545CC52A4C17FDAB32A79848A0DB4880BEFDCAEFDBF535DB7BC802CC3",
+        "x_bytes_all_ff": true,
+        "samples": [
+          [
+            8,
+            6,
+            117,
+            218,
+            216
+          ],
+          [
+            24,
+            6,
+            175,
+            231,
+            160
+          ],
+          [
+            40,
+            6,
+            95,
+            212,
+            87
+          ],
+          [
+            56,
+            6,
+            206,
+            41,
+            192
+          ],
+          [
+            8,
+            18,
+            78,
+            153,
+            215
+          ],
+          [
+            24,
+            18,
+            168,
+            160,
+            161
+          ],
+          [
+            40,
+            18,
+            98,
+            149,
+            82
+          ],
+          [
+            56,
+            18,
+            79,
+            154,
+            22
+          ],
+          [
+            8,
+            30,
+            87,
+            91,
+            223
+          ],
+          [
+            24,
+            30,
+            174,
+            96,
+            160
+          ],
+          [
+            40,
+            30,
+            97,
+            83,
+            85
+          ],
+          [
+            56,
+            30,
+            86,
+            91,
+            30
+          ],
+          [
+            8,
+            42,
+            102,
+            59,
+            140
+          ],
+          [
+            24,
+            42,
+            172,
+            30,
+            159
+          ],
+          [
+            40,
+            42,
+            100,
+            19,
+            82
+          ],
+          [
+            56,
+            42,
+            67,
+            243,
+            254
+          ]
+        ]
+      },
+      "consulted": 0
+    },
+    {
+      "name": "source-orientation-9",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "source_orientation": 9,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\plain-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "source-orientation-0",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": 0,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "source-orientation-minus-1",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "source_orientation": -1,
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\rot6-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-full-file",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\turbojpeg\\exif-64x48-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\turbojpeg\\exif-64x48-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-full-bytes",
+      "from": "bytes",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      },
+      "path": "mem.jpg",
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "buffer_layout": "Bgr32",
+        "estimated_bytes": 12288,
+        "downscaled": false,
+        "orientation": 1,
+        "actual_backend": "TurboJpeg",
+        "original_width": 64,
+        "original_height": 48,
+        "exif_null": false,
+        "exif_encoded": "01FF00F12076E769DC080543616E6F6E0C43616E6F6E20454F5320523517524632342D37306D6D2046322E38204C2049532055534D9001000032000000010000001C0000000A00000001000000FA000000",
+        "bgr_sha256": "3A1D33E32CE9A6496C52256775CD9DDAEC46C08B58F208F1599F589116E7F63F",
+        "x_bytes_all_ff": true,
+        "samples": [
+          [
+            8,
+            6,
+            83,
+            47,
+            53
+          ],
+          [
+            24,
+            6,
+            95,
+            22,
+            90
+          ],
+          [
+            40,
+            6,
+            88,
+            25,
+            165
+          ],
+          [
+            56,
+            6,
+            252,
+            219,
+            72
+          ],
+          [
+            8,
+            18,
+            169,
+            101,
+            36
+          ],
+          [
+            24,
+            18,
+            100,
+            88,
+            88
+          ],
+          [
+            40,
+            18,
+            81,
+            94,
+            156
+          ],
+          [
+            56,
+            18,
+            170,
+            100,
+            230
+          ],
+          [
+            8,
+            30,
+            175,
+            168,
+            35
+          ],
+          [
+            24,
+            30,
+            93,
+            154,
+            88
+          ],
+          [
+            40,
+            30,
+            87,
+            160,
+            164
+          ],
+          [
+            56,
+            30,
+            175,
+            167,
+            230
+          ],
+          [
+            8,
+            42,
+            214,
+            185,
+            110
+          ],
+          [
+            24,
+            42,
+            101,
+            218,
+            85
+          ],
+          [
+            40,
+            42,
+            79,
+            226,
+            158
+          ],
+          [
+            56,
+            42,
+            246,
+            255,
+            255
+          ]
+        ]
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-full-downscaled",
+      "from": "file",
+      "box": [
+        32,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-64x48-o1.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\turbojpeg\\exif-64x48-o1.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\turbojpeg\\exif-64x48-o1.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-partial",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-partial-64x48.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\turbojpeg\\exif-partial-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\turbojpeg\\exif-partial-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-none",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/noexif-64x48.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\turbojpeg\\noexif-64x48.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\turbojpeg\\noexif-64x48.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "exif-make-32x24",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "wic-direct/jpeg-make-32x24.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\jpeg-make-32x24.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\jpeg-make-32x24.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-0x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 0,
+            "size": 60000
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\lead-com-0x60000-exif-24x16-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\lead-com-0x60000-exif-24x16-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-1x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 1,
+            "size": 60000
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\lead-com-1x60000-exif-24x16-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\lead-com-1x60000-exif-24x16-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-2x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 2,
+            "size": 60000
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\lead-com-2x60000-exif-24x16-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\lead-com-2x60000-exif-24x16-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-3x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 3,
+            "size": 60000
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\lead-com-3x60000-exif-24x16-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\lead-com-3x60000-exif-24x16-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-20x60000-exif-24x16-o6",
+      "from": "file",
+      "box": [
+        0,
+        0
+      ],
+      "apply_orientation": true,
+      "memory": {
+        "total": 68719476736,
+        "load": 0
+      },
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 20,
+            "size": 60000
+          }
+        ]
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\lead-com-20x60000-exif-24x16-o6.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\lead-com-20x60000-exif-24x16-o6.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    }
+  ]
+}

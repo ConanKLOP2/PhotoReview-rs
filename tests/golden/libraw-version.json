@@ -1,0 +1,975 @@
+{
+  "generator": "oracle-cs libraw-version",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "try-parse-00-0.22.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-00-0.22.2",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-00-0.22.2",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-01-0.22.2-Release",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-01-0.22.2-Release",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-01-0.22.2-Release",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-02-0.22.1",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-02-0.22.1",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-02-0.22.1",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-03-0.22.3",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-03-0.22.3",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-03-0.22.3",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-04-0.22.9-Release",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-04-0.22.9-Release",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-04-0.22.9-Release",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-05-0.22.0",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-05-0.22.0",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-05-0.22.0",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-06-0.22",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-06-0.22",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-06-0.22",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-07-0.23.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 23
+    },
+    {
+      "name": "check-exact-07-0.23.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-07-0.23.2",
+      "op": "check-version",
+      "problem": "libraw.dll is LibRaw 0.23.2 but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "try-parse-08-1.22.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 1,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-08-1.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-08-1.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll is LibRaw 1.22.2 but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "try-parse-09-garbage",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-09-garbage",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-09-garbage",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version 'garbage'."
+    },
+    {
+      "name": "try-parse-10-empty",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-10-empty",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-10-empty",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version ''."
+    },
+    {
+      "name": "try-parse-11-null",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-11-null",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-11-null",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version ''."
+    },
+    {
+      "name": "try-parse-12-0.21.4-Release",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 21
+    },
+    {
+      "name": "check-exact-12-0.21.4-Release",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-12-0.21.4-Release",
+      "op": "check-version",
+      "problem": "libraw.dll is LibRaw 0.21.4-Release but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "try-parse-13-1.0",
+      "op": "try-parse",
+      "ok": true,
+      "major": 1,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-13-1.0",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-13-1.0",
+      "op": "check-version",
+      "problem": "libraw.dll is LibRaw 1.0 but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "try-parse-14-0",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-14-0",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-14-0",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0'."
+    },
+    {
+      "name": "try-parse-15-abc.def",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-15-abc.def",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-15-abc.def",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version 'abc.def'."
+    },
+    {
+      "name": "try-parse-16-0.22.02",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-16-0.22.02",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-16-0.22.02",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-17-00.22.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-17-00.22.2",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-17-00.22.2",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-18-0.022.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-18-0.022.2",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-18-0.022.2",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-19-0.22.2.5",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-19-0.22.2.5",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-19-0.22.2.5",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-20-0.22.2abc",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-20-0.22.2abc",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-20-0.22.2abc",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-21-0.22.",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-21-0.22.",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-21-0.22.",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-22-0.22.x",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-22-0.22.x",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-22-0.22.x",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-23-0.22-Release",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-23-0.22-Release",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-23-0.22-Release",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0.22-Release'."
+    },
+    {
+      "name": "try-parse-24-0.22.99999999999",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-24-0.22.99999999999",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-24-0.22.99999999999",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-25-2147483647.0",
+      "op": "try-parse",
+      "ok": true,
+      "major": 2147483647,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-25-2147483647.0",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-25-2147483647.0",
+      "op": "check-version",
+      "problem": "libraw.dll is LibRaw 2147483647.0 but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "try-parse-26-2147483648.0",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-26-2147483648.0",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-26-2147483648.0",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '2147483648.0'."
+    },
+    {
+      "name": "try-parse-27-0.2147483648",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-27-0.2147483648",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-27-0.2147483648",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0.2147483648'."
+    },
+    {
+      "name": "try-parse-28-+0.22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-28-+0.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-28-+0.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '+0.22.2'."
+    },
+    {
+      "name": "try-parse-29-0.+22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-29-0.+22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-29-0.+22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0.+22.2'."
+    },
+    {
+      "name": "try-parse-30-0.22.+2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-30-0.22.+2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-30-0.22.+2",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-31--1.22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-31--1.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-31--1.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '-1.22.2'."
+    },
+    {
+      "name": "try-parse-32-_0.22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-32-_0.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-32-_0.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version ' 0.22.2'."
+    },
+    {
+      "name": "try-parse-33-0.22.2_",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-33-0.22.2_",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-33-0.22.2_",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-34-0._22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-34-0._22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-34-0._22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0. 22.2'."
+    },
+    {
+      "name": "try-parse-35-0.22.2_n",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-35-0.22.2_n",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-35-0.22.2_n",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-36-0..2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-36-0..2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-36-0..2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '0..2'."
+    },
+    {
+      "name": "try-parse-37-.22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-37-.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-37-.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '.22.2'."
+    },
+    {
+      "name": "try-parse-38-0.22._",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-38-0.22._",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-38-0.22._",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-39-_.22.2",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-39-_.22.2",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-39-_.22.2",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '٠.22.2'."
+    },
+    {
+      "name": "try-parse-40-0.22.2.",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-40-0.22.2.",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-40-0.22.2.",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-41-...",
+      "op": "try-parse",
+      "ok": false,
+      "major": 0,
+      "minor": 0
+    },
+    {
+      "name": "check-exact-41-...",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-41-...",
+      "op": "check-version",
+      "problem": "libraw.dll reported an unreadable LibRaw version '...'."
+    },
+    {
+      "name": "try-parse-42-0.22.2-0.1",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-42-0.22.2-0.1",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-42-0.22.2-0.1",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-43-0.22_u0000",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-43-0.22_u0000",
+      "op": "check-exact",
+      "value": false
+    },
+    {
+      "name": "check-version-43-0.22_u0000",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-44-0_u0000.22.2",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-44-0_u0000.22.2",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-44-0_u0000.22.2",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "try-parse-45-0.22.2_u0000",
+      "op": "try-parse",
+      "ok": true,
+      "major": 0,
+      "minor": 22
+    },
+    {
+      "name": "check-exact-45-0.22.2_u0000",
+      "op": "check-exact",
+      "value": true
+    },
+    {
+      "name": "check-version-45-0.22.2_u0000",
+      "op": "check-version",
+      "problem": null
+    },
+    {
+      "name": "check-version-display-name-is-used",
+      "op": "check-version",
+      "problem": "C:\\app\\libraw-copy.dll is LibRaw 0.23.0 but this build requires 0.22.x (run tools/fetch-libraw.ps1)."
+    },
+    {
+      "name": "check-version-unreadable-display-name-is-used",
+      "op": "check-version",
+      "problem": "kernel32.dll reported an unreadable LibRaw version 'x'."
+    },
+    {
+      "name": "required-exports",
+      "op": "required-exports",
+      "names": [
+        "libraw_adjust_sizes_info_only",
+        "libraw_close",
+        "libraw_dcraw_clear_mem",
+        "libraw_dcraw_make_mem_image",
+        "libraw_dcraw_make_mem_thumb",
+        "libraw_dcraw_process",
+        "libraw_get_decoder_info",
+        "libraw_get_iheight",
+        "libraw_get_iparams",
+        "libraw_get_iwidth",
+        "libraw_get_raw_height",
+        "libraw_get_raw_width",
+        "libraw_init",
+        "libraw_open_buffer",
+        "libraw_open_wfile",
+        "libraw_set_no_auto_bright",
+        "libraw_set_output_bps",
+        "libraw_set_output_color",
+        "libraw_set_progress_handler",
+        "libraw_strerror",
+        "libraw_unpack",
+        "libraw_unpack_thumb",
+        "libraw_version"
+      ],
+      "count": 23
+    },
+    {
+      "name": "compute-exact-true-exact",
+      "op": "compute-exact",
+      "value": true,
+      "error": null,
+      "version_calls": 1
+    },
+    {
+      "name": "compute-exact-true-patch3",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 1
+    },
+    {
+      "name": "compute-exact-true-null",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 1
+    },
+    {
+      "name": "compute-exact-true-throws",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 1
+    },
+    {
+      "name": "compute-exact-false-exact",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-false-patch3",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-false-null",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-false-throws",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-throw-exact",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-throw-patch3",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-throw-null",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-throw-throws",
+      "op": "compute-exact",
+      "value": false,
+      "error": null,
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-oom-exact",
+      "op": "compute-exact",
+      "value": null,
+      "error": "OutOfMemoryException",
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-oom-patch3",
+      "op": "compute-exact",
+      "value": null,
+      "error": "OutOfMemoryException",
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-oom-null",
+      "op": "compute-exact",
+      "value": null,
+      "error": "OutOfMemoryException",
+      "version_calls": 0
+    },
+    {
+      "name": "compute-exact-oom-throws",
+      "op": "compute-exact",
+      "value": null,
+      "error": "OutOfMemoryException",
+      "version_calls": 0
+    },
+    {
+      "name": "guard-probe-ok",
+      "op": "guard-probe",
+      "available": true,
+      "reason": null,
+      "error": null
+    },
+    {
+      "name": "guard-probe-unavailable",
+      "op": "guard-probe",
+      "available": false,
+      "reason": "boom",
+      "error": null
+    },
+    {
+      "name": "guard-probe-throw",
+      "op": "guard-probe",
+      "available": false,
+      "reason": "libraw.dll probe failed: boom",
+      "error": null
+    },
+    {
+      "name": "guard-probe-oom",
+      "op": "guard-probe",
+      "available": null,
+      "reason": null,
+      "error": "OutOfMemoryException"
+    },
+    {
+      "name": "guard-probe-throw-empty-message",
+      "op": "guard-probe",
+      "available": false,
+      "reason": "libraw.dll probe failed: ",
+      "error": null
+    }
+  ]
+}

@@ -25,6 +25,16 @@
     <Reference Include="PhotoReview.Imaging">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.dll</HintPath>
     </Reference>
+    <!-- W5: RAW container readers, TurboJPEG and LibRaw backends (turbojpeg.dll / libraw.dll are copied next to them by tools/oracle.ps1). -->
+    <Reference Include="PhotoReview.Imaging.Raw">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.Raw.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview.Imaging.TurboJpeg">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.TurboJpeg.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview.Imaging.LibRaw">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.LibRaw.dll</HintPath>
+    </Reference>
     <Reference Include="PhotoReview.PerfAnalysis">
       <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
     </Reference>

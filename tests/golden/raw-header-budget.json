@@ -1,0 +1,550 @@
+{
+  "generator": "oracle-cs raw-header-budget",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "zero-length-source",
+      "length": 0,
+      "source_length": 0,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 1,
+          "count": 0,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        }
+      ]
+    },
+    {
+      "name": "single-block-then-cached",
+      "length": 262144,
+      "source_length": 262144,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 0,
+          "last": 9,
+          "sum": 45,
+          "total_bytes_read": 65536
+        },
+        {
+          "offset": 100,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 100,
+          "last": 109,
+          "sum": 1045,
+          "total_bytes_read": 65536
+        },
+        {
+          "offset": 65531,
+          "count": 20,
+          "ok": true,
+          "len": 20,
+          "first": 20,
+          "last": 39,
+          "sum": 590,
+          "total_bytes_read": 131072
+        },
+        {
+          "offset": 65531,
+          "count": 20,
+          "ok": true,
+          "len": 20,
+          "first": 20,
+          "last": 39,
+          "sum": 590,
+          "total_bytes_read": 131072
+        },
+        {
+          "offset": 0,
+          "count": 131072,
+          "ok": true,
+          "len": 131072,
+          "first": 0,
+          "last": 49,
+          "sum": 16378975,
+          "total_bytes_read": 131072
+        }
+      ]
+    },
+    {
+      "name": "last-block-counts-only-its-bytes",
+      "length": 100000,
+      "source_length": 100000,
+      "steps": [
+        {
+          "offset": 99990,
+          "count": 10,
+          "ok": true,
+          "len": 10,
+          "first": 92,
+          "last": 101,
+          "sum": 965,
+          "total_bytes_read": 34464
+        },
+        {
+          "offset": 0,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 0,
+          "last": 0,
+          "sum": 0,
+          "total_bytes_read": 100000
+        },
+        {
+          "offset": 99999,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 101,
+          "last": 101,
+          "sum": 101,
+          "total_bytes_read": 100000
+        }
+      ]
+    },
+    {
+      "name": "past-end-and-zero-count-edges",
+      "length": 100,
+      "source_length": 100,
+      "steps": [
+        {
+          "offset": 95,
+          "count": 10,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 100,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 101,
+          "count": 0,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 10,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": 100,
+          "ok": true,
+          "len": 100,
+          "first": 0,
+          "last": 99,
+          "sum": 4950,
+          "total_bytes_read": 100
+        },
+        {
+          "offset": 99,
+          "count": 2,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 100
+        },
+        {
+          "offset": 0,
+          "count": 101,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 100
+        }
+      ]
+    },
+    {
+      "name": "negative-offset-or-count",
+      "length": 1000,
+      "source_length": 1000,
+      "steps": [
+        {
+          "offset": -1,
+          "count": 1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": -1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "total_bytes_read": 0
+        },
+        {
+          "offset": -1,
+          "count": -1,
+          "ok": false,
+          "error": "ArgumentOutOfRangeException",
+          "param": "offset",
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 0
+        }
+      ]
+    },
+    {
+      "name": "huge-offset-no-overflow",
+      "length": 1000,
+      "source_length": 1000,
+      "steps": [
+        {
+          "offset": 9223372036854775807,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 9223372036854775807,
+          "count": 0,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 1000,
+          "count": 2147483647,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": 2147483647,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        }
+      ]
+    },
+    {
+      "name": "count-over-max-header-bytes",
+      "length": 9437184,
+      "source_length": 9437184,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 8388609,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 0
+        },
+        {
+          "offset": 0,
+          "count": 8388608,
+          "ok": true,
+          "len": 8388608,
+          "first": 0,
+          "last": 187,
+          "sum": 1048570078,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8388608,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 8388608
+        }
+      ]
+    },
+    {
+      "name": "exact-end-of-source",
+      "length": 1000,
+      "source_length": 1000,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 1000,
+          "ok": true,
+          "len": 1000,
+          "first": 0,
+          "last": 246,
+          "sum": 124506,
+          "total_bytes_read": 1000
+        },
+        {
+          "offset": 1000,
+          "count": 0,
+          "ok": true,
+          "len": 0,
+          "first": null,
+          "last": null,
+          "sum": 0,
+          "total_bytes_read": 1000
+        },
+        {
+          "offset": 999,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 246,
+          "last": 246,
+          "sum": 246,
+          "total_bytes_read": 1000
+        },
+        {
+          "offset": 1000,
+          "count": 1,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 1000
+        }
+      ]
+    },
+    {
+      "name": "exact-slice-values",
+      "length": 8,
+      "source_length": 8,
+      "steps": [
+        {
+          "offset": 2,
+          "count": 4,
+          "ok": true,
+          "len": 4,
+          "first": 2,
+          "last": 5,
+          "sum": 14,
+          "total_bytes_read": 8
+        },
+        {
+          "offset": 0,
+          "count": 8,
+          "ok": true,
+          "len": 8,
+          "first": 0,
+          "last": 7,
+          "sum": 28,
+          "total_bytes_read": 8
+        },
+        {
+          "offset": 7,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 7,
+          "last": 7,
+          "sum": 7,
+          "total_bytes_read": 8
+        }
+      ]
+    },
+    {
+      "name": "multi-block-exhausts-budget-keeps-earlier-blocks",
+      "length": 8519680,
+      "source_length": 8519680,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 8257536,
+          "ok": true,
+          "len": 8257536,
+          "first": 0,
+          "last": 137,
+          "sum": 1032184203,
+          "total_bytes_read": 8257536
+        },
+        {
+          "offset": 8257536,
+          "count": 196608,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8257536,
+          "count": 131072,
+          "ok": true,
+          "len": 131072,
+          "first": 138,
+          "last": 187,
+          "sum": 16385875,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8388608,
+          "count": 10,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8257536,
+          "count": 131072,
+          "ok": true,
+          "len": 131072,
+          "first": 138,
+          "last": 187,
+          "sum": 16385875,
+          "total_bytes_read": 8388608
+        }
+      ]
+    },
+    {
+      "name": "single-block-read-after-budget-spent",
+      "length": 8519680,
+      "source_length": 8519680,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 8388608,
+          "ok": true,
+          "len": 8388608,
+          "first": 0,
+          "last": 187,
+          "sum": 1048570078,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8388608,
+          "count": 10,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8388607,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 187,
+          "last": 187,
+          "sum": 187,
+          "total_bytes_read": 8388608
+        },
+        {
+          "offset": 8388600,
+          "count": 64,
+          "ok": false,
+          "error": "InvalidDataException",
+          "param": null,
+          "total_bytes_read": 8388608
+        }
+      ]
+    },
+    {
+      "name": "sparse-blocks-charge-per-block",
+      "length": 1048576,
+      "source_length": 1048576,
+      "steps": [
+        {
+          "offset": 0,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 0,
+          "last": 0,
+          "sum": 0,
+          "total_bytes_read": 65536
+        },
+        {
+          "offset": 327680,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 125,
+          "last": 125,
+          "sum": 125,
+          "total_bytes_read": 131072
+        },
+        {
+          "offset": 720895,
+          "count": 1,
+          "ok": true,
+          "len": 1,
+          "first": 23,
+          "last": 23,
+          "sum": 23,
+          "total_bytes_read": 196608
+        },
+        {
+          "offset": 327690,
+          "count": 100,
+          "ok": true,
+          "len": 100,
+          "first": 135,
+          "last": 234,
+          "sum": 18450,
+          "total_bytes_read": 196608
+        },
+        {
+          "offset": 196608,
+          "count": 65536,
+          "ok": true,
+          "len": 65536,
+          "first": 75,
+          "last": 99,
+          "sum": 8191050,
+          "total_bytes_read": 262144
+        }
+      ]
+    }
+  ]
+}

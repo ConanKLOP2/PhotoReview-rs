@@ -1,0 +1,2066 @@
+{
+  "generator": "oracle-cs raw-exif",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "no-blocks",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "single-full-camera-tiff",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "single-full-camera-tiff-big-endian",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "single-camera-only",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ]
+      ],
+      "total_bytes_read": 128
+    },
+    {
+      "name": "single-block-iso-in-ifd0-is-ignored-without-flag",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ]
+      ],
+      "total_bytes_read": 128
+    },
+    {
+      "name": "single-block-iso-as-exif-ifd",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ]
+      ],
+      "total_bytes_read": 128
+    },
+    {
+      "name": "single-block-all-zero-bytes",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ]
+      ],
+      "total_bytes_read": 64
+    },
+    {
+      "name": "empty-source-with-a-block",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "cr3-cmt1-plus-cmt2-merges-camera-and-exposure",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": "RF50mm",
+        "iso": 800,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          512
+        ]
+      ],
+      "total_bytes_read": 768
+    },
+    {
+      "name": "cr3-cmt2-without-ifd-is-exif-flag-reads-no-exposure",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          512
+        ]
+      ],
+      "total_bytes_read": 768
+    },
+    {
+      "name": "cr3-cmt2-without-date-keeps-cmt1-date",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          128
+        ]
+      ],
+      "total_bytes_read": 384
+    },
+    {
+      "name": "first-block-wins-per-field-iso",
+      "summary": {
+        "date_taken": null,
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          512
+        ],
+        [
+          512,
+          128
+        ]
+      ],
+      "total_bytes_read": 640
+    },
+    {
+      "name": "cr3-hostile-second-block-keeps-first-summary",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          64
+        ]
+      ],
+      "total_bytes_read": 320
+    },
+    {
+      "name": "two-exif-ifd-blocks-first-date-wins",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ],
+        [
+          128,
+          128
+        ]
+      ],
+      "total_bytes_read": 256
+    },
+    {
+      "name": "dateless-first-block-then-two-exif-blocks-first-exif-date-wins",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ],
+        [
+          128,
+          128
+        ],
+        [
+          256,
+          128
+        ]
+      ],
+      "total_bytes_read": 384
+    },
+    {
+      "name": "exif-block-without-date-then-plain-date-then-exif-date-exif-date-replaces",
+      "summary": {
+        "date_taken": "2021-06-07T08:09:10",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": 100,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ],
+        [
+          128,
+          64
+        ],
+        [
+          192,
+          128
+        ]
+      ],
+      "total_bytes_read": 320
+    },
+    {
+      "name": "plain-date-first-then-exif-date-exif-date-replaces",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ],
+        [
+          64,
+          128
+        ]
+      ],
+      "total_bytes_read": 192
+    },
+    {
+      "name": "exif-date-first-then-plain-date-keeps-exif-date",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ],
+        [
+          128,
+          64
+        ],
+        [
+          192,
+          128
+        ]
+      ],
+      "total_bytes_read": 320
+    },
+    {
+      "name": "plain-date-first-then-plain-date-keeps-first",
+      "summary": {
+        "date_taken": "2018-01-01T00:00:00",
+        "camera_make": "Nikon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ],
+        [
+          64,
+          82
+        ]
+      ],
+      "total_bytes_read": 146
+    },
+    {
+      "name": "plain-block-without-date-then-exif-date-fills",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": "Canon",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          128
+        ],
+        [
+          128,
+          128
+        ]
+      ],
+      "total_bytes_read": 256
+    },
+    {
+      "name": "exif-flag-date-replaces-plain-date-and-the-rest-stays",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          64
+        ]
+      ],
+      "total_bytes_read": 320
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-date",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          184
+        ],
+        [
+          184,
+          96
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-make",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          230
+        ],
+        [
+          230,
+          32
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-model",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          222
+        ],
+        [
+          222,
+          40
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-lens",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          212
+        ],
+        [
+          212,
+          68
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-iso",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          236
+        ],
+        [
+          236,
+          44
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-focal",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          228
+        ],
+        [
+          228,
+          52
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-fnumber",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          228
+        ],
+        [
+          228,
+          52
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "field-missing-from-first-block-taken-from-second-exposure",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          228
+        ],
+        [
+          228,
+          52
+        ]
+      ],
+      "total_bytes_read": 280
+    },
+    {
+      "name": "first-block-lacks-only-focal-second-disagrees-everywhere",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 85,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          228
+        ],
+        [
+          228,
+          228
+        ]
+      ],
+      "total_bytes_read": 456
+    },
+    {
+      "name": "first-block-complete-later-exif-block-not-read",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 312
+    },
+    {
+      "name": "block-starting-past-the-end-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-with-negative-offset-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-claiming-past-eof-is-read-to-the-end",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "zero-length-block-is-skipped",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "negative-length-block-is-skipped",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "block-offset-equals-length-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-last-byte-only",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          247,
+          1
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-int-max-length",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-int-max-plus-one-length",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-long-max-length",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-offset-long-max-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-offset-long-min-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "block-length-long-min-is-skipped",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "both-blocks-have-focal-first-wins",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          212
+        ],
+        [
+          212,
+          52
+        ]
+      ],
+      "total_bytes_read": 264
+    },
+    {
+      "name": "second-block-claiming-past-eof-is-read-to-the-end",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "Lens X",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          212
+        ],
+        [
+          212,
+          52
+        ]
+      ],
+      "total_bytes_read": 264
+    },
+    {
+      "name": "same-block-listed-twice",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          212
+        ],
+        [
+          0,
+          212
+        ]
+      ],
+      "total_bytes_read": 212
+    },
+    {
+      "name": "overlapping-blocks-second-inside-first",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          40
+        ],
+        [
+          0,
+          212
+        ]
+      ],
+      "total_bytes_read": 212
+    },
+    {
+      "name": "orf-iiro-block",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "OLYMPUS",
+        "camera_model": "E-M1",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-iirs-block",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "OLYMPUS",
+        "camera_model": "E-M1",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-big-endian-mmor-block",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "OLYMPUS",
+        "camera_model": "E-M1",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-plain-tiff-magic-block",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "OLYMPUS",
+        "camera_model": "E-M1",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-unknown-magic-0000",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-unknown-magic-002b",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-unknown-magic-4f53",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-unknown-magic-ffff",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-hostile-ifd-offset",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-hostile-entry-count",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "OLYMPUS",
+        "camera_model": "E-M1",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          200
+        ]
+      ],
+      "total_bytes_read": 200
+    },
+    {
+      "name": "orf-magic-inside-jpeg-block-stays-strict",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          214
+        ]
+      ],
+      "total_bytes_read": 214
+    },
+    {
+      "name": "jpeg-block-full-camera",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          262
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "jpeg-block-ifd-is-exif-flag-is-ignored",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          262
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "jpeg-block-claiming-past-eof",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8 L IS USM",
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          262
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "block-flagged-tiff-but-bytes-are-jpeg",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          262
+        ]
+      ],
+      "total_bytes_read": 262
+    },
+    {
+      "name": "tiff-bytes-flagged-as-jpeg-block",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          248
+        ]
+      ],
+      "total_bytes_read": 248
+    },
+    {
+      "name": "jpeg-block-then-tiff-exif-block-merge",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": "RF50mm",
+        "iso": 800,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          270
+        ],
+        [
+          270,
+          512
+        ]
+      ],
+      "total_bytes_read": 782
+    },
+    {
+      "name": "jpeg-block-without-exif",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4
+        ]
+      ],
+      "total_bytes_read": 4
+    },
+    {
+      "name": "hostile-tiff-block-claiming-past-eof-parses-available-bytes",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Cam",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ]
+      ],
+      "total_bytes_read": 64
+    },
+    {
+      "name": "hostile-block-near-eof-and-overlong",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          96,
+          4
+        ],
+        [
+          99,
+          1
+        ]
+      ],
+      "total_bytes_read": 100
+    },
+    {
+      "name": "hostile-source-throws-on-every-read",
+      "summary": null,
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ]
+      ],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "failure-on-first-block-still-tries-later-blocks",
+      "summary": {
+        "date_taken": null,
+        "camera_make": "Cam",
+        "camera_model": null,
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          64
+        ],
+        [
+          0,
+          64
+        ]
+      ],
+      "total_bytes_read": 64
+    },
+    {
+      "name": "failure-on-second-block-keeps-first-summary-complete-false",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          512
+        ]
+      ],
+      "total_bytes_read": 768
+    },
+    {
+      "name": "failure-on-first-block-second-succeeds-complete-stays-false",
+      "summary": {
+        "date_taken": "2020-01-02T03:04:05",
+        "camera_make": null,
+        "camera_model": null,
+        "lens_model": "RF50mm",
+        "iso": 800,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          512
+        ]
+      ],
+      "total_bytes_read": 768
+    },
+    {
+      "name": "failure-on-every-block-gives-null-and-incomplete",
+      "summary": null,
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ],
+        [
+          256,
+          512
+        ]
+      ],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "skipped-blocks-and-one-failure-complete-false",
+      "summary": null,
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          256
+        ]
+      ],
+      "total_bytes_read": 0
+    },
+    {
+      "name": "failure-after-incomplete-first-block",
+      "summary": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": null,
+        "iso": 400,
+        "focal_length": {
+          "numerator": 50,
+          "denominator": 1
+        },
+        "f_number": {
+          "numerator": 28,
+          "denominator": 10
+        },
+        "exposure_time": {
+          "numerator": 1,
+          "denominator": 250
+        }
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          212
+        ],
+        [
+          212,
+          44
+        ]
+      ],
+      "total_bytes_read": 256
+    },
+    {
+      "name": "block-length-clamped-to-4-mib",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ]
+      ],
+      "total_bytes_read": 4194304
+    },
+    {
+      "name": "block-exactly-4-mib",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ]
+      ],
+      "total_bytes_read": 4194304
+    },
+    {
+      "name": "block-4-mib-plus-one-clamped",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ]
+      ],
+      "total_bytes_read": 4194304
+    },
+    {
+      "name": "block-at-offset-clamped-by-source-end",
+      "summary": null,
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          1048576,
+          100
+        ]
+      ],
+      "total_bytes_read": 100
+    },
+    {
+      "name": "header-budget-exhausted-on-third-block",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ],
+        [
+          4194304,
+          4194304
+        ],
+        [
+          8388608,
+          4194304
+        ]
+      ],
+      "total_bytes_read": 8388608
+    },
+    {
+      "name": "header-budget-exhausted-by-small-block-after-exact-fit",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": false,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ],
+        [
+          4194304,
+          4194304
+        ],
+        [
+          8388608,
+          64
+        ]
+      ],
+      "total_bytes_read": 8388608
+    },
+    {
+      "name": "same-block-read-three-times-is-charged-once",
+      "summary": {
+        "date_taken": "2019-05-06T07:08:09",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS",
+        "lens_model": null,
+        "iso": null,
+        "focal_length": null,
+        "f_number": null,
+        "exposure_time": null
+      },
+      "complete": true,
+      "threw": false,
+      "reads": [
+        [
+          0,
+          4194304
+        ],
+        [
+          0,
+          4194304
+        ],
+        [
+          0,
+          4194304
+        ]
+      ],
+      "total_bytes_read": 4194304
+    }
+  ]
+}

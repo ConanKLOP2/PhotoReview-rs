@@ -1,0 +1,30 @@
+{
+  "cases": [
+    { "name": "seam-owned-valid-0x40-dispose-twice", "kind": "seam", "raw": 64, "owns": true, "destroy": "record", "disposes": 2 },
+    { "name": "seam-owned-valid-1", "kind": "seam", "raw": 1, "owns": true, "destroy": "record", "disposes": 1 },
+    { "name": "seam-owned-valid-0x1000", "kind": "seam", "raw": 4096, "owns": true, "destroy": "record", "disposes": 1 },
+    { "name": "seam-owned-minus-2-is-valid", "kind": "seam", "raw": -2, "owns": true, "destroy": "record", "disposes": 1 },
+    { "name": "seam-owned-long-max", "kind": "seam", "raw": 9223372036854775807, "owns": true, "destroy": "record", "disposes": 1 },
+    { "name": "seam-owned-long-min", "kind": "seam", "raw": -9223372036854775808, "owns": true, "destroy": "record", "disposes": 1 },
+    { "name": "seam-owned-zero-never-destroyed", "kind": "seam", "raw": 0, "owns": true, "destroy": "record", "disposes": 2 },
+    { "name": "seam-owned-minus-1-never-destroyed", "kind": "seam", "raw": -1, "owns": true, "destroy": "record", "disposes": 2 },
+    { "name": "seam-not-owned-valid-never-destroyed", "kind": "seam", "raw": 64, "owns": false, "destroy": "record", "disposes": 2 },
+    { "name": "seam-not-owned-zero", "kind": "seam", "raw": 0, "owns": false, "destroy": "record", "disposes": 1 },
+    { "name": "seam-not-owned-minus-1", "kind": "seam", "raw": -1, "owns": false, "destroy": "record", "disposes": 1 },
+    { "name": "seam-destroy-throws-propagates-then-closed", "kind": "seam", "raw": 64, "owns": true, "destroy": "throw", "disposes": 2 },
+    { "name": "seam-destroy-throws-not-called-for-zero", "kind": "seam", "raw": 0, "owns": true, "destroy": "throw", "disposes": 1 },
+    { "name": "seam-destroy-throws-not-called-when-not-owned", "kind": "seam", "raw": 64, "owns": false, "destroy": "throw", "disposes": 1 },
+
+    { "name": "public-ctor-zero-owned", "kind": "public-ctor", "raw": 0, "owns": true },
+    { "name": "public-ctor-minus-1-owned", "kind": "public-ctor", "raw": -1, "owns": true },
+    { "name": "public-ctor-zero-not-owned", "kind": "public-ctor", "raw": 0, "owns": false },
+    { "name": "public-ctor-minus-1-not-owned", "kind": "public-ctor", "raw": -1, "owns": false },
+
+    { "name": "wrap-null-throws", "kind": "wrap", "raw": 0 },
+    { "name": "wrap-0x40-owning-valid", "kind": "wrap", "raw": 64 },
+    { "name": "wrap-minus-1-is-wrapped-but-invalid", "kind": "wrap", "raw": -1 },
+    { "name": "wrap-1", "kind": "wrap", "raw": 1 },
+
+    { "name": "set-invalid-then-dispose-never-destroys", "kind": "set-invalid", "raw": 64, "owns": true, "destroy": "record", "disposes": 1 }
+  ]
+}

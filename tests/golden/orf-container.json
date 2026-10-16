@@ -1,0 +1,6892 @@
+{
+  "generator": "oracle-cs orf-container",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "can-read-iiro",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-iirs",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-mmor",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-plain-tiff-le",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-plain-tiff-be-mm-is-not-accepted",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-mmsr-is-not-accepted",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-ii-bigtiff-is-not-accepted",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-uppercase-extension",
+      "op": "can-read",
+      "ext": ".ORF",
+      "can_read": true
+    },
+    {
+      "name": "can-read-mixed-case-extension",
+      "op": "can-read",
+      "ext": ".Orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-extension-without-dot",
+      "op": "can-read",
+      "ext": "orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-extension-trailing-space",
+      "op": "can-read",
+      "ext": ".orf ",
+      "can_read": false
+    },
+    {
+      "name": "can-read-other-extension-nef",
+      "op": "can-read",
+      "ext": ".nef",
+      "can_read": false
+    },
+    {
+      "name": "can-read-empty-extension",
+      "op": "can-read",
+      "ext": "",
+      "can_read": false
+    },
+    {
+      "name": "can-read-longer-extension",
+      "op": "can-read",
+      "ext": ".orfx",
+      "can_read": false
+    },
+    {
+      "name": "can-read-three-bytes",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-empty-bytes",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-64-bytes-with-iiro-prefix",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": true
+    },
+    {
+      "name": "can-read-iiro-byte-0-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iiro-byte-1-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iiro-byte-2-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iiro-byte-3-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iirs-byte-0-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iirs-byte-1-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iirs-byte-2-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-iirs-byte-3-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-mmor-byte-0-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-mmor-byte-1-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-mmor-byte-2-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-mmor-byte-3-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-tiff-byte-0-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-tiff-byte-1-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-tiff-byte-2-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "can-read-tiff-byte-3-flipped",
+      "op": "can-read",
+      "ext": ".orf",
+      "can_read": false
+    },
+    {
+      "name": "header-empty-ifd-sixteen-bytes",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 16,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "header-empty-file",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "File too short for ORF container."
+    },
+    {
+      "name": "header-fifteen-bytes",
+      "op": "read",
+      "can_read": true,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "File too short for ORF container."
+    },
+    {
+      "name": "header-junk-sixty-four-bytes",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "header-all-zero-sixty-four-bytes",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-iiro",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-iirs",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-ii-42",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-mmor",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-mm-42",
+      "op": "read",
+      "can_read": false,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-mmsr-is-read-though-can-read-refuses-it",
+      "op": "read",
+      "can_read": false,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "magic-ii-unknown-1234",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-ii-bigtiff-43",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-ii-rw2-0x55-rejected",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-byte-order-letters-im-rejected",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-mm-with-little-endian-ro-bytes-rejected",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-ii-os-0x4f53-rejected",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "magic-lowercase-ii-rejected",
+      "op": "read",
+      "can_read": false,
+      "ok": false,
+      "error": "InvalidDataException",
+      "message": "Invalid ORF header."
+    },
+    {
+      "name": "ifd0-offset-zero-reads-nothing",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-four-is-before-the-header-end",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-seven",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-ffffffff",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-last-two-bytes-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 200,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-claims-more-entries-than-the-file-holds",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 40,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd0-offset-count-one-but-no-room-for-the-entry",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 24,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-4000x3000-little-endian",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-4000x3000-big-endian",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-long-ffffffff-clamps-to-int-max",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 2147483647,
+      "sensor_height": 2147483647,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-long-7fffffff",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 2147483647,
+      "sensor_height": 2147483647,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-long-80000000-clamps",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 2147483647,
+      "sensor_height": 2147483647,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-slong-negative-is-zero",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-sshort-negative-is-zero",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-byte-type",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 200,
+      "sensor_height": 100,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-rational-type-is-unreadable",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-out-of-line-long-array-reads-first",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 5000,
+      "sensor_height": 3500,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-out-of-line-offset-past-the-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-zero-count-entry",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-unknown-type-entry",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-only-width",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-only-height",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-zero-width",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-zero-height",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4080-e-p3-frame-loses-24-columns",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4056,
+      "sensor_height": 3040,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4080-big-endian",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4056,
+      "sensor_height": 3040,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4079-is-not-changed",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4079,
+      "sensor_height": 3040,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4081-is-not-changed",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4081,
+      "sensor_height": 3040,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4056-height-4080-height-never-touched",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4056,
+      "sensor_height": 4080,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4080-height-zero-reports-nothing",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-width-4080-long-type",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4056,
+      "sensor_height": 3040,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-em1-4640x3472",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4640,
+      "sensor_height": 3472,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-om1-5220x3912",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 5220,
+      "sensor_height": 3912,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 128,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-duplicate-width-last-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 5000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-duplicate-width-zero-last-resets",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-duplicate-width-unreadable-last-keeps-first",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-second-ifd-never-replaces-ifd0",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-second-ifd-only-reports-nothing",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "size-ifd0-zero-then-second-ifd-valid-reports-nothing",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-6",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-8",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 8,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-1",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-0-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-9-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-65535-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-second-entry-1-overrides",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-second-entry-8-overrides",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 8,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-second-entry-0-keeps-first",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-second-entry-9-keeps-first",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-big-endian",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-long-type",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 3,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-of-second-ifd-is-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "orientation-only-in-second-ifd-defaults-to-1",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 160,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-ifd0-jpeg-pointer",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-declared-size-contradicting-the-frame-uses-the-frame",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 9000,
+      "sensor_height": 6000,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 320,
+          "height": 240,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-declared-size-equal-to-the-frame",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 640,
+      "sensor_height": 480,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 640,
+          "height": 480,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-declared-width-only-keeps-width-and-zero-height",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 4000,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-declared-height-only",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 3000,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-sensor-size-and-preview-size-differ",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 320,
+          "height": 240,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-pointer-to-zero-padding",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 3000,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-pointer-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-length-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-length-reaches-exactly-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-offset-zero",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-length-zero",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-length-three-is-too-short",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-length-four-with-soi-is-accepted",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 4,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-not-starting-with-soi",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-only-offset-tag",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-only-length-tag",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-duplicate-offset-tag-last-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-duplicate-offset-tag-unreadable-last-clears",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-offset-stored-as-short",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-offset-stored-as-slong-negative",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "previews-ifd0-and-ifd1-in-order",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1163,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1326,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "previews-same-jpeg-in-two-ifds-is-listed-twice",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "previews-chain-of-64-ifds-lists-at-most-64",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 2,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 3,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 4,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 5,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 6,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 7,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 8,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 9,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 10,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 11,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 12,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 13,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 14,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 15,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 16,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 17,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 18,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 19,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 20,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 21,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 22,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 23,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 24,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 25,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 26,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 27,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 28,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 29,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 30,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 31,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 32,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 33,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 34,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 35,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 36,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 37,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 38,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 39,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 40,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 41,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 42,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 43,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 44,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 45,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 46,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 47,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 48,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 49,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 50,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 51,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 52,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 53,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 54,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 55,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 56,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 57,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 58,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 59,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 60,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 61,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 62,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 63,
+          "offset": 1928,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 2091,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "previews-chain-of-65-ifds-lists-at-most-64",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 2,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 3,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 4,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 5,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 6,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 7,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 8,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 9,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 10,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 11,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 12,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 13,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 14,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 15,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 16,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 17,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 18,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 19,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 20,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 21,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 22,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 23,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 24,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 25,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 26,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 27,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 28,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 29,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 30,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 31,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 32,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 33,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 34,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 35,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 36,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 37,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 38,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 39,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 40,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 41,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 42,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 43,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 44,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 45,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 46,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 47,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 48,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 49,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 50,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 51,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 52,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 53,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 54,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 55,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 56,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 57,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 58,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 59,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 60,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 61,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 62,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 63,
+          "offset": 1958,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 2121,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "previews-chain-of-66-ifds-lists-at-most-64",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 2,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 3,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 4,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 5,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 6,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 7,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 8,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 9,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 10,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 11,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 12,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 13,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 14,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 15,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 16,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 17,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 18,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 19,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 20,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 21,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 22,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 23,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 24,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 25,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 26,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 27,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 28,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 29,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 30,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 31,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 32,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 33,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 34,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 35,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 36,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 37,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 38,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 39,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 40,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 41,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 42,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 43,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 44,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 45,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 46,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 47,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 48,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 49,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 50,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 51,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 52,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 53,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 54,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 55,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 56,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 57,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 58,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 59,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 60,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 61,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 62,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 63,
+          "offset": 1988,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 2151,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-ifd-pointing-to-itself-ends",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-two-ifds-pointing-at-each-other-end",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-next-pointer-before-the-header-end-is-dropped",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-next-pointer-beyond-file-is-dropped",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-next-pointer-with-exactly-six-bytes-room",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 106,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "chain-next-pointer-one-byte-short-of-six-bytes-room",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 106,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd-with-4095-entries-reads-all-and-follows-next",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 49184,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 49347,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd-with-4096-entries-reads-all-and-follows-next",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 49196,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 49359,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd-with-4097-entries-reads-4096-and-drops-the-chain",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 49371,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "ifd-entry-count-65535-truncated-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "preview-jpeg-exhausting-the-header-budget-keeps-the-declared-size",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 9175343,
+          "kind": "Jpeg",
+          "width": 9000,
+          "height": 6000,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 131072,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-8",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-5",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-4",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-3",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-0",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "makernote-tag-in-ifd0-count-1",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-100-count-4",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-100-count-5",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 5,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-100-count-6",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 6,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-200-count-250",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-100-count-4294967295",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-tag-101-count-163",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-outside-the-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-offset-negative-sum",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-not-a-jpeg",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-of-an-already-listed-jpeg-is-not-listed-twice",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-same-offset-different-length-is-not-listed-twice",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-two-thumbnails-listed-in-entry-order",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1163,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1326,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-two-thumbnails-same-offset-listed-once",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-with-18-bytes-before-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 100,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-with-17-bytes-before-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 100,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-with-16-bytes-before-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-with-15-bytes-before-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-with-1-bytes-before-the-end-of-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-truncated-near-end-of-file-300-bytes",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 300,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-offset-zero-is-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-offset-seven-reads-nothing",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-offset-eight-is-the-ifd0-itself",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-offset-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-offset-ffffffff",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 400,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-signature-olympus-with-wrong-terminator-is-plain-tiff",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-preview-relative-to-the-note",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-camera-settings-preview-relative-to-the-note",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-count-4-is-inline-not-an-offset",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-count-5",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-not-a-jpeg",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-length-3",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 604,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-length-4",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 4,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 604,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-length-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-big-endian-note-in-little-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-little-endian-note-in-big-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-camera-settings-big-endian-note-in-big-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-big-endian-note-in-little-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 600,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 763,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-MI",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-IM",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-MM",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-II",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-XX",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-thumbnail-marks-MI",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-thumbnail-marks-IM",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-thumbnail-marks-MM",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-om-system-thumbnail-marks-II",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-II-in-big-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-olympus-thumbnail-marks-MM-in-big-endian-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-legacy-olymp-thumbnail-is-file-absolute-le",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-legacy-olymp-signature-only-nothing-at-plus-8-le",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-legacy-olymp-thumbnail-is-file-absolute-be",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 400,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-legacy-olymp-signature-only-nothing-at-plus-8-be",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 563,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-without-signature-uses-file-order-and-absolute-offsets-le",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 900,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1063,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-without-signature-uses-file-order-and-absolute-offsets-be",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 900,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1063,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-pointer-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-start-without-length",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 700,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-length-without-start",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 700,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-length-3",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-length-4",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 500,
+          "length": 4,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-duplicate-start-tag-first-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 500,
+          "length": 4,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 700,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-two-camera-settings-entries-first-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 500,
+          "length": 4,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 800,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-thumbnail-then-camera-settings-previews-in-that-order",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1163,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1326,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-camera-settings-same-jpeg-as-thumbnail-is-listed-once",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-previews-come-after-the-ifd-chain-previews",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1163,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 1,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        },
+        {
+          "index": 2,
+          "offset": 1326,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1489,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-pointer-ifd0-entry-after-exif-pointer-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1326,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-pointer-exif-ifd-entry-after-ifd0-entry-wins",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1163,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1326,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-pointer-exif-ifd-count-4-and-9286-tag-ignored",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-pointer-in-exif-ifd-count-8",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "note-pointer-in-second-ifd-is-used",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [
+        {
+          "index": 0,
+          "offset": 1000,
+          "length": 163,
+          "kind": "Jpeg",
+          "width": 0,
+          "height": 0,
+          "color_space": "Unknown",
+          "header_resolved": false
+        }
+      ],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 1163,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-pointer-zero-is-skipped",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-pointer-to-ifd0-itself-terminates",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-pointer-beyond-file",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-pointer-below-eight",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 6,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 600,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-ifds-after-128kib-grow-the-block",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 300006,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-ifds-inside-the-default-window",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 131072,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-ifds-beyond-the-max-block-keep-the-default",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 131072,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-make-ends-one-byte-inside-the-max-block",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 4194303,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-make-ends-exactly-at-the-max-block",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 4194304,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-make-ends-one-byte-over-the-max-block",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 131072,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-small-file-uses-the-file-length",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 4000,
+      "sensor_height": 3000,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 100,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-ifd0-offset-zero",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 300,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "exif-block-big-endian",
+      "op": "read",
+      "can_read": true,
+      "ok": true,
+      "error": null,
+      "message": null,
+      "format": "Orf",
+      "sensor_width": 0,
+      "sensor_height": 0,
+      "orientation": 1,
+      "previews": [],
+      "exif_blocks": [
+        {
+          "offset": 0,
+          "length": 300006,
+          "is_tiff_header": true,
+          "ifd_is_exif": false
+        }
+      ]
+    },
+    {
+      "name": "corpus-olympus-e-p3-16bit-4-3-orf",
+      "op": "corpus",
+      "file": "Olympus - E-P3 - 16bit (4_3).ORF",
+      "present": false
+    },
+    {
+      "name": "corpus-olympus-e-m1-16bit-4-3-orf",
+      "op": "corpus",
+      "file": "Olympus - E-M1 - 16bit (4_3).orf",
+      "present": false
+    },
+    {
+      "name": "corpus-om-system-om-1-16bit-4-3-orf",
+      "op": "corpus",
+      "file": "OM System - OM-1 - 16bit (4_3).ORF",
+      "present": false
+    }
+  ]
+}

@@ -1,0 +1,890 @@
+{
+ "cases": [
+  {
+   "name": "try-parse-00-0.22.2",
+   "op": "try-parse",
+   "version": "0.22.2"
+  },
+  {
+   "name": "check-exact-00-0.22.2",
+   "op": "check-exact",
+   "version": "0.22.2"
+  },
+  {
+   "name": "check-version-00-0.22.2",
+   "op": "check-version",
+   "version": "0.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-01-0.22.2-Release",
+   "op": "try-parse",
+   "version": "0.22.2-Release"
+  },
+  {
+   "name": "check-exact-01-0.22.2-Release",
+   "op": "check-exact",
+   "version": "0.22.2-Release"
+  },
+  {
+   "name": "check-version-01-0.22.2-Release",
+   "op": "check-version",
+   "version": "0.22.2-Release",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-02-0.22.1",
+   "op": "try-parse",
+   "version": "0.22.1"
+  },
+  {
+   "name": "check-exact-02-0.22.1",
+   "op": "check-exact",
+   "version": "0.22.1"
+  },
+  {
+   "name": "check-version-02-0.22.1",
+   "op": "check-version",
+   "version": "0.22.1",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-03-0.22.3",
+   "op": "try-parse",
+   "version": "0.22.3"
+  },
+  {
+   "name": "check-exact-03-0.22.3",
+   "op": "check-exact",
+   "version": "0.22.3"
+  },
+  {
+   "name": "check-version-03-0.22.3",
+   "op": "check-version",
+   "version": "0.22.3",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-04-0.22.9-Release",
+   "op": "try-parse",
+   "version": "0.22.9-Release"
+  },
+  {
+   "name": "check-exact-04-0.22.9-Release",
+   "op": "check-exact",
+   "version": "0.22.9-Release"
+  },
+  {
+   "name": "check-version-04-0.22.9-Release",
+   "op": "check-version",
+   "version": "0.22.9-Release",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-05-0.22.0",
+   "op": "try-parse",
+   "version": "0.22.0"
+  },
+  {
+   "name": "check-exact-05-0.22.0",
+   "op": "check-exact",
+   "version": "0.22.0"
+  },
+  {
+   "name": "check-version-05-0.22.0",
+   "op": "check-version",
+   "version": "0.22.0",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-06-0.22",
+   "op": "try-parse",
+   "version": "0.22"
+  },
+  {
+   "name": "check-exact-06-0.22",
+   "op": "check-exact",
+   "version": "0.22"
+  },
+  {
+   "name": "check-version-06-0.22",
+   "op": "check-version",
+   "version": "0.22",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-07-0.23.2",
+   "op": "try-parse",
+   "version": "0.23.2"
+  },
+  {
+   "name": "check-exact-07-0.23.2",
+   "op": "check-exact",
+   "version": "0.23.2"
+  },
+  {
+   "name": "check-version-07-0.23.2",
+   "op": "check-version",
+   "version": "0.23.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-08-1.22.2",
+   "op": "try-parse",
+   "version": "1.22.2"
+  },
+  {
+   "name": "check-exact-08-1.22.2",
+   "op": "check-exact",
+   "version": "1.22.2"
+  },
+  {
+   "name": "check-version-08-1.22.2",
+   "op": "check-version",
+   "version": "1.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-09-garbage",
+   "op": "try-parse",
+   "version": "garbage"
+  },
+  {
+   "name": "check-exact-09-garbage",
+   "op": "check-exact",
+   "version": "garbage"
+  },
+  {
+   "name": "check-version-09-garbage",
+   "op": "check-version",
+   "version": "garbage",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-10-empty",
+   "op": "try-parse",
+   "version": ""
+  },
+  {
+   "name": "check-exact-10-empty",
+   "op": "check-exact",
+   "version": ""
+  },
+  {
+   "name": "check-version-10-empty",
+   "op": "check-version",
+   "version": "",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-11-null",
+   "op": "try-parse",
+   "version": null
+  },
+  {
+   "name": "check-exact-11-null",
+   "op": "check-exact",
+   "version": null
+  },
+  {
+   "name": "check-version-11-null",
+   "op": "check-version",
+   "version": null,
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-12-0.21.4-Release",
+   "op": "try-parse",
+   "version": "0.21.4-Release"
+  },
+  {
+   "name": "check-exact-12-0.21.4-Release",
+   "op": "check-exact",
+   "version": "0.21.4-Release"
+  },
+  {
+   "name": "check-version-12-0.21.4-Release",
+   "op": "check-version",
+   "version": "0.21.4-Release",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-13-1.0",
+   "op": "try-parse",
+   "version": "1.0"
+  },
+  {
+   "name": "check-exact-13-1.0",
+   "op": "check-exact",
+   "version": "1.0"
+  },
+  {
+   "name": "check-version-13-1.0",
+   "op": "check-version",
+   "version": "1.0",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-14-0",
+   "op": "try-parse",
+   "version": "0"
+  },
+  {
+   "name": "check-exact-14-0",
+   "op": "check-exact",
+   "version": "0"
+  },
+  {
+   "name": "check-version-14-0",
+   "op": "check-version",
+   "version": "0",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-15-abc.def",
+   "op": "try-parse",
+   "version": "abc.def"
+  },
+  {
+   "name": "check-exact-15-abc.def",
+   "op": "check-exact",
+   "version": "abc.def"
+  },
+  {
+   "name": "check-version-15-abc.def",
+   "op": "check-version",
+   "version": "abc.def",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-16-0.22.02",
+   "op": "try-parse",
+   "version": "0.22.02"
+  },
+  {
+   "name": "check-exact-16-0.22.02",
+   "op": "check-exact",
+   "version": "0.22.02"
+  },
+  {
+   "name": "check-version-16-0.22.02",
+   "op": "check-version",
+   "version": "0.22.02",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-17-00.22.2",
+   "op": "try-parse",
+   "version": "00.22.2"
+  },
+  {
+   "name": "check-exact-17-00.22.2",
+   "op": "check-exact",
+   "version": "00.22.2"
+  },
+  {
+   "name": "check-version-17-00.22.2",
+   "op": "check-version",
+   "version": "00.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-18-0.022.2",
+   "op": "try-parse",
+   "version": "0.022.2"
+  },
+  {
+   "name": "check-exact-18-0.022.2",
+   "op": "check-exact",
+   "version": "0.022.2"
+  },
+  {
+   "name": "check-version-18-0.022.2",
+   "op": "check-version",
+   "version": "0.022.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-19-0.22.2.5",
+   "op": "try-parse",
+   "version": "0.22.2.5"
+  },
+  {
+   "name": "check-exact-19-0.22.2.5",
+   "op": "check-exact",
+   "version": "0.22.2.5"
+  },
+  {
+   "name": "check-version-19-0.22.2.5",
+   "op": "check-version",
+   "version": "0.22.2.5",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-20-0.22.2abc",
+   "op": "try-parse",
+   "version": "0.22.2abc"
+  },
+  {
+   "name": "check-exact-20-0.22.2abc",
+   "op": "check-exact",
+   "version": "0.22.2abc"
+  },
+  {
+   "name": "check-version-20-0.22.2abc",
+   "op": "check-version",
+   "version": "0.22.2abc",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-21-0.22.",
+   "op": "try-parse",
+   "version": "0.22."
+  },
+  {
+   "name": "check-exact-21-0.22.",
+   "op": "check-exact",
+   "version": "0.22."
+  },
+  {
+   "name": "check-version-21-0.22.",
+   "op": "check-version",
+   "version": "0.22.",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-22-0.22.x",
+   "op": "try-parse",
+   "version": "0.22.x"
+  },
+  {
+   "name": "check-exact-22-0.22.x",
+   "op": "check-exact",
+   "version": "0.22.x"
+  },
+  {
+   "name": "check-version-22-0.22.x",
+   "op": "check-version",
+   "version": "0.22.x",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-23-0.22-Release",
+   "op": "try-parse",
+   "version": "0.22-Release"
+  },
+  {
+   "name": "check-exact-23-0.22-Release",
+   "op": "check-exact",
+   "version": "0.22-Release"
+  },
+  {
+   "name": "check-version-23-0.22-Release",
+   "op": "check-version",
+   "version": "0.22-Release",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-24-0.22.99999999999",
+   "op": "try-parse",
+   "version": "0.22.99999999999"
+  },
+  {
+   "name": "check-exact-24-0.22.99999999999",
+   "op": "check-exact",
+   "version": "0.22.99999999999"
+  },
+  {
+   "name": "check-version-24-0.22.99999999999",
+   "op": "check-version",
+   "version": "0.22.99999999999",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-25-2147483647.0",
+   "op": "try-parse",
+   "version": "2147483647.0"
+  },
+  {
+   "name": "check-exact-25-2147483647.0",
+   "op": "check-exact",
+   "version": "2147483647.0"
+  },
+  {
+   "name": "check-version-25-2147483647.0",
+   "op": "check-version",
+   "version": "2147483647.0",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-26-2147483648.0",
+   "op": "try-parse",
+   "version": "2147483648.0"
+  },
+  {
+   "name": "check-exact-26-2147483648.0",
+   "op": "check-exact",
+   "version": "2147483648.0"
+  },
+  {
+   "name": "check-version-26-2147483648.0",
+   "op": "check-version",
+   "version": "2147483648.0",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-27-0.2147483648",
+   "op": "try-parse",
+   "version": "0.2147483648"
+  },
+  {
+   "name": "check-exact-27-0.2147483648",
+   "op": "check-exact",
+   "version": "0.2147483648"
+  },
+  {
+   "name": "check-version-27-0.2147483648",
+   "op": "check-version",
+   "version": "0.2147483648",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-28-+0.22.2",
+   "op": "try-parse",
+   "version": "+0.22.2"
+  },
+  {
+   "name": "check-exact-28-+0.22.2",
+   "op": "check-exact",
+   "version": "+0.22.2"
+  },
+  {
+   "name": "check-version-28-+0.22.2",
+   "op": "check-version",
+   "version": "+0.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-29-0.+22.2",
+   "op": "try-parse",
+   "version": "0.+22.2"
+  },
+  {
+   "name": "check-exact-29-0.+22.2",
+   "op": "check-exact",
+   "version": "0.+22.2"
+  },
+  {
+   "name": "check-version-29-0.+22.2",
+   "op": "check-version",
+   "version": "0.+22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-30-0.22.+2",
+   "op": "try-parse",
+   "version": "0.22.+2"
+  },
+  {
+   "name": "check-exact-30-0.22.+2",
+   "op": "check-exact",
+   "version": "0.22.+2"
+  },
+  {
+   "name": "check-version-30-0.22.+2",
+   "op": "check-version",
+   "version": "0.22.+2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-31--1.22.2",
+   "op": "try-parse",
+   "version": "-1.22.2"
+  },
+  {
+   "name": "check-exact-31--1.22.2",
+   "op": "check-exact",
+   "version": "-1.22.2"
+  },
+  {
+   "name": "check-version-31--1.22.2",
+   "op": "check-version",
+   "version": "-1.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-32-_0.22.2",
+   "op": "try-parse",
+   "version": " 0.22.2"
+  },
+  {
+   "name": "check-exact-32-_0.22.2",
+   "op": "check-exact",
+   "version": " 0.22.2"
+  },
+  {
+   "name": "check-version-32-_0.22.2",
+   "op": "check-version",
+   "version": " 0.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-33-0.22.2_",
+   "op": "try-parse",
+   "version": "0.22.2 "
+  },
+  {
+   "name": "check-exact-33-0.22.2_",
+   "op": "check-exact",
+   "version": "0.22.2 "
+  },
+  {
+   "name": "check-version-33-0.22.2_",
+   "op": "check-version",
+   "version": "0.22.2 ",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-34-0._22.2",
+   "op": "try-parse",
+   "version": "0. 22.2"
+  },
+  {
+   "name": "check-exact-34-0._22.2",
+   "op": "check-exact",
+   "version": "0. 22.2"
+  },
+  {
+   "name": "check-version-34-0._22.2",
+   "op": "check-version",
+   "version": "0. 22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-35-0.22.2_n",
+   "op": "try-parse",
+   "version": "0.22.2\n"
+  },
+  {
+   "name": "check-exact-35-0.22.2_n",
+   "op": "check-exact",
+   "version": "0.22.2\n"
+  },
+  {
+   "name": "check-version-35-0.22.2_n",
+   "op": "check-version",
+   "version": "0.22.2\n",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-36-0..2",
+   "op": "try-parse",
+   "version": "0..2"
+  },
+  {
+   "name": "check-exact-36-0..2",
+   "op": "check-exact",
+   "version": "0..2"
+  },
+  {
+   "name": "check-version-36-0..2",
+   "op": "check-version",
+   "version": "0..2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-37-.22.2",
+   "op": "try-parse",
+   "version": ".22.2"
+  },
+  {
+   "name": "check-exact-37-.22.2",
+   "op": "check-exact",
+   "version": ".22.2"
+  },
+  {
+   "name": "check-version-37-.22.2",
+   "op": "check-version",
+   "version": ".22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-38-0.22._",
+   "op": "try-parse",
+   "version": "0.22.٢"
+  },
+  {
+   "name": "check-exact-38-0.22._",
+   "op": "check-exact",
+   "version": "0.22.٢"
+  },
+  {
+   "name": "check-version-38-0.22._",
+   "op": "check-version",
+   "version": "0.22.٢",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-39-_.22.2",
+   "op": "try-parse",
+   "version": "٠.22.2"
+  },
+  {
+   "name": "check-exact-39-_.22.2",
+   "op": "check-exact",
+   "version": "٠.22.2"
+  },
+  {
+   "name": "check-version-39-_.22.2",
+   "op": "check-version",
+   "version": "٠.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-40-0.22.2.",
+   "op": "try-parse",
+   "version": "0.22.2."
+  },
+  {
+   "name": "check-exact-40-0.22.2.",
+   "op": "check-exact",
+   "version": "0.22.2."
+  },
+  {
+   "name": "check-version-40-0.22.2.",
+   "op": "check-version",
+   "version": "0.22.2.",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-41-...",
+   "op": "try-parse",
+   "version": "..."
+  },
+  {
+   "name": "check-exact-41-...",
+   "op": "check-exact",
+   "version": "..."
+  },
+  {
+   "name": "check-version-41-...",
+   "op": "check-version",
+   "version": "...",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-42-0.22.2-0.1",
+   "op": "try-parse",
+   "version": "0.22.2-0.1"
+  },
+  {
+   "name": "check-exact-42-0.22.2-0.1",
+   "op": "check-exact",
+   "version": "0.22.2-0.1"
+  },
+  {
+   "name": "check-version-42-0.22.2-0.1",
+   "op": "check-version",
+   "version": "0.22.2-0.1",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-43-0.22_u0000",
+   "op": "try-parse",
+   "version": "0.22\u0000"
+  },
+  {
+   "name": "check-exact-43-0.22_u0000",
+   "op": "check-exact",
+   "version": "0.22\u0000"
+  },
+  {
+   "name": "check-version-43-0.22_u0000",
+   "op": "check-version",
+   "version": "0.22\u0000",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-44-0_u0000.22.2",
+   "op": "try-parse",
+   "version": "0\u0000.22.2"
+  },
+  {
+   "name": "check-exact-44-0_u0000.22.2",
+   "op": "check-exact",
+   "version": "0\u0000.22.2"
+  },
+  {
+   "name": "check-version-44-0_u0000.22.2",
+   "op": "check-version",
+   "version": "0\u0000.22.2",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "try-parse-45-0.22.2_u0000",
+   "op": "try-parse",
+   "version": "0.22.2\u0000"
+  },
+  {
+   "name": "check-exact-45-0.22.2_u0000",
+   "op": "check-exact",
+   "version": "0.22.2\u0000"
+  },
+  {
+   "name": "check-version-45-0.22.2_u0000",
+   "op": "check-version",
+   "version": "0.22.2\u0000",
+   "display": "libraw.dll"
+  },
+  {
+   "name": "check-version-display-name-is-used",
+   "op": "check-version",
+   "version": "0.23.0",
+   "display": "C:\\app\\libraw-copy.dll"
+  },
+  {
+   "name": "check-version-unreadable-display-name-is-used",
+   "op": "check-version",
+   "version": "x",
+   "display": "kernel32.dll"
+  },
+  {
+   "name": "required-exports",
+   "op": "required-exports"
+  },
+  {
+   "name": "compute-exact-true-exact",
+   "op": "compute-exact",
+   "probe": "true",
+   "version": "0.22.2"
+  },
+  {
+   "name": "compute-exact-true-patch3",
+   "op": "compute-exact",
+   "probe": "true",
+   "version": "0.22.3"
+  },
+  {
+   "name": "compute-exact-true-null",
+   "op": "compute-exact",
+   "probe": "true",
+   "version": null
+  },
+  {
+   "name": "compute-exact-true-throws",
+   "op": "compute-exact",
+   "probe": "true",
+   "version": {
+    "throw": true
+   }
+  },
+  {
+   "name": "compute-exact-false-exact",
+   "op": "compute-exact",
+   "probe": "false",
+   "version": "0.22.2"
+  },
+  {
+   "name": "compute-exact-false-patch3",
+   "op": "compute-exact",
+   "probe": "false",
+   "version": "0.22.3"
+  },
+  {
+   "name": "compute-exact-false-null",
+   "op": "compute-exact",
+   "probe": "false",
+   "version": null
+  },
+  {
+   "name": "compute-exact-false-throws",
+   "op": "compute-exact",
+   "probe": "false",
+   "version": {
+    "throw": true
+   }
+  },
+  {
+   "name": "compute-exact-throw-exact",
+   "op": "compute-exact",
+   "probe": "throw",
+   "version": "0.22.2"
+  },
+  {
+   "name": "compute-exact-throw-patch3",
+   "op": "compute-exact",
+   "probe": "throw",
+   "version": "0.22.3"
+  },
+  {
+   "name": "compute-exact-throw-null",
+   "op": "compute-exact",
+   "probe": "throw",
+   "version": null
+  },
+  {
+   "name": "compute-exact-throw-throws",
+   "op": "compute-exact",
+   "probe": "throw",
+   "version": {
+    "throw": true
+   }
+  },
+  {
+   "name": "compute-exact-oom-exact",
+   "op": "compute-exact",
+   "probe": "oom",
+   "version": "0.22.2"
+  },
+  {
+   "name": "compute-exact-oom-patch3",
+   "op": "compute-exact",
+   "probe": "oom",
+   "version": "0.22.3"
+  },
+  {
+   "name": "compute-exact-oom-null",
+   "op": "compute-exact",
+   "probe": "oom",
+   "version": null
+  },
+  {
+   "name": "compute-exact-oom-throws",
+   "op": "compute-exact",
+   "probe": "oom",
+   "version": {
+    "throw": true
+   }
+  },
+  {
+   "name": "guard-probe-ok",
+   "op": "guard-probe",
+   "core": "ok",
+   "message": "boom"
+  },
+  {
+   "name": "guard-probe-unavailable",
+   "op": "guard-probe",
+   "core": "unavailable",
+   "message": "boom"
+  },
+  {
+   "name": "guard-probe-throw",
+   "op": "guard-probe",
+   "core": "throw",
+   "message": "boom"
+  },
+  {
+   "name": "guard-probe-oom",
+   "op": "guard-probe",
+   "core": "oom",
+   "message": "boom"
+  },
+  {
+   "name": "guard-probe-throw-empty-message",
+   "op": "guard-probe",
+   "core": "throw",
+   "message": ""
+  }
+ ]
+}

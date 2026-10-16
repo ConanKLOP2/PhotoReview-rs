@@ -1,0 +1,373 @@
+{
+  "generator": "oracle-cs turbojpeg-read-info (W5-14b)",
+  "fixtures_dir": "../fixtures",
+  "cases": [
+    {
+      "name": "orient-0-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-0-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-1-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-1-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-2-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-2-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-3-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-3-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-4-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-4-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-5-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-5-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-6-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-6-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-7-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-7-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-8-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-8-120x80.jpg"
+      }
+    },
+    {
+      "name": "orient-9-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-9-120x80.jpg"
+      }
+    },
+    {
+      "name": "sig-3-bytes",
+      "source": {
+        "hex": "FFD8FF"
+      }
+    },
+    {
+      "name": "two-bytes",
+      "source": {
+        "hex": "FFD8"
+      }
+    },
+    {
+      "name": "empty",
+      "source": {
+        "fixture": "wic-direct/empty.jpg"
+      }
+    },
+    {
+      "name": "text",
+      "source": {
+        "fixture": "wic-direct/text.jpg"
+      }
+    },
+    {
+      "name": "bad-precision",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "bad_precision"
+          }
+        ]
+      }
+    },
+    {
+      "name": "no-sof",
+      "source": {
+        "hex": "FFD8FFE000041122FFC40002FFD9"
+      }
+    },
+    {
+      "name": "header-garbage",
+      "source": {
+        "fixture": "wic-direct/header-garbage.jpg"
+      }
+    },
+    {
+      "name": "huge-65500",
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      }
+    },
+    {
+      "name": "truncated-400x300-30",
+      "source": {
+        "fixture": "wic-direct/truncated-400x300-30.jpg"
+      }
+    },
+    {
+      "name": "plain-64x48",
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      }
+    },
+    {
+      "name": "rot6-64x48",
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      }
+    },
+    {
+      "name": "sos-cut-1",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-2",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-3",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-4",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-5",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-8",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-11",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 11
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-12",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 12
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-cut-13",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 13
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-0x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 0,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-1x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 1,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-2x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 2,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-3x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 3,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "lead-com-20x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 20,
+            "size": 60000
+          }
+        ]
+      }
+    },
+    {
+      "name": "sos-straddle-65530",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "sos_at",
+            "offset": 65530
+          }
+        ]
+      }
+    },
+    {
+      "name": "late-sof-beyond-8mib",
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_bytes",
+            "bytes": 9437184,
+            "payload": 65000
+          }
+        ]
+      }
+    },
+    {
+      "name": "endless-header-no-sof",
+      "source": {
+        "hex": "FFD8",
+        "transforms": [
+          {
+            "op": "pad_com_bytes",
+            "bytes": 9437184,
+            "payload": 65000,
+            "keep_tail": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing-file",
+      "source": {
+        "missing": "does-not-exist.jpg"
+      }
+    },
+    {
+      "name": "blank-path",
+      "source": {
+        "path": ""
+      }
+    },
+    {
+      "name": "whitespace-path",
+      "source": {
+        "path": "  "
+      }
+    },
+    {
+      "name": "directory-path",
+      "source": {
+        "directory": true
+      }
+    }
+  ]
+}

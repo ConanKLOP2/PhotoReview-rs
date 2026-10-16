@@ -1,0 +1,1891 @@
+{
+ "cases": [
+  {
+   "name": "minimal-640x480",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "frame-ends-exactly-at-range-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "frame-cut-by-one-byte",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length_delta": -1
+  },
+  {
+   "name": "frame-cut-by-two-bytes",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length_delta": -2
+  },
+  {
+   "name": "sof-minimum-5-byte-payload",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC000070801E00280"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-4-byte-payload-rejected",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC000060801E00280"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-4-byte-payload-does-not-read-next-segment",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC00004080101E00280FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-runs-past-buffer",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC000110801E0028003012200"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-length-0xFFFF-far-beyond-buffer",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0FFFF0801E00280"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-precision-12-is-accepted-here",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0C01E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sof-precision-0-is-accepted-here",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0001E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C0-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C1-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC1000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C2-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC2000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C3-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC3000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C4-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC4000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C5-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC5000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C6-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC6000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C7-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC7000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C8-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC8000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-C9-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC9000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CA-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCA000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CB-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCB000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CC-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCC000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CD-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCD000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CE-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCE000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "first-frame-marker-CF-then-valid-baseline",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCF000B0802BC03E801011100FFC0000B0800DE006F01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "skipped-segment-C4-20-bytes",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC400160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "skipped-segment-C8-20-bytes",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC800160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "skipped-segment-CC-20-bytes",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFCC00160000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-0x480",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0000001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-640x0",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B080000028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-0x0",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B080000000001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-1x1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B080001000101011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-65535x65535",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B08FFFFFFFF01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-65535x1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B080001FFFF01011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "size-1x65535",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B08FFFF000101011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "empty-segment-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE00002FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-length-0-ends-the-walk",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE00000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-length-1-ends-the-walk",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE00001FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-payload-254-skipped-with-full-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00100",
+     "pad_to": 258
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-payload-255-skipped-with-full-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00101",
+     "pad_to": 259
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-payload-256-skipped-with-full-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00102",
+     "pad_to": 260
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-payload-300-skipped-with-full-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE0012E",
+     "pad_to": 304
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-payload-65533-skipped-with-full-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE0FFFF",
+     "pad_to": 65537
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-length-65535-runs-past-range",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE0FFFF00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "terminator-00-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FF000002FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "terminator-DA-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFDA0002FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "terminator-D9-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFD90002FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-01-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FF01FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-D0-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFD0FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-D4-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFD4FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-D7-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFD7FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-D8-before-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "app-segments-510-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00002",
+     "repeat": 510
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "app-segments-511-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00002",
+     "repeat": 511
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "app-segments-512-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00002",
+     "repeat": 512
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "app-segments-513-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE00002",
+     "repeat": 513
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-markers-510-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFD0",
+     "repeat": 510
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-markers-511-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFD0",
+     "repeat": 511
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-markers-512-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFD0",
+     "repeat": 512
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "standalone-markers-513-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFD0",
+     "repeat": 513
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-1-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 1
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-255-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 255
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-256-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 256
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-600-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 600
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-65535-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 65535
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-65536-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 65536
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-65537-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 65537
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-70000-then-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 70000
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-does-not-use-segment-budget-100-fill-511-segments",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 100
+    },
+    {
+     "hex": "FFE00002",
+     "repeat": 511
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-between-segments-resets-the-run",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 40000
+    },
+    {
+     "hex": "FFE00002"
+    },
+    {
+     "hex": "FF",
+     "repeat": 40000
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-then-terminator",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 10
+    },
+    {
+     "hex": "FFD90002"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-run-reaches-end-of-range",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 20
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fill-then-3-byte-tail",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FF",
+     "repeat": 2
+    },
+    {
+     "hex": "FFC000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "no-soi",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "0000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "soi-only",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "soi-reversed",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "D8FFFFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "soi-plus-3-bytes",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "soi-plus-4-bytes-segment-header-only",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "not-a-marker",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8123456789ABC"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-length-below-own-field",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE000010000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "segment-runs-past-the-range",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE0FFF00000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "sos-before-any-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFDA00020000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "offset-160-honoured",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    }
+   ],
+   "offset": 160,
+   "length": 163
+  },
+  {
+   "name": "offset-160-length-to-end-of-file",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    }
+   ],
+   "offset": 160
+  },
+  {
+   "name": "offset-3-inside-garbage-prefix",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "010203"
+    },
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 3
+  },
+  {
+   "name": "offset-minus-1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": -1,
+   "length": 100
+  },
+  {
+   "name": "offset-equals-source-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 15,
+   "length": 100
+  },
+  {
+   "name": "offset-past-source-length",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 100,
+   "length": 4
+  },
+  {
+   "name": "offset-int64-max",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": "9223372036854775807",
+   "length": 10
+  },
+  {
+   "name": "offset-source-length-minus-1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 14,
+   "length": 100
+  },
+  {
+   "name": "length-3",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": 3
+  },
+  {
+   "name": "length-4",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": 4
+  },
+  {
+   "name": "length-0",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": 0
+  },
+  {
+   "name": "length-negative",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": -5
+  },
+  {
+   "name": "length-int64-min",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": "-9223372036854775808"
+  },
+  {
+   "name": "length-claimed-past-end-by-1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length_delta": 1
+  },
+  {
+   "name": "length-claimed-past-end-by-1000000",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length_delta": 1000000
+  },
+  {
+   "name": "length-int64-max-offset-0-is-clamped",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "length-int64-max-offset-1-overflows-the-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 1,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "length-int64-max-offset-2-overflows-the-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 2,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "length-int64-max-div-2-offset-0",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": "4611686018427387903"
+  },
+  {
+   "name": "length-int64-max-minus-1-offset-1-no-overflow-not-soi",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 1,
+   "length": "9223372036854775806"
+  },
+  {
+   "name": "soi-at-offset-1-length-int64-max-overflows-the-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "00"
+    },
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 1,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "soi-at-offset-2-length-int64-max-overflows-the-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "0000"
+    },
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 2,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "soi-at-offset-1-length-int64-max-minus-1-does-not-overflow",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "00"
+    },
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 1,
+   "length": "9223372036854775806"
+  },
+  {
+   "name": "soi-at-offset-2-length-int64-max-minus-1-overflows-the-end",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "0000"
+    },
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 2,
+   "length": "9223372036854775806"
+  },
+  {
+   "name": "soi-at-offset-0-length-int64-max-is-clamped-control",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length": "9223372036854775807"
+  },
+  {
+   "name": "range-ends-before-sof-fuji",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0,
+   "length": 70000
+  },
+  {
+   "name": "fuji-sof-past-64k-found",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-sof-past-64k-with-300KB-trailing-data-not-read",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    },
+    {
+     "hex": "00",
+     "repeat": 300000
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-at-offset-160",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 160
+    },
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080CC0132003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    },
+    {
+     "hex": "00",
+     "repeat": 500
+    }
+   ],
+   "offset": 160,
+   "length": 85621
+  },
+  {
+   "name": "fuji-frame-marker-C0",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-C1",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC10011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-C2",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC20011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-C3",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC30011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-C5",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC50011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-C9",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC90011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-CA",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFCA0011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "fuji-frame-marker-CB",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1FFAC"
+    },
+    {
+     "hex": "11",
+     "repeat": 65450
+    },
+    {
+     "hex": "FFE24E22"
+    },
+    {
+     "hex": "11",
+     "repeat": 20000
+    },
+    {
+     "hex": "FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFCB0011080FA0177003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-R03-le-with-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-R03-be-with-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE100464578696600004D4D002A00000008000187690004000000010000001A000000000001A0050004000000010000002C00000000000100010002000000045230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-R98-with-frame",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080258032003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-in-app2-not-used",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE2004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-app1-payload-13-bytes-not-read",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1000F45786966000049492A00080000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-app1-payload-14-bytes-read-not-adobe",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1001045786966000049492A0008000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-second-app1-adobe",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-first-app1-adobe-second-not",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-then-lossless-frame-keeps-colour",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC3000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-then-zero-width-frame-keeps-colour",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC0000B0801E0000001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-then-range-cut-keeps-colour",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0,
+   "length_delta": -3
+  },
+  {
+   "name": "exif-after-frame-not-seen",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFC0000B0801E0028001011100FFE1004645786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005230330000000000"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "exif-noise-outside-interop-entry",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8FFE1005A45786966000049492A0008000000010069870400010000001A00000000000000010005A00400010000002C00000000000000010001000200040000005239380000000000787852303378782041646F626520524742207878FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110801E0028003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "budget-exhausting-app-segments-140",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE0FFFF",
+     "pad_to": 65537,
+     "repeat": 140
+    },
+    {
+     "hex": "FFC0000B0800F0014001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "budget-just-inside-app-segments-100",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE0FFFF",
+     "pad_to": 65537,
+     "repeat": 100
+    },
+    {
+     "hex": "FFC0000B0800F0014001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "app1-exif-payload-65533-read-in-one-go",
+   "source": "memory",
+   "parts": [
+    {
+     "hex": "FFD8"
+    },
+    {
+     "hex": "FFE1FFFF457869660000",
+     "pad_to": 65537
+    },
+    {
+     "hex": "FFC0000B0801E0028001011100"
+    }
+   ],
+   "offset": 0
+  },
+  {
+   "name": "throw-invalid-source",
+   "source": "throw-invalid",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 64
+    }
+   ],
+   "offset": 0,
+   "length": 64
+  },
+  {
+   "name": "throw-io-source",
+   "source": "throw-io",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 64
+    }
+   ],
+   "offset": 0,
+   "length": 64
+  },
+  {
+   "name": "throw-io-source-range-too-short-reads-nothing",
+   "source": "throw-io",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 64
+    }
+   ],
+   "offset": 0,
+   "length": 3
+  },
+  {
+   "name": "throw-io-source-offset-outside-reads-nothing",
+   "source": "throw-io",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 64
+    }
+   ],
+   "offset": 100,
+   "length": 10
+  },
+  {
+   "name": "throw-invalid-source-offset-minus-1-reads-nothing",
+   "source": "throw-invalid",
+   "parts": [
+    {
+     "hex": "00",
+     "repeat": 64
+    }
+   ],
+   "offset": -1,
+   "length": 10
+  }
+ ]
+}

@@ -1,0 +1,740 @@
+{
+  "generator": "oracle-cs turbojpeg-read-info",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "environment",
+      "os_version": "10.0.26300.0",
+      "windowscodecs_version": "10.0.26100.9711 (WinBuild.160101.0800)",
+      "turbojpeg_sha256": "E9BDEC69FA2008EAF557CB68BD483E62A350B740A1588497D14AC157A0DD583D",
+      "turbojpeg_version": "0,3,0,0"
+    },
+    {
+      "name": "orient-0-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-0-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-1-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-1-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-2-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-2-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 2,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-3-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-3-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 3,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-4-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-4-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 4,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-5-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-5-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 5,
+        "width": 80,
+        "height": 120
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-6-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-6-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 6,
+        "width": 80,
+        "height": 120
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-7-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-7-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 7,
+        "width": 80,
+        "height": 120
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-8-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-8-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 8,
+        "width": 80,
+        "height": 120
+      },
+      "consulted": 0
+    },
+    {
+      "name": "orient-9-120x80",
+      "source": {
+        "fixture": "wic-direct/orient-9-120x80.jpg"
+      },
+      "ok": {
+        "pixel_width": 120,
+        "pixel_height": 80,
+        "orientation": 1,
+        "width": 120,
+        "height": 80
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sig-3-bytes",
+      "source": {
+        "hex": "FFD8FF"
+      },
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to read image info: Premature end of JPEG file",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image information could not be read: Premature end of JPEG file",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "two-bytes",
+      "source": {
+        "hex": "FFD8"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <tmp>\\two-bytes.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <tmp>\\two-bytes.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "empty",
+      "source": {
+        "fixture": "wic-direct/empty.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\empty.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\empty.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "text",
+      "source": {
+        "fixture": "wic-direct/text.jpg"
+      },
+      "error": {
+        "type": "System.NotSupportedException",
+        "message": "File is not a valid JPEG: <fixtures>\\wic-direct\\text.jpg",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The file is not a valid JPEG: <fixtures>\\wic-direct\\text.jpg",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "bad-precision",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "bad_precision"
+          }
+        ]
+      },
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to read image info: Unsupported JPEG data precision 3",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image information could not be read: Unsupported JPEG data precision 3",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "no-sof",
+      "source": {
+        "hex": "FFD8FFE000041122FFC40002FFD9"
+      },
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to read image info: Header parse error",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image information could not be read: no details available",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "header-garbage",
+      "source": {
+        "fixture": "wic-direct/header-garbage.jpg"
+      },
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to read image info: Premature end of JPEG file",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image information could not be read: Premature end of JPEG file",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "huge-65500",
+      "source": {
+        "fixture": "wic-direct/huge-65500.jpg"
+      },
+      "ok": {
+        "pixel_width": 65500,
+        "pixel_height": 65500,
+        "orientation": 1,
+        "width": 65500,
+        "height": 65500
+      },
+      "consulted": 0
+    },
+    {
+      "name": "truncated-400x300-30",
+      "source": {
+        "fixture": "wic-direct/truncated-400x300-30.jpg"
+      },
+      "ok": {
+        "pixel_width": 400,
+        "pixel_height": 300,
+        "orientation": 1,
+        "width": 400,
+        "height": 300
+      },
+      "consulted": 0
+    },
+    {
+      "name": "plain-64x48",
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg"
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "rot6-64x48",
+      "source": {
+        "fixture": "wic-direct/rot6-64x48.jpg"
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 6,
+        "width": 48,
+        "height": 64
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-1",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 1
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-2",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 2
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-3",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 3
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-4",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 4
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-5",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 5
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-8",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 8
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-11",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 11
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-12",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 12
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-cut-13",
+      "source": {
+        "fixture": "turbojpeg/small-q85-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_before_sos",
+            "sos_bytes_in_first_chunk": 13
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-0x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 0,
+            "size": 60000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-1x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 1,
+            "size": 60000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-2x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 2,
+            "size": 60000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-3x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 3,
+            "size": 60000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "lead-com-20x60000-exif-24x16-o6",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "lead_com",
+            "count": 20,
+            "size": 60000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "sos-straddle-65530",
+      "source": {
+        "fixture": "turbojpeg/exif-24x16-o6.jpg",
+        "transforms": [
+          {
+            "op": "sos_at",
+            "offset": 65530
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 24,
+        "pixel_height": 16,
+        "orientation": 6,
+        "width": 16,
+        "height": 24
+      },
+      "consulted": 0
+    },
+    {
+      "name": "late-sof-beyond-8mib",
+      "source": {
+        "fixture": "wic-direct/plain-64x48.jpg",
+        "transforms": [
+          {
+            "op": "pad_com_bytes",
+            "bytes": 9437184,
+            "payload": 65000
+          }
+        ]
+      },
+      "ok": {
+        "pixel_width": 64,
+        "pixel_height": 48,
+        "orientation": 1,
+        "width": 64,
+        "height": 48
+      },
+      "consulted": 0
+    },
+    {
+      "name": "endless-header-no-sof",
+      "source": {
+        "hex": "FFD8",
+        "transforms": [
+          {
+            "op": "pad_com_bytes",
+            "bytes": 9437184,
+            "payload": 65000,
+            "keep_tail": false
+          }
+        ]
+      },
+      "error": {
+        "type": "System.IO.InvalidDataException",
+        "message": "TurboJPEG failed to read image info: Premature end of JPEG file",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "The image information could not be read: Premature end of JPEG file",
+        "fallbackable": true,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "missing-file",
+      "source": {
+        "missing": "does-not-exist.jpg"
+      },
+      "error": {
+        "type": "System.IO.FileNotFoundException",
+        "message": "Image file not found.",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "Image file not found: <tmp>\\does-not-exist.jpg",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "blank-path",
+      "source": {
+        "path": ""
+      },
+      "error": {
+        "type": "System.ArgumentException",
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "inner_type": null,
+        "is_localized": false,
+        "user_text": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "whitespace-path",
+      "source": {
+        "path": "  "
+      },
+      "error": {
+        "type": "System.ArgumentException",
+        "message": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "inner_type": null,
+        "is_localized": false,
+        "user_text": "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    },
+    {
+      "name": "directory-path",
+      "source": {
+        "directory": true
+      },
+      "error": {
+        "type": "System.IO.FileNotFoundException",
+        "message": "Image file not found.",
+        "inner_type": null,
+        "is_localized": true,
+        "user_text": "Image file not found: <tmp>",
+        "fallbackable": false,
+        "source_bytes_length": null
+      },
+      "consulted": 0
+    }
+  ]
+}

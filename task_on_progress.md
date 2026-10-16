@@ -1,10 +1,10 @@
 # Task on progress
 
-**Updated:** 2026-10-16 (branch `integration/wave-4`, PR #20)
+**Updated:** 2026-10-16 (branch `wave5/contracts`; Wave 4 port is merged, PR #20)
 
 ## How to resume (read this first)
-1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-28: unconfirmed proposals, all acted on),
-   `docs/MULTI-AGENT-PLAN.md`, `docs/PARITY.md` ("Wave 4 final status"), `tools/autopilot/README.md`.
+1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-33: unconfirmed proposals, all acted on),
+   `docs/MULTI-AGENT-PLAN.md`, `docs/PARITY.md` ("Wave 4 final status"), `contracts/README.md` ("Wave 5 roster", D45..D58), `tools/autopilot/README.md`.
 2. Standing user instruction: run the whole port end to end, auto-fix + auto-merge (squash) every PR, never ask;
    log open questions as a `P-nn` row and act on the recommended option. Replies in Vietnamese.
 3. The 15-minute loop was cancelled; restart it with `/loop 15m` + `tools/autopilot/loop-prompt.md`.
@@ -15,7 +15,7 @@
 ## State (verified)
 - **master** (`985ba99`): Wave 0, 1, 2, 3 merged (PR #8, #17), Wave 4 contracts (#16), Wave 4 plan, docs (#9-#15, #18),
   autopilot kit (#19). C# baseline for all goldens: `d92d6aae`.
-- **PR #20 (open, auto-merge on)**: Wave 4 port (`integration/wave-4`, 36 sub-units). Last gate run on the merged tree:
+- **PR #20 (merged into master as `b3bb2e7`)**: Wave 4 port (`integration/wave-4`, 36 sub-units). Last gate run on the merged tree:
   `cargo fmt` clean, `cargo clippy --workspace --all-targets --locked -- -D warnings` clean,
   `cargo test --workspace --locked --no-fail-fast`: 3619 passed, 0 failed, 304 ignored. First CI run failed on 7
   `pr-imaging` tests (CI temp dir is an 8.3 short name `RUNNER~1`; .NET-style `GetFullPath` expands it); fixed in
@@ -47,3 +47,29 @@
 3. P-17 sync patch, then Phase 0 spikes, then Waves 5+6 (contracts workflow, wire + PR, port workflow, PR), 7, 8.
 4. Fix the stale last sentence of AGENTS.md "Disk hygiene" (it still mentions a per-loop-tick disk check; the loop no
    longer does that).
+
+## Wave 5 contracts (branch `wave5/contracts`, based on master `bb6a865`)
+- Wired: 29 contracts (`contracts/W5-01a..W5-17.md`; W5-01, 02, 10, 11, 12, 13, 14, 15, 16 split into sub-units), stubs in
+  `pr-imaging-raw` (`formats`, `contracts`, `tiff_nav`, `jpeg_probe`, `bmff`, `preview_selector`, `raw_exif`, `registry`,
+  `header_source`, `decoder` + `decoder/fallback`, `routing`, `readers/{arw,cr2,cr3,dng,nef,orf,raf,rw2}`), `pr-turbojpeg`
+  (`native`, `availability`, `area_resampler`, `decoder`) and `pr-libraw` (`native`, `availability`, `full_decode_gate`,
+  `memory_guard`, `decoder`, `resampler`); asset `crates/pr-imaging-raw/assets/AdobeCompat-v2.icc`; 27 oracle files plus 45
+  dispatch lines; 45 inputs; 45 goldens; 18 TurboJPEG fixtures (136 KB). Cargo: dev-dependencies only (D57), `.gitignore`
+  gets `/tests/fixtures/raw-corpus/`. Roster, tiers and lead decisions D45..D58 are in `contracts/README.md`; PARITY has 9 new
+  rows; proposals P-30..P-33.
+- Run (this machine, C# `d92d6aae`): `tools/oracle.ps1 -Commit d92d6aae -Command <name>` once per command, 45 commands. The first
+  pass failed on 7 (4 bad inputs, 2 missing corpus handling, 1 DLL not next to the oracle) and the oracle needed 3 source fixes;
+  all were fixed (contracts/README.md D55, D56). Final: all 45 ran; every golden and the fixture folder were produced at least
+  twice and compared byte for byte: identical (the three goldens that depend on the native DLLs, `turbojpeg-decode`,
+  `turbojpeg-read-info` and `libraw-decoder-native`, differed only between the first pass, which ran without the DLLs, and the
+  later passes; the later passes are identical). No pre-existing golden changed.
+- Run: `cargo fmt --all --check` clean; `cargo clippy --workspace --all-targets --locked -- -D warnings` clean;
+  `cargo test --workspace --locked --no-fail-fast`: 3619 passed, 0 failed, 304 ignored (no new tests: stubs are `todo!()`).
+- Wiring fixes found by compiling the drafts together: two incompatible `RawHeaderError`/`EmbeddedPreview`/`ExifBlock` definitions
+  (D45) and 15 unresolved imports from differing module and type names in the stubs (D46).
+- NOT run: `cargo-mutants`; any Rust test against the new goldens (none written yet); any native test (nothing implemented);
+  the RAW corpus (not on this machine, a download needs the user's yes, P-30), so the corpus goldens hold no corpus cases;
+  the oracle on another machine or Windows build (goldens that record `windowscodecs_version` or the native DLL hashes may differ).
+  The compile check of the stubs against each other is only as good as `cargo clippy`; the `todo!()` bodies were never executed.
+- Open for the lead: amendments A8..A11 and proposals P-30..P-33 (contracts/README.md, docs/PROPOSED-DECISIONS.md).
+- Next: dependency-graph port workflows (P-28) starting from the Tier A units; `pr_test_support::raw` first (D48).

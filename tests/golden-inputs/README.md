@@ -106,3 +106,7 @@ Fixtures synced by `tools/sync-from-csharp.ps1` at `d92d6aae` (never hand-edited
 ## Wave 4 (imaging)
 
 Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b, 09, 10a, 11a-e, 12b/c, 14a, 15a/b, 16a/b) are listed in `docs/PARITY.md` per row (name and case count). All Wave 4 units are now merged. Goldens `embedded-thumbnail-read` (native hash), `thumbnail-disk-decode` and the W4-11e native twins are only exercised by native tests that still hit `todo!()` seams (see PARITY.md "Wave 4 final status"). No pre-existing golden changed.
+
+## Wave 5 (RAW, TurboJPEG, LibRaw)
+
+45 commands, one oracle file per unit in `tools/oracle-cs/Commands/W5-*.cs` (names and case counts: `contracts/README.md` "Wave 5 roster"). The corpus commands (`cr2-container-corpus`, `raw-dng-corpus`, `rw2-corpus`, `raf-corpus`, `raw-exif-corpus`) and the corpus cases of `raw-arw-reader`, `raw-cr3-reader` and `libraw-decoder-native` were generated WITHOUT the RAW corpus (P-30): zero cases, `present: false` or `skipped: true`. `turbojpeg-fixtures` writes `tests/fixtures/turbojpeg/` (18 files, committed). `turbojpeg-native-decode`, `turbojpeg-decode`, `turbojpeg-read-info` and `libraw-decoder-native` record the `turbojpeg.dll`/`libraw.dll` found in the C# checkout's `native/x64` (SHA-256 in the first "environment" case). Inputs fixed while running the oracle are listed in `contracts/README.md` D56. No pre-existing golden changed.

@@ -1,0 +1,601 @@
+{
+ "cases": [
+  {
+   "name": "chunked-reads-fill-one-block",
+   "ctor": "stream",
+   "length": 200000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 100,
+     "count": 10
+    },
+    {
+     "op": "read",
+     "offset": 65531,
+     "count": 20
+    },
+    {
+     "op": "read",
+     "offset": 150000,
+     "count": 40
+    }
+   ],
+   "chunk": 1000
+  },
+  {
+   "name": "one-byte-chunks-small-stream",
+   "ctor": "stream",
+   "length": 100,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 100
+    },
+    {
+     "op": "read",
+     "offset": 99,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 50,
+     "count": 0
+    }
+   ],
+   "chunk": 1
+  },
+  {
+   "name": "exact-block-size-stream",
+   "ctor": "stream",
+   "length": 65536,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 65536
+    },
+    {
+     "op": "read",
+     "offset": 65535,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 65536,
+     "count": 0
+    },
+    {
+     "op": "read",
+     "offset": 65535,
+     "count": 2
+    }
+   ]
+  },
+  {
+   "name": "zero-length-stream",
+   "ctor": "stream",
+   "length": 0,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 0
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 1,
+     "count": 0
+    },
+    {
+     "op": "read",
+     "offset": -1,
+     "count": 0
+    }
+   ]
+  },
+  {
+   "name": "short-stream-single-block",
+   "ctor": "stream",
+   "length": 69536,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65546,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65546,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    }
+   ],
+   "declared_length": 131072
+  },
+  {
+   "name": "short-stream-multi-block-crossing",
+   "ctor": "stream",
+   "length": 69536,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 65528,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65528,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 8
+    }
+   ],
+   "declared_length": 131072
+  },
+  {
+   "name": "short-stream-empty-last-block",
+   "ctor": "stream",
+   "length": 65536,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65536,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 65535,
+     "count": 2
+    }
+   ],
+   "declared_length": 65537
+  },
+  {
+   "name": "stream-empty-but-declared-nonzero",
+   "ctor": "stream",
+   "length": 0,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 0
+    }
+   ],
+   "declared_length": 10
+  },
+  {
+   "name": "io-fault-first-read",
+   "ctor": "stream",
+   "length": 1000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 0
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    }
+   ],
+   "read_fault": "io",
+   "fault_after": 0
+  },
+  {
+   "name": "io-fault-on-second-block-of-multi-block-read",
+   "ctor": "stream",
+   "length": 196608,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 65526,
+     "count": 20
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65526,
+     "count": 20
+    },
+    {
+     "op": "read",
+     "offset": 131072,
+     "count": 8
+    }
+   ],
+   "read_fault": "io",
+   "fault_after": 1
+  },
+  {
+   "name": "io-fault-after-cached-block-still-serves-cache",
+   "ctor": "stream",
+   "length": 131072,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65536,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 5,
+     "count": 5
+    }
+   ],
+   "read_fault": "io",
+   "fault_after": 1
+  },
+  {
+   "name": "io-fault-with-partial-chunks",
+   "ctor": "stream",
+   "length": 131072,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 65536,
+     "count": 16
+    }
+   ],
+   "read_fault": "io",
+   "fault_after": 70,
+   "chunk": 1000
+  },
+  {
+   "name": "disposed-fault-inner-type",
+   "ctor": "stream",
+   "length": 1000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 8,
+     "count": 4
+    }
+   ],
+   "read_fault": "disposed",
+   "fault_after": 0
+  },
+  {
+   "name": "dispose-drops-the-cache",
+   "ctor": "stream",
+   "length": 1000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "dispose"
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 0
+    },
+    {
+     "op": "dispose"
+    },
+    {
+     "op": "read",
+     "offset": 900,
+     "count": 100
+    }
+   ]
+  },
+  {
+   "name": "dispose-then-argument-checks-come-first",
+   "ctor": "stream",
+   "length": 1000,
+   "steps": [
+    {
+     "op": "dispose"
+    },
+    {
+     "op": "read",
+     "offset": -1,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": -1
+    },
+    {
+     "op": "read",
+     "offset": 990,
+     "count": 11
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 8388609
+    }
+   ]
+  },
+  {
+   "name": "argument-and-range-messages",
+   "ctor": "stream",
+   "length": 100,
+   "steps": [
+    {
+     "op": "read",
+     "offset": -1,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": -1
+    },
+    {
+     "op": "read",
+     "offset": 95,
+     "count": 10
+    },
+    {
+     "op": "read",
+     "offset": 100,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 100,
+     "count": 0
+    },
+    {
+     "op": "read",
+     "offset": 9223372036854775807,
+     "count": 1
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 2147483647
+    },
+    {
+     "op": "read",
+     "offset": 1,
+     "count": 2147483647
+    }
+   ]
+  },
+  {
+   "name": "over-max-header-bytes-checked-before-the-range-or-allocation",
+   "ctor": "stream",
+   "length": 20971520,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 8388609
+    },
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 8388608
+    },
+    {
+     "op": "read",
+     "offset": 8388608,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "budget-exhausted-message",
+   "ctor": "stream",
+   "length": 9437184,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 8257536
+    },
+    {
+     "op": "read",
+     "offset": 8257536,
+     "count": 196608
+    },
+    {
+     "op": "read",
+     "offset": 8257536,
+     "count": 131072
+    },
+    {
+     "op": "read",
+     "offset": 8388608,
+     "count": 16
+    }
+   ]
+  },
+  {
+   "name": "multi-block-reads-of-different-sizes",
+   "ctor": "stream",
+   "length": 196608,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 65436,
+     "count": 65736
+    },
+    {
+     "op": "read",
+     "offset": 65526,
+     "count": 20
+    },
+    {
+     "op": "read",
+     "offset": 131067,
+     "count": 10
+    },
+    {
+     "op": "read",
+     "offset": 10,
+     "count": 131122
+    },
+    {
+     "op": "read",
+     "offset": 65486,
+     "count": 100
+    },
+    {
+     "op": "read",
+     "offset": 131022,
+     "count": 100
+    }
+   ]
+  },
+  {
+   "name": "length-fault-stream-ctor-disposes-the-stream",
+   "ctor": "stream",
+   "length": 10,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 1
+    }
+   ],
+   "length_fault": true
+  },
+  {
+   "name": "length-fault-path-ctor-disposes-the-stream",
+   "ctor": "path",
+   "path": "x.dng",
+   "length": 10,
+   "length_fault": true,
+   "steps": []
+  },
+  {
+   "name": "path-ctor-viewer-priority-and-block-size-buffer",
+   "ctor": "path",
+   "path": "C:\\raw\\a.dng",
+   "priority": "Viewer",
+   "length": 1000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 16
+    },
+    {
+     "op": "read",
+     "offset": 990,
+     "count": 10
+    }
+   ]
+  },
+  {
+   "name": "path-ctor-preload-priority",
+   "ctor": "path",
+   "path": "D:\\x\\b.cr3",
+   "priority": "Preload",
+   "length": 70000,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 65530,
+     "count": 20
+    }
+   ]
+  },
+  {
+   "name": "path-ctor-default-priority-is-viewer",
+   "ctor": "path",
+   "path": "c.nef",
+   "length": 10,
+   "steps": []
+  },
+  {
+   "name": "path-ctor-empty-path",
+   "ctor": "path",
+   "path": "",
+   "length": 10,
+   "steps": []
+  },
+  {
+   "name": "path-ctor-whitespace-path",
+   "ctor": "path",
+   "path": "  \t ",
+   "length": 10,
+   "steps": []
+  },
+  {
+   "name": "path-ctor-path-with-surrounding-spaces-is-passed-unchanged",
+   "ctor": "path",
+   "path": " a b.dng ",
+   "length": 10,
+   "steps": [
+    {
+     "op": "read",
+     "offset": 0,
+     "count": 10
+    }
+   ]
+  }
+ ]
+}

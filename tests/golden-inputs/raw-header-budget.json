@@ -1,0 +1,276 @@
+{
+ "cases": [
+  {
+   "name": "zero-length-source",
+   "length": 0,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 0
+    },
+    {
+     "offset": 0,
+     "count": 1
+    },
+    {
+     "offset": 1,
+     "count": 0
+    }
+   ]
+  },
+  {
+   "name": "single-block-then-cached",
+   "length": 262144,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 10
+    },
+    {
+     "offset": 100,
+     "count": 10
+    },
+    {
+     "offset": 65531,
+     "count": 20
+    },
+    {
+     "offset": 65531,
+     "count": 20
+    },
+    {
+     "offset": 0,
+     "count": 131072
+    }
+   ]
+  },
+  {
+   "name": "last-block-counts-only-its-bytes",
+   "length": 100000,
+   "steps": [
+    {
+     "offset": 99990,
+     "count": 10
+    },
+    {
+     "offset": 0,
+     "count": 1
+    },
+    {
+     "offset": 99999,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "past-end-and-zero-count-edges",
+   "length": 100,
+   "steps": [
+    {
+     "offset": 95,
+     "count": 10
+    },
+    {
+     "offset": 100,
+     "count": 0
+    },
+    {
+     "offset": 101,
+     "count": 0
+    },
+    {
+     "offset": 10,
+     "count": 0
+    },
+    {
+     "offset": 0,
+     "count": 100
+    },
+    {
+     "offset": 99,
+     "count": 2
+    },
+    {
+     "offset": 0,
+     "count": 101
+    }
+   ]
+  },
+  {
+   "name": "negative-offset-or-count",
+   "length": 1000,
+   "steps": [
+    {
+     "offset": -1,
+     "count": 1
+    },
+    {
+     "offset": 0,
+     "count": -1
+    },
+    {
+     "offset": -1,
+     "count": -1
+    },
+    {
+     "offset": 0,
+     "count": 0
+    }
+   ]
+  },
+  {
+   "name": "huge-offset-no-overflow",
+   "length": 1000,
+   "steps": [
+    {
+     "offset": 9223372036854775807,
+     "count": 1
+    },
+    {
+     "offset": 9223372036854775807,
+     "count": 0
+    },
+    {
+     "offset": 1000,
+     "count": 2147483647
+    },
+    {
+     "offset": 0,
+     "count": 2147483647
+    }
+   ]
+  },
+  {
+   "name": "count-over-max-header-bytes",
+   "length": 9437184,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 8388609
+    },
+    {
+     "offset": 0,
+     "count": 8388608
+    },
+    {
+     "offset": 8388608,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "exact-end-of-source",
+   "length": 1000,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 1000
+    },
+    {
+     "offset": 1000,
+     "count": 0
+    },
+    {
+     "offset": 999,
+     "count": 1
+    },
+    {
+     "offset": 1000,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "exact-slice-values",
+   "length": 8,
+   "steps": [
+    {
+     "offset": 2,
+     "count": 4
+    },
+    {
+     "offset": 0,
+     "count": 8
+    },
+    {
+     "offset": 7,
+     "count": 1
+    }
+   ]
+  },
+  {
+   "name": "multi-block-exhausts-budget-keeps-earlier-blocks",
+   "length": 8519680,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 8257536
+    },
+    {
+     "offset": 8257536,
+     "count": 196608
+    },
+    {
+     "offset": 8257536,
+     "count": 131072
+    },
+    {
+     "offset": 8388608,
+     "count": 10
+    },
+    {
+     "offset": 8257536,
+     "count": 131072
+    }
+   ]
+  },
+  {
+   "name": "single-block-read-after-budget-spent",
+   "length": 8519680,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 8388608
+    },
+    {
+     "offset": 8388608,
+     "count": 10
+    },
+    {
+     "offset": 8388607,
+     "count": 1
+    },
+    {
+     "offset": 8388600,
+     "count": 64
+    }
+   ]
+  },
+  {
+   "name": "sparse-blocks-charge-per-block",
+   "length": 1048576,
+   "steps": [
+    {
+     "offset": 0,
+     "count": 1
+    },
+    {
+     "offset": 327680,
+     "count": 1
+    },
+    {
+     "offset": 720895,
+     "count": 1
+    },
+    {
+     "offset": 327690,
+     "count": 100
+    },
+    {
+     "offset": 196608,
+     "count": 65536
+    }
+   ]
+  }
+ ]
+}

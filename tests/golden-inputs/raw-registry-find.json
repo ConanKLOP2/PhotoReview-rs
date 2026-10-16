@@ -1,0 +1,273 @@
+{
+ "cases": [
+  {
+   "name": "default-registration-order",
+   "op": "default-order"
+  },
+  {
+   "name": "cr2-lower",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".cr2"
+  },
+  {
+   "name": "cr2-upper-extension",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".CR2"
+  },
+  {
+   "name": "cr2-mixed-case-extension",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".Cr2"
+  },
+  {
+   "name": "cr2-without-cr-marker-is-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".cr2"
+  },
+  {
+   "name": "cr2-header-exactly-10-bytes",
+   "header_hex": "49492a00000000004352",
+   "ext": ".cr2"
+  },
+  {
+   "name": "cr2-header-9-bytes-is-null",
+   "header_hex": "49492a000000000043",
+   "ext": ".cr2"
+  },
+  {
+   "name": "cr2-big-endian-is-null",
+   "header_hex": "4d4d002a0000000043520000",
+   "ext": ".cr2"
+  },
+  {
+   "name": "nef-little-endian",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".nef"
+  },
+  {
+   "name": "nef-big-endian",
+   "header_hex": "4d4d002a000000000000000000000000",
+   "ext": ".nef"
+  },
+  {
+   "name": "nef-header-exactly-4-bytes",
+   "header_hex": "49492a00",
+   "ext": ".nef"
+  },
+  {
+   "name": "nef-header-3-bytes-is-null",
+   "header_hex": "49492a",
+   "ext": ".nef"
+  },
+  {
+   "name": "nef-bad-magic-is-null",
+   "header_hex": "49492b00000000000000000000000000",
+   "ext": ".nef"
+  },
+  {
+   "name": "arw-little-endian",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".arw"
+  },
+  {
+   "name": "arw-big-endian-is-null",
+   "header_hex": "4d4d002a000000000000000000000000",
+   "ext": ".arw"
+  },
+  {
+   "name": "dng-little-endian",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".dng"
+  },
+  {
+   "name": "dng-big-endian",
+   "header_hex": "4d4d002a000000000000000000000000",
+   "ext": ".dng"
+  },
+  {
+   "name": "dng-bad-magic-is-null",
+   "header_hex": "00000000000000000000000000000000",
+   "ext": ".dng"
+  },
+  {
+   "name": "orf-iiro",
+   "header_hex": "4949524f000000000000000000000000",
+   "ext": ".orf"
+  },
+  {
+   "name": "orf-iirs",
+   "header_hex": "49495253000000000000000000000000",
+   "ext": ".orf"
+  },
+  {
+   "name": "orf-mmor",
+   "header_hex": "4d4d4f52000000000000000000000000",
+   "ext": ".orf"
+  },
+  {
+   "name": "orf-standard-tiff-fallback",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".orf"
+  },
+  {
+   "name": "orf-big-endian-tiff-is-null",
+   "header_hex": "4d4d002a000000000000000000000000",
+   "ext": ".orf"
+  },
+  {
+   "name": "orf-upper-extension",
+   "header_hex": "4949524f000000000000000000000000",
+   "ext": ".ORF"
+  },
+  {
+   "name": "rw2-iiu",
+   "header_hex": "49495500000000000000000000000000",
+   "ext": ".rw2"
+  },
+  {
+   "name": "rw2-with-tiff-magic-is-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".rw2"
+  },
+  {
+   "name": "cr3-ftyp-crx",
+   "header_hex": "00000018667479706372782000000000",
+   "ext": ".cr3"
+  },
+  {
+   "name": "cr3-upper-extension",
+   "header_hex": "00000018667479706372782000000000",
+   "ext": ".CR3"
+  },
+  {
+   "name": "cr3-header-exactly-12-bytes",
+   "header_hex": "000000186674797063727820",
+   "ext": ".cr3"
+  },
+  {
+   "name": "cr3-header-11-bytes-is-null",
+   "header_hex": "0000001866747970637278",
+   "ext": ".cr3"
+  },
+  {
+   "name": "cr3-other-brand-is-null",
+   "header_hex": "00000018667479706865696300000000",
+   "ext": ".cr3"
+  },
+  {
+   "name": "raf-magic",
+   "header_hex": "46554a4946494c4d4343442d52415720000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "ext": ".raf"
+  },
+  {
+   "name": "raf-header-exactly-16-bytes",
+   "header_hex": "46554a4946494c4d4343442d52415720",
+   "ext": ".raf"
+  },
+  {
+   "name": "raf-header-15-bytes-is-null",
+   "header_hex": "46554a4946494c4d4343442d524157",
+   "ext": ".raf"
+  },
+  {
+   "name": "raf-magic-last-byte-wrong-is-null",
+   "header_hex": "46554a4946494c4d4343442d52415721000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "ext": ".raf"
+  },
+  {
+   "name": "raf-bytes-in-a-nef-extension-is-null",
+   "header_hex": "46554a4946494c4d4343442d52415720000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "ext": ".nef"
+  },
+  {
+   "name": "nrw-is-reserved-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".nrw"
+  },
+  {
+   "name": "pef-is-reserved-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".pef"
+  },
+  {
+   "name": "jpg-extension-is-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".jpg"
+  },
+  {
+   "name": "empty-extension-is-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ""
+  },
+  {
+   "name": "extension-without-dot-is-null",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": "cr2"
+  },
+  {
+   "name": "extension-with-trailing-space-is-null",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".cr2 "
+  },
+  {
+   "name": "empty-header-is-null",
+   "header_hex": "",
+   "ext": ".dng"
+  },
+  {
+   "name": "64-byte-header-dng",
+   "header_hex": "49492a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "ext": ".dng"
+  },
+  {
+   "name": "custom-empty-registry-is-null",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".cr2",
+   "registry": []
+  },
+  {
+   "name": "custom-duplicate-first-wins",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".cr2",
+   "registry": [
+    "Cr2",
+    "Cr2"
+   ]
+  },
+  {
+   "name": "custom-cr2-after-others",
+   "header_hex": "49492a000000000043520000",
+   "ext": ".cr2",
+   "registry": [
+    "Nef",
+    "Dng",
+    "Cr2"
+   ]
+  },
+  {
+   "name": "custom-subset-misses-extension",
+   "header_hex": "49492a00000000000000000000000000",
+   "ext": ".arw",
+   "registry": [
+    "Cr2",
+    "Nef",
+    "Dng"
+   ]
+  },
+  {
+   "name": "custom-reverse-order-still-routes-by-extension",
+   "header_hex": "4949524f000000000000000000000000",
+   "ext": ".orf",
+   "registry": [
+    "Raf",
+    "Cr3",
+    "Rw2",
+    "Orf",
+    "Dng",
+    "Arw",
+    "Nef",
+    "Cr2"
+   ]
+  }
+ ]
+}

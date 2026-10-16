@@ -1,0 +1,7147 @@
+{
+  "generator": "oracle-cs raw-decoder-fallback",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "next-best-after-InvalidData",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ChosenPreviewFails_NextBestPreviewIsDecodedBeforeTheFullDecode",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-rejected-InvalidData-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NoPreviewAndThumbnailFallbackRejected_UsesTheFullDecodeForEveryRecoverableFailure",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "InvalidData",
+          "message": "thumb"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 64,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "every-preview-fails-InvalidData-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_EveryPreviewFails_UsesTheFullDecodeForAnyFormat",
+      "file": {
+        "physical": true,
+        "name": "bad.dng",
+        "size": 72,
+        "segments": [
+          {
+            "at": 64,
+            "hex": "FFD8000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 80,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 255,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 80,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-after-FileFormat",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ChosenPreviewFails_NextBestPreviewIsDecodedBeforeTheFullDecode",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "FileFormat",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-rejected-FileFormat-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NoPreviewAndThumbnailFallbackRejected_UsesTheFullDecodeForEveryRecoverableFailure",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "FileFormat",
+          "message": "thumb"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 64,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "every-preview-fails-FileFormat-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_EveryPreviewFails_UsesTheFullDecodeForAnyFormat",
+      "file": {
+        "physical": true,
+        "name": "bad.dng",
+        "size": 72,
+        "segments": [
+          {
+            "at": 64,
+            "hex": "FFD8000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "FileFormat",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 80,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 255,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 80,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-after-NotSupported",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ChosenPreviewFails_NextBestPreviewIsDecodedBeforeTheFullDecode",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-rejected-NotSupported-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NoPreviewAndThumbnailFallbackRejected_UsesTheFullDecodeForEveryRecoverableFailure",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "NotSupported",
+          "message": "thumb"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 64,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "every-preview-fails-NotSupported-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_EveryPreviewFails_UsesTheFullDecodeForAnyFormat",
+      "file": {
+        "physical": true,
+        "name": "bad.dng",
+        "size": 72,
+        "segments": [
+          {
+            "at": 64,
+            "hex": "FFD8000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 80,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 255,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 80,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-after-Com",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ChosenPreviewFails_NextBestPreviewIsDecodedBeforeTheFullDecode",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "bad",
+              "hresult": -2147467259
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-rejected-Com-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NoPreviewAndThumbnailFallbackRejected_UsesTheFullDecodeForEveryRecoverableFailure",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "Com",
+          "message": "thumb",
+          "hresult": -2147467259
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 64,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "every-preview-fails-Com-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_EveryPreviewFails_UsesTheFullDecodeForAnyFormat",
+      "file": {
+        "physical": true,
+        "name": "bad.dng",
+        "size": 72,
+        "segments": [
+          {
+            "at": 64,
+            "hex": "FFD8000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "Com",
+            "message": "bad",
+            "hresult": -2147467259
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 80,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 255,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 80,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-missing-codec-is-recoverable",
+      "csharp_test": "RawDecoder.IsRecoverablePreviewFailure (MissingImageCodecException is a NotSupportedException)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "MissingCodec",
+              "message": "no codec"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-is-degraded",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NextBestPreviewAfterFailure_IsMarkedDegradedFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "thumbnail-after-corrupt-larger-is-degraded",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ThumbnailAfterCorruptLargerPreview_IsMarkedDegradedFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 16,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "first-choice-not-degraded",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_FirstChoicePreviewSucceeds_IsNotMarkedDegradedFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "full-after-every-preview-not-degraded",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_FullDecodeAfterEveryPreviewFails_IsNotMarkedDegradedFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 4104,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-without-libraw",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ChosenPreviewFailsWithoutAnyLibRaw_NextBestPreviewIsStillDecoded",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4128,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4128,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "every-preview-fails-without-libraw",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_EveryPreviewFailsWithoutAnyLibRaw_TheFirstFailurePropagates",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "first"
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "first",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-recoverable-Canceled-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonRecoverableFailure_PropagatesWithoutTheFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Canceled",
+              "message": "fatal"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "OperationCanceledException",
+            "message": "fatal",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-recoverable-OutOfMemory-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonRecoverableFailure_PropagatesWithoutTheFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "OutOfMemory",
+              "message": "fatal"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "OutOfMemoryException",
+            "message": "fatal",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-recoverable-Io-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonRecoverableFailure_PropagatesWithoutTheFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Io",
+              "message": "fatal"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "IOException",
+            "message": "fatal",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-recoverable-InvalidCast-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonRecoverableFailure_PropagatesWithoutTheFallback",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidCast",
+              "message": "fatal"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidCastException",
+            "message": "fatal",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "resource-exhaustion-8007000e-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionFromBigPreview_PropagatesInsteadOfReturningTheNextPreview",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "wic failure",
+              "hresult": -2147024882
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "COMException",
+            "message": "wic failure",
+            "hresult": -2147024882,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "resource-exhaustion-80070008-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionFromBigPreview_PropagatesInsteadOfReturningTheNextPreview",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "wic failure",
+              "hresult": -2147024888
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "COMException",
+            "message": "wic failure",
+            "hresult": -2147024888,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "resource-exhaustion-800705aa-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionFromBigPreview_PropagatesInsteadOfReturningTheNextPreview",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "wic failure",
+              "hresult": -2147023446
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "COMException",
+            "message": "wic failure",
+            "hresult": -2147023446,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "resource-exhaustion-800705af-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionFromBigPreview_PropagatesInsteadOfReturningTheNextPreview",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "wic failure",
+              "hresult": -2147023441
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "COMException",
+            "message": "wic failure",
+            "hresult": -2147023441,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "corrupt-InvalidData-only-thumbnail-left-accepted",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_CorruptBigPreviewAndOnlyAThumbnailRemains_TheThumbnailIsAcceptedAsLastResort",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 16,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "corrupt-FileFormat-only-thumbnail-left-accepted",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_CorruptBigPreviewAndOnlyAThumbnailRemains_TheThumbnailIsAcceptedAsLastResort",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "FileFormat",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 16,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "wic-badimage-only-thumbnail-left-accepted",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_WicBadImageFromBigPreviewAndOnlyAThumbnailRemains_TheThumbnailIsAccepted",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "wic failure",
+              "hresult": -2003292320
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 16,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "wrapped-exhaustion-8007000e-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionWrappedInNotSupported_PropagatesInsteadOfReturningTheNextPreview",
+      "requires": [
+        "inner_com_hresult"
+      ],
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "icc",
+              "inner_hresult": -2147024882
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "icc",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "wrapped-exhaustion-800705aa-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_ResourceExhaustionWrappedInNotSupported_PropagatesInsteadOfReturningTheNextPreview",
+      "requires": [
+        "inner_com_hresult"
+      ],
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "icc",
+              "inner_hresult": -2147023446
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "icc",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "wrapped-badimage-only-thumbnail-left-accepted",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_WicBadImageWrappedInNotSupportedAndOnlyAThumbnailRemains_TheThumbnailIsAccepted",
+      "requires": [
+        "inner_com_hresult"
+      ],
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "icc",
+              "inner_hresult": -2003292320
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4120,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 16,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4120,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-corrupt-com-only-thumbnail-left-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonCorruptFailureOfBigPreviewAndOnlyAThumbnailRemains_TheThumbnailIsNotAcceptedSoTheFailurePropagates",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "componentnotfound",
+              "hresult": -2003292336
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "COMException",
+            "message": "componentnotfound",
+            "hresult": -2003292336,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-corrupt-not-supported-only-thumbnail-left-propagates",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonCorruptFailureOfBigPreviewAndOnlyAThumbnailRemains_TheThumbnailIsNotAcceptedSoTheFailurePropagates",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-corrupt-com-only-thumbnail-left-uses-full",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_NonCorruptFailureOfBigPreviewAndOnlyAThumbnailRemains_TheFullDecodeIsUsedInstead",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 72,
+              "length": 16,
+              "width": 160,
+              "height": 120,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "8": {
+            "throw": {
+              "type": "Com",
+              "message": "componentnotfound",
+              "hresult": -2003292336
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 640,
+          "h": 480
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              640,
+              480
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 1228800,
+            "source_bytes_read": 4104,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "single-preview-fails-keeps-original",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_PreviewFailsWithoutAnyFallback_KeepsTheOriginalException",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 8,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "original"
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "original",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 8,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4104,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "full-decode-counts-whole-file-once",
+      "csharp_test": "RawDecoderFallbackBreadthTests.Decode_FullDecodeFallback_CountsTheWholeFileOnceNotTheHeaderOnTopOfIt",
+      "file": {
+        "physical": true,
+        "name": "nopreview.dng",
+        "size": 200000,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 200000,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 65536,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "bytes-next-best-counts-failed-and-decoded",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_NextBestPreviewAfterAFailure_CountsTheFailedAndTheDecodedPreviewBytes",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4160,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4160,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "bytes-full-after-failure-physical",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_FullDecodeAfterEveryPreviewFailed_CountsTheWholeFilePlusTheFailedPreviewBytes",
+      "file": {
+        "physical": true,
+        "name": "a.dng",
+        "size": 4096,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              6000,
+              4000
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 96000000,
+            "source_bytes_read": 4136,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "bytes-full-after-failure-virtual",
+      "csharp_test": "RawDecoder.Decode (full decode of a virtual file: header + failed preview)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "bad"
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              6000,
+              4000
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 96000000,
+            "source_bytes_read": 4136,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "bytes-thumbnail-without-preview",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_ThumbnailFallbackWithoutAnyPreview_CountsTheHeaderPlusTheThumbnailBytes",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 30
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              1200,
+              900
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4126,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 30,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "bytes-full-decode-virtual-no-preview",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_FullDecodeOfAFileThatHasNoPhysicalLength_StillCountsTheHeaderBytes",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              6000,
+              4000
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 96000000,
+            "source_bytes_read": 4096,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "zero-length-preview-uses-thumbnail",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_SingleJpegPreviewDeclaringNoBytes_UsesTheThumbnailFallbackInsteadOfDecodingNothing",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 0,
+              "width": 1200,
+              "height": 900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 30
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              1200,
+              900
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 4126,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 30,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-unsupported-uses-thumbnail-degraded",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfPreviewUnsupported_DecodesTheThumbnailFallbackAndMarksItDegraded",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 160,
+            "h": 120
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 20
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              160,
+              120
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 76800,
+            "source_bytes_read": 4156,
+            "embedded_preview": [
+              160,
+              120
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 20,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-unsupported-without-provider-propagates",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfPreviewUnsupportedWithoutAThumbnailProvider_PropagatesTheUnsupportedFailure",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "non-orf-unsupported-never-asks-thumbnail",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_NonOrfPreviewUnsupported_NeverAsksForTheThumbnail",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 20
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-invalid-data-never-asks-thumbnail",
+      "csharp_test": "RawDecoder.DecodePreviewWithFallbacks (ORF thumbnail only after a NotSupported failure)",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "corrupt"
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 20
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "corrupt",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-recoverable-failure-with-full",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfThumbnailFallbackFailsRecoverablyWithAFullDecoder_UsesTheFullDecode",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "InvalidData",
+          "message": "thumb-broken"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              6000,
+              4000
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 96000000,
+            "source_bytes_read": 4136,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-recoverable-failure-without-full",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfThumbnailFallbackFailsRecoverablyWithoutAFullDecoder_TheFirstFailurePropagatesUnchanged",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "InvalidData",
+          "message": "thumb-broken"
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-io-failure-without-full",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfThumbnailFallbackFailsNonRecoverablyWithoutAFullDecoder_ThePropagatedFailureIsTheThumbnailsOwn",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "Io",
+          "message": "thumb-broken"
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "IOException",
+            "message": "thumb-broken",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-io-failure-with-full",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfThumbnailFallbackFailsNonRecoverablyWithAFullDecoder_DoesNotSwallowIt",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "Io",
+          "message": "thumb-io"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "IOException",
+            "message": "thumb-io",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-undecodable-then-full-virtual",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_OrfThumbnailUndecodableThenFullDecodeOfAVirtualFile_DoesNotCountTheDiscardedThumbnailBytes",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "by_length": {
+          "20": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "thumb-undecodable"
+            }
+          },
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 20
+      },
+      "full": {
+        "ok": {
+          "w": 6000,
+          "h": 4000
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              6000,
+              4000
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 96000000,
+            "source_bytes_read": 4136,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 20,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "orf-thumbnail-empty-is-swallowed-first-failure-stands",
+      "csharp_test": "RawDecoder.DecodeFallbackThumbnail (invalid size in the ORF path is recoverable)",
+      "file": {
+        "physical": false,
+        "size": 4096,
+        "virtual_path": "C:\\raw-virtual-nonexistent\\a.orf"
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Orf",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        },
+        "ext": ".orf"
+      },
+      "inner": {
+        "default": {
+          "throw": {
+            "type": "NotSupported",
+            "message": "unsupported"
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 0
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "max-four-previews-tried",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_MoreThanFourPreviewsAllTheFirstFourFail_OnlyFourAreTriedBeforeGivingUp",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 20,
+              "width": 5000,
+              "height": 4000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 21,
+              "width": 4900,
+              "height": 3900,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 2,
+              "offset": 192,
+              "length": 22,
+              "width": 4800,
+              "height": 3800,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 3,
+              "offset": 256,
+              "length": 23,
+              "width": 4700,
+              "height": 3700,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 4,
+              "offset": 320,
+              "length": 25,
+              "width": 4600,
+              "height": 3600,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "25": {
+            "ok": {
+              "w": 4600,
+              "h": 3600
+            }
+          }
+        },
+        "default": {
+          "throw": {
+            "type": "InvalidData",
+            "message": "bad"
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "bad",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 20,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 21,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 22,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 23,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 5,
+          "stream_bytes_read": 4182,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "empty-other-jpeg-not-tried",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_ChosenPreviewFailsAndTheOnlyOtherJpegDeclaresNoBytes_DoesNotTryTheEmptyOne",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 0,
+              "width": 3900,
+              "height": 2900,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "bad",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "unknown-size-preview-after-unsupported-taken",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_UnsupportedPreviewThenAnUnknownSizePreview_TheUnknownSizeOneIsStillTaken",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 0,
+              "height": 0,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 24,
+            "h": 24
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              24,
+              24
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 2304,
+            "source_bytes_read": 4160,
+            "embedded_preview": [
+              24,
+              24
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4160,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "useful-long-side-1000-taken",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_UnsupportedPreviewThenAPreviewOfExactlyTheUsefulLongSide_ThatPreviewIsTaken",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 1000,
+              "height": 750,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 1000,
+            "h": 750
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1000,
+              750
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 3000000,
+            "source_bytes_read": 4160,
+            "embedded_preview": [
+              1000,
+              750
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4160,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "useful-long-side-999-not-taken",
+      "csharp_test": "RawDecoder.SelectNextPreview (999 px is a thumbnail after a larger unsupported failure)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 999,
+              "height": 750,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 999,
+            "h": 750
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "NotSupportedException",
+            "message": "unsupported",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 4136,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "equal-thumbnail-after-thumbnail-failure-taken",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_ThumbnailSizedPreviewFailsThenAnEquallySizedOneExists_TheEquallySizedOneIsTaken",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 800,
+              "height": 600,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 800,
+              "height": 600,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "40": {
+            "throw": {
+              "type": "NotSupported",
+              "message": "unsupported"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 800,
+            "h": 600
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              800,
+              600
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 1920000,
+            "source_bytes_read": 4160,
+            "embedded_preview": [
+              800,
+              600
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 40,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4160,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "next-best-respects-the-box",
+      "csharp_test": "RawDecoder.SelectNextPreview (PreviewSelector picks among the remaining with the request box)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            6000,
+            4000
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 40,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 128,
+              "length": 24,
+              "width": 1024,
+              "height": 768,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 2,
+              "offset": 192,
+              "length": 30,
+              "width": 1600,
+              "height": 1200,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "by_length": {
+          "24": {
+            "throw": {
+              "type": "InvalidData",
+              "message": "bad"
+            }
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 800,
+            "h": 600,
+            "downscaled": true,
+            "original": [
+              1600,
+              1200
+            ]
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode",
+          "box": [
+            800,
+            600
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              800,
+              600
+            ],
+            "original": [
+              6000,
+              4000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": true,
+            "estimated_bytes": 1920000,
+            "source_bytes_read": 4150,
+            "embedded_preview": [
+              1600,
+              1200
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 24,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                800,
+                600
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            },
+            {
+              "length": 30,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                800,
+                600
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 3,
+          "stream_bytes_read": 4150,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-default-registry-nopreview.dng-uses-thumbnail",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewWithFallback_DecodesTheFallbackThumbnail",
+      "file": {
+        "physical": true,
+        "name": "nopreview.dng",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A0008000000030012010300010000000100000001020400010000003200000002020400010000000000000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 96,
+            "h": 64
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 777
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              96,
+              64
+            ],
+            "original": [
+              96,
+              64
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 24576,
+            "source_bytes_read": 827,
+            "embedded_preview": [
+              96,
+              64
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 777,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 50,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "no-preview-default-registry-nopreview.nef-uses-thumbnail",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewWithFallback_DecodesTheFallbackThumbnail",
+      "file": {
+        "physical": true,
+        "name": "nopreview.nef",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A0008000000030012010300010000000100000001020400010000003200000002020400010000000000000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 96,
+            "h": 64
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 777
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              96,
+              64
+            ],
+            "original": [
+              96,
+              64
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 24576,
+            "source_bytes_read": 827,
+            "embedded_preview": [
+              96,
+              64
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 777,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 50,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "no-preview-without-any-fallback",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewWithoutAnyFallback_KeepsTheTypedError",
+      "file": {
+        "physical": true,
+        "name": "nopreview.dng",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A0008000000030012010300010000000100000001020400010000003200000002020400010000000000000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "No embedded preview found in RAW file: {path}",
+            "hresult": null,
+            "localized_key": "image.error.rawNoPreview"
+          },
+          "inner_requests": [],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 50,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-not-supported-uses-full",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewAndFallbackHasNoJpeg_UsesTheFullDecoder",
+      "file": {
+        "physical": true,
+        "name": "nopreview.dng",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A0008000000030012010300010000000100000001020400010000003200000002020400010000000000000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "NotSupported",
+          "message": "thumbnail fallback is not enabled for Dng"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              48,
+              32
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 50,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 50,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "no-preview-only-full",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewWithOnlyTheFullDecoder_UsesIt",
+      "file": {
+        "physical": true,
+        "name": "nopreview.dng",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A0008000000030012010300010000000100000001020400010000003200000002020400010000000000000000000000"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              48,
+              32
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 50,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 50,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "preview-present-never-touches-fallbacks",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_EmbeddedPreviewPresent_NeverTouchesTheFallbacks",
+      "file": {
+        "physical": true,
+        "name": "preview.dng",
+        "size": 0,
+        "segments": [
+          {
+            "at": 0,
+            "hex": "49492A000800000003001201030001000000010000000102040001000000320000000202040001000000A300000000000000FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC00011080030004003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+          }
+        ]
+      },
+      "container": {
+        "kind": "default"
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 64,
+            "h": 48
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 777
+      },
+      "full": {
+        "ok": {
+          "w": 64,
+          "h": 48
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              64,
+              48
+            ],
+            "original": [
+              64,
+              48
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 12288,
+            "source_bytes_read": 376,
+            "embedded_preview": [
+              64,
+              48
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 163,
+              "first_byte": 255,
+              "last_byte": 217,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 376,
+          "container_reads_total": 0
+        }
+      ]
+    },
+    {
+      "name": "thumbnail-exposes-size-full-does-not",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_FallbackThumbnailJpeg_ExposesItsSizeButTheFullDecodeDoesNot",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 96,
+            "h": 64
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 777
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              96,
+              64
+            ],
+            "original": [
+              96,
+              64
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 24576,
+            "source_bytes_read": 841,
+            "embedded_preview": [
+              96,
+              64
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 777,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "full-decode-exposes-no-preview-size",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_FallbackThumbnailJpeg_ExposesItsSizeButTheFullDecodeDoesNot (full half)",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 64,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 96,
+            "h": 64
+          }
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 96,
+          "h": 64
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              96,
+              64
+            ],
+            "original": [
+              96,
+              64
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 24576,
+            "source_bytes_read": 64,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 0,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 64,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-empty-thumbnail-fails",
+      "csharp_test": "RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewAndFallbackThumbnailEmpty_FailsWithTypedError",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 256,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 0
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "RAW fallback thumbnail size is invalid: 0 bytes.",
+            "hresult": null,
+            "localized_key": "image.error.rawNoPreview"
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 256,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-empty-thumbnail-with-full-uses-full",
+      "csharp_test": "RawDecoder.DecodeWithoutPreview (invalid thumbnail is recoverable when a full decoder exists)",
+      "file": {
+        "physical": true,
+        "name": "none.dng",
+        "size": 256,
+        "segments": []
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            4000,
+            3000
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 0
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              48,
+              32
+            ],
+            "original": [
+              4000,
+              3000
+            ],
+            "downscaled": true,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 6144,
+            "source_bytes_read": 256,
+            "embedded_preview": [
+              0,
+              0
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 1,
+          "opens": 1,
+          "stream_bytes_read": 256,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "thumbnail-exactly-max-accepted",
+      "csharp_test": "RawDecoderMutationGapTests.Decode_ThumbnailFallbackOfExactlyTheMaximumSize_IsAcceptedNotTreatedAsInvalid",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 33554432
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              1200,
+              900
+            ],
+            "original": [
+              1200,
+              900
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 4320000,
+            "source_bytes_read": 33558528,
+            "embedded_preview": [
+              1200,
+              900
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 33554432,
+              "first_byte": 0,
+              "last_byte": 0,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "thumbnail-max-plus-one-rejected",
+      "csharp_test": "RawDecoder.DecodeFallbackThumbnail (one byte over the cap)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1200,
+            "h": 900
+          }
+        }
+      },
+      "fallback": {
+        "bytes": 33554433
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "InvalidDataException",
+            "message": "RAW fallback thumbnail size is invalid: 33554433 bytes.",
+            "hresult": null,
+            "localized_key": "image.error.rawNoPreview"
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "no-preview-thumbnail-io-failure-with-full-propagates",
+      "csharp_test": "RawDecoder.DecodeWithoutPreview (non-recoverable thumbnail failure is never swallowed)",
+      "file": {
+        "physical": false,
+        "size": 4096
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            0,
+            0
+          ],
+          "orientation": 1,
+          "previews": [],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "default": {
+          "ok": {
+            "w": 1,
+            "h": 1
+          }
+        }
+      },
+      "fallback": {
+        "throw": {
+          "type": "Io",
+          "message": "thumb-io"
+        }
+      },
+      "full": {
+        "ok": {
+          "w": 48,
+          "h": 32
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "IOException",
+            "message": "thumb-io",
+            "hresult": null,
+            "localized_key": null
+          },
+          "inner_requests": [],
+          "fallback_calls": 1,
+          "full_calls": 0,
+          "opens": 1,
+          "stream_bytes_read": 4096,
+          "container_reads_total": 1
+        }
+      ]
+    },
+    {
+      "name": "identity-stale-offsets-after-file-change",
+      "csharp_test": "RawDecoderIdentityTests.Decode_FileChangesAfterTheContainerWasRead_NextPreviewAttemptDoesNotUseTheStaleOffsets",
+      "file": {
+        "physical": true,
+        "name": "a.dng",
+        "size": 390,
+        "segments": [
+          {
+            "at": 64,
+            "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+          },
+          {
+            "at": 227,
+            "hex": "FFD8FFE000104A46494600010100000100010000FFDB00430010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010FFC000110800F0014003012200021101031101FFC4001F0000010501010101010100000000000000000102030405060708090A0BFFDA000C03010002110311003F00AA55AA55AA55FFD9"
+          }
+        ]
+      },
+      "container": {
+        "kind": "fixed",
+        "info": {
+          "format": "Dng",
+          "sensor": [
+            320,
+            240
+          ],
+          "orientation": 1,
+          "previews": [
+            {
+              "index": 0,
+              "offset": 64,
+              "length": 163,
+              "width": 4000,
+              "height": 3000,
+              "color_space": "Srgb"
+            },
+            {
+              "index": 1,
+              "offset": 227,
+              "length": 163,
+              "width": 320,
+              "height": 240,
+              "color_space": "Srgb"
+            }
+          ],
+          "exif_blocks": []
+        }
+      },
+      "inner": {
+        "first_call": {
+          "touch": true,
+          "throw": {
+            "type": "InvalidData",
+            "message": "corrupt preview"
+          }
+        },
+        "default": {
+          "ok": {
+            "w": 320,
+            "h": 240
+          }
+        }
+      },
+      "full": {
+        "throw": {
+          "type": "NotSupported",
+          "message": "full"
+        }
+      },
+      "ops": [
+        {
+          "op": "decode"
+        },
+        {
+          "op": "decode"
+        }
+      ],
+      "steps": [
+        {
+          "op": "decode",
+          "error": {
+            "type": "IOException",
+            "message": "RAW source changed while reading: {path}",
+            "hresult": null,
+            "localized_key": "err.io.fileChangedWhileReading"
+          },
+          "inner_requests": [
+            {
+              "length": 163,
+              "first_byte": 255,
+              "last_byte": 217,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 553,
+          "container_reads_total": 1
+        },
+        {
+          "op": "decode",
+          "ok": {
+            "pixel": [
+              320,
+              240
+            ],
+            "original": [
+              320,
+              240
+            ],
+            "downscaled": false,
+            "orientation": 1,
+            "degraded": false,
+            "estimated_bytes": 307200,
+            "source_bytes_read": 553,
+            "embedded_preview": [
+              320,
+              240
+            ],
+            "backend": "Wpf",
+            "exif_make": null
+          },
+          "inner_requests": [
+            {
+              "length": 163,
+              "first_byte": 255,
+              "last_byte": 217,
+              "box": [
+                0,
+                0
+              ],
+              "apply_orientation": true,
+              "source_orientation": 1,
+              "priority": "Viewer"
+            }
+          ],
+          "fallback_calls": 0,
+          "full_calls": 0,
+          "opens": 2,
+          "stream_bytes_read": 553,
+          "container_reads_total": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "generator": "oracle-cs turbojpeg-fixtures",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "file": "parity-1x1.jpg",
+      "length": 670,
+      "sha256": "1f18773ebeaefd96eef907478ee81b736258dc5580e73f58dfada25c717daf77",
+      "what": "GenerateJpegWithOrientation(1,1,1) q90"
+    },
+    {
+      "file": "parity-1x17.jpg",
+      "length": 729,
+      "sha256": "84478e90894320cacdb63da154aac3ddc0430d9e7f48bd0bd85ad5237c46b15a",
+      "what": "GenerateJpegWithOrientation(1,17,1) q90"
+    },
+    {
+      "file": "parity-17x1.jpg",
+      "length": 735,
+      "sha256": "a456e546a36d11cea41a12cb4aaaa60fa91659e1b44225eb065add40708ae099",
+      "what": "GenerateJpegWithOrientation(17,1,1) q90"
+    },
+    {
+      "file": "parity-8x8.jpg",
+      "length": 772,
+      "sha256": "cac7bf6a627c7b3d2cb8ff86fb5dd059a4707c3b4cc99e3f7646358bc7cc4024",
+      "what": "GenerateJpegWithOrientation(8,8,1) q90"
+    },
+    {
+      "file": "parity-33x31.jpg",
+      "length": 1296,
+      "sha256": "f941ddff47864613eb0253dac9853c9f17311477cf570d71277e43c9da917e1c",
+      "what": "GenerateJpegWithOrientation(33,31,1) q90"
+    },
+    {
+      "file": "parity-64x48.jpg",
+      "length": 2087,
+      "sha256": "ef348447d79b738c5ec62cce000d07881ece98fbf0ced8ba4e7aa0c55815451a",
+      "what": "GenerateJpegWithOrientation(64,48,1) q90"
+    },
+    {
+      "file": "parity-100x75.jpg",
+      "length": 3867,
+      "sha256": "c0eaf308f39855c6ab16963dd785abebf78f8a8d47ff74258a38bcd3e882aef7",
+      "what": "GenerateJpegWithOrientation(100,75,1) q90"
+    },
+    {
+      "file": "parity-257x129.jpg",
+      "length": 4161,
+      "sha256": "cd66e583fef2d228e1c3a4cb4a91dc6922b2b0159b762c6d0b2ef53ddc99ceb3",
+      "what": "GenerateJpegWithOrientation(257,129,1) q90"
+    },
+    {
+      "file": "parity-400x300.jpg",
+      "length": 19257,
+      "sha256": "d530a4662ae0454c7e08be156d64ea6bd9b8aa1500c16e387daaeb1f71ae09ab",
+      "what": "GenerateJpegWithOrientation(400,300,1) q90"
+    },
+    {
+      "file": "parity-640x480.jpg",
+      "length": 29709,
+      "sha256": "acb13b3e7b6126578a65040978cb72fc02ee4585c1e255533bfa1578421f092a",
+      "what": "GenerateJpegWithOrientation(640,480,1) q90"
+    },
+    {
+      "file": "tall-10x1000.jpg",
+      "length": 7710,
+      "sha256": "1c177e686cc765b125367f1d3f7f7eb40a8526e912d902991fa793a1e3575442",
+      "what": "GenerateGradientJpeg(10,1000): Downscaled_WhenTheBoxLimitsTheHeight"
+    },
+    {
+      "file": "gradient-256x256.jpg",
+      "length": 4992,
+      "sha256": "83b0f45632bb3ddc556e04c8c758226d6fa6847da042416bbe0448d3a852f050",
+      "what": "GenerateGradientJpeg(256,256): CorruptJpeg_DoesNotLeakPixelBuffer"
+    },
+    {
+      "file": "small-q85-64x48.jpg",
+      "length": 1738,
+      "sha256": "6f94a4a778c539890af676ff3514d0c66eed97d10073d369a4ce5ab740be142b",
+      "what": "SmallJpeg() of the guard/hardening tests (q85, no metadata)"
+    },
+    {
+      "file": "exif-24x16-o6.jpg",
+      "length": 1184,
+      "sha256": "16644f544bd33b4424aabfdea19315ee342f8445435ddaf9a2cfd33105d6e602",
+      "what": "ExifTestData.EncodeJpegWithExif(24,16,orientation 6)"
+    },
+    {
+      "file": "exif-64x48-o1.jpg",
+      "length": 2311,
+      "sha256": "2ba5a2da0901bcf75ed79fecb611498c1918d27f298541b4e42f6a5e4a52e832",
+      "what": "ExifTestData.EncodeJpegWithExif() full camera"
+    },
+    {
+      "file": "exif-64x48-o6.jpg",
+      "length": 2323,
+      "sha256": "e12307e253245eb72ba299ee6b6471619d5e9397826ac12795f112a19eafee02",
+      "what": "ExifTestData.EncodeJpegWithExif(64,48,orientation 6)"
+    },
+    {
+      "file": "noexif-64x48.jpg",
+      "length": 2051,
+      "sha256": "935b4b912239df10ba43ad8b2a8d6f5bdfc497d9da320190ed1755d02d11a873",
+      "what": "ExifTestData.EncodeJpegWithExif(withExif: false)"
+    },
+    {
+      "file": "exif-partial-64x48.jpg",
+      "length": 2129,
+      "sha256": "be70ac3c6dc8d1f90346e593cfa4e65831ad7f69fa4e391c2495375ac33f5996",
+      "what": "ExifTestData.EncodeJpegWithPartialExif()"
+    }
+  ]
+}

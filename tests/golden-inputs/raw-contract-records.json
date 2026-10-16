@@ -1,0 +1,219 @@
+{
+ "cases": [
+  {
+   "name": "enums",
+   "type": "enums"
+  },
+  {
+   "name": "preview-default-header-resolved-false",
+   "type": "preview",
+   "a": [
+    0,
+    100,
+    2000,
+    "Jpeg",
+    640,
+    480,
+    "Unknown"
+   ],
+   "b": [
+    0,
+    100,
+    2000,
+    "Jpeg",
+    640,
+    480,
+    "Unknown",
+    false
+   ]
+  },
+  {
+   "name": "preview-header-resolved-true-differs",
+   "type": "preview",
+   "a": [
+    0,
+    100,
+    2000,
+    "Jpeg",
+    640,
+    480,
+    "Srgb",
+    true
+   ],
+   "b": [
+    0,
+    100,
+    2000,
+    "Jpeg",
+    640,
+    480,
+    "Srgb"
+   ]
+  },
+  {
+   "name": "preview-index-differs",
+   "type": "preview",
+   "a": [
+    1,
+    100,
+    2000,
+    "Jpeg",
+    0,
+    0,
+    "AdobeRgb"
+   ],
+   "b": [
+    2,
+    100,
+    2000,
+    "Jpeg",
+    0,
+    0,
+    "AdobeRgb"
+   ]
+  },
+  {
+   "name": "preview-colour-space-differs",
+   "type": "preview",
+   "a": [
+    0,
+    0,
+    1,
+    "Jpeg",
+    1,
+    1,
+    "Srgb"
+   ],
+   "b": [
+    0,
+    0,
+    1,
+    "Jpeg",
+    1,
+    1,
+    "AdobeRgb"
+   ]
+  },
+  {
+   "name": "preview-size-unknown-zero",
+   "type": "preview",
+   "a": [
+    0,
+    4294967296,
+    0,
+    "Jpeg",
+    0,
+    0,
+    "Unknown"
+   ],
+   "b": [
+    0,
+    4294967296,
+    0,
+    "Jpeg",
+    0,
+    0,
+    "Unknown"
+   ]
+  },
+  {
+   "name": "preview-extreme-values",
+   "type": "preview",
+   "a": [
+    2147483647,
+    9223372036854775807,
+    9223372036854775807,
+    "Jpeg",
+    2147483647,
+    -2147483648,
+    "Unknown",
+    true
+   ],
+   "b": [
+    2147483647,
+    9223372036854775807,
+    9223372036854775807,
+    "Jpeg",
+    2147483647,
+    -2147483648,
+    "Unknown",
+    true
+   ]
+  },
+  {
+   "name": "block-default-ifd-is-exif-false",
+   "type": "block",
+   "a": [
+    0,
+    131072,
+    true
+   ],
+   "b": [
+    0,
+    131072,
+    true,
+    false
+   ]
+  },
+  {
+   "name": "block-ifd-is-exif-true-differs",
+   "type": "block",
+   "a": [
+    512,
+    4096,
+    true,
+    true
+   ],
+   "b": [
+    512,
+    4096,
+    true
+   ]
+  },
+  {
+   "name": "block-not-tiff-header",
+   "type": "block",
+   "a": [
+    512,
+    4096,
+    false
+   ],
+   "b": [
+    512,
+    4096,
+    false,
+    false
+   ]
+  },
+  {
+   "name": "block-offset-differs",
+   "type": "block",
+   "a": [
+    1,
+    2,
+    true
+   ],
+   "b": [
+    2,
+    2,
+    true
+   ]
+  },
+  {
+   "name": "block-extreme-values",
+   "type": "block",
+   "a": [
+    -1,
+    9223372036854775807,
+    false,
+    true
+   ],
+   "b": [
+    -1,
+    9223372036854775807,
+    false,
+    true
+   ]
+  }
+ ]
+}

@@ -83,6 +83,9 @@ version = "0.1.0"
 dependencies = [
  "pr-core",
  "pr-imaging",
+ "pr-platform-win",
+ "pr-test-support",
+ "serde_json",
 ]
 
 [[package]]
@@ -100,6 +103,9 @@ version = "0.1.0"
 dependencies = [
  "pr-core",
  "pr-imaging",
+ "pr-imaging-raw",
+ "pr-test-support",
+ "serde_json",
 ]
 
 [[package]]
@@ -139,6 +145,9 @@ version = "0.1.0"
 dependencies = [
  "pr-core",
  "pr-imaging",
+ "pr-platform-win",
+ "pr-test-support",
+ "serde_json",
 ]
 
 [[package]]

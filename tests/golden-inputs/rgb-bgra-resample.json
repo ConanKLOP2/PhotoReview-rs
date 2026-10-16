@@ -1,0 +1,2331 @@
+{
+ "cases": [
+  {
+   "name": "same-1x1-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 247
+   }
+  },
+  {
+   "name": "same-1x1-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 1,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 248
+   }
+  },
+  {
+   "name": "same-2x2-c3",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535244
+   }
+  },
+  {
+   "name": "same-2x2-c1",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535245
+   }
+  },
+  {
+   "name": "same-7x3-c3",
+   "sw": 7,
+   "sh": 3,
+   "tw": 7,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "same-7x3-c1",
+   "sw": 7,
+   "sh": 3,
+   "tw": 7,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "same-40x30-c3",
+   "sw": 40,
+   "sh": 30,
+   "tw": 40,
+   "th": 30,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 0
+   }
+  },
+  {
+   "name": "same-40x30-c1",
+   "sw": 40,
+   "sh": 30,
+   "tw": 40,
+   "th": 30,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 1
+   }
+  },
+  {
+   "name": "same-1x9-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 9,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535248
+   }
+  },
+  {
+   "name": "same-1x9-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 9,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535249
+   }
+  },
+  {
+   "name": "same-300x200-c3",
+   "sw": 300,
+   "sh": 200,
+   "tw": 300,
+   "th": 200,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535250
+   }
+  },
+  {
+   "name": "same-300x200-c1",
+   "sw": 300,
+   "sh": 200,
+   "tw": 300,
+   "th": 200,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535251
+   }
+  },
+  {
+   "name": "up-3x2-to-5x4-c3",
+   "sw": 3,
+   "sh": 2,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535252
+   }
+  },
+  {
+   "name": "up-3x2-to-5x4-c1",
+   "sw": 3,
+   "sh": 2,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535253
+   }
+  },
+  {
+   "name": "mild-7x5-to-4x3-c3",
+   "sw": 7,
+   "sh": 5,
+   "tw": 4,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535254
+   }
+  },
+  {
+   "name": "mild-7x5-to-4x3-c1",
+   "sw": 7,
+   "sh": 5,
+   "tw": 4,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535255
+   }
+  },
+  {
+   "name": "mild-40x30-to-25x20-c3",
+   "sw": 40,
+   "sh": 30,
+   "tw": 25,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 10
+   }
+  },
+  {
+   "name": "mild-40x30-to-25x20-c1",
+   "sw": 40,
+   "sh": 30,
+   "tw": 25,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 11
+   }
+  },
+  {
+   "name": "mild-4x1-to-3x1-c3",
+   "sw": 4,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 12
+   }
+  },
+  {
+   "name": "mild-4x1-to-3x1-c1",
+   "sw": 4,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 13
+   }
+  },
+  {
+   "name": "mild-1x4-to-1x3-c3",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 14
+   }
+  },
+  {
+   "name": "mild-1x4-to-1x3-c1",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 15
+   }
+  },
+  {
+   "name": "up-2x1-to-4x1-c3",
+   "sw": 2,
+   "sh": 1,
+   "tw": 4,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535262
+   }
+  },
+  {
+   "name": "up-2x1-to-4x1-c1",
+   "sw": 2,
+   "sh": 1,
+   "tw": 4,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535263
+   }
+  },
+  {
+   "name": "up-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535264
+   }
+  },
+  {
+   "name": "up-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535265
+   }
+  },
+  {
+   "name": "up-1x5-to-4x5-c3",
+   "sw": 1,
+   "sh": 5,
+   "tw": 4,
+   "th": 5,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535266
+   }
+  },
+  {
+   "name": "up-1x5-to-4x5-c1",
+   "sw": 1,
+   "sh": 5,
+   "tw": 4,
+   "th": 5,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535267
+   }
+  },
+  {
+   "name": "up-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535268
+   }
+  },
+  {
+   "name": "up-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535269
+   }
+  },
+  {
+   "name": "up-3x3-to-10x10-c3",
+   "sw": 3,
+   "sh": 3,
+   "tw": 10,
+   "th": 10,
+   "channels": 3,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "up-3x3-to-10x10-c1",
+   "sw": 3,
+   "sh": 3,
+   "tw": 10,
+   "th": 10,
+   "channels": 1,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "up-17x11-to-64x48-c3",
+   "sw": 17,
+   "sh": 11,
+   "tw": 64,
+   "th": 48,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535270
+   }
+  },
+  {
+   "name": "up-17x11-to-64x48-c1",
+   "sw": 17,
+   "sh": 11,
+   "tw": 64,
+   "th": 48,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535271
+   }
+  },
+  {
+   "name": "mild-100x100-to-51x51-c3",
+   "sw": 100,
+   "sh": 100,
+   "tw": 51,
+   "th": 51,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535272
+   }
+  },
+  {
+   "name": "mild-100x100-to-51x51-c1",
+   "sw": 100,
+   "sh": 100,
+   "tw": 51,
+   "th": 51,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535273
+   }
+  },
+  {
+   "name": "mild-1000x3-to-501x3-c3",
+   "sw": 1000,
+   "sh": 3,
+   "tw": 501,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535274
+   }
+  },
+  {
+   "name": "mild-1000x3-to-501x3-c1",
+   "sw": 1000,
+   "sh": 3,
+   "tw": 501,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535275
+   }
+  },
+  {
+   "name": "mild-width-only-9x6-to-5x6-c3",
+   "sw": 9,
+   "sh": 6,
+   "tw": 5,
+   "th": 6,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535276
+   }
+  },
+  {
+   "name": "mild-width-only-9x6-to-5x6-c1",
+   "sw": 9,
+   "sh": 6,
+   "tw": 5,
+   "th": 6,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535277
+   }
+  },
+  {
+   "name": "mild-height-only-6x9-to-6x5-c3",
+   "sw": 6,
+   "sh": 9,
+   "tw": 6,
+   "th": 5,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535278
+   }
+  },
+  {
+   "name": "mild-height-only-6x9-to-6x5-c1",
+   "sw": 6,
+   "sh": 9,
+   "tw": 6,
+   "th": 5,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535279
+   }
+  },
+  {
+   "name": "exactly-2-width-8x4-to-4x4-c3",
+   "sw": 8,
+   "sh": 4,
+   "tw": 4,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535280
+   }
+  },
+  {
+   "name": "exactly-2-width-8x4-to-4x4-c1",
+   "sw": 8,
+   "sh": 4,
+   "tw": 4,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535281
+   }
+  },
+  {
+   "name": "exactly-2-height-4x4-to-4x2-c3",
+   "sw": 4,
+   "sh": 4,
+   "tw": 4,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535282
+   }
+  },
+  {
+   "name": "exactly-2-height-4x4-to-4x2-c1",
+   "sw": 4,
+   "sh": 4,
+   "tw": 4,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535283
+   }
+  },
+  {
+   "name": "exactly-2-both-64x48-to-32x24-c3",
+   "sw": 64,
+   "sh": 48,
+   "tw": 32,
+   "th": 24,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535284
+   }
+  },
+  {
+   "name": "exactly-2-both-64x48-to-32x24-c1",
+   "sw": 64,
+   "sh": 48,
+   "tw": 32,
+   "th": 24,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535285
+   }
+  },
+  {
+   "name": "mixed-up-width-shrink-height-1p5-4x6-to-8x4-c3",
+   "sw": 4,
+   "sh": 6,
+   "tw": 8,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535286
+   }
+  },
+  {
+   "name": "mixed-up-width-shrink-height-1p5-4x6-to-8x4-c1",
+   "sw": 4,
+   "sh": 6,
+   "tw": 8,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535287
+   }
+  },
+  {
+   "name": "stretch-wide-100x2-to-150x3-c3",
+   "sw": 100,
+   "sh": 2,
+   "tw": 150,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "stretch-wide-100x2-to-150x3-c1",
+   "sw": 100,
+   "sh": 2,
+   "tw": 150,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "gradient"
+   }
+  },
+  {
+   "name": "half-even-probe-8x4-to-4x4-c1",
+   "sw": 8,
+   "sh": 4,
+   "tw": 4,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "name": "half-even-probe-4x4-to-4x2-c1",
+   "sw": 4,
+   "sh": 4,
+   "tw": 4,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3
+    ]
+   }
+  },
+  {
+   "name": "ramp-4x1-to-3x1-c3",
+   "sw": 4,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     0,
+     0,
+     90,
+     90,
+     90,
+     180,
+     180,
+     180,
+     255,
+     255,
+     255
+    ]
+   }
+  },
+  {
+   "name": "ramp-4x1-to-3x1-c1",
+   "sw": 4,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     90,
+     180,
+     255
+    ]
+   }
+  },
+  {
+   "name": "column-0-30-60-90-1x4-to-1x3-c1",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     30,
+     60,
+     90
+    ]
+   }
+  },
+  {
+   "name": "box-60x60-to-20x20-checker-c3",
+   "sw": 60,
+   "sh": 60,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "checker"
+   }
+  },
+  {
+   "name": "box-60x60-to-20x20-checker-c1",
+   "sw": 60,
+   "sh": 60,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "checker"
+   }
+  },
+  {
+   "name": "box-90x60-to-30x20-c3",
+   "sw": 90,
+   "sh": 60,
+   "tw": 30,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 42
+   }
+  },
+  {
+   "name": "box-90x60-to-30x20-c1",
+   "sw": 90,
+   "sh": 60,
+   "tw": 30,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 43
+   }
+  },
+  {
+   "name": "box-64x48-to-16x12-c3",
+   "sw": 64,
+   "sh": 48,
+   "tw": 16,
+   "th": 12,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 44
+   }
+  },
+  {
+   "name": "box-64x48-to-16x12-c1",
+   "sw": 64,
+   "sh": 48,
+   "tw": 16,
+   "th": 12,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 45
+   }
+  },
+  {
+   "name": "box-40x6-to-10x12-width-ratio-4-height-up-c3",
+   "sw": 40,
+   "sh": 6,
+   "tw": 10,
+   "th": 12,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535292
+   }
+  },
+  {
+   "name": "box-40x6-to-10x12-width-ratio-4-height-up-c1",
+   "sw": 40,
+   "sh": 6,
+   "tw": 10,
+   "th": 12,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535293
+   }
+  },
+  {
+   "name": "box-6x40-to-12x10-height-ratio-4-width-up-c3",
+   "sw": 6,
+   "sh": 40,
+   "tw": 12,
+   "th": 10,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535294
+   }
+  },
+  {
+   "name": "box-6x40-to-12x10-height-ratio-4-width-up-c1",
+   "sw": 6,
+   "sh": 40,
+   "tw": 12,
+   "th": 10,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535295
+   }
+  },
+  {
+   "name": "box-101x67-to-10x7-uneven-footprints-c3",
+   "sw": 101,
+   "sh": 67,
+   "tw": 10,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535296
+   }
+  },
+  {
+   "name": "box-101x67-to-10x7-uneven-footprints-c1",
+   "sw": 101,
+   "sh": 67,
+   "tw": 10,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535297
+   }
+  },
+  {
+   "name": "box-7x7-to-3x3-c3",
+   "sw": 7,
+   "sh": 7,
+   "tw": 3,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535298
+   }
+  },
+  {
+   "name": "box-7x7-to-3x3-c1",
+   "sw": 7,
+   "sh": 7,
+   "tw": 3,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535299
+   }
+  },
+  {
+   "name": "box-5x3-to-2x1-c3",
+   "sw": 5,
+   "sh": 3,
+   "tw": 2,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535300
+   }
+  },
+  {
+   "name": "box-5x3-to-2x1-c1",
+   "sw": 5,
+   "sh": 3,
+   "tw": 2,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535301
+   }
+  },
+  {
+   "name": "box-10x10-to-1x1-c3",
+   "sw": 10,
+   "sh": 10,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535302
+   }
+  },
+  {
+   "name": "box-10x10-to-1x1-c1",
+   "sw": 10,
+   "sh": 10,
+   "tw": 1,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535303
+   }
+  },
+  {
+   "name": "box-3x1-to-1x1-c3",
+   "sw": 3,
+   "sh": 1,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535304
+   }
+  },
+  {
+   "name": "box-3x1-to-1x1-c1",
+   "sw": 3,
+   "sh": 1,
+   "tw": 1,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535305
+   }
+  },
+  {
+   "name": "box-2001x1-to-1000x1-ratio-2p001-c3",
+   "sw": 2001,
+   "sh": 1,
+   "tw": 1000,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535306
+   }
+  },
+  {
+   "name": "box-2001x1-to-1000x1-ratio-2p001-c1",
+   "sw": 2001,
+   "sh": 1,
+   "tw": 1000,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535307
+   }
+  },
+  {
+   "name": "box-1x2001-to-1x1000-ratio-2p001-c3",
+   "sw": 1,
+   "sh": 2001,
+   "tw": 1,
+   "th": 1000,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535308
+   }
+  },
+  {
+   "name": "box-1x2001-to-1x1000-ratio-2p001-c1",
+   "sw": 1,
+   "sh": 2001,
+   "tw": 1,
+   "th": 1000,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535309
+   }
+  },
+  {
+   "name": "box-1x8-to-1x2-c3",
+   "sw": 1,
+   "sh": 8,
+   "tw": 1,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 64
+   }
+  },
+  {
+   "name": "box-1x8-to-1x2-c1",
+   "sw": 1,
+   "sh": 8,
+   "tw": 1,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 65
+   }
+  },
+  {
+   "name": "box-8x1-to-2x1-c3",
+   "sw": 8,
+   "sh": 1,
+   "tw": 2,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 66
+   }
+  },
+  {
+   "name": "box-8x1-to-2x1-c1",
+   "sw": 8,
+   "sh": 1,
+   "tw": 2,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 67
+   }
+  },
+  {
+   "name": "box-1x4-to-1x1-c3",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 68
+   }
+  },
+  {
+   "name": "box-1x4-to-1x1-c1",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 69
+   }
+  },
+  {
+   "name": "box-6x2-to-2x1-c3",
+   "sw": 6,
+   "sh": 2,
+   "tw": 2,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 70
+   }
+  },
+  {
+   "name": "box-6x2-to-2x1-c1",
+   "sw": 6,
+   "sh": 2,
+   "tw": 2,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "mod",
+    "mul": 31,
+    "add": 71
+   }
+  },
+  {
+   "name": "box-257x131-to-16x9-c3",
+   "sw": 257,
+   "sh": 131,
+   "tw": 16,
+   "th": 9,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535318
+   }
+  },
+  {
+   "name": "box-257x131-to-16x9-c1",
+   "sw": 257,
+   "sh": 131,
+   "tw": 16,
+   "th": 9,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535319
+   }
+  },
+  {
+   "name": "box-all-255-sums-do-not-overflow-512x512-to-1x1-c3",
+   "sw": 512,
+   "sh": 512,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "checker"
+   }
+  },
+  {
+   "name": "box-all-255-sums-do-not-overflow-512x512-to-1x1-c1",
+   "sw": 512,
+   "sh": 512,
+   "tw": 1,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "checker"
+   }
+  },
+  {
+   "name": "box-1200x800-to-120x80-c3",
+   "sw": 1200,
+   "sh": 800,
+   "tw": 120,
+   "th": 80,
+   "channels": 3,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535320
+   }
+  },
+  {
+   "name": "box-1200x800-to-120x80-c1",
+   "sw": 1200,
+   "sh": 800,
+   "tw": 120,
+   "th": 80,
+   "channels": 1,
+   "source": {
+    "kind": "xorshift",
+    "seed": 2463535321
+   }
+  },
+  {
+   "name": "box-solid-40x40-to-8x8-keeps-bgr-order",
+   "sw": 40,
+   "sh": 40,
+   "tw": 8,
+   "th": 8,
+   "channels": 3,
+   "source": {
+    "kind": "solid_rgb",
+    "rgb": [
+     200,
+     100,
+     10
+    ]
+   }
+  },
+  {
+   "name": "same-solid-rgb-3x2",
+   "sw": 3,
+   "sh": 2,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid_rgb",
+    "rgb": [
+     200,
+     100,
+     10
+    ]
+   }
+  },
+  {
+   "name": "bilinear-solid-rgb-5x5-to-8x8",
+   "sw": 5,
+   "sh": 5,
+   "tw": 8,
+   "th": 8,
+   "channels": 3,
+   "source": {
+    "kind": "solid_rgb",
+    "rgb": [
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "name": "rgb-column-1x4-to-1x1",
+   "sw": 1,
+   "sh": 4,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     10,
+     100,
+     200,
+     20,
+     110,
+     190,
+     30,
+     120,
+     180,
+     40,
+     130,
+     170
+    ]
+   }
+  },
+  {
+   "name": "rgb-2x1-to-4x1",
+   "sw": 2,
+   "sh": 1,
+   "tw": 4,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     0,
+     0,
+     200,
+     100,
+     50
+    ]
+   }
+  },
+  {
+   "name": "gray-6x2-box-2x1",
+   "sw": 6,
+   "sh": 2,
+   "tw": 2,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     0,
+     0,
+     100,
+     100,
+     100,
+     30,
+     30,
+     30,
+     200,
+     200,
+     200
+    ]
+   }
+  },
+  {
+   "name": "gray-1x8-box-1x2",
+   "sw": 1,
+   "sh": 8,
+   "tw": 1,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     10,
+     20,
+     30,
+     40,
+     50,
+     60,
+     70,
+     80
+    ]
+   }
+  },
+  {
+   "name": "gray-same-2x2",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     0,
+     90,
+     180,
+     255
+    ]
+   }
+  },
+  {
+   "name": "rgb-same-2x2-reds",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     255,
+     0,
+     0,
+     0,
+     255,
+     0,
+     0,
+     0,
+     255,
+     10,
+     20,
+     30
+    ]
+   }
+  },
+  {
+   "name": "uniform-0-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-1x9-to-1x3-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-1x9-to-1x3-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-9x1-to-3x1-c1",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-9x1-to-3x1-c3",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-30x30-to-7x7-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-30x30-to-7x7-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-30x30-to-20x20-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-0-30x30-to-20x20-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 0
+   }
+  },
+  {
+   "name": "uniform-1-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-1x9-to-1x3-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-1x9-to-1x3-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-9x1-to-3x1-c1",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-9x1-to-3x1-c3",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-30x30-to-7x7-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-30x30-to-7x7-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-30x30-to-20x20-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-1-30x30-to-20x20-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 1
+   }
+  },
+  {
+   "name": "uniform-77-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-1x9-to-1x3-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-1x9-to-1x3-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-9x1-to-3x1-c1",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-9x1-to-3x1-c3",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-30x30-to-7x7-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-30x30-to-7x7-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-30x30-to-20x20-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-77-30x30-to-20x20-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 77
+   }
+  },
+  {
+   "name": "uniform-254-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-1x9-to-1x3-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-1x9-to-1x3-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-9x1-to-3x1-c1",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-9x1-to-3x1-c3",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-30x30-to-7x7-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-30x30-to-7x7-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-30x30-to-20x20-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-254-30x30-to-20x20-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 254
+   }
+  },
+  {
+   "name": "uniform-255-1x1-to-3x2-c1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-1x1-to-3x2-c3",
+   "sw": 1,
+   "sh": 1,
+   "tw": 3,
+   "th": 2,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-5x1-to-5x4-c1",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-5x1-to-5x4-c3",
+   "sw": 5,
+   "sh": 1,
+   "tw": 5,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-1x9-to-1x3-c1",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-1x9-to-1x3-c3",
+   "sw": 1,
+   "sh": 9,
+   "tw": 1,
+   "th": 3,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-9x1-to-3x1-c1",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-9x1-to-3x1-c3",
+   "sw": 9,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-30x30-to-7x7-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-30x30-to-7x7-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 7,
+   "th": 7,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-30x30-to-20x20-c1",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "uniform-255-30x30-to-20x20-c3",
+   "sw": 30,
+   "sh": 30,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 255
+   }
+  },
+  {
+   "name": "cancelled-same-1x1",
+   "sw": 1,
+   "sh": 1,
+   "tw": 1,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "cancelled-same-4x4",
+   "sw": 4,
+   "sh": 4,
+   "tw": 4,
+   "th": 4,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "cancelled-box-60x60-to-20x20",
+   "sw": 60,
+   "sh": 60,
+   "tw": 20,
+   "th": 20,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "cancelled-box-gray-8x1-to-2x1",
+   "sw": 8,
+   "sh": 1,
+   "tw": 2,
+   "th": 1,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "cancelled-bilinear-4x1-to-3x1",
+   "sw": 4,
+   "sh": 1,
+   "tw": 3,
+   "th": 1,
+   "channels": 3,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "cancelled-bilinear-up-1x1-to-2x2",
+   "sw": 1,
+   "sh": 1,
+   "tw": 2,
+   "th": 2,
+   "channels": 1,
+   "source": {
+    "kind": "solid",
+    "value": 5
+   },
+   "cancelled": true
+  },
+  {
+   "name": "unsupported-channels-0-same-size",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 0,
+   "source": {
+    "kind": "explicit",
+    "bytes": []
+   }
+  },
+  {
+   "name": "unsupported-channels-0-bilinear",
+   "sw": 2,
+   "sh": 2,
+   "tw": 3,
+   "th": 3,
+   "channels": 0,
+   "source": {
+    "kind": "explicit",
+    "bytes": []
+   }
+  },
+  {
+   "name": "unsupported-channels-2-same-size",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 2,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "name": "unsupported-channels-2-bilinear",
+   "sw": 2,
+   "sh": 2,
+   "tw": 3,
+   "th": 3,
+   "channels": 2,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "name": "unsupported-channels-4-same-size",
+   "sw": 2,
+   "sh": 2,
+   "tw": 2,
+   "th": 2,
+   "channels": 4,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  },
+  {
+   "name": "unsupported-channels-4-bilinear",
+   "sw": 2,
+   "sh": 2,
+   "tw": 3,
+   "th": 3,
+   "channels": 4,
+   "source": {
+    "kind": "explicit",
+    "bytes": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   }
+  }
+ ]
+}
