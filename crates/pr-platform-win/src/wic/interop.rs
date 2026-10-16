@@ -1139,9 +1139,26 @@ fn check_memory_length(len: u64) -> io::Result<usize> {
     usize::try_from(len).map_err(|_| argument_out_of_range("Stream length is out of range."))
 }
 
-/// Grows `bytes` to `new_len` zero bytes without aborting on allocation failure (`ERROR_OUTOFMEMORY`).
+/// .NET `Array.MaxLength` (`0x7FFFFFC7`): the largest `byte[]` a `MemoryStream` can allocate. Growing its buffer
+/// past it (`MemoryStream.EnsureCapacity` -> `new byte[n]`) throws `OutOfMemoryException` (`E_OUTOFMEMORY`) for
+/// any length in `0x7FFFFFC8..=int.MaxValue`, before anything changes (.NET 10 oracle: `SetLength(0x7FFFFFC8)`,
+/// a write ending at `0x7FFFFFD0`, a 0-byte write at position `0x7FFFFFC8`).
+const ARRAY_MAX_LENGTH: usize = 0x7FFF_FFC7;
+
+/// `new byte[new_len]` of .NET: above [`ARRAY_MAX_LENGTH`] -> `ERROR_OUTOFMEMORY` (`E_OUTOFMEMORY`) without
+/// trying to allocate.
+fn check_array_length(new_len: usize) -> io::Result<()> {
+    if new_len > ARRAY_MAX_LENGTH {
+        return Err(io::Error::from_raw_os_error(ERROR_OUTOFMEMORY));
+    }
+    Ok(())
+}
+
+/// Grows `bytes` to `new_len` zero bytes without aborting on allocation failure (`ERROR_OUTOFMEMORY`); a length
+/// above .NET `Array.MaxLength` is `ERROR_OUTOFMEMORY` too (see [`ARRAY_MAX_LENGTH`]), nothing changed.
 fn grow_zeroed(bytes: &mut Vec<u8>, new_len: usize) -> io::Result<()> {
     if new_len > bytes.len() {
+        check_array_length(new_len)?;
         bytes
             .try_reserve(new_len - bytes.len())
             .map_err(|_| io::Error::from_raw_os_error(ERROR_OUTOFMEMORY))?;
@@ -1830,5 +1847,20 @@ mod tests {
         })
         .join()
         .expect("apartment thread");
+    }
+
+    /// .NET `Array.MaxLength` boundary (repair round 3): `new byte[0x7FFFFFC7]` is allowed, one more is
+    /// `OutOfMemoryException`. Checked on the pure guard so the in-range edge needs no 2 GiB allocation.
+    #[test]
+    fn check_array_length_refuses_above_dotnet_array_max_length() {
+        assert_eq!(ARRAY_MAX_LENGTH, 0x7FFF_FFC7);
+        for ok in [0, 1, 0x7FFF_FFC6, 0x7FFF_FFC7] {
+            assert!(check_array_length(ok).is_ok(), "{ok:#X}");
+        }
+        for too_big in [0x7FFF_FFC8, 0x7FFF_FFFF, 0x8000_0000, usize::MAX] {
+            let error = check_array_length(too_big).expect_err("too big");
+            assert_eq!(error.raw_os_error(), Some(ERROR_OUTOFMEMORY), "{too_big:#X}");
+        }
+        assert_eq!(hresult_from_win32(ERROR_OUTOFMEMORY as u32), 0x8007_000E_u32 as i32);
     }
 }

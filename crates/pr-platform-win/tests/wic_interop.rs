@@ -2484,3 +2484,88 @@ fn inet_codes_are_file_not_found() {
         );
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Repair round 3 (verdict FAIL, docs/PARITY.md "Wave 4 open verdicts"): a growable `MemoryStream` cannot grow its
+// buffer past .NET `Array.MaxLength` (0x7FFFFFC7): `EnsureCapacity` -> `new byte[n]` throws
+// `OutOfMemoryException` (E_OUTOFMEMORY 0x8007000E) for any length in 0x7FFFFFC8..=int.MaxValue, nothing changed.
+// Expected values from the .NET 10 oracle (`new MemoryStream()`, `SetLength` / `Position` + `Write`).
+// ---------------------------------------------------------------------------------------------------------------
+
+const E_OUTOFMEMORY: i32 = 0x8007_000E_u32 as i32;
+
+/// Length, position and content of a growable stream (safe methods only).
+fn growable_state(s: &ComStream) -> (u64, u64) {
+    let length = s.stat().map(|st| st.cbSize).expect("stat");
+    let position = s.seek(0, 1).expect("position");
+    (length, position)
+}
+
+#[test]
+fn growable_set_size_above_array_max_length_is_out_of_memory_without_allocating() {
+    let s = growable_at_1();
+    // Oracle: SetLength(0x7FFFFFC8) and SetLength(0x7FFFFFFF) -> OutOfMemoryException 0x8007000E;
+    // SetLength(0x80000000) -> ArgumentOutOfRangeException (range check first).
+    for size in [0x7FFF_FFC8_u64, 0x7FFF_FFD0, 0x7FFF_FFFF] {
+        assert_eq!(hr_of(s.set_size(size)), Err(E_OUTOFMEMORY), "{size:#X}");
+        assert_eq!(growable_state(&s), (4, 1), "{size:#X}: nothing changed");
+    }
+    assert_eq!(hr_of(s.set_size(0x8000_0000)), Err(COR_E_ARGUMENTOUTOFRANGE));
+    assert_eq!(
+        exception_kind_for_hresult(E_OUTOFMEMORY),
+        Some(DotnetExceptionKind::OutOfMemory)
+    );
+    // Through the vtable: the fault is the OS error 14 (ERROR_OUTOFMEMORY).
+    let stream: IStream = s.istream();
+    assert_eq!(vt_set_size(stream.as_raw(), 0x7FFF_FFC8).0, E_OUTOFMEMORY);
+    match s.take_last_fault() {
+        Some(StreamFault::Io(error)) => assert_eq!(error.raw_os_error(), Some(14)),
+        other => panic!("expected Io(ERROR_OUTOFMEMORY), got {other:?}"),
+    }
+    assert_eq!(growable_state(&s), (4, 1));
+    // In-range sizes still work afterwards.
+    assert_eq!(hr_of(s.set_size(6)), Ok(()));
+    assert_eq!(growable_state(&s), (6, 1));
+}
+
+#[test]
+fn growable_write_ending_above_array_max_length_is_out_of_memory() {
+    let s = growable_at_1();
+    // Oracle: Position = 0x7FFFFFC0, Write(16 bytes) (ends at 0x7FFFFFD0) -> OutOfMemoryException.
+    assert_eq!(s.seek(0x7FFF_FFC0, 0).ok(), Some(0x7FFF_FFC0));
+    assert_eq!(hr_of(s.write(&[0u8; 16])), Err(E_OUTOFMEMORY));
+    assert_eq!(growable_state(&s), (4, 0x7FFF_FFC0), "nothing changed");
+    // Oracle: a 0-byte write at 0x7FFFFFC8 or at int.MaxValue grows the length: OutOfMemoryException too.
+    for position in [0x7FFF_FFC8_i64, 0x7FFF_FFFF] {
+        assert_eq!(s.seek(position, 0).ok(), Some(position as u64));
+        assert_eq!(hr_of(s.write(&[])), Err(E_OUTOFMEMORY), "{position:#X}");
+        assert_eq!(growable_state(&s), (4, position as u64));
+    }
+    // Oracle: Position = 0x7FFFFFF8, Write(16 bytes) (past int.MaxValue) stays IOException "Stream was too long".
+    assert_eq!(s.seek(0x7FFF_FFF8, 0).ok(), Some(0x7FFF_FFF8));
+    assert_eq!(hr_of(s.write(&[0u8; 16])), Err(COR_E_IO));
+    // Through the vtable: E_OUTOFMEMORY, the count pointer untouched.
+    assert_eq!(s.seek(0x7FFF_FFC5, 0).ok(), Some(0x7FFF_FFC5));
+    let stream: IStream = s.istream();
+    let mut pcb = SENTINEL_U32;
+    assert_eq!(
+        vt_write(stream.as_raw(), FOUR.as_ptr().cast(), 4, &mut pcb).0,
+        E_OUTOFMEMORY
+    );
+    assert_eq!(pcb, SENTINEL_U32);
+    assert_eq!(growable_state(&s), (4, 0x7FFF_FFC5));
+    // A write that does not grow the buffer is unaffected.
+    assert_eq!(s.seek(0, 0).ok(), Some(0));
+    assert_eq!(hr_of(s.write(&[9])), Ok(()));
+    assert_eq!(growable_state(&s), (4, 1));
+}
+
+/// Read-only memory: `EnsureWriteable` comes before `EnsureCapacity` (oracle: `SetLength(0x7FFFFFC8)` and a write
+/// at 0x7FFFFFC8 are `NotSupportedException`).
+#[test]
+fn read_only_above_array_max_length_stays_not_supported() {
+    let s = read_only_at_1();
+    assert_eq!(hr_of(s.set_size(0x7FFF_FFC8)), Err(COR_E_NOTSUPPORTED));
+    assert_eq!(s.seek(0x7FFF_FFC8, 0).ok(), Some(0x7FFF_FFC8));
+    assert_eq!(hr_of(s.write(&[1])), Err(COR_E_NOTSUPPORTED));
+}
