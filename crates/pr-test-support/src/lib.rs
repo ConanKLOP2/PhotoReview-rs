@@ -10,6 +10,7 @@ mod fake_ui;
 mod fault_injection_file_system;
 pub mod golden;
 mod hook_file_system;
+pub mod raw;
 mod recording_log;
 mod temp_root;
 
