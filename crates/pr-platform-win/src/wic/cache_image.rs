@@ -10,7 +10,6 @@
 //! block, every COM pointer released on every path by RAII guards; it uses W4-11a's wrappers).
 //!
 //! `DecodeBox` and the pixel types are the real `pr_imaging` ones (W4-01b, W4-16a).
-#![allow(unused_variables, dead_code)] // D11: only while a body is `todo!()`; the porter removes this line.
 
 use std::fmt;
 use std::io::Write;
@@ -125,23 +124,31 @@ pub const IMAGE_QUALITY_PROPERTY: &str = "ImageQuality";
 
 /// C# `WicImageEncoder.SourceFormat(layout)`: `Pbgra32` => 32bppPBGRA, everything else => 32bppBGR.
 pub fn source_format(layout: PixelLayout) -> Guid {
-    todo!("Pbgra32 => PIXEL_FORMAT_32BPP_PBGRA, else PIXEL_FORMAT_32BPP_BGR")
+    if layout == PixelLayout::Pbgra32 {
+        PIXEL_FORMAT_32BPP_PBGRA
+    } else {
+        PIXEL_FORMAT_32BPP_BGR
+    }
 }
 
 /// C# `WicCacheImageReader.IsOutOfMemory(COMException)`: `hresult == E_OUTOFMEMORY` and nothing else. A resource failure,
 /// never "corrupt entry".
 pub fn is_out_of_memory(hresult: i32) -> bool {
-    todo!("hresult == E_OUTOFMEMORY")
+    hresult == E_OUTOFMEMORY
 }
 
 /// C# `WicCacheImageReader.IsOpaqueFormat(format)`: exact 16-byte membership in [`OPAQUE_FORMATS`].
 pub fn is_opaque_format(format: &Guid) -> bool {
-    todo!("OPAQUE_FORMATS.contains(format)")
+    OPAQUE_FORMATS.contains(format)
 }
 
 /// The layout a payload decodes to when the caller asks for none: opaque frame => `Bgr32`, anything else => `Pbgra32`.
 pub fn target_layout(requested: Option<PixelLayout>, frame_format: &Guid) -> PixelLayout {
-    todo!("requested, else Bgr32 for an opaque frame format and Pbgra32 otherwise")
+    match requested {
+        Some(layout) => layout,
+        None if is_opaque_format(frame_format) => PixelLayout::Bgr32,
+        None => PixelLayout::Pbgra32,
+    }
 }
 
 /// Result of [`plan_decode`]: what the native path allocates and reports.
@@ -190,9 +197,12 @@ pub const INVALID_DATA_TOO_LARGE: &str = "Cache entry payload is implausibly lar
 
 impl fmt::Display for CacheImageError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!(
-            "InvalidData => the text; InsufficientMemory => \"Not enough memory to decode the cache entry.\"; Com => the HRESULT in hex"
-        )
+        match self {
+            Self::InvalidData(text) => f.write_str(text),
+            Self::Com { hresult } => write!(f, "WIC call failed (0x{:08X}).", *hresult as u32),
+            Self::InsufficientMemory { .. } => f.write_str("Not enough memory to decode the cache entry."),
+            Self::Pixels(error) => write!(f, "{error}"),
+        }
     }
 }
 
@@ -203,7 +213,11 @@ impl CacheImageError {
     /// decode again from the source); `InsufficientMemory` and `Pixels(OutOfMemory)` are not (the entry is kept and the
     /// error propagates).
     pub fn is_entry_failure(&self) -> bool {
-        todo!()
+        match self {
+            Self::InvalidData(_) | Self::Com { .. } => true,
+            Self::InsufficientMemory { .. } => false,
+            Self::Pixels(error) => !matches!(error, PixelBufferError::OutOfMemory { .. }),
+        }
     }
 }
 
@@ -222,7 +236,41 @@ pub fn plan_decode(
     expected_width: i32,
     expected_height: i32,
 ) -> Result<DecodePlan, CacheImageError> {
-    todo!()
+    if raw_width == 0 || raw_height == 0 || raw_width > i32::MAX as u32 || raw_height > i32::MAX as u32 {
+        return Err(CacheImageError::InvalidData(INVALID_DATA_DIMENSIONS));
+    }
+    // Both fit in `i32` now.
+    let source_width = raw_width as i32;
+    let source_height = raw_height as i32;
+    if expected_width > 0 && (source_width != expected_width || source_height != expected_height) {
+        return Err(CacheImageError::InvalidData(INVALID_DATA_HEADER_MISMATCH));
+    }
+    let (fit_width, fit_height) = if decode_box.is_unbounded() {
+        (source_width, source_height)
+    } else {
+        decode_box.fit_stored(source_width, source_height, false)
+    };
+    let downscaled = fit_width < source_width || fit_height < source_height;
+    let (width, height) = if downscaled {
+        (fit_width, fit_height)
+    } else {
+        (source_width, source_height)
+    };
+    // DIVERGENCE: C# checks the size after `CreateBitmapScaler`/`Initialize`; the plan checks it up front, so a failing
+    // scaler `Initialize` on an implausibly large final size reports `InvalidData` here and the COM error in C#.
+    // DIVERGENCE: the product is `u64`; C# `(long)w * h * 4` wraps negative for `i32::MAX` squared and passes the check
+    // (then `Allocate` fails). Rust reports `InvalidData(TOO_LARGE)` for it.
+    let bytes = (width as u64) * (height as u64) * 4;
+    if bytes > MAX_DECODED_BYTES as u64 {
+        return Err(CacheImageError::InvalidData(INVALID_DATA_TOO_LARGE));
+    }
+    Ok(DecodePlan {
+        source_width,
+        source_height,
+        width,
+        height,
+        downscaled,
+    })
 }
 
 /// How the encoder hands the pixels to `IWICBitmapFrameEncode` after `SetPixelFormat` (C# `Encode` branch).
@@ -240,18 +288,27 @@ pub enum EncodePath {
 /// C# branch after `SetPixelFormat(ref acceptedFormat)`: `accepted == source` => `Direct`; `accepted == 24bppBGR` =>
 /// `Bgr24Bands`; otherwise `WicConversion`. Exact 16-byte comparison.
 pub fn plan_encode_path(source_format: &Guid, accepted_format: &Guid) -> EncodePath {
-    todo!()
+    if accepted_format == source_format {
+        EncodePath::Direct
+    } else if *accepted_format == PIXEL_FORMAT_24BPP_BGR {
+        EncodePath::Bgr24Bands
+    } else {
+        EncodePath::WicConversion
+    }
 }
 
 /// C# `Math.Clamp(BandBytes / (width * 3), 1, height)`: rows per band of the BGRX -> BGR conversion.
 /// `width >= 1`, `height >= 1`.
 pub fn rows_per_band(width: i32, height: i32) -> i32 {
-    todo!()
+    let row_bytes = (i64::from(width) * 3).max(1);
+    let rows = BAND_BYTES as i64 / row_bytes;
+    // `Math.Clamp(rows, 1, height)`; `height >= 1` by contract (guard a bad caller instead of panicking).
+    rows.clamp(1, i64::from(height.max(1))) as i32
 }
 
 /// C# `quality / 100f`: the `ImageQuality` value written to the property bag (`VT_R4`).
 pub fn image_quality_value(quality: i32) -> f32 {
-    todo!("quality as f32 / 100.0")
+    quality as f32 / 100.0
 }
 
 /// Destination of [`bgrx32_to_bgr24`] is shorter than 3 bytes per source pixel (C# `ArgumentException`).
@@ -263,7 +320,7 @@ pub struct DestinationTooShort {
 
 impl fmt::Display for DestinationTooShort {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("\"Destination is too short.\"")
+        f.write_str("Destination is too short.")
     }
 }
 
@@ -278,7 +335,18 @@ impl std::error::Error for DestinationTooShort {}
 /// * The C# needs `+ 16` slack for its 16-byte vector stores; a safe Rust implementation does not (chunked scalar
 ///   copies auto-vectorise). Results are identical for every width.
 pub fn bgrx32_to_bgr24(source: &[u8], destination: &mut [u8]) -> Result<(), DestinationTooShort> {
-    todo!()
+    let pixel_count = source.len() / 4;
+    let required = pixel_count * 3;
+    if destination.len() < required {
+        return Err(DestinationTooShort {
+            required,
+            actual: destination.len(),
+        });
+    }
+    for (from, to) in source.chunks_exact(4).zip(destination.chunks_exact_mut(3)) {
+        to.copy_from_slice(&from[..3]);
+    }
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -304,7 +372,17 @@ pub enum EncodeError {
 
 impl fmt::Display for EncodeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::QualityOutOfRange { quality } => {
+                write!(f, "JPEG quality must be between 1 and 100 (was {quality}).")
+            }
+            Self::Disposed => f.write_str("Cannot access a disposed object (PixelBuffer)."),
+            Self::TooLarge { byte_count } => {
+                write!(f, "Pixel buffer is too large to encode ({byte_count} bytes).")
+            }
+            Self::Com { hresult } => write!(f, "WIC call failed (0x{:08X}).", *hresult as u32),
+            Self::Io(error) => write!(f, "Writing the encoded image failed: {error}"),
+        }
     }
 }
 
@@ -317,12 +395,52 @@ impl std::error::Error for EncodeError {}
 /// Order of checks: `quality` range, then disposed, then size. No partial file contract here: the caller
 /// (`AtomicCacheFile`) writes to a temp file and publishes atomically.
 pub fn encode_jpeg(pixels: &PixelBuffer, output: &mut dyn Write, quality: i32) -> Result<(), EncodeError> {
-    todo!()
+    if !(1..=100).contains(&quality) {
+        return Err(EncodeError::QualityOutOfRange { quality });
+    }
+    validate_pixels(pixels)?;
+    native::encode(pixels, output, &CONTAINER_FORMAT_JPEG, quality)
 }
 
 /// C# `WicImageEncoder.EncodePng`: PNG with WIC default options (no interlace), same parameters as `PngBitmapEncoder`.
 pub fn encode_png(pixels: &PixelBuffer, output: &mut dyn Write) -> Result<(), EncodeError> {
-    todo!()
+    validate_pixels(pixels)?;
+    native::encode(pixels, output, &CONTAINER_FORMAT_PNG, 0)
+}
+
+/// The managed checks of C# `Encode` after the quality range: disposed, then `byte_count > u32::MAX`.
+fn validate_pixels(pixels: &PixelBuffer) -> Result<(), EncodeError> {
+    if pixels.is_disposed() {
+        return Err(EncodeError::Disposed);
+    }
+    if pixels.byte_count() > i64::from(u32::MAX) {
+        return Err(EncodeError::TooLarge {
+            byte_count: pixels.byte_count(),
+        });
+    }
+    Ok(())
+}
+
+/// `windows` GUID of a `pr_core` [`Guid`] (.NET `ToByteArray()` order: the first three fields little-endian).
+pub(crate) fn guid_to_windows(guid: &Guid) -> windows_core::GUID {
+    let b = guid.0;
+    windows_core::GUID {
+        data1: u32::from_le_bytes([b[0], b[1], b[2], b[3]]),
+        data2: u16::from_le_bytes([b[4], b[5]]),
+        data3: u16::from_le_bytes([b[6], b[7]]),
+        data4: [b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]],
+    }
+}
+
+/// The `pr_core` [`Guid`] of a `windows` GUID (inverse of [`guid_to_windows`]).
+pub(crate) fn guid_from_windows(guid: &windows_core::GUID) -> Guid {
+    let a = guid.data1.to_le_bytes();
+    let b = guid.data2.to_le_bytes();
+    let c = guid.data3.to_le_bytes();
+    let d = guid.data4;
+    Guid([
+        a[0], a[1], a[2], a[3], b[0], b[1], c[0], c[1], d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
+    ])
 }
 
 /// C# `WicCacheImageReader.Decode`: decodes an in-memory JPEG/PNG cache payload into a NEW buffer the caller owns.
@@ -343,7 +461,10 @@ pub fn decode(
     expected_width: i32,
     expected_height: i32,
 ) -> Result<(PixelBuffer, WicCacheImageInfo), CacheImageError> {
-    todo!("empty check, then native::decode_payload")
+    if encoded.is_empty() {
+        return Err(CacheImageError::InvalidData(INVALID_DATA_EMPTY));
+    }
+    native::decode_payload(encoded, layout, decode_box, expected_width, expected_height)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -351,20 +472,47 @@ pub fn decode(
 // ---------------------------------------------------------------------------------------------------------------------
 
 pub(crate) mod native {
-    use super::{CacheImageError, DecodeBox, EncodeError, PixelBuffer, PixelLayout, WicCacheImageInfo};
+    use super::{
+        CacheImageError, DPI, DecodeBox, E_FAIL, EncodeError, EncodePath, IMAGE_QUALITY_PROPERTY,
+        INVALID_DATA_TOO_LARGE, PROPBAG2_TYPE_DATA, PixelBuffer, PixelLayout, VENDOR_MICROSOFT, VT_R4,
+        WIC_BITMAP_ENCODER_NO_CACHE, WicCacheImageInfo, bgrx32_to_bgr24, guid_from_windows, guid_to_windows,
+        image_quality_value, is_out_of_memory, plan_decode, plan_encode_path, rows_per_band, source_format,
+        target_layout,
+    };
+    use crate::wic::interop::{self, Com, ComStream, WicError};
     use pr_core::catalog::explorer_types::Guid;
-    use std::io::Write;
+    use std::io::{Cursor, Write};
+    use windows::Win32::Graphics::Imaging::{
+        IWICBitmap, IWICBitmapEncoder, IWICBitmapFrameEncode, IWICBitmapScaler, IWICPalette, WICBitmapDitherTypeNone,
+        WICBitmapEncoderCacheOption, WICBitmapInterpolationModeFant, WICBitmapPaletteTypeCustom,
+        WICDecodeMetadataCacheOnDemand,
+    };
+    use windows::Win32::System::Com::StructuredStorage::{IPropertyBag2, PROPBAG2};
+    use windows::Win32::System::Variant::{VARENUM, VARIANT};
+    use windows_core::PWSTR;
 
-    /// C# `PropBag2` (wincodec `PROPBAG2`): `ImageQuality` is written through it. Natural `repr(C)` layout, 8-byte aligned
-    /// pointer on x64. Delete this struct when the `windows` crate's `PROPBAG2` is used (contract, Depends on).
-    #[repr(C)]
-    pub(crate) struct PropBag2 {
-        pub dw_type: u32,
-        pub vt: u16,
-        pub cf_type: u16,
-        pub dw_hint: u32,
-        pub pstr_name: *mut u16,
-        pub clsid: [u8; 16],
+    /// C# `catch (COMException) when IsOutOfMemory(e)` => `InsufficientMemory`, every other failure => `Com`.
+    fn decode_error(error: &WicError) -> CacheImageError {
+        let hresult = error.hresult();
+        if is_out_of_memory(hresult) {
+            CacheImageError::InsufficientMemory { hresult }
+        } else {
+            CacheImageError::Com { hresult }
+        }
+    }
+
+    fn decode_com(error: &windows_core::Error) -> CacheImageError {
+        decode_error(&WicError::from_windows(error))
+    }
+
+    fn encode_error(error: &WicError) -> EncodeError {
+        EncodeError::Com {
+            hresult: error.hresult(),
+        }
+    }
+
+    fn encode_com(error: &windows_core::Error) -> EncodeError {
+        encode_error(&WicError::from_windows(error))
     }
 
     /// Steps of C# `Decode` after `plan_decode` is known (all objects released by guards on every path, in reverse order
@@ -389,16 +537,126 @@ pub(crate) mod native {
         expected_width: i32,
         expected_height: i32,
     ) -> Result<(PixelBuffer, WicCacheImageInfo), CacheImageError> {
-        todo!("W4-11a wrappers; see the doc comment for the exact call order")
+        // WIC's memory stream takes a 32-bit length; a payload this large is not a cache entry (C# spans are `int`).
+        if encoded.len() > u32::MAX as usize {
+            return Err(CacheImageError::InvalidData(INVALID_DATA_TOO_LARGE));
+        }
+        // Locals drop in reverse order of declaration: converter, scaler, frame, decoder, stream, factory.
+        let factory = interop::create_factory().map_err(|e| decode_error(&e))?;
+        let stream = interop::create_stream(&factory).map_err(|e| decode_error(&e))?;
+        // SAFETY: `stream` is a live `IWICStream`; `encoded` is borrowed for this whole function and `stream` (which keeps
+        // the pointer, the memory is not copied) is dropped before the function returns.
+        unsafe { stream.InitializeFromMemory(encoded) }.map_err(|e| decode_com(&e))?;
+        let decoder = interop::create_decoder_from_stream(&factory, &stream, WICDecodeMetadataCacheOnDemand)
+            .map_err(|e| decode_error(&e))?;
+        let frame = interop::get_frame(&decoder, 0).map_err(|e| decode_error(&e))?;
+
+        let (mut raw_width, mut raw_height) = (0u32, 0u32);
+        // SAFETY: `frame` is a live `IWICBitmapFrameDecode`; both out pointers are valid `u32` locals.
+        unsafe { frame.GetSize(&mut raw_width, &mut raw_height) }.map_err(|e| decode_com(&e))?;
+        // SAFETY: `frame` is a live `IWICBitmapFrameDecode`; `GetPixelFormat` has no pointer arguments.
+        let frame_format = unsafe { frame.GetPixelFormat() }.map_err(|e| decode_com(&e))?;
+        let plan = plan_decode(raw_width, raw_height, decode_box, expected_width, expected_height)?;
+        let target = target_layout(layout, &guid_from_windows(&frame_format));
+
+        let scaler: Option<Com<IWICBitmapScaler>> = if plan.downscaled {
+            let scaler = interop::create_bitmap_scaler(&factory).map_err(|e| decode_error(&e))?;
+            // SAFETY: `scaler` and `frame` are live COM objects owned by guards in this frame; the size is positive
+            // (`plan_decode` validated it).
+            unsafe {
+                scaler.Initialize(
+                    &*frame,
+                    plan.width as u32,
+                    plan.height as u32,
+                    WICBitmapInterpolationModeFant,
+                )
+            }
+            .map_err(|e| decode_com(&e))?;
+            Some(scaler)
+        } else {
+            None
+        };
+
+        let converter = interop::create_format_converter(&factory).map_err(|e| decode_error(&e))?;
+        let destination_format = guid_to_windows(&source_format(target));
+        // SAFETY: `converter` is a live `IWICFormatConverter`; its source (scaler or frame) is a live bitmap source owned
+        // by a guard that outlives the converter; `destination_format` outlives the call; the palette is a typed null.
+        let initialized = unsafe {
+            match &scaler {
+                Some(scaler) => converter.Initialize(
+                    &**scaler,
+                    &destination_format,
+                    WICBitmapDitherTypeNone,
+                    None::<&IWICPalette>,
+                    0.0,
+                    WICBitmapPaletteTypeCustom,
+                ),
+                None => converter.Initialize(
+                    &*frame,
+                    &destination_format,
+                    WICBitmapDitherTypeNone,
+                    None::<&IWICPalette>,
+                    0.0,
+                    WICBitmapPaletteTypeCustom,
+                ),
+            }
+        };
+        initialized.map_err(|e| decode_com(&e))?;
+
+        // Allocated only now (C# order); a failure below drops it (the C# `finally { pixels?.Dispose(); }`).
+        let mut pixels = PixelBuffer::allocate(plan.width, plan.height, target).map_err(CacheImageError::Pixels)?;
+        let stride = pixels.stride() as u32;
+        let target_bytes = pixels.bytes_mut().map_err(CacheImageError::Pixels)?;
+        // SAFETY: `converter` is initialised; `target_bytes` is exactly `stride * height` writable bytes owned by `pixels`,
+        // which outlives the call (the length fits `u32`: `plan_decode` limits it to `i32::MAX`); a null rect is the
+        // whole image.
+        unsafe { converter.CopyPixels(std::ptr::null(), stride, target_bytes) }.map_err(|e| decode_com(&e))?;
+
+        Ok((
+            pixels,
+            WicCacheImageInfo {
+                source_width: plan.source_width,
+                source_height: plan.source_height,
+                downscaled: plan.downscaled,
+            },
+        ))
+    }
+
+    /// Writes `ImageQuality` (`VT_R4`) into the encoder option bag (C# `WriteImageQuality`).
+    fn write_image_quality(options: &IPropertyBag2, quality: f32) -> Result<(), EncodeError> {
+        // NUL-terminated UTF-16 name that outlives the call (the C# string is CoTaskMem; any such buffer is fine).
+        let mut name: Vec<u16> = IMAGE_QUALITY_PROPERTY
+            .encode_utf16()
+            .chain(std::iter::once(0))
+            .collect();
+        let bag = PROPBAG2 {
+            dwType: PROPBAG2_TYPE_DATA,
+            vt: VARENUM(VT_R4),
+            pstrName: PWSTR(name.as_mut_ptr()),
+            ..PROPBAG2::default()
+        };
+        let mut variant = VARIANT::default();
+        // SAFETY: `variant` is a zeroed, owned VARIANT; writing the type tag and the `fltVal` member of the freshly
+        // initialised union is sound and `VT_R4` needs no cleanup.
+        unsafe {
+            let inner = &mut *variant.Anonymous.Anonymous;
+            inner.vt = VARENUM(VT_R4);
+            inner.Anonymous.fltVal = quality;
+        }
+        // SAFETY: `options` is a live `IPropertyBag2`; `bag` and `variant` are valid for one property and outlive the call,
+        // and `name` (referenced by `bag`) is alive until the end of this function.
+        let written = unsafe { options.Write(1, &bag, &variant) };
+        // Keep the VARIANT from running a destructor over the union: nothing to clear for VT_R4.
+        std::mem::forget(variant);
+        written.map_err(|e| encode_com(&e))
     }
 
     /// Steps of C# `Encode` (after validation): factory; `CreateEncoder(container, VENDOR_MICROSOFT)`;
     /// `Initialize(IStream adapter over output, WIC_BITMAP_ENCODER_NO_CACHE)`; `CreateNewFrame`; when `quality > 0` write
-    /// `ImageQuality` (`VT_R4`, `image_quality_value`) into the option bag through [`PropBag2`] and a 24-byte zeroed
-    /// VARIANT (type at byte 0, float at byte 8); `frame.Initialize(options)` (also for PNG, with the untouched bag);
-    /// `SetSize`; `SetResolution(DPI, DPI)`;
+    /// `ImageQuality` (`VT_R4`, `image_quality_value`) into the option bag; `frame.Initialize(options)` (also for PNG,
+    /// with the untouched bag); `SetSize`; `SetResolution(DPI, DPI)`;
     /// `SetPixelFormat(source_format)`; then by [`super::plan_encode_path`]: `WritePixels` of the whole buffer, or the
-    /// band loop of `bgrx32_to_bgr24` (one pooled band buffer of `rows_per_band * width * 3` bytes, reused), or a
+    /// band loop of `bgrx32_to_bgr24` (one band buffer of `rows_per_band * width * 3` bytes, reused), or a
     /// temporary `IWICBitmap` (`CreateBitmapFromMemory`) + `WriteSource`; then `frame.Commit()`, `encoder.Commit()`.
     /// Everything is released on every path; the pixel buffer stays alive until after `Commit`.
     pub(crate) fn encode(
@@ -407,6 +665,106 @@ pub(crate) mod native {
         container: &Guid,
         quality: i32,
     ) -> Result<(), EncodeError> {
-        todo!("W4-11a wrappers; see the doc comment for the exact call order")
+        // Contract note 10: WIC writes into an in-memory COM stream; the bytes are copied to `output` after `Commit`.
+        // Release order (reverse of declaration): options, frame, encoder, factory, stream.
+        let stream = ComStream::writable_memory();
+        let factory = interop::create_factory().map_err(|e| encode_error(&e))?;
+        let container_format = guid_to_windows(container);
+        let vendor = guid_to_windows(&VENDOR_MICROSOFT);
+        // SAFETY: `factory` is a live `IWICImagingFactory`; both GUID pointers are valid for the call.
+        let encoder: Com<IWICBitmapEncoder> =
+            Com::adopt(unsafe { factory.CreateEncoder(&container_format, &vendor) }).map_err(|e| encode_error(&e))?;
+        let istream = stream.istream();
+        // SAFETY: `encoder` is a live encoder; `istream` is a live COM stream (adapter over the owner's memory stream)
+        // that stays alive until the end of this function.
+        unsafe {
+            encoder.Initialize(
+                &istream,
+                WICBitmapEncoderCacheOption(WIC_BITMAP_ENCODER_NO_CACHE as i32),
+            )
+        }
+        .map_err(|e| encode_com(&e))?;
+
+        let mut frame_out: Option<IWICBitmapFrameEncode> = None;
+        let mut options_out: Option<IPropertyBag2> = None;
+        // SAFETY: `encoder` is initialised; both out pointers refer to valid `Option` locals.
+        unsafe { encoder.CreateNewFrame(&mut frame_out, &mut options_out) }.map_err(|e| encode_com(&e))?;
+        let frame = Com::adopt(frame_out.ok_or_else(windows_core::Error::empty)).map_err(|e| encode_error(&e))?;
+        let options = Com::adopt(options_out.ok_or_else(windows_core::Error::empty)).map_err(|e| encode_error(&e))?;
+
+        if quality > 0 {
+            write_image_quality(&options, image_quality_value(quality))?;
+        }
+        let width = pixels.width();
+        let height = pixels.height();
+        let layout_format = guid_to_windows(&source_format(pixels.layout()));
+        let mut accepted = layout_format;
+        // SAFETY: `frame` is a live frame encoder and `options` the bag it handed out; `accepted` is a valid in/out GUID.
+        unsafe {
+            frame.Initialize(&*options).map_err(|e| encode_com(&e))?;
+            frame.SetSize(width as u32, height as u32).map_err(|e| encode_com(&e))?;
+            frame.SetResolution(DPI, DPI).map_err(|e| encode_com(&e))?;
+            frame.SetPixelFormat(&mut accepted).map_err(|e| encode_com(&e))?;
+        }
+
+        let path = plan_encode_path(&guid_from_windows(&layout_format), &guid_from_windows(&accepted));
+        match path {
+            EncodePath::Direct => {
+                let bytes = pixels.bytes().map_err(|_| EncodeError::Disposed)?;
+                // SAFETY: `frame` is configured; `bytes` is the whole buffer (`height * stride` bytes, `<= u32::MAX`
+                // checked by the caller) and outlives the call.
+                unsafe { frame.WritePixels(height as u32, pixels.stride() as u32, bytes) }
+                    .map_err(|e| encode_com(&e))?;
+            }
+            EncodePath::Bgr24Bands => {
+                let row_bytes = width as usize * 3;
+                let rows_per = rows_per_band(width, height) as usize;
+                let mut band = vec![0u8; rows_per * row_bytes];
+                let total = height as usize;
+                let mut y = 0usize;
+                while y < total {
+                    let rows = rows_per.min(total - y);
+                    for r in 0..rows {
+                        let source = pixels.get_row((y + r) as i32).map_err(|_| EncodeError::Disposed)?;
+                        bgrx32_to_bgr24(source, &mut band[r * row_bytes..(r + 1) * row_bytes])
+                            .map_err(|_| EncodeError::Com { hresult: E_FAIL })?;
+                    }
+                    // SAFETY: `frame` is configured; the slice is `rows * row_bytes` initialised bytes of `band`.
+                    unsafe { frame.WritePixels(rows as u32, row_bytes as u32, &band[..rows * row_bytes]) }
+                        .map_err(|e| encode_com(&e))?;
+                    y += rows;
+                }
+            }
+            EncodePath::WicConversion => {
+                let bytes = pixels.bytes().map_err(|_| EncodeError::Disposed)?;
+                // SAFETY: `factory` is live; `layout_format` outlives the call; `bytes` is the whole buffer and is only
+                // read (WIC copies it into the temporary bitmap).
+                let bitmap: Com<IWICBitmap> = Com::adopt(unsafe {
+                    factory.CreateBitmapFromMemory(
+                        width as u32,
+                        height as u32,
+                        &layout_format,
+                        pixels.stride() as u32,
+                        bytes,
+                    )
+                })
+                .map_err(|e| encode_error(&e))?;
+                // SAFETY: `frame` is configured and `bitmap` is a live bitmap source; a null rect means the whole image.
+                unsafe { frame.WriteSource(&*bitmap, std::ptr::null()) }.map_err(|e| encode_com(&e))?;
+            }
+        }
+
+        // SAFETY: `frame` and `encoder` are live and fully written; `pixels` is borrowed until after the commits.
+        unsafe {
+            frame.Commit().map_err(|e| encode_com(&e))?;
+            encoder.Commit().map_err(|e| encode_com(&e))?;
+        }
+
+        let backend = stream.dispose().ok_or(EncodeError::Com { hresult: E_FAIL })?;
+        let payload = backend
+            .into_any()
+            .downcast::<Cursor<Vec<u8>>>()
+            .map_err(|_| EncodeError::Com { hresult: E_FAIL })?;
+        output.write_all(payload.get_ref()).map_err(EncodeError::Io)
     }
 }

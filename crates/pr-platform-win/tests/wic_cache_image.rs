@@ -62,6 +62,23 @@ fn pattern(width: i32, height: i32, layout: PixelLayout, seed: u64, alpha: bool)
     px
 }
 
+/// C# `LegacyWpfPreviewCache.Pattern(width, height, alpha: false)` as a `PixelBuffer`: the smooth gradient checkerboard
+/// (the C# `PatternPixels` of the quality and round-trip tests, unlike the noisy golden pattern).
+fn legacy_pattern_pixels(width: i32, height: i32, layout: PixelLayout) -> PixelBuffer {
+    let mut px = PixelBuffer::allocate(width, height, layout).expect("valid geometry");
+    for y in 0..height {
+        let row = px.get_row_mut(y).expect("not disposed");
+        for x in 0..width {
+            let i = x as usize * 4;
+            row[i] = (x * 255 / (width - 1).max(1)) as u8;
+            row[i + 1] = (y * 255 / (height - 1).max(1)) as u8;
+            row[i + 2] = ((((x / 8) + (y / 8)) % 2) * 200 + 28) as u8;
+            row[i + 3] = 255;
+        }
+    }
+    px
+}
+
 /// Colour channels that are part of the contract: B, G, R of every pixel for Bgr32 (byte 3 is WIC-defined), all four for Pbgra32.
 fn meaningful_bytes(px: &PixelBuffer) -> Vec<u8> {
     let channels = if px.layout() == PixelLayout::Pbgra32 { 4 } else { 3 };
@@ -201,12 +218,20 @@ fn jpeg_of(pixels: &PixelBuffer, quality: i32) -> Vec<u8> {
     out
 }
 
+/// `NativePixelMemory::live_count` is process-global: every test of this file runs under one lock so the live-count
+/// assertions are not disturbed by buffers other tests hold (the default test runner is multi-threaded).
+fn serial() -> std::sync::MutexGuard<'static, ()> {
+    static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    LOCK.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Pure tests
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[test]
 fn bgrx32_to_bgr24_drops_fourth_byte() {
+    let _serial = serial();
     // C#: WicImageEncoder.Bgrx32ToBgr24_DropsFourthByte (WicCacheImageIoTests). Theory rows 1, 3, 4, 5, 17, 64.
     for pixel_count in [1usize, 3, 4, 5, 17, 64] {
         let source: Vec<u8> = (0..pixel_count * 4)
@@ -235,6 +260,7 @@ fn bgrx32_to_bgr24_drops_fourth_byte() {
 
 #[test]
 fn bgrx32_to_bgr24_too_short_destination_throws() {
+    let _serial = serial();
     // C#: WicImageEncoder.Bgrx32ToBgr24_TooShortDestination_Throws (ArgumentException; here DestinationTooShort).
     let mut destination = vec![0xAAu8; 11];
     let result = bgrx32_to_bgr24(&[0u8; 16], &mut destination);
@@ -254,6 +280,7 @@ fn bgrx32_to_bgr24_too_short_destination_throws() {
 
 #[test]
 fn bgrx32_to_bgr24_golden_matches_csharp() {
+    let _serial = serial();
     // Golden: tests/golden/wic-bgrx-to-bgr.json (13 cases). Source byte i is 0xEE for the 4th byte of a pixel, else (i * 7 + 1).
     let golden = golden::load("wic-bgrx-to-bgr");
     let inputs = golden_input_cases("wic-bgrx-to-bgr");
@@ -286,6 +313,7 @@ fn bgrx32_to_bgr24_golden_matches_csharp() {
 
 #[test]
 fn encode_jpeg_quality_out_of_range_throws() {
+    let _serial = serial();
     // C#: WicImageEncoder.EncodeJpeg_QualityOutOfRange_Throws (rows 0, 101, -5): checked before anything else is touched.
     let pixels = pattern(16, 16, PixelLayout::Bgr32, 0, false);
     for quality in [0, 101, -5] {
@@ -300,6 +328,7 @@ fn encode_jpeg_quality_out_of_range_throws() {
 
 #[test]
 fn encode_bad_arguments_throw() {
+    let _serial = serial();
     // C#: WicImageEncoder.Encode_BadArguments_Throw, the disposed-buffer half (ObjectDisposedException => Disposed).
     // The `null` stream half has no Rust twin (contract note 1, documented in the file header).
     let mut pixels = pattern(8, 8, PixelLayout::Bgr32, 0, false);
@@ -312,6 +341,7 @@ fn encode_bad_arguments_throw() {
 
 #[test]
 fn is_out_of_memory_only_for_e_outofmemory() {
+    let _serial = serial();
     // C#: WicCacheImageReader.IsOutOfMemory_OnlyForEOutOfMemory. The COM exception itself is replaced by its HRESULT.
     assert!(is_out_of_memory(E_OUTOFMEMORY));
     assert!(is_out_of_memory(0x8007_000E_u32 as i32));
@@ -325,6 +355,7 @@ fn is_out_of_memory_only_for_e_outofmemory() {
 
 #[test]
 fn is_out_of_memory_golden_matches_csharp() {
+    let _serial = serial();
     // Golden: tests/golden/wic-cache-classify.json (24 cases): HRESULT classification and the opaque-format set.
     let golden = golden::load("wic-cache-classify");
     let inputs = golden_input_cases("wic-cache-classify");
@@ -344,6 +375,7 @@ fn is_out_of_memory_golden_matches_csharp() {
 
 #[test]
 fn opaque_formats_are_exactly_the_fourteen_listed_guids() {
+    let _serial = serial();
     // C#: WicCacheImageReader.OpaqueFormats (same list as WicDirectDecoder). Exact 16-byte membership, no prefix matching.
     assert_eq!(OPAQUE_FORMATS.len(), 14);
     assert!(is_opaque_format(&PIXEL_FORMAT_BLACK_WHITE));
@@ -367,6 +399,7 @@ fn opaque_formats_are_exactly_the_fourteen_listed_guids() {
 
 #[test]
 fn empty_payload_is_invalid_data_entry_failure() {
+    let _serial = serial();
     // C#: WicCacheImageReader.Decode of an empty payload, first half of EmptyOrGarbagePayload_IsEntryFailure
     // (InvalidDataException, a cache-entry failure). WIC must not be touched.
     let result = decode(&[], Some(PixelLayout::Bgr32), DecodeBox::UNBOUNDED, 0, 0);
@@ -380,6 +413,7 @@ fn empty_payload_is_invalid_data_entry_failure() {
 
 #[test]
 fn is_entry_failure_table() {
+    let _serial = serial();
     // Contract "New Rust tests": InvalidData and Com are entry failures; InsufficientMemory and Pixels(OutOfMemory) are not.
     use pr_imaging::pixels::PixelBufferError;
     assert!(CacheImageError::InvalidData(INVALID_DATA_EMPTY).is_entry_failure());
@@ -390,6 +424,7 @@ fn is_entry_failure_table() {
 
 #[test]
 fn error_display_texts_are_byte_identical_to_csharp() {
+    let _serial = serial();
     // Contract "New Rust tests": Display of every error variant; the four InvalidData texts are fixed (callers log them).
     assert_eq!(INVALID_DATA_EMPTY, "Cache entry payload is empty.");
     assert_eq!(INVALID_DATA_DIMENSIONS, "Cache entry payload has invalid dimensions.");
@@ -425,6 +460,7 @@ fn error_display_texts_are_byte_identical_to_csharp() {
 
 #[test]
 fn plan_decode_rejects_zero_and_oversized_dimensions() {
+    let _serial = serial();
     // Contract "New Rust tests": zero width/height, 0x8000_0000 and u32::MAX on each axis => INVALID_DATA_DIMENSIONS.
     let cases: [(u32, u32); 8] = [
         (0, 10),
@@ -446,6 +482,7 @@ fn plan_decode_rejects_zero_and_oversized_dimensions() {
 
 #[test]
 fn plan_decode_header_mismatch_in_either_axis_and_skipped_without_expected_width() {
+    let _serial = serial();
     // C#: WicCacheImageReader.Decode header check. Both dimensions compared; expected_height ignored when expected_width == 0.
     for (ew, eh) in [(31, 20), (32, 21), (31, 21)] {
         match plan_decode(32, 20, DecodeBox::UNBOUNDED, ew, eh) {
@@ -461,6 +498,7 @@ fn plan_decode_header_mismatch_in_either_axis_and_skipped_without_expected_width
 
 #[test]
 fn plan_decode_box_shrinks_400x200_to_100x50_downscaled() {
+    let _serial = serial();
     // Contract "New Rust tests": box (100, 0) on a 400x200 frame => 100x50, downscaled, source size reported.
     let plan = plan_decode(400, 200, DecodeBox::new(100, 0), 0, 0).expect("valid");
     assert_eq!(
@@ -477,6 +515,7 @@ fn plan_decode_box_shrinks_400x200_to_100x50_downscaled() {
 
 #[test]
 fn plan_decode_box_larger_than_frame_keeps_frame_size() {
+    let _serial = serial();
     // C# Box_ShrinksButNeverUpscales (the "same" half): a box larger than the frame never upscales.
     let plan = plan_decode(400, 200, DecodeBox::new(4000, 0), 0, 0).expect("valid");
     assert_eq!((plan.width, plan.height, plan.downscaled), (400, 200, false));
@@ -484,6 +523,7 @@ fn plan_decode_box_larger_than_frame_keeps_frame_size() {
 
 #[test]
 fn plan_decode_i32_max_square_is_accepted_when_shrunk_and_too_large_unbounded() {
+    let _serial = serial();
     // Contract "New Rust tests" (trap 3): i32::MAX square with a (1, 1) box is accepted; unbounded => TOO_LARGE, no panic.
     let max = i32::MAX as u32;
     assert!(plan_decode(max, max, DecodeBox::new(1, 1), 0, 0).is_ok());
@@ -495,6 +535,7 @@ fn plan_decode_i32_max_square_is_accepted_when_shrunk_and_too_large_unbounded() 
 
 #[test]
 fn plan_decode_max_square_unbounded_is_too_large_without_panic() {
+    let _serial = serial();
     // Contract trap 3: i32::MAX x i32::MAX unbounded => TOO_LARGE; the product is u64, so it must not overflow or panic.
     let result = plan_decode(i32::MAX as u32, i32::MAX as u32, DecodeBox::UNBOUNDED, 0, 0);
     assert!(matches!(
@@ -506,6 +547,7 @@ fn plan_decode_max_square_unbounded_is_too_large_without_panic() {
 
 #[test]
 fn plan_encode_path_table() {
+    let _serial = serial();
     // Contract "New Rust tests": accepted == source => Direct; accepted == 24bppBGR => Bgr24Bands; other => WicConversion.
     assert_eq!(
         plan_encode_path(&PIXEL_FORMAT_32BPP_BGR, &PIXEL_FORMAT_32BPP_BGR),
@@ -527,6 +569,7 @@ fn plan_encode_path_table() {
 
 #[test]
 fn rows_per_band_table() {
+    let _serial = serial();
     // Contract "New Rust tests": 1x1; width 87 382 => 1 row (quotient 0 clamped); height smaller than the quotient;
     // width BAND_BYTES / 3 => 1 row.
     assert_eq!(rows_per_band(1, 1), 1);
@@ -542,6 +585,7 @@ fn rows_per_band_table() {
 
 #[test]
 fn source_format_and_target_layout() {
+    let _serial = serial();
     // C# WicImageEncoder.SourceFormat and WicCacheImageReader target layout (contract note 3 (d)).
     assert_eq!(source_format(PixelLayout::Pbgra32), PIXEL_FORMAT_32BPP_PBGRA);
     assert_eq!(source_format(PixelLayout::Bgr32), PIXEL_FORMAT_32BPP_BGR);
@@ -568,6 +612,7 @@ fn source_format_and_target_layout() {
 
 #[test]
 fn container_and_pixel_format_guids_match_wincodec_h() {
+    let _serial = serial();
     // Contract "New Rust tests": each constant against its textual GUID (wincodec.h) and against wic::interop::guids.
     assert_eq!(
         CONTAINER_FORMAT_JPEG,
@@ -603,6 +648,7 @@ fn container_and_pixel_format_guids_match_wincodec_h() {
 
 #[test]
 fn golden_cache_codec_quality_errors_are_pure() {
+    let _serial = serial();
     // Golden wic-cache-codec rows jpeg-quality-{zero,101,negative}-throws: encodeThrows ArgumentOutOfRangeException (pure).
     let golden = golden::load("wic-cache-codec");
     let pixels = pattern(16, 16, PixelLayout::Bgr32, 0, false);
@@ -637,8 +683,11 @@ fn golden_cache_codec_quality_errors_are_pure() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn encode_jpeg_quality_changes_payload() {
+    let _serial = serial();
     // C#: WicImageEncoder.EncodeJpeg_QualityChangesPayload: q95 bigger than q30 and PSNR higher by more than 1 dB.
-    let pixels = pattern(200, 120, PixelLayout::Bgr32, 0, false);
+    // C# uses `LegacyWpfPreviewCache.PatternPixels` (the smooth checkerboard): on the noisy golden pattern both
+    // qualities are equally bad and the PSNR gap vanishes.
+    let pixels = legacy_pattern_pixels(200, 120, PixelLayout::Bgr32);
     let low = jpeg_of(&pixels, 30);
     let high = jpeg_of(&pixels, 95);
     assert!(
@@ -661,6 +710,7 @@ fn encode_jpeg_quality_changes_payload() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn opaque_png_round_trips_as_bgr32() {
+    let _serial = serial();
     // C#: WicCacheImageIoTests.OpaquePng_RoundTrips_AsBgr32: pixel for pixel, Bgr32 when no layout is requested.
     let pixels = pattern(37, 23, PixelLayout::Bgr32, 0, false);
     let png = png_of(&pixels);
@@ -680,6 +730,7 @@ fn opaque_png_round_trips_as_bgr32() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn alpha_png_decodes_as_pbgra32_with_alpha_kept() {
+    let _serial = serial();
     // C#: WicCacheImageIoTests.AlphaPng_DecodesAsPbgra32_WithAlphaKept.
     let pixels = pattern(40, 8, PixelLayout::Pbgra32, 0, true);
     let png = png_of(&pixels);
@@ -693,6 +744,7 @@ fn alpha_png_decodes_as_pbgra32_with_alpha_kept() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn box_shrinks_but_never_upscales() {
+    let _serial = serial();
     // C#: WicCacheImageIoTests.Box_ShrinksButNeverUpscales.
     let pixels = pattern(400, 200, PixelLayout::Bgr32, 0, false);
     let png = png_of(&pixels);
@@ -712,6 +764,7 @@ fn box_shrinks_but_never_upscales() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn expected_size_mismatch_throws() {
+    let _serial = serial();
     // C#: WicCacheImageIoTests.ExpectedSizeMismatch_Throws (31x20 and 32x21 against a 32x20 frame), real PNG header.
     let png = png_of(&pattern(32, 20, PixelLayout::Bgr32, 0, false));
     for (ew, eh) in [(31, 20), (32, 21)] {
@@ -725,6 +778,7 @@ fn expected_size_mismatch_throws() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn box_one_pixel_strip_is_shrunk_by_width() {
+    let _serial = serial();
     // C#: WicCacheImageIoTests.Box_OnePixelStrip_IsShrunkByWidth: a 1000x1 strip with a 500-wide box is 500x1, downscaled.
     let png = png_of(&pattern(1000, 1, PixelLayout::Bgr32, 0, false));
 
@@ -737,6 +791,7 @@ fn box_one_pixel_strip_is_shrunk_by_width() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn garbage_payload_is_com_entry_failure() {
+    let _serial = serial();
     // C#: EmptyOrGarbagePayload_IsEntryFailure, garbage half through WIC: Com (entry failure), never InvalidData.
     for payload in [
         vec![0u8; 64],
@@ -755,14 +810,16 @@ fn garbage_payload_is_com_entry_failure() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn encode_png_error_path_leaks_nothing() {
+    let _serial = serial();
     // Contract "Done when": leak test after an error path in encode_png (live pixel count and COM counter balanced).
     use pr_imaging::pixel_memory::NativePixelMemory;
     use pr_platform_win::wic::interop::outstanding_on_this_thread;
     let mut pixels = pattern(8, 8, PixelLayout::Bgr32, 0, false);
+    // The buffer is freed first: the baseline is taken after that, so the encode call itself must change nothing.
+    pixels.dispose();
     let live_before = NativePixelMemory::live_count();
     let com_before = outstanding_on_this_thread();
 
-    pixels.dispose();
     let mut out = Vec::new();
     let _ = encode_png(&pixels, &mut out);
 
@@ -773,6 +830,7 @@ fn encode_png_error_path_leaks_nothing() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn cache_encode_decode_balanced() {
+    let _serial = serial();
     // C#: WicLifetimeBalanceTests.CacheEncodeDecodeAndScale_Balanced (encode JPEG, encode PNG opaque and with alpha, decode
     // unbounded / box / garbage). Every COM wrapper created is released: the outstanding counter returns to its start.
     use pr_platform_win::wic::interop::outstanding_on_this_thread;
@@ -794,27 +852,32 @@ fn cache_encode_decode_balanced() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn encode_jpeg_and_decode_are_pinned_by_golden_hash() {
+    let _serial = serial();
     // Golden: tests/golden/wic-cache-codec.json (31 cases). Replays each case: encode (length and FNV of the payload), decode
     // (size, layout, FNV of the meaningful bytes, source size, downscaled) or the expected exception family.
+    // The golden outputs do not repeat the inputs: the pattern, quality, payload, layout, box and expected size come from
+    // tests/golden-inputs/wic-cache-codec.json (by case name); the expected results come from the golden.
     let golden = golden::load("wic-cache-codec");
+    let inputs = golden_input_cases("wic-cache-codec");
     for case in &golden.cases {
         let name = str_of(case, "name");
-        let payload: Vec<u8> = if let Some(hex) = case["payloadHex"].as_str() {
+        let input = golden_input(&inputs, name);
+        let payload: Vec<u8> = if let Some(hex) = input["payloadHex"].as_str() {
             hex_decode(hex)
         } else {
-            let layout = layout_of(str_of(case, "layout"));
-            let seed = case["seed"].as_u64().unwrap_or(0);
-            let alpha = case["alpha"].as_bool().unwrap_or(false);
+            let layout = layout_of(str_of(&input, "layout"));
+            let seed = input["seed"].as_u64().unwrap_or(0);
+            let alpha = input["alpha"].as_bool().unwrap_or(false);
             let pixels = pattern(
-                i64_of(case, "width") as i32,
-                i64_of(case, "height") as i32,
+                i64_of(&input, "width") as i32,
+                i64_of(&input, "height") as i32,
                 layout,
                 seed,
                 alpha,
             );
-            let encoded = match str_of(case, "encode") {
+            let encoded = match str_of(&input, "encode") {
                 "jpeg" => {
-                    let quality = case["quality"].as_i64().unwrap_or(90) as i32;
+                    let quality = input["quality"].as_i64().unwrap_or(90) as i32;
                     let mut out = Vec::new();
                     encode_jpeg(&pixels, &mut out, quality).map(|()| out)
                 }
@@ -838,12 +901,12 @@ fn encode_jpeg_and_decode_are_pinned_by_golden_hash() {
             }
         };
 
-        let decode_layout = case["decodeLayout"].as_str().map(layout_of);
-        let box_ = match case["box"].as_array() {
+        let decode_layout = input["decodeLayout"].as_str().map(layout_of);
+        let box_ = match input["box"].as_array() {
             Some(b) => DecodeBox::new(b[0].as_i64().unwrap_or(0) as i32, b[1].as_i64().unwrap_or(0) as i32),
             None => DecodeBox::UNBOUNDED,
         };
-        let (ew, eh) = match case["expected"].as_array() {
+        let (ew, eh) = match input["expected"].as_array() {
             Some(e) => (e[0].as_i64().unwrap_or(0) as i32, e[1].as_i64().unwrap_or(0) as i32),
             None => (0, 0),
         };
@@ -886,6 +949,7 @@ fn encode_jpeg_and_decode_are_pinned_by_golden_hash() {
 
 #[test]
 fn plan_decode_golden_row_shapes_are_pure() {
+    let _serial = serial();
     // The box rows of the codec golden (box (100,0), (4000,0), (0,50), (100,100), (500,0), (64,32), (20,0)) are pure decisions of
     // plan_decode: the source size, box and expected size come from tests/golden-inputs, the result from tests/golden.
     let golden = golden::load("wic-cache-codec");
@@ -920,9 +984,40 @@ fn plan_decode_golden_row_shapes_are_pure() {
 
 #[test]
 fn decode_empty_returns_invalid_data_without_wic() {
+    let _serial = serial();
     // Contract "New Rust tests": decode(&[]) is InvalidData(EMPTY) without WIC (the pure check runs first).
     match decode(&[], None, DecodeBox::UNBOUNDED, 0, 0) {
         Err(CacheImageError::InvalidData(text)) => assert_eq!(text, INVALID_DATA_EMPTY),
         other => panic!("expected InvalidData(EMPTY), got {other:?}"),
     }
+}
+
+#[test]
+#[ignore = "native: needs WIC"]
+fn decode_and_encode_jpeg_error_paths_leak_nothing() {
+    // Contract "Done when": the live pixel count and the COM counter are back at their start after an error path of `decode`
+    // (garbage payload, header mismatch after the frame was opened, box shrink of a truncated entry) and of `encode_jpeg`.
+    let _serial = serial();
+    use pr_imaging::pixel_memory::NativePixelMemory;
+    use pr_platform_win::wic::interop::outstanding_on_this_thread;
+    let source = pattern(32, 20, PixelLayout::Bgr32, 0, false);
+    let png = png_of(&source);
+    let live_before = NativePixelMemory::live_count();
+    let com_before = outstanding_on_this_thread();
+
+    assert!(decode(&[9, 9, 9, 9], None, DecodeBox::UNBOUNDED, 0, 0).is_err());
+    assert!(matches!(
+        decode(&png, None, DecodeBox::UNBOUNDED, 31, 20),
+        Err(CacheImageError::InvalidData(INVALID_DATA_HEADER_MISMATCH))
+    ));
+    // A truncated PNG may decode (WIC reads lazily) or fail: either way nothing may leak.
+    let _ = decode(&png[..png.len() / 2], None, DecodeBox::new(16, 0), 0, 0);
+    let mut out = Vec::new();
+    assert!(matches!(
+        encode_jpeg(&source, &mut out, 0),
+        Err(EncodeError::QualityOutOfRange { .. })
+    ));
+
+    assert_eq!(NativePixelMemory::live_count(), live_before);
+    assert_eq!(outstanding_on_this_thread(), com_before);
 }

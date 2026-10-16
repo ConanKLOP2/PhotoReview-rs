@@ -47,16 +47,23 @@ fn pattern(width: i32, height: i32, layout: PixelLayout, seed: u64, alpha: bool)
     px
 }
 
-/// A smooth, photo-like gradient (Bgr32): the size comparison of a real photo is meaningful, unlike the noisy golden pattern.
+/// A photo-like source (Bgr32): the C# `CreatePhotoLikeBitmap` is a gradient checkerboard with +-16 of per-channel noise, so a
+/// PNG cannot predict it away and the JPEG is smaller. The noise here is a fixed LCG (deterministic, no RNG dependency).
 fn gradient(width: i32, height: i32) -> PixelBuffer {
     let mut px = PixelBuffer::allocate(width, height, PixelLayout::Bgr32).expect("valid geometry");
+    let mut state: u32 = 2024;
+    let mut noise = move || {
+        state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+        ((state >> 24) % 32) as i32 - 16
+    };
     for y in 0..height {
         let row = px.get_row_mut(y).expect("not disposed");
         for x in 0..width {
             let i = x as usize * 4;
-            row[i] = (x * 255 / width.max(1)) as u8;
-            row[i + 1] = (y * 255 / height.max(1)) as u8;
-            row[i + 2] = ((x + y) & 0xFF) as u8;
+            let base = [x * 255 / width.max(1), y * 255 / height.max(1), (x + y) & 0xFF];
+            for (c, value) in base.into_iter().enumerate() {
+                row[i + c] = (value + noise()).clamp(0, 255) as u8;
+            }
             row[i + 3] = 255;
         }
     }

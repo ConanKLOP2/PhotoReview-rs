@@ -99,12 +99,20 @@ fn input_case(name: &str) -> serde_json::Value {
         .unwrap_or_else(|| panic!("golden input {name} missing"))
 }
 
+/// `NativePixelMemory::live_count` is process-global: every test of this file runs under one lock so the live-count
+/// assertions are not disturbed by buffers other tests hold (the default test runner is multi-threaded).
+fn serial() -> std::sync::MutexGuard<'static, ()> {
+    static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    LOCK.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Pure tests
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[test]
 fn plan_resize_checks_run_in_contract_order() {
+    let _serial = serial();
     // Contract note 2 and the "New Rust tests" list: disposed before width, width before height, byte_count last.
     // C#: WicPixelScaler.Resize check order (ObjectDisposedException, ArgumentOutOfRangeException x2, ArgumentException).
     assert_eq!(
@@ -145,6 +153,7 @@ fn plan_resize_checks_run_in_contract_order() {
 
 #[test]
 fn plan_resize_same_size_is_copy_else_wic() {
+    let _serial = serial();
     // Contract note 2: width == source.width && height == source.height is a COPY; everything else, enlargement included, is WIC.
     assert_eq!(plan_resize(false, 17, 9, 17 * 9 * 4, 17, 9), Ok(ResizePlan::Copy));
     assert_eq!(
@@ -161,6 +170,7 @@ fn plan_resize_same_size_is_copy_else_wic() {
 
 #[test]
 fn resize_same_size_is_a_copy() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_SameSize_IsACopy: an independent buffer with the same bytes (no WIC call).
     let source = pattern(17, 9, PixelLayout::Bgr32, 2, false);
 
@@ -179,6 +189,7 @@ fn resize_same_size_is_a_copy() {
 
 #[test]
 fn resize_invalid_arguments_throw_and_leak_nothing() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_InvalidArguments_Throw_AndLeakNothing (the ArgumentNullException half has no Rust twin).
     let before = NativePixelMemory::live_count();
     let mut source = PixelBuffer::allocate(4, 4, PixelLayout::Bgr32).expect("valid geometry");
@@ -198,6 +209,7 @@ fn resize_invalid_arguments_throw_and_leak_nothing() {
 
 #[test]
 fn golden_wic_scale_resize_checks_and_copy_plan_are_pure() {
+    let _serial = serial();
     // Golden wic-scale-resize: the throw rows are pure decisions of plan_resize; a sameAsSource row is a Copy plan, every other
     // non-throwing row a Wic plan. Inputs come from tests/golden-inputs/wic-scale-resize.json.
     let golden = golden::load("wic-scale-resize");
@@ -239,6 +251,7 @@ fn golden_wic_scale_resize_checks_and_copy_plan_are_pure() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn resize_produces_requested_size_and_layout() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_ProducesRequestedSize_AndLayout (three rows).
     for (layout, sw, sh, tw, th) in [
         (PixelLayout::Bgr32, 64, 48, 16, 12),
@@ -258,6 +271,7 @@ fn resize_produces_requested_size_and_layout() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn resize_flat_colour_stays_flat() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_FlatColour_StaysFlat: no edge bleed, no channel swap.
     let mut source = PixelBuffer::allocate(40, 30, PixelLayout::Bgr32).expect("valid geometry");
     for y in 0..30 {
@@ -285,6 +299,7 @@ fn resize_flat_colour_stays_flat() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn resize_pbgra_keeps_alpha() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_Pbgra_KeepsAlpha: premultiplied alpha survives the Fant scaler.
     let mut source = PixelBuffer::allocate(8, 8, PixelLayout::Pbgra32).expect("valid geometry");
     for y in 0..8 {
@@ -307,6 +322,7 @@ fn resize_pbgra_keeps_alpha() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn resize_holds_only_the_result() {
+    let _serial = serial();
     // C#: WicPixelScalerTests.Resize_HoldsOnlyTheResult: live pixel count +1 while the result lives, then back.
     let source = pattern(32, 32, PixelLayout::Bgr32, 1, false);
     let before = NativePixelMemory::live_count();
@@ -321,6 +337,7 @@ fn resize_holds_only_the_result() {
 #[test]
 #[ignore = "native: needs WIC"]
 fn golden_wic_scale_resize_matches_csharp() {
+    let _serial = serial();
     // Golden wic-scale-resize.json (15 cases). Successful rows: size, layout, FNV of the meaningful bytes, same-as-source
     // (bytes equal) and distinct buffer. The C# `Resize_EqualsWpfScaleTransform` is replaced by the fnv column.
     let golden = golden::load("wic-scale-resize");
