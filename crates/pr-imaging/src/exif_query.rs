@@ -350,4 +350,27 @@ mod tests {
         assert_eq!(as_string(Some(&QueryValue::I32(5))), None);
         assert_eq!(as_string(None), None);
     }
+
+    // Mutation kill (no C# twin): the roots are the literal strings WIC expects.
+    #[test]
+    fn ifd_roots_and_paths_are_the_wic_literals() {
+        assert_eq!(JPEG_IFD_ROOT, "/app1/ifd");
+        assert_eq!(TIFF_IFD_ROOT, "/ifd");
+        assert_eq!(ifd0_path("/r", 271), "/r/{ushort=271}");
+        assert_eq!(exif_path("/r", 33434), "/r/exif/{ushort=33434}");
+    }
+
+    // Mutation kill (no C# twin): the CLR reinterpretation of negative arrays is invisible through `read` for `int[]`
+    // (ISO is dropped either way), so pin it directly; scalars keep their sign and large u32 stays unsigned.
+    #[test]
+    fn as_integer_negative_arrays_are_read_unsigned_scalars_keep_sign() {
+        assert_eq!(integer(QueryValue::I16s(vec![-1])), Some(65_535));
+        assert_eq!(integer(QueryValue::I32s(vec![-400])), Some(4_294_966_896));
+        assert_eq!(integer(QueryValue::I16(-1)), Some(-1));
+        assert_eq!(integer(QueryValue::I32(-400)), Some(-400));
+        assert_eq!(integer(QueryValue::U32(3_000_000_000)), Some(3_000_000_000));
+        assert_eq!(integer(QueryValue::U32s(vec![3_000_000_000])), Some(3_000_000_000));
+        assert_eq!(integer(QueryValue::U64(5)), None);
+        assert_eq!(integer(QueryValue::I64s(vec![5])), None);
+    }
 }
