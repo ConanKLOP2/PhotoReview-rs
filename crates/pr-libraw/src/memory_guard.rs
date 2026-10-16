@@ -6,8 +6,6 @@
 //! arithmetic and string matching: no FFI, no `unsafe`, no OS query, no dependency. The comparison with the free memory is NOT here:
 //! the caller passes the estimate to `pr_imaging::memory_headroom::has_headroom` (W4-07b), fed by a `MemoryInfoSource`.
 
-#![allow(unused_variables, unused_imports, dead_code)] // D11: remove with the last todo!()
-
 /// LibRaw's working image (4 x 16-bit channels), alive until the handle is closed (C# `WorkingImageBytesPerPixel`).
 pub const WORKING_IMAGE_BYTES_PER_PIXEL: i64 = 8;
 /// The 8-bit RGB output buffer (`libraw_dcraw_make_mem_image`) that coexists with the working image (C# `RgbOutputBytesPerPixel`).
@@ -35,7 +33,11 @@ pub enum RawBufferFamily {
 impl RawBufferFamily {
     /// Bytes per sensor pixel of the unpacked raw buffer (the `switch` of C# `EstimatePeakBytes`).
     pub fn raw_bytes_per_pixel(self) -> i64 {
-        todo!("Bayer 2, Linear 8, Float 24")
+        match self {
+            Self::Bayer => BAYER_RAW_BYTES_PER_PIXEL,
+            Self::Linear => LINEAR_RAW_BYTES_PER_PIXEL,
+            Self::Float => FLOAT_RAW_BYTES_PER_PIXEL,
+        }
     }
 }
 
@@ -54,7 +56,7 @@ impl RawStructure {
 
     /// C# `IsBayer`: a mosaic (`filters != 0`) of 1 to 4 colours (inclusive): LibRaw keeps a single 16-bit sample per pixel.
     pub fn is_bayer(&self) -> bool {
-        todo!("self.filters != 0 && (1..=4).contains(&self.colors)")
+        self.filters != 0 && (1..=4).contains(&self.colors)
     }
 }
 
@@ -66,7 +68,22 @@ impl RawStructure {
 /// (`str::contains`; no `to_lowercase`, no trimming). `uncompressed_fp_dng_load_raw()` contains `_fp_dng` only, `deflate_fp_dng_load_raw()`
 /// contains both `_fp_dng` and no `deflate_dng`: the Float test runs FIRST and the DNG family names never overlap it.
 pub fn classify(decoder_name: Option<&str>, structure: Option<RawStructure>) -> RawBufferFamily {
-    todo!("see doc comment")
+    let Some(name) = decoder_name else {
+        return RawBufferFamily::Bayer;
+    };
+    if name.contains("_fp_dng") {
+        return RawBufferFamily::Float;
+    }
+    let dng = ["deflate_dng", "lossless_dng", "packed_dng", "lossy_dng"]
+        .iter()
+        .any(|n| name.contains(n));
+    if dng {
+        return match structure {
+            Some(s) if s.is_bayer() => RawBufferFamily::Bayer,
+            _ => RawBufferFamily::Linear,
+        };
+    }
+    RawBufferFamily::Bayer
 }
 
 /// C# `EstimatePeakBytes` with every optional argument supplied (`raw_width` / `raw_height` = 0 and `RawBufferFamily::Bayer` are the C# defaults).
@@ -84,11 +101,24 @@ pub fn estimate_peak_bytes(
     raw_height: i32,
     family: RawBufferFamily,
 ) -> i64 {
-    todo!("see doc comment")
+    if width <= 0 || height <= 0 {
+        return 0;
+    }
+    let (w, h) = (width as u128, height as u128);
+    let source = w * h * ((WORKING_IMAGE_BYTES_PER_PIXEL + RGB_OUTPUT_BYTES_PER_PIXEL) as u128);
+    let raw_pixels = if raw_width > 0 && raw_height > 0 {
+        (raw_width as u128) * (raw_height as u128)
+    } else {
+        w * h
+    };
+    let raw = raw_pixels * (family.raw_bytes_per_pixel() as u128);
+    let target = (target_width.max(0) as u128) * (target_height.max(0) as u128) * (BITMAP_BYTES_PER_PIXEL as u128);
+    let total = source + raw + target;
+    i64::try_from(total).unwrap_or(i64::MAX)
 }
 
 /// The C# call with the defaults `rawWidth = 0, rawHeight = 0, family = Bayer` (tests call `EstimatePeakBytes(w, h, tw, th)`): the raw buffer is
 /// sized from the OUTPUT size at 2 B/px. Equals `estimate_peak_bytes(width, height, target_width, target_height, 0, 0, RawBufferFamily::Bayer)`.
 pub fn estimate_peak_bytes_output_sized(width: i32, height: i32, target_width: i32, target_height: i32) -> i64 {
-    todo!("delegate to estimate_peak_bytes")
+    estimate_peak_bytes(width, height, target_width, target_height, 0, 0, RawBufferFamily::Bayer)
 }
