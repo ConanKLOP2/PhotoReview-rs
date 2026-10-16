@@ -81,7 +81,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 ## Disk hygiene (C: filled up once: 33 GB of per-worktree debug builds)
 
 - Build with `CARGO_PROFILE_DEV_DEBUG=line-tables-only` and `CARGO_INCREMENTAL=0` in agent worktrees; one
-  `CARGO_TARGET_DIR` per worktree, deleted as soon as that unit's verdict is in. At most 8 live target dirs.
+  `CARGO_TARGET_DIR` per worktree, deleted as soon as that unit's verdict is in. No fixed cap on live target dirs (P-29); keep >= 20 GB free.
 - After a PR merges: remove its worktrees, branches and `target-wave-*` dirs. Check free space (`Get-PSDrive C`) at
   every loop tick; below 20 GB, delete target dirs idle for 2 hours (never one a cargo process is writing).
 
