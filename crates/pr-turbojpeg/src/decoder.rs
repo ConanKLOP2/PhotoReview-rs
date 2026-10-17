@@ -458,10 +458,9 @@ pub fn try_read_segment<'a>(jpeg: &'a [u8], offset: &mut usize) -> SegmentStep<'
         if byte_at(jpeg, *offset) != 0xFF {
             return SegmentStep::End { needs_more_data: false };
         }
-        // Any marker may be preceded by repeated 0xFF fill bytes (ITU T.81 B.1.1.2).
-        while *offset + 1 < len && byte_at(jpeg, *offset + 1) == 0xFF {
-            *offset += 1;
-        }
+        // Any marker may be preceded by repeated 0xFF fill bytes (ITU T.81 B.1.1.2). Scan the finite suffix in one
+        // pass so a failed progress update cannot turn malformed input into an unbounded loop.
+        skip_marker_fill_bytes(jpeg, offset);
         if len - *offset < 2 {
             return SegmentStep::End { needs_more_data: true };
         }
@@ -495,6 +494,19 @@ pub fn try_read_segment<'a>(jpeg: &'a [u8], offset: &mut usize) -> SegmentStep<'
     }
     // Ran out of bytes exactly at a segment boundary.
     SegmentStep::End { needs_more_data: true }
+}
+
+/// Advances `offset` past the run of fill bytes after the current `FF` marker prefix. The slice scan is bounded by the
+/// JPEG length and performs no allocation; unlike a progress-controlled loop, it cannot stall on a repeated `FF` run.
+fn skip_marker_fill_bytes(jpeg: &[u8], offset: &mut usize) {
+    let first_fill = offset.saturating_add(1);
+    let fill_count = jpeg
+        .get(first_fill..)
+        .unwrap_or_default()
+        .iter()
+        .take_while(|byte| **byte == 0xFF)
+        .count();
+    *offset = offset.saturating_add(fill_count);
 }
 
 /// `jpeg[index]`, `0` past the end (callers have already bounded `index`; this only keeps the walk panic-free).
@@ -745,6 +757,33 @@ mod reserve_growth_tests {
         let error = reserve_growth(&mut buffer, usize::MAX).unwrap_err();
 
         assert!(matches!(error, SourceReadError::OutOfMemory { bytes: i64::MAX }));
+    }
+}
+
+#[cfg(test)]
+mod marker_fill_tests {
+    use super::skip_marker_fill_bytes;
+
+    #[test]
+    fn marker_fill_scan_advances_to_the_next_non_fill_byte() {
+        // Rust-only progress guard: a run of repeated FF bytes must advance to the marker in one bounded scan.
+        let jpeg = [0xFF, 0xFF, 0xFF, 0xD9];
+        let mut offset = 0;
+
+        skip_marker_fill_bytes(&jpeg, &mut offset);
+
+        assert_eq!(offset, 2);
+    }
+
+    #[test]
+    fn marker_fill_scan_consumes_a_trailing_run_without_reading_past_the_slice() {
+        // Rust-only boundary guard for fill bytes ending exactly at the available slice boundary.
+        let jpeg = [0xFF, 0xFF, 0xFF];
+        let mut offset = 0;
+
+        skip_marker_fill_bytes(&jpeg, &mut offset);
+
+        assert_eq!(offset, 2);
     }
 }
 
