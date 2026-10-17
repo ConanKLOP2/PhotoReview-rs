@@ -112,3 +112,7 @@
 - Integrated W5-11a registry/ICC at `e541625`; direct integration test `cargo test -p pr-imaging-raw --test registry --locked` passed 30/30, including both full goldens (49 registry cases, 44 ICC cases). Agent also reported full RAW crate tests 729 passed, 0 failed, 8 ignored; fmt/clippy passed. ICC asset SHA-256 matches C# baseline `d92d6aae` (`60fb2adecacf82132db0b1c09b303316f3bdb9e2823e7ba096d01627d12d57c9`).
 - This completes the registry dependency for W5-12 RawDecoder. Updated the I-14 parity status; selector/EXIF work remains separately tracked.
 - ORF mutation run is ongoing; latest snapshot: 67 caught, 5 missed, 1 unviable, 0 timeout. Review the five survivors once the run completes; likely some are zero-boundary equivalences, but no verdict yet.
+
+## Wave 5 integration update (2026-10-17, ORF mutation)
+- Added `read_zero_ifd0_offset_does_not_check_cancellation`, covering C#'s zero-IFD0 behavior. `cargo test -p pr-imaging-raw --test readers_orf --locked` passed 40/40; `cargo fmt --all --check` and RAW crate clippy passed.
+- Targeted cargo-mutants over ORF source and only the `readers_orf` test binary completed: 109 mutants, 101 caught, 7 missed, 1 unviable. A focused rerun confirmed the zero-offset `current > 0` -> `>= 0` mutant is caught. Six other missed variants were reviewed against navigator/caller bounds and judged equivalent by source inspection; they were not rerun individually. This is targeted evidence, not a package-wide mutation run.

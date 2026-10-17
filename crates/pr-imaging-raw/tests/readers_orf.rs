@@ -107,6 +107,22 @@ fn read_sixteen_byte_file_with_empty_ifd_returns_empty_info_for_orf() {
     assert!(info.previews.is_empty());
 }
 
+#[test]
+// Rust-only mutation killer: C# `Read` does not enter its IFD loop when IFD0's offset is zero, so it does not observe cancellation.
+fn read_zero_ifd0_offset_does_not_check_cancellation() {
+    let token = CancelToken::new();
+    token.cancel();
+    let bytes = orf_file(16).u32(4, 0).into_vec();
+    let mut source = InMemoryRawHeaderSource::new(bytes);
+
+    let info = OrfContainerReader::new()
+        .read(&mut source, &token)
+        .expect("zero IFD0 offset skips the C# loop before cancellation is checked");
+
+    assert_eq!((info.sensor_width, info.sensor_height), (0, 0));
+    assert!(info.previews.is_empty());
+}
+
 // ---------------------------------------------------------------- ORF: header, chain, orientation, size
 
 #[test]
