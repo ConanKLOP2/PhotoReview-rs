@@ -700,7 +700,11 @@ where
 {
     match copy_pixels() {
         Err(error) if color_transform_active && matches!(error.kind(), DecodeError::Com { .. }) => {
-            Err(icc_transform_failed(&error.message()))
+            let hresult = match error.kind() {
+                DecodeError::Com { hresult, .. } => *hresult,
+                _ => unreachable!("guarded COM error"),
+            };
+            Err(icc_transform_failed(&error.message(), Some(hresult)))
         }
         other => other,
     }
@@ -709,10 +713,16 @@ where
 /// The ICC failure: `NotSupported` (fallbackable: the colour-managed fallback may succeed) with message
 /// [`ICC_TRANSFORM_FAILED_PREFIX`]` + os_message` (localized key `err.decoder.iccTransformFailed` with `{detail}`;
 /// the sentence waits for an injected text seam, contract OQ1 / A1 / D41).
-pub fn icc_transform_failed(os_message: &str) -> DecodeError {
-    DecodeError::NotSupported {
-        message: format!("{ICC_TRANSFORM_FAILED_PREFIX}{os_message}"),
-        user_text: None,
+pub fn icc_transform_failed(os_message: &str, inner_hresult: Option<i32>) -> DecodeError {
+    match inner_hresult {
+        Some(hresult) => {
+            DecodeError::not_supported_with_inner_hresult(format!("{ICC_TRANSFORM_FAILED_PREFIX}{os_message}"), hresult)
+        }
+        None => DecodeError::NotSupported {
+            message: format!("{ICC_TRANSFORM_FAILED_PREFIX}{os_message}"),
+            user_text: None,
+            inner_hresult: None,
+        },
     }
 }
 
@@ -823,6 +833,7 @@ pub fn decode_error_from_wic(error: &WicError) -> DecodeError {
         DotnetExceptionKind::NotSupported | DotnetExceptionKind::PlatformNotSupported => DecodeError::NotSupported {
             message,
             user_text: None,
+            inner_hresult: None,
         },
         DotnetExceptionKind::FileNotFound => DecodeError::FileNotFound { message },
         DotnetExceptionKind::DirectoryNotFound => DecodeError::DirectoryNotFound { message },
@@ -872,8 +883,9 @@ pub fn is_color_metadata_fault(error: &DecodeError) -> bool {
 /// those three become [`icc_transform_failed`]`(message)`; anything else (e.g. `OutOfMemory`) is returned unchanged.
 pub fn color_chain_failure(error: DecodeError) -> DecodeError {
     match error.kind() {
-        DecodeError::Com { .. } | DecodeError::InvalidCast { .. } | DecodeError::InvalidArgument { .. } => {
-            icc_transform_failed(&error.message())
+        DecodeError::Com { hresult, .. } => icc_transform_failed(&error.message(), Some(*hresult)),
+        DecodeError::InvalidCast { .. } | DecodeError::InvalidArgument { .. } => {
+            icc_transform_failed(&error.message(), None)
         }
         _ => error,
     }

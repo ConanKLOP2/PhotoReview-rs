@@ -93,12 +93,10 @@ pub fn is_corrupt_data_failure(error: &DecodeError) -> bool {
         }
 }
 
-/// C# `ex.InnerException is COMException inner ? inner.HResult : (none)`. `DecodeError` has no inner-exception slot at the
-/// baseline (W4-11c's `icc_transform_failed` keeps only the message): Open question 1 of the contract proposes one. Until
-/// it lands this returns `None` and the three "wrapped in NotSupported" golden cases stay red (they are tagged
-/// `requires: ["inner_com_hresult"]`).
-fn inner_com_hresult(_error: &DecodeError) -> Option<i32> {
-    None
+/// C# `ex.InnerException is COMException inner ? inner.HResult : (none)`. W5 A8 / D59 stores the direct COM HRESULT on
+/// `DecodeError::NotSupported`; wrappers are transparent through `DecodeError::inner_hresult()`.
+fn inner_com_hresult(error: &DecodeError) -> Option<i32> {
+    error.inner_hresult()
 }
 
 /// C# `LongSide(p)`: `max(width, height)`.
@@ -224,11 +222,10 @@ impl RawDecoder {
         }
 
         if info.format == RawFormat::Orf && self.preview_fallback.is_some() && last_is_not_supported {
-            let thumbnail_request = request_with_empty_bytes(request, info.orientation);
             match self.decode_fallback_thumbnail(
                 &request.path.to_string_lossy(),
                 info.format,
-                &thumbnail_request,
+                request,
                 info.orientation,
                 self.user_text(|texts| texts.raw_corrupt()),
             ) {
@@ -300,11 +297,10 @@ impl RawDecoder {
         info: &RawContainerInfo,
     ) -> Result<PreviewOutcome, DecodeError> {
         if self.preview_fallback.is_some() {
-            let thumbnail_request = request_with_empty_bytes(request, info.orientation);
             match self.decode_fallback_thumbnail(
                 &request.path.to_string_lossy(),
                 info.format,
-                &thumbnail_request,
+                request,
                 info.orientation,
                 self.user_text(|texts| texts.raw_no_preview()),
             ) {
@@ -381,14 +377,6 @@ impl RawDecoder {
         let image = decoder.decode(request)?;
         let bytes = super::stat_file(&request.path.to_string_lossy()).map_or(0, |(length, _)| length);
         Ok((image, bytes))
-    }
-}
-
-fn request_with_empty_bytes(request: &DecodeRequest, orientation: i32) -> DecodeRequest {
-    DecodeRequest {
-        bytes: Some(Arc::from([])),
-        source_orientation: Some(orientation),
-        ..request.clone()
     }
 }
 

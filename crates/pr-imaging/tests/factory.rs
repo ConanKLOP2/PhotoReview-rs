@@ -93,6 +93,7 @@ impl Marker {
         DecodeError::NotSupported {
             message: format!("marker {} fails", self.name),
             user_text: None,
+            inner_hresult: None,
         }
     }
 }

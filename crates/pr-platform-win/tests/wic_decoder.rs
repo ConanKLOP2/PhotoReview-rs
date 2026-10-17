@@ -649,8 +649,13 @@ fn color_transform_chain_wic_fault_is_reported_as_icc_transform_failure() {
         },
     ];
     for error in rows {
+        let expected_hresult = match error.kind() {
+            DecodeError::Com { hresult, .. } => Some(*hresult),
+            _ => None,
+        };
         let mapped = color_chain_failure(error);
         assert!(matches!(mapped.kind(), DecodeError::NotSupported { .. }), "{mapped}");
+        assert_eq!(mapped.inner_hresult(), expected_hresult);
         assert!(mapped.message().starts_with(ICC_TRANSFORM_FAILED_PREFIX));
     }
     let untouched = color_chain_failure(DecodeError::OutOfMemory {
@@ -804,8 +809,9 @@ fn output_admission_refusal_message_says_too_large_for_the_available_memory() {
 // C#: DecoderErrorLocalizationTests.WicIccTransformFailure_IsLocalizedAndFallbackable (English parts)
 #[test]
 fn wic_icc_transform_failure_is_not_supported_with_english_text_and_fallbackable() {
-    let error = icc_transform_failed("boom");
+    let error = icc_transform_failed("boom", Some(-2_003_292_336));
     assert!(matches!(error.kind(), DecodeError::NotSupported { .. }), "{error}");
+    assert_eq!(error.inner_hresult(), Some(-2_003_292_336));
     assert!(
         error.message().starts_with("WicDirect could not transform"),
         "{}",
@@ -816,11 +822,18 @@ fn wic_icc_transform_failure_is_not_supported_with_english_text_and_fallbackable
 
 // C#: DecoderErrorLocalizationTests.WicIccTransformFailure_IsLocalizedAndFallbackable (localized sentence, contract OQ1)
 #[test]
-#[ignore = "blocked: W4-11c OQ1"]
+#[ignore = "blocked: W4-11c OQ1 localization text seam"]
 fn wic_icc_transform_failure_carries_the_localized_sentence() {
-    let error = icc_transform_failed("boom");
+    let error = icc_transform_failed("boom", Some(-2_003_292_336));
     match error.kind() {
-        DecodeError::NotSupported { user_text, .. } => assert!(user_text.is_some(), "localized sentence attached"),
+        DecodeError::NotSupported {
+            user_text,
+            inner_hresult,
+            ..
+        } => {
+            assert!(user_text.is_some(), "localized sentence attached");
+            assert_eq!(*inner_hresult, Some(-2_003_292_336));
+        }
         other => panic!("expected NotSupported, got {other:?}"),
     }
 }

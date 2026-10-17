@@ -232,6 +232,7 @@ fn make_error(kind: &str, message: &str, hresult: i32) -> DecodeError {
         "NotSupported" | "PlatformNotSupported" => DecodeError::NotSupported {
             message,
             user_text: None,
+            inner_hresult: None,
         },
         "MissingCodec" => DecodeError::missing_codec_with(message),
         "InvalidCast" => DecodeError::InvalidCast { message },

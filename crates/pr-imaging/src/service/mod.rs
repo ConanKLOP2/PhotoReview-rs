@@ -1524,9 +1524,14 @@ fn rebuild_decode_error_kind(error: &DecodeError) -> DecodeError {
         DecodeError::OutOfMemory { message } => DecodeError::OutOfMemory {
             message: message.clone(),
         },
-        DecodeError::NotSupported { message, user_text } => DecodeError::NotSupported {
+        DecodeError::NotSupported {
+            message,
+            user_text,
+            inner_hresult,
+        } => DecodeError::NotSupported {
             message: message.clone(),
             user_text: user_text.clone(),
+            inner_hresult: *inner_hresult,
         },
         DecodeError::InvalidCast { message } => DecodeError::InvalidCast {
             message: message.clone(),
@@ -1746,6 +1751,7 @@ mod preload_adapter_tests {
             DecodeError::NotSupported {
                 message: m(),
                 user_text: None,
+                inner_hresult: Some(-5),
             },
             DecodeError::InvalidCast { message: m() },
             DecodeError::Overflow { message: m() },

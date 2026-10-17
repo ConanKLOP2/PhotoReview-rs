@@ -115,6 +115,7 @@ impl DecodedImageView for FakeImage {
 #[derive(Default)]
 struct DecoderStats {
     preview_lengths: Mutex<Vec<usize>>,
+    preview_requests: Mutex<Vec<Value>>,
     full_calls: AtomicUsize,
 }
 
@@ -151,6 +152,18 @@ impl ImageDecoder for FakeDecoder {
         }
         let length = request.bytes.as_ref().map_or(0, |bytes| bytes.len());
         self.stats.preview_lengths.lock().unwrap().push(length);
+        let (first_byte, last_byte) = request.bytes.as_ref().map_or((0, 0), |bytes| {
+            (bytes.first().copied().unwrap_or(0), bytes.last().copied().unwrap_or(0))
+        });
+        self.stats.preview_requests.lock().unwrap().push(json!({
+            "length": length,
+            "first_byte": first_byte,
+            "last_byte": last_byte,
+            "box": [request.target_width, request.target_height],
+            "apply_orientation": request.apply_orientation,
+            "source_orientation": request.source_orientation,
+            "priority": format!("{:?}", request.priority),
+        }));
         let rule = self.spec["by_length"]
             .get(length.to_string())
             .unwrap_or(&self.spec["default"]);
@@ -188,6 +201,7 @@ fn make_error(value: &Value) -> DecodeError {
         "NotSupported" => DecodeError::NotSupported {
             message,
             user_text: None,
+            inner_hresult: value.get("inner_hresult").and_then(Value::as_i64).map(|hr| hr as i32),
         },
         "MissingCodec" => DecodeError::missing_codec(),
         "Canceled" => DecodeError::Canceled,
@@ -383,7 +397,7 @@ fn run_case(case: &Value, expected: &Value) {
             .as_i64()
             .or_else(|| op["box"][1].as_i64())
             .unwrap_or(0) as i32;
-        let prior_preview_attempts = decoder_stats.preview_lengths.lock().unwrap().len();
+        let prior_preview_attempts = decoder_stats.preview_requests.lock().unwrap().len();
         let request = DecodeRequest::with_box(&path, DecodeBox::new(width, height));
         let result = decoder.decode(&request);
         if let Some(want) = step.get("error") {
@@ -468,20 +482,12 @@ fn run_case(case: &Value, expected: &Value) {
             json!(io_stats.container_reads.load(Ordering::SeqCst)),
             "{name} step {index}"
         );
-        let expected_lengths: Vec<_> = step["inner_requests"]
-            .as_array()
-            .expect("inner request trace")
-            .iter()
-            .filter_map(|request| request["length"].as_u64())
-            .collect();
-        let observed_lengths = decoder_stats.preview_lengths.lock().unwrap();
+        let expected_requests = step["inner_requests"].as_array().expect("inner request trace");
+        let observed_requests = decoder_stats.preview_requests.lock().unwrap();
         assert_eq!(
-            expected_lengths,
-            observed_lengths[prior_preview_attempts..]
-                .iter()
-                .map(|length| *length as u64)
-                .collect::<Vec<_>>(),
-            "{name} step {index}: attempted preview byte lengths"
+            expected_requests,
+            &observed_requests[prior_preview_attempts..],
+            "{name} step {index}: full inner DecodeRequest trace"
         );
     }
     if let Some(path) = physical_path {
@@ -511,19 +517,12 @@ fn golden_raw_decoder_fallback_runs_virtual_fixed_container_cases() {
             gated.push(case["name"].as_str().unwrap_or("?"));
             continue;
         }
-        if case["requires"]
-            .as_array()
-            .is_some_and(|r| r.iter().any(|x| x == "inner_com_hresult"))
-        {
-            gated.push(case["name"].as_str().unwrap_or("?"));
-            continue;
-        }
         run_case(case, expected_case);
         ran += 1;
     }
     eprintln!("raw-decoder-fallback: ran {ran}/75 cases; gated {gated:?}");
     assert!(
-        ran >= 60,
+        ran >= 70,
         "expected broad fallback integration coverage, got {ran}; gated {}",
         gated.len()
     );

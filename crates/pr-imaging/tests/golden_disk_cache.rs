@@ -616,6 +616,7 @@ fn decode_error_for(type_name: &str) -> DecodeError {
         "NotSupportedException" | "PlatformNotSupportedException" => DecodeError::NotSupported {
             message: msg,
             user_text: None,
+            inner_hresult: None,
         },
         "MissingImageCodecException" => DecodeError::MissingCodec {
             message: msg,

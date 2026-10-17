@@ -382,6 +382,7 @@ impl RawPreviewFallback for UnsupportedFallback {
         Err(DecodeError::NotSupported {
             message: format!("no thumbnail for {format:?} at {path}"),
             user_text: None,
+            inner_hresult: None,
         })
     }
 }

@@ -8,9 +8,11 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use pr_core::abstractions::{ReadSeek, SourceReadPriority, SourceReader};
+use pr_core::model::enums::DecoderBackend;
 use pr_core::sync::CancelToken;
-use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
+use pr_imaging::decode_types::{DecodeBox, DecodeRequest, DecodedImageView, ImageInfo, PlatformImage};
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
+use pr_imaging::exif_summary::ExifSummary;
 use pr_imaging_raw::decoder::RawDecoder;
 use pr_imaging_raw::registry::RawContainerReaderRegistry;
 use pr_imaging_raw::{
@@ -29,6 +31,104 @@ impl ImageDecoder for NeverCalledDecoder {
 
     fn read_info(&self, _: &str) -> Result<ImageInfo, DecodeError> {
         panic!("this core-only golden operation must not invoke an image decoder")
+    }
+}
+
+struct ScriptedImageDecoder {
+    result: Value,
+    requests: Arc<std::sync::Mutex<Vec<Value>>>,
+}
+
+struct ScriptedImage {
+    width: i32,
+    height: i32,
+    original_width: i32,
+    original_height: i32,
+    downscaled: bool,
+    backend: DecoderBackend,
+    degraded: bool,
+    exif: Option<ExifSummary>,
+}
+
+impl DecodedImageView for ScriptedImage {
+    fn pixel_width(&self) -> i32 {
+        self.width
+    }
+    fn pixel_height(&self) -> i32 {
+        self.height
+    }
+    fn downscaled(&self) -> bool {
+        self.downscaled
+    }
+    fn orientation(&self) -> i32 {
+        1
+    }
+    fn original_width(&self) -> i32 {
+        self.original_width
+    }
+    fn original_height(&self) -> i32 {
+        self.original_height
+    }
+    fn estimated_bytes(&self) -> i64 {
+        i64::from(self.width) * i64::from(self.height) * 4
+    }
+    fn platform_image(&self) -> &PlatformImage {
+        unreachable!("golden tests inspect image metadata only")
+    }
+    fn actual_backend(&self) -> DecoderBackend {
+        self.backend
+    }
+    fn is_degraded_fallback(&self) -> bool {
+        self.degraded
+    }
+    fn exif(&self) -> Option<&ExifSummary> {
+        self.exif.as_ref()
+    }
+}
+
+impl ImageDecoder for ScriptedImageDecoder {
+    fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        let bytes = request.bytes.as_deref().unwrap_or_default();
+        self.requests.lock().unwrap().push(json!({
+            "length": bytes.len(),
+            "first_byte": bytes.first().copied().unwrap_or(0),
+            "last_byte": bytes.last().copied().unwrap_or(0),
+            "box": [request.target_width, request.target_height],
+            "apply_orientation": request.apply_orientation,
+            "source_orientation": request.source_orientation,
+            "priority": format!("{:?}", request.priority),
+        }));
+        let result = self.result.get("ok").unwrap_or(&self.result);
+        let backend = match result["backend"].as_str().unwrap_or("Wpf") {
+            "WicDirect" => DecoderBackend::WicDirect,
+            "TurboJpeg" => DecoderBackend::TurboJpeg,
+            "LibRaw" => DecoderBackend::LibRaw,
+            _ => DecoderBackend::Wpf,
+        };
+        let exif = result["exif_make"].as_str().map(|make| ExifSummary {
+            camera_make: Some(make.to_owned()),
+            ..Default::default()
+        });
+        Ok(Arc::new(ScriptedImage {
+            width: result["w"].as_i64().unwrap_or(1) as i32,
+            height: result["h"].as_i64().unwrap_or(1) as i32,
+            original_width: result["original"][0]
+                .as_i64()
+                .unwrap_or_else(|| result["w"].as_i64().unwrap_or(1)) as i32,
+            original_height: result["original"][1]
+                .as_i64()
+                .unwrap_or_else(|| result["h"].as_i64().unwrap_or(1)) as i32,
+            downscaled: result["downscaled"].as_bool().unwrap_or(false),
+            backend,
+            degraded: result["degraded"].as_bool().unwrap_or(false),
+            exif,
+        }))
+    }
+
+    fn read_info(&self, _: &str) -> Result<ImageInfo, DecodeError> {
+        Err(DecodeError::InvalidOperation {
+            message: "not used".into(),
+        })
     }
 }
 
@@ -194,7 +294,11 @@ fn raw_info(value: &Value) -> RawContainerInfo {
 }
 
 fn file_bytes(case: &Value) -> Arc<[u8]> {
-    let mut bytes = vec![0; case["file"]["size"].as_u64().unwrap_or(0) as usize];
+    let length = case["file"]["zero_length"]
+        .as_u64()
+        .or_else(|| case["file"]["size"].as_u64())
+        .unwrap_or(0) as usize;
+    let mut bytes = vec![0; length];
     if let Some(segments) = case["file"]["segments"].as_array() {
         for segment in segments {
             let offset = segment["at"].as_u64().expect("segment offset") as usize;
@@ -255,7 +359,6 @@ fn expected_info_matches(info: ImageInfo, expected: &Value) -> bool {
 
 fn decode_fails_before_inner(case: &Value) -> bool {
     let kind = case["container"]["kind"].as_str().unwrap_or("none");
-    // `range-negative-offset` stays gated: its current output differs from the C# oracle's open count (1 vs. 2).
     matches!(kind, "none" | "throws")
         || case["file"]["faulty_read"].is_string()
         || matches!(
@@ -264,6 +367,7 @@ fn decode_fails_before_inner(case: &Value) -> bool {
                 "unsupported-default-registry-3-bytes"
                     | "malformed-default-registry-12-bytes"
                     | "range-past-end"
+                    | "range-negative-offset"
                     | "range-longer-than-cap"
                     | "range-adobe-rgb-not-a-jpeg"
             )
@@ -391,6 +495,142 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
     (read_info_steps, executed_steps)
 }
 
+fn run_image_decode_case(input: &Value, expected: &Value) {
+    let name = input["name"].as_str().expect("case name");
+    let path = format!(r"C:\raw-virtual-nonexistent\{name}.dng");
+    let bytes = file_bytes(input);
+    let stats = Arc::new(ReadStats::default());
+    let reader_reads = Arc::new(AtomicUsize::new(0));
+    let source_reader = Arc::new(MemorySourceReader {
+        bytes,
+        fail_reads_with: None,
+        stats: Arc::clone(&stats),
+    });
+    let container = &input["container"];
+    let registry = if container["kind"] == "default" {
+        Arc::new(RawContainerReaderRegistry::new())
+    } else {
+        Arc::new(RawContainerReaderRegistry::with_readers([Box::new(GoldenReader {
+            result: ReaderResult::Fixed(raw_info(&container["info"])),
+            reads: Arc::clone(&reader_reads),
+        })
+            as Box<dyn RawContainerReader>]))
+    };
+    let request_log = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let inner = Arc::new(ScriptedImageDecoder {
+        result: input["inner"]["default"].clone(),
+        requests: Arc::clone(&request_log),
+    });
+    let decoder = RawDecoder::with_options(
+        inner,
+        pr_imaging_raw::decoder::RawDecoderOptions {
+            source_reader: Some(source_reader),
+            registry: Some(registry),
+            ..Default::default()
+        },
+    );
+    let op = &input["ops"][0];
+    let mut request = DecodeRequest::with_box(
+        &path,
+        DecodeBox::new(
+            op["box"][0].as_i64().unwrap_or(0) as i32,
+            op["box"][1].as_i64().unwrap_or(0) as i32,
+        ),
+    )
+    .with_apply_orientation(op["apply_orientation"].as_bool().unwrap_or(true));
+    if let Some(orientation) = op["source_orientation"].as_i64() {
+        request = request.with_source_orientation(orientation as i32);
+    }
+    if op["priority"].as_str() == Some("Preload") {
+        request = request.with_priority(SourceReadPriority::Preload);
+    }
+
+    let image = decoder
+        .decode(&request)
+        .unwrap_or_else(|error| panic!("case {name}: {error:?}"));
+    let step = &expected["steps"][0];
+    assert_eq!(step["op"], "decode", "case {name}");
+    let info = &step["ok"];
+    assert_eq!(
+        [image.pixel_width(), image.pixel_height()],
+        [
+            info["pixel"][0].as_i64().unwrap() as i32,
+            info["pixel"][1].as_i64().unwrap() as i32
+        ],
+        "case {name}: pixel size"
+    );
+    assert_eq!(
+        [image.original_width(), image.original_height()],
+        [
+            info["original"][0].as_i64().unwrap() as i32,
+            info["original"][1].as_i64().unwrap() as i32
+        ],
+        "case {name}: original size"
+    );
+    assert_eq!(
+        image.downscaled(),
+        info["downscaled"].as_bool().unwrap(),
+        "case {name}: downscaled"
+    );
+    assert_eq!(
+        image.orientation(),
+        info["orientation"].as_i64().unwrap() as i32,
+        "case {name}: orientation"
+    );
+    assert_eq!(
+        image.is_degraded_fallback(),
+        info["degraded"].as_bool().unwrap(),
+        "case {name}: degraded"
+    );
+    assert_eq!(
+        image.estimated_bytes(),
+        info["estimated_bytes"].as_i64().unwrap(),
+        "case {name}: estimated bytes"
+    );
+    assert_eq!(
+        image.source_bytes_read(),
+        Some(info["source_bytes_read"].as_i64().unwrap()),
+        "case {name}: source bytes"
+    );
+    assert_eq!(
+        image.embedded_preview_size(),
+        Some((
+            info["embedded_preview"][0].as_i64().unwrap() as i32,
+            info["embedded_preview"][1].as_i64().unwrap() as i32
+        )),
+        "case {name}: embedded size"
+    );
+    assert_eq!(
+        format!("{:?}", image.actual_backend()),
+        info["backend"].as_str().unwrap(),
+        "case {name}: backend"
+    );
+    let exif_make = image.exif().and_then(|exif| exif.camera_make.as_deref());
+    assert_eq!(exif_make, info["exif_make"].as_str(), "case {name}: EXIF make");
+    assert_eq!(
+        json!(*request_log.lock().unwrap()),
+        step["inner_requests"],
+        "case {name}: inner request trace"
+    );
+    assert_eq!(step["fallback_calls"], 0, "case {name}: fallback calls");
+    assert_eq!(step["full_calls"], 0, "case {name}: full decode calls");
+    assert_eq!(
+        step["opens"],
+        json!(stats.opens.load(Ordering::SeqCst)),
+        "case {name}: opens"
+    );
+    assert_eq!(
+        step["stream_bytes_read"],
+        json!(stats.bytes.load(Ordering::SeqCst)),
+        "case {name}: source reads"
+    );
+    assert_eq!(
+        step["container_reads_total"],
+        json!(reader_reads.load(Ordering::SeqCst)),
+        "case {name}: container reads"
+    );
+}
+
 #[test]
 fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
     let root = golden::repo_root();
@@ -405,6 +645,7 @@ fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
     let mut executed_steps = 0usize;
     let mut gated_cases = Vec::new();
     let mut gated_steps = Vec::new();
+    let mut image_decode_cases = 0usize;
     for (input, golden_case) in input_cases.iter().zip(&expected.cases) {
         assert_eq!(input["name"], golden_case["name"], "input/golden case order");
         let early_error_container = decode_fails_before_inner(input);
@@ -412,7 +653,17 @@ fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
             ops.iter()
                 .all(|op| op["op"] == "read_info" || (op["op"] == "decode" && early_error_container))
         });
-        if all_ops_run_without_image_decoder {
+        let scripted_image_case = !input["file"]["physical"].as_bool().unwrap_or(false)
+            && input["ops"]
+                .as_array()
+                .is_some_and(|ops| ops.len() == 1 && ops[0]["op"] == "decode")
+            && golden_case["steps"][0]["ok"].is_object()
+            && input["container"]["kind"] != "throws";
+        if scripted_image_case {
+            run_image_decode_case(input, golden_case);
+            image_decode_cases += 1;
+            executed_steps += 1;
+        } else if all_ops_run_without_image_decoder {
             let (infos, steps) = run_read_info_case(input, golden_case);
             read_info_steps += infos;
             executed_steps += steps;
@@ -429,11 +680,12 @@ fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
         "the 13 core read_info steps are executable without an image decoder"
     );
     assert_eq!(
-        executed_steps, 21,
-        "13 read_info and 8 early-error decode steps are executable"
+        executed_steps,
+        22 + image_decode_cases,
+        "13 read_info, 9 early-error decode, and all eligible scripted image decode steps are executable"
     );
     eprintln!(
-        "raw-decoder-core: executed {executed_steps} steps ({read_info_steps} read_info); gated {} cases and {} steps: cases={gated_cases:?}; steps={gated_steps:?}",
+        "raw-decoder-core: executed {executed_steps} steps ({read_info_steps} read_info, {image_decode_cases} scripted image decode); gated {} cases and {} steps: cases={gated_cases:?}; steps={gated_steps:?}",
         gated_cases.len(),
         gated_steps.len()
     );

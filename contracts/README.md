@@ -447,10 +447,8 @@ Decided and wired in this PR (the stubs show the result; D28 applies):
 
 To apply at porter kick-off (not wired here because they change a unit's behaviour; the porter of the named unit owns it):
 
-- **A8 (W5-12b, W4-01c, W4-11c):** `DecodeError` gets an additive slot for the inner OS error of a `NotSupported` (for example
-  `inner_hresult: Option<i32>` on the ICC-transform failure of W4-11c) so the golden cases tagged `requires:[inner_com_hresult]`
-  in `raw-decoder-fallback` and 3 C# test rows can pass. Without it they stay red; if the porter rejects it, record a `Different`
-  row and drop them (proposal P-32).
+- **A8 (W5-12b, W4-01c, W4-11c): CONFIRMED A (D59).** `DecodeError::NotSupported` retains an optional directly wrapped COM HRESULT;
+  WIC ICC failures preserve it when their cause is COM. The three `requires:[inner_com_hresult]` fallback golden cases now run.
 - **A9 (W5-12b):** fix the doc comment of `RawPreviewFallback` (W5-01b): `RawDecoder` classifies thumbnail failures with its own
   `IsRecoverablePreviewFailure` list (InvalidCast, Overflow and DllNotFound are not recoverable there), not with the W4-12b whitelist.
 - **A10 (W5-16a):** `CancelToken::wait_timeout` (A7) replaces the 10 ms cancellation polling inside `wait_for_grant`.

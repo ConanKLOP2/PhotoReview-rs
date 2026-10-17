@@ -467,6 +467,7 @@ impl RawDecoder {
             .ok_or_else(|| DecodeError::NotSupported {
                 message: format!("{UNSUPPORTED_FORMAT_PREFIX}{extension}"),
                 user_text: Some(self.user_text(|t| t.raw_unsupported())),
+                inner_hresult: None,
             })?;
         let info = reader
             .read(&mut header_source, &pr_core::sync::CancelToken::new())
@@ -612,12 +613,6 @@ impl RawDecoder {
         expected_length: i64,
         priority: SourceReadPriority,
     ) -> Result<Vec<u8>, DecodeError> {
-        if count < 0 || offset < 0 {
-            return Err(DecodeError::Io(std::io::Error::new(
-                std::io::ErrorKind::UnexpectedEof,
-                format!("Embedded preview range is outside {path}"),
-            )));
-        }
         let mut stream = self
             .source_reader
             .open_source(std::path::Path::new(path), priority, 1024 * 1024)
@@ -627,7 +622,7 @@ impl RawDecoder {
             return Err(self.changed_while_reading(path));
         }
         let count64 = i64::from(count);
-        if count64 > expected_length || offset > expected_length - count64 {
+        if count64 < 0 || offset < 0 || count64 > expected_length || offset > expected_length - count64 {
             return Err(DecodeError::Io(std::io::Error::new(
                 std::io::ErrorKind::UnexpectedEof,
                 format!("Embedded preview range is outside {path}"),
