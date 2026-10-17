@@ -457,3 +457,15 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
 - **A11 (W5-13a, W5-15a):** a lead-owned `tools/stage-native.ps1` (SHA-256 pin check; copies `turbojpeg.dll`, `libraw.dll` and the
   licence files next to the test and app executables) and a Rust-side `tools/fetch-native.ps1`; CI runs it before `--include-ignored`.
 
+## Wave 6 roster (Windows platform)
+
+| WU | Unit | Rust | Porter | Tests |
+|---|---|---|---|---|
+| W6-01 | COM enumeration, Explorer interop/window selection/order | `pr-platform-win` | Sonnet | Explorer COM integration tests |
+| W6-02 | Windows Recycle Bin and capacity | `pr-platform-win` | Sonnet | fake-first; native tests only remove their own items |
+| W6-03 | Single-instance keys/scope and forwarding client/server | `pr-platform-win` | Sonnet | fake-first + bounded native process/pipe cases |
+| W6-04 | `WindowsDisplayClock`, D3DKMT vblank driver, DWM fallback | `display_clock` | Sonnet (P-34) | `contracts/W6-04.md`; deterministic fake-driven twins + one ignored native DWM smoke |
+| W6-05 | Windows memory probe, natural comparer, dark title bar, live-operation registry | `memory_probe`, `natural_comparer`, `dark_title_bar`, `live_operation_registry` | Haiku (unsafe review by Sonnet) | `contracts/W6-05.md` |
+
+W6-04 directly depends on the existing `DisplayClock`, `DisplayTiming`, and `VBlankEstimator`; it can be implemented without waiting for the other Wave 6 units. The contract names the full C# test matrix and owns no core abstractions.
+
