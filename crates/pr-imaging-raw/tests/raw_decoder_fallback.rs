@@ -1,10 +1,12 @@
 //! W5-12b2 fallback-chain integration goldens. Each case uses fake decoders, source reads, and container metadata so
 //! the production fallback decisions are exercised without native codecs or access to a user's files.
 
+use std::fs::{self, OpenOptions};
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, SystemTime};
 
 use pr_core::abstractions::{ReadSeek, SourceReadPriority, SourceReader};
 use pr_core::sync::CancelToken;
@@ -123,6 +125,7 @@ struct FakeDecoder {
     spec: Value,
     stats: Arc<DecoderStats>,
     full: bool,
+    physical_path: Option<PathBuf>,
 }
 
 impl FakeDecoder {
@@ -164,9 +167,22 @@ impl ImageDecoder for FakeDecoder {
             "source_orientation": request.source_orientation,
             "priority": format!("{:?}", request.priority),
         }));
-        let rule = self.spec["by_length"]
-            .get(length.to_string())
-            .unwrap_or(&self.spec["default"]);
+        let call_index = self.stats.preview_requests.lock().unwrap().len().saturating_sub(1);
+        let first_call = call_index == 0 && self.spec.get("first_call").is_some();
+        let rule = if first_call {
+            &self.spec["first_call"]
+        } else {
+            self.spec["by_length"]
+                .get(length.to_string())
+                .unwrap_or(&self.spec["default"])
+        };
+        if first_call && rule["touch"] == true {
+            let path = self
+                .physical_path
+                .as_deref()
+                .expect("touch requires a test-owned physical file");
+            set_modified_time(path, Duration::from_secs(60))?;
+        }
         self.result(rule)
     }
 
@@ -175,6 +191,38 @@ impl ImageDecoder for FakeDecoder {
             message: "not used".into(),
         })
     }
+}
+
+struct PhysicalGoldenFile {
+    directory: PathBuf,
+    path: PathBuf,
+}
+
+impl PhysicalGoldenFile {
+    fn new(name: &str, contents: &[u8]) -> Self {
+        static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
+        let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
+        let directory = std::env::temp_dir().join(format!("photoreview-rs-fallback-{}-{id}", std::process::id()));
+        fs::create_dir(&directory).expect("create test-owned fallback directory");
+        let path = directory.join(name);
+        fs::write(&path, contents).expect("write test-owned fallback fixture");
+        set_modified_time(&path, Duration::ZERO).expect("set deterministic initial fixture timestamp");
+        Self { directory, path }
+    }
+}
+
+impl Drop for PhysicalGoldenFile {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.directory);
+    }
+}
+
+fn set_modified_time(path: &Path, offset: Duration) -> io::Result<()> {
+    let modified = SystemTime::UNIX_EPOCH + Duration::from_secs(1_700_000_000) + offset;
+    OpenOptions::new()
+        .write(true)
+        .open(path)?
+        .set_times(fs::FileTimes::new().set_modified(modified))
 }
 
 struct FakeThumbnail {
@@ -334,23 +382,32 @@ fn run_case(case: &Value, expected: &Value) {
             }) as Box<dyn RawContainerReader>,
         ])))
     };
+    let physical_file = if case["file"]["physical"] == true {
+        let filename = case["file"]["name"]
+            .as_str()
+            .map(str::to_owned)
+            .unwrap_or_else(|| format!("{name}.dng"));
+        Some(PhysicalGoldenFile::new(
+            &filename,
+            fixture_bytes(&case["file"]).as_ref(),
+        ))
+    } else {
+        None
+    };
+    let path = physical_file
+        .as_ref()
+        .map_or_else(
+            || PathBuf::from(format!(r"C:\raw-fallback-fixtures\{name}.dng")),
+            |file| file.path.clone(),
+        )
+        .to_string_lossy()
+        .into_owned();
+    // The scripted inner decoder changes this test-owned file's timestamp after its first preview read.
     let inner = Arc::new(FakeDecoder {
         spec: case["inner"].clone(),
         stats: Arc::clone(&decoder_stats),
         full: false,
-    });
-    let full = case.get("full").filter(|v| !v.is_null()).map(|spec| {
-        Arc::new(FakeDecoder {
-            spec: spec.clone(),
-            stats: Arc::clone(&decoder_stats),
-            full: true,
-        }) as Arc<dyn ImageDecoder>
-    });
-    let thumbnail = case.get("fallback").filter(|v| !v.is_null()).map(|spec| {
-        Arc::new(FakeThumbnail {
-            spec: spec.clone(),
-            stats: Arc::clone(&thumbnail_calls),
-        }) as Arc<dyn RawPreviewFallback>
+        physical_path: physical_file.as_ref().map(|file| file.path.clone()),
     });
     let decoder = RawDecoder::with_options(
         inner,
@@ -360,30 +417,23 @@ fn run_case(case: &Value, expected: &Value) {
                 stats: Arc::clone(&io_stats),
             })),
             registry,
-            preview_fallback: thumbnail,
-            no_preview_decoder: full,
+            preview_fallback: case.get("fallback").filter(|v| !v.is_null()).map(|spec| {
+                Arc::new(FakeThumbnail {
+                    spec: spec.clone(),
+                    stats: Arc::clone(&thumbnail_calls),
+                }) as Arc<dyn RawPreviewFallback>
+            }),
+            no_preview_decoder: case.get("full").filter(|v| !v.is_null()).map(|spec| {
+                Arc::new(FakeDecoder {
+                    spec: spec.clone(),
+                    stats: Arc::clone(&decoder_stats),
+                    full: true,
+                    physical_path: None,
+                }) as Arc<dyn ImageDecoder>
+            }),
             ..Default::default()
         },
     );
-    let physical_path = if case["file"]["physical"] == true {
-        let filename = case["file"]["name"]
-            .as_str()
-            .map(str::to_owned)
-            .unwrap_or_else(|| format!("{name}.dng"));
-        let path = std::env::temp_dir().join(format!("photoreview-rs-fallback-{}-{filename}", std::process::id()));
-        std::fs::write(&path, fixture_bytes(&case["file"]).as_ref()).expect("write physical golden fixture");
-        Some(path)
-    } else {
-        None
-    };
-    let path = physical_path
-        .as_ref()
-        .map_or_else(
-            || PathBuf::from(format!(r"C:\raw-fallback-fixtures\{name}.dng")),
-            Clone::clone,
-        )
-        .to_string_lossy()
-        .into_owned();
     let ops = case["ops"].as_array().expect("ops");
     let steps = expected["steps"].as_array().expect("steps");
     assert_eq!(ops.len(), steps.len(), "{name}: steps align");
@@ -489,9 +539,9 @@ fn run_case(case: &Value, expected: &Value) {
             &observed_requests[prior_preview_attempts..],
             "{name} step {index}: full inner DecodeRequest trace"
         );
-    }
-    if let Some(path) = physical_path {
-        std::fs::remove_file(path).expect("remove physical golden fixture");
+        // The oracle records source opens and stream bytes per operation; container reads remain cumulative.
+        io_stats.opens.store(0, Ordering::SeqCst);
+        io_stats.bytes.store(0, Ordering::SeqCst);
     }
 }
 
@@ -509,11 +559,8 @@ fn golden_raw_decoder_fallback_runs_virtual_fixed_container_cases() {
     let mut gated = Vec::new();
     for (case, expected_case) in cases.iter().zip(&expected.cases) {
         assert_eq!(case["name"], expected_case["name"], "input/golden ordering");
-        // The identity case rewrites the source during an inner decode; it remains gated until the fixture supports
-        // that stateful hook. Default-registry cases below use the real registry against tiny checked-in TIFF fixtures.
-        if (case["container"]["kind"] != "fixed" && case["container"]["kind"] != "default")
-            || case["name"] == "identity-stale-offsets-after-file-change"
-        {
+        // Default-registry cases use the real registry against tiny checked-in TIFF fixtures.
+        if case["container"]["kind"] != "fixed" && case["container"]["kind"] != "default" {
             gated.push(case["name"].as_str().unwrap_or("?"));
             continue;
         }
@@ -522,7 +569,7 @@ fn golden_raw_decoder_fallback_runs_virtual_fixed_container_cases() {
     }
     eprintln!("raw-decoder-fallback: ran {ran}/75 cases; gated {gated:?}");
     assert!(
-        ran >= 70,
+        ran == 75,
         "expected broad fallback integration coverage, got {ran}; gated {}",
         gated.len()
     );
