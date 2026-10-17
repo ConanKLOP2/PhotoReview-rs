@@ -18,7 +18,7 @@ pr-core.workspace = true
 pr-imaging.workspace = true
 
 [target.'cfg(windows)'.dependencies]
-windows = { workspace = true, features = ["Win32_System_ProcessStatus", "Win32_System_RemoteDesktop", "Win32_System_Threading"] }
+windows = { workspace = true, features = ["Win32_Storage_FileSystem", "Win32_System_ProcessStatus", "Win32_System_Registry", "Win32_System_RemoteDesktop", "Win32_System_Threading"] }
 windows-core = { workspace = true }
 
 [dev-dependencies]
