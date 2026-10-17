@@ -221,6 +221,71 @@ pub(crate) fn read_batched(
     expected: usize,
     cancellation: &CancelToken,
 ) -> Result<Option<Vec<String>>, SelectionReadError> {
+    read_batched_with(folder_view, folder, expected, cancellation, &ShellPidlApi)
+}
+
+pub(crate) trait PidlApi {
+    fn parse_folder(&self, folder: &str) -> Option<NonNull<c_void>>;
+    fn combine(&self, parent: NonNull<c_void>, child: NonNull<c_void>) -> Option<NonNull<c_void>>;
+    fn file_system_path(&self, absolute: NonNull<c_void>) -> Option<NonNull<u16>>;
+}
+
+struct ShellPidlApi;
+
+impl PidlApi for ShellPidlApi {
+    fn parse_folder(&self, folder: &str) -> Option<NonNull<c_void>> {
+        let encoded: Vec<u16> = folder.encode_utf16().chain(std::iter::once(0)).collect();
+        let mut parent_raw = std::ptr::null_mut();
+        let mut attributes = 0u32;
+        let hr = unsafe {
+            // SAFETY: `encoded` is null-terminated and remains alive through the synchronous shell call; output is writable.
+            com::sh_parse_display_name(
+                encoded.as_ptr(),
+                std::ptr::null_mut(),
+                &mut parent_raw,
+                0,
+                &mut attributes,
+            )
+        };
+        let parent = NonNull::new(parent_raw)?;
+        if hr < 0 {
+            // SAFETY: SHParseDisplayName transfers any non-null output through the task allocator even on failure.
+            unsafe { CoTaskMemFree(parent.as_ptr()) }
+            None
+        } else {
+            Some(parent)
+        }
+    }
+
+    fn combine(&self, parent: NonNull<c_void>, child: NonNull<c_void>) -> Option<NonNull<c_void>> {
+        // SAFETY: both pointers are live PIDLs owned by the caller for this synchronous shell call.
+        NonNull::new(unsafe { com::il_combine(parent.as_ptr(), child.as_ptr()) })
+    }
+
+    fn file_system_path(&self, absolute: NonNull<c_void>) -> Option<NonNull<u16>> {
+        let mut name = std::ptr::null_mut();
+        let hr = unsafe {
+            // SAFETY: `absolute` is a live PIDL and `name` is a writable task-allocator output slot.
+            com::sh_get_name_from_id_list(absolute.as_ptr(), com::ids::SIGDN_FILE_SYSTEM_PATH, &mut name)
+        };
+        let name = NonNull::new(name)?;
+        if hr < 0 {
+            // SAFETY: SHGetNameFromIDList returns task-allocator memory even if it also reports failure.
+            unsafe { CoTaskMemFree(name.as_ptr().cast()) }
+            None
+        } else {
+            Some(name)
+        }
+    }
+}
+
+pub(crate) fn read_batched_with(
+    folder_view: NonNull<c_void>,
+    folder: &str,
+    expected: usize,
+    cancellation: &CancelToken,
+    pidls: &dyn PidlApi,
+) -> Result<Option<Vec<String>>, SelectionReadError> {
     // Cancellation before starting avoids opening the enumerator or parsing the folder PIDL.
     if cancellation.is_canceled() {
         return Err(canceled_error());
@@ -229,29 +294,10 @@ pub(crate) fn read_batched(
         Ok(pointer) => OwnedCom(pointer),
         Err(_) => return Ok(None),
     };
-    let encoded: Vec<u16> = folder.encode_utf16().chain(std::iter::once(0)).collect();
-    let mut parent_raw = std::ptr::null_mut();
-    let mut attributes = 0u32;
-    let parse_hr = unsafe {
-        // SAFETY: `encoded` is null-terminated and remains alive through the synchronous shell call; the output slot is writable.
-        com::sh_parse_display_name(
-            encoded.as_ptr(),
-            std::ptr::null_mut(),
-            &mut parent_raw,
-            0,
-            &mut attributes,
-        )
-    };
-    let Some(parent) = NonNull::new(parent_raw) else {
-        if parse_hr < 0 {
-            return Ok(None);
-        }
+    let Some(parent) = pidls.parse_folder(folder) else {
         return Ok(None);
     };
     let parent = TaskMem(parent);
-    if parse_hr < 0 {
-        return Ok(None);
-    }
 
     let batch_len = expected.clamp(1, MAX_BATCH);
     let mut children = vec![std::ptr::null_mut(); batch_len];
@@ -275,29 +321,16 @@ pub(crate) fn read_batched(
             let Some(child_ptr) = NonNull::new(*child) else {
                 continue;
             };
-            let absolute = unsafe {
-                // SAFETY: parent and child are live PIDLs returned by shell APIs; ILCombine returns a task-allocator PIDL.
-                com::il_combine(parent.as_ptr(), child_ptr.as_ptr())
-            };
-            let Some(absolute) = NonNull::new(absolute) else {
+            let Some(absolute) = pidls.combine(parent.0, child_ptr) else {
                 free_pidls(&mut children);
                 return Ok(None);
             };
             let absolute = TaskMem(absolute);
-            let mut name = std::ptr::null_mut();
-            let hr = unsafe {
-                // SAFETY: `absolute` is a valid combined PIDL; `name` is a writable output slot.
-                com::sh_get_name_from_id_list(absolute.as_ptr(), com::ids::SIGDN_FILE_SYSTEM_PATH, &mut name)
-            };
-            let Some(name) = NonNull::new(name) else {
+            let Some(name) = pidls.file_system_path(absolute.0) else {
                 free_pidls(&mut children);
                 return Ok(None);
             };
             let name = TaskMem(name);
-            if hr < 0 {
-                free_pidls(&mut children);
-                return Ok(None);
-            }
             match read_wide_string(name.as_ptr()) {
                 Some(path) => result.push(path),
                 None => {
@@ -307,7 +340,7 @@ pub(crate) fn read_batched(
             }
         }
         free_pidls(&mut children);
-        if hr == com::ids::S_FALSE || fetched == 0 {
+        if fetched == 0 || result.len() >= expected {
             break;
         }
     }
