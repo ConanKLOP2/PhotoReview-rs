@@ -84,3 +84,11 @@
   merged"), W5-14b (red tests blocked). Git history shows W5-02a/03/07/08/09/11a/11c merges from earlier runs; their verdicts are not in the final reports.
 - NOT run: corpus tests (P-30), `#[ignore]` native tests (no pinned DLLs staged in this run), mutation for units without a report.
 - Next: land W5-04..06, registry, RawDecoder chain (12b1/12b2/12c), TurboJPEG decoder (14b); commit the W5-16c killing tests.
+
+## Continuation (2026-10-17, `integration/wave-5`)
+- Continued from the current remote state in `.claude/worktrees/integ-w5`; the dirty primary `master` checkout was left untouched.
+- Integrated W5-04 NEF (`637fc7d`): `cargo fmt --all --check` and `cargo test -p pr-imaging-raw --locked` passed; NEF suite 61 passed, 1 ignored.
+- Integrated W5-14b TurboJPEG decoder (`9e0c57f`): `cargo fmt --all --check`, `cargo clippy -p pr-turbojpeg --all-targets --locked -- -D warnings`, and `cargo test -p pr-turbojpeg --locked` passed; crate totals 157 passed, 65 ignored across test binaries (native DLL and slow allocation cases remain ignored by default). This is crate-level evidence, not the full workspace gate.
+- Updated `docs/PARITY.md` to remove stale duplicate Todo rows and reflect the current partial W5 state. W5-04 and W5-14b still need verifier reports; W5-14b has the documented oracle gap for file-input rows.
+- Delegated W5-05 ORF port and W5-16c mutation-killer closure on isolated unit branches; neither is merged yet. Next: integrate their completed commits, continue W5-06 and W5-11a registry / W5-12 decoder chain, then run full workspace gates before PR.
+- Not done in this continuation: cargo-mutants for W5-04/W5-14b, native tests with pinned DLLs, RAW corpus tests, full workspace clippy/test gate, push/PR.
