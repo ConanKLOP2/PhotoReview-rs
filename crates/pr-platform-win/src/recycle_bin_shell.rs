@@ -7,12 +7,10 @@ use std::io;
 
 use pr_core::time::DateTimeUtc;
 use windows::Win32::Foundation::{FILETIME, PROPERTYKEY};
-use windows::Win32::System::Com::{
-    CoInitializeEx, CoTaskMemFree, CoUninitialize, COINIT_APARTMENTTHREADED, IBindCtx,
-};
+use windows::Win32::System::Com::{COINIT_APARTMENTTHREADED, CoInitializeEx, CoTaskMemFree, CoUninitialize, IBindCtx};
 use windows::Win32::UI::Shell::{
-    BHID_EnumItems, BHID_SFUIObject, CMINVOKECOMMANDINFO, FOLDERID_RecycleBinFolder, IContextMenu,
-    IEnumShellItems, IShellItem, IShellItem2, SHGetKnownFolderItem, SIGDN_PARENTRELATIVE,
+    BHID_EnumItems, BHID_SFUIObject, CMINVOKECOMMANDINFO, FOLDERID_RecycleBinFolder, IContextMenu, IEnumShellItems,
+    IShellItem, IShellItem2, SHGetKnownFolderItem, SIGDN_PARENTRELATIVE,
 };
 use windows::core::{PCSTR, PWSTR};
 
@@ -75,11 +73,8 @@ pub(super) fn open_session() -> io::Result<Option<Box<dyn RecycleRestoreSession>
 impl RecycleRestoreSession for ComRecycleBinSession {
     fn entries(&mut self) -> io::Result<Vec<Box<dyn RecycleRestoreEntry>>> {
         // SAFETY: the folder is a live IShellItem created in this thread; EnumItems returns an owned COM interface.
-        let enumerator: IEnumShellItems = unsafe {
-            self.folder
-                .BindToHandler(None::<&IBindCtx>, &BHID_EnumItems)
-        }
-        .map_err(|error| com_error("Could not enumerate Recycle Bin items", error.code().0))?;
+        let enumerator: IEnumShellItems = unsafe { self.folder.BindToHandler(None::<&IBindCtx>, &BHID_EnumItems) }
+            .map_err(|error| com_error("Could not enumerate Recycle Bin items", error.code().0))?;
 
         let mut entries: Vec<Box<dyn RecycleRestoreEntry>> = Vec::new();
         loop {
@@ -120,8 +115,8 @@ impl RecycleRestoreEntry for ComRecycleBinEntry {
         // SAFETY: `item` is a live IShellItem2; GetDisplayName allocates a CoTaskMem string, released below.
         let display_name = unsafe { self.item.GetDisplayName(SIGDN_PARENTRELATIVE) }
             .map_err(|error| per_item_com_error("Could not read Recycle Bin item name", error.code().0))?;
-        let name = take_pwstr(display_name)
-            .map_err(|error| per_item_error(RecycleRestoreItemFailureKind::Format, error))?;
+        let name =
+            take_pwstr(display_name).map_err(|error| per_item_error(RecycleRestoreItemFailureKind::Format, error))?;
 
         // SAFETY: `item` is a live IShellItem2 and the property key is the documented System.Size key.
         let size = match unsafe { self.item.GetUInt64(&PKEY_SIZE) } {
@@ -133,7 +128,10 @@ impl RecycleRestoreEntry for ComRecycleBinEntry {
         };
 
         // SAFETY: `item` is a live IShellItem2 and the property key is the documented System.DateModified key.
-        let FILETIME { dwLowDateTime, dwHighDateTime } = match unsafe { self.item.GetFileTime(&PKEY_DATE_MODIFIED) } {
+        let FILETIME {
+            dwLowDateTime,
+            dwHighDateTime,
+        } = match unsafe { self.item.GetFileTime(&PKEY_DATE_MODIFIED) } {
             Ok(value) => value,
             Err(_) => return Ok(None),
         };
@@ -155,11 +153,8 @@ impl RecycleRestoreEntry for ComRecycleBinEntry {
 
     fn invoke_restore(&self) -> io::Result<()> {
         // SAFETY: this live Shell item binds to its own context menu; the returned COM reference is owned locally.
-        let menu: IContextMenu = unsafe {
-            self.item
-                .BindToHandler(None::<&IBindCtx>, &BHID_SFUIObject)
-        }
-        .map_err(|error| com_error("Could not open Recycle Bin item context menu", error.code().0))?;
+        let menu: IContextMenu = unsafe { self.item.BindToHandler(None::<&IBindCtx>, &BHID_SFUIObject) }
+            .map_err(|error| com_error("Could not open Recycle Bin item context menu", error.code().0))?;
 
         let command = CMINVOKECOMMANDINFO {
             cbSize: std::mem::size_of::<CMINVOKECOMMANDINFO>() as u32,
@@ -185,10 +180,14 @@ fn get_shell_string(item: &IShellItem2, key: &PROPERTYKEY) -> io::Result<Option<
 
 fn take_pwstr(value: PWSTR) -> io::Result<String> {
     if value.is_null() {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, "Shell returned a null string"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Shell returned a null string",
+        ));
     }
     // SAFETY: Shell GetDisplayName/GetString return a NUL-terminated CoTaskMem string; conversion happens before free.
-    let text = unsafe { value.to_string() }.map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Shell string is invalid UTF-16"));
+    let text = unsafe { value.to_string() }
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Shell string is invalid UTF-16"));
     // SAFETY: both APIs transfer the PWSTR allocation to the caller using the COM task allocator.
     unsafe { CoTaskMemFree(Some(value.0.cast())) };
     text

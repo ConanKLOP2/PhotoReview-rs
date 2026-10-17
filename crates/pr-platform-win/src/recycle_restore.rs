@@ -112,7 +112,12 @@ impl WindowsRecycleBinRestoreBackend {
         }
     }
 
-    fn restore_on_worker(&self, original_path: &Path, expected_size: u64, expected_last_write_utc: DateTimeUtc) -> io::Result<bool> {
+    fn restore_on_worker(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
         let Ok(expected_size_i64) = i64::try_from(expected_size) else {
             return Ok(false);
         };
@@ -138,7 +143,10 @@ impl WindowsRecycleBinRestoreBackend {
                                 &path,
                                 expected_size_i64,
                                 expected_last_write_utc,
-                            ) => matches.push(entry),
+                            ) =>
+                        {
+                            matches.push(entry)
+                        }
                         Ok(_) => {}
                         Err(error) if error.is_per_item() => {
                             log.error("Recycle Bin item inspection failed", Some(&error.source));
@@ -173,11 +181,7 @@ impl crate::recycle_bin::RecycleBinRestoreBackend for WindowsRecycleBinRestoreBa
 }
 
 /// C# `WaitForRestore`: `attempts` checks, one pause after each miss, then a final check.
-pub fn wait_for_restore_with(
-    attempts: usize,
-    mut proof: impl FnMut() -> bool,
-    mut pause: impl FnMut(),
-) -> bool {
+pub fn wait_for_restore_with(attempts: usize, mut proof: impl FnMut() -> bool, mut pause: impl FnMut()) -> bool {
     for _ in 0..attempts {
         if proof() {
             return true;
@@ -229,13 +233,7 @@ mod tests {
     }
 
     fn candidate(name: &str) -> RecycleCandidate {
-        RecycleCandidate::new(
-            Some(r"C:\photos".to_owned()),
-            Some(name.to_owned()),
-            123,
-            stamp(),
-            None,
-        )
+        RecycleCandidate::new(Some(r"C:\photos".to_owned()), Some(name.to_owned()), 123, stamp(), None)
     }
 
     struct FakeEntry {
@@ -287,9 +285,7 @@ mod tests {
             drops: Arc<AtomicUsize>,
         ) -> Self {
             Self {
-                metadata: metadata.map_err(|error| {
-                    (error.kind, error.source.kind(), error.source.to_string())
-                }),
+                metadata: metadata.map_err(|error| (error.kind, error.source.kind(), error.source.to_string())),
                 invokes,
                 drops,
                 invoke_error: false,
@@ -297,12 +293,13 @@ mod tests {
         }
 
         fn build(&self) -> Box<dyn RecycleRestoreEntry> {
-            let metadata = self.metadata.clone().map_err(|(kind, error_kind, message)| {
-                RecycleRestoreItemError {
+            let metadata = self
+                .metadata
+                .clone()
+                .map_err(|(kind, error_kind, message)| RecycleRestoreItemError {
                     kind,
                     source: io::Error::new(error_kind, message),
-                }
-            });
+                });
             Box::new(FakeEntry {
                 metadata,
                 invokes: Arc::clone(&self.invokes),
@@ -377,7 +374,14 @@ mod tests {
     fn wait_for_restore_returns_false_after_final_bounded_check() {
         let mut checks = 0;
         let mut pauses = 0;
-        assert!(!wait_for_restore_with(2, || { checks += 1; false }, || pauses += 1));
+        assert!(!wait_for_restore_with(
+            2,
+            || {
+                checks += 1;
+                false
+            },
+            || pauses += 1
+        ));
         assert_eq!(checks, 3);
         assert_eq!(pauses, 2);
     }
@@ -393,7 +397,12 @@ mod tests {
     fn restore_proof_requires_both_exact_size_and_utc_write_time() {
         assert!(is_expected_restore_file(123, stamp(), 123, stamp()));
         assert!(!is_expected_restore_file(122, stamp(), 123, stamp()));
-        assert!(!is_expected_restore_file(123, DateTimeUtc::from_ticks(stamp().ticks() + 1).unwrap(), 123, stamp()));
+        assert!(!is_expected_restore_file(
+            123,
+            DateTimeUtc::from_ticks(stamp().ticks() + 1).unwrap(),
+            123,
+            stamp()
+        ));
     }
 
     #[test]
@@ -403,8 +412,16 @@ mod tests {
         let session_drops = Arc::new(AtomicUsize::new(0));
         let opened = Arc::new(AtomicUsize::new(0));
         let entries = vec![
-            FakeEntrySpec::from_metadata(Ok(Some(candidate("photo.jpg"))), Arc::clone(&invokes), Arc::clone(&entry_drops)),
-            FakeEntrySpec::from_metadata(Ok(Some(candidate("other.jpg"))), Arc::clone(&invokes), Arc::clone(&entry_drops)),
+            FakeEntrySpec::from_metadata(
+                Ok(Some(candidate("photo.jpg"))),
+                Arc::clone(&invokes),
+                Arc::clone(&entry_drops),
+            ),
+            FakeEntrySpec::from_metadata(
+                Ok(Some(candidate("other.jpg"))),
+                Arc::clone(&invokes),
+                Arc::clone(&entry_drops),
+            ),
         ];
         let backend = backend(entries, true, Arc::clone(&opened), Arc::clone(&session_drops));
         assert!(restore(&backend).expect("single candidate restores"));
@@ -420,7 +437,11 @@ mod tests {
         let entry_drops = Arc::new(AtomicUsize::new(0));
         let session_drops = Arc::new(AtomicUsize::new(0));
         let backend = backend(
-            vec![FakeEntrySpec::from_metadata(Ok(None), Arc::clone(&invokes), Arc::clone(&entry_drops))],
+            vec![FakeEntrySpec::from_metadata(
+                Ok(None),
+                Arc::clone(&invokes),
+                Arc::clone(&entry_drops),
+            )],
             true,
             Arc::new(AtomicUsize::new(0)),
             Arc::clone(&session_drops),
@@ -437,8 +458,16 @@ mod tests {
         let entry_drops = Arc::new(AtomicUsize::new(0));
         let backend = backend(
             vec![
-                FakeEntrySpec::from_metadata(Ok(Some(candidate("photo.jpg"))), Arc::clone(&invokes), Arc::clone(&entry_drops)),
-                FakeEntrySpec::from_metadata(Ok(Some(candidate("photo.jpg"))), Arc::clone(&invokes), Arc::clone(&entry_drops)),
+                FakeEntrySpec::from_metadata(
+                    Ok(Some(candidate("photo.jpg"))),
+                    Arc::clone(&invokes),
+                    Arc::clone(&entry_drops),
+                ),
+                FakeEntrySpec::from_metadata(
+                    Ok(Some(candidate("photo.jpg"))),
+                    Arc::clone(&invokes),
+                    Arc::clone(&entry_drops),
+                ),
             ],
             true,
             Arc::new(AtomicUsize::new(0)),
@@ -461,7 +490,11 @@ mod tests {
             Arc::clone(&invokes),
             Arc::clone(&entry_drops),
         );
-        let matched = FakeEntrySpec::from_metadata(Ok(Some(candidate("photo.jpg"))), Arc::clone(&invokes), Arc::clone(&entry_drops));
+        let matched = FakeEntrySpec::from_metadata(
+            Ok(Some(candidate("photo.jpg"))),
+            Arc::clone(&invokes),
+            Arc::clone(&entry_drops),
+        );
         let backend = backend(
             vec![skipped, matched],
             true,
@@ -515,7 +548,10 @@ mod tests {
             Arc::new(AtomicUsize::new(0)),
             Arc::clone(&session_drops),
         );
-        assert_eq!(restore(&backend).expect_err("verb failure propagates").to_string(), "fake invocation failed");
+        assert_eq!(
+            restore(&backend).expect_err("verb failure propagates").to_string(),
+            "fake invocation failed"
+        );
         assert_eq!(invokes.load(Ordering::SeqCst), 1);
         assert_eq!(entry_drops.load(Ordering::SeqCst), 1);
         assert_eq!(session_drops.load(Ordering::SeqCst), 1);

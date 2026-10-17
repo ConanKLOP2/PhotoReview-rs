@@ -234,3 +234,7 @@
 - Independent static re-review of `2ab03a9` found no new W6-05 issue. It confirmed `windows` 0.62.2 maps `LoadLibraryW` failures through `Error::from_thread()` / `HRESULT_FROM_WIN32`, so checking the low 16 bits recognizes `ERROR_MOD_NOT_FOUND`; the focused tests use APIs present in the locked windows crate. No Cargo compile/test was run.
 - C: has about 115 MiB free and no Cargo/rustc process was running. PR #24 (Wave 5 integration) and PR #26 (Wave 5 continuation) are merged; `integ-w5` is clean at `f1e5053`. An attempt to remove only its verified stale `target` was rejected by automatic policy because the command used `Remove-Item -Recurse`; no files were removed and no command variant will be retried. The dirty primary checkout and current mutation outputs remain untouched.
 - Wave 6 remains ineligible for PR until fmt/clippy/workspace tests and mutation triage receive required verdicts. The W6 integration branch remains pushed at `2ab03a9`; no Wave 7 changes are stacked on it.
+
+## Wave 6 workspace formatting gate (2026-10-18)
+- `cargo fmt --all --check` found unformatted W6-03 forwarding and W6-02 recycle files. Applied `cargo fmt --all`; the full formatting gate and `git diff --check` now pass. Changes are rustfmt-only layout and import ordering.
+- No Clippy or workspace tests were attempted: C: remains under 1 GiB free and the stale merged Wave 5 target cleanup was blocked by automatic policy. Wave 6 remains unready for PR until the remaining required gates run.

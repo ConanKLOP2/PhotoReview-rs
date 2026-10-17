@@ -48,7 +48,12 @@ pub trait ForwardClientTransport: Send + Sync {
     /// Writes the complete request before the deadline.
     fn write_all(&self, bytes: &[u8], deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError>;
     /// Reads at most `limit` bytes through the first newline, before the deadline.
-    fn read_reply(&self, limit: usize, deadline: Instant, cancel: &CancelToken) -> Result<Vec<u8>, ForwardTransportError>;
+    fn read_reply(
+        &self,
+        limit: usize,
+        deadline: Instant,
+        cancel: &CancelToken,
+    ) -> Result<Vec<u8>, ForwardTransportError>;
     /// Closes the connection so later calls open a fresh pipe instance.
     fn disconnect(&self);
 }
@@ -78,9 +83,16 @@ impl<T> ForwardPipeClient<T> {
         transport: T,
     ) -> Result<Self, ForwardError> {
         let Some(pipe_name) = pipe_name else {
-            return Err(ForwardError::Failed { kind: "ArgumentNullException".to_owned() });
+            return Err(ForwardError::Failed {
+                kind: "ArgumentNullException".to_owned(),
+            });
         };
-        Ok(Self { pipe_name, allow_server_foreground, transport, operation: std::sync::Mutex::new(()) })
+        Ok(Self {
+            pipe_name,
+            allow_server_foreground,
+            transport,
+            operation: std::sync::Mutex::new(()),
+        })
     }
 }
 
@@ -130,10 +142,14 @@ impl<T: ForwardClientTransport> ForwardPipeClient<T> {
         match self.transport.write_all(&request, deadline, cancel) {
             Ok(()) => {}
             Err(_) if cancel.is_canceled() => return Err(ForwardError::Canceled),
-            Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: true }) => {
+            Err(ForwardTransportError::WriteFailed {
+                bytes_may_have_reached_server: true,
+            }) => {
                 return Ok(ForwardOutcome::Unknown);
             }
-            Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: false })
+            Err(ForwardTransportError::WriteFailed {
+                bytes_may_have_reached_server: false,
+            })
             | Err(ForwardTransportError::Failed)
             | Err(ForwardTransportError::NoServer)
             | Err(ForwardTransportError::TimedOut) => return Ok(ForwardOutcome::NoInstance),
@@ -164,13 +180,20 @@ mod native {
     use std::os::windows::ffi::OsStrExt;
     use std::sync::Mutex;
 
-    use windows::Win32::Foundation::{CloseHandle, FreeLibrary, GENERIC_READ, GENERIC_WRITE, HANDLE, WAIT_OBJECT_0, WAIT_TIMEOUT};
+    use windows::Win32::Foundation::{
+        CloseHandle, FreeLibrary, GENERIC_READ, GENERIC_WRITE, HANDLE, WAIT_OBJECT_0, WAIT_TIMEOUT,
+    };
     use windows::Win32::Security::{GetLengthSid, GetTokenInformation, TOKEN_QUERY, TOKEN_USER, TokenUser};
-    use windows::Win32::Storage::FileSystem::{CreateFileW, FILE_ATTRIBUTE_NORMAL, FILE_FLAG_OVERLAPPED, FILE_SHARE_NONE, OPEN_EXISTING, ReadFile, WriteFile};
+    use windows::Win32::Storage::FileSystem::{
+        CreateFileW, FILE_ATTRIBUTE_NORMAL, FILE_FLAG_OVERLAPPED, FILE_SHARE_NONE, OPEN_EXISTING, ReadFile, WriteFile,
+    };
     use windows::Win32::System::IO::{CancelIoEx, GetOverlappedResult, OVERLAPPED};
-    use windows::Win32::System::Pipes::{GetNamedPipeServerProcessId, WaitNamedPipeW};
-    use windows::Win32::System::Threading::{CreateEventW, GetCurrentProcess, OpenProcess, OpenProcessToken, WaitForMultipleObjects, PROCESS_QUERY_LIMITED_INFORMATION};
     use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
+    use windows::Win32::System::Pipes::{GetNamedPipeServerProcessId, WaitNamedPipeW};
+    use windows::Win32::System::Threading::{
+        CreateEventW, GetCurrentProcess, OpenProcess, OpenProcessToken, PROCESS_QUERY_LIMITED_INFORMATION,
+        WaitForMultipleObjects,
+    };
     use windows::core::PCWSTR;
 
     /// Concrete overlapped named-pipe transport. Each send owns one handle, protected for cancellation-safe I/O.
@@ -183,7 +206,9 @@ mod native {
         let mut required = 0u32;
         // SAFETY: the first call requests the required length; null buffer and zero size are the documented probe.
         let _ = unsafe { GetTokenInformation(token, TokenUser, None, 0, &mut required) };
-        if required < std::mem::size_of::<TOKEN_USER>() as u32 { return None; }
+        if required < std::mem::size_of::<TOKEN_USER>() as u32 {
+            return None;
+        }
         let word_count = (required as usize).div_ceil(std::mem::size_of::<u64>());
         let mut storage = vec![0u64; word_count];
         // SAFETY: storage is aligned, writable for `required` bytes, and the token remains open for this call.
@@ -201,7 +226,9 @@ mod native {
         let user = unsafe { &*storage.as_ptr().cast::<TOKEN_USER>() };
         // SAFETY: `user.User.Sid` points to the valid SID returned by GetTokenInformation.
         let length = unsafe { GetLengthSid(user.User.Sid) } as usize;
-        if length == 0 { return None; }
+        if length == 0 {
+            return None;
+        }
         // SAFETY: the returned SID is inside `storage`; GetLengthSid provides its readable byte length.
         Some(unsafe { std::slice::from_raw_parts(user.User.Sid.0.cast::<u8>(), length) }.to_vec())
     }
@@ -222,9 +249,18 @@ mod native {
     unsafe impl Sync for WindowsForwardTransport {}
 
     impl WindowsForwardTransport {
-        fn wide(value: &str) -> Vec<u16> { OsStr::new(value).encode_wide().chain(Some(0)).collect() }
+        fn wide(value: &str) -> Vec<u16> {
+            OsStr::new(value).encode_wide().chain(Some(0)).collect()
+        }
 
-        fn wait_io(&self, handle: HANDLE, event: HANDLE, deadline: Instant, cancel: &CancelToken, overlapped: &OVERLAPPED) -> Result<u32, ForwardTransportError> {
+        fn wait_io(
+            &self,
+            handle: HANDLE,
+            event: HANDLE,
+            deadline: Instant,
+            cancel: &CancelToken,
+            overlapped: &OVERLAPPED,
+        ) -> Result<u32, ForwardTransportError> {
             loop {
                 if cancel.is_canceled() {
                     // SAFETY: cancels only this operation; handle and OVERLAPPED stay live until the result is drained.
@@ -253,7 +289,9 @@ mod native {
                         .map(|_| transferred)
                         .map_err(|_| ForwardTransportError::Failed);
                 }
-                if wait == WAIT_TIMEOUT { continue; }
+                if wait == WAIT_TIMEOUT {
+                    continue;
+                }
                 // SAFETY: stop a pending operation before its event, buffer, and OVERLAPPED go out of scope.
                 let _ = unsafe { CancelIoEx(handle, Some(overlapped as *const OVERLAPPED)) };
                 let mut ignored = 0;
@@ -263,25 +301,45 @@ mod native {
             }
         }
 
-        fn transfer(&self, bytes: &mut [u8], write: bool, deadline: Instant, cancel: &CancelToken) -> Result<usize, ForwardTransportError> {
-            if cancel.is_canceled() { return Err(ForwardTransportError::Failed); }
-            if Instant::now() >= deadline { return Err(ForwardTransportError::TimedOut); }
+        fn transfer(
+            &self,
+            bytes: &mut [u8],
+            write: bool,
+            deadline: Instant,
+            cancel: &CancelToken,
+        ) -> Result<usize, ForwardTransportError> {
+            if cancel.is_canceled() {
+                return Err(ForwardTransportError::Failed);
+            }
+            if Instant::now() >= deadline {
+                return Err(ForwardTransportError::TimedOut);
+            }
             let guard = self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-            let Some(handle) = *guard else { return Err(ForwardTransportError::Failed) };
+            let Some(handle) = *guard else {
+                return Err(ForwardTransportError::Failed);
+            };
             // SAFETY: creates a private event owned until the overlapped operation finishes.
             let event = unsafe { CreateEventW(None, true, false, None) }.map_err(|_| ForwardTransportError::Failed)?;
-            let mut overlapped = OVERLAPPED { hEvent: event, ..OVERLAPPED::default() };
+            let mut overlapped = OVERLAPPED {
+                hEvent: event,
+                ..OVERLAPPED::default()
+            };
             let mut transferred = 0;
             // SAFETY: handle is live; the buffer and OVERLAPPED remain valid until completion is observed.
             let result = unsafe {
-                if write { WriteFile(handle, Some(bytes), Some(&mut transferred), Some(&mut overlapped)) }
-                else { ReadFile(handle, Some(bytes), Some(&mut transferred), Some(&mut overlapped)) }
+                if write {
+                    WriteFile(handle, Some(bytes), Some(&mut transferred), Some(&mut overlapped))
+                } else {
+                    ReadFile(handle, Some(bytes), Some(&mut transferred), Some(&mut overlapped))
+                }
             };
             let count = match result {
                 Ok(()) => Ok(transferred),
                 Err(error) if error.code().0 as u32 == 0x8007_03E5 => {
                     match self.wait_io(handle, event, deadline, cancel, &overlapped) {
-                        Err(ForwardTransportError::TimedOut) if write => Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: true }),
+                        Err(ForwardTransportError::TimedOut) if write => Err(ForwardTransportError::WriteFailed {
+                            bytes_may_have_reached_server: true,
+                        }),
                         result => result,
                     }
                 }
@@ -294,17 +352,41 @@ mod native {
     }
 
     impl ForwardClientTransport for WindowsForwardTransport {
-        fn connect(&self, pipe_name: &str, deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError> {
-            if cancel.is_canceled() { return Err(ForwardTransportError::Failed); }
+        fn connect(
+            &self,
+            pipe_name: &str,
+            deadline: Instant,
+            cancel: &CancelToken,
+        ) -> Result<(), ForwardTransportError> {
+            if cancel.is_canceled() {
+                return Err(ForwardTransportError::Failed);
+            }
             let name = Self::wide(&format!(r"\\.\pipe\{pipe_name}"));
             loop {
                 // SAFETY: name is NUL-terminated and the returned handle is owned by this transport.
-                let handle = unsafe { CreateFileW(PCWSTR(name.as_ptr()), GENERIC_READ.0 | GENERIC_WRITE.0, FILE_SHARE_NONE, None, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, None) };
+                let handle = unsafe {
+                    CreateFileW(
+                        PCWSTR(name.as_ptr()),
+                        GENERIC_READ.0 | GENERIC_WRITE.0,
+                        FILE_SHARE_NONE,
+                        None,
+                        OPEN_EXISTING,
+                        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+                        None,
+                    )
+                };
                 match handle {
-                    Ok(handle) => { *self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = Some(handle); return Ok(()); }
+                    Ok(handle) => {
+                        *self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = Some(handle);
+                        return Ok(());
+                    }
                     Err(error) if error.code().0 as u32 == 0x8007_0002 || error.code().0 as u32 == 0x8007_00E7 => {
-                        if cancel.is_canceled() { return Err(ForwardTransportError::Failed); }
-                        if Instant::now() >= deadline { return Err(ForwardTransportError::NoServer); }
+                        if cancel.is_canceled() {
+                            return Err(ForwardTransportError::Failed);
+                        }
+                        if Instant::now() >= deadline {
+                            return Err(ForwardTransportError::NoServer);
+                        }
                         let wait = deadline.saturating_duration_since(Instant::now()).min(CANCEL_POLL);
                         let wait_name = PCWSTR(name.as_ptr());
                         // SAFETY: name remains live; pipe-busy waits are bounded and missing-pipe retries are throttled.
@@ -322,9 +404,13 @@ mod native {
             let Some(handle) = *guard else { return false };
             let mut pid = 0;
             // SAFETY: handle is the connected pipe owned by this client; pid is a valid output slot.
-            if unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.is_err() { return false; }
+            if unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.is_err() {
+                return false;
+            }
             // SAFETY: opens only the process reported by the connected pipe for limited token inspection.
-            let Ok(server) = (unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid) }) else { return false };
+            let Ok(server) = (unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid) }) else {
+                return false;
+            };
             let server_sid = process_user_sid(server);
             // SAFETY: OpenProcess returned an owned process handle, which is closed once here.
             let _ = unsafe { CloseHandle(server) };
@@ -334,30 +420,47 @@ mod native {
         }
         fn allow_server_foreground(&self) -> Result<(), ForegroundPermissionError> {
             let guard = self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-            let Some(handle) = *guard else { return Err(ForegroundPermissionError::InvalidOperation) };
+            let Some(handle) = *guard else {
+                return Err(ForegroundPermissionError::InvalidOperation);
+            };
             let mut pid = 0;
             // SAFETY: handle is the connected pipe owned by this client; pid is a valid output slot.
-            unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.map_err(|_| ForegroundPermissionError::InvalidOperation)?;
-            if pid == 0 { return Err(ForegroundPermissionError::InvalidOperation); }
+            unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }
+                .map_err(|_| ForegroundPermissionError::InvalidOperation)?;
+            if pid == 0 {
+                return Err(ForegroundPermissionError::InvalidOperation);
+            }
             let library = Self::wide("user32.dll");
             // SAFETY: `library` is a live NUL-terminated UTF-16 string.
-            let module = unsafe { LoadLibraryW(PCWSTR(library.as_ptr())) }.map_err(|_| ForegroundPermissionError::LibraryUnavailable)?;
+            let module = unsafe { LoadLibraryW(PCWSTR(library.as_ptr())) }
+                .map_err(|_| ForegroundPermissionError::LibraryUnavailable)?;
             // SAFETY: module is a live user32 module and the byte string is NUL-terminated.
-            let Some(procedure) = (unsafe { GetProcAddress(module, windows::core::s!("AllowSetForegroundWindow")) }) else {
+            let Some(procedure) = (unsafe { GetProcAddress(module, windows::core::s!("AllowSetForegroundWindow")) })
+            else {
                 // SAFETY: `module` is the owned reference returned by LoadLibraryW and is released on lookup failure.
                 let _ = unsafe { FreeLibrary(module) };
                 return Err(ForegroundPermissionError::EntryPointUnavailable);
             };
             type AllowForeground = unsafe extern "system" fn(u32) -> windows::Win32::Foundation::BOOL;
             // SAFETY: the named Windows API has the declared system ABI and one u32 PID parameter.
-            let allow: AllowForeground = unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, AllowForeground>(procedure) };
+            let allow: AllowForeground =
+                unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, AllowForeground>(procedure) };
             // SAFETY: calling the documented API with the server PID is valid; a false result is best-effort denial.
             let allowed = unsafe { allow(pid) };
             // SAFETY: this call owns the reference returned by LoadLibraryW and frees it once.
             let _ = unsafe { FreeLibrary(module) };
-            if allowed.as_bool() { Ok(()) } else { Err(ForegroundPermissionError::InvalidOperation) }
+            if allowed.as_bool() {
+                Ok(())
+            } else {
+                Err(ForegroundPermissionError::InvalidOperation)
+            }
         }
-        fn write_all(&self, bytes: &[u8], deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError> {
+        fn write_all(
+            &self,
+            bytes: &[u8],
+            deadline: Instant,
+            cancel: &CancelToken,
+        ) -> Result<(), ForwardTransportError> {
             let mut offset = 0;
             while offset < bytes.len() {
                 let mut chunk = bytes[offset..].to_vec();
@@ -366,19 +469,34 @@ mod native {
                     Err(ForwardTransportError::TimedOut) if offset == 0 => return Err(ForwardTransportError::TimedOut),
                     // Once a prior chunk was written, or an overlapped write timed out, some bytes may have arrived.
                     Err(ForwardTransportError::TimedOut | ForwardTransportError::WriteFailed { .. }) => {
-                        return Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: true });
+                        return Err(ForwardTransportError::WriteFailed {
+                            bytes_may_have_reached_server: true,
+                        });
                     }
                     Err(_) if offset == 0 => {
-                        return Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: false });
+                        return Err(ForwardTransportError::WriteFailed {
+                            bytes_may_have_reached_server: false,
+                        });
                     }
-                    Err(_) => return Err(ForwardTransportError::WriteFailed { bytes_may_have_reached_server: true }),
+                    Err(_) => {
+                        return Err(ForwardTransportError::WriteFailed {
+                            bytes_may_have_reached_server: true,
+                        });
+                    }
                 };
-                if written == 0 { return Err(ForwardTransportError::Failed); }
+                if written == 0 {
+                    return Err(ForwardTransportError::Failed);
+                }
                 offset += written;
             }
             Ok(())
         }
-        fn read_reply(&self, limit: usize, deadline: Instant, cancel: &CancelToken) -> Result<Vec<u8>, ForwardTransportError> {
+        fn read_reply(
+            &self,
+            limit: usize,
+            deadline: Instant,
+            cancel: &CancelToken,
+        ) -> Result<Vec<u8>, ForwardTransportError> {
             let mut reply = Vec::with_capacity(limit);
             while reply.len() < limit && !reply.contains(&b'\n') {
                 let mut buffer = [0u8; 1];
@@ -401,7 +519,12 @@ mod native {
 
     impl Drop for WindowsForwardTransport {
         fn drop(&mut self) {
-            if let Some(handle) = self.pipe.get_mut().unwrap_or_else(std::sync::PoisonError::into_inner).take() {
+            if let Some(handle) = self
+                .pipe
+                .get_mut()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .take()
+            {
                 // SAFETY: this transport owns the connected client handle and closes it exactly once.
                 let _ = unsafe { CloseHandle(handle) };
             }
