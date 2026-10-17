@@ -4,7 +4,7 @@ mod forward_client;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use forward_client::{ForwardClientTransport, ForwardPipeClient, ForwardTransportError};
+use forward_client::{ForwardClientTransport, ForegroundPermissionError, ForwardPipeClient, ForwardTransportError};
 use pr_core::instance::forwarding::{ForwardError, ForwardOutcome};
 use pr_core::instance::protocol;
 use pr_core::sync::CancelToken;
@@ -18,8 +18,10 @@ struct State {
     reply: Result<Vec<u8>, ForwardTransportError>,
     request: Vec<u8>,
     foreground_calls: usize,
+    foreground_result: Result<(), ForegroundPermissionError>,
     disconnect_calls: usize,
     cancel_on_read: Option<CancelToken>,
+    server_is_current_user: bool,
 }
 impl Default for State {
     fn default() -> Self {
@@ -29,8 +31,10 @@ impl Default for State {
             reply: Ok(Vec::new()),
             request: Vec::new(),
             foreground_calls: 0,
+            foreground_result: Ok(()),
             disconnect_calls: 0,
             cancel_on_read: None,
+            server_is_current_user: true,
         }
     }
 }
@@ -40,7 +44,12 @@ impl ForwardClientTransport for FakeTransport {
         if cancel.is_canceled() { return Err(ForwardTransportError::Failed); }
         self.0.lock().unwrap().connect
     }
-    fn allow_server_foreground(&self) { self.0.lock().unwrap().foreground_calls += 1; }
+    fn server_is_current_user(&self) -> bool { self.0.lock().unwrap().server_is_current_user }
+    fn allow_server_foreground(&self) -> Result<(), ForegroundPermissionError> {
+        let mut state = self.0.lock().unwrap();
+        state.foreground_calls += 1;
+        state.foreground_result
+    }
     fn write_all(&self, bytes: &[u8], _: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError> {
         if cancel.is_canceled() { return Err(ForwardTransportError::Failed); }
         let mut state = self.0.lock().unwrap();
@@ -170,6 +179,36 @@ fn send_foreground_permission_is_best_effort() {
     let fake = FakeTransport::default(); fake.0.lock().unwrap().reply = Ok(b"OK\n".to_vec());
     assert_eq!(client(fake.clone(), true).send_with_timeout(&[], Duration::from_secs(1), &CancelToken::none()), Ok(ForwardOutcome::Delivered));
     assert_eq!(fake.0.lock().unwrap().foreground_calls, 1);
+}
+
+#[test]
+fn send_foreground_api_errors_do_not_change_delivery_outcome() {
+    // C# twin: AllowServerForeground_StillDelivers, including missing-library and invalid-operation paths.
+    for error in [
+        ForegroundPermissionError::LibraryUnavailable,
+        ForegroundPermissionError::EntryPointUnavailable,
+        ForegroundPermissionError::InvalidOperation,
+    ] {
+        let fake = FakeTransport::default();
+        {
+            let mut state = fake.0.lock().unwrap();
+            state.reply = Ok(b"OK\n".to_vec());
+            state.foreground_result = Err(error);
+        }
+        assert_eq!(client(fake.clone(), true).send_with_timeout(&[], Duration::from_secs(1), &CancelToken::none()), Ok(ForwardOutcome::Delivered));
+        assert_eq!(fake.0.lock().unwrap().foreground_calls, 1);
+    }
+}
+
+#[test]
+fn send_pipe_owned_by_another_user_is_rejected_before_write() {
+    // C# twin: NamedPipeClientStream.CurrentUserOnly refuses a pipe owned by a different user.
+    let fake = FakeTransport::default();
+    fake.0.lock().unwrap().server_is_current_user = false;
+    assert_eq!(client(fake.clone(), true).send_with_timeout(&[path("one")], Duration::from_secs(1), &CancelToken::none()), Ok(ForwardOutcome::NoInstance));
+    let state = fake.0.lock().unwrap();
+    assert!(state.request.is_empty());
+    assert_eq!(state.foreground_calls, 0);
 }
 
 #[test]

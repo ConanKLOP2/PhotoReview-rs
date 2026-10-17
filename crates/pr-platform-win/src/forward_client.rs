@@ -26,12 +26,25 @@ pub enum ForwardTransportError {
     WriteFailed { bytes_may_have_reached_server: bool },
 }
 
+/// Optional foreground request failures are deliberately non-fatal to forwarding.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ForegroundPermissionError {
+    /// user32.dll could not be loaded on this system.
+    LibraryUnavailable,
+    /// The optional API is missing from user32.dll.
+    EntryPointUnavailable,
+    /// The pipe or foreground request was invalid or denied.
+    InvalidOperation,
+}
+
 /// Injectable pipe operations used by the client and deterministic contract tests.
 pub trait ForwardClientTransport: Send + Sync {
     /// Establishes a connection by the deadline.
     fn connect(&self, pipe_name: &str, deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError>;
+    /// Confirms the connected server process belongs to the current user, failing closed on inspection errors.
+    fn server_is_current_user(&self) -> bool;
     /// Best-effort foreground permission for the connected server process.
-    fn allow_server_foreground(&self);
+    fn allow_server_foreground(&self) -> Result<(), ForegroundPermissionError>;
     /// Writes the complete request before the deadline.
     fn write_all(&self, bytes: &[u8], deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError>;
     /// Reads at most `limit` bytes through the first newline, before the deadline.
@@ -108,8 +121,11 @@ impl<T: ForwardClientTransport> ForwardPipeClient<T> {
             Err(_) if cancel.is_canceled() => return Err(ForwardError::Canceled),
             Err(_) => return Ok(ForwardOutcome::NoInstance),
         }
+        if !self.transport.server_is_current_user() {
+            return Ok(ForwardOutcome::NoInstance);
+        }
         if self.allow_server_foreground {
-            self.transport.allow_server_foreground();
+            let _ = self.transport.allow_server_foreground();
         }
         match self.transport.write_all(&request, deadline, cancel) {
             Ok(()) => {}
@@ -148,18 +164,56 @@ mod native {
     use std::os::windows::ffi::OsStrExt;
     use std::sync::Mutex;
 
-    use windows::Win32::Foundation::{CloseHandle, GENERIC_READ, GENERIC_WRITE, HANDLE, WAIT_OBJECT_0, WAIT_TIMEOUT};
+    use windows::Win32::Foundation::{CloseHandle, FreeLibrary, GENERIC_READ, GENERIC_WRITE, HANDLE, WAIT_OBJECT_0, WAIT_TIMEOUT};
+    use windows::Win32::Security::{GetLengthSid, GetTokenInformation, TOKEN_QUERY, TOKEN_USER, TokenUser};
     use windows::Win32::Storage::FileSystem::{CreateFileW, FILE_ATTRIBUTE_NORMAL, FILE_FLAG_OVERLAPPED, FILE_SHARE_NONE, OPEN_EXISTING, ReadFile, WriteFile};
     use windows::Win32::System::IO::{CancelIoEx, GetOverlappedResult, OVERLAPPED};
     use windows::Win32::System::Pipes::{GetNamedPipeServerProcessId, WaitNamedPipeW};
-    use windows::Win32::System::Threading::{CreateEventW, WaitForMultipleObjects};
-    use windows::Win32::UI::WindowsAndMessaging::AllowSetForegroundWindow;
+    use windows::Win32::System::Threading::{CreateEventW, GetCurrentProcess, OpenProcess, OpenProcessToken, WaitForMultipleObjects, PROCESS_QUERY_LIMITED_INFORMATION};
+    use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
     use windows::core::PCWSTR;
 
     /// Concrete overlapped named-pipe transport. Each send owns one handle, protected for cancellation-safe I/O.
     #[derive(Default)]
     pub struct WindowsForwardTransport {
         pipe: Mutex<Option<HANDLE>>,
+    }
+
+    fn sid_bytes(token: HANDLE) -> Option<Vec<u8>> {
+        let mut required = 0u32;
+        // SAFETY: the first call requests the required length; null buffer and zero size are the documented probe.
+        let _ = unsafe { GetTokenInformation(token, TokenUser, None, 0, &mut required) };
+        if required < std::mem::size_of::<TOKEN_USER>() as u32 { return None; }
+        let word_count = (required as usize).div_ceil(std::mem::size_of::<u64>());
+        let mut storage = vec![0u64; word_count];
+        // SAFETY: storage is aligned, writable for `required` bytes, and the token remains open for this call.
+        unsafe {
+            GetTokenInformation(
+                token,
+                TokenUser,
+                Some(storage.as_mut_ptr().cast()),
+                (storage.len() * std::mem::size_of::<u64>()) as u32,
+                &mut required,
+            )
+        }
+        .ok()?;
+        // SAFETY: GetTokenInformation filled storage with a complete TOKEN_USER structure.
+        let user = unsafe { &*storage.as_ptr().cast::<TOKEN_USER>() };
+        // SAFETY: `user.User.Sid` points to the valid SID returned by GetTokenInformation.
+        let length = unsafe { GetLengthSid(user.User.Sid) } as usize;
+        if length == 0 { return None; }
+        // SAFETY: the returned SID is inside `storage`; GetLengthSid provides its readable byte length.
+        Some(unsafe { std::slice::from_raw_parts(user.User.Sid.0.cast::<u8>(), length) }.to_vec())
+    }
+
+    fn process_user_sid(process: HANDLE) -> Option<Vec<u8>> {
+        let mut token = HANDLE::default();
+        // SAFETY: `process` is live and `token` is a valid output slot.
+        unsafe { OpenProcessToken(process, TOKEN_QUERY, &mut token) }.ok()?;
+        let sid = sid_bytes(token);
+        // SAFETY: OpenProcessToken returned the owned token handle, which is closed once here.
+        let _ = unsafe { CloseHandle(token) };
+        sid
     }
 
     // SAFETY: kernel handles are process-wide values; moving this owner between threads does not alter handle validity.
@@ -263,16 +317,45 @@ mod native {
                 }
             }
         }
-        fn allow_server_foreground(&self) {
+        fn server_is_current_user(&self) -> bool {
             let guard = self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-            if let Some(handle) = *guard {
-                let mut pid = 0;
-                // SAFETY: handle is the connected pipe owned by this client; pid is a valid output slot.
-                if unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.is_ok() {
-                    // SAFETY: the API accepts a process ID; failure is intentionally best effort.
-                    let _ = unsafe { AllowSetForegroundWindow(pid) };
-                }
-            }
+            let Some(handle) = *guard else { return false };
+            let mut pid = 0;
+            // SAFETY: handle is the connected pipe owned by this client; pid is a valid output slot.
+            if unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.is_err() { return false; }
+            // SAFETY: opens only the process reported by the connected pipe for limited token inspection.
+            let Ok(server) = (unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid) }) else { return false };
+            let server_sid = process_user_sid(server);
+            // SAFETY: OpenProcess returned an owned process handle, which is closed once here.
+            let _ = unsafe { CloseHandle(server) };
+            // SAFETY: GetCurrentProcess returns the process pseudo-handle and does not transfer ownership.
+            let current_sid = process_user_sid(unsafe { GetCurrentProcess() });
+            matches!((server_sid, current_sid), (Some(server), Some(current)) if server == current)
+        }
+        fn allow_server_foreground(&self) -> Result<(), ForegroundPermissionError> {
+            let guard = self.pipe.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let Some(handle) = *guard else { return Err(ForegroundPermissionError::InvalidOperation) };
+            let mut pid = 0;
+            // SAFETY: handle is the connected pipe owned by this client; pid is a valid output slot.
+            unsafe { GetNamedPipeServerProcessId(handle, &mut pid) }.map_err(|_| ForegroundPermissionError::InvalidOperation)?;
+            if pid == 0 { return Err(ForegroundPermissionError::InvalidOperation); }
+            let library = Self::wide("user32.dll");
+            // SAFETY: `library` is a live NUL-terminated UTF-16 string.
+            let module = unsafe { LoadLibraryW(PCWSTR(library.as_ptr())) }.map_err(|_| ForegroundPermissionError::LibraryUnavailable)?;
+            // SAFETY: module is a live user32 module and the byte string is NUL-terminated.
+            let Some(procedure) = (unsafe { GetProcAddress(module, windows::core::s!("AllowSetForegroundWindow")) }) else {
+                // SAFETY: `module` is the owned reference returned by LoadLibraryW and is released on lookup failure.
+                let _ = unsafe { FreeLibrary(module) };
+                return Err(ForegroundPermissionError::EntryPointUnavailable);
+            };
+            type AllowForeground = unsafe extern "system" fn(u32) -> windows::Win32::Foundation::BOOL;
+            // SAFETY: the named Windows API has the declared system ABI and one u32 PID parameter.
+            let allow: AllowForeground = unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, AllowForeground>(procedure) };
+            // SAFETY: calling the documented API with the server PID is valid; a false result is best-effort denial.
+            let allowed = unsafe { allow(pid) };
+            // SAFETY: this call owns the reference returned by LoadLibraryW and frees it once.
+            let _ = unsafe { FreeLibrary(module) };
+            if allowed.as_bool() { Ok(()) } else { Err(ForegroundPermissionError::InvalidOperation) }
         }
         fn write_all(&self, bytes: &[u8], deadline: Instant, cancel: &CancelToken) -> Result<(), ForwardTransportError> {
             let mut offset = 0;
