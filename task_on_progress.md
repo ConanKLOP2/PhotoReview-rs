@@ -107,3 +107,8 @@
 - Integrated `wu/W5-16c` test commit `0eca1b5` as a test-only change in `decoder_repair.rs`: two boundary cases cover truncated marker after an APP segment and a minimum-length APP segment before EOI.
 - Focused mutation run: 8 mutants, 2 caught by the new tests, 6 not killed (5 remove handoff fields outside this subtask; 1 loop-boundary mutant judged equivalent). The prior 277-mutant run was interrupted by a global-gate hang under an unrelated `full_decode_queued_waiters -> 0` mutation; the historical set of 10 survivors is not fully reconstructed. W5-16c stays Partial.
 - Mutation run for ORF is still running in this worktree. `mutants.out/` is cargo-mutants output and must be removed after the process completes; do not stage it.
+
+## Wave 5 integration update (2026-10-17, W5-11a)
+- Integrated W5-11a registry/ICC at `e541625`; direct integration test `cargo test -p pr-imaging-raw --test registry --locked` passed 30/30, including both full goldens (49 registry cases, 44 ICC cases). Agent also reported full RAW crate tests 729 passed, 0 failed, 8 ignored; fmt/clippy passed. ICC asset SHA-256 matches C# baseline `d92d6aae` (`60fb2adecacf82132db0b1c09b303316f3bdb9e2823e7ba096d01627d12d57c9`).
+- This completes the registry dependency for W5-12 RawDecoder. Updated the I-14 parity status; selector/EXIF work remains separately tracked.
+- ORF mutation run is ongoing; latest snapshot: 67 caught, 5 missed, 1 unviable, 0 timeout. Review the five survivors once the run completes; likely some are zero-boundary equivalences, but no verdict yet.
