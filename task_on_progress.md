@@ -14,12 +14,12 @@
 
 ## State (verified, 2026-10-17)
 - `master` includes PR #25 (`3d8f2cf`, W6-05 platform primitives); squash auto-merge completed.
-- W5 continuation is rebased on `origin/master` at `3d8f2cf` (head `527d2ec`). Final gates passed on this exact tree: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` (4,847 passed, 0 failed, 420 ignored across 209 binaries), and `tools/sync-from-csharp.ps1 -Check`. Native LibRaw/TurboJPEG DLL tests and RAW corpus tests remain unexecuted; W5 remains Partial for those and incomplete historical mutation coverage.
+- W5 continuation is rebased on `origin/master` at `3d8f2cf` (head `2d57224`). Final gates passed on this exact tree: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` (4,847 passed, 0 failed, 420 ignored across 209 binaries), and `tools/sync-from-csharp.ps1 -Check`. Native LibRaw/TurboJPEG DLL tests and RAW corpus tests remain unexecuted; W5 remains Partial for those and incomplete historical mutation coverage.
 - Build guidance uses a separate Cargo target directory per worktree and removes it after the unit verdict or PR merge.
 - No C# files or real Recycle Bin operations were used.
 
 ## Next steps
-1. Push `codex/w5-continuation` and open one W5 PR to `master`; enable squash auto-merge and the available CI automation.
+1. W5 PR #26 is open; squash auto-merge is enabled with `gh pr merge --auto --squash`. The `ccd_pr` auto-fix/bind monitor is not available in this session; follow the app CI event rather than polling GitHub manually.
 2. W6-05 is merged. W6-04 contract is drafted and pushed as `wu/W6-04-contract` (`1579276`); continue its implementation after the W5 PR lands.
 3. After each merge, reconcile `task_on_progress.md` and remove only the merged wave's branches, worktrees, and target directories.
 ## Wave 5 contracts (branch `wave5/contracts`, based on master `bb6a865`)
@@ -180,4 +180,4 @@
 ## Wave 5 continuation PR preparation (2026-10-17)
 - Rebuilt the W5 tree delta from `origin/master`, then rebased on `3d8f2cf`; the reviewed W5 commit changes 57 files. The initial workspace tests passed before review fixes. Independent review then found and fixed the missing LibRaw corpus selection/full-decode parity, white-balance thumbnail decode, and two TurboJPEG synthetic native twins. W5-16c OQ5 and W5-14b OQ5 now record the chosen TurboJPEG test approach.
 - W5 remains Partial: native LibRaw/TurboJPEG DLL and RAW corpus execution are unavailable, and the historical W5 mutation survivor set is not fully reconstructed.
-- Final rebased gate passed: fmt, clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), and C# asset sync check. W6-05 PR #25 is merged; W5 is ready for its own PR.
+- Final rebased gate passed: fmt, clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), and C# asset sync check. W6-05 PR #25 is merged; W5 PR #26 is open with squash auto-merge enabled.
