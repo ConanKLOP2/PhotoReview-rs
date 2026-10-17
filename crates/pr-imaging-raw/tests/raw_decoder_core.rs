@@ -1,6 +1,6 @@
-//! W5-12b1 core tests. The golden driver executes only operations that can be exercised without W5-12b2's fallback
-//! chain: container lookup, caching, `read_info`, localized unsupported/corrupt errors and header I/O propagation.
-//! Decode operations remain in the shared C# golden package but are explicitly counted as gated until fallback lands.
+//! W5-12b1 core tests. The golden driver executes `read_info` and decode steps that fail before an inner image decoder
+//! is needed. Image-producing decode cases need the scripted decoder seam; physical identity and stateful-hook cases
+//! also need the C# fixture behavior and stay explicitly gated.
 
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
 use std::path::Path;
@@ -253,7 +253,24 @@ fn expected_info_matches(info: ImageInfo, expected: &Value) -> bool {
         && expected["size"] == json!([info.width(), info.height()])
 }
 
-fn run_read_info_case(input: &Value, expected: &Value) -> usize {
+fn decode_fails_before_inner(case: &Value) -> bool {
+    let kind = case["container"]["kind"].as_str().unwrap_or("none");
+    // `range-negative-offset` stays gated: its current output differs from the C# oracle's open count (1 vs. 2).
+    matches!(kind, "none" | "throws")
+        || case["file"]["faulty_read"].is_string()
+        || matches!(
+            case["name"].as_str(),
+            Some(
+                "unsupported-default-registry-3-bytes"
+                    | "malformed-default-registry-12-bytes"
+                    | "range-past-end"
+                    | "range-longer-than-cap"
+                    | "range-adobe-rgb-not-a-jpeg"
+            )
+        )
+}
+
+fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
     let file = file_bytes(input);
     let stats = Arc::new(ReadStats::default());
     let reader_reads = Arc::new(AtomicUsize::new(0));
@@ -270,18 +287,23 @@ fn run_read_info_case(input: &Value, expected: &Value) -> usize {
                 .unwrap_or("RAW header read exceeded hard limit.")
                 .to_owned(),
         ),
-        "default" | "none" => ReaderResult::None,
+        "none" => ReaderResult::None,
+        "default" => ReaderResult::None,
         other => panic!("core golden harness does not support container kind {other}"),
     };
-    let registry = match result {
-        ReaderResult::None => Arc::new(RawContainerReaderRegistry::with_readers(Vec::<
-            Box<dyn RawContainerReader>,
-        >::new())),
-        result => Arc::new(RawContainerReaderRegistry::with_readers([Box::new(GoldenReader {
-            result,
-            reads: Arc::clone(&reader_reads),
-        })
-            as Box<dyn RawContainerReader>])),
+    let registry = if input["container"]["kind"] == "default" && input["file"]["faulty_read"].is_null() {
+        Arc::new(RawContainerReaderRegistry::new())
+    } else {
+        match result {
+            ReaderResult::None => Arc::new(RawContainerReaderRegistry::with_readers(Vec::<
+                Box<dyn RawContainerReader>,
+            >::new())),
+            result => Arc::new(RawContainerReaderRegistry::with_readers([Box::new(GoldenReader {
+                result,
+                reads: Arc::clone(&reader_reads),
+            })
+                as Box<dyn RawContainerReader>])),
+        }
     };
     let decoder = RawDecoder::with_options(
         Arc::new(NeverCalledDecoder),
@@ -295,13 +317,11 @@ fn run_read_info_case(input: &Value, expected: &Value) -> usize {
     let path = format!(r"C:\raw-virtual-nonexistent\{name}.dng");
     let ops = input["ops"].as_array().expect("ops");
     let steps = expected["steps"].as_array().expect("golden steps");
-    let mut executed = 0;
+    let mut read_info_steps = 0;
+    let mut executed_steps = 0;
     for (index, op) in ops.iter().enumerate() {
         let is_read_info = op["op"] == "read_info";
-        let is_safe_early_decode = op["op"] == "decode"
-            && (input["container"]["kind"] == "none"
-                || input["container"]["kind"] == "throws"
-                || input["file"]["faulty_read"].is_string());
+        let is_safe_early_decode = op["op"] == "decode" && decode_fails_before_inner(input);
         if !is_read_info && !is_safe_early_decode {
             continue;
         }
@@ -364,10 +384,11 @@ fn run_read_info_case(input: &Value, expected: &Value) -> usize {
             "one lookup must invoke at most one container read"
         );
         if is_read_info {
-            executed += 1;
+            read_info_steps += 1;
         }
+        executed_steps += 1;
     }
-    executed
+    (read_info_steps, executed_steps)
 }
 
 #[test]
@@ -380,33 +401,41 @@ fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
     let input_cases = inputs["cases"].as_array().expect("input cases");
     assert_eq!(input_cases.len(), 50, "the C# core package has 50 cases");
     assert_eq!(expected.cases.len(), 50, "the expected core golden has 50 cases");
-    let mut ran = 0usize;
-    let mut gated = 0usize;
+    let mut read_info_steps = 0usize;
+    let mut executed_steps = 0usize;
+    let mut gated_cases = Vec::new();
+    let mut gated_steps = Vec::new();
     for (input, golden_case) in input_cases.iter().zip(&expected.cases) {
         assert_eq!(input["name"], golden_case["name"], "input/golden case order");
-        let simple_virtual_reader_case = input["container"]["kind"] == "fixed"
-            || input["container"]["kind"] == "none"
-            || input["container"]["kind"] == "throws"
-            || (input["container"]["kind"] == "default" && input["file"]["faulty_read"].is_string());
-        let has_read_info = input["ops"]
-            .as_array()
-            .is_some_and(|ops| ops.iter().any(|op| op["op"] == "read_info"));
-        let has_stateful_hook = input["ops"].as_array().is_some_and(|ops| {
+        let early_error_container = decode_fails_before_inner(input);
+        let all_ops_run_without_image_decoder = input["ops"].as_array().is_some_and(|ops| {
             ops.iter()
-                .any(|op| matches!(op["op"].as_str(), Some("hooks" | "rewrite")))
+                .all(|op| op["op"] == "read_info" || (op["op"] == "decode" && early_error_container))
         });
-        if has_read_info && simple_virtual_reader_case && !has_stateful_hook {
-            ran += run_read_info_case(input, golden_case);
+        if all_ops_run_without_image_decoder {
+            let (infos, steps) = run_read_info_case(input, golden_case);
+            read_info_steps += infos;
+            executed_steps += steps;
         } else {
-            gated += 1;
+            let name = input["name"].as_str().unwrap_or("<unnamed>");
+            gated_cases.push(name.to_owned());
+            for (index, op) in input["ops"].as_array().into_iter().flatten().enumerate() {
+                gated_steps.push(format!("{name}[{index}] {}", op["op"].as_str().unwrap_or("?")));
+            }
         }
     }
     assert_eq!(
-        ran, 12,
-        "six fixed size/cache cases, unknown-size preview header, unsupported, thrown reader, and header I/O are core-only"
+        read_info_steps, 13,
+        "the 13 core read_info steps are executable without an image decoder"
+    );
+    assert_eq!(
+        executed_steps, 21,
+        "13 read_info and 8 early-error decode steps are executable"
     );
     eprintln!(
-        "raw-decoder-core: ran {ran} read_info steps; gated {gated} whole cases while W5-12b2/physical hooks are unavailable"
+        "raw-decoder-core: executed {executed_steps} steps ({read_info_steps} read_info); gated {} cases and {} steps: cases={gated_cases:?}; steps={gated_steps:?}",
+        gated_cases.len(),
+        gated_steps.len()
     );
 }
 
