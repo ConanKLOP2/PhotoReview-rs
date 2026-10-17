@@ -277,6 +277,8 @@ fn decode_repeated_200_times_does_not_continuously_grow_private_bytes() {
     if !native_available() {
         return;
     }
+    // Skips cleanly without the corpus (P-30); on a corpus machine the missing helper below keeps the test red.
+    let Some(_corpus) = corpus_dir() else { return };
     todo!("needs process_private_bytes() (contract Open question 4): not ported yet")
 }
 
@@ -288,6 +290,8 @@ fn read_info_portrait_rewritten_corpus_file_matches_decoded_oriented_dimensions(
     if !native_available() {
         return;
     }
+    // Skips cleanly without the corpus (P-30); on a corpus machine the missing helpers below keep the test red.
+    let Some(_corpus) = corpus_dir() else { return };
     todo!("needs W5-11a registry and the RawOrientationPatcher test-support port")
 }
 

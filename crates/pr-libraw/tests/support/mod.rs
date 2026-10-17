@@ -9,7 +9,7 @@ use std::collections::VecDeque;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use std::time::Duration;
 
 use pr_core::abstractions::SourceReadPriority;
@@ -31,6 +31,20 @@ static GLOBAL_GATE: Mutex<()> = Mutex::new(());
 /// Holds the process-wide gate lock for the duration of one test (contract trap T9).
 pub fn global_gate_lock() -> MutexGuard<'static, ()> {
     GLOBAL_GATE.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// `NativePixelMemory::live_count()` is process-wide, so the tests that assert it (exclusive) must not overlap with any test that
+/// allocates or frees pixel buffers (shared). C# serialises the same way through its xUnit collection.
+static PIXEL_MEMORY: RwLock<()> = RwLock::new(());
+
+/// Taken by every test that allocates or frees pixel buffers.
+pub fn pixel_memory_shared() -> RwLockReadGuard<'static, ()> {
+    PIXEL_MEMORY.read().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// Taken by the tests that assert `NativePixelMemory::live_count()` deltas.
+pub fn pixel_memory_exclusive() -> RwLockWriteGuard<'static, ()> {
+    PIXEL_MEMORY.write().unwrap_or_else(PoisonError::into_inner)
 }
 
 // ------------------------------------------------------------------------------------------------ golden inputs
@@ -112,7 +126,7 @@ pub fn unique_temp_dir(label: &str) -> PathBuf {
 }
 
 /// The C# `FormatError` table of `tests/golden/libraw-decoder-native.json` (`format-error` case), as a closure for the pure
-/// helpers (`check_result`, `create_failure`, `open_file_with`). Unknown codes are `LibRaw error {code}`.
+/// helpers (`check_result`, `create_failure`, `open_file_with`). Codes outside the table get the library's own `Unknown error code` text (`libraw_strerror`).
 pub fn golden_format_error() -> impl Fn(i32) -> String {
     let golden = pr_test_support::golden::load("libraw-decoder-native");
     let table = golden
@@ -128,7 +142,7 @@ pub fn golden_format_error() -> impl Fn(i32) -> String {
             .iter()
             .find(|row| row["code"].as_i64() == Some(i64::from(code)))
             .and_then(|row| row["message"].as_str().map(str::to_owned))
-            .unwrap_or_else(|| format!("LibRaw error {code}"))
+            .unwrap_or_else(|| "Unknown error code".to_owned())
     }
 }
 
@@ -692,11 +706,33 @@ pub fn canceled_token() -> CancelToken {
     token
 }
 
-/// Golden `select_corpus_files` helper (C# `LibRawCorpusSelectionTests`): not ported yet, see the decoder test that uses it.
-pub fn select_corpus_files(_files: &[PathBuf], _strict: bool) -> Vec<PathBuf> {
-    todo!(
-        "test-support port of LibRawCorpusSelectionTests.SelectCorpusFiles (contract Depends on: test-support helper)"
-    )
+/// C# `LibRawDecoderTests.SelectCorpusFiles` (without the `PHOTOREVIEW_LIBRAW_SAMPLE` branch, which the native test reads itself):
+/// only RAW files (`is_raw_extension`) are ever selected; `strict` keeps every one of them, ordered by name ignoring case; the
+/// default keeps the first file (by name, ignoring case) of each extension (ignoring case), also ordered by name.
+pub fn select_corpus_files(files: &[PathBuf], strict: bool) -> Vec<PathBuf> {
+    let key = |path: &PathBuf| path.to_string_lossy().to_lowercase();
+    let mut raw: Vec<PathBuf> = files
+        .iter()
+        .filter(|path| pr_imaging_raw::formats::is_raw_extension(path.to_str()))
+        .cloned()
+        .collect();
+    raw.sort_by_key(key);
+    if strict {
+        return raw;
+    }
+    let mut seen = std::collections::HashSet::new();
+    let mut picked: Vec<PathBuf> = raw
+        .into_iter()
+        .filter(|path| {
+            let extension = path
+                .extension()
+                .map(|e| e.to_string_lossy().to_lowercase())
+                .unwrap_or_default();
+            seen.insert(extension)
+        })
+        .collect();
+    picked.sort_by_key(key);
+    picked
 }
 
 /// Bytes of the golden `trim-*` input (`hex` or fill+patches), used by the decoder logic tests too.

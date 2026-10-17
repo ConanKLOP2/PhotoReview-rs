@@ -44,8 +44,8 @@ use pr_libraw::resampler::ResampleError;
 
 use support::{
     ExpectError, FakeApi, FakeCodec, FakeProbe, FakeStaged, Log, Script, WAIT_LIMIT, global_gate_lock, kind_name,
-    memory_source, memory_source_never_read, request, select_corpus_files, stage_logger, trim_case_bytes,
-    xorshift32_bytes,
+    memory_source, memory_source_never_read, pixel_memory_exclusive, pixel_memory_shared, request, select_corpus_files,
+    stage_logger, trim_case_bytes, xorshift32_bytes,
 };
 
 // ------------------------------------------------------------------------------------------------ helpers
@@ -296,6 +296,7 @@ fn check_result_failure_while_cancelled_is_a_cancellation() {
 // C#: LibRawSeamGapTests.Decode_OutOfMemoryInTheDecodeBody_BecomesAnInvalidOperation (no inner error in Rust)
 #[test]
 fn decode_out_of_memory_in_the_decode_body_becomes_an_invalid_operation() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let core = failing_core(|| DecodeError::OutOfMemory {
         message: "body ran out of memory".to_owned(),
@@ -500,6 +501,8 @@ fn admit_decode_dng_with_a_non_mosaic_structure_is_refused_but_an_unrelated_deco
         decoder_name: Some("kodak_load_raw()".to_owned()),
         ..dng
     };
+    // The private gate has one slot: release the first lease before the second one is requested.
+    drop(dng_lease);
     let other_lease = free_lease(&gate);
     assert!(
         decoder
@@ -514,6 +517,7 @@ fn admit_decode_dng_with_a_non_mosaic_structure_is_refused_but_an_unrelated_deco
 // C#: LibRawDecodeRequestGuardTests.Decode_ApplyOrientationFalse_IsRefusedBeforeTheGateAndTheBody
 #[test]
 fn decode_apply_orientation_false_is_refused_before_the_gate_and_the_body() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let body_ran = Arc::new(Mutex::new(false));
     let probe = Arc::clone(&body_ran);
@@ -558,6 +562,7 @@ fn decode_apply_orientation_false_is_refused_before_the_gate_and_the_body() {
 // C#: LibRawDecodeRequestGuardTests.Decode_BlankPath_IsRejectedBeforeTheBody (2 rows)
 #[test]
 fn decode_blank_path_is_rejected_before_the_body() {
+    let _pixels = pixel_memory_shared();
     for blank in ["", "   "] {
         let log = Log::default();
         let decoder = private_decoder(
@@ -585,6 +590,7 @@ fn decode_blank_path_is_rejected_before_the_body() {
 // C#: LibRawDecodeRequestGuardTests.Decode_ValidRequest_RunsTheBodyUnderTheGateAndReleasesTheSlot (process-wide gate)
 #[test]
 fn decode_valid_request_runs_the_body_under_the_gate_and_releases_the_slot() {
+    let _pixels = pixel_memory_shared();
     let _lock = global_gate_lock();
     let log = Log::default();
     let seen = Arc::new(Mutex::new(None::<i32>));
@@ -623,6 +629,7 @@ fn decode_valid_request_runs_the_body_under_the_gate_and_releases_the_slot() {
 // C#: LibRawDecodeRequestGuardTests / Rust-only: an un-oriented request does not reach the gate (contract semantics 2, step 2).
 #[test]
 fn decode_rejects_request_that_would_leave_orientation_unapplied() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let decoder = private_decoder(
         FakeApi::arc(
@@ -763,6 +770,7 @@ fn create_failure_other_codes_stay_invalid_data() {
 // C#: LibRawManagedLogicTests.ReadJpegThumbnail_AndDecode_WithCancelledToken_ThrowOperationCanceledBeforeOpeningTheFile
 #[test]
 fn read_jpeg_thumbnail_and_decode_with_cancelled_token_throw_before_opening_the_file() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::new(
         Script {
@@ -1065,6 +1073,7 @@ fn to_extended_length_path_never_panics_on_odd_long_paths() {
 // C#: LibRawOpenOrderTests.Decode_MissingFile_ConfiguresOutputBeforeAttemptingToOpen (fake twin)
 #[test]
 fn decode_missing_file_configures_output_before_attempting_to_open() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::arc(
         Script {
@@ -1098,6 +1107,7 @@ fn decode_missing_file_configures_output_before_attempting_to_open() {
 // C#: LibRawOpenOrderTests.Decode_CorpusFile_ConfiguresOutputBeforeOpenAndNotAfter (fake twin)
 #[test]
 fn decode_configures_output_before_open_and_not_after() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::arc(full_bayer_script(), &log);
     let decoder = private_decoder(api, memory_source(64 * GIB, 0), &log).with_stage_observer(stage_logger(&log));
@@ -1123,6 +1133,7 @@ fn decode_configures_output_before_open_and_not_after() {
 // C#: LibRawOpenOrderTests.Decode_NotEnoughHeadroom_IsRefusedBeforeUnpackAsInvalidOperation (fake twin)
 #[test]
 fn decode_not_enough_headroom_is_refused_before_unpack_as_invalid_operation() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::arc(full_bayer_script(), &log);
     let decoder = private_decoder(api, memory_source(GIB, 0), &log).with_stage_observer(stage_logger(&log));
@@ -1138,6 +1149,7 @@ fn decode_not_enough_headroom_is_refused_before_unpack_as_invalid_operation() {
 // Budget 1.6e9: working image + bitmap (15 bytes/px = 1.51e9) passes, the full Bayer estimate (17 bytes/px = 1.72e9) does not.
 #[test]
 fn decode_headroom_covers_only_the_working_image_and_bitmap_is_refused_because_the_raw_buffer_counts() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::arc(full_bayer_script(), &log);
     let decoder = private_decoder(api, memory_source(1_600_000_000, 0), &log);
@@ -1151,6 +1163,7 @@ fn decode_headroom_covers_only_the_working_image_and_bitmap_is_refused_because_t
 // C#: LibRawOpenOrderTests.Decode_HeadroomCoversTheRawBufferToo_Decodes (fake twin of the full pipeline, stage order pinned)
 #[test]
 fn decode_headroom_covers_the_raw_buffer_too_and_decodes_through_the_pipeline() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let api = FakeApi::arc(Script::default(), &log);
     let decoder = private_decoder(api, memory_source(64 * GIB, 0), &log).with_stage_observer(stage_logger(&log));
@@ -1175,6 +1188,7 @@ fn decode_headroom_covers_the_raw_buffer_too_and_decodes_through_the_pipeline() 
 // C#: LibRawGateSlotNativeTests.ReadJpegThumbnailAndDecode_WithCancelledToken_LeaveTheFullDecodeSlotFree (fake api)
 #[test]
 fn read_jpeg_thumbnail_and_decode_with_cancelled_token_leave_the_full_decode_slot_free() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let gate = FullDecodeGate::new(MAX_QUEUED_PRELOAD_DECODES);
     let decoder = private_decoder(FakeApi::arc(Script::default(), &log), memory_source_never_read(), &log)
@@ -1189,6 +1203,7 @@ fn read_jpeg_thumbnail_and_decode_with_cancelled_token_leave_the_full_decode_slo
 // C#: LibRawGateSlotNativeTests.Decode_CancelledAfterTheGateWasEntered_ReleasesTheSlotOnUnwind (fake twin)
 #[test]
 fn decode_canceled_after_the_gate_was_entered_releases_the_slot() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let gate = FullDecodeGate::new(MAX_QUEUED_PRELOAD_DECODES);
     let core = failing_core(|| DecodeError::Canceled);
@@ -1258,6 +1273,7 @@ fn handoff_decoder(log: &Log, codec_fails: bool) -> LibRawDecoder {
 // C#: Pixels/LibRawPixelBufferHandOffTests.HandOff_WithCodec_GivesTheSamePixelsAsTheWpfPath (4 rows)
 #[test]
 fn hand_off_with_codec_gives_the_same_pixels_as_the_wpf_path() {
+    let _pixels = pixel_memory_shared();
     for (downscaled, original_width, original_height) in [(false, 4, 4), (true, 8, 8), (true, 4, 8), (false, 3, 5)] {
         let log = Log::default();
         let decoder = handoff_decoder(&log, false);
@@ -1290,6 +1306,7 @@ fn hand_off_with_codec_gives_the_same_pixels_as_the_wpf_path() {
 // C#: Pixels/LibRawPixelBufferHandOffTests.HandOff_WithCodec_MovesOwnershipWithoutCopy_AndTheEmptiedBufferFreesNothing
 #[test]
 fn hand_off_with_codec_moves_ownership_without_copy_and_the_emptied_buffer_frees_nothing() {
+    let _pixels = pixel_memory_exclusive();
     let log = Log::default();
     let decoder = handoff_decoder(&log, false);
     let mut staged = FakeStaged::new(4, 4);
@@ -1308,6 +1325,7 @@ fn hand_off_with_codec_moves_ownership_without_copy_and_the_emptied_buffer_frees
 // C#: Pixels/LibRawPixelBufferHandOffTests.HandOff_CodecThrows_BufferIsFreed_AndTheErrorPropagates
 #[test]
 fn hand_off_codec_throws_buffer_is_freed_and_the_error_propagates() {
+    let _pixels = pixel_memory_exclusive();
     let log = Log::default();
     let decoder = handoff_decoder(&log, true);
     let mut staged = FakeStaged::new(4, 4);
@@ -1326,6 +1344,7 @@ fn hand_off_codec_throws_buffer_is_freed_and_the_error_propagates() {
 // C#: Pixels/LibRawPixelBufferHandOffTests.HandOff_WithoutCodec_StillReportsSourceHeldWhenTheRgbBufferIsOpen
 #[test]
 fn hand_off_still_reports_source_held_when_the_rgb_buffer_is_open() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let decoder = handoff_decoder(&log, false);
     let mut staged = FakeStaged::new(4, 4);
@@ -1341,6 +1360,7 @@ fn hand_off_still_reports_source_held_when_the_rgb_buffer_is_open() {
 // C#: Pixels/LibRawPixelBufferHandOffTests.HandOff_ReportsSourceReleased_WhileTheStagingBufferIsStillOwned
 #[test]
 fn hand_off_reports_source_released_while_the_staging_buffer_is_still_owned() {
+    let _pixels = pixel_memory_shared();
     let log = Log::default();
     let mut staged = FakeStaged::new(4, 4);
     let owned = staged.owned_flag();
