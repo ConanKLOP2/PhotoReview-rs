@@ -43,6 +43,19 @@ struct ViewData {
     item_return_self: bool,
     display_name_hr: i32,
     display_name_text: Vec<u16>,
+    enum_items: Vec<usize>,
+    enum_position: usize,
+    enum_chunk: usize,
+    enum_calls: usize,
+    enum_hr: i32,
+    service_hr: i32,
+    service_guid: Option<windows_core::GUID>,
+    service_iid: Option<windows_core::GUID>,
+    active_hr: i32,
+    query_count: usize,
+    query_fail_at: Option<usize>,
+    item_count_hr: i32,
+    item_count: i32,
     refs: usize,
 }
 
@@ -172,6 +185,52 @@ unsafe extern "system" fn display_name(this: *mut c_void, _kind: u32, output: *m
     value.display_name_hr
 }
 
+#[repr(C)]
+struct FakePidl {
+    item_index: usize,
+}
+
+unsafe extern "system" fn enum_next(
+    this: *mut c_void,
+    requested: u32,
+    output: *mut *mut c_void,
+    fetched: *mut u32,
+) -> i32 {
+    let mut values = views().lock().unwrap();
+    let value = values.get_mut(&(this as usize)).expect("fake enumerator is registered");
+    value.enum_calls += 1;
+    if value.enum_hr < 0 {
+        // SAFETY: fetched is the writable output argument supplied by IEnumIDList::Next.
+        unsafe { *fetched = 0 };
+        return value.enum_hr;
+    }
+    let count = (requested as usize)
+        .min(value.enum_chunk)
+        .min(value.enum_items.len() - value.enum_position);
+    for offset in 0..count {
+        let item = value.enum_items[value.enum_position + offset];
+        // SAFETY: CoTaskMemAlloc reserves one FakePidl and the output array has `requested` writable slots.
+        let allocation = unsafe { CoTaskMemAlloc(std::mem::size_of::<FakePidl>()) }.cast::<FakePidl>();
+        if allocation.is_null() {
+            // SAFETY: fetched is a writable IEnumIDList::Next output.
+            unsafe { *fetched = offset as u32 };
+            return E_FAIL;
+        }
+        // SAFETY: allocation is aligned and large enough for FakePidl.
+        unsafe { allocation.write(FakePidl { item_index: item }) };
+        // SAFETY: output points to `requested` writable pointer slots as provided by enum_next.
+        unsafe { *output.add(offset) = allocation.cast() };
+    }
+    value.enum_position += count;
+    // SAFETY: fetched is a writable IEnumIDList::Next output.
+    unsafe { *fetched = count as u32 };
+    if count < requested as usize {
+        explorer_com_interop::ids::S_FALSE
+    } else {
+        0
+    }
+}
+
 #[link(name = "ole32")]
 unsafe extern "system" {
     fn CoTaskMemAlloc(bytes: usize) -> *mut c_void;
@@ -204,6 +263,75 @@ unsafe extern "system" fn partial_query(
     E_FAIL
 }
 
+unsafe extern "system" fn self_query(
+    this: *mut c_void,
+    _iid: *const windows_core::GUID,
+    output: *mut *mut c_void,
+) -> i32 {
+    let mut values = views().lock().unwrap();
+    let value = values.get_mut(&(this as usize)).expect("fake view is registered");
+    value.query_count += 1;
+    if value.query_fail_at == Some(value.query_count) {
+        // SAFETY: the output slot is writable and a failed QI returns no interface pointer.
+        unsafe { *output = std::ptr::null_mut() };
+        return 0x8000_4002_u32 as i32;
+    }
+    value.refs += 1;
+    // SAFETY: the fake returns itself with one owned reference through QueryInterface's output slot.
+    unsafe { *output = this };
+    0
+}
+
+unsafe extern "system" fn query_service(
+    this: *mut c_void,
+    service: *const windows_core::GUID,
+    iid: *const windows_core::GUID,
+    output: *mut *mut c_void,
+) -> i32 {
+    let mut values = views().lock().unwrap();
+    let value = values
+        .get_mut(&(this as usize))
+        .expect("fake service provider is registered");
+    // SAFETY: IServiceProvider provides valid GUID pointers and a writable output slot for the call duration.
+    value.service_guid = Some(unsafe { *service });
+    // SAFETY: the IID pointer remains valid through the synchronous call.
+    value.service_iid = Some(unsafe { *iid });
+    if value.service_hr >= 0 {
+        value.refs += 1;
+        // SAFETY: the output slot is writable and receives one owned COM reference on success.
+        unsafe { *output = this };
+    } else {
+        // SAFETY: the output slot is writable; this fake returns null on its configured failure.
+        unsafe { *output = std::ptr::null_mut() };
+    }
+    value.service_hr
+}
+
+unsafe extern "system" fn active_view_failure(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+    let values = views().lock().unwrap();
+    let value = &values[&(this as usize)];
+    // SAFETY: IShellBrowser provides a writable active-view output slot.
+    unsafe { *output = std::ptr::null_mut() };
+    value.active_hr
+}
+
+unsafe extern "system" fn active_view_success(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+    let mut values = views().lock().unwrap();
+    let value = values.get_mut(&(this as usize)).expect("fake browser is registered");
+    value.refs += 1;
+    // SAFETY: IShellBrowser provides a writable output slot, and this fake transfers one owned reference.
+    unsafe { *output = this };
+    0
+}
+
+unsafe extern "system" fn view_item_count(this: *mut c_void, _flags: u32, output: *mut i32) -> i32 {
+    let values = views().lock().unwrap();
+    let value = &values[&(this as usize)];
+    // SAFETY: IFolderView::ItemCount provides a writable count output.
+    unsafe { *output = value.item_count };
+    value.item_count_hr
+}
+
 struct FakeView {
     object: *mut *const *const c_void,
     table: Box<[*const c_void; 30]>,
@@ -213,7 +341,10 @@ impl FakeView {
     fn new(data: ViewData) -> Self {
         let mut table = Box::new([std::ptr::null(); 30]);
         table[2] = release as *const c_void;
+        table[3] = enum_next as *const c_void;
+        table[15] = active_view_failure as *const c_void;
         table[5] = display_name as *const c_void;
+        table[7] = view_item_count as *const c_void;
         table[18] = group_by as *const c_void;
         table[26] = sort_count as *const c_void;
         table[28] = sort_columns as *const c_void;
@@ -260,7 +391,72 @@ fn fake_data(columns: Vec<SortColumn>) -> ViewData {
         item_return_self: false,
         display_name_hr: E_FAIL,
         display_name_text: Vec::new(),
+        enum_items: Vec::new(),
+        enum_position: 0,
+        enum_chunk: usize::MAX,
+        enum_calls: 0,
+        enum_hr: 0,
+        service_hr: E_FAIL,
+        service_guid: None,
+        service_iid: None,
+        active_hr: E_FAIL,
+        query_count: 0,
+        query_fail_at: None,
+        item_count_hr: 0,
+        item_count: 0,
         refs: 1,
+    }
+}
+
+struct FakePidlApi {
+    paths: Vec<String>,
+    parses: bool,
+}
+
+impl explorer_native_view::PidlApi for FakePidlApi {
+    fn parse_folder(&self, _folder: &str) -> Option<std::ptr::NonNull<c_void>> {
+        if !self.parses {
+            return None;
+        }
+        // SAFETY: CoTaskMemAlloc creates a task-allocator-owned fake parent PIDL.
+        let pointer = unsafe { CoTaskMemAlloc(std::mem::size_of::<FakePidl>()) }.cast::<FakePidl>();
+        if pointer.is_null() {
+            return None;
+        }
+        // SAFETY: pointer is aligned and large enough for FakePidl.
+        unsafe { pointer.write(FakePidl { item_index: usize::MAX }) };
+        std::ptr::NonNull::new(pointer.cast())
+    }
+
+    fn combine(
+        &self,
+        _parent: std::ptr::NonNull<c_void>,
+        child: std::ptr::NonNull<c_void>,
+    ) -> Option<std::ptr::NonNull<c_void>> {
+        // SAFETY: test enumerator supplies a live CoTaskMem-allocated FakePidl child.
+        let item_index = unsafe { child.cast::<FakePidl>().as_ref().item_index };
+        // SAFETY: CoTaskMemAlloc creates a task-allocator-owned fake absolute PIDL.
+        let pointer = unsafe { CoTaskMemAlloc(std::mem::size_of::<FakePidl>()) }.cast::<FakePidl>();
+        if pointer.is_null() {
+            return None;
+        }
+        // SAFETY: pointer is aligned and large enough for FakePidl.
+        unsafe { pointer.write(FakePidl { item_index }) };
+        std::ptr::NonNull::new(pointer.cast())
+    }
+
+    fn file_system_path(&self, absolute: std::ptr::NonNull<c_void>) -> Option<std::ptr::NonNull<u16>> {
+        // SAFETY: test combiner supplies a live CoTaskMem-allocated FakePidl absolute PIDL.
+        let item_index = unsafe { absolute.cast::<FakePidl>().as_ref().item_index };
+        let path: Vec<u16> = self.paths.get(item_index)?.encode_utf16().chain([0]).collect();
+        // SAFETY: CoTaskMemAlloc reserves enough space for the path including its terminator.
+        let pointer = unsafe { CoTaskMemAlloc(path.len() * std::mem::size_of::<u16>()) }.cast::<u16>();
+        if pointer.is_null() {
+            return None;
+        }
+        // SAFETY: pointer has `path.len()` writable UTF-16 units.
+        unsafe { std::ptr::copy_nonoverlapping(path.as_ptr(), pointer, path.len()) };
+        std::ptr::NonNull::new(pointer)
     }
 }
 
@@ -398,6 +594,122 @@ fn batched_read_uses_view_order_flags_and_falls_back_when_items_fails() {
         flags,
         explorer_com_interop::ids::SVGIO_ALL_VIEW | explorer_com_interop::ids::SVGIO_FLAG_VIEW_ORDER
     );
+}
+
+#[test]
+fn batched_read_collects_short_s_false_chunks_in_view_order() {
+    // C#: BatchedRead_EnumeratorHandsOutItemsInSeveralCalls_CollectsAllOfThem
+    let paths = vec![
+        r"C:\photos\c.jpg".into(),
+        r"C:\photos\a.jpg".into(),
+        r"C:\photos\b.jpg".into(),
+    ];
+    let mut data = fake_data(vec![]);
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_items = vec![0, 1, 2];
+    data.enum_chunk = 1;
+    let fake = FakeView::new(data);
+    let token = CancelToken::new();
+
+    let result = explorer_native_view::read_batched_with(
+        fake.pointer(),
+        r"C:\photos",
+        paths.len(),
+        &token,
+        &FakePidlApi {
+            paths: paths.clone(),
+            parses: true,
+        },
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(result, paths);
+    let values = views().lock().unwrap();
+    let value = &values[&(fake.object as usize)];
+    assert_eq!(value.enum_calls, 4); // three S_FALSE chunks followed by the terminal empty read
+    assert_eq!(value.refs, 1);
+}
+
+#[test]
+fn batched_read_rejects_short_enumeration_so_caller_can_fallback() {
+    // C#: PerItemRead_WhenTheEnumeratorYieldsFewerItemsThanTheView_FallsBackAndIsComplete
+    let paths = vec![
+        r"C:\photos\a.jpg".into(),
+        r"C:\photos\b.jpg".into(),
+        r"C:\photos\c.jpg".into(),
+    ];
+    let mut data = fake_data(vec![]);
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_items = vec![0, 1];
+    data.enum_chunk = 1;
+    let fake = FakeView::new(data);
+    let token = CancelToken::new();
+
+    let batched = explorer_native_view::read_batched_with(
+        fake.pointer(),
+        r"C:\photos",
+        paths.len(),
+        &token,
+        &FakePidlApi { paths, parses: true },
+    )
+    .unwrap();
+
+    assert_eq!(batched, None);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn batched_read_falls_back_when_folder_pidls_cannot_be_parsed() {
+    // C#: PerItemRead_WhenTheFolderCannotBeParsedToAPidl_FallsBack
+    let mut data = fake_data(vec![]);
+    data.items_hr = 0;
+    data.items_return_self = true;
+    let fake = FakeView::new(data);
+    let token = CancelToken::new();
+
+    let result = explorer_native_view::read_batched_with(
+        fake.pointer(),
+        r"C:\photos\missing",
+        2,
+        &token,
+        &FakePidlApi {
+            paths: Vec::new(),
+            parses: false,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(result, None);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn batched_read_falls_back_when_enumerator_next_fails() {
+    // C#: PerItemRead_WhenTheEnumeratorFails_FallsBack
+    let mut data = fake_data(vec![]);
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_hr = E_FAIL;
+    let fake = FakeView::new(data);
+    let token = CancelToken::new();
+
+    let result = explorer_native_view::read_batched_with(
+        fake.pointer(),
+        r"C:\photos",
+        2,
+        &token,
+        &FakePidlApi {
+            paths: vec![r"C:\photos\a.jpg".into(), r"C:\photos\b.jpg".into()],
+            parses: true,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(result, None);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
 }
 
 #[test]
@@ -561,6 +873,98 @@ fn failed_service_provider_query_releases_a_non_null_partial_output() {
         drop(Box::from_raw(object));
     }
     drop(table);
+}
+
+#[test]
+fn window_browser_service_failure_reports_query_service_and_requests_top_level_browser() {
+    // C#: Window_BrowserServiceFails_ReportsQueryService
+    let fake = FakeView::new(fake_data(vec![]));
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+
+    let snapshot = read_native_view(fake.pointer(), r"C:\photos", None, usize::MAX, &CancelToken::new()).unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::NativeViewUnavailable);
+    assert_eq!(
+        snapshot.reason.as_deref(),
+        Some("com-call-failed|QueryService(IShellBrowser)|0x80004005")
+    );
+    let values = views().lock().unwrap();
+    let value = &values[&(fake.object as usize)];
+    assert_eq!(
+        value.service_guid,
+        Some(explorer_com_interop::ids::SID_TOP_LEVEL_BROWSER)
+    );
+    assert_eq!(value.service_iid, Some(explorer_com_interop::ids::IID_SHELL_BROWSER));
+    assert_eq!(value.refs, 1);
+}
+
+#[test]
+fn window_active_shell_view_failure_reports_the_exact_com_stage() {
+    // C#: Window_ActiveShellViewFails_ReportsIt
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+
+    let snapshot = read_native_view(fake.pointer(), r"C:\photos", None, usize::MAX, &CancelToken::new()).unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::NativeViewUnavailable);
+    assert_eq!(
+        snapshot.reason.as_deref(),
+        Some("com-call-failed|QueryActiveShellView|0x80004005")
+    );
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn window_without_folder_view2_reports_interface_query_failure() {
+    // C#: Window_ViewWithoutIFolderView2_ReportsIt
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.query_fail_at = Some(2);
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+
+    let snapshot = read_native_view(fake.pointer(), r"C:\photos", None, usize::MAX, &CancelToken::new()).unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::NativeViewUnavailable);
+    assert_eq!(
+        snapshot.reason.as_deref(),
+        Some("com-call-failed|QueryInterface(IFolderView2)|0x80004002")
+    );
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn window_empty_or_uncountable_view_is_reported_as_empty() {
+    // C#: Window_EmptyOrUncountableView_IsReportedAsEmptyView
+    let mut empty_data = fake_data(vec![]);
+    empty_data.service_hr = 0;
+    empty_data.item_count = 0;
+    let empty = FakeView::new(empty_data);
+    empty.table[0] = self_query as *const c_void;
+    empty.table[3] = query_service as *const c_void;
+    empty.table[15] = active_view_success as *const c_void;
+    let empty_snapshot =
+        read_native_view(empty.pointer(), r"C:\photos", None, usize::MAX, &CancelToken::new()).unwrap();
+    assert_eq!(empty_snapshot.reason.as_deref(), Some("empty-view|0x00000000|0"));
+    assert_eq!(views().lock().unwrap()[&(empty.object as usize)].refs, 1);
+
+    let mut failed_data = fake_data(vec![]);
+    failed_data.service_hr = 0;
+    failed_data.item_count_hr = E_FAIL;
+    let failed = FakeView::new(failed_data);
+    failed.table[0] = self_query as *const c_void;
+    failed.table[3] = query_service as *const c_void;
+    failed.table[15] = active_view_success as *const c_void;
+    let failed_snapshot =
+        read_native_view(failed.pointer(), r"C:\photos", None, usize::MAX, &CancelToken::new()).unwrap();
+    assert_eq!(failed_snapshot.reason.as_deref(), Some("empty-view|0x80004005|0"));
+    assert_eq!(views().lock().unwrap()[&(failed.object as usize)].refs, 1);
 }
 
 #[test]
