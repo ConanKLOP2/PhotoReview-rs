@@ -84,3 +84,58 @@ fn resize_to_buffer_zero_source_width_rejected_before_allocation() {
         );
     }
 }
+
+#[test]
+fn convert_rgb_over_one_check_block() {
+    // > 0x40000 pixels, 3 channels: second block starts at first = 262144
+    let n = 262_144 + 1000;
+    let src: Vec<u8> = (0..n * 3).map(|i| (i % 251) as u8).collect();
+    let mut got = vec![0u8; n * 4];
+    resize(&src, n as i32, 1, &mut got, n as i32, 1, &CancelToken::none(), 3).unwrap();
+    for p in [0usize, 262_143, 262_144, 262_145, n - 1] {
+        assert_eq!(
+            &got[p * 4..p * 4 + 4],
+            &[src[p * 3 + 2], src[p * 3 + 1], src[p * 3], 255],
+            "pixel {p}"
+        );
+    }
+}
+
+#[test]
+fn resize_single_non_positive_side_is_invalid_data() {
+    let src = vec![7u8; 64];
+    for (sw, sh, tw, th) in [
+        (0, 5, 3, 3),
+        (5, 0, 3, 3),
+        (5, 5, 0, 3),
+        (5, 5, 3, 0),
+        (-1, 5, 3, 3),
+        (5, -1, 3, 3),
+        (5, 5, -1, 3),
+        (5, 5, 3, -1),
+    ] {
+        let mut out = vec![0u8; 64];
+        let r = resize(&src, sw, sh, &mut out, tw, th, &CancelToken::none(), 3);
+        match r {
+            Err(ResampleError::InvalidData(m)) => assert!(m.starts_with("Invalid RAW resize dimensions"), "{m}"),
+            other => panic!("{sw} {sh} {tw} {th}: {other:?}"),
+        }
+    }
+}
+
+#[test]
+fn resize_to_buffer_guard_precedes_allocation_for_every_side() {
+    // target would overflow the stride (Overflow) if allocation were attempted first
+    for (sw, sh, tw, th) in [
+        (0, 5, i32::MAX, 1),
+        (5, 0, i32::MAX, 1),
+        (5, 5, 0, 1),
+        (5, 5, i32::MAX, 0),
+    ] {
+        let r = resize_to_buffer(&[0u8; 75], sw, sh, tw, th, 3, &CancelToken::none());
+        match r {
+            Err(ResampleError::InvalidData(m)) => assert!(m.starts_with("Invalid RAW resize dimensions"), "{m}"),
+            other => panic!("{sw} {sh} {tw} {th}: {:?}", other.map(|_| ())),
+        }
+    }
+}
