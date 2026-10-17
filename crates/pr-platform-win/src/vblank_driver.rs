@@ -6,17 +6,35 @@
 use pr_core::abstractions::DisplayTiming;
 
 /// Missing native dependencies are distinct from an NTSTATUS failure, as in the C# exception path.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum NativeImportError {
-    DllNotFound,
-    EntryPointNotFound,
+    DllNotFound { message: String },
+    EntryPointNotFound { message: String },
 }
 
 impl NativeImportError {
-    pub(crate) const fn type_name(self) -> &'static str {
+    pub(crate) fn dll_not_found(message: impl Into<String>) -> Self {
+        Self::DllNotFound {
+            message: message.into(),
+        }
+    }
+
+    pub(crate) fn entry_point_not_found(message: impl Into<String>) -> Self {
+        Self::EntryPointNotFound {
+            message: message.into(),
+        }
+    }
+
+    pub(crate) const fn type_name(&self) -> &'static str {
         match self {
-            Self::DllNotFound => "DllNotFoundException",
-            Self::EntryPointNotFound => "EntryPointNotFoundException",
+            Self::DllNotFound { .. } => "DllNotFoundException",
+            Self::EntryPointNotFound { .. } => "EntryPointNotFoundException",
+        }
+    }
+
+    pub(crate) fn message(&self) -> &str {
+        match self {
+            Self::DllNotFound { message } | Self::EntryPointNotFound { message } => message,
         }
     }
 }
@@ -172,11 +190,15 @@ impl IVBlankDriver for NativeVBlankDriver {
     }
 
     fn try_open(&self, _monitor: isize) -> Result<Option<(u32, u32)>, NativeImportError> {
-        Err(NativeImportError::DllNotFound)
+        Err(NativeImportError::dll_not_found(
+            "gdi32.dll is unavailable on this platform",
+        ))
     }
 
     fn wait_for_vblank(&self, _adapter: u32, _source: u32) -> Result<i32, NativeImportError> {
-        Err(NativeImportError::DllNotFound)
+        Err(NativeImportError::dll_not_found(
+            "gdi32.dll is unavailable on this platform",
+        ))
     }
 
     fn close(&self, _adapter: u32) {}
@@ -394,12 +416,16 @@ unsafe fn with_optional_gdi_symbol<T>(
     // SAFETY: MODULE_NAME is a static, NUL-terminated UTF-16 string.
     let module = unsafe { LoadLibraryW(MODULE_NAME.as_ptr()) };
     if module.is_null() {
-        return Err(NativeImportError::DllNotFound);
+        return Err(NativeImportError::dll_not_found(
+            std::io::Error::last_os_error().to_string(),
+        ));
     }
     // SAFETY: module is a live LoadLibraryW reference and name points to a static NUL-terminated export name.
     let address = unsafe { GetProcAddress(module, name.as_ptr().cast()) };
     let result = if address.is_null() {
-        Err(NativeImportError::EntryPointNotFound)
+        Err(NativeImportError::entry_point_not_found(
+            std::io::Error::last_os_error().to_string(),
+        ))
     } else {
         // SAFETY: callers request documented D3DKMT exports with the same one-pointer NTSTATUS ABI.
         let function: unsafe extern "system" fn(*mut T) -> i32 = unsafe { core::mem::transmute(address) };

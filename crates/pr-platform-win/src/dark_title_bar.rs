@@ -2,7 +2,7 @@
 
 use std::sync::OnceLock;
 
-use windows::Win32::Foundation::{ERROR_MOD_NOT_FOUND, FreeLibrary, HWND};
+use windows::Win32::Foundation::{FreeLibrary, HWND};
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
 use windows::core::w;
 
@@ -19,8 +19,7 @@ fn dwm_set_window_attribute() -> Option<DwmSetWindowAttributeFn> {
         // SAFETY: the DLL name is a static NUL-terminated UTF-16 string.
         let module = match unsafe { LoadLibraryW(w!("dwmapi.dll")) } {
             Ok(module) => module,
-            Err(error) if win32_error_code(&error) == ERROR_MOD_NOT_FOUND.0 => return None,
-            Err(error) => panic!("loading dwmapi.dll failed: {error}"),
+            Err(_) => return None,
         };
         // SAFETY: the module handle is valid and the export name is a static NUL-terminated ANSI string.
         let Some(address) = (unsafe { GetProcAddress(module, windows::core::s!("DwmSetWindowAttribute")) }) else {
@@ -32,10 +31,6 @@ fn dwm_set_window_attribute() -> Option<DwmSetWindowAttributeFn> {
         // SAFETY: dwmapi documents this export as (HWND, DWORD, LPCVOID, DWORD) -> HRESULT.
         Some(unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, DwmSetWindowAttributeFn>(address) })
     })
-}
-
-fn win32_error_code(error: &windows::core::Error) -> u32 {
-    (error.code().0 as u32) & 0xFFFF
 }
 
 /// DWM attributes for the app's native dark title bar and caption color.

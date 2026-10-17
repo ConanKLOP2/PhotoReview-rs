@@ -6,7 +6,7 @@ use std::sync::OnceLock;
 
 use pr_core::abstractions::NaturalComparer;
 use pr_core::catalog::natural_cmp::ManagedNaturalComparer;
-use windows::Win32::Foundation::{ERROR_MOD_NOT_FOUND, FreeLibrary};
+use windows::Win32::Foundation::FreeLibrary;
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
 use windows::core::{PCWSTR, w};
 
@@ -19,8 +19,7 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
         // SAFETY: the DLL name is a static NUL-terminated UTF-16 string.
         let module = match unsafe { LoadLibraryW(w!("shlwapi.dll")) } {
             Ok(module) => module,
-            Err(error) if win32_error_code(&error) == ERROR_MOD_NOT_FOUND.0 => return None,
-            Err(error) => panic!("loading shlwapi.dll failed: {error}"),
+            Err(_) => return None,
         };
         // SAFETY: the module handle is valid and the export name is a static NUL-terminated ANSI string.
         let Some(address) = (unsafe { GetProcAddress(module, windows::core::s!("StrCmpLogicalW")) }) else {
@@ -47,10 +46,6 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
             Ordering::Greater => Ordering::Greater,
         },
     )
-}
-
-fn win32_error_code(error: &windows::core::Error) -> u32 {
-    (error.code().0 as u32) & 0xFFFF
 }
 
 /// Windows shell natural comparer. If shlwapi or StrCmpLogicalW is unavailable, uses the managed comparer.

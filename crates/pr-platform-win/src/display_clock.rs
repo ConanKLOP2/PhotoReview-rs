@@ -214,6 +214,11 @@ impl DisplayClock for WindowsDisplayClock {
 }
 
 fn worker_main(shared: Arc<Shared>) {
+    if let Err(error) = set_clock_worker_priority() {
+        shared.log.warn(&format!(
+            "Could not set vblank clock thread priority to Highest: {error}"
+        ));
+    }
     let mut adapter = None;
     let mut opened = 0;
     let mut target = 0;
@@ -250,7 +255,7 @@ fn worker_main(shared: Arc<Shared>) {
                         return;
                     }
                     Err(error) => {
-                        mark_failed(&shared, wanted, &native_import_message(error));
+                        mark_failed(&shared, wanted, &native_import_message(&error));
                         return;
                     }
                 };
@@ -268,7 +273,7 @@ fn worker_main(shared: Arc<Shared>) {
                 Ok(status) => status,
                 Err(error) => {
                     if !shared.stopping.load(Ordering::Acquire) {
-                        mark_failed(&shared, opened, &native_import_message(error));
+                        mark_failed(&shared, opened, &native_import_message(&error));
                     }
                     return;
                 }
@@ -311,6 +316,21 @@ fn worker_main(shared: Arc<Shared>) {
     retire_worker(&shared);
 }
 
+#[cfg(windows)]
+fn set_clock_worker_priority() -> windows::core::Result<()> {
+    use windows::Win32::System::Threading::{GetCurrentThread, SetThreadPriority, THREAD_PRIORITY_HIGHEST};
+
+    // SAFETY: GetCurrentThread returns the calling thread's pseudo-handle, valid for SetThreadPriority.
+    let current_thread = unsafe { GetCurrentThread() };
+    // SAFETY: `current_thread` is the current thread pseudo-handle and the priority is a documented constant.
+    unsafe { SetThreadPriority(current_thread, THREAD_PRIORITY_HIGHEST) }
+}
+
+#[cfg(not(windows))]
+fn set_clock_worker_priority() -> std::io::Result<()> {
+    Ok(())
+}
+
 fn mark_failed(shared: &Shared, monitor: isize, step: &str) {
     shared.log.warn(&format!(
         "Vblank clock unavailable for monitor 0x{:X}, falling back to DWM timing (primary display only) for {} ms: {step}",
@@ -323,8 +343,8 @@ fn mark_failed(shared: &Shared, monitor: isize, step: &str) {
     shared.state_changed.notify_all();
 }
 
-fn native_import_message(error: NativeImportError) -> String {
-    format!("{}: native vblank dependency is unavailable", error.type_name())
+fn native_import_message(error: &NativeImportError) -> String {
+    format!("{}: {}", error.type_name(), error.message())
 }
 
 fn close_adapter(shared: &Shared, adapter: &mut Option<(u32, u32)>) {

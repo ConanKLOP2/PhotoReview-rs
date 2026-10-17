@@ -474,13 +474,18 @@ fn wait_failure_closes_the_adapter_and_falls_back_to_dwm() {
 #[test]
 fn missing_native_library_falls_back_to_dwm() {
     // C#: WindowsDisplayClockTests.MissingNativeLibrary_FallsBackToDwm.
-    for missing in [NativeImportError::DllNotFound, NativeImportError::EntryPointNotFound] {
+    for missing in [
+        NativeImportError::dll_not_found("missing gdi32.dll detail"),
+        NativeImportError::entry_point_not_found("missing D3DKMT export detail"),
+    ] {
         let fixture = Fixture::new();
         assert_eq!(fixture.clock.get_timing(WINDOW_A), None);
         fixture
             .driver
             .await_event(|event| *event == DriverEvent::Waiting, "initial native wait");
-        fixture.driver.set_wait_outcome(WaitOutcome::ImportError(missing));
+        fixture
+            .driver
+            .set_wait_outcome(WaitOutcome::ImportError(missing.clone()));
         fixture.driver.release_vblank();
         fixture.log.wait_warn();
         fixture.clock.await_failed_monitor(MONITOR_A);
@@ -489,7 +494,7 @@ fn missing_native_library_falls_back_to_dwm() {
                 .log
                 .messages()
                 .iter()
-                .any(|message| message.contains(missing.type_name()))
+                .any(|message| message.contains(missing.type_name()) && message.contains(missing.message()))
         );
         fixture
             .driver
