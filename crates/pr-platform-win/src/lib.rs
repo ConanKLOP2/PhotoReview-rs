@@ -6,7 +6,29 @@
 pub(crate) mod explorer_com_interop;
 
 #[cfg(windows)]
+#[allow(dead_code)] // W6-01d consumes the selector policy in the native query path.
+pub(crate) mod explorer_window_selector;
+
+#[cfg(windows)]
+#[allow(dead_code)] // W6-03c consumes mutex-name generation and the default prefix.
 pub(crate) mod instance_keys;
+
+#[cfg(windows)]
+#[allow(dead_code)] // W6-03c/d consume the pipe identity and ACL construction API.
+pub(crate) mod forward_pipe;
+
+#[cfg(windows)]
+pub mod recycle_bin_settings;
+
+#[cfg(windows)]
+pub mod recycle_bin_capacity;
+
+#[cfg(windows)]
+pub mod recycle_eligibility;
+
+#[cfg(windows)]
+#[allow(dead_code)] // The crate-private provider awaits registration by the application composition root.
+pub(crate) mod explorer_order_service;
 
 #[cfg(windows)]
 pub mod wic;
@@ -24,8 +46,10 @@ pub mod memory_probe;
 pub mod natural_comparer;
 
 #[cfg(windows)]
-#[allow(dead_code)] // W6-04a consumes this driver seam before the Wave 6 integration gate.
 pub(crate) mod vblank_driver;
+
+#[cfg(windows)]
+pub mod display_clock;
 
 /// Test-only Win32 process memory metrics used by native decoder parity tests.
 #[cfg(all(windows, feature = "test-support"))]

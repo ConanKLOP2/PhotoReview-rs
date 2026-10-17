@@ -59,6 +59,12 @@ pub struct WindowsDisplayClock {
     shared: Arc<Shared>,
 }
 
+impl std::fmt::Debug for WindowsDisplayClock {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.debug_struct("WindowsDisplayClock").finish_non_exhaustive()
+    }
+}
+
 impl WindowsDisplayClock {
     /// Creates the native clock. The native driver is stateless; worker state belongs to this instance.
     pub fn new() -> Self {
@@ -105,6 +111,8 @@ impl WindowsDisplayClock {
     }
 
     /// Stops and joins workers. Callers that inject a blocking driver must release its wait first.
+    #[cfg(test)]
+    #[allow(dead_code)] // The integration-test source module consumes this teardown seam; the crate unit-test target does not.
     pub(crate) fn shutdown_and_join(&self) {
         self.shared.stopping.store(true, Ordering::Release);
         loop {
@@ -127,11 +135,15 @@ impl WindowsDisplayClock {
         }
     }
 
+    #[cfg(test)]
+    #[allow(dead_code)] // The integration-test source module consumes this signal seam; the crate unit-test target does not.
     pub(crate) fn request_stop(&self) {
         self.shared.stopping.store(true, Ordering::Release);
     }
 
     /// Waits for the failure state transition without timing-based polling in fake-driven tests.
+    #[cfg(test)]
+    #[allow(dead_code)] // The integration-test source module consumes this synchronization seam.
     pub(crate) fn await_failed_monitor(&self, monitor: isize) {
         let (state, _result) = self
             .shared

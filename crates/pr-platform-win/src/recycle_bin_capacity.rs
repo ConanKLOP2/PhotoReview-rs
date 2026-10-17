@@ -21,6 +21,7 @@ pub enum RecycleCapacityVerdict {
 }
 
 /// Evaluates whether a Windows shell recycle operation will place the file in the Recycle Bin.
+#[derive(Debug)]
 pub struct RecycleBinCapacityGuard;
 
 impl RecycleBinCapacityGuard {
