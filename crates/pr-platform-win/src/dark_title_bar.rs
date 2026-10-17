@@ -2,7 +2,7 @@
 
 use std::sync::OnceLock;
 
-use windows::Win32::Foundation::{FreeLibrary, HWND};
+use windows::Win32::Foundation::{ERROR_MOD_NOT_FOUND, FreeLibrary, HWND};
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
 use windows::core::w;
 
@@ -19,7 +19,8 @@ fn dwm_set_window_attribute() -> Option<DwmSetWindowAttributeFn> {
         // SAFETY: the DLL name is a static NUL-terminated UTF-16 string.
         let module = match unsafe { LoadLibraryW(w!("dwmapi.dll")) } {
             Ok(module) => module,
-            Err(_) => return None,
+            Err(error) if win32_error_code(&error) == ERROR_MOD_NOT_FOUND.0 => return None,
+            Err(error) => panic!("loading dwmapi.dll failed: {error}"),
         };
         // SAFETY: the module handle is valid and the export name is a static NUL-terminated ANSI string.
         let Some(address) = (unsafe { GetProcAddress(module, windows::core::s!("DwmSetWindowAttribute")) }) else {
@@ -31,6 +32,10 @@ fn dwm_set_window_attribute() -> Option<DwmSetWindowAttributeFn> {
         // SAFETY: dwmapi documents this export as (HWND, DWORD, LPCVOID, DWORD) -> HRESULT.
         Some(unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, DwmSetWindowAttributeFn>(address) })
     })
+}
+
+fn win32_error_code(error: &windows::core::Error) -> u32 {
+    (error.code().0 as u32) & 0xFFFF
 }
 
 /// DWM attributes for the app's native dark title bar and caption color.
@@ -75,6 +80,15 @@ impl WindowsDarkTitleBar {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn only_missing_library_error_uses_false_fallback() {
+        // C# twin: WindowsDarkTitleBar.TrySet catches DllNotFoundException only.
+        let missing = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_007E_u32 as i32));
+        let access_denied = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_0005_u32 as i32));
+        assert_eq!(win32_error_code(&missing), ERROR_MOD_NOT_FOUND.0);
+        assert_ne!(win32_error_code(&access_denied), ERROR_MOD_NOT_FOUND.0);
+    }
 
     #[test]
     fn null_hwnd_is_rejected_without_calling_dwm() {

@@ -225,3 +225,7 @@
 - Independent review found W6-04 import errors lost their loader message, and the worker did not request C# `ThreadPriority.Highest`. `NativeImportError` now carries the OS message into the fallback log; Windows workers attempt Highest and log if the OS refuses the setting. The fake display-clock test now checks both exception type and original message.
 - W6-05 DWM/natural-comparer DLL loading previously panicked for loader errors other than `ERROR_MOD_NOT_FOUND`. Both now fail closed/fall back for any `LoadLibraryW` error; contracts and PARITY were aligned.
 - Static `rustfmt --check` and `git diff --check` passed after these edits; no Cargo/build/test/clippy/native checks due C: space constraint. The display clock and platform primitives remain without a post-integration compile verdict.
+
+## Wave 6 static audit correction (2026-10-18, W6-05)
+- Independent W6 audit found natural comparer and dark title bar were swallowing non-missing-module `LoadLibraryW` errors, unlike the C# catches. Both now fall back only for `ERROR_MOD_NOT_FOUND`; other loader failures propagate. Added focused error-code classification tests and restored narrow behavior in W6-05 contract/PARITY.
+- `rustfmt --check` and `git diff --check` passed. No Cargo/build/test/clippy/native check was run on this correction due to C: free space; tests are source-only until the required gates can run.

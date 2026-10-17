@@ -6,7 +6,7 @@ use std::sync::OnceLock;
 
 use pr_core::abstractions::NaturalComparer;
 use pr_core::catalog::natural_cmp::ManagedNaturalComparer;
-use windows::Win32::Foundation::FreeLibrary;
+use windows::Win32::Foundation::{ERROR_MOD_NOT_FOUND, FreeLibrary};
 use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
 use windows::core::{PCWSTR, w};
 
@@ -19,7 +19,8 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
         // SAFETY: the DLL name is a static NUL-terminated UTF-16 string.
         let module = match unsafe { LoadLibraryW(w!("shlwapi.dll")) } {
             Ok(module) => module,
-            Err(_) => return None,
+            Err(error) if win32_error_code(&error) == ERROR_MOD_NOT_FOUND.0 => return None,
+            Err(error) => panic!("loading shlwapi.dll failed: {error}"),
         };
         // SAFETY: the module handle is valid and the export name is a static NUL-terminated ANSI string.
         let Some(address) = (unsafe { GetProcAddress(module, windows::core::s!("StrCmpLogicalW")) }) else {
@@ -46,6 +47,10 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
             Ordering::Greater => Ordering::Greater,
         },
     )
+}
+
+fn win32_error_code(error: &windows::core::Error) -> u32 {
+    (error.code().0 as u32) & 0xFFFF
 }
 
 /// Windows shell natural comparer. If shlwapi or StrCmpLogicalW is unavailable, uses the managed comparer.
@@ -78,6 +83,15 @@ impl NaturalComparer for WindowsNaturalComparer {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn only_missing_library_error_uses_managed_fallback() {
+        // C# twin: WindowsNaturalComparer.Compare catches DllNotFoundException only.
+        let missing = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_007E_u32 as i32));
+        let access_denied = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_0005_u32 as i32));
+        assert_eq!(win32_error_code(&missing), ERROR_MOD_NOT_FOUND.0);
+        assert_ne!(win32_error_code(&access_denied), ERROR_MOD_NOT_FOUND.0);
+    }
 
     #[test]
     fn null_values_sort_before_non_null_values() {
