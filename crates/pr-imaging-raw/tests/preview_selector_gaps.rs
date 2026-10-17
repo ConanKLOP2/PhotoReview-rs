@@ -1,4 +1,4 @@
-//! Adversarial verification tests for W5-11b (kept out of the commit).
+//! Mutation-gap tests for W5-11b PreviewSelector (length-4 unknown-size sibling; partial request boxes with a negative side).
 use pr_imaging::decode_types::DecodeBox;
 use pr_imaging_raw::preview_selector::{select_preview, select_preview_resolved};
 use pr_imaging_raw::{EmbeddedPreview, EmbeddedPreviewKind, InMemoryRawHeaderSource, PreviewColorSpace};
