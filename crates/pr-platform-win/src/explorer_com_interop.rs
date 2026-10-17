@@ -862,6 +862,29 @@ mod tests {
         browser.free();
     }
 
+    #[test]
+    fn shell_windows_iterator_never_requests_an_index_after_count() {
+        let collection = Fake::new();
+        let browser = Fake::new();
+        collection.state.lock().unwrap().count = 1;
+        collection
+            .state
+            .lock()
+            .unwrap()
+            .items
+            .insert(0, browser.pointer.as_ptr() as usize);
+        let source = ShellWindowsSource::from_owned(collection.add_owned());
+        let mut windows = source.windows();
+        drop(windows.next().unwrap().unwrap());
+        assert!(windows.next().is_none());
+        assert_eq!(collection.state.lock().unwrap().last.unwrap().data1, 0);
+        drop(source);
+        assert_eq!(collection.refs(), 0);
+        assert_eq!(browser.refs(), 0);
+        collection.free();
+        browser.free();
+    }
+
     // C#: ShellWindows_CountFailing_SurfacesAsComException
     #[test]
     fn shell_windows_count_failure_is_reported() {
@@ -939,7 +962,27 @@ mod tests {
     fn shell_com_accepts_success_and_s_false_and_retains_failure_hresult() {
         assert_eq!(ShellCom::check(0), Ok(()));
         assert_eq!(ShellCom::check(ids::S_FALSE), Ok(()));
-        assert_eq!(ShellCom::check(E_FAIL), Err(ShellComError(E_FAIL)));
+        let error = ShellCom::check(E_FAIL).unwrap_err();
+        assert_eq!(error, ShellComError(E_FAIL));
+        assert_eq!(error.hresult(), E_FAIL);
+        assert_eq!(error.to_string(), "shell COM call failed (HRESULT 0x80004005)");
+    }
+
+    #[test]
+    fn owned_unknown_raw_accessors_preserve_the_owned_pointer() {
+        let browser = Fake::new();
+        let unknown = OwnedUnknown(browser.add_owned());
+        let expected = browser.pointer.as_ptr();
+        assert_eq!(unknown.as_raw(), expected);
+
+        let raw = unknown.into_raw();
+        assert_eq!(raw, expected);
+        assert_eq!(browser.refs(), 1);
+        let owned = NonNull::new(raw).expect("into_raw must return the owned pointer");
+        // SAFETY: `into_raw` transferred this one live fake COM reference to the test, which releases it exactly once.
+        unsafe { ShellCom::release(owned) };
+        assert_eq!(browser.refs(), 0);
+        browser.free();
     }
 
     #[test]

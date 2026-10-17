@@ -190,3 +190,8 @@
 - Wave 6 contracts PR #27 (`integration/wave-6-contracts`) has squash auto-merge enabled and is rebased onto `87c9bf4` at head `e070f54`. The base advance made the PR report `DIRTY`; the two conflicts were resolved by preserving merged Wave 5 progress/decision records and Wave 6 contract updates.
 - Post-rebase gates passed: `cargo fmt --all --check`, workspace Clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), `tools/sync-from-csharp.ps1 -Check`, and `git diff --check`.
 - PR #27 last observed state: OPEN/BLOCKED with auto-merge enabled; CI is left to the app monitor. The dedicated `target-wave6-contracts` directory remains for cleanup after PR completion because recursive deletion was rejected by the command safety policy.
+
+## Wave 6 integration update (2026-10-18, W6-01a mutation tests)
+- Added three focused COM interop assertions: the shell window iterator never requests an index beyond the reported count, `ShellComError` preserves and formats the HRESULT, and `OwnedUnknown` raw-pointer accessors preserve ownership transfer semantics.
+- Focused validation: `cargo test -p pr-platform-win --test explorer_com_interop --locked` passed 12/12; `cargo clippy -p pr-platform-win --all-targets --locked -- -D warnings`, `cargo fmt --all`, and `git diff --check` passed.
+- Targeted Cargo Mutants rerun remains incomplete: 10 mutants caught and 1 compile-time unviable outcome were recorded before interruption; the output has no final `end_time`, so no full mutation verdict is claimed. The prior seven survivors are among the caught mutations in this rerun.
