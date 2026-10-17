@@ -199,3 +199,7 @@
 ## Cập nhật hướng dẫn build (2026-10-17)
 - Theo yêu cầu người dùng, đã bỏ các ngưỡng/cảnh báo dung lượng ổ C khỏi `AGENTS.md`, P-19/P-29 và nhật ký tiến độ; heartbeat tiếp tục Wave 5 rồi chuyển Wave 6 và các wave sau.
 - Giữ quy tắc mỗi worktree có `CARGO_TARGET_DIR` riêng và dọn target khi đơn vị có verdict hoặc PR merge. Đã rà các tài liệu Markdown/config/script trong worktree, không còn nội dung chính sách ngưỡng dung lượng ổ đĩa.
+
+## Wave 5 integration update (2026-10-17, W5-16c native corpus test completion)
+- Implemented the two C# PrivateUsage growth tests with a test-only Win32 `GetProcessMemoryInfo` helper, plus the three-row portrait orientation rewrite test using the RAW registry and orientation patcher. Contract question 4 is resolved; tests remain `#[ignore = "native"]` because pinned LibRaw/corpus runtime evidence is unavailable here.
+- Focused validation: `cargo check -p pr-libraw --tests --offline` passed and refreshed `Cargo.lock`; `cargo test -p pr-libraw --test decoder_native --locked` passed (median helper 1/1; 23 native cases ignored); `cargo test -p pr-libraw --test private_usage_helper --locked` passed 1/1 on Windows.

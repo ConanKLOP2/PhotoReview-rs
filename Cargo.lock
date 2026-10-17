@@ -104,6 +104,7 @@ dependencies = [
  "pr-core",
  "pr-imaging",
  "pr-imaging-raw",
+ "pr-platform-win",
  "pr-test-support",
  "serde_json",
 ]

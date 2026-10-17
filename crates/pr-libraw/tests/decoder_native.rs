@@ -1,17 +1,16 @@
 //! Native twins of `LibRawDecoder` (W5-16c): every test drives the REAL `libraw.dll` (0.22.2, pinned by sha256) through the
 //! production adapter `NativeLibRaw`, and most of them also need the RAW corpus (`PHOTOREVIEW_RAW_CORPUS_DIR`).
 //!
-//! Every test here is `#[ignore = "native: libraw.dll (+ RAW corpus)"]` (contract `Done when`: run with `-- --ignored` on a
-//! machine that has the pinned DLL and the corpus). When the DLL or the corpus is missing the test skips (C# `RequireNative`),
-//! unless `PHOTOREVIEW_RAW_CORPUS_STRICT=1` turns the skip into a failure.
+//! Native integration cases are `#[ignore = "native: libraw.dll (+ RAW corpus)"]` (contract `Done when`: run with `-- --ignored`
+//! on a machine with the pinned DLL and corpus). Missing dependencies skip as in C# `RequireNative`, unless
+//! `PHOTOREVIEW_RAW_CORPUS_STRICT=1` turns the skip into a failure.
 //!
-//! Red tests: the stub bodies are `todo!()`, so every test here fails until the W5-16c porter fills them in. Two groups stay
-//! red for their own reasons, documented on each test: the private-bytes leak tests (contract Open question 4: a
-//! `process_private_bytes()` helper) and the white-balance preview decode (Open question 5: a JPEG decoder for the test).
+//! Native tests need the pinned LibRaw DLL and, for corpus cases, the configured RAW corpus. The white-balance preview
+//! decode remains unported because its test needs a JPEG decoder (contract Open question 5).
 
 mod support;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
 
@@ -20,6 +19,9 @@ use pr_core::sync::CancelToken;
 use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, SourceBytes};
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
 use pr_imaging::pixel_memory::PixelBufferImageCodec;
+use pr_imaging_raw::InMemoryRawHeaderSource;
+use pr_imaging_raw::formats::limits::MAX_HEADER_BYTES;
+use pr_imaging_raw::registry::RawContainerReaderRegistry;
 use pr_libraw::availability;
 use pr_libraw::decoder::{
     LONG_PATH_THRESHOLD, LibRawDecoder, MAX_QUEUED_PRELOAD_DECODES, NOT_ENOUGH_MEMORY_MESSAGE, NativeLibRaw,
@@ -27,6 +29,7 @@ use pr_libraw::decoder::{
 };
 use pr_libraw::full_decode_gate::FullDecodeGate;
 use pr_libraw::native;
+use pr_test_support::TempRoot;
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};
 
 use support::{
@@ -96,6 +99,30 @@ fn corpus_sample(prefix: &str) -> Option<PathBuf> {
         .collect();
     names.sort();
     names.into_iter().next()
+}
+
+fn corpus_file(name: &str) -> Option<PathBuf> {
+    let path = corpus_dir()?.join(name);
+    path.is_file().then_some(path)
+}
+
+fn median(values: &[u64]) -> u64 {
+    assert!(!values.is_empty(), "median requires at least one sample");
+    let mut sorted = values.to_vec();
+    sorted.sort_unstable();
+    let middle = sorted.len() / 2;
+    if sorted.len() % 2 == 1 {
+        sorted[middle]
+    } else {
+        let sum = u128::from(sorted[middle - 1]) + u128::from(sorted[middle]);
+        u64::try_from(sum / 2).expect("the average of two u64 values fits in u64")
+    }
+}
+
+#[test]
+fn median_matches_csharp_lower_middle_average_for_even_samples() {
+    assert_eq!(median(&[9, 1, 7, 3]), 5);
+    assert_eq!(median(&[9, 1, 7]), 7);
 }
 
 /// Writes `bytes` to a fresh temp file, returns its path (the caller removes it).
@@ -258,16 +285,37 @@ fn decode_official_corpus_samples_return_a_valid_rgb_backed_bitmap() {
 }
 
 // C#: LibRawDecoderTests.ReadJpegThumbnail_RepeatedOrfExtraction_DoesNotContinuouslyGrowPrivateBytes
-// Open question 4: private bytes need a `process_private_bytes()` helper (not in this crate yet): red until it lands.
 #[test]
 #[ignore = "native: libraw.dll (+ RAW corpus)"]
 fn read_jpeg_thumbnail_repeated_orf_extraction_does_not_continuously_grow_private_bytes() {
     if !native_available() {
         return;
     }
-    let Some(sample) = corpus_sample("Olympus") else { return };
-    let _ = sample;
-    todo!("needs process_private_bytes() (contract Open question 4): not ported yet")
+    let Some(sample) = corpus_file("Olympus - E-P3 - 16bit (4_3).ORF") else {
+        return;
+    };
+    let sample_text = sample.to_str().expect("RAW corpus path is Unicode");
+    let mut after_warmup = None;
+    for index in 0..100 {
+        let thumbnail = read_jpeg_thumbnail(&NativeLibRaw, sample_text, &CancelToken::none())
+            .unwrap_or_else(|error| panic!("thumbnail extraction {index} for {sample_text}: {error}"));
+        assert!(
+            (4..=(MAX_HEADER_BYTES as usize * 4)).contains(&thumbnail.len()),
+            "{sample_text}"
+        );
+        if (index + 1) % 10 != 0 {
+            continue;
+        }
+        if index == 49 {
+            after_warmup = Some(pr_platform_win::test_support::process_private_bytes().expect("sample private bytes"));
+        }
+    }
+
+    let baseline = after_warmup.expect("warmup baseline at extraction 50");
+    let final_bytes = pr_platform_win::test_support::process_private_bytes().expect("sample final private bytes");
+    let growth = i128::from(final_bytes) - i128::from(baseline);
+    eprintln!("LibRaw thumbnail extraction 100x: after warmup={baseline}; growth={growth}; final={final_bytes}");
+    assert!(growth <= i128::from(32_u64 * 1024 * 1024));
 }
 
 // C#: LibRawDecoderTests.Decode_Repeated200Times_DoesNotContinuouslyGrowPrivateBytes (same open question as above)
@@ -277,22 +325,100 @@ fn decode_repeated_200_times_does_not_continuously_grow_private_bytes() {
     if !native_available() {
         return;
     }
-    // Skips cleanly without the corpus (P-30); on a corpus machine the missing helper below keeps the test red.
-    let Some(_corpus) = corpus_dir() else { return };
-    todo!("needs process_private_bytes() (contract Open question 4): not ported yet")
+    let Some(sample) = corpus_file("Canon - EOS 7D - sRAW2 (sRAW) (3_2).CR2") else {
+        return;
+    };
+    let sample_text = sample.to_str().expect("RAW corpus path is Unicode");
+    let decoder = native_decoder(&Log::default());
+    let mut samples = Vec::with_capacity(20);
+    for index in 0..200 {
+        let request = DecodeRequest::with_box(sample.clone(), pr_imaging::decode_types::DecodeBox::UNBOUNDED);
+        let image = decoder
+            .decode_with_cancel(&request, &CancelToken::none())
+            .unwrap_or_else(|error| panic!("decode {index} for {sample_text}: {error}"));
+        assert!(image.pixel_width() > 0 && image.pixel_height() > 0, "{sample_text}");
+        assert_eq!(image.actual_backend(), pr_core::model::DecoderBackend::LibRaw);
+        let info = decoder
+            .read_info(sample_text)
+            .unwrap_or_else(|error| panic!("read_info after decode {index} for {sample_text}: {error}"));
+        assert_eq!(image.pixel_width(), info.pixel_width, "{sample_text}");
+        assert_eq!(image.pixel_height(), info.pixel_height, "{sample_text}");
+
+        if (index + 1) % 10 == 0 {
+            samples.push(pr_platform_win::test_support::process_private_bytes().expect("sample private bytes"));
+        }
+    }
+
+    let warm_median = median(&samples[4..10]);
+    let late_median = median(&samples[14..20]);
+    let growth = i128::from(late_median) - i128::from(warm_median);
+    eprintln!(
+        "LibRaw 200 decodes: samples(MB)={:?}; median decodes 50-100={warm_median}; median decodes 150-200={late_median}; growth={growth}",
+        samples.iter().map(|bytes| bytes / (1024 * 1024)).collect::<Vec<_>>()
+    );
+    assert!(growth <= i128::from(192_u64 * 1024 * 1024));
 }
 
-// C#: LibRawDecoderTests.ReadInfo_PortraitRewrittenCorpusFile_MatchesDecodedOrientedDimensions (3 rows). Needs W5-11a's
-// registry and the `RawOrientationPatcher` test-support port: red until both merge.
+// C#: LibRawDecoderTests.ReadInfo_PortraitRewrittenCorpusFile_MatchesDecodedOrientedDimensions (3 rows).
 #[test]
 #[ignore = "native: libraw.dll (+ RAW corpus)"]
 fn read_info_portrait_rewritten_corpus_file_matches_decoded_oriented_dimensions() {
     if !native_available() {
         return;
     }
-    // Skips cleanly without the corpus (P-30); on a corpus machine the missing helpers below keep the test red.
-    let Some(_corpus) = corpus_dir() else { return };
-    todo!("needs W5-11a registry and the RawOrientationPatcher test-support port")
+    let Some(corpus) = corpus_dir() else { return };
+    let cases = [
+        "Canon - EOS 350D - RAW (3_2).CR2",
+        "Sony - NEX-6 - 12bit 12bit compressed (3_2).ARW",
+        "Nikon - D40X - 12bit 12bit compressed (Lossy (type 1)) (3_2).NEF",
+    ];
+    for file_name in cases {
+        let source = corpus.join(file_name);
+        if !source.is_file() {
+            continue;
+        }
+        let mut bytes = std::fs::read(&source).unwrap_or_else(|error| panic!("read {}: {error}", source.display()));
+        let extension = Path::new(file_name)
+            .extension()
+            .and_then(|value| value.to_str())
+            .map(|value| format!(".{}", value.to_ascii_lowercase()))
+            .expect("corpus fixture extension");
+        let registry = RawContainerReaderRegistry::new();
+        let first_64 = &bytes[..bytes.len().min(64)];
+        let reader = registry
+            .find_reader(first_64, &extension)
+            .unwrap_or_else(|| panic!("no RAW reader for {file_name}"));
+        let mut source = InMemoryRawHeaderSource::new(bytes.clone());
+        let info = reader
+            .read(&mut source, &CancelToken::none())
+            .unwrap_or_else(|error| panic!("read container info for {file_name}: {error}"));
+        assert!(
+            support::raw_orientation_patcher::try_write_orientation(&mut bytes, &extension, &info, 6),
+            "{file_name} has no orientation tag to rewrite"
+        );
+
+        let temp = TempRoot::new("libraw-portrait");
+        let path = temp.join(file_name);
+        std::fs::write(&path, bytes).unwrap_or_else(|error| panic!("write {}: {error}", path.display()));
+        let path_text = path.to_str().expect("temporary path is Unicode");
+        let decoder = native_decoder(&Log::default());
+        let read_info = decoder
+            .read_info(path_text)
+            .unwrap_or_else(|error| panic!("read_info for {file_name}: {error}"));
+        let request = DecodeRequest::with_box(path.clone(), pr_imaging::decode_types::DecodeBox::new(640, 480));
+        let decoded = decoder
+            .decode_with_cancel(&request, &CancelToken::none())
+            .unwrap_or_else(|error| panic!("decode for {file_name}: {error}"));
+
+        assert!(
+            decoded.original_height() > decoded.original_width(),
+            "{file_name} should decode as portrait"
+        );
+        assert_eq!(decoded.original_width(), read_info.width(), "{file_name}");
+        assert_eq!(decoded.original_height(), read_info.height(), "{file_name}");
+        assert_eq!(decoded.original_width(), read_info.pixel_width, "{file_name}");
+        assert_eq!(decoded.original_height(), read_info.pixel_height, "{file_name}");
+    }
 }
 
 // C#: LibRawDecoderTests.ReadJpegThumbnail_OrfCorpusSamples_FallsBackToDecodablePreview (LibRaw half only: the 3 ORF

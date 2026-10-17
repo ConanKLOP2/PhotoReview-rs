@@ -19,3 +19,4 @@ pr-test-support.workspace = true
 serde_json.workspace = true
 # W5-16c native twin (ReadInfo_PortraitRewritten through the RAW registry); no cycle: pr-imaging-raw does not depend on pr-libraw.
 pr-imaging-raw.workspace = true
+pr-platform-win = { path = "../pr-platform-win", features = ["test-support"] }
