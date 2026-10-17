@@ -207,11 +207,25 @@ action → journal khớp C#; Verifier chạy bằng Opus thay vì Sonnet.
 
 | WU | C# nguồn (dòng) | Màu | P |
 |---|---|---|---|
-| W6-01 | `ComEnumeration`(120), `ExplorerComInterop`(65), `ExplorerWindowSelector`(83), `ExplorerOrderService`(509) | 🔴 | Sonnet |
-| W6-02 | `WindowsRecycleBin`(452), `RecycleBinCapacity`(230): test chỉ dùng fake, test native chỉ xóa item của chính nó | 🔴 | Sonnet |
-| W6-03 | `InstanceKeys`(68), `InstanceScope`(281), `InstanceForwardServer`(154), `InstanceForwardClient`(105) | 🟡 | Sonnet |
-| W6-04 | `WindowsDisplayClock`(323) | 🟡 | Sonnet |
+| W6-01a | `ExplorerComInterop` và shell window source (65; bỏ `ComEnumeration` đã retire ở WP-33) | 🔴 | Sonnet |
+| W6-01b | `ExplorerWindowSelector`(83), pure selection/location policy | 🔴 | Sonnet |
+| W6-01c | `ExplorerOrderService` STA pump, lifecycle, timeout, prefetch | 🔴 | Sonnet |
+| W6-01d | `ExplorerOrderService` native view query, COM vtable, ordered items | 🔴 | Sonnet |
+| W6-02a | Recycle eligibility và permanent-delete guard; chỉ fake drive/mount resolver | 🔴 | Sonnet |
+| W6-02b | `RecycleBinCapacity`(230), settings/registry source và capacity verdict | 🔴 | Sonnet |
+| W6-02c | `WindowsRecycleBin` send/delete facade; fake-first | 🔴 | Sonnet |
+| W6-02d | Recycle candidate matching và restore-verb selection (pure logic) | 🔴 | Sonnet |
+| W6-02e | Shell restore orchestration; native chỉ thao tác item do test tạo | 🔴 | Sonnet |
+| W6-03a | `InstanceKeys`(68), mutex key and process identity | 🟡 | Sonnet |
+| W6-03b | `InstanceForwardPipe` naming and current-user ACL | 🟡 | Sonnet |
+| W6-03c | `InstanceForwardServer` listener and bounded pipe lifecycle | 🟡 | Sonnet |
+| W6-03d | `InstanceForwardClient` request/result and timeout behavior | 🟡 | Sonnet |
+| W6-03e | `InstanceScope`(281), ownership coordinator | 🟡 | Sonnet |
+| W6-04a | `WindowsDisplayClock` worker/state machine (source split under P-18) | 🟡 | Sonnet |
+| W6-04b | `IVBlankDriver` + `NativeVBlankDriver` (D3DKMT/DWM, unsafe ABI) | 🔴 | Sonnet |
 | W6-05 | `WindowsMemoryProbe`(56), `WindowsNaturalComparer`(39), `WindowsDarkTitleBar`(67), `WindowsLiveOperationRegistry`(75) | 🟢 | Haiku (lời gọi Win32 đơn giản; `unsafe` cần Sonnet duyệt) |
+
+Contracts and direct dependencies are listed per subunit in `contracts/W6-*.md`. W6-01a precedes W6-01d; W6-01b consumes W6-01a; W6-01c consumes W6-01b and defines the query seam; W6-01d consumes W6-01a/b/c and implements that seam. W6-02b owns the shared volume/mount-point query adapter; W6-02a consumes it; W6-02c consumes both policy/settings units and defines an injected restore-backend trait; W6-02e implements that backend, while W6-02d supplies pure matching helpers. W6-03a generates mutex names; W6-03b derives paired pipe names and ACLs; W6-03c/d consume that pipe contract, and 03e composes the keys, server, and client. W6-04a depends on 04b; 04b and W6-05 are independent. `lib.rs` wiring is lead-owned for W6-02 units.
 
 ### Wave 7: Benchmarking
 

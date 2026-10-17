@@ -456,3 +456,28 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
 - **A11 (W5-13a, W5-15a):** a lead-owned `tools/stage-native.ps1` (SHA-256 pin check; copies `turbojpeg.dll`, `libraw.dll` and the
   licence files next to the test and app executables) and a Rust-side `tools/fetch-native.ps1`; CI runs it before `--include-ignored`.
 
+## Wave 6 roster (Windows platform)
+
+| WU | Unit | Rust | Porter | Tests |
+|---|---|---|---|---|
+| W6-01a | Explorer COM interop and shell window source | `explorer_com_interop` | Sonnet | `contracts/W6-01a.md`; fake COM ownership/vtable tests |
+| W6-01b | Explorer window selection and location policy | `explorer_window_selector` | Sonnet | `contracts/W6-01b.md`; fake iterator/window tests |
+| W6-01c | Explorer STA provider, timeout and prefetch lifecycle | `explorer_order_provider` | Sonnet | `contracts/W6-01c.md`; deterministic seam tests, native smoke ignored |
+| W6-01d | Explorer native view read and item ordering | `explorer_native_view` | Sonnet | `contracts/W6-01d.md`; fake-vtable tests |
+| W6-02a | Recycle eligibility and permanent-delete guard | `recycle_eligibility` | Sonnet | `contracts/W6-02a-recycle-eligibility.md`; injected drive/mount fakes; depends on 02b query adapter |
+| W6-02b | Recycle settings, shared volume queries, and capacity verdict | `recycle_bin_settings`, `recycle_bin_capacity` | Sonnet | `contracts/W6-02b-recycle-capacity.md`; registry/volume fakes; 02a consumes its mount-point seam |
+| W6-02c | Windows Recycle Bin facade, guarded send/delete, and restore delegation | `recycle_bin` | Sonnet | `contracts/W6-02c-recycle-bin-facade.md`; fake-first action tests; restore backend injected by 02e |
+| W6-02d | Recycle item matching and restore-verb selection | `recycle_candidate`, `restore_verb` | Sonnet | `contracts/W6-02d-recycle-restore-selection.md`; pure tests |
+| W6-02e | Shell restore orchestration and bounded native integration | `recycle_bin_shell`, `recycle_restore` | Sonnet | `contracts/W6-02e-recycle-restore-com-and-native.md`; native tests only clean their own items |
+| W6-03a | Instance mutex key generation | `instance_keys` | Sonnet | `contracts/W6-03a.md`; deterministic path tests |
+| W6-03b | Forward pipe naming and ACL | `forward_pipe` | Sonnet | `contracts/W6-03b.md`; deterministic pipe names + bounded native ACL checks; consumes 03a |
+| W6-03c | Forward server listener | `forward_server` | Sonnet | `contracts/W6-03c.md`; bounded named-pipe tests |
+| W6-03d | Forward client operation | `forward_client` | Sonnet | `contracts/W6-03d.md`; fake outcomes + bounded client/server cases |
+| W6-03e | Instance ownership scope coordinator | `instance_scope` | Sonnet | `contracts/W6-03e.md`; fake locks/forwarder + bounded native mutex cases |
+| W6-04a | `WindowsDisplayClock` worker/state machine | `display_clock` | Sonnet (P-34) | `contracts/W6-04a.md`; deterministic fake-driven behavioral twins |
+| W6-04b | `IVBlankDriver`, D3DKMT vblank driver, DWM fallback | `vblank_driver` | Sonnet (P-34) | `contracts/W6-04b.md`; pure ABI checks + one ignored native DWM smoke |
+| W6-05 | Windows memory probe, natural comparer, dark title bar, live-operation registry | `memory_probe`, `natural_comparer`, `dark_title_bar`, `live_operation_registry` | Haiku (unsafe review by Sonnet) | `contracts/W6-05.md` |
+
+W6-02b owns the shared volume/mount-point query adapter; W6-02a consumes it, W6-02c consumes both policy/settings units, and W6-02e implements the restore backend injected by W6-02c. W6-02d remains independent. `lib.rs` wiring is lead-owned for all W6-02 units.
+
+W6-03a generates mutex names; W6-03b derives paired pipe names and ACLs; W6-03c/d consume the pipe contract; W6-03e composes keys, server, and client. W6-04b depends only on the existing `DisplayTiming` contract and is independently implementable. W6-04a depends on W6-04b's driver trait plus the existing `DisplayClock`, `DisplayTiming`, and `VBlankEstimator`; it owns no Core abstractions. The parent contract records the split and dependency.

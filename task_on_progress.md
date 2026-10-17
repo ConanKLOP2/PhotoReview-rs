@@ -181,3 +181,9 @@
 - Rebuilt the W5 tree delta from `origin/master`, then rebased on `3d8f2cf`; the reviewed W5 commit changes 57 files. The initial workspace tests passed before review fixes. Independent review then found and fixed the missing LibRaw corpus selection/full-decode parity, white-balance thumbnail decode, and two TurboJPEG synthetic native twins. W5-16c OQ5 and W5-14b OQ5 now record the chosen TurboJPEG test approach.
 - W5 remains Partial: native LibRaw/TurboJPEG DLL and RAW corpus execution are unavailable, and the historical W5 mutation survivor set is not fully reconstructed.
 - Final rebased gate passed: fmt, clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), and C# asset sync check. W6-05 PR #25 is merged; W5 PR #26 is open with squash auto-merge enabled.
+
+## Wave 6 contract PR update (2026-10-18)
+- Wave 5 PR #26 merged into `origin/master` at `87c9bf4` while the Wave 6 contracts PR was being prepared.
+- Wave 6 contracts PR #27 (`integration/wave-6-contracts`) has squash auto-merge enabled and is rebased onto `87c9bf4` at head `e070f54`. The base advance made the PR report `DIRTY`; the two conflicts were resolved by preserving merged Wave 5 progress/decision records and Wave 6 contract updates.
+- Post-rebase gates passed: `cargo fmt --all --check`, workspace Clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), `tools/sync-from-csharp.ps1 -Check`, and `git diff --check`.
+- PR #27 last observed state: OPEN/BLOCKED with auto-merge enabled; CI is left to the app monitor. The dedicated `target-wave6-contracts` directory remains for cleanup after PR completion because recursive deletion was rejected by the command safety policy.

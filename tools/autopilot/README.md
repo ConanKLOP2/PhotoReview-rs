@@ -1,7 +1,7 @@
 # Autopilot kit (run the port end to end with Claude Code)
 
 What was used for Waves 2-4 of the PhotoReview-rs port, kept here so the next run starts from files instead of from
-memory. Rules that the agents follow are in `AGENTS.md` ("Pull requests", "Build artifact hygiene") and
+memory. Rules that the agents follow are in `AGENTS.md` ("Pull requests", per-worktree Cargo target cleanup) and
 `docs/MULTI-AGENT-PLAN.md`; unconfirmed decisions live in `docs/PROPOSED-DECISIONS.md`.
 
 ## Files
