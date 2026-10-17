@@ -692,11 +692,7 @@ pub fn grow_header_area<R: Read + ?Sized>(
         if new_len <= old_len {
             break;
         }
-        buffer
-            .try_reserve_exact(new_len - old_len)
-            .map_err(|_| SourceReadError::OutOfMemory {
-                bytes: i64::try_from(new_len).unwrap_or(i64::MAX),
-            })?;
+        reserve_growth(&mut buffer, new_len)?;
         buffer.resize(new_len, 0);
         let added = fill_buffer(reader, buffer.get_mut(old_len..).unwrap_or_default())?;
         if old_len + added < new_len {
@@ -706,6 +702,50 @@ pub fn grow_header_area<R: Read + ?Sized>(
         }
     }
     Ok(buffer)
+}
+
+fn reserve_growth(buffer: &mut Vec<u8>, new_len: usize) -> Result<(), SourceReadError> {
+    reserve_growth_with(buffer, new_len, Vec::try_reserve_exact).map_err(|_| SourceReadError::OutOfMemory {
+        bytes: i64::try_from(new_len).unwrap_or(i64::MAX),
+    })
+}
+
+fn reserve_growth_with<E>(
+    buffer: &mut Vec<u8>,
+    new_len: usize,
+    reserve: impl FnOnce(&mut Vec<u8>, usize) -> Result<(), E>,
+) -> Result<(), E> {
+    let additional = new_len - buffer.len();
+    reserve(buffer, additional)
+}
+
+#[cfg(test)]
+mod reserve_growth_tests {
+    use super::{SourceReadError, reserve_growth, reserve_growth_with};
+
+    #[test]
+    fn grow_header_area_reserves_exact_additional_capacity() {
+        // Rust-only guard for the Vec additional-capacity contract; C# allocates a buffer of the target length.
+        let mut buffer = vec![0; 3];
+        let mut requested = None;
+        reserve_growth_with(&mut buffer, 11, |buffer, additional| {
+            requested = Some(additional);
+            buffer.try_reserve_exact(additional)
+        })
+        .unwrap();
+
+        assert_eq!(requested, Some(8));
+        assert!(buffer.capacity() >= 11);
+    }
+
+    #[test]
+    fn grow_header_area_maps_reserve_capacity_overflow_to_out_of_memory() {
+        // `usize::MAX` fails Vec's capacity check before allocating any large buffer.
+        let mut buffer = Vec::new();
+        let error = reserve_growth(&mut buffer, usize::MAX).unwrap_err();
+
+        assert!(matches!(error, SourceReadError::OutOfMemory { bytes: i64::MAX }));
+    }
 }
 
 /// C# `ReadHeaderArea(path)`: open (shared read/write/delete), `length` = file length, read `min(length, 64 KiB)`
