@@ -5,16 +5,32 @@
 
 use pr_core::abstractions::DisplayTiming;
 
+/// Missing native dependencies are distinct from an NTSTATUS failure, as in the C# exception path.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum NativeImportError {
+    DllNotFound,
+    EntryPointNotFound,
+}
+
+impl NativeImportError {
+    pub(crate) const fn type_name(self) -> &'static str {
+        match self {
+            Self::DllNotFound => "DllNotFoundException",
+            Self::EntryPointNotFound => "EntryPointNotFoundException",
+        }
+    }
+}
+
 /// Monitor nearest to a window, adapter open/wait/close, and compositor timing operations for the display clock.
 pub(crate) trait IVBlankDriver: Send + Sync {
     /// Returns the nearest monitor for a nonzero HWND, or zero when lookup fails.
     fn monitor_from_window(&self, window: isize) -> isize;
 
     /// Opens the adapter associated with `monitor` and returns its adapter/source identifiers.
-    fn try_open(&self, monitor: isize) -> Option<(u32, u32)>;
+    fn try_open(&self, monitor: isize) -> Result<Option<(u32, u32)>, NativeImportError>;
 
     /// Waits for a vblank and returns the D3DKMT NTSTATUS (zero is success).
-    fn wait_for_vblank(&self, adapter: u32, source: u32) -> i32;
+    fn wait_for_vblank(&self, adapter: u32, source: u32) -> Result<i32, NativeImportError>;
 
     /// Closes an opened adapter.
     fn close(&self, adapter: u32);
@@ -84,7 +100,7 @@ impl IVBlankDriver for NativeVBlankDriver {
         unsafe { MonitorFromWindow(window, Self::monitor_default_to_nearest_flag()) }
     }
 
-    fn try_open(&self, monitor: isize) -> Option<(u32, u32)> {
+    fn try_open(&self, monitor: isize) -> Result<Option<(u32, u32)>, NativeImportError> {
         let mut info = MonitorInfoExW {
             size: Self::monitor_info_ex_size() as u32,
             ..MonitorInfoExW::default()
@@ -92,7 +108,7 @@ impl IVBlankDriver for NativeVBlankDriver {
         // SAFETY: `info` is initialized with the ABI size and has the exact MONITORINFOEXW layout; it is writable
         // for the duration of this call and `monitor` is an opaque HMONITOR returned by MonitorFromWindow.
         if unsafe { GetMonitorInfoW(monitor, &mut info) } == 0 {
-            return None;
+            return Ok(None);
         }
 
         let device = Self::device_name_from(&info.device);
@@ -109,7 +125,7 @@ impl IVBlankDriver for NativeVBlankDriver {
             )
         };
         if dc == 0 {
-            return None;
+            return Ok(None);
         }
 
         let mut opened = OpenAdapterFromHdc {
@@ -119,14 +135,14 @@ impl IVBlankDriver for NativeVBlankDriver {
         // SAFETY: `opened` matches D3DKMT_OPENADAPTERFROMHDC and is writable for the call; `dc` remains a valid
         // HDC because DeleteDC is deferred until the cleanup immediately below. A missing entry point maps to
         // failure just as the C# display-clock catch path does.
-        let status = unsafe { with_optional_gdi_d3dkmt_open(&mut opened) }.unwrap_or(-1);
+        let status = unsafe { with_optional_gdi_d3dkmt_open(&mut opened) };
         // SAFETY: `dc` was returned by CreateDCW above and has not been deleted; this call releases its single owner
         // regardless of whether the D3DKMT open succeeded.
         let _ = unsafe { DeleteDC(dc) };
-        (status == 0).then_some((opened.adapter, opened.vid_pn_source_id))
+        Ok((status? == 0).then_some((opened.adapter, opened.vid_pn_source_id)))
     }
 
-    fn wait_for_vblank(&self, adapter: u32, source: u32) -> i32 {
+    fn wait_for_vblank(&self, adapter: u32, source: u32) -> Result<i32, NativeImportError> {
         let mut wait = WaitForVerticalBlankEvent {
             adapter,
             device: 0,
@@ -134,7 +150,7 @@ impl IVBlankDriver for NativeVBlankDriver {
         };
         // SAFETY: `wait` is a writable stack value matching D3DKMT_WAITFORVERTICALBLANKEVENT and remains valid
         // through the synchronous native call; adapter/source came from a successful open.
-        unsafe { with_optional_gdi_d3dkmt_wait(&mut wait) }.unwrap_or(-1)
+        unsafe { with_optional_gdi_d3dkmt_wait(&mut wait) }
     }
 
     fn close(&self, adapter: u32) {
@@ -155,12 +171,12 @@ impl IVBlankDriver for NativeVBlankDriver {
         0
     }
 
-    fn try_open(&self, _monitor: isize) -> Option<(u32, u32)> {
-        None
+    fn try_open(&self, _monitor: isize) -> Result<Option<(u32, u32)>, NativeImportError> {
+        Err(NativeImportError::DllNotFound)
     }
 
-    fn wait_for_vblank(&self, _adapter: u32, _source: u32) -> i32 {
-        -1
+    fn wait_for_vblank(&self, _adapter: u32, _source: u32) -> Result<i32, NativeImportError> {
+        Err(NativeImportError::DllNotFound)
     }
 
     fn close(&self, _adapter: u32) {}
@@ -352,19 +368,19 @@ unsafe fn with_optional_dwm<T>(
 }
 
 #[cfg(windows)]
-unsafe fn with_optional_gdi_d3dkmt_open(data: *mut OpenAdapterFromHdc) -> Option<i32> {
+unsafe fn with_optional_gdi_d3dkmt_open(data: *mut OpenAdapterFromHdc) -> Result<i32, NativeImportError> {
     // SAFETY: the symbol helper checks the module and export before invoking this documented ABI.
     unsafe { with_optional_gdi_symbol(c"D3DKMTOpenAdapterFromHdc", |function| function(data)) }
 }
 
 #[cfg(windows)]
-unsafe fn with_optional_gdi_d3dkmt_wait(data: *mut WaitForVerticalBlankEvent) -> Option<i32> {
+unsafe fn with_optional_gdi_d3dkmt_wait(data: *mut WaitForVerticalBlankEvent) -> Result<i32, NativeImportError> {
     // SAFETY: the symbol helper checks the module and export before invoking this documented ABI.
     unsafe { with_optional_gdi_symbol(c"D3DKMTWaitForVerticalBlankEvent", |function| function(data)) }
 }
 
 #[cfg(windows)]
-unsafe fn with_optional_gdi_d3dkmt_close(data: *mut CloseAdapter) -> Option<i32> {
+unsafe fn with_optional_gdi_d3dkmt_close(data: *mut CloseAdapter) -> Result<i32, NativeImportError> {
     // SAFETY: the symbol helper checks the module and export before invoking this documented ABI.
     unsafe { with_optional_gdi_symbol(c"D3DKMTCloseAdapter", |function| function(data)) }
 }
@@ -373,21 +389,21 @@ unsafe fn with_optional_gdi_d3dkmt_close(data: *mut CloseAdapter) -> Option<i32>
 unsafe fn with_optional_gdi_symbol<T>(
     name: &'static core::ffi::CStr,
     call: impl FnOnce(unsafe extern "system" fn(*mut T) -> i32) -> i32,
-) -> Option<i32> {
+) -> Result<i32, NativeImportError> {
     const MODULE_NAME: [u16; 10] = [103, 100, 105, 51, 50, 46, 100, 108, 108, 0];
     // SAFETY: MODULE_NAME is a static, NUL-terminated UTF-16 string.
     let module = unsafe { LoadLibraryW(MODULE_NAME.as_ptr()) };
     if module.is_null() {
-        return None;
+        return Err(NativeImportError::DllNotFound);
     }
     // SAFETY: module is a live LoadLibraryW reference and name points to a static NUL-terminated export name.
     let address = unsafe { GetProcAddress(module, name.as_ptr().cast()) };
     let result = if address.is_null() {
-        None
+        Err(NativeImportError::EntryPointNotFound)
     } else {
         // SAFETY: callers request documented D3DKMT exports with the same one-pointer NTSTATUS ABI.
         let function: unsafe extern "system" fn(*mut T) -> i32 = unsafe { core::mem::transmute(address) };
-        Some(call(function))
+        Ok(call(function))
     };
     // SAFETY: module is the reference acquired above and is no longer used after this call.
     let _ = unsafe { FreeLibrary(module) };
