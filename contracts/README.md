@@ -464,8 +464,8 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
 | W6-01 | COM enumeration, Explorer interop/window selection/order | `pr-platform-win` | Sonnet | Explorer COM integration tests |
 | W6-02 | Windows Recycle Bin and capacity | `pr-platform-win` | Sonnet | fake-first; native tests only remove their own items |
 | W6-03 | Single-instance keys/scope and forwarding client/server | `pr-platform-win` | Sonnet | fake-first + bounded native process/pipe cases |
-| W6-04 | `WindowsDisplayClock`, D3DKMT vblank driver, DWM fallback | `display_clock` | Sonnet (P-34) | `contracts/W6-04.md`; deterministic fake-driven twins + one ignored native DWM smoke |
+| W6-04a | `WindowsDisplayClock` worker/state machine | `display_clock` | Sonnet (P-34) | `contracts/W6-04a.md`; deterministic fake-driven behavioral twins |
+| W6-04b | `IVBlankDriver`, D3DKMT vblank driver, DWM fallback | `vblank_driver` | Sonnet (P-34) | `contracts/W6-04b.md`; pure ABI checks + one ignored native DWM smoke |
 | W6-05 | Windows memory probe, natural comparer, dark title bar, live-operation registry | `memory_probe`, `natural_comparer`, `dark_title_bar`, `live_operation_registry` | Haiku (unsafe review by Sonnet) | `contracts/W6-05.md` |
 
-W6-04 directly depends on the existing `DisplayClock`, `DisplayTiming`, and `VBlankEstimator`; it can be implemented without waiting for the other Wave 6 units. The contract names the full C# test matrix and owns no core abstractions.
-
+W6-04b depends only on the existing `DisplayTiming` contract and is independently implementable. W6-04a depends on W6-04b's driver trait plus the existing `DisplayClock`, `DisplayTiming`, and `VBlankEstimator`; it owns no Core abstractions. The parent contract records the split and dependency.

@@ -210,7 +210,8 @@ action → journal khớp C#; Verifier chạy bằng Opus thay vì Sonnet.
 | W6-01 | `ComEnumeration`(120), `ExplorerComInterop`(65), `ExplorerWindowSelector`(83), `ExplorerOrderService`(509) | 🔴 | Sonnet |
 | W6-02 | `WindowsRecycleBin`(452), `RecycleBinCapacity`(230): test chỉ dùng fake, test native chỉ xóa item của chính nó | 🔴 | Sonnet |
 | W6-03 | `InstanceKeys`(68), `InstanceScope`(281), `InstanceForwardServer`(154), `InstanceForwardClient`(105) | 🟡 | Sonnet |
-| W6-04 | `WindowsDisplayClock`(323) | 🟡 | Sonnet |
+| W6-04a | `WindowsDisplayClock` worker/state machine (source split under P-18) | 🟡 | Sonnet |
+| W6-04b | `IVBlankDriver` + `NativeVBlankDriver` (D3DKMT/DWM, unsafe ABI) | 🔴 | Sonnet |
 | W6-05 | `WindowsMemoryProbe`(56), `WindowsNaturalComparer`(39), `WindowsDarkTitleBar`(67), `WindowsLiveOperationRegistry`(75) | 🟢 | Haiku (lời gọi Win32 đơn giản; `unsafe` cần Sonnet duyệt) |
 
 ### Wave 7: Benchmarking
