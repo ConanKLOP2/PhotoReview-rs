@@ -135,6 +135,17 @@ pub(crate) fn read_native_view(
     batch_size: usize,
     cancellation: &CancelToken,
 ) -> Result<ExplorerViewSnapshot, SelectionReadError> {
+    read_native_view_with(window, folder, progress, batch_size, cancellation, &ShellPidlApi)
+}
+
+pub(crate) fn read_native_view_with(
+    window: NonNull<c_void>,
+    folder: &str,
+    progress: Option<&(dyn Fn(ExplorerQueryProgress) + Sync)>,
+    batch_size: usize,
+    cancellation: &CancelToken,
+    pidls: &dyn PidlApi,
+) -> Result<ExplorerViewSnapshot, SelectionReadError> {
     let service = match query_interface(window.as_ptr(), &com::ids::IID_SERVICE_PROVIDER) {
         Ok(pointer) => pointer,
         Err(error) => return Ok(com_failure(folder, "QueryInterface(IServiceProvider)", error.hresult())),
@@ -179,7 +190,7 @@ pub(crate) fn read_native_view(
         return Err(canceled_error());
     }
     let count = count as usize;
-    let paths = match read_batched(folder_view.pointer(), folder, count, cancellation) {
+    let paths = match read_batched_with(folder_view.pointer(), folder, count, cancellation, pidls) {
         Ok(Some(paths)) => {
             if let Some(progress) = progress {
                 progress(ExplorerQueryProgress {
