@@ -121,3 +121,8 @@
 - Cherry-picked W5-12b1 core implementation `a8d8d94` as `26546df` on `integration/wave-5`. It adds decoder construction/text defaults, identity-keyed container cache and TOCTOU checks, `read_info`, decode composition, preview range/cache handling, and error mapping; it does not implement the W5-12b2 fallback chain.
 - `cargo fmt --all --check` passed; `cargo test -p pr-imaging-raw --test raw_decoder_core --locked` passed 2/2 blank-path checks. The ORF regression target still passes 40/40.
 - The core's 50-case golden harness and most contract tests are still missing. Clippy is not yet clean because core seams are unused until 12b2 calls them; do not treat package tests as parity proof yet.
+
+## Wave 5 integration update (2026-10-17, W5-12c routing)
+- Implemented `FormatRoutingDecoder` routing, RAW-off localized `NotSupported`, and the `read_info` blank-path guard. Added `raw_routing.rs` with a golden runner covering all 116 `raw-routing` cases plus routing/cancellation/localization checks.
+- `cargo fmt --all --check` passed and `cargo test -p pr-imaging-raw --test raw_routing --locked` passed 5/5 (including all 116 golden cases).
+- `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings` is still blocked by three dead-code warnings in W5-12b1 core (`inner_decoder`, `source_bytes_cache`, preview range methods/error mapper), because W5-12b2 fallback remains stubbed. Routing itself emitted no clippy warning.
