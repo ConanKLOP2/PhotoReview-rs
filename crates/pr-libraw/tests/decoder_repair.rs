@@ -150,3 +150,24 @@ fn global_queued_waiters_counts_both_lanes() {
     }
     assert_eq!(seen, 2);
 }
+
+fn hex_bytes(s: &str) -> Vec<u8> {
+    (0..s.len() / 2)
+        .map(|i| u8::from_str_radix(&s[2 * i..2 * i + 2], 16).unwrap_or(0))
+        .collect()
+}
+
+/// The structure walk (not the structure-free fallback) must decide for entropy data holding `FF FF`, `FF 00` and `FF Dn`.
+/// A later `FF D9` followed by non-padding bytes makes the fallback answer differently, so a wrong skip is visible.
+#[test]
+fn entropy_scan_structure_walk_matches_csharp_oracle() {
+    for (s, want) in [
+        ("FFD8FFDA0002FFFF0011FFD92233FFD944", 12usize),
+        ("FFD8FFDA0002FF00FFD92233FFD944", 10),
+        ("FFD8FFDA0002AABBFF00CCFFD92233FFD944", 13),
+        ("FFD8FFDA0002FFD0FFD92233FFD944", 10),
+        ("FFD8FFDA0002AAFFD0BBFFD92233FFD944", 12),
+    ] {
+        assert_eq!(find_end_of_image(&hex_bytes(s)).unwrap(), want, "{s}");
+    }
+}
