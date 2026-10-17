@@ -242,3 +242,7 @@
 ## Wave 7 readiness inventory (2026-10-18, read-only)
 - Independent read-only audit found W7-01..03 have no contracts or parity rows and no implementations beyond the empty `pr-bench` crate shell. C# sources are pinned by `docs/SYNC-LEDGER.md` at `d92d6aae`: models/profiles/metrics; slow-link filesystem/source-reader and benchmark Recycle Bin; engine/executor/workload runner and CLI output parity.
 - After Wave 6 has passed gates and merged, add W7 contracts first. W7-01 provides shared types; W7-02 depends on filesystem/source abstractions and must use fake/test-owned files only; W7-03 depends on W7-01/02 plus imaging/preload/performance APIs and needs pinned JSON/summary/console output behavior. No Wave 7 files were changed while Wave 6 is unmerged.
+
+## Latest heartbeat check (2026-10-18)
+- `codex/integration-wave-6` is still clean except the two preserved untracked mutation-output directories and remains synced to `origin/codex/integration-wave-6` at `91ae88c`; `origin/master` remains `70a35d7`.
+- C: free space increased to about 334 MiB, with no Cargo/rustc process. The merged W5 integration target still exists; no cleanup retry was made after automatic review blocked recursive removal. This is still insufficient for safe workspace build/test outputs, so Clippy/tests and Wave 6 PR remain pending.
