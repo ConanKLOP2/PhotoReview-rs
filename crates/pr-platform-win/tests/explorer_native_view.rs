@@ -43,6 +43,8 @@ struct ViewData {
     item_return_self: bool,
     display_name_hr: i32,
     display_name_text: Vec<u16>,
+    item_names: Vec<Vec<u16>>,
+    last_item_index: usize,
     enum_items: Vec<usize>,
     enum_position: usize,
     enum_chunk: usize,
@@ -133,12 +135,13 @@ unsafe extern "system" fn release(this: *mut c_void) -> u32 {
 
 unsafe extern "system" fn get_item(
     this: *mut c_void,
-    _index: i32,
+    index: i32,
     _iid: *const windows_core::GUID,
     output: *mut *mut c_void,
 ) -> i32 {
     let mut values = views().lock().unwrap();
     let value = values.get_mut(&(this as usize)).expect("fake view is registered");
+    value.last_item_index = index.max(0) as usize;
     if value.item_return_self {
         value.refs += 1;
         // SAFETY: output is writable and this fake transfers one owned COM reference.
@@ -163,7 +166,11 @@ unsafe extern "system" fn display_name(this: *mut c_void, _kind: u32, output: *m
             *output = std::ptr::null_mut();
         }
     } else {
-        let bytes = value.display_name_text.len() * std::mem::size_of::<u16>();
+        let text = value
+            .item_names
+            .get(value.last_item_index)
+            .unwrap_or(&value.display_name_text);
+        let bytes = text.len() * std::mem::size_of::<u16>();
         // SAFETY: CoTaskMemAlloc returns task-allocator memory for this COM test fake's output string.
         let allocation = unsafe { CoTaskMemAlloc(bytes) }.cast::<u16>();
         if allocation.is_null() {
@@ -171,11 +178,7 @@ unsafe extern "system" fn display_name(this: *mut c_void, _kind: u32, output: *m
         }
         // SAFETY: allocation has exactly enough space for the UTF-16 payload copied from the immutable fake state.
         unsafe {
-            std::ptr::copy_nonoverlapping(
-                value.display_name_text.as_ptr(),
-                allocation,
-                value.display_name_text.len(),
-            );
+            std::ptr::copy_nonoverlapping(text.as_ptr(), allocation, text.len());
         }
         // SAFETY: output is writable and now receives ownership of the allocated name.
         unsafe {
@@ -391,6 +394,8 @@ fn fake_data(columns: Vec<SortColumn>) -> ViewData {
         item_return_self: false,
         display_name_hr: E_FAIL,
         display_name_text: Vec::new(),
+        item_names: Vec::new(),
+        last_item_index: 0,
         enum_items: Vec::new(),
         enum_position: 0,
         enum_chunk: usize::MAX,
@@ -630,6 +635,194 @@ fn batched_read_collects_short_s_false_chunks_in_view_order() {
     let value = &values[&(fake.object as usize)];
     assert_eq!(value.enum_calls, 4); // three S_FALSE chunks followed by the terminal empty read
     assert_eq!(value.refs, 1);
+}
+
+#[test]
+fn native_view_batched_happy_path_preserves_order_sort_group_and_progress() {
+    // C#: BatchedRead_ReturnsThePathsInViewOrderWithSortAndGrouping
+    let paths = vec![
+        r"C:\photos\c.jpg".into(),
+        r"C:\photos\a.jpg".into(),
+        r"C:\photos\b.jpg".into(),
+    ];
+    let mut data = fake_data(vec![
+        SortColumn {
+            propkey: key(0x0011_2233_4455_6677_8899_aabb_ccdd_eeff, 14),
+            direction: 1,
+        },
+        SortColumn {
+            propkey: key(0, 7),
+            direction: -1,
+        },
+    ]);
+    data.service_hr = 0;
+    data.item_count = paths.len() as i32;
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_items = vec![0, 1, 2];
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+    let progress = Mutex::new(Vec::new());
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos",
+        Some(&|event| progress.lock().unwrap().push(event)),
+        16,
+        &CancelToken::new(),
+        &FakePidlApi {
+            paths: paths.clone(),
+            parses: true,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.folder, r"C:\photos");
+    assert_eq!(snapshot.ordered_paths, paths);
+    assert_eq!(snapshot.group_state, ExplorerGroupState::None);
+    assert_eq!(snapshot.sort_columns.len(), 2);
+    assert_eq!(snapshot.sort_columns[0].property_id, 14);
+    assert_eq!(snapshot.sort_columns[0].direction, ExplorerSortDirection::Ascending);
+    assert_eq!(snapshot.sort_columns[1].property_id, 7);
+    assert_eq!(snapshot.sort_columns[1].direction, ExplorerSortDirection::Descending);
+    assert_eq!(
+        *progress.lock().unwrap(),
+        [pr_core::catalog::explorer_types::ExplorerQueryProgress {
+            items_read: 3,
+            item_count: 3,
+            com_calls: 1,
+        }]
+    );
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn native_view_grouped_batched_read_reports_active_grouping_without_sorts() {
+    // C#: BatchedRead_GroupedView_ReportsActiveGrouping
+    let paths = vec![r"C:\photos\one.jpg".to_owned()];
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.item_count = 1;
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_items = vec![0];
+    data.group = key(0x1020_3040_5060_7080_90a0_b0c0_d0e0_f000, 3);
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos",
+        None,
+        16,
+        &CancelToken::new(),
+        &FakePidlApi { paths, parses: true },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.group_state, ExplorerGroupState::Active);
+    assert!(snapshot.sort_columns.is_empty());
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn native_view_falls_back_to_get_item_when_enumerator_cannot_open() {
+    // C#: PerItemRead_WhenTheEnumeratorCannotBeOpened_ReadsEveryItemOneByOne
+    let paths = vec![r"C:\photos\one.jpg".to_owned(), r"C:\photos\two.jpg".to_owned()];
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.item_count = paths.len() as i32;
+    data.item_return_self = true;
+    data.item_hr = 0;
+    data.display_name_hr = 0;
+    data.item_names = paths
+        .iter()
+        .map(|path| path.encode_utf16().chain([0]).collect())
+        .collect();
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+    let progress = Mutex::new(Vec::new());
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos",
+        Some(&|event| progress.lock().unwrap().push(event)),
+        16,
+        &CancelToken::new(),
+        &FakePidlApi {
+            paths: Vec::new(),
+            parses: true,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.ordered_paths, paths);
+    assert_eq!(
+        *progress.lock().unwrap(),
+        [
+            pr_core::catalog::explorer_types::ExplorerQueryProgress {
+                items_read: 1,
+                item_count: 2,
+                com_calls: 3
+            },
+            pr_core::catalog::explorer_types::ExplorerQueryProgress {
+                items_read: 2,
+                item_count: 2,
+                com_calls: 5
+            },
+        ]
+    );
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn native_view_falls_back_when_batched_enumerator_is_incomplete() {
+    // C#: PerItemRead_WhenTheEnumeratorYieldsFewerItemsThanTheView_FallsBackAndIsComplete
+    let paths = vec![r"C:\photos\one.jpg".to_owned(), r"C:\photos\two.jpg".to_owned()];
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.item_count = paths.len() as i32;
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_items = vec![0];
+    data.enum_chunk = 1;
+    data.item_return_self = true;
+    data.item_hr = 0;
+    data.display_name_hr = 0;
+    data.item_names = paths
+        .iter()
+        .map(|path| path.encode_utf16().chain([0]).collect())
+        .collect();
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos",
+        None,
+        16,
+        &CancelToken::new(),
+        &FakePidlApi {
+            paths: paths.clone(),
+            parses: true,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.ordered_paths, paths);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
 }
 
 #[test]
@@ -878,6 +1071,7 @@ fn failed_service_provider_query_releases_a_non_null_partial_output() {
 #[test]
 fn window_browser_service_failure_reports_query_service_and_requests_top_level_browser() {
     // C#: Window_BrowserServiceFails_ReportsQueryService
+    // C#: Window_AsksTheTopLevelBrowserServiceForIShellBrowser
     let fake = FakeView::new(fake_data(vec![]));
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
