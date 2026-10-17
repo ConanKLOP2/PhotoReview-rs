@@ -97,3 +97,8 @@
 - Integrated W5-06 DNG at `7652b44` (unit commit `52dbf19`): `cargo fmt --all --check`, `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings`, and `cargo test -p pr-imaging-raw --locked` passed on the integration tree. Crate run included 50 DNG tests plus the 1-case synthetic DNG golden; the DNG implementation report counted 317 passing tests across RAW crate targets.
 - Corpus tests and cargo-mutants for DNG remain unrun. Updated the I-13 parity row to mark DNG done while ORF remains pending.
 - W5-05 ORF implementation commit arrived, but its golden test is under correction: the existing golden input already includes a repeated zero patch (`times: 40`) mirroring C# `Span.Clear`; likely the Rust test builder must honor the repeat field. Asked the porter to fix the builder and rerun.
+
+## Wave 5 integration update (2026-10-17, ORF)
+- Integrated W5-05 at `b95d7b8` (implementation `0eb9713`, test-helper fix `e870990`). ORF unit tests pass 39/39, including all 233 golden cases; the root cause was the Rust golden-input builder not honoring repeated-byte `times` patches, while the input and oracle were already correct.
+- On the integration tree, `cargo fmt --all --check`, `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings`, and `cargo test -p pr-imaging-raw --locked` all passed after merging W5-05 and W5-06.
+- ORF/DNG corpus checks and cargo-mutants remain open. W5-05/W5-06 still need independent verifier mutation verdicts before final Wave 5 PR gate.
