@@ -826,6 +826,85 @@ fn native_view_falls_back_when_batched_enumerator_is_incomplete() {
 }
 
 #[test]
+fn native_view_falls_back_to_get_item_when_enum_next_fails() {
+    // C#: PerItemRead_WhenTheEnumeratorFails_FallsBack
+    let paths = vec![r"C:\photos\one.jpg".to_owned(), r"C:\photos\two.jpg".to_owned()];
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.item_count = paths.len() as i32;
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.enum_hr = E_FAIL;
+    data.item_return_self = true;
+    data.item_hr = 0;
+    data.display_name_hr = 0;
+    data.item_names = paths
+        .iter()
+        .map(|path| path.encode_utf16().chain([0]).collect())
+        .collect();
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos",
+        None,
+        16,
+        &CancelToken::new(),
+        &FakePidlApi {
+            paths: paths.clone(),
+            parses: true,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.ordered_paths, paths);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
+fn native_view_falls_back_to_get_item_when_folder_pidls_cannot_be_parsed() {
+    // C#: PerItemRead_WhenTheFolderCannotBeParsedToAPidl_FallsBack
+    let paths = vec![r"C:\photos\one.jpg".to_owned(), r"C:\photos\two.jpg".to_owned()];
+    let mut data = fake_data(vec![]);
+    data.service_hr = 0;
+    data.item_count = paths.len() as i32;
+    data.items_hr = 0;
+    data.items_return_self = true;
+    data.item_return_self = true;
+    data.item_hr = 0;
+    data.display_name_hr = 0;
+    data.item_names = paths
+        .iter()
+        .map(|path| path.encode_utf16().chain([0]).collect())
+        .collect();
+    let fake = FakeView::new(data);
+    fake.table[0] = self_query as *const c_void;
+    fake.table[3] = query_service as *const c_void;
+    fake.table[15] = active_view_success as *const c_void;
+
+    let snapshot = explorer_native_view::read_native_view_with(
+        fake.pointer(),
+        r"C:\photos\missing\deeper",
+        None,
+        16,
+        &CancelToken::new(),
+        &FakePidlApi {
+            paths: paths.clone(),
+            parses: false,
+        },
+    )
+    .unwrap();
+
+    assert_eq!(snapshot.status, ExplorerOrderStatus::Available);
+    assert_eq!(snapshot.ordered_paths, paths);
+    assert_eq!(views().lock().unwrap()[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
 fn batched_read_rejects_short_enumeration_so_caller_can_fallback() {
     // C#: PerItemRead_WhenTheEnumeratorYieldsFewerItemsThanTheView_FallsBackAndIsComplete
     let paths = vec![
