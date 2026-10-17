@@ -5,8 +5,11 @@ use std::sync::OnceLock;
 
 use pr_core::model::InstanceMode;
 
-/// Default object-name prefix shared with the C# application.
-pub const DEFAULT_PREFIX: &str = "PhotoReview";
+/// Rust object-name prefix, isolated from the C# application per ADR R0002.
+pub const DEFAULT_PREFIX: &str = "PhotoReviewRs";
+
+/// C# canonical key used when no folder is available (kept for oracle parity).
+const NO_FOLDER_CANONICAL_KEY: &str = "PhotoReview";
 
 static CURRENT_USER_SID: OnceLock<String> = OnceLock::new();
 static CURRENT_SESSION_ID: OnceLock<u32> = OnceLock::new();
@@ -56,11 +59,11 @@ pub fn mutex_name_for(mode: InstanceMode, folder: Option<&str>, prefix: &str) ->
 
 /// R2-F-08 key: resolve to an absolute path, trim its ending separator, and uppercase invariantly.
 ///
-/// Null, empty, and whitespace-only paths share the fixed `PhotoReview` key. Invalid Windows path text falls back
+/// Null, empty, and whitespace-only paths share the fixed C# canonical `PhotoReview` key. Invalid Windows path text falls back
 /// to its original uppercased spelling, so lock lookup itself does not reject the launch.
 pub fn canonical_key(path: Option<&str>) -> String {
     let Some(path) = path.filter(|path| !path.trim().is_empty()) else {
-        return DEFAULT_PREFIX.to_owned();
+        return NO_FOLDER_CANONICAL_KEY.to_owned();
     };
     if path.contains('\0') {
         return path.to_uppercase();

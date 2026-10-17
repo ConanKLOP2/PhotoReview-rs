@@ -209,3 +209,8 @@
 - W6-02e has fake-only candidate/disposal/proof tests and `git diff --cached --check`; no Cargo, rustfmt, compile, tests, mutation, or native COM was run. Restore invokes one canonical `undelete` route and tests never touch a user's bin.
 - W6-03d includes fake outcome, SID, foreground-best-effort cases and an ignored unique-pipe native test; `git diff --cached --check` passed, but Cargo/rustfmt/compile/tests/Clippy were not run.
 - C: free space remains critically low (last measured about 127 MB) and no Cargo/rustc/linker process was running at that check. No workspace integration gate has run on the combined head. Do not run Cargo until storage is available.
+
+## Wave 6 integration update (2026-10-18, W6-03e and R0002 prefix reconciliation)
+- Cherry-picked W6-03e instance-scope ownership implementation (`0767c53`) into integration as `5e11290`; source provides fake/unit tests for ownership claims, pending opens, release, and stop-listener coordination.
+- Reconciled W6-03a and W6-03e default kernel-object names with AGENTS.md and ADR R0002: Rust mutex/forward pipe defaults use `PhotoReviewRs`; the no-folder canonical hash input stays `PhotoReview` to match the C# oracle. Updated scope expectations, contract W6-03a, P-04/P-05 and D-13 parity records; exposed `instance_scope` from the Windows crate root.
+- Static validation only: `git diff --check` passed. Cargo/rustfmt/compile/tests/clippy/mutation have not run on this combined head due to critically low C: free space (about 119 MiB at check); no native ownership or named-pipe behavior is claimed.
