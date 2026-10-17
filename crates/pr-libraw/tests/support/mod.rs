@@ -5,6 +5,8 @@
 //! Every test binary includes this module with `mod support;`. Items unused by one binary are allowed.
 #![allow(dead_code)] // each test binary uses a different subset of these helpers
 
+pub mod raw_orientation_patcher;
+
 use std::collections::VecDeque;
 use std::ffi::OsStr;
 use std::path::PathBuf;

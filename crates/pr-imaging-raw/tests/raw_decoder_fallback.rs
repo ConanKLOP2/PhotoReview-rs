@@ -18,6 +18,7 @@ use pr_imaging_raw::{
     EmbeddedPreview, EmbeddedPreviewKind, ExifBlock, PreviewColorSpace, RawContainerInfo, RawContainerReader,
     RawFormat, RawHeaderError, RawHeaderSource, RawPreviewFallback,
 };
+use pr_test_support::TempRoot;
 use pr_test_support::golden;
 use serde_json::{Value, json};
 
@@ -581,4 +582,91 @@ fn golden_raw_decoder_fallback_runs_virtual_fixed_container_cases() {
         "expected broad fallback integration coverage, got {ran}; gated {}",
         gated.len()
     );
+}
+
+fn no_preview_info() -> RawContainerInfo {
+    RawContainerInfo {
+        format: RawFormat::Dng,
+        sensor_width: 0,
+        sensor_height: 0,
+        orientation: 1,
+        previews: Vec::new(),
+        exif_blocks: Vec::new(),
+    }
+}
+
+fn no_preview_decoder(stats: &Arc<DecoderStats>) -> Arc<dyn ImageDecoder> {
+    Arc::new(FakeDecoder {
+        spec: json!({ "w": 6000, "h": 4000, "original": [6000, 4000] }),
+        stats: Arc::clone(stats),
+        full: true,
+        physical_path: None,
+    })
+}
+
+fn no_preview_raw_decoder(bytes: Arc<[u8]>, io_stats: &Arc<IoStats>, decoder_stats: &Arc<DecoderStats>) -> RawDecoder {
+    let registry = Arc::new(RawContainerReaderRegistry::with_readers([Box::new(FixedReader {
+        info: Some(no_preview_info()),
+        stats: Arc::clone(io_stats),
+    })
+        as Box<dyn RawContainerReader>]));
+    RawDecoder::with_options(
+        Arc::new(FakeDecoder {
+            spec: json!({ "default": { "throw": { "type": "InvalidData", "message": "unused" } } }),
+            stats: Arc::clone(decoder_stats),
+            full: false,
+            physical_path: None,
+        }),
+        RawDecoderOptions {
+            source_reader: Some(Arc::new(MemoryReader {
+                bytes,
+                stats: Arc::clone(io_stats),
+            })),
+            registry: Some(registry),
+            no_preview_decoder: Some(no_preview_decoder(decoder_stats)),
+            ..Default::default()
+        },
+    )
+}
+
+#[test]
+fn full_decode_without_physical_length_counts_header_bytes() {
+    // Mirrors C# RawDecoderMutationGapTests.Decode_FullDecodeOfAFileThatHasNoPhysicalLength_StillCountsTheHeaderBytes.
+    let bytes: Arc<[u8]> = Arc::from(vec![0_u8; 4096]);
+    let io_stats = Arc::new(IoStats::default());
+    let decoder_stats = Arc::new(DecoderStats::default());
+    let decoder = no_preview_raw_decoder(Arc::clone(&bytes), &io_stats, &decoder_stats);
+    let root = TempRoot::new("full-without-physical-length");
+    let path = root.join("missing.dng");
+    assert!(!path.exists(), "the virtual path must not exist on disk");
+
+    let image = decoder
+        .decode(&DecodeRequest::with_box(path, DecodeBox::new(0, 0)))
+        .unwrap();
+    let header_bytes = io_stats.bytes.load(Ordering::SeqCst) as i64;
+
+    assert!(header_bytes > 0, "the container header must read source bytes");
+    assert_eq!(image.source_bytes_read(), Some(header_bytes));
+    assert_eq!(decoder_stats.full_calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn full_decode_with_physical_file_counts_file_length_once() {
+    const FILE_LENGTH: usize = 4096;
+    let physical_file = PhysicalGoldenFile::new("full.dng", &vec![0_u8; FILE_LENGTH]);
+    let bytes: Arc<[u8]> = Arc::from(vec![0_u8; FILE_LENGTH]);
+    let io_stats = Arc::new(IoStats::default());
+    let decoder_stats = Arc::new(DecoderStats::default());
+    let decoder = no_preview_raw_decoder(bytes, &io_stats, &decoder_stats);
+
+    let image = decoder
+        .decode(&DecodeRequest::with_box(&physical_file.path, DecodeBox::new(0, 0)))
+        .unwrap();
+
+    assert!(
+        io_stats.bytes.load(Ordering::SeqCst) > 0,
+        "the container header must read source bytes"
+    );
+    assert_eq!(image.source_bytes_read(), Some(FILE_LENGTH as i64));
+    assert_eq!(decoder_stats.full_calls.load(Ordering::SeqCst), 1);
 }

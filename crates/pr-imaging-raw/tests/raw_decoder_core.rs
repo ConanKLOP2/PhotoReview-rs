@@ -231,6 +231,7 @@ fn set_modified_time(path: &Path, offset: Duration) -> io::Result<()> {
 struct MemorySourceReader {
     bytes: Arc<[u8]>,
     fail_reads_with: Option<String>,
+    max_chunk: Option<usize>,
     stats: Arc<ReadStats>,
 }
 
@@ -244,6 +245,7 @@ impl SourceReader for MemorySourceReader {
             }),
             None => Box::new(CountingCursor {
                 cursor: Cursor::new(Arc::clone(&self.bytes)),
+                max_chunk: self.max_chunk,
                 stats: Arc::clone(&self.stats),
             }),
         };
@@ -253,11 +255,14 @@ impl SourceReader for MemorySourceReader {
 
 struct CountingCursor {
     cursor: Cursor<Arc<[u8]>>,
+    max_chunk: Option<usize>,
     stats: Arc<ReadStats>,
 }
 
 impl Read for CountingCursor {
     fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
+        let limit = self.max_chunk.unwrap_or(output.len()).min(output.len());
+        let output = &mut output[..limit];
         let count = self.cursor.read(output)?;
         self.stats.bytes.fetch_add(count, Ordering::SeqCst);
         Ok(count)
@@ -496,6 +501,7 @@ fn run_read_info_case(input: &Value, expected: &Value, path: &str) -> (usize, us
         None => Arc::new(MemorySourceReader {
             bytes: file,
             fail_reads_with: input["file"]["faulty_read"].as_str().map(str::to_owned),
+            max_chunk: input["file"]["max_chunk"].as_u64().map(|value| value as usize),
             stats: Arc::clone(&stats),
         }),
     };
@@ -671,6 +677,7 @@ fn run_image_decode_case(input: &Value, expected: &Value, path: &str) {
         None => Arc::new(MemorySourceReader {
             bytes: file_bytes(input),
             fail_reads_with: None,
+            max_chunk: input["file"]["max_chunk"].as_u64().map(|value| value as usize),
             stats: Arc::clone(&stats),
         }),
     };

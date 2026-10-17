@@ -785,14 +785,91 @@ fn blank_path_error(param: &str) -> DecodeError {
 
 #[cfg(test)]
 mod tests {
+    use std::io::{self, Cursor, Read, Seek, SeekFrom};
     use std::sync::Arc;
+    use std::sync::Mutex;
 
+    use pr_core::abstractions::{ReadSeek, SourceReadPriority, SourceReader};
     use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
     use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
 
     use super::{CachedRaw, EnglishRawDecoderTexts, RawDecoder, RawDecoderOptions, RawInfoKey, file_identity_changed};
     use crate::contracts::{EmbeddedPreview, EmbeddedPreviewKind, ExifBlock, PreviewColorSpace};
     use crate::formats::{RawContainerInfo, RawFormat};
+
+    #[derive(Clone, Copy)]
+    enum ReadFault {
+        None,
+        InterruptedOnce,
+        PermissionDeniedOnce,
+    }
+
+    struct MemorySourceReader {
+        bytes: Vec<u8>,
+        requested_buffer_size: Mutex<Option<usize>>,
+        read_fault: ReadFault,
+    }
+
+    impl SourceReader for MemorySourceReader {
+        fn open_source(
+            &self,
+            _path: &std::path::Path,
+            _priority: SourceReadPriority,
+            buffer_size: usize,
+        ) -> io::Result<Box<dyn ReadSeek>> {
+            *self.requested_buffer_size.lock().expect("buffer mutex") = Some(buffer_size);
+            Ok(Box::new(MemoryStream {
+                cursor: Cursor::new(self.bytes.clone()),
+                read_fault: self.read_fault,
+                fault_returned: false,
+            }))
+        }
+    }
+
+    struct MemoryStream {
+        cursor: Cursor<Vec<u8>>,
+        read_fault: ReadFault,
+        fault_returned: bool,
+    }
+
+    impl Read for MemoryStream {
+        fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+            if !self.fault_returned {
+                let kind = match self.read_fault {
+                    ReadFault::None => None,
+                    ReadFault::InterruptedOnce => Some(io::ErrorKind::Interrupted),
+                    ReadFault::PermissionDeniedOnce => Some(io::ErrorKind::PermissionDenied),
+                };
+                if let Some(kind) = kind {
+                    self.fault_returned = true;
+                    return Err(io::Error::new(kind, "injected read error"));
+                }
+            }
+            self.cursor.read(buf)
+        }
+    }
+
+    impl Seek for MemoryStream {
+        fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+            self.cursor.seek(pos)
+        }
+    }
+
+    fn decoder_with_memory_reader(bytes: &[u8], read_fault: ReadFault) -> (RawDecoder, Arc<MemorySourceReader>) {
+        let reader = Arc::new(MemorySourceReader {
+            bytes: bytes.to_vec(),
+            requested_buffer_size: Mutex::new(None),
+            read_fault,
+        });
+        let decoder = RawDecoder::with_options(
+            Arc::new(UnusedDecoder),
+            RawDecoderOptions {
+                source_reader: Some(reader.clone()),
+                ..RawDecoderOptions::default()
+            },
+        );
+        (decoder, reader)
+    }
 
     struct UnusedDecoder;
 
@@ -879,5 +956,53 @@ mod tests {
             .try_get(&key)
             .expect("resolved container info is stored for the same file identity");
         assert_eq!(cached.info.previews, [resolved]);
+    }
+
+    #[test]
+    fn read_preview_range_opens_source_with_one_mib_buffer() {
+        // Rust-only contract guard for C# RawDecoder.ReadPreviewRange's default source buffer size.
+        let (decoder, reader) = decoder_with_memory_reader(b"preview", ReadFault::None);
+        let bytes = decoder
+            .read_preview_range("memory.dng", 0, 7, 7, SourceReadPriority::Viewer)
+            .expect("the in-memory preview range should be read");
+
+        assert_eq!(bytes, b"preview");
+        assert_eq!(
+            *reader.requested_buffer_size.lock().expect("buffer mutex"),
+            Some(1024 * 1024)
+        );
+    }
+
+    #[test]
+    fn read_preview_range_accepts_full_file_range() {
+        // C# RawDecoder.ReadPreviewRange permits offset=0 and count=file length.
+        let (decoder, _) = decoder_with_memory_reader(b"entire source", ReadFault::None);
+        let bytes = decoder
+            .read_preview_range("memory.dng", 0, 13, 13, SourceReadPriority::Viewer)
+            .expect("the full-file range is within bounds");
+
+        assert_eq!(bytes, b"entire source");
+    }
+
+    #[test]
+    fn read_preview_range_retries_interrupted_read_and_completes() {
+        // C# ReadPreviewRange continues reading after a transient interrupted read.
+        let (decoder, _) = decoder_with_memory_reader(b"preview", ReadFault::InterruptedOnce);
+        let bytes = decoder
+            .read_preview_range("memory.dng", 0, 7, 7, SourceReadPriority::Viewer)
+            .expect("Interrupted should be retried until the range is complete");
+
+        assert_eq!(bytes, b"preview");
+    }
+
+    #[test]
+    fn read_preview_range_returns_permission_denied_read_error() {
+        // C# ReadPreviewRange propagates non-transient read errors rather than treating them as truncation.
+        let (decoder, _) = decoder_with_memory_reader(b"preview", ReadFault::PermissionDeniedOnce);
+        let error = decoder
+            .read_preview_range("memory.dng", 0, 7, 7, SourceReadPriority::Viewer)
+            .expect_err("PermissionDenied must be propagated");
+
+        assert!(matches!(error, DecodeError::Io(ref io_error) if io_error.kind() == io::ErrorKind::PermissionDenied));
     }
 }
