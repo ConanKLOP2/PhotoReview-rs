@@ -1065,7 +1065,7 @@ fn golden_orf_container() {
 
         let expected = expected_case.as_object().expect("golden case object");
         for (key, value) in expected {
-            if matches!(key.as_str(), "name" | "op") {
+            if matches!(key.as_str(), "name" | "op" | "ext") {
                 continue;
             }
             if actual.get(key) != Some(value) {
