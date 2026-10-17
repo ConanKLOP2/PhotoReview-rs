@@ -262,6 +262,32 @@ fn read_next_ifd_pointer_equal_to_a_registered_sub_ifd_parses_that_ifd_once() {
     assert_eq!(sensor(&info), (4000, 3000));
 }
 
+// Rust-only baseline test based on C# `DngContainerReader.Read` (d92d6aae), IFD walk at lines 52, 66, and 75.
+#[test]
+fn read_zero_ifd_offsets_are_ignored() {
+    // C# treats offsets below the first legal IFD byte as empty; a zero IFD0 offset yields empty metadata.
+    let data = TiffBytes::new(true, 64)
+        .header(0)
+        .ifd(8, 0, &image(4000, 3000, CFA))
+        .into_vec();
+    assert_eq!(sensor(&read_ok(data)), (0, 0));
+
+    let mut ifd0 = image(4000, 3000, CFA);
+    ifd0.push(long(0x014A, 0));
+    let data = TiffBytes::new(true, 256).header(8).ifd(8, 0, &ifd0).into_vec();
+
+    assert_eq!(sensor(&read_ok(data)), (4000, 3000));
+
+    let mut ifd0 = image(4000, 3000, CFA);
+    ifd0.push(long(0x014A, 120));
+    let data = TiffBytes::new(true, 256)
+        .header(8)
+        .ifd(8, 0, &ifd0)
+        .ifd(120, 0, &[long(0x014A, 0)])
+        .into_vec();
+    assert_eq!(sensor(&read_ok(data)), (4000, 3000));
+}
+
 // ---------------------------------------------------------------- orientation
 
 // C#: DngMutationGapTests.Read_SecondOrientationEntryInIfd0_OverridesOnlyWithinOneToEight (4 rows)
@@ -275,6 +301,29 @@ fn read_second_orientation_entry_in_ifd0_overrides_only_within_one_to_eight() {
 
         assert_eq!(read_ok(data).orientation, expected, "second orientation {second}");
     }
+}
+
+// Rust-only mutation killer based on C# `DngContainerReader.Read` (baseline d92d6aae), orientation guard at line 125.
+#[test]
+fn read_orientation_from_nonzero_ifd_is_ignored() {
+    let data = TiffBytes::new(true, 256)
+        .header(8)
+        .ifd(8, 120, &image(4000, 3000, CFA))
+        .ifd(
+            120,
+            0,
+            &[
+                short(0x0112, 8),
+                short(0x0100, 640),
+                short(0x0101, 480),
+                short(0x0106, RGB),
+            ],
+        )
+        .into_vec();
+
+    let info = read_ok(data);
+    assert_eq!(info.orientation, 1);
+    assert_eq!(sensor(&info), (4000, 3000));
 }
 
 // ---------------------------------------------------------------- primary IFD choice
@@ -303,6 +352,19 @@ fn read_two_raw_ifds_of_equal_area_keeps_the_first() {
         .into_vec();
 
     assert_eq!(sensor(&read_ok(data)), (4000, 3000));
+}
+
+// Rust-only mutation killer based on C# `DngContainerReader.Read` (baseline d92d6aae), candidate area at line 186.
+#[test]
+fn read_raw_ifd_ranking_uses_product_rather_than_dimension_sum() {
+    // 2200*1400 > 3000*1000, but 2200+1400 < 3000+1000: product and sum rankings choose different IFDs.
+    let data = TiffBytes::new(true, 256)
+        .header(8)
+        .ifd(8, 120, &image(3000, 1000, CFA))
+        .ifd(120, 0, &image(2200, 1400, CFA))
+        .into_vec();
+
+    assert_eq!(sensor(&read_ok(data)), (2200, 1400));
 }
 
 // C#: DngMutationGapTests.Read_SmallerNonRawIfdAfterLargerNonRawIfd_KeepsTheLarger
@@ -376,6 +438,56 @@ fn read_only_preview_ifds_sensor_size_is_the_largest_preview() {
         assert_eq!(info.previews.len(), 2, "largest_first={largest_first}");
         assert_eq!(sensor(&info), (640, 480), "largest_first={largest_first}");
     }
+}
+
+// Rust-only mutation killer based on C# `DngContainerReader.Read` (baseline d92d6aae), preview ranking at line 202.
+#[test]
+fn read_preview_ranking_uses_product_and_keeps_first_on_equal_area() {
+    let first = create_minimal_jpeg(3000, 1000);
+    let larger_product = create_minimal_jpeg(2200, 1400);
+    let (data, first_offset) = two_preview_ifds(&first, &larger_product);
+    let info = read_ok(data);
+    assert_eq!(sensor(&info), (2200, 1400));
+    assert_eq!(info.previews[0].offset, first_offset as i64);
+
+    let first = create_minimal_jpeg(640, 480);
+    let equal_area_second = create_minimal_jpeg(480, 640);
+    let (data, first_offset) = two_preview_ifds(&first, &equal_area_second);
+    let info = read_ok(data);
+    assert_eq!(sensor(&info), (640, 480));
+    assert_eq!(info.previews[0].offset, first_offset as i64);
+}
+
+/// Two chained preview IFDs with JPEG frame sizes authoritative for preview dimensions.
+fn two_preview_ifds(first: &[u8], second: &[u8]) -> (Vec<u8>, usize) {
+    const FIRST_OFFSET: usize = 400;
+    let second_offset = FIRST_OFFSET + first.len();
+    let data = TiffBytes::new(true, second_offset + second.len())
+        .header(8)
+        .ifd(
+            8,
+            120,
+            &[
+                short(0x0100, 1),
+                short(0x0101, 1),
+                long(0x0201, FIRST_OFFSET as u32),
+                long(0x0202, first.len() as u32),
+            ],
+        )
+        .ifd(
+            120,
+            0,
+            &[
+                short(0x0100, 1),
+                short(0x0101, 1),
+                long(0x0201, second_offset as u32),
+                long(0x0202, second.len() as u32),
+            ],
+        )
+        .put(FIRST_OFFSET, first)
+        .put(second_offset, second)
+        .into_vec();
+    (data, FIRST_OFFSET)
 }
 
 // ---------------------------------------------------------------- DefaultCropSize and DefaultScale
@@ -1319,6 +1431,30 @@ fn read_with_token_cancelled_by_source_after_first_ifd_read_returns_canceled() {
     let result = DngContainerReader::new().read(&mut source, &token);
 
     assert!(matches!(result, Err(RawHeaderError::Canceled)), "{result:?}");
+}
+
+// Rust-only mutation killer based on C# `DngContainerReader.Read` (baseline d92d6aae), per-IFD cancellation at line 86.
+#[test]
+fn read_zero_ifd_pointers_do_not_add_a_cancellation_boundary() {
+    let mut ifd0 = image(4000, 3000, CFA);
+    ifd0.push(long(0x014A, 0));
+    let data = TiffBytes::new(true, 256).header(8).ifd(8, 0, &ifd0).into_vec();
+    let token = CancelToken::new();
+    let mut source = CancelAtRead {
+        inner: InMemoryRawHeaderSource::new(data),
+        token: token.clone(),
+        // Header, scan IFD count/entries/next, then the parse pass starts. Cancellation occurs during that parse pass.
+        cancel_at: 5,
+        calls: 0,
+    };
+
+    let result = DngContainerReader::new().read(&mut source, &token);
+
+    assert!(
+        result.is_ok(),
+        "zero SubIFD/next pointers add no parsed IFD: {result:?}"
+    );
+    assert!(token.is_canceled());
 }
 
 // Rust-only: an I/O failure at every read call of the walk (header, IFD0, the chain, a SubIFD, the strip probe, the EXIF

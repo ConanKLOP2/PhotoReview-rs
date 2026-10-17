@@ -20,6 +20,7 @@
 // C# unchecked casts of golden numbers (16/32-bit fields, `(ushort)`, `(uint)`, `(byte)`): the truncation is the point.
 #![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 
+use std::io;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -29,10 +30,149 @@ use pr_imaging_raw::raw_exif::try_read_exif;
 use pr_imaging_raw::readers::nef::NefContainerReader;
 use pr_imaging_raw::{InMemoryRawHeaderSource, RawContainerReader, RawHeaderError, RawHeaderSource};
 use pr_test_support::golden;
-use pr_test_support::raw::{build_tiff, create_minimal_jpeg, from_hex, mutants};
+use pr_test_support::raw::{TiffBytes, at, build_tiff, create_minimal_jpeg, from_hex, long, mutants};
 use serde_json::{Map, Value, json};
 
 const GOLDEN: &str = "nef-container";
+
+/// A bounded test source with deterministic read hooks for cancellation and I/O-only mutation killers.
+struct HookedRawSource {
+    bytes: Vec<u8>,
+    reads: Vec<(i64, i32)>,
+    fail_on: Option<(i64, i32, usize)>,
+    matching_reads: usize,
+    cancel_on: Option<(i64, i32, CancelToken)>,
+}
+
+impl HookedRawSource {
+    fn new(bytes: Vec<u8>) -> Self {
+        Self {
+            bytes,
+            reads: Vec::new(),
+            fail_on: None,
+            matching_reads: 0,
+            cancel_on: None,
+        }
+    }
+
+    fn fail_on_nth_read(mut self, offset: i64, count: i32, nth: usize) -> Self {
+        self.fail_on = Some((offset, count, nth));
+        self
+    }
+
+    fn cancel_on_read(mut self, offset: i64, count: i32, token: CancelToken) -> Self {
+        self.cancel_on = Some((offset, count, token));
+        self
+    }
+}
+
+impl RawHeaderSource for HookedRawSource {
+    fn length(&self) -> i64 {
+        i64::try_from(self.bytes.len()).unwrap_or(i64::MAX)
+    }
+
+    fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
+        self.reads.push((offset, count));
+        if let Some((fail_offset, fail_count, nth)) = self.fail_on
+            && (offset, count) == (fail_offset, fail_count)
+        {
+            self.matching_reads += 1;
+            if self.matching_reads == nth {
+                return Err(RawHeaderError::invalid_data_io(
+                    "scripted read failure",
+                    io::Error::other("scripted read failure"),
+                ));
+            }
+        }
+        if let Some((cancel_offset, cancel_count, token)) = &self.cancel_on
+            && (offset, count) == (*cancel_offset, *cancel_count)
+        {
+            token.cancel();
+        }
+        let start = usize::try_from(offset).map_err(|_| RawHeaderError::invalid_data("negative test read offset"))?;
+        let len = usize::try_from(count).map_err(|_| RawHeaderError::invalid_data("negative test read count"))?;
+        let end = start
+            .checked_add(len)
+            .filter(|end| *end <= self.bytes.len())
+            .ok_or_else(|| RawHeaderError::invalid_data("test read out of range"))?;
+        Ok(&self.bytes[start..end])
+    }
+}
+
+fn raw_with_two_jpeg_previews(raw_width: u32, raw_height: u32, first: (u32, u32), second: (u32, u32)) -> Vec<u8> {
+    let first_jpeg = create_minimal_jpeg(first.0 as i32, first.1 as i32);
+    let second_jpeg = create_minimal_jpeg(second.0 as i32, second.1 as i32);
+    let first_offset = 512u32;
+    let second_offset = first_offset + u32::try_from(first_jpeg.len()).expect("fixture JPEG length fits u32") + 16;
+    let second_end = usize::try_from(second_offset).expect("fixture offset fits usize") + second_jpeg.len();
+    let tiff = TiffBytes::new(true, second_end)
+        .header(8)
+        .ifd(
+            8,
+            0,
+            &[long(256, raw_width), long(257, raw_height), at(0x014A, 4, 2, 64)],
+        )
+        .u32(64, 128)
+        .u32(68, 200)
+        .ifd(
+            128,
+            0,
+            &[
+                long(256, first.0),
+                long(257, first.1),
+                long(0x0201, first_offset),
+                long(
+                    0x0202,
+                    u32::try_from(first_jpeg.len()).expect("fixture JPEG length fits u32"),
+                ),
+            ],
+        )
+        .ifd(
+            200,
+            0,
+            &[
+                long(256, second.0),
+                long(257, second.1),
+                long(0x0201, second_offset),
+                long(
+                    0x0202,
+                    u32::try_from(second_jpeg.len()).expect("fixture JPEG length fits u32"),
+                ),
+            ],
+        )
+        .put(
+            usize::try_from(first_offset).expect("fixture offset fits usize"),
+            &first_jpeg,
+        )
+        .put(
+            usize::try_from(second_offset).expect("fixture offset fits usize"),
+            &second_jpeg,
+        );
+    // Keep the test fixture's complete byte vector alive only until it is returned.
+    tiff.into_vec()
+}
+
+fn raw_with_unknown_jpeg_preview(raw_width: u32, raw_height: u32) -> (Vec<u8>, i64) {
+    let jpeg = create_minimal_jpeg(900, 900);
+    let jpeg_offset = 512u32;
+    let bytes = TiffBytes::new(true, jpeg_offset as usize + jpeg.len())
+        .header(8)
+        .ifd(8, 0, &[long(256, raw_width), long(257, raw_height), long(0x014A, 128)])
+        .u32(64, 128)
+        .ifd(
+            128,
+            0,
+            &[
+                long(256, 0),
+                long(257, 0),
+                long(0x0201, jpeg_offset),
+                long(0x0202, u32::try_from(jpeg.len()).expect("fixture JPEG length fits u32")),
+            ],
+        )
+        .put(jpeg_offset as usize, &jpeg)
+        .into_vec();
+    (bytes, i64::from(jpeg_offset))
+}
 
 // ---------------------------------------------------------------- golden DSL (tools/oracle-cs/Commands/W5-04.cs)
 
@@ -396,6 +536,89 @@ fn read_pre_cancelled_token_returns_canceled_past_the_header() {
     cancel.cancel();
     let result = NefContainerReader.read(&mut src, &cancel);
     assert!(matches!(result, Err(RawHeaderError::Canceled)));
+}
+
+// C# source: NefContainerReader.cs:64; Rust-only mutation killer.
+#[test]
+fn read_cyclic_ifd_is_not_reopened_after_being_visited() {
+    let bytes = TiffBytes::new(true, 128)
+        .header(8)
+        .ifd(8, 8, &[long(256, 160), long(257, 120)])
+        .into_vec();
+    // The normal parse reads (8, 2) once and Exif block sizing reads it once more. A third read is the cycle.
+    let mut src = HookedRawSource::new(bytes).fail_on_nth_read(8, 2, 3);
+    let result = NefContainerReader.read(&mut src, &CancelToken::new());
+    assert!(
+        result.is_ok(),
+        "visited IFD should be skipped before another source read"
+    );
+    assert_eq!(src.reads.iter().filter(|read| **read == (8, 2)).count(), 2);
+}
+
+// C# source: NefContainerReader.cs:133-134; Rust-only mutation killer.
+#[test]
+fn read_zero_next_ifd_does_not_create_a_cancellation_boundary() {
+    let bytes = TiffBytes::new(true, 128)
+        .header(8)
+        .ifd(8, 0, &[long(256, 160), long(257, 120)])
+        .into_vec();
+    let token = CancelToken::new();
+    let mut src = HookedRawSource::new(bytes).cancel_on_read(34, 4, token.clone());
+    let result = NefContainerReader.read(&mut src, &token);
+    assert!(
+        token.is_canceled(),
+        "fixture cancels after reading the zero next pointer"
+    );
+    assert!(
+        result.is_ok(),
+        "zero next pointer must not dequeue another IFD and observe cancellation"
+    );
+}
+
+// C# source: NefContainerReader.cs:180; Rust-only mutation killer.
+#[test]
+fn read_nonpositive_raw_axis_skips_full_size_jpeg_probe() {
+    let (bytes, jpeg_offset) = raw_with_unknown_jpeg_preview(0, 1000);
+    let mut src = HookedRawSource::new(bytes).fail_on_nth_read(jpeg_offset, 2, 2);
+    let result = NefContainerReader.read(&mut src, &CancelToken::new());
+    assert!(
+        result.is_ok(),
+        "raw width zero must suppress the later JPEG frame probe"
+    );
+    assert_eq!(src.reads.iter().filter(|read| **read == (jpeg_offset, 2)).count(), 1);
+}
+
+// C# source: NefContainerReader.cs:194-197; Rust-only mutation killer.
+#[test]
+fn read_full_size_jpeg_probe_propagates_io_failure() {
+    let (bytes, jpeg_offset) = raw_with_unknown_jpeg_preview(1000, 1000);
+    let mut src = HookedRawSource::new(bytes).fail_on_nth_read(jpeg_offset, 2, 2);
+    let result = NefContainerReader.read(&mut src, &CancelToken::new());
+    assert!(matches!(result, Err(error) if error.is_io_failure()));
+}
+
+// C# source: NefContainerReader.cs:206-212; Rust-only mutation killer.
+#[test]
+fn read_full_size_jpeg_previews_are_ranked_by_area_not_axis_sum() {
+    let bytes = raw_with_two_jpeg_previews(1000, 1000, (1000, 744), (870, 870));
+    let mut src = InMemoryRawHeaderSource::new(bytes);
+    let info = NefContainerReader
+        .read(&mut src, &CancelToken::new())
+        .expect("synthetic NEF with two full-size frames");
+    assert_eq!((info.sensor_width, info.sensor_height), (870, 870));
+}
+
+// C# source: NefContainerReader.cs:238-240; Rust-only mutation killer.
+#[test]
+fn read_maker_note_exactly_eighteen_bytes_before_eof_reads_its_header() {
+    let case = golden_case("maker-note-starting-exactly-18-bytes-before-eof");
+    let mut src = HookedRawSource::new(nef_bytes(&case["data"]));
+    let result = NefContainerReader.read(&mut src, &CancelToken::new());
+    assert!(result.is_ok());
+    assert!(
+        src.reads.contains(&(182, 18)),
+        "exact-boundary MakerNote must read its 18-byte header"
+    );
 }
 
 /// `RawExif` is W5-11: the EXIF block of this reader is checked through `raw_exif::try_read_exif` (RED until W5-11 is
