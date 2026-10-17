@@ -1649,3 +1649,422 @@ fn read_info_header_size_rows_use_the_first_chunk_only_for_orientation() {
         DimensionsProbe::Failed { native_error: None }
     );
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// REPAIR round 1: tests that pin the boundaries the mutation run found unpinned (Rust-only; no C# twin)
+// ---------------------------------------------------------------------------------------------------------------
+
+mod repair {
+    use super::*;
+    use pr_imaging::decode_types::DecodeBox;
+    use pr_turbojpeg::decoder::{Decompressor, EnglishTurboJpegTexts, TurboJpegTexts};
+    use pr_turbojpeg::native::{TjParam, TjPixelFormat};
+    use std::sync::Mutex;
+
+    /// What the probe decompressors saw (shared across the decompressors a decoder creates).
+    #[derive(Default)]
+    struct Log {
+        factors: Mutex<Vec<(i32, i32)>>,
+        buffers: Mutex<Vec<(usize, i32)>>,
+    }
+
+    /// A decompressor that reports `width x height`, records the scaling factor and the destination, and can refuse
+    /// the factor.
+    struct Probe {
+        log: Arc<Log>,
+        width: i32,
+        height: i32,
+        refuse_scaling: bool,
+    }
+
+    impl Decompressor for Probe {
+        fn set(&mut self, _param: TjParam, _value: i32) -> Result<i32, DecodeError> {
+            Ok(0)
+        }
+        fn get(&mut self, param: TjParam) -> Result<i32, DecodeError> {
+            Ok(match param {
+                TjParam::JpegWidth => self.width,
+                TjParam::JpegHeight => self.height,
+                _ => 0,
+            })
+        }
+        fn decompress_header(&mut self, _jpeg: &[u8]) -> Result<i32, DecodeError> {
+            Ok(0)
+        }
+        fn set_scaling_factor(&mut self, factor: TjScalingFactor) -> Result<i32, DecodeError> {
+            self.log.factors.lock().unwrap().push((factor.num, factor.denom));
+            Ok(i32::from(self.refuse_scaling))
+        }
+        fn decompress8(
+            &mut self,
+            _jpeg: &[u8],
+            dst: &mut [u8],
+            pitch: i32,
+            _pixel_format: TjPixelFormat,
+        ) -> Result<i32, DecodeError> {
+            self.log.buffers.lock().unwrap().push((dst.len(), pitch));
+            Ok(0)
+        }
+        fn error_message(&mut self) -> Option<String> {
+            None
+        }
+    }
+
+    fn factory_of_probe(log: Arc<Log>, width: i32, height: i32, refuse_scaling: bool) -> Arc<dyn DecompressorFactory> {
+        Arc::new(move || -> Result<Box<dyn Decompressor>, DecodeError> {
+            Ok(Box::new(Probe {
+                log: Arc::clone(&log),
+                width,
+                height,
+                refuse_scaling,
+            }))
+        })
+    }
+
+    fn probe_decoder(log: &Arc<Log>, width: i32, height: i32, refuse_scaling: bool) -> TurboJpegDecoder {
+        decoder_with(
+            factory_of_probe(Arc::clone(log), width, height, refuse_scaling),
+            memory(1 << 36, 0),
+            blank_scaler(),
+        )
+    }
+
+    struct Outcome {
+        width: i32,
+        height: i32,
+        downscaled: bool,
+        original: (i32, i32),
+        factor: Option<(i32, i32)>,
+        dst: Option<(usize, i32)>,
+    }
+
+    /// Decodes the 64x48 fixture bytes while the probe reports `width x height`.
+    fn run(
+        width: i32,
+        height: i32,
+        refuse: bool,
+        decode_box: DecodeBox,
+        orientation: Option<i32>,
+    ) -> Result<Outcome, DecodeError> {
+        let log = Arc::new(Log::default());
+        let decoder = probe_decoder(&log, width, height, refuse);
+        let jpeg = fixture_bytes("turbojpeg/parity-64x48.jpg");
+        let mut request = DecodeRequest::with_box("p.jpg", decode_box).with_bytes(jpeg.into());
+        if let Some(value) = orientation {
+            request = request.with_source_orientation(value);
+        }
+        let image = decoder.decode(&request)?;
+        let factor = log.factors.lock().unwrap().first().copied();
+        let dst = log.buffers.lock().unwrap().first().copied();
+        Ok(Outcome {
+            width: image.pixel_width(),
+            height: image.pixel_height(),
+            downscaled: image.downscaled(),
+            original: (image.original_width(), image.original_height()),
+            factor,
+            dst,
+        })
+    }
+
+    #[test]
+    fn output_buffer_saturation_boundary_is_exact() {
+        // width 2^30 -> stride 2^32; i64::MAX / 2^32 == 2^31 - 1 == height: NOT saturated, the true product is printed.
+        let error = calculate_output_buffer(1 << 30, i32::MAX, TjScalingFactor::ONE).unwrap_err();
+        assert_eq!(error.width, 1 << 30);
+        assert_eq!(error.height, i64::from(i32::MAX));
+        assert_eq!(error.buffer_length, (1_i64 << 32) * i64::from(i32::MAX));
+        let ok = calculate_output_buffer(1000, 1000, TjScalingFactor::ONE).unwrap();
+        assert_eq!((ok.stride, ok.buffer_length), (4000, 4_000_000));
+        let error = calculate_output_buffer(i32::MAX, i32::MAX, TjScalingFactor::ONE).unwrap_err();
+        assert_eq!(error.buffer_length, i64::MAX);
+    }
+
+    #[test]
+    fn one_zero_side_is_invalid_dimensions() {
+        for (w, h) in [(0, 5), (5, 0), (0, 0), (-1, 5), (5, -1)] {
+            let error = run(w, h, false, DecodeBox::new(0, 0), None).err().expect("refused");
+            assert!(
+                matches!(error.kind(), DecodeError::InvalidData { .. }),
+                "{w}x{h}: {error:?}"
+            );
+            assert_eq!(
+                error.to_string(),
+                format!("{}{w}x{h}", messages::INVALID_DIMENSIONS_PREFIX),
+                "{w}x{h}"
+            );
+        }
+        assert!(run(1, 1, false, DecodeBox::new(0, 0), None).is_ok());
+    }
+
+    #[test]
+    fn scale_decision_passes_the_expected_factor() {
+        // (reported size, box, refuse, orientation) -> (factor, output size, downscaled)
+        type Row = ((i32, i32), (i32, i32), bool, Option<i32>, (i32, i32), (i32, i32), bool);
+        let rows: [Row; 9] = [
+            // Width shrinks, height does not (aspect clamp): only the width comparison selects the factor.
+            ((4000, 1), (2000, 1), false, None, (1, 2), (2000, 1), true),
+            // Height shrinks, width does not.
+            ((1, 4000), (1, 2000), false, None, (1, 2), (1, 2000), true),
+            // Exact 1/4 factor: DCT output equals the target, no fine scale.
+            ((64, 48), (16, 12), false, None, (1, 4), (16, 12), true),
+            // Target between factors: 3/8 (24x18) then a fine scale down to the target.
+            ((64, 48), (20, 15), false, None, (3, 8), (20, 15), true),
+            // Box equal to the source: nothing to do, factor stays 1/1 and the image is not downscaled.
+            ((64, 48), (64, 48), false, None, (1, 1), (64, 48), false),
+            // Box bigger than the source: same.
+            ((64, 48), (640, 480), false, None, (1, 1), (64, 48), false),
+            // Factor refused (1/2 was attempted): decode at 1/1, fine scale from there; downscaled via the target comparisons.
+            ((4000, 1), (2000, 1), true, None, (1, 2), (2000, 1), true),
+            ((1, 4000), (1, 2000), true, None, (1, 2), (1, 2000), true),
+            // Transposing orientation: stored axes swap for the fit, the result is oriented back.
+            ((64, 48), (24, 32), false, Some(6), (1, 2), (24, 32), true),
+        ];
+        for (reported, box_size, refuse, orientation, factor, size, downscaled) in rows {
+            let label = format!("{reported:?} box {box_size:?} refuse {refuse} orientation {orientation:?}");
+            let outcome = run(
+                reported.0,
+                reported.1,
+                refuse,
+                DecodeBox::new(box_size.0, box_size.1),
+                orientation,
+            )
+            .unwrap_or_else(|e| panic!("{label}: {e:?}"));
+            assert_eq!(outcome.factor, Some(factor), "{label}: factor");
+            assert_eq!((outcome.width, outcome.height), size, "{label}: size");
+            assert_eq!(outcome.downscaled, downscaled, "{label}: downscaled");
+            let transposed = orientation.is_some_and(|o| o >= 5);
+            let expected_original = if transposed { (reported.1, reported.0) } else { reported };
+            assert_eq!(outcome.original, expected_original, "{label}: original");
+        }
+    }
+
+    #[test]
+    fn dct_output_buffer_is_the_scaled_size() {
+        let outcome = run(64, 48, false, DecodeBox::new(16, 12), None).unwrap();
+        assert_eq!(outcome.dst, Some((16 * 12 * 4, 16 * 4)));
+        // Fine scale: the DCT buffer is the 3/8 one (24x18), the result is the target.
+        let outcome = run(64, 48, false, DecodeBox::new(20, 15), None).unwrap();
+        assert_eq!(outcome.dst, Some((24 * 18 * 4, 24 * 4)));
+        assert_eq!((outcome.width, outcome.height), (20, 15));
+    }
+
+    #[test]
+    fn refused_scaling_factor_decodes_into_the_full_size_buffer() {
+        let outcome = run(4000, 1, true, DecodeBox::new(2000, 1), None).unwrap();
+        assert_eq!(outcome.dst, Some((4000 * 4, 4000 * 4)));
+        let outcome = run(1, 4000, true, DecodeBox::new(1, 2000), None).unwrap();
+        assert_eq!(outcome.dst, Some((4000 * 4, 4)));
+    }
+
+    #[test]
+    fn no_downscale_request_never_touches_the_scale_or_flags() {
+        let outcome = run(64, 48, false, DecodeBox::new(0, 0), None).unwrap();
+        assert_eq!(outcome.factor, Some((1, 1)));
+        assert_eq!((outcome.width, outcome.height, outcome.downscaled), (64, 48, false));
+    }
+
+    #[test]
+    fn orientation_is_applied_only_when_requested() {
+        let outcome = run(64, 48, false, DecodeBox::new(0, 0), Some(6)).unwrap();
+        assert_eq!((outcome.width, outcome.height), (48, 64));
+        let outcome = run(64, 48, false, DecodeBox::new(0, 0), Some(1)).unwrap();
+        assert_eq!((outcome.width, outcome.height), (64, 48));
+        // Orientation not requested: reported unchanged, pixels untouched.
+        let log = Arc::new(Log::default());
+        let decoder = probe_decoder(&log, 64, 48, false);
+        let request = DecodeRequest::new("p.jpg", 0)
+            .with_apply_orientation(false)
+            .with_source_orientation(6)
+            .with_bytes(fixture_bytes("turbojpeg/parity-64x48.jpg").into());
+        let image = decoder.decode(&request).unwrap();
+        assert_eq!(
+            (image.pixel_width(), image.pixel_height(), image.orientation()),
+            (64, 48, 1)
+        );
+    }
+
+    /// A reader that yields `Interrupted` before each successful read (3 bytes at a time), or fails with a fixed error.
+    struct Flaky {
+        data: io::Cursor<Vec<u8>>,
+        interrupt_next: bool,
+        fail_with: Option<io::ErrorKind>,
+    }
+
+    impl Read for Flaky {
+        fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+            if let Some(kind) = self.fail_with {
+                return Err(io::Error::from(kind));
+            }
+            if self.interrupt_next {
+                self.interrupt_next = false;
+                return Err(io::Error::from(io::ErrorKind::Interrupted));
+            }
+            self.interrupt_next = true;
+            let limit = buf.len().min(3);
+            self.data.read(&mut buf[..limit])
+        }
+    }
+
+    #[test]
+    fn interrupted_reads_are_retried_and_other_errors_surface() {
+        let data: Vec<u8> = (0..10).collect();
+        let mut reader = Flaky {
+            data: io::Cursor::new(data.clone()),
+            interrupt_next: true,
+            fail_with: None,
+        };
+        assert_eq!(read_all_bytes(&mut reader, 10).unwrap(), data);
+        let mut reader = Flaky {
+            data: io::Cursor::new(data),
+            interrupt_next: false,
+            fail_with: Some(io::ErrorKind::PermissionDenied),
+        };
+        match read_all_bytes(&mut reader, 10) {
+            Err(SourceReadError::Io(e)) => assert_eq!(e.kind(), io::ErrorKind::PermissionDenied),
+            other => panic!("expected Io, got {other:?}"),
+        }
+    }
+
+    /// `FF D8`, `count` APP segments of `payload` bytes each, SOS, EOI.
+    fn big_header(count: usize, payload: usize) -> Vec<u8> {
+        let mut out = vec![0xFF, 0xD8];
+        for _ in 0..count {
+            out.extend(segment(0xE5, &vec![7u8; payload]));
+        }
+        out.extend_from_slice(&[0xFF, 0xDA, 0x00, 0x02, 0xFF, 0xD9]);
+        out
+    }
+
+    #[test]
+    fn grow_header_area_reads_only_while_the_header_is_unfinished_and_inside_the_limits() {
+        let file = big_header(4, 60_000); // ~240 KB: the SOS header ends after 240 KB
+        let total = file.len() as i64;
+        // Buffer already holds the whole file although it looks unfinished: zero reads.
+        let truncated = file[..file.len() - 3].to_vec();
+        let mut reader = CountingReader::new(Vec::new(), 0);
+        let got = grow_header_area(&mut reader, truncated.len() as i64, truncated.clone(), HEADER_READ_CAP).unwrap();
+        assert_eq!((got, reader.reads), (truncated, 0));
+        // Buffer at the cap (limit == len) but shorter than the file and unfinished: zero reads.
+        let first = file[..HEADER_READ_CHUNK].to_vec();
+        let mut reader = CountingReader::new(file[HEADER_READ_CHUNK..].to_vec(), 0);
+        let got = grow_header_area(&mut reader, total, first.clone(), HEADER_READ_CHUNK as i64).unwrap();
+        assert_eq!((got.len(), reader.reads), (HEADER_READ_CHUNK, 0));
+        // Header already complete inside the buffer although the file is longer: zero reads.
+        let mut with_tail = big_header(1, 100);
+        with_tail.extend(vec![0u8; 5000]);
+        let mut reader = CountingReader::new(Vec::new(), 0);
+        let got = grow_header_area(&mut reader, with_tail.len() as i64, with_tail.clone(), HEADER_READ_CAP).unwrap();
+        assert_eq!((got.len(), reader.reads), (with_tail.len(), 0));
+        // The doubling reads: 64 KiB -> 128 KiB -> the file length (the limit): two reads, the whole file.
+        let mut reader = CountingReader::new(file[HEADER_READ_CHUNK..].to_vec(), 0);
+        let got = grow_header_area(&mut reader, total, first, HEADER_READ_CAP).unwrap();
+        assert_eq!(got, file);
+        assert_eq!(reader.reads, 2);
+    }
+
+    #[test]
+    fn grow_header_area_with_a_short_reader_keeps_exactly_the_bytes_that_exist() {
+        let file = big_header(4, 60_000);
+        let first = file[..HEADER_READ_CHUNK].to_vec();
+        // The file "claims" its full length but the reader ends 1000 bytes into the growth.
+        let mut reader = CountingReader::new(file[HEADER_READ_CHUNK..HEADER_READ_CHUNK + 1000].to_vec(), 0);
+        let got = grow_header_area(&mut reader, file.len() as i64, first, HEADER_READ_CAP).unwrap();
+        assert_eq!(got.len(), HEADER_READ_CHUNK + 1000);
+        assert_eq!(got[..], file[..HEADER_READ_CHUNK + 1000]);
+    }
+
+    #[test]
+    fn english_texts_are_the_catalog_sentences() {
+        let t = EnglishTurboJpegTexts;
+        assert_eq!(t.not_jpeg("a.bin"), "The file is not a valid JPEG: a.bin");
+        assert_eq!(t.memory_buffer(), "memory buffer");
+        assert!(t.icc_fallback().contains("embedded ICC color profile"));
+        assert_eq!(t.no_detail(), "no details available");
+        assert_eq!(t.header_failed("x"), "The JPEG header could not be read: x");
+        assert_eq!(
+            t.invalid_dimensions(3, 4),
+            "The decoder reported invalid image dimensions: 3x4"
+        );
+        assert_eq!(t.decompress_failed("x"), "The image could not be decoded: x");
+        assert_eq!(t.info_failed("x"), "The image information could not be read: x");
+        assert_eq!(
+            t.no_source(),
+            "A decode request needs either a file path or image data."
+        );
+        assert_eq!(
+            t.output_too_large(3, 4, 5),
+            "The decoded image would be too large: 3x4 (5 bytes)."
+        );
+        assert_eq!(
+            t.strict_mode_failed("x"),
+            "The decoder could not switch to strict mode: x"
+        );
+        assert_eq!(t.image_not_found("p"), "Image file not found: p");
+    }
+
+    #[test]
+    fn read_info_needs_both_sides_positive() {
+        let root = TempRoot::new("w514b-info-dims");
+        let path = write_under(root.path(), "a.jpg", &fixture_bytes("turbojpeg/parity-64x48.jpg"));
+        for (w, h) in [(0, 5), (5, 0), (-3, 5), (5, -3), (0, 0)] {
+            let log = Arc::new(Log::default());
+            let decoder = probe_decoder(&log, w, h, false);
+            let error = decoder.read_info(path.to_str().unwrap()).unwrap_err();
+            assert!(
+                matches!(error.kind(), DecodeError::InvalidData { .. }),
+                "{w}x{h}: {error:?}"
+            );
+        }
+        let log = Arc::new(Log::default());
+        let info = probe_decoder(&log, 1, 1, false)
+            .read_info(path.to_str().unwrap())
+            .unwrap();
+        assert_eq!((info.pixel_width, info.pixel_height), (1, 1));
+    }
+
+    /// A factory whose first decompressor fails the header parse and whose later ones succeed with 9x7.
+    fn first_fails_then_ok() -> Arc<dyn DecompressorFactory> {
+        let calls = Arc::new(AtomicUsize::new(0));
+        factory_of(move || FakeDecompressor {
+            header_code: i32::from(calls.fetch_add(1, Ordering::SeqCst) == 0),
+            width: 9,
+            height: 7,
+            ..FakeDecompressor::default()
+        })
+    }
+
+    #[test]
+    fn read_info_retries_only_when_the_extended_read_grew_the_buffer() {
+        let root = TempRoot::new("w514b-info-grow");
+        // Header longer than the 8 MiB first cap: the extended buffer is longer, the retry parse succeeds.
+        let big = big_header(150, 60_000); // 9 MB: past the 8 MiB first cap
+        assert!(big.len() as i64 > HEADER_READ_CAP);
+        let path = write_under(root.path(), "big.jpg", &big);
+        let decoder = decoder_with(first_fails_then_ok(), memory(1 << 36, 0), no_scaler());
+        let info = decoder.read_info(path.to_str().unwrap()).unwrap();
+        assert_eq!((info.pixel_width, info.pixel_height), (9, 7));
+        // A small file: the extended read adds nothing, so there is NO retry; the final probe (which would succeed)
+        // is not an `Ok` path, the verdict is the generic parse error.
+        let small = write_under(root.path(), "small.jpg", &fixture_bytes("turbojpeg/parity-64x48.jpg"));
+        let decoder = decoder_with(first_fails_then_ok(), memory(1 << 36, 0), no_scaler());
+        let error = decoder.read_info(small.to_str().unwrap()).unwrap_err();
+        assert!(matches!(error.kind(), DecodeError::InvalidData { .. }), "{error:?}");
+        assert!(error.message().ends_with(messages::HEADER_PARSE_ERROR), "{error:?}");
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn a_source_locked_against_sharing_is_an_io_error_not_not_found() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let root = TempRoot::new("w514b-locked");
+        let path = write_under(root.path(), "locked.jpg", &fixture_bytes("turbojpeg/parity-64x48.jpg"));
+        let _lock = OpenOptions::new().read(true).share_mode(0).open(&path).unwrap();
+        let log = Arc::new(Log::default());
+        let decoder = probe_decoder(&log, 8, 8, false);
+        let error = decoder
+            .decode(&DecodeRequest::new(path.clone(), 0))
+            .err()
+            .expect("locked");
+        assert!(matches!(error.kind(), DecodeError::Io(_)), "{error:?}");
+    }
+}
