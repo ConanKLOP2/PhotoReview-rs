@@ -116,3 +116,8 @@
 ## Wave 5 integration update (2026-10-17, ORF mutation)
 - Added `read_zero_ifd0_offset_does_not_check_cancellation`, covering C#'s zero-IFD0 behavior. `cargo test -p pr-imaging-raw --test readers_orf --locked` passed 40/40; `cargo fmt --all --check` and RAW crate clippy passed.
 - Targeted cargo-mutants over ORF source and only the `readers_orf` test binary completed: 109 mutants, 101 caught, 7 missed, 1 unviable. A focused rerun confirmed the zero-offset `current > 0` -> `>= 0` mutant is caught. Six other missed variants were reviewed against navigator/caller bounds and judged equivalent by source inspection; they were not rerun individually. This is targeted evidence, not a package-wide mutation run.
+
+## Wave 5 integration update (2026-10-17, W5-12b1 core)
+- Cherry-picked W5-12b1 core implementation `a8d8d94` as `26546df` on `integration/wave-5`. It adds decoder construction/text defaults, identity-keyed container cache and TOCTOU checks, `read_info`, decode composition, preview range/cache handling, and error mapping; it does not implement the W5-12b2 fallback chain.
+- `cargo fmt --all --check` passed; `cargo test -p pr-imaging-raw --test raw_decoder_core --locked` passed 2/2 blank-path checks. The ORF regression target still passes 40/40.
+- The core's 50-case golden harness and most contract tests are still missing. Clippy is not yet clean because core seams are unused until 12b2 calls them; do not treat package tests as parity proof yet.
