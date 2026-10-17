@@ -9,7 +9,7 @@ use std::time::Duration;
 use pr_core::abstractions::{Log, NullLog};
 use pr_core::instance::forwarding::InstanceForwardClient;
 use pr_core::instance::handoff;
-use pr_core::instance::ownership::{FolderOpenDecision, FolderOwnership};
+use pr_core::instance::ownership::{FolderOpenDecision, FolderOwnership, FolderOwnershipError};
 use pr_core::model::InstanceMode;
 use pr_core::sync::{CancelToken, Canceled};
 
@@ -334,17 +334,23 @@ impl FolderOwnership for InstanceScope {
         folder: &str,
         initial_path: Option<&str>,
         cancel: &CancelToken,
-    ) -> Result<FolderOpenDecision, Canceled> {
+    ) -> Result<FolderOpenDecision, FolderOwnershipError> {
         if folder.trim().is_empty() {
-            return Ok(FolderOpenDecision::OwnedByOtherInstance);
+            return Err(FolderOwnershipError::InvalidFolder);
         }
-        let (mutex, pipe) = self.keys_for(Some(folder)).map_err(|_| Canceled)?;
-        let mut claim = self.claim_keys(&mutex, &pipe, true).map_err(|_| Canceled)?;
+        let (mutex, pipe) = self
+            .keys_for(Some(folder))
+            .map_err(|_| FolderOwnershipError::Canceled)?;
+        let mut claim = self
+            .claim_keys(&mutex, &pipe, true)
+            .map_err(|_| FolderOwnershipError::Canceled)?;
         if claim == InstanceClaimResult::OwnedElsewhere {
             let (active, _) = &*self.release_state;
             if *lock(active) != 0 {
                 self.wait_for_releases(cancel)?;
-                claim = self.claim_keys(&mutex, &pipe, true).map_err(|_| Canceled)?;
+                claim = self
+                    .claim_keys(&mutex, &pipe, true)
+                    .map_err(|_| FolderOwnershipError::Canceled)?;
             }
         }
         if claim != InstanceClaimResult::OwnedElsewhere {
@@ -382,7 +388,11 @@ impl FolderOwnership for InstanceScope {
         )? {
             return Ok(FolderOpenDecision::ForwardedToOtherInstance);
         }
-        if self.claim_keys(&mutex, &pipe, true).map_err(|_| Canceled)? != InstanceClaimResult::OwnedElsewhere {
+        if self
+            .claim_keys(&mutex, &pipe, true)
+            .map_err(|_| FolderOwnershipError::Canceled)?
+            != InstanceClaimResult::OwnedElsewhere
+        {
             return Ok(FolderOpenDecision::Proceed);
         }
         self.log
@@ -795,6 +805,16 @@ mod tests {
         // C# twin: InstanceScopeGapTests.Constructor_BlankPrefixOrNullHandler_Throws.
         assert!(InstanceScope::with_options(InstanceMode::SingleWindow, |_| {}, None, " \t", None, false).is_err());
         // Rust's non-optional callback parameter makes the C# null-handler case unrepresentable at runtime.
+    }
+
+    #[test]
+    fn before_open_rejects_blank_folder_like_the_csharp_argument_guard() {
+        // C# twin: InstanceScope.BeforeOpenAsync uses ArgumentException.ThrowIfNullOrWhiteSpace(folder).
+        let scope = scope(InstanceMode::PerFolder, "ScopeBlankFolder");
+        assert_eq!(
+            scope.before_open("  ", None, &CancelToken::none()),
+            Err(FolderOwnershipError::InvalidFolder)
+        );
     }
 
     #[test]

@@ -21,7 +21,7 @@ the trait, so the dependency points from W6-02e to W6-02c and does not form a cy
 
 1. `send_to_recycle_bin` validates the path, rejects a volume that cannot recycle, re-reads current file size immediately before Shell invocation, evaluates capacity, invokes the injected recycle operation once, then verifies the source path is gone. A size-read failure or non-Fits verdict refuses before Shell.
 2. `can_recycle` and `fits_in_recycle_bin` delegate to W6-02a/W6-02b and preserve logging and false-on-unsafe behavior.
-3. `delete_permanently` requires explicit positive no-bin eligibility from W6-02a, invokes only the injected delete operation, and reports failure if the source still exists. It must never become a fallback for failed recycle on a fixed/unknown volume.
+3. `delete_permanently` requires explicit positive no-bin eligibility from W6-02a, invokes only the injected delete operation, treats a missing source as already deleted (C# `File.Delete` behavior), and reports failure if the source still exists. It must never become a fallback for failed recycle on a fixed/unknown volume.
 4. `try_restore` implements the Core trait method by delegating to the injected restore backend, preserving its `io::Result<bool>` outcome unchanged.
 5. Every production `IRecycleBin` implementation must explicitly implement the safety-sensitive trait methods (C# architecture invariant B-03).
 

@@ -6,6 +6,32 @@
 
 use crate::sync::{CancelToken, Canceled};
 
+/// Failure while checking ownership before a folder open.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FolderOwnershipError {
+    /// The pending ownership operation was canceled.
+    Canceled,
+    /// The requested folder is empty or whitespace-only (C# `ThrowIfNullOrWhiteSpace`).
+    InvalidFolder,
+}
+
+impl From<Canceled> for FolderOwnershipError {
+    fn from(_: Canceled) -> Self {
+        Self::Canceled
+    }
+}
+
+impl std::fmt::Display for FolderOwnershipError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Canceled => formatter.write_str("operation canceled"),
+            Self::InvalidFolder => formatter.write_str("folder cannot be empty or whitespace"),
+        }
+    }
+}
+
+impl std::error::Error for FolderOwnershipError {}
+
 /// Q-R18: what a window does with a folder-open request once the instance ownership has been checked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum FolderOpenDecision {
@@ -30,7 +56,7 @@ pub trait FolderOwnership: Send + Sync {
         folder: &str,
         initial_path: Option<&str>,
         cancel: &CancelToken,
-    ) -> Result<FolderOpenDecision, Canceled>;
+    ) -> Result<FolderOpenDecision, FolderOwnershipError>;
 
     /// The window now shows `folder`: locks of folders it no longer shows (and no open is pending for) are released.
     fn on_folder_shown(&self, folder: &str);

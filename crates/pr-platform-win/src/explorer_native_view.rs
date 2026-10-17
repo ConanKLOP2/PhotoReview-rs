@@ -26,8 +26,6 @@ use crate::explorer_window_selector::{
 const MAX_BATCH: usize = 512;
 const MAX_SORT_COLUMNS: usize = 32;
 const E_FAIL: i32 = 0x8000_4005_u32 as i32;
-const E_NOINTERFACE: i32 = 0x8000_4002_u32 as i32;
-const COR_E_OBJECTDISPOSED: i32 = 0x8013_1622_u32 as i32;
 
 /// The production query delegate for the W6-01c scheduling service.
 pub(crate) fn query_shell(
@@ -106,13 +104,9 @@ impl ExplorerSelectionWindow for Box<dyn ExplorerSelectionWindow + '_> {
 
 impl ExplorerSelectionWindow for SelectionWindow<'_> {
     fn location_url(&self) -> Result<Option<String>, LocationReadError> {
-        self.0.location_url().map_err(|error| {
-            if matches!(error.hresult(), E_NOINTERFACE | COR_E_OBJECTDISPOSED) {
-                LocationReadError::Unavailable
-            } else {
-                LocationReadError::Other(Box::new(error))
-            }
-        })
+        // The C# selector skips any COMException or InvalidCastException without logging; this call only produces
+        // ShellComError values, so every HRESULT failure is an unavailable candidate window.
+        self.0.location_url().map_err(|_error| LocationReadError::Unavailable)
     }
 
     fn read(&self, folder: &str, cancellation: &CancelToken) -> Result<ExplorerViewSnapshot, SelectionReadError> {

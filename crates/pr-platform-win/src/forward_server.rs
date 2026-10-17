@@ -308,11 +308,28 @@ mod native_pipe {
     use windows::Win32::Security::SECURITY_ATTRIBUTES;
     use windows::Win32::Storage::FileSystem::{FILE_FLAG_OVERLAPPED, PIPE_ACCESS_DUPLEX, ReadFile, WriteFile};
     use windows::Win32::System::IO::{CancelIoEx, GetOverlappedResult, OVERLAPPED};
-    use windows::Win32::System::Pipes::{ConnectNamedPipe, CreateNamedPipeW, DisconnectNamedPipe, PIPE_TYPE_BYTE};
+    use windows::Win32::System::Pipes::{
+        ConnectNamedPipe, CreateNamedPipeW, DisconnectNamedPipe, NAMED_PIPE_MODE, PIPE_REJECT_REMOTE_CLIENTS,
+        PIPE_TYPE_BYTE,
+    };
     use windows::Win32::System::Threading::{CreateEventW, SetEvent, WaitForMultipleObjects, WaitForSingleObject};
     use windows::core::HSTRING;
 
     use crate::forward_pipe::current_security_descriptor;
+
+    fn server_pipe_mode() -> NAMED_PIPE_MODE {
+        PIPE_TYPE_BYTE | PIPE_REJECT_REMOTE_CLIENTS
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn server_pipe_mode_rejects_remote_clients() {
+            assert_ne!(server_pipe_mode().0 & PIPE_REJECT_REMOTE_CLIENTS.0, 0);
+        }
+    }
 
     pub(super) struct NativeForwardPipeFactory {
         stop_event: HANDLE,
@@ -420,7 +437,7 @@ mod native_pipe {
                 CreateNamedPipeW(
                     &name,
                     PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
-                    PIPE_TYPE_BYTE,
+                    server_pipe_mode(),
                     1,
                     0,
                     0,

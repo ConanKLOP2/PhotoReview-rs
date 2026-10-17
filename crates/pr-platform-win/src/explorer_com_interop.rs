@@ -446,7 +446,13 @@ impl ExplorerNativeVtable {
                 std::mem::transmute(Self::slot(pointer, 3));
             function(pointer.as_ptr(), service, iid, &mut result)
         };
-        ShellCom::check(hr)?;
+        if let Err(error) = ShellCom::check(hr) {
+            if let Some(result) = NonNull::new(result) {
+                // SAFETY: a non-null COM interface out pointer carries one owned reference, even on failed HRESULT.
+                unsafe { ShellCom::release(result) };
+            }
+            return Err(error);
+        }
         NonNull::new(result).ok_or(ShellComError(E_FAIL))
     }
 
@@ -458,7 +464,13 @@ impl ExplorerNativeVtable {
                 std::mem::transmute(Self::slot(pointer, 15));
             function(pointer.as_ptr(), &mut result)
         };
-        ShellCom::check(hr)?;
+        if let Err(error) = ShellCom::check(hr) {
+            if let Some(result) = NonNull::new(result) {
+                // SAFETY: a non-null COM interface out pointer carries one owned reference, even on failed HRESULT.
+                unsafe { ShellCom::release(result) };
+            }
+            return Err(error);
+        }
         NonNull::new(result).ok_or(ShellComError(E_FAIL))
     }
 
@@ -608,6 +620,9 @@ mod tests {
         location_hr: i32,
         location: Option<String>,
         supports_app: bool,
+        query_service_hr: i32,
+        query_active_view_hr: i32,
+        query_outputs_on_failure: bool,
     }
     struct Fake {
         pointer: NonNull<c_void>,
@@ -630,8 +645,10 @@ mod tests {
             table[0] = query as *const c_void;
             table[1] = add_ref as *const c_void;
             table[2] = release as *const c_void;
+            table[3] = query_service as *const c_void;
             table[7] = count as *const c_void;
             table[8] = item as *const c_void;
+            table[15] = query_active_view as *const c_void;
             table[30] = location as *const c_void;
             let table = NonNull::new(Box::into_raw(table.into_boxed_slice()).cast::<*const c_void>()).unwrap();
             let pointer = NonNull::new(Box::into_raw(Box::new(table.as_ptr())).cast::<c_void>()).unwrap();
@@ -648,6 +665,9 @@ mod tests {
                     location_hr: 0,
                     location: None,
                     supports_app: true,
+                    query_service_hr: 0,
+                    query_active_view_hr: 0,
+                    query_outputs_on_failure: false,
                 }),
             }));
             registry().lock().unwrap().insert(pointer.as_ptr() as usize, fake);
@@ -712,6 +732,49 @@ mod tests {
         let mut state = fake.state.lock().unwrap();
         state.refs -= 1;
         state.refs as u32
+    }
+    unsafe extern "system" fn query_service(
+        this: *mut c_void,
+        _service: *const GUID,
+        _iid: *const GUID,
+        output: *mut *mut c_void,
+    ) -> i32 {
+        let fake = fake(this);
+        let (hr, write_output) = {
+            let state = fake.state.lock().unwrap();
+            (
+                state.query_service_hr,
+                state.query_service_hr >= 0 || state.query_outputs_on_failure,
+            )
+        };
+        if write_output {
+            fake.state.lock().unwrap().refs += 1;
+            // SAFETY: the fake caller supplied a writable IServiceProvider output pointer.
+            unsafe { *output = this };
+        } else {
+            // SAFETY: the fake caller supplied a writable IServiceProvider output pointer.
+            unsafe { *output = std::ptr::null_mut() };
+        }
+        hr
+    }
+    unsafe extern "system" fn query_active_view(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+        let fake = fake(this);
+        let (hr, write_output) = {
+            let state = fake.state.lock().unwrap();
+            (
+                state.query_active_view_hr,
+                state.query_active_view_hr >= 0 || state.query_outputs_on_failure,
+            )
+        };
+        if write_output {
+            fake.state.lock().unwrap().refs += 1;
+            // SAFETY: the fake caller supplied a writable IShellBrowser output pointer.
+            unsafe { *output = this };
+        } else {
+            // SAFETY: the fake caller supplied a writable IShellBrowser output pointer.
+            unsafe { *output = std::ptr::null_mut() };
+        }
+        hr
     }
     unsafe extern "system" fn count(this: *mut c_void, output: *mut i32) -> i32 {
         let fake = fake(this);
@@ -783,6 +846,40 @@ mod tests {
         assert_eq!(collection.refs(), 0);
         assert_eq!(browser.refs(), 0);
         collection.free();
+        browser.free();
+    }
+
+    #[test]
+    fn failed_query_service_releases_non_null_output_interface() {
+        let provider = Fake::new();
+        let pointer = provider.add_owned();
+        {
+            let mut state = provider.state.lock().unwrap();
+            state.query_service_hr = E_FAIL;
+            state.query_outputs_on_failure = true;
+        }
+        assert_eq!(
+            ExplorerNativeVtable::query_service(pointer, &ids::SID_TOP_LEVEL_BROWSER, &IID_IUNKNOWN),
+            Err(ShellComError(E_FAIL))
+        );
+        assert_eq!(provider.refs(), 1);
+        provider.free();
+    }
+
+    #[test]
+    fn failed_query_active_shell_view_releases_non_null_output_interface() {
+        let browser = Fake::new();
+        let pointer = browser.add_owned();
+        {
+            let mut state = browser.state.lock().unwrap();
+            state.query_active_view_hr = E_FAIL;
+            state.query_outputs_on_failure = true;
+        }
+        assert_eq!(
+            ExplorerNativeVtable::query_active_shell_view(pointer),
+            Err(ShellComError(E_FAIL))
+        );
+        assert_eq!(browser.refs(), 1);
         browser.free();
     }
 

@@ -60,7 +60,7 @@ impl WindowsRecycleBin {
             |path| path.exists(),
             |path| std::fs::metadata(path).map(|metadata| metadata.len()),
             native_shell_recycle,
-            |path| std::fs::remove_file(path),
+            |path| delete_missing_file_is_success(|| std::fs::remove_file(path)),
             restore_backend,
         )
     }
@@ -239,6 +239,30 @@ fn display_name(path: &Path) -> String {
         .filter(|name| !name.is_empty())
         .unwrap_or("file")
         .to_owned()
+}
+
+fn delete_missing_file_is_success(remove: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
+    match remove() {
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(()),
+        result => result,
+    }
+}
+
+#[cfg(test)]
+mod delete_semantics_tests {
+    use super::*;
+
+    #[test]
+    fn permanent_delete_treats_a_missing_source_as_already_deleted() {
+        // C# twin: WindowsRecycleBin.DeletePermanently treats File.Delete on a missing path as success.
+        assert!(delete_missing_file_is_success(|| Err(io::ErrorKind::NotFound.into())).is_ok());
+    }
+
+    #[test]
+    fn permanent_delete_preserves_non_missing_errors() {
+        let error = delete_missing_file_is_success(|| Err(io::ErrorKind::PermissionDenied.into())).unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+    }
 }
 
 fn native_shell_recycle(path: &Path) -> io::Result<()> {
