@@ -46,16 +46,7 @@ pub(crate) fn query_shell(
     }
     let source = match com::ShellWindowsSource::open() {
         Ok(source) => source,
-        Err(error) if error.hresult() == com::ids::CLASS_NOT_REGISTERED => {
-            return Ok(unavailable(
-                folder,
-                ExplorerOrderStatus::NativeViewUnavailable,
-                explorer_reason::SHELL_UNAVAILABLE,
-            ));
-        }
-        Err(error) => {
-            return Err(super::explorer_order_service::QueryError::shell_open(error.hresult()));
-        }
+        Err(error) => return map_shell_open_error(folder, error.hresult()),
     };
     let windows = source.windows().map(|window| {
         window
@@ -64,7 +55,35 @@ pub(crate) fn query_shell(
             })
             .map_err(|error| Box::new(error) as Box<dyn std::error::Error + Send + Sync>)
     });
-    Ok(selector::select(folder, windows, log.as_ref(), cancellation))
+    Ok(select_windows(folder, windows, log.as_ref(), cancellation))
+}
+
+pub(crate) fn map_shell_open_error(
+    folder: &str,
+    hresult: i32,
+) -> Result<ExplorerViewSnapshot, super::explorer_order_service::QueryError> {
+    if hresult == com::ids::CLASS_NOT_REGISTERED {
+        Ok(unavailable(
+            folder,
+            ExplorerOrderStatus::NativeViewUnavailable,
+            explorer_reason::SHELL_UNAVAILABLE,
+        ))
+    } else {
+        Err(super::explorer_order_service::QueryError::shell_open(hresult))
+    }
+}
+
+pub(crate) fn select_windows<I, W>(
+    folder: &str,
+    windows: I,
+    log: &dyn Log,
+    cancellation: &CancelToken,
+) -> ExplorerViewSnapshot
+where
+    I: IntoIterator<Item = Result<W, Box<dyn std::error::Error + Send + Sync>>>,
+    W: ExplorerSelectionWindow,
+{
+    selector::select(folder, windows, log, cancellation)
 }
 
 struct SelectionWindow<'a>(
@@ -291,7 +310,7 @@ pub(crate) fn read_batched(
     Ok((result.len() == expected).then_some(result))
 }
 
-fn read_per_item(
+pub(crate) fn read_per_item(
     folder_view: NonNull<c_void>,
     folder: &str,
     count: usize,
