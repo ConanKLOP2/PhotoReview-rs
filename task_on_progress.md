@@ -102,3 +102,8 @@
 - Integrated W5-05 at `b95d7b8` (implementation `0eb9713`, test-helper fix `e870990`). ORF unit tests pass 39/39, including all 233 golden cases; the root cause was the Rust golden-input builder not honoring repeated-byte `times` patches, while the input and oracle were already correct.
 - On the integration tree, `cargo fmt --all --check`, `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings`, and `cargo test -p pr-imaging-raw --locked` all passed after merging W5-05 and W5-06.
 - ORF/DNG corpus checks and cargo-mutants remain open. W5-05/W5-06 still need independent verifier mutation verdicts before final Wave 5 PR gate.
+
+## Wave 5 integration update (2026-10-17, W5-16c)
+- Integrated `wu/W5-16c` test commit `0eca1b5` as a test-only change in `decoder_repair.rs`: two boundary cases cover truncated marker after an APP segment and a minimum-length APP segment before EOI.
+- Focused mutation run: 8 mutants, 2 caught by the new tests, 6 not killed (5 remove handoff fields outside this subtask; 1 loop-boundary mutant judged equivalent). The prior 277-mutant run was interrupted by a global-gate hang under an unrelated `full_decode_queued_waiters -> 0` mutation; the historical set of 10 survivors is not fully reconstructed. W5-16c stays Partial.
+- Mutation run for ORF is still running in this worktree. `mutants.out/` is cargo-mutants output and must be removed after the process completes; do not stage it.
