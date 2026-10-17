@@ -1,8 +1,8 @@
 //! Port tests for `pr_libraw::availability` (C# `PhotoReview.Imaging.LibRaw.LibRawAvailability`, baseline d92d6aae), contract
 //! `contracts/W5-15b.md`. Paired with W5-15a (`native`): the native twins need its `LibraryHandle`.
 //!
-//! Red tests: the stub bodies are `todo!()`, so every test that reaches one fails until the W5-15b porter fills them in.
-//! `ProbeCache` is complete in the stub, so its two tests pass on the stub by design.
+//! Ported behavior and contract tests for the W5-15b availability probe; native-only cases require the pinned library.
+//! `ProbeCache` tests cover run-once initialization and concurrent callers.
 //!
 //! Native tests (`#[ignore = "native: ..."]`) need `libraw.dll` 0.22.2 next to the test executable (and `kernel32.dll`, which
 //! every Windows process has). They degrade like C# `RawCorpus.RequireNative`: a missing DLL prints a skip note and returns, unless

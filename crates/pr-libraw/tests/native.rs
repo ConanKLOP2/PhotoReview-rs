@@ -1,9 +1,9 @@
 //! Port tests for `pr_libraw::native` (C# `PhotoReview.Imaging.LibRaw.LibRawNativeMethods` and `SafeLibRawHandle`, baseline
 //! d92d6aae), contract `contracts/W5-15a.md`.
 //!
-//! Red tests: the stub bodies are `todo!()`, so every test that reaches one fails until the W5-15a porter fills them in.
-//! Tests that only check constants or layouts already complete in the stub (`ENTRY_POINTS`, the offsets, the struct layouts)
-//! pass on the stub by design; they are guards, not behaviour.
+//! Ported behavior and contract tests for the W5-15a native binding; native-only cases require the pinned library.
+//! Tests that only check constants or layouts (`ENTRY_POINTS`, offsets, and struct layouts)
+//! are guards, not behavior.
 //!
 //! Native tests are `#[ignore = "native: ..."]`: they need `libraw.dll` 0.22.2 next to the test executable and, for the
 //! corpus ones, the RAW corpus named by `PHOTOREVIEW_RS_RAW_CORPUS`. Without them they print a skip note and return
