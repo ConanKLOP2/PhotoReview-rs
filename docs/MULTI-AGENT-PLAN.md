@@ -428,3 +428,13 @@ unit. A failed unit blocks only its dependents.
 - **Main lesson, blocked by tier stubs:** units of one tier (W4-14a/b/c/d, W4-10b, W4-02b) share `todo!()` stubs, so each unit's tests were red until its neighbours landed and several could only report Partial. Use P-28 graph scheduling: start a unit only when its direct dependencies are merged and run its gate against the merged tree.
 - **Native seams across crates:** pr-imaging tests that need pr-platform-win (WIC) cannot dev-depend on it (cycle), so about 30 native tests stay red on `todo!()`. Put native twins in pr-platform-win or a separate test crate from the contract stage.
 - **Shared temp dirs:** agents using a shared scratchpad `mtmp` or `%TEMP%\cargo-mutants-*` globs deleted each other's runs; every agent needs a unique TMP and must delete only its own.
+
+## 16. Lessons from Wave 5 (2026-10-17)
+
+- **Result:** 15 units merged with PASS or FAIL verdicts (W5-01ab, 02a, 02b, 10a, 10b, 11b, 12a, 13a, 13b, 14a, 15ab, 16a, 16b, 16c, 17); W5-02a/03/04..09/11a/11c/12b1/12b2/12c/14b were reported as blocked ("dependency not merged" or "red tests blocked") by the final reports even where git history shows an earlier merge. Reports and branch history disagree: the lead must reconcile them before writing PARITY.
+- **Graph scheduling helped but not enough:** dependency edges between reader units and the registry/decoder units were missed, so the RawDecoder chain (12b1, 12b2, 12c), registry and the NEF/ORF/DNG readers did not land. List cross-unit dependencies in the contract, not only tiers.
+- **Mutation tooling is flaky on shared state:** cargo-mutants runs died on `-j2` path errors or hung on a stale mutated test binary in a shared target dir; batch results were spurious (W5-17 M01/M04/M24 survived in the batch, killed on a clean rerun). Give each verifier its own target dir and TMP, and rerun survivors on a clean tree before reporting.
+- **A FAIL verdict can still merge:** W5-16c merged with 10 surviving mutants; the killing tests were left in a scratch file. The unit should not be Done until those tests are committed.
+- **Equivalent mutants dominate:** bound checks and `|` to `^` on disjoint bits make up most survivors; record them with a one-line reason so verifiers stop re-deriving them.
+- **Native tests skip:** the corpus (P-30) is not on this machine and `#[ignore = native]` tests need the pinned DLLs staged; parity for those is unproven.
+- **Process:** unique `CARGO_TARGET_DIR` per agent; remove it when the unit is done. A background job started with a trailing `&` is killed when the tool call ends; use `run_in_background`.

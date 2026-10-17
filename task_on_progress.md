@@ -73,3 +73,14 @@
   The compile check of the stubs against each other is only as good as `cargo clippy`; the `todo!()` bodies were never executed.
 - Open for the lead: amendments A8..A11 and proposals P-30..P-33 (contracts/README.md, docs/PROPOSED-DECISIONS.md).
 - Next: dependency-graph port workflows (P-28) starting from the Tier A units; `pr_test_support::raw` first (D48).
+
+## Wave 5 port (branch `integration/wave-5`, 2026-10-17)
+- Gate run on the merged tree (after merging origin/master, CARGO_TARGET_DIR `target-wave-5/integ`): `cargo fmt --all --check` clean;
+  `cargo clippy --workspace --all-targets --locked -- -D warnings` clean; `cargo test --workspace --locked --no-fail-fast`:
+  4497 passed, 0 failed, 363 ignored.
+- Verifier reports: PASS for W5-02b, 10a, 10b, 11b, 12a, 13a, 13b, 14a, 15ab, 16a, 16b, 17 (only equivalent or native-only mutants
+  left, listed in the PR); W5-01ab merged without a verdict; FAIL for W5-16c (10 surviving mutants, killing tests in a scratch
+  file not committed). Reported not merged: W5-02a (red tests blocked), W5-04..06, 11a, 11c, 12b1, 12b2, 12c ("dependency not
+  merged"), W5-14b (red tests blocked). Git history shows W5-02a/03/07/08/09/11a/11c merges from earlier runs; their verdicts are not in the final reports.
+- NOT run: corpus tests (P-30), `#[ignore]` native tests (no pinned DLLs staged in this run), mutation for units without a report.
+- Next: land W5-04..06, registry, RawDecoder chain (12b1/12b2/12c), TurboJPEG decoder (14b); commit the W5-16c killing tests.
