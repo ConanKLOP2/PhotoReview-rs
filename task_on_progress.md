@@ -92,3 +92,8 @@
 - Updated `docs/PARITY.md` to remove stale duplicate Todo rows and reflect the current partial W5 state. W5-04 and W5-14b still need verifier reports; W5-14b has the documented oracle gap for file-input rows.
 - Delegated W5-05 ORF port and W5-16c mutation-killer closure on isolated unit branches; neither is merged yet. Next: integrate their completed commits, continue W5-06 and W5-11a registry / W5-12 decoder chain, then run full workspace gates before PR.
 - Not done in this continuation: cargo-mutants for W5-04/W5-14b, native tests with pinned DLLs, RAW corpus tests, full workspace clippy/test gate, push/PR.
+
+## Wave 5 integration update (2026-10-17)
+- Integrated W5-06 DNG at `7652b44` (unit commit `52dbf19`): `cargo fmt --all --check`, `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings`, and `cargo test -p pr-imaging-raw --locked` passed on the integration tree. Crate run included 50 DNG tests plus the 1-case synthetic DNG golden; the DNG implementation report counted 317 passing tests across RAW crate targets.
+- Corpus tests and cargo-mutants for DNG remain unrun. Updated the I-13 parity row to mark DNG done while ORF remains pending.
+- W5-05 ORF implementation commit arrived, but its golden test is under correction: the existing golden input already includes a repeated zero patch (`times: 40`) mirroring C# `Span.Clear`; likely the Rust test builder must honor the repeat field. Asked the porter to fix the builder and rerun.
