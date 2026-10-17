@@ -1,11 +1,12 @@
 //! W5-12b1 core tests. The golden driver executes `read_info` and decode steps that fail before an inner image decoder
 //! is needed. Image-producing decode cases need the scripted decoder seam; physical identity and stateful-hook cases
-//! also need the C# fixture behavior and stay explicitly gated.
+//! also need the C# fixture behavior and stay explicitly gated. Physical cache goldens keep a counting reader on
+//! RawDecoder while SourceBytesCache uses its default PhysicalSourceReader, matching the C# fixture composition.
 
 use std::io::{self, Cursor, Read, Seek, SeekFrom};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 
 use pr_core::abstractions::{ReadSeek, SourceReadPriority, SourceReader};
 use pr_core::model::enums::DecoderBackend;
@@ -374,7 +375,7 @@ fn decode_fails_before_inner(case: &Value) -> bool {
         )
 }
 
-fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
+fn run_read_info_case(input: &Value, expected: &Value, path: &str) -> (usize, usize) {
     let file = file_bytes(input);
     let stats = Arc::new(ReadStats::default());
     let reader_reads = Arc::new(AtomicUsize::new(0));
@@ -418,7 +419,6 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
         },
     );
     let name = input["name"].as_str().expect("case name");
-    let path = format!(r"C:\raw-virtual-nonexistent\{name}.dng");
     let ops = input["ops"].as_array().expect("ops");
     let steps = expected["steps"].as_array().expect("golden steps");
     let mut read_info_steps = 0;
@@ -435,7 +435,7 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
         let step = &steps[index];
         assert_eq!(step["op"], op["op"], "case {name}: golden op alignment");
         let error = if is_read_info {
-            match decoder.read_info(&path) {
+            match decoder.read_info(path) {
                 Ok(info) => {
                     assert!(
                         expected_info_matches(info, &step["info"]),
@@ -448,7 +448,7 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
             }
         } else {
             let width = op["box"]["width"].as_i64().unwrap_or(0) as i32;
-            let request = DecodeRequest::new(&path, width);
+            let request = DecodeRequest::new(path, width);
             match decoder.decode(&request) {
                 Ok(_) => panic!("case {name}, step {index}: early container error expected"),
                 Err(error) => Some(error),
@@ -460,7 +460,7 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
                 error_type(&error),
                 "case {name}, step {index}: {error:?}"
             );
-            let message = error.message().replace(&path, "{path}");
+            let message = error.message().replace(path, "{path}");
             assert_eq!(step["error"]["message"], message, "case {name}, step {index}");
             assert_eq!(
                 step["error"]["localized_key"],
@@ -495,9 +495,37 @@ fn run_read_info_case(input: &Value, expected: &Value) -> (usize, usize) {
     (read_info_steps, executed_steps)
 }
 
-fn run_image_decode_case(input: &Value, expected: &Value) {
+static NEXT_PHYSICAL_GOLDEN_ID: AtomicU64 = AtomicU64::new(0);
+
+/// A test-owned directory; Drop removes it even when a golden assertion unwinds.
+struct PhysicalGoldenFile {
+    directory: PathBuf,
+    path: PathBuf,
+}
+
+impl PhysicalGoldenFile {
+    fn new(name: &str, contents: &[u8]) -> Self {
+        let id = NEXT_PHYSICAL_GOLDEN_ID.fetch_add(1, Ordering::Relaxed);
+        let directory = std::env::temp_dir().join(format!("photoreview-rs-raw-golden-{}-{id}", std::process::id()));
+        std::fs::create_dir(&directory).expect("create test-owned temp directory");
+        let path = directory.join(name);
+        std::fs::write(&path, contents).expect("write test-owned physical golden file");
+        Self { directory, path }
+    }
+
+    fn path_string(&self) -> String {
+        self.path.to_string_lossy().into_owned()
+    }
+}
+
+impl Drop for PhysicalGoldenFile {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.directory);
+    }
+}
+
+fn run_image_decode_case(input: &Value, expected: &Value, path: &str) {
     let name = input["name"].as_str().expect("case name");
-    let path = format!(r"C:\raw-virtual-nonexistent\{name}.dng");
     let bytes = file_bytes(input);
     let stats = Arc::new(ReadStats::default());
     let reader_reads = Arc::new(AtomicUsize::new(0));
@@ -521,114 +549,133 @@ fn run_image_decode_case(input: &Value, expected: &Value) {
         result: input["inner"]["default"].clone(),
         requests: Arc::clone(&request_log),
     });
+    let source_bytes_cache = input["cache"]["capacity"].as_i64().map(|capacity| {
+        Arc::new(
+            pr_imaging::cache::source_bytes::SourceBytesCache::new(capacity, 0, None)
+                .expect("positive golden cache capacity"),
+        )
+    });
     let decoder = RawDecoder::with_options(
         inner,
         pr_imaging_raw::decoder::RawDecoderOptions {
             source_reader: Some(source_reader),
             registry: Some(registry),
+            source_bytes_cache: source_bytes_cache.clone(),
             ..Default::default()
         },
     );
-    let op = &input["ops"][0];
-    let mut request = DecodeRequest::with_box(
-        &path,
-        DecodeBox::new(
-            op["box"][0].as_i64().unwrap_or(0) as i32,
-            op["box"][1].as_i64().unwrap_or(0) as i32,
-        ),
-    )
-    .with_apply_orientation(op["apply_orientation"].as_bool().unwrap_or(true));
-    if let Some(orientation) = op["source_orientation"].as_i64() {
-        request = request.with_source_orientation(orientation as i32);
-    }
-    if op["priority"].as_str() == Some("Preload") {
-        request = request.with_priority(SourceReadPriority::Preload);
-    }
+    for (index, op) in input["ops"].as_array().expect("decode operations").iter().enumerate() {
+        let opens_before = stats.opens.load(Ordering::SeqCst);
+        let bytes_before = stats.bytes.load(Ordering::SeqCst);
+        let request_count_before = request_log.lock().expect("request log lock").len();
+        let mut request = DecodeRequest::with_box(
+            path,
+            DecodeBox::new(
+                op["box"][0].as_i64().unwrap_or(0) as i32,
+                op["box"][1].as_i64().unwrap_or(0) as i32,
+            ),
+        )
+        .with_apply_orientation(op["apply_orientation"].as_bool().unwrap_or(true));
+        if let Some(orientation) = op["source_orientation"].as_i64() {
+            request = request.with_source_orientation(orientation as i32);
+        }
+        if op["priority"].as_str() == Some("Preload") {
+            request = request.with_priority(SourceReadPriority::Preload);
+        }
 
-    let image = decoder
-        .decode(&request)
-        .unwrap_or_else(|error| panic!("case {name}: {error:?}"));
-    let step = &expected["steps"][0];
-    assert_eq!(step["op"], "decode", "case {name}");
-    let info = &step["ok"];
-    assert_eq!(
-        [image.pixel_width(), image.pixel_height()],
-        [
-            info["pixel"][0].as_i64().unwrap() as i32,
-            info["pixel"][1].as_i64().unwrap() as i32
-        ],
-        "case {name}: pixel size"
-    );
-    assert_eq!(
-        [image.original_width(), image.original_height()],
-        [
-            info["original"][0].as_i64().unwrap() as i32,
-            info["original"][1].as_i64().unwrap() as i32
-        ],
-        "case {name}: original size"
-    );
-    assert_eq!(
-        image.downscaled(),
-        info["downscaled"].as_bool().unwrap(),
-        "case {name}: downscaled"
-    );
-    assert_eq!(
-        image.orientation(),
-        info["orientation"].as_i64().unwrap() as i32,
-        "case {name}: orientation"
-    );
-    assert_eq!(
-        image.is_degraded_fallback(),
-        info["degraded"].as_bool().unwrap(),
-        "case {name}: degraded"
-    );
-    assert_eq!(
-        image.estimated_bytes(),
-        info["estimated_bytes"].as_i64().unwrap(),
-        "case {name}: estimated bytes"
-    );
-    assert_eq!(
-        image.source_bytes_read(),
-        Some(info["source_bytes_read"].as_i64().unwrap()),
-        "case {name}: source bytes"
-    );
-    assert_eq!(
-        image.embedded_preview_size(),
-        Some((
-            info["embedded_preview"][0].as_i64().unwrap() as i32,
-            info["embedded_preview"][1].as_i64().unwrap() as i32
-        )),
-        "case {name}: embedded size"
-    );
-    assert_eq!(
-        format!("{:?}", image.actual_backend()),
-        info["backend"].as_str().unwrap(),
-        "case {name}: backend"
-    );
-    let exif_make = image.exif().and_then(|exif| exif.camera_make.as_deref());
-    assert_eq!(exif_make, info["exif_make"].as_str(), "case {name}: EXIF make");
-    assert_eq!(
-        json!(*request_log.lock().unwrap()),
-        step["inner_requests"],
-        "case {name}: inner request trace"
-    );
-    assert_eq!(step["fallback_calls"], 0, "case {name}: fallback calls");
-    assert_eq!(step["full_calls"], 0, "case {name}: full decode calls");
-    assert_eq!(
-        step["opens"],
-        json!(stats.opens.load(Ordering::SeqCst)),
-        "case {name}: opens"
-    );
-    assert_eq!(
-        step["stream_bytes_read"],
-        json!(stats.bytes.load(Ordering::SeqCst)),
-        "case {name}: source reads"
-    );
-    assert_eq!(
-        step["container_reads_total"],
-        json!(reader_reads.load(Ordering::SeqCst)),
-        "case {name}: container reads"
-    );
+        let image = decoder
+            .decode(&request)
+            .unwrap_or_else(|error| panic!("case {name}, step {index}: {error:?}"));
+        let step = &expected["steps"][index];
+        assert_eq!(step["op"], "decode", "case {name}");
+        let info = &step["ok"];
+        assert_eq!(
+            [image.pixel_width(), image.pixel_height()],
+            [
+                info["pixel"][0].as_i64().unwrap() as i32,
+                info["pixel"][1].as_i64().unwrap() as i32
+            ],
+            "case {name}: pixel size"
+        );
+        assert_eq!(
+            [image.original_width(), image.original_height()],
+            [
+                info["original"][0].as_i64().unwrap() as i32,
+                info["original"][1].as_i64().unwrap() as i32
+            ],
+            "case {name}: original size"
+        );
+        assert_eq!(
+            image.downscaled(),
+            info["downscaled"].as_bool().unwrap(),
+            "case {name}: downscaled"
+        );
+        assert_eq!(
+            image.orientation(),
+            info["orientation"].as_i64().unwrap() as i32,
+            "case {name}: orientation"
+        );
+        assert_eq!(
+            image.is_degraded_fallback(),
+            info["degraded"].as_bool().unwrap(),
+            "case {name}: degraded"
+        );
+        assert_eq!(
+            image.estimated_bytes(),
+            info["estimated_bytes"].as_i64().unwrap(),
+            "case {name}: estimated bytes"
+        );
+        assert_eq!(
+            image.source_bytes_read(),
+            Some(info["source_bytes_read"].as_i64().unwrap()),
+            "case {name}: source bytes"
+        );
+        assert_eq!(
+            image.embedded_preview_size(),
+            Some((
+                info["embedded_preview"][0].as_i64().unwrap() as i32,
+                info["embedded_preview"][1].as_i64().unwrap() as i32
+            )),
+            "case {name}: embedded size"
+        );
+        assert_eq!(
+            format!("{:?}", image.actual_backend()),
+            info["backend"].as_str().unwrap(),
+            "case {name}: backend"
+        );
+        let exif_make = image.exif().and_then(|exif| exif.camera_make.as_deref());
+        assert_eq!(exif_make, info["exif_make"].as_str(), "case {name}: EXIF make");
+        assert_eq!(
+            json!(request_log.lock().unwrap()[request_count_before..]),
+            step["inner_requests"],
+            "case {name}: inner request trace"
+        );
+        assert_eq!(step["fallback_calls"], 0, "case {name}: fallback calls");
+        assert_eq!(step["full_calls"], 0, "case {name}: full decode calls");
+        assert_eq!(
+            step["opens"],
+            json!(stats.opens.load(Ordering::SeqCst) - opens_before),
+            "case {name}: opens"
+        );
+        assert_eq!(
+            step["stream_bytes_read"],
+            json!(stats.bytes.load(Ordering::SeqCst) - bytes_before),
+            "case {name}: source reads"
+        );
+        assert_eq!(
+            step["container_reads_total"],
+            json!(reader_reads.load(Ordering::SeqCst)),
+            "case {name}: container reads"
+        );
+        if let Some(cache) = &source_bytes_cache {
+            assert_eq!(step["cache_count"], json!(cache.count()), "case {name}: cache count");
+            assert_eq!(
+                step["cache_size"],
+                json!(cache.current_size()),
+                "case {name}: cache size"
+            );
+        }
+    }
 }
 
 #[test]
@@ -648,23 +695,48 @@ fn golden_raw_decoder_core_runs_core_only_read_info_cases() {
     let mut image_decode_cases = 0usize;
     for (input, golden_case) in input_cases.iter().zip(&expected.cases) {
         assert_eq!(input["name"], golden_case["name"], "input/golden case order");
+        let ops = input["ops"].as_array().expect("operations");
+        let physical_info_case =
+            input["file"]["physical"].as_bool().unwrap_or(false) && ops.iter().all(|op| op["op"] == "read_info");
+        let physical_cache_case = input["file"]["physical"].as_bool().unwrap_or(false)
+            && input["cache"]["capacity"].as_i64().is_some()
+            && ops.iter().all(|op| op["op"] == "decode")
+            && !ops.is_empty()
+            && golden_case["steps"]
+                .as_array()
+                .is_some_and(|steps| steps.len() == ops.len() && steps.iter().all(|step| step["ok"].is_object()));
+        let physical_file = (physical_info_case || physical_cache_case).then(|| {
+            PhysicalGoldenFile::new(
+                input["file"]["name"].as_str().unwrap_or("golden.dng"),
+                file_bytes(input).as_ref(),
+            )
+        });
+        let virtual_path = format!(
+            r"C:\raw-virtual-nonexistent\{}.dng",
+            input["name"].as_str().expect("case name")
+        );
+        let path = physical_file
+            .as_ref()
+            .map(PhysicalGoldenFile::path_string)
+            .unwrap_or(virtual_path);
         let early_error_container = decode_fails_before_inner(input);
         let all_ops_run_without_image_decoder = input["ops"].as_array().is_some_and(|ops| {
             ops.iter()
                 .all(|op| op["op"] == "read_info" || (op["op"] == "decode" && early_error_container))
         });
-        let scripted_image_case = !input["file"]["physical"].as_bool().unwrap_or(false)
-            && input["ops"]
+        let scripted_image_case = (!input["file"]["physical"].as_bool().unwrap_or(false) || physical_cache_case)
+            && ops.iter().all(|op| op["op"] == "decode")
+            && !ops.is_empty()
+            && golden_case["steps"]
                 .as_array()
-                .is_some_and(|ops| ops.len() == 1 && ops[0]["op"] == "decode")
-            && golden_case["steps"][0]["ok"].is_object()
+                .is_some_and(|steps| steps.len() == ops.len() && steps.iter().all(|step| step["ok"].is_object()))
             && input["container"]["kind"] != "throws";
         if scripted_image_case {
-            run_image_decode_case(input, golden_case);
-            image_decode_cases += 1;
-            executed_steps += 1;
+            run_image_decode_case(input, golden_case, &path);
+            image_decode_cases += ops.len();
+            executed_steps += ops.len();
         } else if all_ops_run_without_image_decoder {
-            let (infos, steps) = run_read_info_case(input, golden_case);
+            let (infos, steps) = run_read_info_case(input, golden_case, &path);
             read_info_steps += infos;
             executed_steps += steps;
         } else {
