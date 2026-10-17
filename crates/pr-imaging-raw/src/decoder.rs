@@ -16,8 +16,6 @@
 //!
 //! Localized sentences are injected ([`RawDecoderTexts`], D41: no `pr-l10n` dependency). No `unsafe`, no Windows-only API.
 
-#![allow(unused_variables, dead_code)] // D11: removed together with the last `todo!()`.
-
 mod fallback;
 
 pub use fallback::{
@@ -28,6 +26,7 @@ pub use fallback::{
 use std::fmt;
 use std::sync::Arc;
 
+use crate::RawHeaderSource;
 use pr_core::abstractions::{SourceReadPriority, SourceReader};
 use pr_core::caching::lru::BoundedLruCache;
 use pr_core::model::enums::DecoderBackend;
@@ -75,19 +74,19 @@ pub struct EnglishRawDecoderTexts;
 
 impl RawDecoderTexts for EnglishRawDecoderTexts {
     fn raw_corrupt(&self) -> String {
-        todo!()
+        "Corrupt or invalid RAW file.".to_owned()
     }
 
     fn raw_unsupported(&self) -> String {
-        todo!()
+        "Unsupported RAW container format.".to_owned()
     }
 
     fn raw_no_preview(&self) -> String {
-        todo!()
+        "This RAW file has no embedded preview, so it cannot be shown.".to_owned()
     }
 
     fn file_changed_while_reading(&self, path: &str) -> String {
-        todo!()
+        format!("The file changed while it was being read: {path}")
     }
 }
 
@@ -114,7 +113,14 @@ pub struct RawDecoderOptions {
 impl fmt::Debug for RawDecoderOptions {
     /// The trait objects have no `Debug`: report which options are set.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("RawDecoderOptions")
+            .field("source_reader", &self.source_reader.is_some())
+            .field("registry", &self.registry.is_some())
+            .field("source_bytes_cache", &self.source_bytes_cache.is_some())
+            .field("preview_fallback", &self.preview_fallback.is_some())
+            .field("no_preview_decoder", &self.no_preview_decoder.is_some())
+            .field("texts", &self.texts.is_some())
+            .finish()
     }
 }
 
@@ -189,55 +195,55 @@ struct RawDecodedImage {
 
 impl DecodedImageView for RawDecodedImage {
     fn pixel_width(&self) -> i32 {
-        todo!()
+        self.inner.pixel_width()
     }
 
     fn pixel_height(&self) -> i32 {
-        todo!()
+        self.inner.pixel_height()
     }
 
     fn downscaled(&self) -> bool {
-        todo!()
+        self.downscaled
     }
 
     fn orientation(&self) -> i32 {
-        todo!()
+        self.orientation
     }
 
     fn estimated_bytes(&self) -> i64 {
-        todo!()
+        self.inner.estimated_bytes()
     }
 
     fn platform_image(&self) -> &PlatformImage {
-        todo!()
+        self.inner.platform_image()
     }
 
     fn actual_backend(&self) -> DecoderBackend {
-        todo!()
+        self.actual_backend
     }
 
     fn original_width(&self) -> i32 {
-        todo!()
+        self.original_width
     }
 
     fn original_height(&self) -> i32 {
-        todo!()
+        self.original_height
     }
 
     fn exif(&self) -> Option<&ExifSummary> {
-        todo!()
+        self.exif.as_ref()
     }
 
     fn is_degraded_fallback(&self) -> bool {
-        todo!()
+        self.is_degraded_fallback
     }
 
     fn source_bytes_read(&self) -> Option<i64> {
-        todo!()
+        Some(self.source_bytes_read)
     }
 
     fn embedded_preview_size(&self) -> Option<(i32, i32)> {
-        todo!()
+        Some((self.embedded_preview_width, self.embedded_preview_height))
     }
 }
 
@@ -257,20 +263,39 @@ pub struct RawDecoder {
 
 impl fmt::Debug for RawDecoder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("RawDecoder")
+            .field("container_info_cache", &self.container_info_cache.count())
+            .finish_non_exhaustive()
     }
 }
 
 impl RawDecoder {
     /// `new RawDecoder(innerDecoder)` with every other argument at its C# default.
     pub fn new(inner_decoder: Arc<dyn ImageDecoder>) -> Self {
-        todo!()
+        Self::with_options(inner_decoder, RawDecoderOptions::default())
     }
 
     /// The full C# constructor. The cache is built with [`CONTAINER_INFO_CACHE_CAPACITY`] and a size of 1 per entry
     /// (`BoundedLruCache::new` cannot fail for a positive constant; see the contract for the allowed `expect`).
     pub fn with_options(inner_decoder: Arc<dyn ImageDecoder>, options: RawDecoderOptions) -> Self {
-        todo!()
+        let source_reader = options
+            .source_reader
+            .unwrap_or_else(|| Arc::new(pr_core::abstractions::PhysicalSourceReader));
+        let registry = options
+            .registry
+            .unwrap_or_else(|| Arc::new(RawContainerReaderRegistry::new()));
+        let texts = options.texts.unwrap_or_else(|| Arc::new(EnglishRawDecoderTexts));
+        Self {
+            inner_decoder,
+            source_reader,
+            registry,
+            source_bytes_cache: options.source_bytes_cache,
+            preview_fallback: options.preview_fallback,
+            no_preview_decoder: options.no_preview_decoder,
+            texts,
+            container_info_cache: BoundedLruCache::new(CONTAINER_INFO_CACHE_CAPACITY, |_| 1)
+                .expect("positive constant capacity"),
+        }
     }
 
     /// C# `ReadInfo`. The sensor size of the container, else the size of the best embedded preview (selected with an
@@ -278,14 +303,120 @@ impl RawDecoder {
     /// `"RAW file declares no image size (no sensor size and no sized preview): {path}"` localized `raw_corrupt`.
     /// Returns `ImageInfo::with_orientation(w, h, info.orientation)` (stored size; `ImageInfo::width` swaps for 5..=8).
     fn read_info_impl(&self, path: &str) -> Result<ImageInfo, DecodeError> {
-        todo!()
+        let mut lookup = self.get_container_info(path, SourceReadPriority::Viewer)?;
+        let mut info = lookup.cached.info.clone();
+        let (mut width, mut height) = (info.sensor_width, info.sensor_height);
+        if width <= 0 || height <= 0 {
+            let selection = crate::preview_selector::select_preview_resolved(
+                &mut lookup.header_source,
+                &info.previews,
+                pr_imaging::decode_types::DecodeBox::UNBOUNDED,
+                info.orientation,
+            )
+            .map_err(header_error_to_decode_error)?;
+            lookup.cached = self.remember_resolved_previews(&lookup.key, lookup.cached, selection.resolved_previews);
+            info = lookup.cached.info.clone();
+            if let Some(preview) = selection.chosen.filter(|p| p.width > 0 && p.height > 0) {
+                width = preview.width;
+                height = preview.height;
+            }
+        }
+        if width <= 0 || height <= 0 {
+            return Err(DecodeError::InvalidData {
+                message: format!("RAW file declares no image size (no sensor size and no sized preview): {path}"),
+            }
+            .with_user_text(self.user_text(|t| t.raw_corrupt())));
+        }
+        Ok(ImageInfo::with_orientation(width, height, info.orientation))
     }
 
     /// C# `Decode` (see the contract, "Decode composition"): EXIF (cached once complete), preview selection, the
     /// no-preview branch (`decode_without_preview`, W5-12b2) or the preview chain (`decode_preview_with_fallbacks`,
     /// W5-12b2), then the sensor size / downscaled / byte-count rules and the [`RawDecodedImage`] wrapper.
     fn decode_impl(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        todo!()
+        let mut lookup = self.get_container_info(request.path.to_string_lossy().as_ref(), request.priority)?;
+        let mut info = lookup.cached.info.clone();
+        let exif = if lookup.cached.exif_read {
+            lookup.cached.exif.clone()
+        } else {
+            let read = crate::raw_exif::try_read_exif(&mut lookup.header_source, &info);
+            if read.complete {
+                let cached = Arc::new(CachedRaw {
+                    info: info.clone(),
+                    exif: read.summary.clone(),
+                    exif_read: true,
+                });
+                self.container_info_cache.set(lookup.key.clone(), cached.clone());
+                lookup.cached = cached;
+            }
+            read.summary
+        };
+        let selection = crate::preview_selector::select_preview_resolved(
+            &mut lookup.header_source,
+            &info.previews,
+            request.decode_box(),
+            info.orientation,
+        )
+        .map_err(header_error_to_decode_error)?;
+        lookup.cached = self.remember_resolved_previews(&lookup.key, lookup.cached, selection.resolved_previews);
+        info = lookup.cached.info.clone();
+        let outcome = if let Some(preview) = selection.chosen.filter(|p| p.length > 0) {
+            self.decode_preview_with_fallbacks(request, &info, &lookup.key, &mut lookup.header_source, preview)?
+        } else {
+            if self.preview_fallback.is_none() && self.no_preview_decoder.is_none() {
+                return Err(DecodeError::InvalidData {
+                    message: format!("No embedded preview found in RAW file: {}", request.path.display()),
+                }
+                .with_user_text(self.user_text(|t| t.raw_no_preview())));
+            }
+            self.decode_without_preview(request, &info)?
+        };
+        let mut sw = info.sensor_width;
+        let mut sh = info.sensor_height;
+        if sw <= 0 || sh <= 0 {
+            sw = outcome.image.original_width();
+            sh = outcome.image.original_height();
+        } else if request.apply_orientation && matches!(info.orientation, 5..=8) {
+            std::mem::swap(&mut sw, &mut sh);
+        }
+        let tiny = outcome.from_jpeg_preview
+            && outcome.image.original_width().max(outcome.image.original_height()) <= MAX_THUMBNAIL_LONG_SIDE;
+        let downscaled =
+            outcome.image.downscaled() || tiny || outcome.image.pixel_width() < sw || outcome.image.pixel_height() < sh;
+        let source_bytes_read = if outcome.from_jpeg_preview || outcome.full_decode_bytes_read <= 0 {
+            lookup
+                .header_source
+                .total_bytes_read()
+                .checked_add(outcome.preview_bytes_read)
+                .and_then(|n| n.checked_add(outcome.fallback_thumbnail_bytes_read))
+        } else {
+            outcome.full_decode_bytes_read.checked_add(outcome.preview_bytes_read)
+        }
+        .ok_or_else(|| DecodeError::Overflow {
+            message: "Arithmetic operation resulted in an overflow.".to_owned(),
+        })?;
+        let image = Arc::new(RawDecodedImage {
+            inner: outcome.image.clone(),
+            original_width: sw,
+            original_height: sh,
+            downscaled,
+            orientation: info.orientation,
+            exif: exif.or_else(|| outcome.image.exif().cloned()),
+            actual_backend: outcome.image.actual_backend(),
+            source_bytes_read,
+            embedded_preview_width: if outcome.from_jpeg_preview {
+                outcome.image.original_width()
+            } else {
+                0
+            },
+            embedded_preview_height: if outcome.from_jpeg_preview {
+                outcome.image.original_height()
+            } else {
+                0
+            },
+            is_degraded_fallback: outcome.degraded_fallback || outcome.image.is_degraded_fallback(),
+        });
+        Ok(image)
     }
 
     /// C# `GetContainerInfo` (TOCTOU rules in the contract): stat BEFORE the open, open the header source (open errors
@@ -293,7 +424,68 @@ impl RawDecoder {
     /// re-stat + `set`. A header-source I/O failure (`RawHeaderError::InvalidData { io: Some(_) }`) surfaces as that
     /// I/O error (`DecodeError::from(io)`); a reader's malformed-container error is `InvalidData` localized `raw_corrupt`.
     fn get_container_info(&self, path: &str, priority: SourceReadPriority) -> Result<ContainerLookup, DecodeError> {
-        todo!()
+        let stat_before = stat_file(path);
+        let mut header_source =
+            SourceRawHeaderSource::open(std::path::Path::new(path), self.source_reader.as_ref(), priority)
+                .map_err(DecodeError::Io)?;
+        let length = header_source.length();
+        if let Some((stat_len, _)) = stat_before {
+            if stat_len != length {
+                return Err(self.changed_while_reading(path));
+            }
+        }
+        let key = RawInfoKey {
+            path: pr_imaging::cache_key::normalize_key_path(path).map_err(|error| DecodeError::InvalidArgument {
+                message: error.to_string(),
+            })?,
+            length,
+            last_write_utc_ticks: stat_before.map_or(0, |(_, ticks)| ticks),
+        };
+        if let Some(cached) = self.container_info_cache.try_get(&key) {
+            self.throw_if_stat_changed(path, stat_before.is_some(), length, key.last_write_utc_ticks)?;
+            return Ok(ContainerLookup {
+                cached,
+                header_source,
+                key,
+            });
+        }
+        let probe = header_source
+            .read(0, crate::formats::limits::initial_probe_length(length))
+            .map_err(|e| match e {
+                RawHeaderError::InvalidData { io: Some(io), .. } => DecodeError::Io(io),
+                other => header_error_to_decode_error(other),
+            })?
+            .to_vec();
+        let extension = std::path::Path::new(path)
+            .extension()
+            .and_then(|s| s.to_str())
+            .map(|s| format!(".{s}"))
+            .unwrap_or_default();
+        let reader = self
+            .registry
+            .find_reader(&probe, &extension)
+            .ok_or_else(|| DecodeError::NotSupported {
+                message: format!("{UNSUPPORTED_FORMAT_PREFIX}{extension}"),
+                user_text: Some(self.user_text(|t| t.raw_unsupported())),
+            })?;
+        let info = reader
+            .read(&mut header_source, &pr_core::sync::CancelToken::new())
+            .map_err(|e| match e {
+                RawHeaderError::InvalidData { io: Some(io), .. } => DecodeError::Io(io),
+                other => self.localize_corrupt(header_error_to_decode_error(other)),
+            })?;
+        self.throw_if_stat_changed(path, stat_before.is_some(), length, key.last_write_utc_ticks)?;
+        let cached = Arc::new(CachedRaw {
+            info,
+            exif: None,
+            exif_read: false,
+        });
+        self.container_info_cache.set(key.clone(), cached.clone());
+        Ok(ContainerLookup {
+            cached,
+            header_source,
+            key,
+        })
     }
 
     /// C# `RememberResolvedPreviews`: stores `resolved` in the entry of `key` when it differs from the cached previews
@@ -305,7 +497,19 @@ impl RawDecoder {
         cached: Arc<CachedRaw>,
         resolved: Vec<EmbeddedPreview>,
     ) -> Arc<CachedRaw> {
-        todo!()
+        if cached.info.previews == resolved {
+            return cached;
+        }
+        let next = Arc::new(CachedRaw {
+            info: RawContainerInfo {
+                previews: resolved,
+                ..cached.info.clone()
+            },
+            exif: cached.exif.clone(),
+            exif_read: cached.exif_read,
+        });
+        self.container_info_cache.set(key.clone(), next.clone());
+        next
     }
 
     /// C# `DecodePreview`: cap check (`length > MAX_PREVIEW_BYTES` => `InvalidData` "Embedded preview is too large: {n}
@@ -321,7 +525,78 @@ impl RawDecoder {
         key: &RawInfoKey,
         preview: &EmbeddedPreview,
     ) -> Result<(Arc<dyn DecodedImageView>, i64), DecodeError> {
-        todo!()
+        const MAX_BYTES: i64 = crate::formats::limits::MAX_PREVIEW_BYTES as i64;
+        if preview.length > MAX_BYTES {
+            return Err(self.localize_corrupt(DecodeError::InvalidData {
+                message: format!(
+                    "Embedded preview is too large: {} bytes (limit {MAX_BYTES}).",
+                    preview.length
+                ),
+            }));
+        }
+        let file_stat = stat_file(request.path.to_string_lossy().as_ref());
+        if file_stat.is_some_and(|(len, ticks)| len != key.length || ticks != key.last_write_utc_ticks) {
+            self.container_info_cache.remove(key);
+            return Err(self.changed_while_reading(request.path.to_string_lossy().as_ref()));
+        }
+        let count = i32::try_from(preview.length).map_err(|_| {
+            self.localize_corrupt(DecodeError::InvalidData {
+                message: "Embedded preview size is invalid.".to_owned(),
+            })
+        })?;
+        let path = request.path.to_string_lossy().to_string();
+        let (bytes, read) = if let (Some(cache), Some((file_len, file_ticks))) = (&self.source_bytes_cache, file_stat)
+            && cache.can_cache_range(i64::from(count))
+        {
+            match cache
+                .try_get_range(std::path::Path::new(&path), file_len, file_ticks, preview.offset, count)
+                .map_err(source_bytes_error_to_decode_error)?
+            {
+                Some(bytes) => (bytes, 0),
+                _ => (
+                    cache
+                        .get_or_read_range(
+                            std::path::Path::new(&path),
+                            file_len,
+                            file_ticks,
+                            preview.offset,
+                            count,
+                            request.priority,
+                        )
+                        .map_err(source_bytes_error_to_decode_error)?,
+                    i64::from(count),
+                ),
+            }
+        } else {
+            (
+                Arc::<[u8]>::from(self.read_preview_range(
+                    &path,
+                    preview.offset,
+                    count,
+                    key.length,
+                    request.priority,
+                )?),
+                i64::from(count),
+            )
+        };
+        let bytes: Arc<[u8]> = if preview.color_space == crate::PreviewColorSpace::AdobeRgb {
+            Arc::from(
+                crate::registry::ensure_adobe_rgb_profile(bytes.to_vec())
+                    .map_err(|e| self.localize_corrupt(header_error_to_decode_error(e)))?,
+            )
+        } else {
+            bytes
+        };
+        let inner_request = DecodeRequest {
+            path: request.path.clone(),
+            target_width: request.target_width,
+            target_height: request.target_height,
+            apply_orientation: request.apply_orientation,
+            bytes: Some(bytes),
+            priority: request.priority,
+            source_orientation: Some(info.orientation),
+        };
+        self.inner_decoder.decode(&inner_request).map(|img| (img, read))
     }
 
     /// C# `ReadPreviewRange`: opens `path` through the source reader, length != `expected_length` => changed-while-reading;
@@ -337,13 +612,61 @@ impl RawDecoder {
         expected_length: i64,
         priority: SourceReadPriority,
     ) -> Result<Vec<u8>, DecodeError> {
-        todo!()
+        if count < 0 || offset < 0 {
+            return Err(DecodeError::Io(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                format!("Embedded preview range is outside {path}"),
+            )));
+        }
+        let mut stream = self
+            .source_reader
+            .open_source(std::path::Path::new(path), priority, 1024 * 1024)
+            .map_err(DecodeError::Io)?;
+        let length = stream.seek(std::io::SeekFrom::End(0)).map_err(DecodeError::Io)?;
+        if i64::try_from(length).ok() != Some(expected_length) {
+            return Err(self.changed_while_reading(path));
+        }
+        let count64 = i64::from(count);
+        if count64 > expected_length || offset > expected_length - count64 {
+            return Err(DecodeError::Io(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                format!("Embedded preview range is outside {path}"),
+            )));
+        }
+        let size = usize::try_from(count).map_err(|_| DecodeError::Overflow {
+            message: "preview size overflow".into(),
+        })?;
+        stream
+            .seek(std::io::SeekFrom::Start(offset as u64))
+            .map_err(DecodeError::Io)?;
+        let mut bytes = vec![0; size];
+        let mut at = 0;
+        while at < size {
+            match std::io::Read::read(&mut stream, &mut bytes[at..]) {
+                Ok(0) => break,
+                Ok(n) => at += n,
+                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => {}
+                Err(e) => return Err(DecodeError::Io(e)),
+            }
+        }
+        if at != size {
+            return Err(DecodeError::Io(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                format!("Truncated embedded preview in {path}"),
+            )));
+        }
+        Ok(bytes)
     }
 
     /// C# `ChangedWhileReading(path)`: `DecodeError::Io(io::Error::other("RAW source changed while reading: {path}"))`
     /// with the `file_changed_while_reading(path)` sentence. Exactly `Io` (never `FileNotFound`, see the identity tests).
     fn changed_while_reading(&self, path: &str) -> DecodeError {
-        todo!()
+        let text = Arc::clone(&self.texts);
+        let path = path.to_owned();
+        DecodeError::Io(std::io::Error::other(format!(
+            "RAW source changed while reading: {path}"
+        )))
+        .with_user_text(Arc::new(move || text.file_changed_while_reading(&path)))
     }
 
     /// C# `ThrowIfStatChanged`: nothing for a path that had no physical file; else a fresh stat must exist with the same
@@ -355,18 +678,29 @@ impl RawDecoder {
         expected_length: i64,
         expected_last_write_ticks: i64,
     ) -> Result<(), DecodeError> {
-        todo!()
+        if !existed_before {
+            return Ok(());
+        }
+        match stat_file(path) {
+            Some((length, ticks)) if length == expected_length && ticks == expected_last_write_ticks => Ok(()),
+            _ => Err(self.changed_while_reading(path)),
+        }
     }
 
     /// `error.with_user_text(raw_corrupt)` unless `error.is_localized()` (C# `catch (InvalidDataException ex) when
     /// (!UserFacingError.IsLocalized(ex))`). Callers pass only `InvalidData` errors.
     fn localize_corrupt(&self, error: DecodeError) -> DecodeError {
-        todo!()
+        if error.is_localized() {
+            error
+        } else {
+            error.with_user_text(self.user_text(|t| t.raw_corrupt()))
+        }
     }
 
     /// A [`UserText`] closure over the injected texts (used for `raw_corrupt`, `raw_unsupported`, `raw_no_preview`).
     fn user_text(&self, text: fn(&dyn RawDecoderTexts) -> String) -> UserText {
-        todo!()
+        let texts = Arc::clone(&self.texts);
+        Arc::new(move || text(texts.as_ref()))
     }
 }
 
@@ -374,12 +708,18 @@ impl ImageDecoder for RawDecoder {
     /// C# `Decode(DecodeRequest)`: blank path (`ArgumentException.ThrowIfNullOrWhiteSpace(request.Path)`) =>
     /// `InvalidArgument`; else [`RawDecoder::decode_impl`].
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        todo!()
+        if is_blank(&request.path.to_string_lossy()) {
+            return Err(blank_path_error("path"));
+        }
+        self.decode_impl(request)
     }
 
     /// C# `ReadInfo(string)`: blank path => `InvalidArgument`; else [`RawDecoder::read_info_impl`].
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
-        todo!()
+        if is_blank(path) {
+            return Err(blank_path_error("path"));
+        }
+        self.read_info_impl(path)
     }
 }
 
@@ -387,7 +727,12 @@ impl ImageDecoder for RawDecoder {
 /// against the current directory like .NET), `None` for a missing path, a directory or a virtual/test path. Uses
 /// `pr_core::io::physical::PhysicalFileSystem::get_file_stat` (the same stat W4-10a uses); `length` saturates at `i64::MAX`.
 fn stat_file(path: &str) -> Option<(i64, i64)> {
-    todo!()
+    use pr_core::abstractions::FileSystem;
+    let stat = pr_core::io::physical::PhysicalFileSystem.get_file_stat(std::path::Path::new(path))?;
+    Some((
+        i64::try_from(stat.length).unwrap_or(i64::MAX),
+        stat.last_write_utc.ticks(),
+    ))
 }
 
 /// Maps a header-source / reader / ICC error to the decoder's error: `InvalidData { io: None }` => `DecodeError::InvalidData`
@@ -395,23 +740,45 @@ fn stat_file(path: &str) -> Option<(i64, i64)> {
 /// `InvalidDataException` type outside `GetContainerInfo`; only `get_container_info` unwraps the inner I/O error itself);
 /// `ArgumentOutOfRange` => `InvalidArgument` with the `Display` text; `Canceled` => `Canceled`.
 fn header_error_to_decode_error(error: RawHeaderError) -> DecodeError {
-    todo!()
+    match error {
+        RawHeaderError::InvalidData { message, .. } => DecodeError::InvalidData { message },
+        RawHeaderError::ArgumentOutOfRange { param, message } => DecodeError::InvalidArgument {
+            message: format!("{message} (Parameter '{param}')"),
+        },
+        RawHeaderError::Canceled => DecodeError::Canceled,
+    }
 }
 
 /// Maps a `SourceBytesCache` error: `Io` => `DecodeError::Io` with the same kind and message (the `Arc<io::Error>` is not
 /// unwrappable) and the cache's own UI sentence when it has one (`with_user_text`); `Argument`/`ArgumentOutOfRange` =>
 /// `InvalidArgument` naming the parameter.
 fn source_bytes_error_to_decode_error(error: SourceBytesError) -> DecodeError {
-    todo!()
+    let user_text = error.user_text();
+    match error {
+        SourceBytesError::Io(e) => {
+            let mut decoded = DecodeError::Io(std::io::Error::new(e.kind(), e.to_string()));
+            if let Some(text) = user_text {
+                decoded = decoded.with_user_text(text);
+            }
+            decoded
+        }
+        other => DecodeError::InvalidArgument {
+            message: other.to_string(),
+        },
+    }
 }
 
 /// `ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName)`: `true` for "" and all-whitespace (`char::is_whitespace`).
 fn is_blank(value: &str) -> bool {
-    todo!()
+    value.is_empty() || value.chars().all(char::is_whitespace)
 }
 
 /// The `InvalidArgument` error of [`is_blank`]: .NET's "The value cannot be an empty string or composed entirely of
 /// whitespace. (Parameter '{param}')".
 fn blank_path_error(param: &str) -> DecodeError {
-    todo!()
+    DecodeError::InvalidArgument {
+        message: format!(
+            "The value cannot be an empty string or composed entirely of whitespace. (Parameter '{param}')"
+        ),
+    }
 }
