@@ -85,6 +85,9 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - After a PR merges: remove its worktrees, branches and `target-wave-*` dirs. Check free space (`Get-PSDrive C`) at
   every loop tick; below 20 GB, delete target dirs idle for 2 hours (never one a cargo process is writing).
 
+## Model cap (P-34)
+Agents and subagents use Sonnet 5.5 at medium effort or lower (Haiku for mechanical work). Never use Opus or another heavier model without asking the user first. Mutation testing in verify steps is time-boxed (about 15 minutes, only the unit's owned files).
+
 ## Asking the user to decide
 
 Never ask a bare question: give the current state and why it matters, 2-4 options with detailed pros/cons, one

@@ -22,17 +22,17 @@ Haiku làm được việc là nhờ ba thứ:
 
 | Vai trò | Model | Việc | Không được làm |
 |---|---|---|---|
-| **Lead / Integrator** | Opus (phiên chính) | Chia wave, viết hoặc duyệt hợp đồng, merge nhánh, chạy gate, cập nhật PARITY/task_on_progress, mở PR | Tin báo cáo "done" mà không chạy lại gate |
-| **Contract Writer** | Opus cho đơn vị đỏ, Sonnet cho đơn vị vàng/xanh | Đọc C#, viết `contracts/WU-xxx.md` + stub Rust (chữ ký, doc comment, `todo!()` trong thân) + tên test | Viết phần thân implementation |
+| **Lead / Integrator** | Sonnet 5.5 (phiên chính) | Chia wave, viết hoặc duyệt hợp đồng, merge nhánh, chạy gate, cập nhật PARITY/task_on_progress, mở PR | Tin báo cáo "done" mà không chạy lại gate |
+| **Contract Writer** | Sonnet 5.5 cho đơn vị đỏ, Sonnet cho đơn vị vàng/xanh | Đọc C#, viết `contracts/WU-xxx.md` + stub Rust (chữ ký, doc comment, `todo!()` trong thân) + tên test | Viết phần thân implementation |
 | **Golden Generator** | Sonnet | Viết, chạy `tools/oracle-cs` (mục 4) để sinh `tests/golden/**` | Sửa repo C# |
 | **Test Porter** | **Haiku** | Port test C# của đơn vị thành test Rust (đỏ trước), dùng golden | Sửa code `src/` |
-| **Porter** | **Haiku** (xanh), Sonnet (vàng), Opus (đỏ) | Điền thân hàm cho test xanh | Đổi chữ ký public, thêm dependency, viết `unsafe`, sửa file ngoài danh sách |
+| **Porter** | **Haiku** (xanh), Sonnet (vàng và đỏ; trần mô hình P-34) | Điền thân hàm cho test xanh | Đổi chữ ký public, thêm dependency, viết `unsafe`, sửa file ngoài danh sách |
 | **Verifier** | Sonnet | Đọc C# và Rust song song, tìm khác biệt hành vi, chạy mutation mẫu, trả verdict PASS/FAIL kèm bằng chứng | Tự sửa code (chỉ báo lỗi) |
 
 Màu đơn vị:
 - 🟢 **Xanh (Haiku port):** logic thuần, có golden, không I/O hoặc I/O qua trait đã có fake, không `unsafe`, không thread.
 - 🟡 **Vàng (Sonnet port, Haiku port test):** có I/O thật, debounce, atomics, parse format trên đĩa, logic nhiều nhánh.
-- 🔴 **Đỏ (Opus port, Haiku port test):** INV an toàn dữ liệu, concurrency nhiều thread, COM/FFI `unsafe`, đường nóng hiệu năng.
+- 🔴 **Đỏ (Sonnet port, Haiku port test):** INV an toàn dữ liệu, concurrency nhiều thread, COM/FFI `unsafe`, đường nóng hiệu năng.
 
 ---
 
@@ -47,18 +47,18 @@ Màu đơn vị:
 ### 2.2 Vòng đời một WU
 
 ```text
-[Contract] Opus/Sonnet ─► contracts/WU-xxx.md + stub (todo!()) ─► lead merge "contract PR" của wave
+[Contract] Sonnet ─► contracts/WU-xxx.md + stub (todo!()) ─► lead merge "contract PR" của wave
      │
      ├─► [Golden] Sonnet: tests/golden/<area>/WU-xxx/*.json   (nếu WU cần)
      │
      ├─► [Test port] Haiku: test Rust đỏ (fail vì todo!())
      │
-     ├─► [Port] Haiku/Sonnet/Opus: điền thân hàm cho test xanh
+     ├─► [Port] Haiku/Sonnet: điền thân hàm cho test xanh
      │        tự chạy: cargo fmt; cargo clippy -p <crate> --all-targets -- -D warnings; cargo test -p <crate>
      │        trả JSON report (mục 5.3)
      │
      ├─► [Verify] Sonnet: so C# và Rust, chạy mutation mẫu ─► PASS / FAIL(+bằng chứng)
-     │        FAIL lần 1 → trả về Porter kèm diff cụ thể; FAIL lần 2 → nâng model (Haiku→Sonnet→Opus)
+     │        FAIL lần 1 → trả về Porter kèm diff cụ thể; FAIL lần 2 → nâng model (Haiku→Sonnet; không leo lên Opus, P-34)
      │
      └─► [Integrate] Lead: merge vào integration/wave-N, chạy GATE (mục 6), cập nhật PARITY, mở PR
 ```
@@ -93,12 +93,12 @@ Số dòng là kích thước file C# ở baseline.
 
 | WU | Nội dung | Model | Ghi chú |
 |---|---|---|---|
-| W0-01 | ADR R0003 concurrency: thread pool, channel, `Generation(AtomicU64)`, quy tắc UI thread (C# ADR 0005), cancellation token | Opus | Phải có trước mọi WU vàng/đỏ |
+| W0-01 | ADR R0003 concurrency: thread pool, channel, `Generation(AtomicU64)`, quy tắc UI thread (C# ADR 0005), cancellation token | Sonnet | Phải có trước mọi WU vàng/đỏ |
 | W0-02 | `pr-core::abstractions`: trait cho `IFileSystem`(138), `IClock`/`SystemClock`, `IDisplayClock`(123), `ILog`/`NullLog`, `IRecycleBin`, `IUiScheduler`/`ImmediateUiScheduler`, `ISourceReader`, `IMemoryProbe`, `IExplorerOrderProvider`, `ILiveOperationRegistry`(70), `IJournalCompactionFiles`, `INaturalComparer`, `IDialogService`, `IKeyNameValidator`, `IAppPaths` | Opus | Hình dạng trait quyết định mọi thứ sau, không giao Haiku |
 | W0-03 | Crate `pr-test-support`: `FakeFileSystem`, `FakeClock`, `FakeRecycleBin` (không bao giờ đụng thùng rác thật), `FakeUiScheduler`, helper đọc golden | Sonnet | Port từ `tests/PhotoReview.TestSupport` |
 | W0-04 | `tools/oracle-cs` + quy ước golden (mục 4) | Sonnet | Không sửa repo C# |
 | W0-05 | Kiểu lỗi chung (`thiserror`), quy ước log, chọn crate: `serde`, `serde_json`, `thiserror`, `crossbeam-channel`, `rayon`, `windows`, `parking_lot` | Opus | Chỉ lead thêm vào `[workspace.dependencies]` |
-| W0-06 | Contract PR cho Wave 1: khai báo `mod`, stub và `contracts/WU-*.md` của toàn wave | Opus+Sonnet | |
+| W0-06 | Contract PR cho Wave 1: khai báo `mod`, stub và `contracts/WU-*.md` của toàn wave | Sonnet | |
 | W0-07 | Script `tools/wave.ps1`: tạo worktree cho từng WU, chạy gate, gom report JSON | Sonnet | |
 
 ### Wave 1: Lá của Core, gần như toàn Haiku (song song tối đa 8)
@@ -197,18 +197,18 @@ action → journal khớp C#; Verifier chạy bằng Opus thay vì Sonnet.
 | W5-10 | `BmffBoxNavigator`(118), `Cr3ContainerReader`(383) | 🟡 | Sonnet |
 | W5-11 | `RawContainerReaderRegistry`(48), `PreviewSelector`(355), `RawExif`(107), `RawJpegIccProfile`(62) | 🟡 | Sonnet |
 | W5-12 | `SourceRawHeaderSource`(159), `RawDecoder`(603), `FormatRoutingDecoder`(63) | 🟡 | Sonnet |
-| W5-13 | TurboJPEG FFI: `TurboJpegNative`(136), `SafeTurboJpegHandle`, `TurboJpegAvailability`(56) | 🔴 | Opus |
+| W5-13 | TurboJPEG FFI: `TurboJpegNative`(136), `SafeTurboJpegHandle`, `TurboJpegAvailability`(56) | 🔴 | Sonnet |
 | W5-14 | `TurboJpegDecoder`(656) | 🟡 | Sonnet (dựa trên W5-13) |
-| W5-15 | LibRaw FFI: `LibRawNativeMethods`(193), `SafeLibRawHandle`, `LibRawAvailability`(154) | 🔴 | Opus |
-| W5-16 | `LibRawDecoder`(468), `FullDecodeGate`(156), `DecodeMemoryGuard`(91) | 🔴 | Opus |
+| W5-15 | LibRaw FFI: `LibRawNativeMethods`(193), `SafeLibRawHandle`, `LibRawAvailability`(154) | 🔴 | Sonnet |
+| W5-16 | `LibRawDecoder`(468), `FullDecodeGate`(156), `DecodeMemoryGuard`(91) | 🔴 | Sonnet |
 | W5-17 | `RgbBgraResampler`(209) (golden pixel) | 🟢 | Haiku |
 
 ### Wave 6: Platform Windows
 
 | WU | C# nguồn (dòng) | Màu | P |
 |---|---|---|---|
-| W6-01 | `ComEnumeration`(120), `ExplorerComInterop`(65), `ExplorerWindowSelector`(83), `ExplorerOrderService`(509) | 🔴 | Opus |
-| W6-02 | `WindowsRecycleBin`(452), `RecycleBinCapacity`(230): test chỉ dùng fake, test native chỉ xóa item của chính nó | 🔴 | Opus |
+| W6-01 | `ComEnumeration`(120), `ExplorerComInterop`(65), `ExplorerWindowSelector`(83), `ExplorerOrderService`(509) | 🔴 | Sonnet |
+| W6-02 | `WindowsRecycleBin`(452), `RecycleBinCapacity`(230): test chỉ dùng fake, test native chỉ xóa item của chính nó | 🔴 | Sonnet |
 | W6-03 | `InstanceKeys`(68), `InstanceScope`(281), `InstanceForwardServer`(154), `InstanceForwardClient`(105) | 🟡 | Sonnet |
 | W6-04 | `WindowsDisplayClock`(323) | 🟡 | Sonnet |
 | W6-05 | `WindowsMemoryProbe`(56), `WindowsNaturalComparer`(39), `WindowsDarkTitleBar`(67), `WindowsLiveOperationRegistry`(75) | 🟢 | Haiku (lời gọi Win32 đơn giản; `unsafe` cần Sonnet duyệt) |
@@ -227,9 +227,9 @@ Chia lại chi tiết sau R0001, vì cấu trúc phụ thuộc framework. Khung 
 
 | WU | Nội dung | Màu | P |
 |---|---|---|---|
-| W8-01 | Composition root (AppHost), vòng đời app, single instance | 🔴 | Opus |
-| W8-02 | `MainViewModel` + coordinator (`FolderLoadCoordinator`, INV-9) | 🔴 | Opus |
-| W8-03 | `ImagePresenter` (choke point), canvas zoom/pan/Fit (ADR 0008), Compare | 🔴 | Opus |
+| W8-01 | Composition root (AppHost), vòng đời app, single instance | 🔴 | Sonnet |
+| W8-02 | `MainViewModel` + coordinator (`FolderLoadCoordinator`, INV-9) | 🔴 | Sonnet |
+| W8-03 | `ImagePresenter` (choke point), canvas zoom/pan/Fit (ADR 0008), Compare | 🔴 | Sonnet |
 | W8-04 | `ShortcutRouter` + input (K-* rows) | 🟡 | Sonnet |
 | W8-05 | SettingsWindow (từng tab là 1 WU) | 🟢 | Haiku (layout spec + view model có sẵn) |
 | W8-06 | ActionProfilesWindow, ClickZoomCustomDialog, DiagnosticsWindow | 🟢 | Haiku |
@@ -237,7 +237,7 @@ Chia lại chi tiết sau R0001, vì cấu trúc phụ thuộc framework. Khung 
 | W8-08 | BenchmarkWindow | 🟢 | Haiku |
 | W8-09 | Menu chuột phải, title bar, thông báo lỗi (C-*, W-*) | 🟡 | Sonnet |
 
-**Tổng (Wave 1–7):** khoảng 95 WU. Haiku port khoảng 55 WU, Sonnet khoảng 25, Opus khoảng 15. Haiku port test cho hầu hết WU, kể cả WU đỏ.
+**Tổng (Wave 1–7):** khoảng 95 WU. Haiku port khoảng 55 WU, Sonnet khoảng 25, Opus 0 (P-34). Haiku port test cho hầu hết WU, kể cả WU đỏ.
 
 ---
 
@@ -316,7 +316,7 @@ Answer: PASS, or FAIL with the failing tests and the surviving mutations. Do not
 ### 5.5 Nâng model khi gặp khó
 - Haiku FAIL lần 1: gửi lại đúng Haiku đó kèm test fail và diff.
 - Haiku FAIL lần 2 hoặc BLOCKED: chuyển WU cho Sonnet, kèm nhánh của Haiku làm điểm xuất phát.
-- Sonnet FAIL 2 lần, hoặc WU hóa ra đụng INV: chuyển cho Opus, đổi màu WU và ghi vào hợp đồng.
+- Sonnet FAIL 2 lần, hoặc WU hóa ra đụng INV: chuyển cho Sonnet (xem lại thủ công), đổi màu WU và ghi vào hợp đồng.
 - Một wave có hơn 30% WU phải nâng model: dừng lại, viết hợp đồng chi tiết hơn, vì lỗi nằm ở hợp đồng chứ không ở model.
 
 ---
