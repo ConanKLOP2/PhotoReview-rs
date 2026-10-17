@@ -4,15 +4,14 @@
 - Rust crate: `pr-platform-win`
 - C# source: `src/PhotoReview.Platform.Windows/RecycleBinCapacity.cs` (`RecycleBinCapacityGuard`, `WindowsRecycleBinSettingsSource`)
 - C# tests: `tests/PhotoReview.Integration.Tests/RecycleBinCapacityGuardTests.cs`, `WindowsRecycleBinFitsVerdictTests.cs`, and the registry/volume sections of `RecycleBinPlatformGapTests.cs`
-- Depends on: W0 `ILog`, `IRecycleBinSettingsSource`/`IRecycleBin`; W6-02a for shared volume eligibility helpers if the implementation composes them.
+- Depends on: W0 `ILog`, `IRecycleBinSettingsSource`/`IRecycleBin`. This unit owns the shared volume/mount-point query adapter consumed by W6-02a; it does not depend on W6-02a.
 
 ## Owned Rust files
 
 - `crates/pr-platform-win/src/recycle_bin_settings.rs`
 - `crates/pr-platform-win/src/recycle_bin_capacity.rs`
-- `crates/pr-platform-win/tests/recycle_bin_capacity.rs`
-- `crates/pr-platform-win/tests/recycle_bin_settings.rs`
-- `crates/pr-platform-win/src/lib.rs` only for module declaration/re-export.
+- `crates/pr-platform-win/tests/recycle_bin_settings_capacity.rs` (registry/volume adapter and capacity verdict cases)
+- `lib.rs` module wiring is lead-owned; do not edit it.
 
 ## Port scope
 

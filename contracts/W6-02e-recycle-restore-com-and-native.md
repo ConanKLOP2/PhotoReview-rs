@@ -4,15 +4,14 @@
 - Rust crate: `pr-platform-win`
 - C# source: `src/PhotoReview.Platform.Windows/Shell/RecycleBinShell.cs`; restore entry points and verification helpers in `src/PhotoReview.Platform.Windows/WindowsRecycleBin.cs`
 - C# tests: restore delegation/proof cases in `tests/PhotoReview.Integration.Tests/WindowsRecycleBinRestoreGuardTests.cs`; bounded behavior in `RecycleBinPlatformGapTests.cs`; native twins `tests/PhotoReview.App.Tests/HotPath/NativeRecycleBinTests.cs` and its exact-folder helper `TestRecycleBinCleanup.cs`.
-- Depends on: W6-02c facade, W6-02d pure selector/verb helpers, and W6-02a/b volume/settings support as required by construction.
+- Depends on: W6-02c's restore-backend trait and W6-02d pure selector/verb helpers. This unit implements the backend injected into W6-02c; W6-02c does not depend on this unit.
 
 ## Owned Rust files
 
 - `crates/pr-platform-win/src/recycle_bin_shell.rs` (COM/Shell adapter and restore enumeration)
-- `crates/pr-platform-win/src/recycle_restore.rs` (restore delegate and proof polling, if kept separate from facade)
-- `crates/pr-platform-win/tests/recycle_bin_restore.rs`
-- `crates/pr-platform-win/tests/recycle_bin_native.rs` (ignored Windows-only test module)
-- module declarations in `crates/pr-platform-win/src/lib.rs` only.
+- `crates/pr-platform-win/src/recycle_restore.rs` (restore backend and proof polling)
+- `crates/pr-platform-win/tests/recycle_bin_restore.rs` (fake-driven restore and ignored Windows-only native module)
+- `lib.rs` module wiring is lead-owned; do not edit it.
 
 ## Port scope
 

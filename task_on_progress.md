@@ -181,3 +181,8 @@
 - Rebuilt the W5 tree delta from `origin/master`, then rebased on `3d8f2cf`; the reviewed W5 commit changes 57 files. The initial workspace tests passed before review fixes. Independent review then found and fixed the missing LibRaw corpus selection/full-decode parity, white-balance thumbnail decode, and two TurboJPEG synthetic native twins. W5-16c OQ5 and W5-14b OQ5 now record the chosen TurboJPEG test approach.
 - W5 remains Partial: native LibRaw/TurboJPEG DLL and RAW corpus execution are unavailable, and the historical W5 mutation survivor set is not fully reconstructed.
 - Final rebased gate passed: fmt, clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), and C# asset sync check. W6-05 PR #25 is merged; W5 PR #26 is open with squash auto-merge enabled.
+
+## Wave 6 contract PR update (2026-10-18)
+- Wave 5 PR #26 merged into `origin/master` at `87c9bf4` while the Wave 6 contracts PR was being prepared.
+- Wave 6 contracts PR #27 (`integration/wave-6-contracts`) has squash auto-merge enabled. The base advance made the PR report `DIRTY`; this branch is being rebased onto the new master and conflicts are being resolved by preserving the merged Wave 5 progress/decision records and the Wave 6 contract updates.
+- Pre-rebase gates passed: fmt, workspace clippy, workspace tests (exit code 0), and C# asset sync. Gates will be rerun after conflict resolution.

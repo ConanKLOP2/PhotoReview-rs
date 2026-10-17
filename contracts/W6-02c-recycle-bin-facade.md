@@ -11,16 +11,19 @@
 - `crates/pr-platform-win/src/recycle_bin.rs` (IRecycleBin implementation and action orchestration)
 - `crates/pr-platform-win/tests/recycle_bin_facade.rs`
 - `crates/pr-platform-win/tests/recycle_bin_contract.rs`
-- `crates/pr-platform-win/src/lib.rs` only for module declaration/re-export.
+- `lib.rs` module wiring is lead-owned; do not edit it.
 
 ## Port scope
 
-Implement the platform `IRecycleBin` facade and preserve the C# fail-closed ordering:
+Implement the platform `IRecycleBin` facade, including `try_restore`, and preserve the C# fail-closed ordering. Define an
+injected restore-backend trait in this unit; W6-02e implements that backend. The facade delegates restore calls through
+the trait, so the dependency points from W6-02e to W6-02c and does not form a cycle.
 
 1. `send_to_recycle_bin` validates the path, rejects a volume that cannot recycle, re-reads current file size immediately before Shell invocation, evaluates capacity, invokes the injected recycle operation once, then verifies the source path is gone. A size-read failure or non-Fits verdict refuses before Shell.
 2. `can_recycle` and `fits_in_recycle_bin` delegate to W6-02a/W6-02b and preserve logging and false-on-unsafe behavior.
 3. `delete_permanently` requires explicit positive no-bin eligibility from W6-02a, invokes only the injected delete operation, and reports failure if the source still exists. It must never become a fallback for failed recycle on a fixed/unknown volume.
-4. Every production `IRecycleBin` implementation must explicitly implement the safety-sensitive trait methods (C# architecture invariant B-03).
+4. `try_restore` implements the Core trait method by delegating to the injected restore backend, preserving its `io::Result<bool>` outcome unchanged.
+5. Every production `IRecycleBin` implementation must explicitly implement the safety-sensitive trait methods (C# architecture invariant B-03).
 
 Use injectable filesystem/Shell/settings seams so tests cannot reach real deletion paths. Keep capacity grouped preflight (`pr_core::file_actions::RecycleBinCapacity::FirstOverflow`) in Core, outside this platform unit.
 

@@ -10,9 +10,8 @@
 
 - `crates/pr-platform-win/src/recycle_candidate.rs`
 - `crates/pr-platform-win/src/restore_verb.rs`
-- `crates/pr-platform-win/tests/recycle_candidate.rs`
-- `crates/pr-platform-win/tests/restore_verb.rs`
-- `crates/pr-platform-win/src/lib.rs` only for module declaration/re-export.
+- `crates/pr-platform-win/tests/recycle_restore_selection.rs`
+- `lib.rs` module wiring is lead-owned; do not edit it.
 
 ## Port scope
 
