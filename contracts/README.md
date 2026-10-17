@@ -310,12 +310,12 @@ cases. The tier only orders the table; a unit starts as soon as its direct depen
 
 | WU | Unit | Rust (`pr_turbojpeg::`) | Porter | Goldens |
 |---|---|---|---|---|
-| W5-13a | TurboJPEG FFI: run-time loading, `TurboJpegHandle`, `unsafe` | `native` | **Opus** | `turbojpeg-native-types` (46), `turbojpeg-native-handle` (23), `turbojpeg-native-decode` (146) |
+| W5-13a | TurboJPEG FFI: run-time loading, `TurboJpegHandle`, `unsafe` | `native` | Sonnet (P-34) | `turbojpeg-native-types` (46), `turbojpeg-native-handle` (23), `turbojpeg-native-decode` (146) |
 | W5-14a | `PixelAreaResampler` | `area_resampler` | Haiku | `pixel-area-resample` (78) |
 
 | WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
 |---|---|---|---|---|
-| W5-16a | `FullDecodeGate` (process-wide admission, INV-8) | `full_decode_gate` | **Opus** | `full-decode-gate` (30) |
+| W5-16a | `FullDecodeGate` (process-wide admission, INV-8) | `full_decode_gate` | Sonnet (P-34) | `full-decode-gate` (30) |
 | W5-16b | `DecodeMemoryGuard` | `memory_guard` | Sonnet | `libraw-memory-guard` (359) |
 | W5-17 | `RgbBgraResampler` | `resampler` | Haiku | `rgb-bgra-resample` (176), `rgb-bgra-validate` (113) |
 
@@ -331,7 +331,7 @@ cases. The tier only orders the table; a unit starts as soon as its direct depen
 
 | WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
 |---|---|---|---|---|
-| W5-15a | LibRaw FFI: run-time loading, `LibRawHandle`, layout proof, progress callback (no golden) | `native` | **Opus** | - |
+| W5-15a | LibRaw FFI: run-time loading, `LibRawHandle`, layout proof, progress callback (no golden) | `native` | Sonnet (P-34) | - |
 | W5-15b | `LibRawAvailability` probe (merge with W5-15a as one pair) | `availability` | Sonnet | `libraw-version` (162) |
 
 ### Tier C: container readers and consumers of Tier B
@@ -353,7 +353,7 @@ cases. The tier only orders the table; a unit starts as soon as its direct depen
 
 | WU | Unit | Rust (`pr_libraw::`) | Porter | Goldens |
 |---|---|---|---|---|
-| W5-16c | `LibRawDecoder` (seam traits + `NativeLibRaw` adapter) | `decoder` | **Opus** (verifier Opus) | `libraw-decoder` (155), `libraw-decoder-native` (35) |
+| W5-16c | `LibRawDecoder` (seam traits + `NativeLibRaw` adapter) | `decoder` | Sonnet (P-34) (verifier Sonnet) | `libraw-decoder` (155), `libraw-decoder-native` (35) |
 
 ### Tier D: registry and routing
 | WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
@@ -364,7 +364,7 @@ cases. The tier only orders the table; a unit starts as soon as its direct depen
 ### Tier E: `RawDecoder`
 | WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
 |---|---|---|---|---|
-| W5-12b1 | `RawDecoder` core: `read_info`, `decode`, preview range reads | `decoder` | Sonnet (verifier Opus: INV-1 identity, INV-8) | `raw-decoder-core` (50) |
+| W5-12b1 | `RawDecoder` core: `read_info`, `decode`, preview range reads | `decoder` | Sonnet (verifier Sonnet: INV-1 identity, INV-8) | `raw-decoder-core` (50) |
 | W5-12b2 | `RawDecoder` fallback chain (child module) | `decoder::fallback` | Sonnet | `raw-decoder-fallback` (75) |
 
 Dependency graph (direct, merge order inside a crate): 01a + 01b (one type cycle, merge together) -> 02a, 02b, 10a, 12a, 11b ->
