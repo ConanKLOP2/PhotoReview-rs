@@ -171,3 +171,18 @@ fn entropy_scan_structure_walk_matches_csharp_oracle() {
         assert_eq!(find_end_of_image(&hex_bytes(s)).unwrap(), want, "{s}");
     }
 }
+
+#[test]
+fn structure_walk_rejects_segment_ending_at_buffer_boundary_without_panicking() {
+    // C#: LibRawThumbnailTrimMutationGapTests.TruncatedStreamWithGarbageTail_Throws
+    // An APP segment with a length of two has no payload; it ends exactly at EOF, so the next marker is missing.
+    assert!(find_end_of_image(&[0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x02]).is_err());
+}
+
+#[test]
+fn structure_walk_accepts_minimum_length_segment_before_eoi() {
+    // C#: LibRawThumbnailTrimMutationGapTests.TailWithAMarkerLikePairThatIsNotStructure_IsAccepted
+    // The APP segment's legal minimum length is two (the length field itself); a later EOI in the tail is not structural.
+    let jpeg = hex_bytes("FFD8FFE00002FFD912FFD944FFDA0002");
+    assert_eq!(find_end_of_image(&jpeg).unwrap(), 8);
+}
