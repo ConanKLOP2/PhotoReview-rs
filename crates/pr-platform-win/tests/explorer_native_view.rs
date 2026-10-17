@@ -412,6 +412,21 @@ fn failed_items_call_releases_a_non_null_partial_output() {
 }
 
 #[test]
+fn batched_read_cancellation_before_first_batch_does_not_open_enumerator() {
+    // C#: BatchedRead_CancelledBeforeTheFirstBatch_Throws
+    let fake = FakeView::new(fake_data(vec![]));
+    let token = CancelToken::new();
+    token.cancel();
+
+    let error = read_batched(fake.pointer(), r"C:\photos", 2, &token).unwrap_err();
+
+    assert!(error.canceled);
+    let values = views().lock().unwrap();
+    assert_eq!(values[&(fake.object as usize)].last_items_flags, 0);
+    assert_eq!(values[&(fake.object as usize)].refs, 1);
+}
+
+#[test]
 fn display_name_reader_handles_null_and_valid_utf16() {
     let text: Vec<u16> = "C:\\photos\\a.jpg".encode_utf16().chain([0]).collect();
     assert_eq!(read_wide_string(std::ptr::null_mut()), None);
