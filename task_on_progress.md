@@ -229,3 +229,8 @@
 ## Wave 6 static audit correction (2026-10-18, W6-05)
 - Independent W6 audit found natural comparer and dark title bar were swallowing non-missing-module `LoadLibraryW` errors, unlike the C# catches. Both now fall back only for `ERROR_MOD_NOT_FOUND`; other loader failures propagate. Added focused error-code classification tests and restored narrow behavior in W6-05 contract/PARITY.
 - `rustfmt --check` and `git diff --check` passed. No Cargo/build/test/clippy/native check was run on this correction due to C: free space; tests are source-only until the required gates can run.
+
+## Wave 6 follow-up (2026-10-18, independent W6-05 audit and disk cleanup)
+- Independent static re-review of `2ab03a9` found no new W6-05 issue. It confirmed `windows` 0.62.2 maps `LoadLibraryW` failures through `Error::from_thread()` / `HRESULT_FROM_WIN32`, so checking the low 16 bits recognizes `ERROR_MOD_NOT_FOUND`; the focused tests use APIs present in the locked windows crate. No Cargo compile/test was run.
+- C: has about 115 MiB free and no Cargo/rustc process was running. PR #24 (Wave 5 integration) and PR #26 (Wave 5 continuation) are merged; `integ-w5` is clean at `f1e5053`. An attempt to remove only its verified stale `target` was rejected by automatic policy because the command used `Remove-Item -Recurse`; no files were removed and no command variant will be retried. The dirty primary checkout and current mutation outputs remain untouched.
+- Wave 6 remains ineligible for PR until fmt/clippy/workspace tests and mutation triage receive required verdicts. The W6 integration branch remains pushed at `2ab03a9`; no Wave 7 changes are stacked on it.
