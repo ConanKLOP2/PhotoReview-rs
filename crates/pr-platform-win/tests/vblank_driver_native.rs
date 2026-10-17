@@ -32,6 +32,24 @@ fn device_name_conversion_stops_at_nul_and_limits_32_units() {
 }
 
 #[test]
+fn monitor_lookup_uses_nearest_monitor_flag() {
+    assert_eq!(NativeVBlankDriver::monitor_default_to_nearest_flag(), 2);
+}
+
+#[test]
+fn dwm_timing_maps_only_successful_nonzero_qpc_values() {
+    assert!(NativeVBlankDriver::map_dwm_timing(None, 10, 5).is_none());
+    assert!(NativeVBlankDriver::map_dwm_timing(Some(-1), 10, 5).is_none());
+    assert!(NativeVBlankDriver::map_dwm_timing(Some(0), 0, 5).is_none());
+    assert!(NativeVBlankDriver::map_dwm_timing(Some(0), 10, 0).is_none());
+    assert_eq!(
+        NativeVBlankDriver::map_dwm_timing(Some(0), 12_345, 167_000)
+            .map(|grid| (grid.last_vblank, grid.refresh_period)),
+        Some((12_345, 167_000))
+    );
+}
+
+#[test]
 #[ignore = "native: requires Windows DWM"]
 // C#: DwmTiming_Static_ReturnsNullOrAPositiveGrid
 fn dwm_timing_static_returns_null_or_a_positive_grid() {

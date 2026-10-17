@@ -47,6 +47,11 @@ impl NativeVBlankDriver {
         String::from_utf16_lossy(&bounded[..end])
     }
 
+    /// The Win32 `MONITOR_DEFAULTTONEAREST` flag used by C# `MonitorFromWindow`.
+    pub const fn monitor_default_to_nearest_flag() -> u32 {
+        2
+    }
+
     #[cfg(windows)]
     fn dwm_timing_impl(&self) -> Option<DisplayTiming> {
         let mut info = DwmTimingInfo {
@@ -55,13 +60,18 @@ impl NativeVBlankDriver {
         };
         // SAFETY: the dynamic resolver checks for the optional DLL and entry point before calling it; `info` is a
         // writable stack value with the packed DWM_TIMING_INFO ABI and exact size, and stays live for the call.
-        let status = (unsafe { with_optional_dwm(|get_timing| get_timing(0, &mut info)) })?;
-        if status != 0 || info.qpc_refresh_period == 0 || info.qpc_vblank == 0 {
+        let status = unsafe { with_optional_dwm(|get_timing| get_timing(0, &mut info)) };
+        Self::map_dwm_timing(status, info.qpc_vblank, info.qpc_refresh_period)
+    }
+
+    /// Maps DWM's HRESULT and QPC fields, treating a missing DLL/entry point and zero fields as unavailable.
+    pub fn map_dwm_timing(status: Option<i32>, qpc_vblank: u64, qpc_refresh_period: u64) -> Option<DisplayTiming> {
+        if status != Some(0) || qpc_refresh_period == 0 || qpc_vblank == 0 {
             return None;
         }
         Some(DisplayTiming {
-            last_vblank: info.qpc_vblank as i64,
-            refresh_period: info.qpc_refresh_period as i64,
+            last_vblank: qpc_vblank as i64,
+            refresh_period: qpc_refresh_period as i64,
         })
     }
 }
@@ -71,7 +81,7 @@ impl IVBlankDriver for NativeVBlankDriver {
     fn monitor_from_window(&self, window: isize) -> isize {
         // SAFETY: the HWND is an opaque handle supplied by the caller; the API does not retain or dereference it
         // after returning. MONITOR_DEFAULTTONEAREST is the C# behavior.
-        unsafe { MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST) }
+        unsafe { MonitorFromWindow(window, Self::monitor_default_to_nearest_flag()) }
     }
 
     fn try_open(&self, monitor: isize) -> Option<(u32, u32)> {
@@ -159,9 +169,6 @@ impl IVBlankDriver for NativeVBlankDriver {
         None
     }
 }
-
-#[cfg(windows)]
-const MONITOR_DEFAULTTONEAREST: u32 = 2;
 
 #[cfg(windows)]
 #[repr(C)]

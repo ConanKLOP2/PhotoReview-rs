@@ -14,7 +14,7 @@
 
 ## State (verified, 2026-10-18)
 - `origin/master` is `70a35d7` and includes Wave 6 contracts PR #27 (`70a35d7`, squash merge). Wave 5 PR #26 is merged; W5 remains Partial because native LibRaw/TurboJPEG DLL tests, RAW corpus tests, and part of the historical mutation coverage remain unverified.
-- Wave 6 implementation is in progress on `codex/integration-wave-6`, based on `70a35d7`. W6-04b ABI and device-name tests pass (3 passed, 1 native DWM smoke ignored); package Clippy passes with a temporary dead-code allowance until dependent W6-04a consumes the driver seam. The native DWM smoke was not run.
+- Wave 6 implementation is in progress on `codex/integration-wave-6`, based on `70a35d7`. W6-04b base implementation was committed/pushed at `e65ecf2`; expanded ABI/device-name/monitor-flag/DWM-mapping tests now pass 5/5, with one native DWM smoke ignored. Package Clippy and fmt pass; the package has a temporary justified `dead_code` allowance until W6-04a consumes the driver seam. Native DWM was not run.
 - W6-01a, W6-02d, and W6-03a are independent implementation lanes in isolated worktrees. W6-02d is integrated on `codex/integration-wave-6` at `4cecee0`; its synthetic focused test and crate Clippy passed on the unit branch. W6-01a found the merged contract's `ShellCom` dependency absent from Rust; the lead corrected the contract so W6-01a owns the required narrow local helper. W6-03a needs lead-owned `lib.rs` wiring for its focused test and was asked to use temporary local wiring only.
 - Every active worktree uses its own `CARGO_TARGET_DIR`; cargo processes are checked before builds. No C# files were edited, no corpus was downloaded, and no real Recycle Bin operation was used.
 
