@@ -65,6 +65,8 @@ pub enum DecodeError {
     NotSupported {
         message: String,
         user_text: Option<UserText>,
+        /// HRESULT of a directly wrapped COM failure (C# `InnerException.HResult`), when classification needs it.
+        inner_hresult: Option<i32>,
     },
     /// `InvalidCastException`, e.g. a failed COM interface cast (fallbackable).
     InvalidCast { message: String },
@@ -178,6 +180,25 @@ impl DecodeError {
         Self::NotSupported {
             message: message.into(),
             user_text: Some(text),
+            inner_hresult: None,
+        }
+    }
+
+    /// A `NotSupported` that retains the HRESULT of its directly wrapped COM failure (C# `InnerException`).
+    pub fn not_supported_with_inner_hresult(message: impl Into<String>, inner_hresult: i32) -> Self {
+        Self::NotSupported {
+            message: message.into(),
+            user_text: None,
+            inner_hresult: Some(inner_hresult),
+        }
+    }
+
+    /// The directly wrapped COM HRESULT carried by a `NotSupported`, if present.
+    #[must_use]
+    pub fn inner_hresult(&self) -> Option<i32> {
+        match self.kind() {
+            Self::NotSupported { inner_hresult, .. } => *inner_hresult,
+            _ => None,
         }
     }
 
@@ -187,9 +208,12 @@ impl DecodeError {
     #[must_use]
     pub fn with_user_text(self, text: UserText) -> Self {
         match self {
-            Self::NotSupported { message, .. } => Self::NotSupported {
+            Self::NotSupported {
+                message, inner_hresult, ..
+            } => Self::NotSupported {
                 message,
                 user_text: Some(text),
+                inner_hresult,
             },
             Self::MissingCodec { message, .. } => Self::MissingCodec {
                 message,

@@ -4,19 +4,17 @@
 //! with RAW support off it is REFUSED (never handed to the standard chain, which would decode a DNG's tiny IFD0
 //! thumbnail as if it were the photo). Every other path goes to the standard decoder chain unchanged. Container
 //! errors of the RAW decoder propagate as they are: the router never falls back to the standard chain for RAW.
-//! PARITY: I-13, I-02/I-03/INV-12 (routing). See contracts/drafts-w5/W5-12c/contract.md.
+//! PARITY: I-13, I-02/I-03/INV-12 (routing). See `contracts/W5-12c.md`.
 //!
-//! Target path: `crates/pr-imaging-raw/src/routing.rs` (lead adds `pub mod routing;` to `lib.rs`, see mod-lines.txt).
+//! Target path: `crates/pr-imaging-raw/src/routing.rs`.
 //!
 //! No unsafe, no I/O, no Windows dependency. Depends on W5-01a (`crate::formats::is_raw_extension`) and on the Wave 4
 //! seams `pr_imaging::{decode_types, decoder_traits}` (amendment A1: `DecodeError::not_supported_localized`).
-#![allow(unused_variables, unused_imports, dead_code)] // D11: stub bodies are todo!(); the porter removes this line.
-
 use std::fmt;
 use std::sync::Arc;
 
 use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
-use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, UserText};
+use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
 
 use crate::formats::is_raw_extension;
 
@@ -71,7 +69,14 @@ impl FormatRoutingDecoder {
     /// decoder WITHOUT calling `is_raw_enabled`; else `is_raw_enabled()` exactly once; off ->
     /// `Err(self.raw_disabled(path))`; on -> the RAW decoder.
     fn route(&self, path: &str) -> Result<&Arc<dyn ImageDecoder>, DecodeError> {
-        todo!("W5-12c: see contract semantics 1-3")
+        if !is_raw_extension(Some(path)) {
+            return Ok(&self.standard);
+        }
+        if (self.is_raw_enabled)() {
+            Ok(&self.raw)
+        } else {
+            Err(self.raw_disabled(path))
+        }
     }
 
     /// C# `RawDisabled(path)`: `DecodeError::not_supported_localized(english, text)` with
@@ -79,7 +84,11 @@ impl FormatRoutingDecoder {
     /// (`pr_core::text::dotnet_path`), and `text` = closure over `Arc<dyn RawRoutingTexts>` + the name calling
     /// `raw_disabled(&name)` at display time.
     fn raw_disabled(&self, path: &str) -> DecodeError {
-        todo!("W5-12c: see contract semantics 4")
+        let file_name = pr_core::text::dotnet_path::get_file_name(path).to_owned();
+        let english = format!("RAW support is disabled; cannot decode '{file_name}'.");
+        let texts = Arc::clone(&self.texts);
+        let localized_name = file_name;
+        DecodeError::not_supported_localized(english, Arc::new(move || texts.raw_disabled(&localized_name)))
     }
 }
 
@@ -87,13 +96,20 @@ impl ImageDecoder for FormatRoutingDecoder {
     /// C# `Decode(request)`: `route(request.path.to_string_lossy())` then forward the SAME request unchanged. No
     /// blank-path check (that is `read_info` only).
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        todo!("W5-12c: see contract semantics 1, 5")
+        let decoder = self.route(&request.path.to_string_lossy())?;
+        decoder.decode(request)
     }
 
     /// C# `ReadInfo(path)`: blank/whitespace path (`chars().all(char::is_whitespace)`, includes `""`) ->
     /// `Err(DecodeError::InvalidArgument)` BEFORE routing (C# `ArgumentException.ThrowIfNullOrWhiteSpace`), even
     /// with RAW support off; else `route(path)` then forward.
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
-        todo!("W5-12c: see contract semantics 5")
+        if path.chars().all(char::is_whitespace) {
+            return Err(DecodeError::InvalidArgument {
+                message: "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')"
+                    .to_owned(),
+            });
+        }
+        self.route(path)?.read_info(path)
     }
 }

@@ -16,3 +16,7 @@ pub mod memory_probe;
 
 #[cfg(windows)]
 pub mod natural_comparer;
+
+/// Test-only Win32 process memory metrics used by native decoder parity tests.
+#[cfg(all(windows, feature = "test-support"))]
+pub mod test_support;

@@ -11,8 +11,6 @@
 //! Child module of `decoder` (W5-12b1): it reads the private fields of `RawDecoder` and calls `decode_preview`,
 //! `stat_file`, `localize_*`; W5-12b1 calls the two `pub(super)` entry points.
 
-#![allow(unused_variables, dead_code)] // D11: removed together with the last `todo!()`.
-
 use std::sync::Arc;
 
 use pr_imaging::decode_types::{DecodeRequest, DecodedImageView};
@@ -47,12 +45,18 @@ pub const WINCODEC_ERR_UNKNOWNIMAGEFORMAT: u32 = 0x8898_2F07;
 
 /// C# `IsResourceExhaustion(hresult)`: `(uint)hresult` is one of the four resource-exhaustion HRESULTs above.
 pub fn is_resource_exhaustion(hresult: i32) -> bool {
-    todo!()
+    matches!(
+        hresult as u32,
+        HRESULT_E_OUTOFMEMORY | HRESULT_NOT_ENOUGH_MEMORY | HRESULT_NO_SYSTEM_RESOURCES | HRESULT_COMMITMENT_LIMIT
+    )
 }
 
 /// C# `IsCorruptHResult(hresult)`: `(uint)hresult` is `BADIMAGE`, `BADHEADER` or `UNKNOWNIMAGEFORMAT`.
 pub fn is_corrupt_hresult(hresult: i32) -> bool {
-    todo!()
+    matches!(
+        hresult as u32,
+        WINCODEC_ERR_BADIMAGE | WINCODEC_ERR_BADHEADER | WINCODEC_ERR_UNKNOWNIMAGEFORMAT
+    )
 }
 
 /// C# `IsRecoverablePreviewFailure(ex)`: corrupt, truncated or unsupported preview data. Order (C#):
@@ -64,26 +68,40 @@ pub fn is_corrupt_hresult(hresult: i32) -> bool {
 ///
 /// Classify on `error.kind()` (the `WithSourceBytes`/`Localized` wrappers are transparent, as C# `Exception.Data` is).
 pub fn is_recoverable_preview_failure(error: &DecodeError) -> bool {
-    todo!()
+    if inner_com_hresult(error).is_some_and(is_resource_exhaustion) {
+        return false;
+    }
+    match error.kind() {
+        DecodeError::Com { hresult, .. } => !is_resource_exhaustion(*hresult),
+        DecodeError::InvalidData { .. }
+        | DecodeError::Format { .. }
+        | DecodeError::NotSupported { .. }
+        | DecodeError::MissingCodec { .. } => true,
+        _ => false,
+    }
 }
 
 /// C# `IsCorruptDataFailure(ex)`: `InvalidData` or `Format`, or `Com` with a corrupt HRESULT, or a directly wrapped COM
 /// failure ([`inner_com_hresult`]) with a corrupt HRESULT. `NotSupported` alone is NOT corrupt data.
 pub fn is_corrupt_data_failure(error: &DecodeError) -> bool {
-    todo!()
+    let nested = inner_com_hresult(error).is_some_and(is_corrupt_hresult);
+    nested
+        || match error.kind() {
+            DecodeError::InvalidData { .. } | DecodeError::Format { .. } => true,
+            DecodeError::Com { hresult, .. } => is_corrupt_hresult(*hresult),
+            _ => false,
+        }
 }
 
-/// C# `ex.InnerException is COMException inner ? inner.HResult : (none)`. `DecodeError` has no inner-exception slot at the
-/// baseline (W4-11c's `icc_transform_failed` keeps only the message): Open question 1 of the contract proposes one. Until
-/// it lands this returns `None` and the three "wrapped in NotSupported" golden cases stay red (they are tagged
-/// `requires: ["inner_com_hresult"]`).
+/// C# `ex.InnerException is COMException inner ? inner.HResult : (none)`. W5 A8 / D59 stores the direct COM HRESULT on
+/// `DecodeError::NotSupported`; wrappers are transparent through `DecodeError::inner_hresult()`.
 fn inner_com_hresult(error: &DecodeError) -> Option<i32> {
-    todo!()
+    error.inner_hresult()
 }
 
 /// C# `LongSide(p)`: `max(width, height)`.
 fn long_side(preview: &EmbeddedPreview) -> i32 {
-    todo!()
+    preview.width.max(preview.height)
 }
 
 /// The pure part of C# `SelectNextPreview` (everything before the `PreviewSelector.SelectPreview` call):
@@ -99,7 +117,36 @@ pub fn next_preview_candidates(
     largest_failed_long_side: i32,
     failure_is_corrupt_data: bool,
 ) -> Option<Vec<EmbeddedPreview>> {
-    todo!()
+    let remaining: Vec<_> = previews
+        .iter()
+        .filter(|preview| {
+            preview.kind == crate::EmbeddedPreviewKind::Jpeg
+                && preview.length > 0
+                && !tried_offsets.contains(&preview.offset)
+        })
+        .cloned()
+        .collect();
+    if remaining.is_empty() {
+        return None;
+    }
+    if largest_failed_long_side <= 0 {
+        return Some(remaining);
+    }
+    let usable: Vec<_> = remaining
+        .iter()
+        .filter(|preview| {
+            let long = long_side(preview);
+            !(long > 0 && long < MIN_USEFUL_FALLBACK_LONG_SIDE) || long >= largest_failed_long_side
+        })
+        .cloned()
+        .collect();
+    if !usable.is_empty() {
+        Some(usable)
+    } else if failure_is_corrupt_data {
+        Some(remaining)
+    } else {
+        None
+    }
 }
 
 impl RawDecoder {
@@ -120,7 +167,100 @@ impl RawDecoder {
         header_source: &mut dyn RawHeaderSource,
         chosen: EmbeddedPreview,
     ) -> Result<PreviewOutcome, DecodeError> {
-        todo!()
+        let mut tried_offsets = Vec::new();
+        let mut first_failure = None;
+        let mut last_is_not_supported = false;
+        let mut failed_bytes = 0i64;
+        let mut largest_failed_long_side = 0;
+        let mut current = Some(chosen);
+
+        while let Some(preview) = current.take() {
+            if tried_offsets.len() >= MAX_PREVIEW_ATTEMPTS {
+                break;
+            }
+            tried_offsets.push(preview.offset);
+            match self.decode_preview(request, info, key, &preview) {
+                Ok((image, read)) => {
+                    let preview_bytes_read = read.checked_add(failed_bytes).ok_or_else(byte_count_overflow)?;
+                    return Ok(PreviewOutcome {
+                        image,
+                        preview_bytes_read,
+                        fallback_thumbnail_bytes_read: 0,
+                        full_decode_bytes_read: 0,
+                        from_jpeg_preview: true,
+                        degraded_fallback: tried_offsets.len() > 1,
+                    });
+                }
+                Err(error) if is_recoverable_preview_failure(&error) => {
+                    let is_not_supported = error.is_not_supported();
+                    let is_corrupt = is_corrupt_data_failure(&error);
+                    let failed_long_side = info
+                        .previews
+                        .iter()
+                        .find(|candidate| candidate.offset == preview.offset)
+                        .map_or_else(|| long_side(&preview), long_side);
+                    if first_failure.is_none() {
+                        first_failure = Some(error);
+                    }
+                    last_is_not_supported = is_not_supported;
+                    failed_bytes = failed_bytes
+                        .checked_add(preview.length.min(i64::from(crate::formats::limits::MAX_PREVIEW_BYTES)))
+                        .ok_or_else(byte_count_overflow)?;
+                    largest_failed_long_side = largest_failed_long_side.max(failed_long_side);
+                    // C# selects the next candidate after every recoverable failure, including the fourth.
+                    current = self.select_next_preview(
+                        header_source,
+                        info,
+                        request,
+                        &tried_offsets,
+                        largest_failed_long_side,
+                        is_corrupt,
+                    )?;
+                }
+                Err(error) => return Err(error),
+            }
+        }
+
+        if info.format == RawFormat::Orf && self.preview_fallback.is_some() && last_is_not_supported {
+            match self.decode_fallback_thumbnail(
+                &request.path.to_string_lossy(),
+                info.format,
+                request,
+                info.orientation,
+                self.user_text(|texts| texts.raw_corrupt()),
+            ) {
+                Ok((image, bytes)) => {
+                    return Ok(PreviewOutcome {
+                        image,
+                        preview_bytes_read: failed_bytes,
+                        fallback_thumbnail_bytes_read: bytes,
+                        full_decode_bytes_read: 0,
+                        from_jpeg_preview: true,
+                        degraded_fallback: true,
+                    });
+                }
+                Err(error) if is_recoverable_preview_failure(&error) => {}
+                Err(error) => return Err(error),
+            }
+        }
+
+        if self.no_preview_decoder.is_some() {
+            let (image, full_decode_bytes_read) = self.full_decode(request)?;
+            return Ok(PreviewOutcome {
+                image,
+                preview_bytes_read: failed_bytes,
+                fallback_thumbnail_bytes_read: 0,
+                full_decode_bytes_read,
+                from_jpeg_preview: false,
+                degraded_fallback: false,
+            });
+        }
+        match first_failure {
+            Some(error) => Err(error),
+            None => Err(DecodeError::InvalidOperation {
+                message: "RAW preview fallback chain had no candidate or failure.".to_owned(),
+            }),
+        }
     }
 
     /// C# `SelectNextPreview`: [`next_preview_candidates`] then `preview_selector::select_preview(header_source,
@@ -135,7 +275,16 @@ impl RawDecoder {
         largest_failed_long_side: i32,
         failure_is_corrupt_data: bool,
     ) -> Result<Option<EmbeddedPreview>, DecodeError> {
-        todo!()
+        let Some(candidates) = next_preview_candidates(
+            &info.previews,
+            tried_offsets,
+            largest_failed_long_side,
+            failure_is_corrupt_data,
+        ) else {
+            return Ok(None);
+        };
+        crate::preview_selector::select_preview(header_source, &candidates, request.decode_box(), info.orientation)
+            .map_err(super::header_error_to_decode_error)
     }
 
     /// C# `DecodeWithoutPreview` (called only when `preview_fallback` or `no_preview_decoder` exists): the thumbnail
@@ -147,7 +296,37 @@ impl RawDecoder {
         request: &DecodeRequest,
         info: &RawContainerInfo,
     ) -> Result<PreviewOutcome, DecodeError> {
-        todo!()
+        if self.preview_fallback.is_some() {
+            match self.decode_fallback_thumbnail(
+                &request.path.to_string_lossy(),
+                info.format,
+                request,
+                info.orientation,
+                self.user_text(|texts| texts.raw_no_preview()),
+            ) {
+                Ok((image, bytes)) => {
+                    return Ok(PreviewOutcome {
+                        image,
+                        preview_bytes_read: 0,
+                        fallback_thumbnail_bytes_read: bytes,
+                        full_decode_bytes_read: 0,
+                        from_jpeg_preview: true,
+                        degraded_fallback: false,
+                    });
+                }
+                Err(error) if self.no_preview_decoder.is_some() && is_recoverable_preview_failure(&error) => {}
+                Err(error) => return Err(error),
+            }
+        }
+        let (image, full_decode_bytes_read) = self.full_decode(request)?;
+        Ok(PreviewOutcome {
+            image,
+            preview_bytes_read: 0,
+            fallback_thumbnail_bytes_read: 0,
+            full_decode_bytes_read,
+            from_jpeg_preview: false,
+            degraded_fallback: false,
+        })
     }
 
     /// C# `DecodeFallbackThumbnail`: `preview_fallback.read_jpeg_thumbnail(path, format)`; length 0 or above
@@ -163,13 +342,95 @@ impl RawDecoder {
         source_orientation: i32,
         invalid_thumbnail_text: UserText,
     ) -> Result<(Arc<dyn DecodedImageView>, i64), DecodeError> {
-        todo!()
+        let fallback = self
+            .preview_fallback
+            .as_ref()
+            .ok_or_else(|| DecodeError::InvalidOperation {
+                message: "RAW thumbnail fallback was requested but is unavailable.".to_owned(),
+            })?;
+        let bytes = fallback.read_jpeg_thumbnail(path, format)?;
+        if bytes.is_empty() || bytes.len() > MAX_FALLBACK_THUMBNAIL_BYTES {
+            return Err(DecodeError::InvalidData {
+                message: format!("RAW fallback thumbnail size is invalid: {} bytes.", bytes.len()),
+            }
+            .with_user_text(invalid_thumbnail_text));
+        }
+        let count = i64::try_from(bytes.len()).map_err(|_| byte_count_overflow())?;
+        let inner_request = DecodeRequest {
+            bytes: Some(Arc::from(bytes)),
+            source_orientation: Some(source_orientation),
+            ..request.clone()
+        };
+        self.inner_decoder.decode(&inner_request).map(|image| (image, count))
     }
 
     /// The full decode: `no_preview_decoder.decode(request)` (the caller's request unchanged) and the whole-file length
     /// (`stat_file`, 0 when there is no physical file). Callers guarantee the decoder exists; a missing one is
     /// `InvalidOperation` (never a panic).
     fn full_decode(&self, request: &DecodeRequest) -> Result<(Arc<dyn DecodedImageView>, i64), DecodeError> {
-        todo!()
+        let decoder = self
+            .no_preview_decoder
+            .as_ref()
+            .ok_or_else(|| DecodeError::InvalidOperation {
+                message: "RAW full decoder was requested but is unavailable.".to_owned(),
+            })?;
+        let image = decoder.decode(request)?;
+        let bytes = super::stat_file(&request.path.to_string_lossy()).map_or(0, |(length, _)| length);
+        Ok((image, bytes))
+    }
+}
+
+fn byte_count_overflow() -> DecodeError {
+    DecodeError::Overflow {
+        message: "Arithmetic operation resulted in an overflow.".to_owned(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{EmbeddedPreviewKind, PreviewColorSpace};
+
+    fn preview(offset: i64, width: i32, height: i32) -> EmbeddedPreview {
+        EmbeddedPreview::new(
+            0,
+            offset,
+            10,
+            EmbeddedPreviewKind::Jpeg,
+            width,
+            height,
+            PreviewColorSpace::Srgb,
+        )
+    }
+
+    #[test]
+    fn recoverable_preview_failure_matches_raw_decoder_whitelist() {
+        assert!(is_recoverable_preview_failure(&DecodeError::InvalidData {
+            message: "bad".into()
+        }));
+        assert!(is_recoverable_preview_failure(&DecodeError::missing_codec()));
+        assert!(!is_recoverable_preview_failure(&DecodeError::Canceled));
+        assert!(!is_recoverable_preview_failure(&DecodeError::OutOfMemory {
+            message: "oom".into()
+        }));
+        assert!(!is_recoverable_preview_failure(&DecodeError::Io(
+            std::io::Error::other("io")
+        )));
+        assert!(!is_recoverable_preview_failure(&DecodeError::Com {
+            hresult: HRESULT_E_OUTOFMEMORY as i32,
+            message: "oom".into(),
+        }));
+    }
+
+    #[test]
+    fn next_preview_candidates_filters_tried_and_tiny_unless_corrupt() {
+        let previews = [preview(1, 2400, 1600), preview(2, 320, 240), preview(3, 2000, 1000)];
+        let usable = next_preview_candidates(&previews, &[1], 2400, false).expect("remaining usable");
+        assert_eq!(usable.iter().map(|p| p.offset).collect::<Vec<_>>(), [3]);
+        let corrupt = next_preview_candidates(&previews, &[1], 2400, true).expect("corrupt permits thumbnail");
+        assert_eq!(corrupt.iter().map(|p| p.offset).collect::<Vec<_>>(), [3]);
+        let tiny_only = next_preview_candidates(&previews[..2], &[1], 2400, true).expect("corrupt permits thumbnail");
+        assert_eq!(tiny_only.iter().map(|p| p.offset).collect::<Vec<_>>(), [2]);
+        assert!(next_preview_candidates(&previews[..1], &[1], 2400, true).is_none());
     }
 }

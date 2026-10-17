@@ -293,11 +293,11 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
 
 ## Wave 5 roster (RAW, TurboJPEG, LibRaw; dependency-graph scheduling, P-28)
 
-Source of truth for scope: `docs/MULTI-AGENT-PLAN.md` section 3 (rows W5-01..W5-17, split into sub-units by the contract writers, P-18).
-Every unit below has its contract (`contracts/W5-*.md`), a stub with `todo!()` bodies in its crate path
-(`pr-imaging-raw`, `pr-turbojpeg`, `pr-libraw`), an oracle file in `tools/oracle-cs/Commands/` (except W5-13b and W5-15a, which are
-host-dependent FFI gates without a golden), inputs in `tests/golden-inputs/` and goldens in `tests/golden/`. Counts are golden
-cases. The tier only orders the table; a unit starts as soon as its direct dependencies are merged (P-28).
+Source of truth for the original scope: `docs/MULTI-AGENT-PLAN.md` section 3 (rows W5-01..W5-17, split into sub-units by the contract writers, P-18).
+This roster records the port plan; it is not a live list of stubs or remaining work. Contracts are in `contracts/W5-*.md`,
+oracle commands in `tools/oracle-cs/Commands/` (except W5-13b and W5-15a, host-dependent FFI gates without a golden), with
+inputs in `tests/golden-inputs/` and outputs in `tests/golden/`. Counts are golden cases. The tier ordered the original schedule;
+current implementation and validation status are recorded in `docs/PARITY.md` and the W5 final status below.
 
 ### Tier A: leaves (no Wave 5 dependency)
 | WU | Unit | Rust (`pr_imaging_raw::` unless noted) | Porter | Goldens |
@@ -367,12 +367,13 @@ cases. The tier only orders the table; a unit starts as soon as its direct depen
 | W5-12b1 | `RawDecoder` core: `read_info`, `decode`, preview range reads | `decoder` | Sonnet (verifier Sonnet: INV-1 identity, INV-8) | `raw-decoder-core` (50) |
 | W5-12b2 | `RawDecoder` fallback chain (child module) | `decoder::fallback` | Sonnet | `raw-decoder-fallback` (75) |
 
-Dependency graph (direct, merge order inside a crate): 01a + 01b (one type cycle, merge together) -> 02a, 02b, 10a, 12a, 11b ->
+Original dependency graph (direct, merge order inside a crate): 01a + 01b (one type cycle, merge together) -> 02a, 02b, 10a, 12a, 11b ->
 readers 03..09 and 10b (each needs 02a/02b and, for the size-reconcile tests, 11b), 11c -> 11a (registry names every reader) ->
 12c, 12b1/12b2 (12b needs 11a, 11b, 11c, 12a). `pr-turbojpeg`: 13a, 14a -> 14b; 13b needs 13a. `pr-libraw`: 16b -> 15a + 15b;
-16a, 16b, 17, 15a -> 16c. The three crates are independent of each other except for the `pr-libraw` dev-dependency on
-`pr-imaging-raw` (W5-16c native twin). The Wave 5 contracts still mention `contracts/drafts-w5/<unit>/...`: that folder is gone;
-the stub is at its crate path, the oracle at `tools/oracle-cs/Commands/<unit>.cs`, the inputs under `tests/golden-inputs/`.
+16a, 16b, 17, 15a -> 16c. The three crates were independent of each other except for the `pr-libraw` dev-dependency on
+`pr-imaging-raw` (W5-16c native twin). Some Wave 5 contracts retain historical draft paths; `contracts/drafts-w5/<unit>/...`
+is not the current source location. Implementations are at their crate paths, oracle commands at
+`tools/oracle-cs/Commands/<unit>.cs`, and inputs under `tests/golden-inputs/`.
 
 ## Lead decisions (Wave 5)
 
@@ -389,7 +390,7 @@ Decided and wired in this PR (the stubs show the result; D28 applies):
   `crate::tiff_navigator`, `jpeg_marker_probe`, `RawError`, `RawReadError` and `crate::header_source::RawHeaderError` were rewritten.
 - **D47 Frame walker as a parameter:** `tiff_nav::reconcile_jpeg_size` takes the JPEG frame walker as a closure so W5-02a does
   not depend on W5-11b (which depends on the readers). Readers pass `preview_selector::try_read_jpeg_frame`. The synthetic
-  reader tests that expect a JPEG frame size to win stay red until W5-11b has a body, so W5-11b is scheduled before the readers.
+  reader tests that expect a JPEG frame size to win were scheduled after W5-11b; its implementation and reader tests are now present in the integrated W5 tree.
 - **D48 Shared test builders:** pure byte builders (`TiffBytes`, `create_minimal_jpeg`, `SyntheticRawBuilder`, fuzz mutators,
   golden spec interpreter) live in `pr_test_support::raw` (no crate cycle); the first reader porter (W5-02a) creates them and
   adds the `SyntheticRawBuilder` round-trip test; all later units consume them. `InMemoryRawHeaderSource` stays in
@@ -447,10 +448,8 @@ Decided and wired in this PR (the stubs show the result; D28 applies):
 
 To apply at porter kick-off (not wired here because they change a unit's behaviour; the porter of the named unit owns it):
 
-- **A8 (W5-12b, W4-01c, W4-11c):** `DecodeError` gets an additive slot for the inner OS error of a `NotSupported` (for example
-  `inner_hresult: Option<i32>` on the ICC-transform failure of W4-11c) so the golden cases tagged `requires:[inner_com_hresult]`
-  in `raw-decoder-fallback` and 3 C# test rows can pass. Without it they stay red; if the porter rejects it, record a `Different`
-  row and drop them (proposal P-32).
+- **A8 (W5-12b, W4-01c, W4-11c): CONFIRMED A (D59).** `DecodeError::NotSupported` retains an optional directly wrapped COM HRESULT;
+  WIC ICC failures preserve it when their cause is COM. The three `requires:[inner_com_hresult]` fallback golden cases now run.
 - **A9 (W5-12b):** fix the doc comment of `RawPreviewFallback` (W5-01b): `RawDecoder` classifies thumbnail failures with its own
   `IsRecoverablePreviewFailure` list (InvalidCast, Overflow and DllNotFound are not recoverable there), not with the W4-12b whitelist.
 - **A10 (W5-16a):** `CancelToken::wait_timeout` (A7) replaces the 10 ms cancellation polling inside `wait_for_grant`.

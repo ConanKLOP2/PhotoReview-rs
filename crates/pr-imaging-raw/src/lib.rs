@@ -1,6 +1,6 @@
 //! Port target: `PhotoReview.Imaging.Raw` (ADR 0009). Ported parser, not a third-party RAW crate, so output stays identical.
 //!
-//! Wave 5 contracts: every module below is a stub (`todo!()` bodies) pinned by `contracts/W5-*.md` and the goldens.
+//! Wave 5 RAW container, reader, routing, and decoder implementations are pinned by `contracts/W5-*.md` and the C# goldens.
 
 pub mod bmff;
 pub mod contracts;
