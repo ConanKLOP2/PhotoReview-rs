@@ -169,4 +169,6 @@
 
 - Follow-up audit: W5-15ab and W5-16a are implemented and verifier-PASS (already in merged PR #24); corrected the stale PARITY row that called them pending. Native LibRaw DLL and corpus-backed tests remain unverified because pinned DLL/corpus are unavailable. Removed obsolete red-test/stub headers from the three LibRaw test files; no runtime code changed.
 
-- DNG cancellation-boundary adjudication: readers/dng.rs:156 current > 0 → >= 0 is equivalent to C# for the zero-offset sentinel.     tiff_nav::read_ifd_entries returns empty for offsets below 8 without reading the source; the parse pass checks cancellation on the same offset afterward. No test seam was added for an implementation-only check.
+- DNG cancellation-boundary adjudication: readers/dng.rs:156 current > 0 → >= 0 is equivalent to C# for the zero-offset sentinel. tiff_nav::read_ifd_entries returns empty for offsets below 8 without reading the source; the parse pass checks cancellation on the same offset afterward. No test seam was added for an implementation-only check.
+
+- TurboJPEG timeout review: the try_read_segment fill-skip progress point at crates/pr-turbojpeg/src/decoder.rs:461 must advance past repeated FF bytes; without progress, adjacent FF FF can loop forever. No safe in-process timeout assertion is available, so keep this as a timeout, not equivalent. Historical exact mutation diff/artifact is unavailable.
