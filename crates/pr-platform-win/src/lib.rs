@@ -3,6 +3,12 @@
 //! `WindowsLiveOperationRegistry`).
 
 #[cfg(windows)]
+pub(crate) mod explorer_com_interop;
+
+#[cfg(windows)]
+pub(crate) mod instance_keys;
+
+#[cfg(windows)]
 pub mod wic;
 
 #[cfg(windows)]
