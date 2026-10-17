@@ -17,6 +17,10 @@ pub mod memory_probe;
 #[cfg(windows)]
 pub mod natural_comparer;
 
+#[cfg(windows)]
+#[allow(dead_code)] // W6-04a consumes this driver seam before the Wave 6 integration gate.
+pub(crate) mod vblank_driver;
+
 /// Test-only Win32 process memory metrics used by native decoder parity tests.
 #[cfg(all(windows, feature = "test-support"))]
 pub mod test_support;

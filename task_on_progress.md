@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-17 (branch `codex/w5-continuation`)
+**Updated:** 2026-10-18 (branch `codex/integration-wave-6`)
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-33: unconfirmed proposals, all acted on),
@@ -12,16 +12,17 @@
    workflow agents; the user must add the rules from `tools/autopilot/README.md` to `.claude/settings.local.json`
    (agents cannot grant themselves permissions). The main session pushes and opens PRs when a workflow agent refuses.
 
-## State (verified, 2026-10-17)
-- `master` includes PR #25 (`3d8f2cf`, W6-05 platform primitives); squash auto-merge completed.
-- W5 continuation is rebased on `origin/master` at `3d8f2cf` (head `2d57224`). Final gates passed on this exact tree: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` (4,847 passed, 0 failed, 420 ignored across 209 binaries), and `tools/sync-from-csharp.ps1 -Check`. Native LibRaw/TurboJPEG DLL tests and RAW corpus tests remain unexecuted; W5 remains Partial for those and incomplete historical mutation coverage.
-- Build guidance uses a separate Cargo target directory per worktree and removes it after the unit verdict or PR merge.
-- No C# files or real Recycle Bin operations were used.
+## State (verified, 2026-10-18)
+- `origin/master` is `70a35d7` and includes Wave 6 contracts PR #27 (`70a35d7`, squash merge). Wave 5 PR #26 is merged; W5 remains Partial because native LibRaw/TurboJPEG DLL tests, RAW corpus tests, and part of the historical mutation coverage remain unverified.
+- Wave 6 implementation is in progress on `codex/integration-wave-6`, based on `70a35d7`. W6-04b ABI and device-name tests pass (3 passed, 1 native DWM smoke ignored); package Clippy passes with a temporary dead-code allowance until dependent W6-04a consumes the driver seam. The native DWM smoke was not run.
+- W6-01a, W6-02d, and W6-03a are independent implementation lanes in isolated worktrees. W6-02d is integrated on `codex/integration-wave-6` at `4cecee0`; its synthetic focused test and crate Clippy passed on the unit branch. W6-01a found the merged contract's `ShellCom` dependency absent from Rust; the lead corrected the contract so W6-01a owns the required narrow local helper. W6-03a needs lead-owned `lib.rs` wiring for its focused test and was asked to use temporary local wiring only.
+- Every active worktree uses its own `CARGO_TARGET_DIR`; cargo processes are checked before builds. No C# files were edited, no corpus was downloaded, and no real Recycle Bin operation was used.
 
 ## Next steps
-1. W5 PR #26 is open; squash auto-merge is enabled with `gh pr merge --auto --squash`. The `ccd_pr` auto-fix/bind monitor is not available in this session; follow the app CI event rather than polling GitHub manually.
-2. W6-05 is merged. W6-04 contract is drafted and pushed as `wu/W6-04-contract` (`1579276`); continue its implementation after the W5 PR lands.
-3. After each merge, reconcile `task_on_progress.md` and remove only the merged wave's branches, worktrees, and target directories.
+1. Integrate verified W6-01a/02d/03a/04b and continue dependency-ready W6-01b, 02b, 03a, 04a/04b lanes. Complete remaining Wave 6 units by the merged dependency contracts.
+2. Update W6 contract/PARITY evidence for any implementation-stage discovery and rerun all required workspace gates on the final Wave 6 head.
+3. Open one Wave 6 PR against `master`, enable squash auto-merge, follow app CI events, and reconcile task status/worktrees/targets after merge.
+4. Continue into Wave 7 and subsequent plan waves without pausing at the Wave 6 boundary; preserve W5 native/corpus evidence limits.
 ## Wave 5 contracts (branch `wave5/contracts`, based on master `bb6a865`)
 - Wired: 29 contracts (`contracts/W5-01a..W5-17.md`; W5-01, 02, 10, 11, 12, 13, 14, 15, 16 split into sub-units), stubs in
   `pr-imaging-raw` (`formats`, `contracts`, `tiff_nav`, `jpeg_probe`, `bmff`, `preview_selector`, `raw_exif`, `registry`,
