@@ -6,6 +6,9 @@
 pub(crate) mod explorer_com_interop;
 
 #[cfg(windows)]
+pub(crate) mod explorer_native_view;
+
+#[cfg(windows)]
 #[allow(dead_code)] // W6-01d consumes the selector policy in the native query path.
 pub(crate) mod explorer_window_selector;
 
@@ -21,7 +24,19 @@ pub(crate) mod forward_pipe;
 pub mod forward_server;
 
 #[cfg(windows)]
+pub mod forward_client;
+
+#[cfg(windows)]
 pub mod recycle_bin;
+
+#[cfg(windows)]
+mod recycle_candidate;
+
+#[cfg(windows)]
+mod recycle_bin_shell;
+
+#[cfg(windows)]
+pub mod recycle_restore;
 
 #[cfg(windows)]
 pub mod recycle_bin_settings;
