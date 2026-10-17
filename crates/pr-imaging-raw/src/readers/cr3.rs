@@ -21,9 +21,6 @@
 //! `crate::{RawContainerInfo, RawFormat}`, W5-10a `crate::bmff`, W5-02a `crate::tiff_nav`, W5-02b `crate::jpeg_probe`, and
 //! `pr_imaging::tiff` (W4-03a, merged).
 
-// D11: removed in the commit that removes the last `todo!()`.
-#![allow(unused_variables, dead_code, unused_imports)]
-
 use pr_core::sync::CancelToken;
 use pr_imaging::tiff as tiff_structure;
 
@@ -89,20 +86,58 @@ const THMB_LAYOUT: HeaderLayout = HeaderLayout {
 pub struct Cr3ContainerReader;
 
 impl RawContainerReader for Cr3ContainerReader {
-    /// C# `CanRead`: extension equals `.cr3` ignoring case (`pr_core::text::eq_ignore_case`) AND at least 12 bytes AND bytes `4..12` are
-    /// `ftypcrx ` (the box size in bytes `0..4` is NOT looked at). Any other brand, a shorter slice or another extension is `false`.
+    /// C# `CanRead`: extension equals `.cr3` ignoring case AND at least 12 bytes AND bytes `4..12` are `ftypcrx `.
     fn can_read(&self, first_64_bytes: &[u8], extension: &str) -> bool {
-        todo!()
+        if !pr_core::text::eq_ignore_case(extension, ".cr3") {
+            return false;
+        }
+        matches!(first_64_bytes.get(4..12), Some(b"ftypcrx "))
     }
 
-    /// C# `Read`. See contract.md "Algorithm" for the step order; the order of the three preview lists is part of the behaviour.
+    /// C# `Read`: top-level scan; the order of the three preview lists is part of the behaviour.
     fn read(&self, source: &mut dyn RawHeaderSource, ct: &CancelToken) -> Result<RawContainerInfo, RawHeaderError> {
-        todo!()
+        if source.length() < MIN_FILE_LENGTH {
+            return Err(RawHeaderError::invalid_data("File too short for CR3 container."));
+        }
+
+        let mut state = ReadState {
+            orientation: 1,
+            sensor_width: 0,
+            sensor_height: 0,
+            previews: PreviewCollector::default(),
+            exif_blocks: Vec::new(),
+        };
+
+        let mut offset: i64 = 0;
+        while offset <= source.length() - 8 {
+            ct.check()?;
+            let Some(b) = bmff::try_read_box(source, offset, None)? else {
+                break;
+            };
+
+            if b.uuid == Some(PREVIEW_UUID) {
+                parse_preview_uuid_box(source, &b, &mut state.previews)?;
+            } else if b.box_type.eq_ignore_ascii_case("PRVW") {
+                add_prvw_box(source, &b, &mut state.previews)?;
+            } else if b.box_type == "moov" {
+                parse_moov_box(source, &b, &mut state)?;
+            }
+
+            offset += b.total_size;
+        }
+
+        Ok(RawContainerInfo {
+            format: RawFormat::Cr3,
+            sensor_width: state.sensor_width,
+            sensor_height: state.sensor_height,
+            orientation: state.orientation,
+            previews: state.previews.into_ordered(),
+            exif_blocks: state.exif_blocks,
+        })
     }
 }
 
-/// The C# `ref` parameters (`orientation`, `sensorWidth`, `sensorHeight`) plus the two collections the parse helpers fill, bundled so
-/// the helpers take one `&mut`. Starts at orientation 1, sensor 0x0, nothing collected.
+/// The C# `ref` parameters (`orientation`, `sensorWidth`, `sensorHeight`) plus the two collections the parse helpers fill.
 #[derive(Debug)]
 struct ReadState {
     orientation: i32,
@@ -112,7 +147,7 @@ struct ReadState {
     exif_blocks: Vec<ExifBlock>,
 }
 
-/// C# `PreviewCollector`: previews grouped by origin so the final list is PRVW, then track JPEGs, then THMB, whatever the box order.
+/// C# `PreviewCollector`: previews grouped by origin so the final list is PRVW, then track JPEGs, then THMB.
 #[derive(Debug, Default)]
 struct PreviewCollector {
     prvw: Vec<EmbeddedPreview>,
@@ -123,168 +158,367 @@ struct PreviewCollector {
 impl PreviewCollector {
     /// C# `ToOrderedList`: `prvw ++ track ++ thumb`, each element's `index` replaced by its position in the result.
     fn into_ordered(self) -> Vec<EmbeddedPreview> {
-        todo!()
+        let mut ordered = Vec::with_capacity(self.prvw.len() + self.track.len() + self.thumb.len());
+        ordered.extend(self.prvw);
+        ordered.extend(self.track);
+        ordered.extend(self.thumb);
+        for (position, preview) in ordered.iter_mut().enumerate() {
+            preview.index = i32::try_from(position).unwrap_or(i32::MAX);
+        }
+        ordered
     }
 }
 
 /// C# `NewJpeg`: `index` 0 (re-indexed later), kind JPEG, colour space `Unknown`, `header_resolved` false.
 fn new_jpeg(offset: i64, length: i64, width: i32, height: i32) -> EmbeddedPreview {
-    todo!()
+    EmbeddedPreview::new(
+        0,
+        offset,
+        length,
+        EmbeddedPreviewKind::Jpeg,
+        width,
+        height,
+        PreviewColorSpace::Unknown,
+    )
+}
+
+fn short_read() -> RawHeaderError {
+    RawHeaderError::invalid_data("Header source returned fewer bytes than requested.")
+}
+
+/// Reads exactly `N` bytes at `offset` and copies them out (the slice from the source dies with the next read).
+/// A short slice from a non-conforming source is `InvalidData`, never an index panic.
+fn read_array<const N: usize>(source: &mut dyn RawHeaderSource, offset: i64) -> Result<[u8; N], RawHeaderError> {
+    let count = i32::try_from(N).unwrap_or(i32::MAX);
+    let slice = source.read(offset, count)?;
+    slice
+        .get(..N)
+        .and_then(|s| <[u8; N]>::try_from(s).ok())
+        .ok_or_else(short_read)
+}
+
+fn be_u16(bytes: &[u8], at: usize) -> u16 {
+    match bytes.get(at..at + 2).and_then(|s| <[u8; 2]>::try_from(s).ok()) {
+        Some(b) => u16::from_be_bytes(b),
+        None => 0,
+    }
+}
+
+fn be_u32(bytes: &[u8], at: usize) -> u32 {
+    match bytes.get(at..at + 4).and_then(|s| <[u8; 4]>::try_from(s).ok()) {
+        Some(b) => u32::from_be_bytes(b),
+        None => 0,
+    }
 }
 
 /// C# `ReadClamped`: up to `max_count` bytes at `offset`, clamped to the source; an EMPTY slice (and NO source read) when
-/// `offset < 0 || offset >= source.length() || max_count <= 0`. Otherwise reads `min(max_count, length - offset)` bytes.
+/// `offset < 0 || offset >= source.length() || max_count <= 0`.
 fn read_clamped(source: &mut dyn RawHeaderSource, offset: i64, max_count: i64) -> Result<&[u8], RawHeaderError> {
-    todo!()
+    let length = source.length();
+    if offset < 0 || offset >= length || max_count <= 0 {
+        return Ok(&[]);
+    }
+    let count = max_count.min(length - offset);
+    source.read(offset, i32::try_from(count).unwrap_or(i32::MAX))
 }
 
-/// C# `HasSoi`: `read_clamped(offset, 2)` is exactly `FF D8` (a 1-byte clamped read at the very end is `false`).
+/// C# `HasSoi`: `read_clamped(offset, 2)` is exactly `FF D8`.
 fn has_soi(source: &mut dyn RawHeaderSource, offset: i64) -> Result<bool, RawHeaderError> {
-    todo!()
+    Ok(matches!(read_clamped(source, offset, SOI_BYTES)?, [0xFF, 0xD8]))
 }
 
-/// C# `TryReadHeaderedJpeg`: the JPEG after a 16-byte Canon preview header (`layout` says where width/height/size are).
-///
-/// `None` when `container.payload_size < 18`; otherwise reads the 16 header bytes at `payload_offset` (copy the five fields out BEFORE the
-/// next read), then `jpeg_offset = payload_offset + 16`, `available = payload_size - 16`,
-/// `jpeg_length = declared if 0 < declared <= available else available` (a declared size of 0 or above the box is clamped to the box; a
-/// declared size of 1 is kept and then rejected), and returns `None` when `jpeg_length < 2`, when `jpeg_offset > source.length() - jpeg_length`
-/// (cannot happen for a box that fits the source, kept as the C# guard) or when there is no SOI at `jpeg_offset`. `Some` carries
-/// `new_jpeg(jpeg_offset, jpeg_length, width, height)` with the 16-bit big-endian header fields (0..=65535) as they are.
+/// C# `TryReadHeaderedJpeg`: the JPEG after a 16-byte Canon preview header.
 fn try_read_headered_jpeg(
     source: &mut dyn RawHeaderSource,
     container: &BmffBox,
     layout: HeaderLayout,
 ) -> Result<Option<EmbeddedPreview>, RawHeaderError> {
-    todo!()
+    if container.payload_size < PREVIEW_HEADER_BYTES + SOI_BYTES {
+        return Ok(None);
+    }
+
+    let header: [u8; 16] = read_array(source, container.payload_offset)?;
+    let width = i32::from(be_u16(&header, layout.width_offset));
+    let height = i32::from(be_u16(&header, layout.height_offset));
+    let declared = be_u32(&header, layout.size_field_offset);
+
+    let jpeg_offset = container.payload_offset + PREVIEW_HEADER_BYTES;
+    let available = container.payload_size - PREVIEW_HEADER_BYTES;
+    let jpeg_length = if declared > 0 && i64::from(declared) <= available {
+        i64::from(declared)
+    } else {
+        available
+    };
+
+    if jpeg_length < SOI_BYTES || jpeg_offset > source.length() - jpeg_length || !has_soi(source, jpeg_offset)? {
+        return Ok(None);
+    }
+    Ok(Some(new_jpeg(jpeg_offset, jpeg_length, width, height)))
 }
 
-/// C# `ParsePreviewUuidBox` (top-level `uuid` equal to [`PREVIEW_UUID`]): children with an 8-byte payload skip; when that yields NO child
-/// at all, children again without skip (tolerates producers without the prefix). Every child whose type is exactly `PRVW` (case
-/// sensitive here) and that [`try_read_headered_jpeg`] accepts with [`PRVW_LAYOUT`] is pushed to `previews.prvw`; other children are ignored.
+/// C# `ParsePreviewUuidBox`: children with an 8-byte skip; when none, again without skip.
 fn parse_preview_uuid_box(
     source: &mut dyn RawHeaderSource,
     uuid_box: &BmffBox,
     previews: &mut PreviewCollector,
 ) -> Result<(), RawHeaderError> {
-    todo!()
+    let mut children = bmff::read_child_boxes(source, uuid_box, PREVIEW_UUID_PREFIX_BYTES)?;
+    if children.is_empty() {
+        children = bmff::read_child_boxes(source, uuid_box, 0)?;
+    }
+
+    for child in &children {
+        if child.box_type == "PRVW"
+            && let Some(preview) = try_read_headered_jpeg(source, child, PRVW_LAYOUT)?
+        {
+            previews.prvw.push(preview);
+        }
+    }
+    Ok(())
 }
 
-/// C# `AddPrvwBox` (a top-level box whose type equals `PRVW` ignoring ASCII case, e.g. the `prvw` of the synthetic test files).
-/// Payload under 2 bytes: nothing. SOI at `payload_offset`: the WHOLE payload is one preview with width/height 0 (trailing bytes
-/// included). Otherwise [`try_read_headered_jpeg`] with [`PRVW_LAYOUT`]. Pushes to `previews.prvw`.
+/// C# `AddPrvwBox` (top-level box whose type equals `PRVW` ignoring ASCII case).
 fn add_prvw_box(
     source: &mut dyn RawHeaderSource,
     prvw_box: &BmffBox,
     previews: &mut PreviewCollector,
 ) -> Result<(), RawHeaderError> {
-    todo!()
+    if prvw_box.payload_size < SOI_BYTES {
+        return Ok(());
+    }
+
+    if has_soi(source, prvw_box.payload_offset)? {
+        previews
+            .prvw
+            .push(new_jpeg(prvw_box.payload_offset, prvw_box.payload_size, 0, 0));
+        return Ok(());
+    }
+
+    if let Some(preview) = try_read_headered_jpeg(source, prvw_box, PRVW_LAYOUT)? {
+        previews.prvw.push(preview);
+    }
+    Ok(())
 }
 
-/// C# `ParseMoovBox`: `read_child_boxes(moov, 0)` (at most 256 children). A child whose `uuid` equals [`CANON_MOOV_UUID`] goes to
-/// [`parse_canon_moov_uuid`]; a child of type `trak` goes to [`parse_track_for_jpeg_preview`]; everything else (including a `uuid` child
-/// with another uuid) is ignored.
+/// C# `ParseMoovBox`.
 fn parse_moov_box(
     source: &mut dyn RawHeaderSource,
     moov_box: &BmffBox,
     state: &mut ReadState,
 ) -> Result<(), RawHeaderError> {
-    todo!()
+    let children = bmff::read_child_boxes(source, moov_box, 0)?;
+    for child in &children {
+        if child.uuid == Some(CANON_MOOV_UUID) {
+            parse_canon_moov_uuid(source, child, state)?;
+        } else if child.box_type == "trak" {
+            parse_track_for_jpeg_preview(source, child, &mut state.previews)?;
+        }
+    }
+    Ok(())
 }
 
-/// C# `ParseCanonMoovUuid`: `read_child_boxes(uuid_box, 0)`; per child, by exact type: `CMT1` => [`parse_cmt1`]; `CMT2` => push
-/// `ExifBlock::with_ifd_is_exif(payload_offset, payload_size, true, true)`; `THMB` => [`try_read_headered_jpeg`] with [`THMB_LAYOUT`]
-/// pushed to `previews.thumb`. Other children (`CMT3`, `CMT4`, ...) are ignored.
+/// C# `ParseCanonMoovUuid`.
 fn parse_canon_moov_uuid(
     source: &mut dyn RawHeaderSource,
     uuid_box: &BmffBox,
     state: &mut ReadState,
 ) -> Result<(), RawHeaderError> {
-    todo!()
+    let children = bmff::read_child_boxes(source, uuid_box, 0)?;
+    for child in &children {
+        match child.box_type.as_str() {
+            "CMT1" => parse_cmt1(source, child, state)?,
+            "CMT2" => state.exif_blocks.push(ExifBlock::with_ifd_is_exif(
+                child.payload_offset,
+                child.payload_size,
+                true,
+                true,
+            )),
+            "THMB" => {
+                if let Some(thumb) = try_read_headered_jpeg(source, child, THMB_LAYOUT)? {
+                    state.previews.thumb.push(thumb);
+                }
+            }
+            _ => {}
+        }
+    }
+    Ok(())
 }
 
 /// The `CMT1` branch of C# `ParseCanonMoovUuid`.
-///
-/// 1. ALWAYS push `ExifBlock::new(payload_offset, payload_size, true)` (even when the TIFF below is unusable).
-/// 2. Only when `payload_size >= 16`: read `min(payload_size, 4096)` bytes at `payload_offset` (the read size is observable through the
-///    header budget; keep it) and parse the TIFF header from them with `pr_imaging::tiff::try_read_header` (byte order `II`/`MM`; the magic is
-///    NOT checked). No header: stop.
-/// 3. `ifd0` must satisfy `ifd0 >= 8 && ifd0 <= payload_size - 2` (as i64; "IFD0 must lie inside the CMT1 payload"), else stop.
-/// 4. `entries = tiff_nav::read_ifd_entries(source, payload_offset + ifd0, little_endian)?.entries` (the navigator bounds itself by the FILE, not
-///    by the payload, hence step 5).
-/// 5. `max_entries = (payload_size - ifd0 - 2) / 12` computed in i64, cast to `i32` with wrap-around like the C# `(int)` (clamp a negative to 0
-///    for `take`); only the first `max_entries` entries are looked at, so an entry straddling the payload end is never read.
-/// 6. For each entry, by tag, in this order and ONLY when the tag matches (the value read costs header budget):
-///    `0x0112` => `read_cmt1_value`, `Some(v)` with `1..=8` sets `orientation`; `0x0100` / `0x0101` => `Some(v)` with `1..=i32::MAX` sets
-///    `sensor_width` / `sensor_height`. A later valid entry overrides an earlier one; an invalid one (0, 9, negative, above i32::MAX, unreadable)
-///    changes nothing.
 fn parse_cmt1(source: &mut dyn RawHeaderSource, cmt1: &BmffBox, state: &mut ReadState) -> Result<(), RawHeaderError> {
-    todo!()
+    state
+        .exif_blocks
+        .push(ExifBlock::new(cmt1.payload_offset, cmt1.payload_size, true));
+    if cmt1.payload_size < 16 {
+        return Ok(());
+    }
+
+    let read_len = cmt1.payload_size.min(CMT1_HEADER_READ_CAP);
+    let tiff_span = source.read(cmt1.payload_offset, i32::try_from(read_len).unwrap_or(i32::MAX))?;
+    let Some(header) = tiff_structure::try_read_header(tiff_span) else {
+        return Ok(());
+    };
+    let little_endian = header.little_endian;
+    let ifd0 = i64::from(header.ifd0_offset);
+    if ifd0 < 8 || ifd0 > cmt1.payload_size - 2 {
+        return Ok(());
+    }
+
+    let entries = tiff_nav::read_ifd_entries(source, cmt1.payload_offset + ifd0, little_endian)?.entries;
+    // C# `(int)Math.Max(0, (payload - ifd0 - 2) / 12)`: the cast wraps; a negative `Take` count takes nothing.
+    let max_entries = ((cmt1.payload_size - ifd0 - 2) / IFD_ENTRY_BYTES).max(0) as i32;
+    let take = usize::try_from(max_entries).unwrap_or(0);
+
+    for entry in entries.iter().take(take) {
+        match entry.tag {
+            TAG_ORIENTATION => {
+                if let Some(v) = read_cmt1_value(source, cmt1, entry, little_endian)?
+                    && (1..=8).contains(&v)
+                {
+                    state.orientation = i32::try_from(v).unwrap_or(state.orientation);
+                }
+            }
+            TAG_IMAGE_WIDTH => {
+                if let Some(v) = read_cmt1_value(source, cmt1, entry, little_endian)?
+                    && (1..=i64::from(i32::MAX)).contains(&v)
+                {
+                    state.sensor_width = i32::try_from(v).unwrap_or(state.sensor_width);
+                }
+            }
+            TAG_IMAGE_LENGTH => {
+                if let Some(v) = read_cmt1_value(source, cmt1, entry, little_endian)?
+                    && (1..=i64::from(i32::MAX)).contains(&v)
+                {
+                    state.sensor_height = i32::try_from(v).unwrap_or(state.sensor_height);
+                }
+            }
+            _ => {}
+        }
+    }
+    Ok(())
 }
 
-/// C# `ReadCmt1Value`: the first unsigned value of a CMT1 IFD entry.
-///
-/// `type_size = pr_imaging::tiff::type_size(entry.field_type)`; `0` (unknown type) or `count == 0` => `None`. If `type_size * count <= 4` (as i64)
-/// the value is inline: `tiff_nav::read_tag_unsigned(source, entry, little_endian)`. Otherwise the offset is RELATIVE TO THE CMT1 PAYLOAD
-/// (a standalone TIFF): `None` when `value_or_offset > cmt1.payload_size - type_size` (the value must lie fully inside the payload; the subtraction
-/// is i64 and may be negative), `absolute = cmt1.payload_offset + value_or_offset`, `None` when `absolute > u32::MAX`, else
-/// `read_tag_unsigned` on a copy of the entry whose `value_or_offset` is `absolute as u32` (the navigator then checks the file bounds itself).
+/// C# `ReadCmt1Value`: the first unsigned value of a CMT1 IFD entry (out-of-line offsets are relative to the CMT1 payload).
 fn read_cmt1_value(
     source: &mut dyn RawHeaderSource,
     cmt1: &BmffBox,
     entry: &TiffEntry,
     little_endian: bool,
 ) -> Result<Option<i64>, RawHeaderError> {
-    todo!()
+    let type_size = i64::from(tiff_structure::type_size(entry.field_type));
+    if type_size == 0 || entry.count == 0 {
+        return Ok(None);
+    }
+    if type_size * i64::from(entry.count) <= 4 {
+        return tiff_nav::read_tag_unsigned(source, entry, little_endian);
+    }
+
+    if i64::from(entry.value_or_offset) > cmt1.payload_size - type_size {
+        return Ok(None);
+    }
+    let absolute = cmt1.payload_offset + i64::from(entry.value_or_offset);
+    let Ok(absolute) = u32::try_from(absolute) else {
+        return Ok(None);
+    };
+    let shifted = TiffEntry {
+        value_or_offset: absolute,
+        ..*entry
+    };
+    tiff_nav::read_tag_unsigned(source, &shifted, little_endian)
 }
 
-/// C# `FirstOrDefault(b => b.Type == ty)` followed by the `TotalSize == 0` "not found" test (a parsed box always has `total_size >= 8`).
+/// `FirstOrDefault(b => b.Type == ty)` plus the `TotalSize == 0` "not found" test.
 fn first_child_of_type<'a>(children: &'a [BmffBox], box_type: &str) -> Option<&'a BmffBox> {
-    todo!()
+    children.iter().find(|b| b.box_type == box_type)
 }
 
-/// C# `ParseTrackForJpegPreview` for one `trak`: walk `trak -> mdia -> minf -> stbl` (`read_child_boxes(.., 0)` at each level and take the FIRST
-/// child of the wanted type; a missing level ends the function silently), take the first `stsz`, first `stco` and first `co64` of `stbl`,
-/// compute `sample_size` ([`read_sample_size`]) and `chunk_offset` ([`read_chunk_offset`]), and push to `previews.track` when
-/// `chunk_offset > 0 && sample_size > 0 && chunk_offset < source.length() && sample_size <= source.length() - chunk_offset` AND
-/// [`probe_track_jpeg`] accepts the range; the preview is `new_jpeg(chunk_offset, sample_size, probed_width, probed_height)`.
+/// C# `ParseTrackForJpegPreview` for one `trak`.
 fn parse_track_for_jpeg_preview(
     source: &mut dyn RawHeaderSource,
     trak_box: &BmffBox,
     previews: &mut PreviewCollector,
 ) -> Result<(), RawHeaderError> {
-    todo!()
+    let children = bmff::read_child_boxes(source, trak_box, 0)?;
+    let Some(mdia) = first_child_of_type(&children, "mdia") else {
+        return Ok(());
+    };
+    let children = bmff::read_child_boxes(source, mdia, 0)?;
+    let Some(minf) = first_child_of_type(&children, "minf") else {
+        return Ok(());
+    };
+    let children = bmff::read_child_boxes(source, minf, 0)?;
+    let Some(stbl) = first_child_of_type(&children, "stbl") else {
+        return Ok(());
+    };
+
+    let stbl_children = bmff::read_child_boxes(source, stbl, 0)?;
+    let stsz = first_child_of_type(&stbl_children, "stsz");
+    let stco = first_child_of_type(&stbl_children, "stco");
+    let co64 = first_child_of_type(&stbl_children, "co64");
+
+    let sample_size = read_sample_size(source, stsz)?;
+    let chunk_offset = read_chunk_offset(source, stco, co64)?;
+
+    // `sample_size <= length - chunk_offset` is the overflow-free form of `chunk_offset + sample_size <= length`.
+    let length = source.length();
+    if chunk_offset > 0
+        && sample_size > 0
+        && chunk_offset < length
+        && sample_size <= length - chunk_offset
+        && let Some((width, height)) = probe_track_jpeg(source, chunk_offset, sample_size)?
+    {
+        previews.track.push(new_jpeg(chunk_offset, sample_size, width, height));
+    }
+    Ok(())
 }
 
-/// The `stsz` half of C# `ParseTrackForJpegPreview`. `None`/payload under 12 => 0. Reads 12 bytes at `payload_offset`: `uniform = u32 @4`,
-/// `count = u32 @8` (big-endian). `uniform > 0` => `uniform`. Else only when `count >= 1 && payload_size >= 16`: the `u32` at `payload_offset + 12`
-/// (the first per-sample size). Everything else => 0. The result is a size in `0..=u32::MAX`.
+/// The `stsz` half of C# `ParseTrackForJpegPreview`.
 fn read_sample_size(source: &mut dyn RawHeaderSource, stsz: Option<&BmffBox>) -> Result<i64, RawHeaderError> {
-    todo!()
+    let Some(stsz) = stsz.filter(|b| b.payload_size >= 12) else {
+        return Ok(0);
+    };
+    let data: [u8; 12] = read_array(source, stsz.payload_offset)?;
+    let uniform = be_u32(&data, 4);
+    let count = be_u32(&data, 8);
+    if uniform > 0 {
+        return Ok(i64::from(uniform));
+    }
+    if count >= 1 && stsz.payload_size >= 16 {
+        let entry: [u8; 4] = read_array(source, stsz.payload_offset + 12)?;
+        return Ok(i64::from(u32::from_be_bytes(entry)));
+    }
+    Ok(0)
 }
 
 /// The `stco`/`co64` half of C# `ParseTrackForJpegPreview`; the FIRST chunk offset or 0.
-///
-/// `stco` present with `payload_size >= 8`: read 8 bytes, `count = u32 @4`; `count >= 1 && payload_size >= 12` => the `u32` at `payload_offset + 8`;
-/// otherwise 0 and **`co64` is NOT consulted** (an `stco` that exists and has 8+ bytes wins even when it holds no offset).
-/// Only when there is no `stco` or its payload is under 8 bytes: `co64` present with `payload_size >= 8`: read 8 bytes, `count = u32 @4`;
-/// `count >= 1 && payload_size >= 16` => the `u64` at `payload_offset + 8`, kept only when `<= i64::MAX` (else 0).
 fn read_chunk_offset(
     source: &mut dyn RawHeaderSource,
     stco: Option<&BmffBox>,
     co64: Option<&BmffBox>,
 ) -> Result<i64, RawHeaderError> {
-    todo!()
+    if let Some(stco) = stco.filter(|b| b.payload_size >= 8) {
+        let data: [u8; 8] = read_array(source, stco.payload_offset)?;
+        let count = be_u32(&data, 4);
+        if count >= 1 && stco.payload_size >= 12 {
+            let offset: [u8; 4] = read_array(source, stco.payload_offset + 8)?;
+            return Ok(i64::from(u32::from_be_bytes(offset)));
+        }
+    } else if let Some(co64) = co64.filter(|b| b.payload_size >= 8) {
+        let data: [u8; 8] = read_array(source, co64.payload_offset)?;
+        let count = be_u32(&data, 4);
+        if count >= 1 && co64.payload_size >= 16 {
+            let offset: [u8; 8] = read_array(source, co64.payload_offset + 8)?;
+            return Ok(i64::try_from(u64::from_be_bytes(offset)).unwrap_or(0));
+        }
+    }
+    Ok(0)
 }
 
-/// C# `TryProbeTrackJpeg`: `jpeg_probe::try_read_lossy_frame(source, offset, length)`. A SOI alone is not enough: the CR3 raw track is a lossless
-/// JPEG (SOF3, tens of MB) and only a lossy SOF0/1/2 8-bit frame passes. `Some((width, height))` for a lossy frame, `None` otherwise (including
-/// an exhausted budget: the probe already maps every non-I/O header error to `Ok(None)`, so the C# `catch (InvalidDataException) when
-/// (!IsIoFailure)` of this method has no extra work to do); an I/O failure of the source is `Err` and propagates.
+/// C# `TryProbeTrackJpeg`: only a lossy SOF0/1/2 8-bit frame passes; an I/O failure of the source propagates.
 fn probe_track_jpeg(
     source: &mut dyn RawHeaderSource,
     offset: i64,
     length: i64,
 ) -> Result<Option<(i32, i32)>, RawHeaderError> {
-    todo!()
+    Ok(jpeg_probe::try_read_lossy_frame(source, offset, length)?.map(|f| (f.width, f.height)))
 }

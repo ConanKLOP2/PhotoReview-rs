@@ -9,10 +9,11 @@
 //!
 //! No `unsafe` here: loading and freeing the library and creating the decompressor are delegated to the `native` module (W5-13a),
 //! which owns every FFI block. This file only sequences them.
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); the porter removes this line.
 
 use std::error::Error;
 use std::sync::OnceLock;
+
+use crate::native;
 
 /// Result of the probe: C# `(bool Available, string? Reason)`.
 ///
@@ -65,7 +66,15 @@ impl ProbeCache {
 /// Real wiring (W5-13a names, see contract semantics 5): `probe_with(native::DLL_NAME, || default_library_path().and_then(|p|
 /// TurboJpegLibrary::load(&p).ok()), drop, || native::create_decompressor().map_err(|e| Box::new(e) as _))`.
 pub fn probe() -> &'static ProbeOutcome {
-    todo!("static PROBE: ProbeCache; PROBE.get_or_run(|| probe_with(DLL_NAME, <load closure>, drop, <create closure>))")
+    static PROBE: ProbeCache = ProbeCache::new();
+    PROBE.get_or_run(|| {
+        probe_with(
+            native::DLL_NAME,
+            || native::default_library_path().and_then(|path| native::TurboJpegLibrary::load(&path).ok()),
+            drop,
+            || native::create_decompressor().map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>),
+        )
+    })
 }
 
 /// `TurboJpegAvailability.RunProbe(tryLoad, free, createDecompressor)` (internal in C#, `pub` here so integration tests and the
@@ -87,5 +96,34 @@ pub fn probe_with<H, D>(
     free: impl FnOnce(H),
     create_decompressor: impl FnOnce() -> Result<D, Box<dyn Error + Send + Sync>>,
 ) -> ProbeOutcome {
-    todo!("see semantics 1-4 in contracts/drafts-w5/W5-13b/contract.md")
+    let Some(handle) = try_load() else {
+        return ProbeOutcome::unavailable(format!(
+            "Could not load {dll_name} (not found or incompatible with the current process architecture)."
+        ));
+    };
+    // C# `finally`: the guard frees the library exactly once on every exit, after the decompressor is dropped.
+    let _guard = FreeGuard {
+        state: Some((handle, free)),
+    };
+    match create_decompressor() {
+        // C# `using var decompressor`: dropped here, before the guard.
+        Ok(decompressor) => {
+            drop(decompressor);
+            ProbeOutcome::ok()
+        }
+        Err(error) => ProbeOutcome::unavailable(format!("{dll_name} loaded but failed to initialize: {error}")),
+    }
+}
+
+/// Calls `free(handle)` once when dropped (also while a panic unwinds).
+struct FreeGuard<H, F: FnOnce(H)> {
+    state: Option<(H, F)>,
+}
+
+impl<H, F: FnOnce(H)> Drop for FreeGuard<H, F> {
+    fn drop(&mut self) {
+        if let Some((handle, free)) = self.state.take() {
+            free(handle);
+        }
+    }
 }

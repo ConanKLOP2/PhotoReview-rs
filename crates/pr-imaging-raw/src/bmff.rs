@@ -9,8 +9,6 @@
 //! can only come from `source.read` (budget exhausted, I/O failure, `InvalidDataException` of `IRawHeaderSource`). Neither function
 //! panics, whatever the bytes or the (even hostile) `BmffBox` handed to [`read_child_boxes`].
 
-#![allow(unused_variables, dead_code)] // D11: removed together with the last `todo!()`.
-
 use crate::contracts::{RawHeaderError, RawHeaderSource};
 
 /// `BmffBoxNavigator.MaxChildBoxes`: immediate children returned by [`read_child_boxes`]; further children are ignored.
@@ -46,7 +44,14 @@ impl BmffBox {
         payload_offset: i64,
         payload_size: i64,
     ) -> Self {
-        todo!()
+        Self {
+            box_type: box_type.into(),
+            offset,
+            total_size,
+            payload_offset,
+            payload_size,
+            uuid: None,
+        }
     }
 }
 
@@ -64,7 +69,72 @@ pub fn try_read_box(
     offset: i64,
     container_end: Option<i64>,
 ) -> Result<Option<BmffBox>, RawHeaderError> {
-    todo!()
+    let length = source.length();
+    if offset < 0 || offset > length.saturating_sub(8) {
+        return Ok(None);
+    }
+    let (size32, box_type) = {
+        let head = source.read(offset, 8)?;
+        if head.len() < 8 {
+            return Ok(None);
+        }
+        let size32 = u32::from_be_bytes([head[0], head[1], head[2], head[3]]);
+        let box_type: String = head[4..8]
+            .iter()
+            .map(|&b| if b <= 0x7F { b as char } else { '?' })
+            .collect();
+        (size32, box_type)
+    };
+    let mut total_size = i64::from(size32);
+    let mut header_size: i64 = 8;
+    if size32 == 1 {
+        if offset > length.saturating_sub(16) {
+            return Ok(None);
+        }
+        let large = {
+            let b = source.read(offset + 8, 8)?;
+            if b.len() < 8 {
+                return Ok(None);
+            }
+            u64::from_be_bytes([b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]])
+        };
+        if large > i64::MAX as u64 {
+            return Ok(None);
+        }
+        total_size = large as i64;
+        header_size = 16;
+    } else if size32 == 0 {
+        let end = match container_end {
+            Some(e) if e >= 0 => e.min(length),
+            _ => length,
+        };
+        total_size = end - offset;
+    }
+    if total_size < header_size || total_size > length - offset {
+        return Ok(None);
+    }
+    let mut uuid = None;
+    if box_type == "uuid" {
+        if total_size < header_size + 16 {
+            return Ok(None);
+        }
+        let b = source.read(offset + header_size, 16)?;
+        if b.len() < 16 {
+            return Ok(None);
+        }
+        let mut u = [0u8; 16];
+        u.copy_from_slice(&b[..16]);
+        uuid = Some(u);
+        header_size += 16;
+    }
+    Ok(Some(BmffBox {
+        box_type,
+        offset,
+        total_size,
+        payload_offset: offset + header_size,
+        payload_size: total_size - header_size,
+        uuid,
+    }))
 }
 
 /// `BmffBoxNavigator.ReadChildBoxes`: the immediate children inside `parent`'s payload, at most [`MAX_CHILD_BOXES`].
@@ -80,5 +150,27 @@ pub fn read_child_boxes(
     parent: &BmffBox,
     payload_skip: i32,
 ) -> Result<Vec<BmffBox>, RawHeaderError> {
-    todo!()
+    let length = source.length();
+    let start = parent.payload_offset;
+    let mut list = Vec::new();
+    if start < 0 || start > length || parent.payload_size < 0 || payload_skip < 0 {
+        return Ok(list);
+    }
+    let limit = start + parent.payload_size.min(length - start);
+    let mut current = start;
+    if i64::from(payload_skip) > limit - current {
+        return Ok(list);
+    }
+    current += i64::from(payload_skip);
+    while limit - current >= 8 && list.len() < MAX_CHILD_BOXES {
+        let Some(child) = try_read_box(source, current, Some(limit))? else {
+            break;
+        };
+        if child.total_size > limit - current {
+            break;
+        }
+        current += child.total_size;
+        list.push(child);
+    }
+    Ok(list)
 }

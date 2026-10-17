@@ -7,15 +7,33 @@
 //! only drops the preview, a bad CFA header only leaves the size at 0x0 (the container is kept so the no-preview LibRaw
 //! fallback can still decode); only a source shorter than 92 bytes, a wrong magic, or a failing header-source read is an `Err`.
 
-#![allow(unused_variables, unused_imports, dead_code)] // D11: removed together with the last `todo!()`.
-
 use pr_core::sync::CancelToken;
+use pr_core::text::eq_ignore_case;
+use pr_imaging::exif_parser::try_read_orientation_from_jpeg;
 
 use crate::contracts::{
     EmbeddedPreview, EmbeddedPreviewKind, ExifBlock, PreviewColorSpace, RawContainerReader, RawHeaderError,
     RawHeaderSource,
 };
+use crate::formats::limits;
 use crate::{RawContainerInfo, RawFormat};
+
+/// Big-endian `u32` at `at`. The callers pass slices of exactly the length they asked the source for, so a short slice
+/// (impossible, the source checks its own bounds) reads as 0 instead of panicking.
+fn be_u32_at(bytes: &[u8], at: usize) -> u32 {
+    bytes
+        .get(at..at + 4)
+        .and_then(|raw| <[u8; 4]>::try_from(raw).ok())
+        .map_or(0, u32::from_be_bytes)
+}
+
+/// Big-endian `u16` at `at`; a missing byte reads as 0 (callers bounds-check first).
+fn be_u16_at(bytes: &[u8], at: usize) -> u16 {
+    bytes
+        .get(at..at + 2)
+        .and_then(|raw| <[u8; 2]>::try_from(raw).ok())
+        .map_or(0, u16::from_be_bytes)
+}
 
 /// C# `Magic`: ASCII `"FUJIFILMCCD-RAW "` (16 bytes, trailing space included).
 pub const MAGIC: [u8; 16] = *b"FUJIFILMCCD-RAW ";
@@ -69,7 +87,7 @@ impl RawContainerReader for RafContainerReader {
     /// True when `extension` equals `.raf` (OrdinalIgnoreCase via `pr_core::text::eq_ignore_case`; checked FIRST),
     /// at least 16 bytes are given and the first 16 are [`MAGIC`]. Bytes past 16 are not examined.
     fn can_read(&self, first_64_bytes: &[u8], extension: &str) -> bool {
-        todo!()
+        eq_ignore_case(extension, ".raf") && first_64_bytes.get(..16) == Some(&MAGIC[..])
     }
 
     /// Reads the container through bounded header reads (read pattern, in this order: `read(0, 92)`, then only when the JPEG
@@ -87,8 +105,60 @@ impl RawContainerReader for RafContainerReader {
     /// bytes, `"Invalid RAF magic header."` when the first 16 bytes are not [`MAGIC`], and whatever the header source
     /// reports (a source of 92..=99 bytes fails the unconditional `read(92, 8)` as "past end"; a budget exhaustion; an I/O
     /// failure keeps its flag). Never `Canceled`, never a panic.
-    fn read(&self, source: &mut dyn RawHeaderSource, ct: &CancelToken) -> Result<RawContainerInfo, RawHeaderError> {
-        todo!()
+    fn read(&self, source: &mut dyn RawHeaderSource, _ct: &CancelToken) -> Result<RawContainerInfo, RawHeaderError> {
+        // Port of `RafContainerReader.Read`: the token is never observed (see the doc comment above).
+        let length = source.length();
+        if length < MIN_CONTAINER_BYTES {
+            return Err(RawHeaderError::invalid_data("File too short for RAF container."));
+        }
+
+        // Copy the pointer fields out: the slice borrows `source`, and the next read needs it mutably.
+        let (jpeg_offset, jpeg_length) = {
+            let header = source.read(0, 92)?;
+            if header.get(..16) != Some(&MAGIC[..]) {
+                return Err(RawHeaderError::invalid_data("Invalid RAF magic header."));
+            }
+            (i64::from(be_u32_at(header, 84)), i64::from(be_u32_at(header, 88)))
+        };
+
+        let mut previews = Vec::new();
+        let mut exif_blocks = Vec::new();
+        let mut orientation = 1;
+
+        // The C# order: each condition is checked before the SOI read, so that read only happens for a plausible range.
+        let range_valid =
+            jpeg_offset >= POINTER_TABLE_END && jpeg_length >= 2 && jpeg_offset + jpeg_length <= length && {
+                let soi = source.read(jpeg_offset, 2)?;
+                soi == [0xFF, 0xD8]
+            };
+        if range_valid {
+            let exif_length = jpeg_length.min(i64::from(limits::DEFAULT_EXIF_BLOCK_BYTES));
+            previews.push(EmbeddedPreview::new(
+                0,
+                jpeg_offset,
+                jpeg_length,
+                EmbeddedPreviewKind::Jpeg,
+                0,
+                0,
+                PreviewColorSpace::Unknown,
+            ));
+            exif_blocks.push(ExifBlock::new(jpeg_offset, exif_length, false));
+            // `exif_length <= 128 KiB`, so the conversion never fails; `unwrap_or` keeps the path panic-free regardless.
+            let exif_count = i32::try_from(exif_length).unwrap_or(limits::DEFAULT_EXIF_BLOCK_BYTES);
+            let exif = source.read(jpeg_offset, exif_count)?;
+            orientation = try_read_orientation_from_jpeg(exif).map_or(1, i32::from);
+        }
+
+        let (sensor_width, sensor_height) = read_cfa_size(source)?;
+
+        Ok(RawContainerInfo {
+            format: RawFormat::Raf,
+            sensor_width,
+            sensor_height,
+            orientation,
+            previews,
+            exif_blocks,
+        })
     }
 }
 
@@ -99,7 +169,19 @@ impl RawContainerReader for RafContainerReader {
 /// # Errors
 /// Only a failing header-source read (see `RafContainerReader::read`).
 pub fn read_cfa_size(source: &mut dyn RawHeaderSource) -> Result<Size, RawHeaderError> {
-    todo!()
+    let length = source.length();
+    // Unconditional: a 92..=99-byte source fails here with the source's own "past end" error (kept on purpose, golden).
+    let (cfa_offset, cfa_length) = {
+        let pointers = source.read(92, 8)?;
+        (i64::from(be_u32_at(pointers, 0)), i64::from(be_u32_at(pointers, 4)))
+    };
+    if cfa_offset == 0 || cfa_length < 4 || cfa_offset + cfa_length > length {
+        return Ok((0, 0));
+    }
+    // At most 64 KiB (`MAX_CFA_HEADER_BYTES`), so the conversion cannot fail; `unwrap_or` keeps it panic-free anyway.
+    let window = i32::try_from(cfa_length.min(MAX_CFA_HEADER_BYTES)).unwrap_or(0);
+    let cfa = source.read(cfa_offset, window)?;
+    Ok(choose_sensor_size(&parse_cfa_records(cfa)))
 }
 
 /// The pure record walk of `ReadCfaSize` over the bytes actually read (`cfa` = the first `min(cfa_length, 65536)` bytes
@@ -110,12 +192,59 @@ pub fn read_cfa_size(source: &mut dyn RawHeaderSource) -> Result<Size, RawHeader
 /// both are > 0 (a later valid record of the same tag overwrites an earlier one). The position always advances by
 /// `4 + size`, also for unknown tags and for `size < 4`.
 pub fn parse_cfa_records(cfa: &[u8]) -> CfaSizes {
-    todo!()
+    let mut sizes = CfaSizes::default();
+    if cfa.len() < 4 {
+        return sizes;
+    }
+    let count = be_u32_at(cfa, 0);
+    let mut position: usize = 4;
+    for _ in 0..count.min(MAX_CFA_RECORDS) {
+        // Record header: tag u16, size u16 (both big-endian); fewer than 4 bytes left ends the walk.
+        if position + 4 > cfa.len() {
+            break;
+        }
+        let tag = be_u16_at(cfa, position);
+        let size = usize::from(be_u16_at(cfa, position + 2));
+        let data = position + 4;
+        let Some(end) = data.checked_add(size) else {
+            break;
+        };
+        // A record whose data runs past the window is dropped and ends the walk (earlier records stay).
+        if end > cfa.len() {
+            break;
+        }
+        if size >= 4 && matches!(tag, TAG_FULL_SIZE | TAG_CROPPED_SIZE | TAG_IMAGE_SIZE) {
+            let height = i32::from(be_u16_at(cfa, data));
+            let mut width = i32::from(be_u16_at(cfa, data + 2));
+            // LibRaw `parse_fuji`: only the 0x0121 record has the 4284 -> 4287 quirk.
+            if tag == TAG_IMAGE_SIZE && width == 4284 {
+                width = 4287;
+            }
+            if width > 0 && height > 0 {
+                let size_pair = (width, height);
+                match tag {
+                    TAG_FULL_SIZE => sizes.full = size_pair,
+                    TAG_CROPPED_SIZE => sizes.cropped = size_pair,
+                    _ => sizes.image_size = size_pair,
+                }
+            }
+        }
+        position = end;
+    }
+    sizes
 }
 
 /// The size choice at the end of `ReadCfaSize`: `cropped` if it "fits", else `image_size` if it fits, else `full`.
 /// `fits(s)` = `s.0 > 0 && (full.0 == 0 || (s.0 <= full.0 && s.1 <= full.1))` (a cropped/image size can only shrink the
 /// full readout; with no full record any valid size fits).
 pub fn choose_sensor_size(sizes: &CfaSizes) -> Size {
-    todo!()
+    let full = sizes.full;
+    let fits = |candidate: Size| candidate.0 > 0 && (full.0 == 0 || (candidate.0 <= full.0 && candidate.1 <= full.1));
+    if fits(sizes.cropped) {
+        sizes.cropped
+    } else if fits(sizes.image_size) {
+        sizes.image_size
+    } else {
+        full
+    }
 }

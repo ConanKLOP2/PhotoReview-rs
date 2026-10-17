@@ -8,8 +8,6 @@
 //! [`RawHeaderError`]; the C# `RawHeaderErrors.IsIoFailure` helper (W5-01a) is a method on it
 //! ([`RawHeaderError::is_io_failure`]) so both units share the type without a cycle.
 
-#![allow(unused_variables, dead_code)] // D11: removed together with the last `todo!()`.
-
 use std::collections::HashSet;
 use std::fmt;
 use std::io;
@@ -17,8 +15,7 @@ use std::io;
 use pr_core::sync::{CancelToken, Canceled};
 use pr_imaging::decoder_traits::DecodeError;
 
-// Defined by W5-01a (`RawFormat`, `RawContainerInfo`); re-exported at the crate root by the lead (see mod-lines.txt).
-use crate::{RawContainerInfo, RawFormat};
+use crate::formats::{RawContainerInfo, RawFormat, limits};
 
 /// `SourceRawHeaderSource.BlockSize`: header reads are charged to the budget in whole 64 KiB-aligned blocks.
 /// Defined here (not in W5-12) so the in-memory source below needs no dependency on the file-backed one.
@@ -133,19 +130,25 @@ pub enum RawHeaderError {
 impl RawHeaderError {
     /// `new InvalidDataException(message)`.
     pub fn invalid_data(message: impl Into<String>) -> Self {
-        todo!()
+        Self::InvalidData {
+            message: message.into(),
+            io: None,
+        }
     }
 
     /// `new InvalidDataException(message, inner)` for a wrapped I/O failure.
     pub fn invalid_data_io(message: impl Into<String>, io: io::Error) -> Self {
-        todo!()
+        Self::InvalidData {
+            message: message.into(),
+            io: Some(io),
+        }
     }
 
     /// `RawHeaderErrors.IsIoFailure(ex)`: true only for `InvalidData` with an inner `io` error (a disk/share failure, not a
     /// malformed or over-budget RAW). Such an error must keep propagating as an I/O problem, never be swallowed as
     /// "preview unusable". `ArgumentOutOfRange` and `Canceled` are never I/O failures.
     pub fn is_io_failure(&self) -> bool {
-        todo!()
+        matches!(self, Self::InvalidData { io: Some(_), .. })
     }
 }
 
@@ -153,21 +156,28 @@ impl fmt::Display for RawHeaderError {
     /// `InvalidData`: the message; `ArgumentOutOfRange`: .NET's `"{message} (Parameter '{param}')"`;
     /// `Canceled`: `"The operation was canceled."`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::InvalidData { message, .. } => f.write_str(message),
+            Self::ArgumentOutOfRange { param, message } => write!(f, "{message} (Parameter '{param}')"),
+            Self::Canceled => f.write_str("The operation was canceled."),
+        }
     }
 }
 
 impl std::error::Error for RawHeaderError {
     /// The inner `io` error of `InvalidData`, else `None`.
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        todo!()
+        match self {
+            Self::InvalidData { io: Some(error), .. } => Some(error as &(dyn std::error::Error + 'static)),
+            _ => None,
+        }
     }
 }
 
 impl From<Canceled> for RawHeaderError {
     /// `ct.ThrowIfCancellationRequested()` becomes `ct.check()?`.
     fn from(_: Canceled) -> Self {
-        todo!()
+        Self::Canceled
     }
 }
 
@@ -236,12 +246,69 @@ impl InMemoryRawHeaderSource {
     }
 }
 
+/// Block size as `i64` for the budget arithmetic (`RAW_HEADER_BLOCK_SIZE` is 64 KiB, far below `i64::MAX`).
+const BLOCK_BYTES: i64 = RAW_HEADER_BLOCK_SIZE as i64;
+
 impl RawHeaderSource for InMemoryRawHeaderSource {
     fn length(&self) -> i64 {
-        todo!()
+        i64::try_from(self.bytes.len()).unwrap_or(i64::MAX)
     }
 
+    /// Port of `InMemoryRawHeaderSource.Read`; the check order is the C# order (golden `raw-header-budget`).
     fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], RawHeaderError> {
-        todo!()
+        if offset < 0 || count < 0 {
+            return Err(RawHeaderError::ArgumentOutOfRange {
+                param: "offset",
+                message: "Offset and count must be non-negative.".to_owned(),
+            });
+        }
+
+        let length = self.length();
+        // `offset > length - count` is the overflow-free form of `offset + count > length`.
+        if offset > length - i64::from(count) {
+            return Err(RawHeaderError::invalid_data(format!(
+                "Attempted to read past end of memory (offset: {offset}, count: {count}, length: {length})."
+            )));
+        }
+
+        let max = limits::MAX_HEADER_BYTES;
+        if count > max {
+            return Err(RawHeaderError::invalid_data(format!(
+                "RAW header read of {count} bytes exceeds hard limit of {max} bytes."
+            )));
+        }
+
+        if count == 0 {
+            return Ok(&[]);
+        }
+
+        // Charge each distinct block the read touches. A block that does not fit leaves the blocks charged so far
+        // in place (C# keeps them), so a later read of them is free.
+        let start_block = offset / BLOCK_BYTES;
+        let end_block = (offset + i64::from(count) - 1) / BLOCK_BYTES;
+        for block in start_block..=end_block {
+            if self.touched_blocks.contains(&block) {
+                continue;
+            }
+            let block_bytes = (length - block * BLOCK_BYTES).min(BLOCK_BYTES);
+            if block_bytes > i64::from(max) - self.total_bytes_read {
+                return Err(RawHeaderError::invalid_data(format!(
+                    "RAW header read exceeded hard limit of {max} bytes."
+                )));
+            }
+            self.touched_blocks.insert(block);
+            self.total_bytes_read += block_bytes;
+        }
+
+        // The checks above guarantee `offset + count <= length`; `get` keeps the slice non-panicking regardless.
+        let start =
+            usize::try_from(offset).map_err(|_| RawHeaderError::invalid_data("RAW header offset out of range"))?;
+        let len = usize::try_from(count).map_err(|_| RawHeaderError::invalid_data("RAW header count out of range"))?;
+        let end = start
+            .checked_add(len)
+            .ok_or_else(|| RawHeaderError::invalid_data("RAW header read out of range"))?;
+        self.bytes
+            .get(start..end)
+            .ok_or_else(|| RawHeaderError::invalid_data("RAW header read out of range"))
     }
 }

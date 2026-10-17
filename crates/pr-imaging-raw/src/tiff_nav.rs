@@ -8,13 +8,19 @@
 //!
 //! Pure apart from the reads on the source: no clock, no file system, no `unsafe`.
 
-#![allow(unused_variables, unused_imports, dead_code)] // D11: remove with the last todo!()
-
 // W5-01 names (W5-01a `formats::limits`, W5-01b `contracts`, both re-exported at the crate root by their mod-lines). Adjust ONLY these
 // `use` lines if the lead merges them elsewhere; `RawHeaderError::is_io_failure(&self)` is the W5-01b method (W5-01a also has a free
 // function `is_io_failure(&RawHeaderError)`: the lead keeps ONE, see contract.md "Assumed W5-01 API").
 use crate::formats::limits::{DEFAULT_EXIF_BLOCK_BYTES, MAX_ENTRIES_PER_IFD, MAX_EXIF_BLOCK_BYTES};
 use crate::{ExifBlock, RawHeaderError, RawHeaderSource};
+use pr_imaging::tiff::{read_u16, read_u32, read_unsigned, type_size};
+
+/// IFD0 tags whose values the EXIF summary reads (Make, Model, DateTime, ExifIFD pointer).
+const IFD0_TAGS: [u16; 4] = [0x010F, 0x0110, 0x0132, 0x8769];
+/// Exif IFD tags whose values the EXIF summary reads.
+const EXIF_TAGS: [u16; 7] = [0x829A, 0x829D, 0x8827, 0x9003, 0x9004, 0x920A, 0xA434];
+/// Exif IFD pointer tag.
+const EXIF_POINTER_TAG: u16 = 0x8769;
 
 /// Default `max_items` of [`read_tag_unsigned_array`] (C# optional parameter `maxItems = 64`).
 pub const DEFAULT_ARRAY_ITEMS: i32 = 64;
@@ -55,7 +61,65 @@ pub fn read_ifd_entries(
     ifd_offset: i64,
     little_endian: bool,
 ) -> Result<IfdRead, RawHeaderError> {
-    todo!("W5-02a")
+    let len = source.length();
+    let empty = IfdRead::default();
+    if ifd_offset < 8 || ifd_offset > len - 2 {
+        return Ok(empty);
+    }
+    let entry_count = {
+        let span = source.read(ifd_offset, 2)?;
+        if span.len() < 2 {
+            return Ok(empty);
+        }
+        i64::from(read_u16(span, 0, little_endian))
+    };
+    let max_entries = i64::from(MAX_ENTRIES_PER_IFD);
+    let mut clamped = entry_count.min(max_entries);
+    if ifd_offset + 2 + clamped * 12 > len {
+        clamped = (len - ifd_offset - 2) / 12;
+        if clamped <= 0 {
+            return Ok(empty);
+        }
+    }
+    let bytes_needed = clamped * 12;
+    let Ok(bytes_i32) = i32::try_from(bytes_needed) else {
+        return Ok(empty);
+    };
+    let mut entries = Vec::with_capacity(usize::try_from(clamped).unwrap_or(0));
+    {
+        let span = source.read(ifd_offset + 2, bytes_i32)?;
+        let span_len = i64::try_from(span.len()).unwrap_or(0);
+        for i in 0..clamped {
+            let off = i * 12;
+            if off + 12 > span_len {
+                break;
+            }
+            let Ok(o) = i32::try_from(off) else { break };
+            entries.push(TiffEntry {
+                tag: read_u16(span, o, little_endian),
+                field_type: read_u16(span, o + 2, little_endian),
+                count: read_u32(span, o + 4, little_endian),
+                value_or_offset: read_u32(span, o + 8, little_endian),
+            });
+        }
+    }
+    let mut next = 0u32;
+    if entry_count <= max_entries {
+        let pos = ifd_offset + 2 + entry_count * 12;
+        if pos + 4 <= len {
+            let span = source.read(pos, 4)?;
+            if span.len() >= 4 {
+                let candidate = read_u32(span, 0, little_endian);
+                if candidate >= 8 && i64::from(candidate) <= len - 6 {
+                    next = candidate;
+                }
+            }
+        }
+    }
+    Ok(IfdRead {
+        entries,
+        next_ifd_offset: next,
+    })
 }
 
 /// Reads the FIRST element of a tag as an unsigned (type-dependent) integer; `None` for an unknown type, `count == 0`,
@@ -69,7 +133,24 @@ pub fn read_tag_unsigned(
     entry: &TiffEntry,
     little_endian: bool,
 ) -> Result<Option<i64>, RawHeaderError> {
-    todo!("W5-02a")
+    let size = i64::from(type_size(entry.field_type));
+    if size == 0 || entry.count == 0 {
+        return Ok(None);
+    }
+    if size * i64::from(entry.count) <= 4 {
+        let buf = inline_bytes(entry.value_or_offset, little_endian);
+        return Ok(read_unsigned(&buf, entry.field_type, little_endian));
+    }
+    let len = source.length();
+    let offset = i64::from(entry.value_or_offset);
+    if offset + size > len {
+        return Ok(None);
+    }
+    let Ok(size_i32) = i32::try_from(size) else {
+        return Ok(None);
+    };
+    let span = source.read(offset, size_i32)?;
+    Ok(read_unsigned(span, entry.field_type, little_endian))
 }
 
 /// Reads up to `max_items` elements of a tag (RATIONAL elements are rounded half away from zero; elements of a type
@@ -84,7 +165,35 @@ pub fn read_tag_unsigned_array(
     little_endian: bool,
     max_items: i32,
 ) -> Result<Vec<i64>, RawHeaderError> {
-    todo!("W5-02a")
+    let size = i64::from(type_size(entry.field_type));
+    let Ok(max_u32) = u32::try_from(max_items) else {
+        return Ok(Vec::new());
+    };
+    if size == 0 || entry.count == 0 || max_u32 == 0 {
+        return Ok(Vec::new());
+    }
+    let n = i64::from(entry.count.min(max_u32));
+    let total = size * i64::from(entry.count);
+    let mut result = Vec::new();
+    if total <= 4 {
+        let buf = inline_bytes(entry.value_or_offset, little_endian);
+        collect_items(&buf, n, size, entry.field_type, little_endian, &mut result);
+        return Ok(result);
+    }
+    let len = source.length();
+    let offset = i64::from(entry.value_or_offset);
+    let want = n * size;
+    if offset + want > len {
+        return Ok(result);
+    }
+    // DIVERGENCE: C# computes `n * size` in `int` (wraps for huge max_items); here it is `i64`, and a read size that
+    // does not fit the source's `i32` count gives an empty list.
+    let Ok(want_i32) = i32::try_from(want) else {
+        return Ok(result);
+    };
+    let span = source.read(offset, want_i32)?;
+    collect_items(span, n, size, entry.field_type, little_endian, &mut result);
+    Ok(result)
 }
 
 /// Sizes the TIFF-header EXIF block: starts at 0, at least `min(length, 128 KiB)`, grown to cover IFD0, the Exif IFD
@@ -98,20 +207,39 @@ pub fn compute_exif_block(
     little_endian: bool,
     ifd0_offset: i64,
 ) -> Result<ExifBlock, RawHeaderError> {
-    todo!("W5-02a")
+    let len = source.length();
+    let default_len = len.min(i64::from(DEFAULT_EXIF_BLOCK_BYTES));
+    let grown = (|| -> Result<i64, RawHeaderError> {
+        let mut length = default_len;
+        let (mut needed, exif_pointer) = exif_summary_extent(source, ifd0_offset, &IFD0_TAGS, little_endian)?;
+        if exif_pointer > 0 {
+            let (exif_needed, _) = exif_summary_extent(source, exif_pointer, &EXIF_TAGS, little_endian)?;
+            needed = needed.max(exif_needed);
+        }
+        if needed <= len.min(i64::from(MAX_EXIF_BLOCK_BYTES)) {
+            length = length.max(needed);
+        }
+        Ok(length)
+    })();
+    match grown {
+        Ok(length) => Ok(ExifBlock::new(0, length, true)),
+        // C# catches only InvalidDataException without an I/O cause; Canceled/ArgumentOutOfRange propagate.
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(ExifBlock::new(0, default_len, true)),
+        Err(e) => Err(e),
+    }
 }
 
 /// First entry with `tag` (a copy), `None` when absent.
 #[must_use]
 pub fn try_get_entry(entries: &[TiffEntry], tag: u16) -> Option<TiffEntry> {
-    todo!("W5-02a")
+    entries.iter().find(|e| e.tag == tag).copied()
 }
 
 /// `[offset, offset + length)` lies inside a file of `file_length` bytes; offset `0` is never a payload start.
 /// Overflow-free: `offset > 0 && length > 0 && offset <= file_length - length`.
 #[must_use]
 pub fn is_range_in_file(offset: i64, length: i64, file_length: i64) -> bool {
-    todo!("W5-02a")
+    offset > 0 && length > 0 && offset <= file_length.saturating_sub(length)
 }
 
 /// StripOffsets (0x0111) / StripByteCounts (0x0117) when the image is exactly one strip (both counts == 1) and the byte
@@ -124,7 +252,22 @@ pub fn try_read_single_strip(
     entries: &[TiffEntry],
     little_endian: bool,
 ) -> Result<Option<(i64, i64)>, RawHeaderError> {
-    todo!("W5-02a")
+    let (Some(offsets), Some(counts)) = (try_get_entry(entries, 0x0111), try_get_entry(entries, 0x0117)) else {
+        return Ok(None);
+    };
+    if offsets.count != 1 || counts.count != 1 {
+        return Ok(None);
+    }
+    let Some(strip) = read_tag_unsigned(source, &offsets, little_endian)? else {
+        return Ok(None);
+    };
+    let Some(bytes) = read_tag_unsigned(source, &counts, little_endian)? else {
+        return Ok(None);
+    };
+    if !is_range_in_file(strip, bytes, source.length()) {
+        return Ok(None);
+    }
+    Ok(Some((strip, bytes)))
 }
 
 /// PixelXDimension (0xA002) / PixelYDimension (0xA003) of the Exif IFD at `exif_ifd_offset` as `(width, height)`.
@@ -137,7 +280,31 @@ pub fn try_read_exif_pixel_dimensions(
     exif_ifd_offset: i64,
     little_endian: bool,
 ) -> Result<Option<(i32, i32)>, RawHeaderError> {
-    todo!("W5-02a")
+    let read = read_ifd_entries(source, exif_ifd_offset, little_endian)?;
+    let mut width = 0i32;
+    let mut height = 0i32;
+    for entry in &read.entries {
+        if entry.tag != 0xA002 && entry.tag != 0xA003 {
+            continue;
+        }
+        let Some(v) = read_tag_unsigned(source, entry, little_endian)? else {
+            continue;
+        };
+        let Ok(v) = i32::try_from(v) else { continue };
+        if v < 1 {
+            continue;
+        }
+        if entry.tag == 0xA002 {
+            width = v;
+        } else {
+            height = v;
+        }
+    }
+    Ok(if width > 0 && height > 0 {
+        Some((width, height))
+    } else {
+        None
+    })
 }
 
 /// DNG DefaultCropSize (0xC620) as `(width, height)`; `None` when absent, fewer than two values, or a value outside
@@ -150,7 +317,20 @@ pub fn try_read_default_crop_size(
     entries: &[TiffEntry],
     little_endian: bool,
 ) -> Result<Option<(i32, i32)>, RawHeaderError> {
-    todo!("W5-02a")
+    let Some(entry) = try_get_entry(entries, 0xC620) else {
+        return Ok(None);
+    };
+    let values = read_tag_unsigned_array(source, &entry, little_endian, 2)?;
+    if values.len() < 2 {
+        return Ok(None);
+    }
+    let (Ok(w), Ok(h)) = (i32::try_from(values[0]), i32::try_from(values[1])) else {
+        return Ok(None);
+    };
+    if w <= 0 || h <= 0 {
+        return Ok(None);
+    }
+    Ok(Some((w, h)))
 }
 
 /// `false` when the IFD carries a DefaultScale (0xC61E) that is not 1:1 (wrong type or count, offset outside `8..=length - 16`,
@@ -163,7 +343,26 @@ pub fn has_square_default_scale(
     entries: &[TiffEntry],
     little_endian: bool,
 ) -> Result<bool, RawHeaderError> {
-    todo!("W5-02a")
+    let Some(entry) = try_get_entry(entries, 0xC61E) else {
+        return Ok(true);
+    };
+    let len = source.length();
+    let offset = i64::from(entry.value_or_offset);
+    if entry.field_type != 5 || entry.count < 2 || offset < 8 || offset > len - 16 {
+        return Ok(false);
+    }
+    let span = source.read(offset, 16)?;
+    if span.len() < 16 {
+        return Ok(false);
+    }
+    let hn = read_u32(span, 0, little_endian);
+    let hd = read_u32(span, 4, little_endian);
+    let vn = read_u32(span, 8, little_endian);
+    let vd = read_u32(span, 12, little_endian);
+    if hn == 0 || hd == 0 || vn == 0 || vd == 0 {
+        return Ok(false);
+    }
+    Ok(u64::from(hn) * u64::from(vd) == u64::from(vn) * u64::from(hd))
 }
 
 /// Active sensor size: DefaultCropSize, else the Exif pixel size, else the raw IFD size. A candidate is ignored unless
@@ -177,7 +376,15 @@ pub fn choose_active_sensor_size(
     exif_width: i32,
     exif_height: i32,
 ) -> (i32, i32) {
-    todo!("W5-02a")
+    let fits =
+        |w: i32, h: i32| w > 0 && h > 0 && (raw_width <= 0 || raw_height <= 0 || (w <= raw_width && h <= raw_height));
+    if fits(crop_width, crop_height) {
+        (crop_width, crop_height)
+    } else if fits(exif_width, exif_height) {
+        (exif_width, exif_height)
+    } else {
+        (raw_width, raw_height)
+    }
 }
 
 /// First entry with `tag`, read with [`read_tag_unsigned`]; `None` when absent or unreadable.
@@ -190,7 +397,10 @@ pub fn read_tag_value(
     tag: u16,
     little_endian: bool,
 ) -> Result<Option<i64>, RawHeaderError> {
-    todo!("W5-02a")
+    match try_get_entry(entries, tag) {
+        Some(entry) => read_tag_unsigned(source, &entry, little_endian),
+        None => Ok(None),
+    }
 }
 
 /// ImageWidth (0x0100) / ImageLength (0x0101) as `(width, height)`; a missing, zero, negative or unreadable value is `0`,
@@ -203,7 +413,9 @@ pub fn read_image_size(
     entries: &[TiffEntry],
     little_endian: bool,
 ) -> Result<(i32, i32), RawHeaderError> {
-    todo!("W5-02a")
+    let width = read_tag_value(source, entries, 0x0100, little_endian)?;
+    let height = read_tag_value(source, entries, 0x0101, little_endian)?;
+    Ok((clamp_to_int(width), clamp_to_int(height)))
 }
 
 /// JPEGInterchangeFormat (0x0201) / JPEGInterchangeFormatLength (0x0202) as `(offset, length)`, required to fit the file
@@ -216,7 +428,16 @@ pub fn try_read_jpeg_interchange(
     entries: &[TiffEntry],
     little_endian: bool,
 ) -> Result<Option<(i64, i64)>, RawHeaderError> {
-    todo!("W5-02a")
+    let Some(offset) = read_tag_value(source, entries, 0x0201, little_endian)? else {
+        return Ok(None);
+    };
+    let Some(length) = read_tag_value(source, entries, 0x0202, little_endian)? else {
+        return Ok(None);
+    };
+    if !is_range_in_file(offset, length, source.length()) || !starts_with_soi(source, offset, length)? {
+        return Ok(None);
+    }
+    Ok(Some((offset, length)))
 }
 
 /// The range is at least 4 bytes, inside the source, and its first two bytes are `FF D8`.
@@ -224,7 +445,11 @@ pub fn try_read_jpeg_interchange(
 /// # Errors
 /// The source refused the read.
 pub fn starts_with_soi(source: &mut dyn RawHeaderSource, offset: i64, length: i64) -> Result<bool, RawHeaderError> {
-    todo!("W5-02a")
+    if length < 4 || !is_range_in_file(offset, length, source.length()) {
+        return Ok(false);
+    }
+    let span = source.read(offset, 2)?;
+    Ok(span.len() >= 2 && span[0] == 0xFF && span[1] == 0xD8)
 }
 
 /// A declared IFD size is only a hint for an embedded JPEG: when BOTH `width` and `height` are positive, the JPEG's own
@@ -247,11 +472,91 @@ pub fn reconcile_jpeg_size<F>(
 where
     F: FnOnce(&mut dyn RawHeaderSource, i64, i64) -> Result<Option<(i32, i32)>, RawHeaderError>,
 {
-    todo!("W5-02a")
+    if *width <= 0 || *height <= 0 {
+        return Ok(());
+    }
+    match read_frame(source, offset, length) {
+        Ok(Some((w, h))) => {
+            *width = w;
+            *height = h;
+            Ok(())
+        }
+        Ok(None) => Ok(()),
+        Err(RawHeaderError::InvalidData { io: None, .. }) => Ok(()),
+        Err(e) => Err(e),
+    }
 }
 
 /// Positive values clamped to `i32::MAX`; `None`, zero and negative give `0`.
 #[must_use]
 pub fn clamp_to_int(value: Option<i64>) -> i32 {
-    todo!("W5-02a")
+    match value {
+        Some(v) if v > 0 => i32::try_from(v).unwrap_or(i32::MAX),
+        _ => 0,
+    }
+}
+
+/// The 4 inline bytes of an entry's value field in the file's byte order.
+fn inline_bytes(value: u32, little_endian: bool) -> [u8; 4] {
+    if little_endian {
+        value.to_le_bytes()
+    } else {
+        value.to_be_bytes()
+    }
+}
+
+/// Decodes up to `n` items of `size` bytes from `span` into `out` (RATIONAL rounded half away from zero, items without an
+/// unsigned reading skipped).
+fn collect_items(span: &[u8], n: i64, size: i64, field_type: u16, little_endian: bool, out: &mut Vec<i64>) {
+    let span_len = i64::try_from(span.len()).unwrap_or(i64::MAX);
+    for i in 0..n {
+        if (i + 1) * size > span_len {
+            break;
+        }
+        let Ok(start) = usize::try_from(i * size) else { break };
+        let item = &span[start..];
+        if field_type == 5 {
+            if item.len() < 8 {
+                continue;
+            }
+            let num = read_u32(item, 0, little_endian);
+            let den = read_u32(item, 4, little_endian);
+            if den == 0 {
+                continue;
+            }
+            // Half away from zero (`MidpointRounding.AwayFromZero`); the quotient is within 0..=u32::MAX.
+            out.push((f64::from(num) / f64::from(den)).round() as i64);
+        } else if let Some(v) = read_unsigned(item, field_type, little_endian) {
+            out.push(v);
+        }
+    }
+}
+
+/// End of the IFD plus the out-of-line values of the `wanted` tags, and the 0x8769 pointer seen (0 when none).
+fn exif_summary_extent(
+    source: &mut dyn RawHeaderSource,
+    ifd: i64,
+    wanted: &[u16],
+    little_endian: bool,
+) -> Result<(i64, i64), RawHeaderError> {
+    let read = read_ifd_entries(source, ifd, little_endian)?;
+    if read.entries.is_empty() {
+        return Ok((0, 0));
+    }
+    let count = i64::try_from(read.entries.len()).unwrap_or(0);
+    let mut end = ifd + 2 + count * 12 + 4;
+    let mut exif_pointer = 0i64;
+    for entry in &read.entries {
+        if entry.tag == EXIF_POINTER_TAG {
+            exif_pointer = i64::from(entry.value_or_offset);
+        }
+        if !wanted.contains(&entry.tag) {
+            continue;
+        }
+        let bytes = i64::from(type_size(entry.field_type)) * i64::from(entry.count);
+        if bytes > 4 {
+            end = end.max(i64::from(entry.value_or_offset) + bytes);
+        }
+    }
+    Ok((end, exif_pointer))
 }

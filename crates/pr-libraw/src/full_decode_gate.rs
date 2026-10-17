@@ -9,17 +9,19 @@
 //! cancellable without disturbing the slot. Every acquisition returns a lease that releases exactly once.
 //!
 //! Thread model (docs/adr/R0003): blocking, no async. One `Mutex<GateState>` replaces the C# `lock (_sync)`; one `Condvar`
-//! replaces the per-waiter `SemaphoreSlim`. [`CancelToken`] is only a flag (contracts/README.md A7 not applied yet), so a
-//! queued waiter re-checks it every [`CANCEL_POLL_INTERVAL`]. The waiter-queued hook and every lease release run OUTSIDE the
-//! lock's critical section of the waiter that calls them; nothing here does file I/O.
+//! replaces the per-waiter `SemaphoreSlim`. [`CancelToken`] is only a flag (contracts/README.md A7/A10 not applicable yet:
+//! `CancelToken::wait_timeout` does not exist in `pr-core`), so a queued waiter re-checks it every [`CANCEL_POLL_INTERVAL`].
+//! DIVERGENCE: C# wakes a cancelled waiter at once; here it notices within 10 ms. Grants are never delayed (condvar).
+//! The waiter-queued hook and every lease release run OUTSIDE the lock's critical section of the waiter that calls them;
+//! nothing here does file I/O.
 //!
 //! No `unsafe`, no FFI: this file is plain Rust although it lives in the LibRaw decoder crate.
-#![allow(dead_code, unused_variables)] // stub: remove when the bodies are ported
 
 use std::collections::VecDeque;
 use std::fmt;
-use std::sync::atomic::AtomicBool;
-use std::sync::{Arc, Condvar, Mutex};
+use std::panic::{self, AssertUnwindSafe};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
 
 use pr_core::abstractions::SourceReadPriority;
@@ -61,7 +63,10 @@ pub enum GateError {
 impl fmt::Display for GateError {
     /// `Canceled` => the `Canceled` text ("operation canceled"); `Busy`/`WaiterHook` => `message`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Canceled => fmt::Display::fmt(&Canceled, f),
+            Self::Busy { message } | Self::WaiterHook { message } => f.write_str(message),
+        }
     }
 }
 
@@ -69,7 +74,7 @@ impl std::error::Error for GateError {}
 
 impl From<Canceled> for GateError {
     fn from(_: Canceled) -> Self {
-        todo!()
+        Self::Canceled
     }
 }
 
@@ -77,7 +82,11 @@ impl From<GateError> for DecodeError {
     /// `Canceled` => `DecodeError::Canceled`; `Busy { message }` => `DecodeError::busy_with(message)` (never fallbackable:
     /// W4-12b `is_fallbackable`, INV-12); `WaiterHook { message }` => `DecodeError::InvalidOperation { message }` (test seam only).
     fn from(error: GateError) -> Self {
-        todo!()
+        match error {
+            GateError::Canceled => DecodeError::Canceled,
+            GateError::Busy { message } => DecodeError::busy_with(message),
+            GateError::WaiterHook { message } => DecodeError::InvalidOperation { message },
+        }
     }
 }
 
@@ -129,37 +138,60 @@ struct Waiter {
     enqueued_at_completion: i64,
 }
 
+/// Lane length as the C# `int` count (saturating; a lane can never be that long in practice).
+fn count(lane: &VecDeque<Waiter>) -> i32 {
+    i32::try_from(lane.len()).unwrap_or(i32::MAX)
+}
+
 impl fmt::Debug for FullDecodeGate {
     /// Shows `max_queued_preloads`, `busy`, both lane lengths and `completions` (the hook is not `Debug`).
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        let state = self.inner.lock();
+        f.debug_struct("FullDecodeGate")
+            .field("max_queued_preloads", &self.inner.max_queued_preloads)
+            .field("busy", &state.busy)
+            .field("queued_viewers", &state.viewer_queue.len())
+            .field("queued_preloads", &state.preload_queue.len())
+            .field("completions", &state.completions)
+            .finish()
     }
 }
 
 impl FullDecodeGate {
     /// C# `new FullDecodeGate(maxQueuedPreloads)`.
     pub fn new(max_queued_preloads: i32) -> Self {
-        todo!()
+        Self::build(max_queued_preloads, None)
     }
 
     /// C# `new FullDecodeGate(maxQueuedPreloads, waiterQueued)` (test seam).
     pub fn with_waiter_queued(max_queued_preloads: i32, waiter_queued: WaiterQueuedHook) -> Self {
-        todo!()
+        Self::build(max_queued_preloads, Some(waiter_queued))
+    }
+
+    fn build(max_queued_preloads: i32, waiter_queued: Option<WaiterQueuedHook>) -> Self {
+        Self {
+            inner: Arc::new(GateInner {
+                state: Mutex::new(GateState::default()),
+                granted: Condvar::new(),
+                max_queued_preloads,
+                waiter_queued,
+            }),
+        }
     }
 
     /// C# `SlotsAvailable`: 1 when the slot is free, 0 while a lease (or a grant not yet picked up) holds it.
     pub fn slots_available(&self) -> i32 {
-        todo!()
+        if self.inner.lock().busy { 0 } else { 1 }
     }
 
     /// C# `QueuedViewers`.
     pub fn queued_viewers(&self) -> i32 {
-        todo!()
+        count(&self.inner.lock().viewer_queue)
     }
 
     /// C# `QueuedPreloads`.
     pub fn queued_preloads(&self) -> i32 {
-        todo!()
+        count(&self.inner.lock().preload_queue)
     }
 
     /// C# `Enter(priority, cancellationToken)`: blocks until the slot is granted.
@@ -171,15 +203,78 @@ impl FullDecodeGate {
     /// a cancellation: if the slot was already granted to this waiter it is passed on (`release_locked`), otherwise the
     /// waiter is removed from its lane at once (so it no longer counts toward the preload bound).
     pub fn enter(&self, priority: SourceReadPriority, cancel: &CancelToken) -> Result<FullDecodeLease, GateError> {
-        todo!()
+        cancel.check()?;
+        let id = {
+            let mut state = self.inner.lock();
+            if !state.busy {
+                state.busy = true;
+                return Ok(self.lease());
+            }
+
+            let preload = priority == SourceReadPriority::Preload;
+            if preload
+                && i64::try_from(state.preload_queue.len()).unwrap_or(i64::MAX)
+                    >= i64::from(self.inner.max_queued_preloads)
+            {
+                return Err(GateError::Busy {
+                    message: PRELOAD_QUEUE_BUSY_MESSAGE.to_owned(),
+                });
+            }
+            let id = state.next_waiter_id;
+            state.next_waiter_id = state.next_waiter_id.wrapping_add(1);
+            let waiter = Waiter {
+                id,
+                enqueued_at_completion: state.completions,
+            };
+            state.lane_mut(priority).push_back(waiter);
+            id
+        };
+
+        if let Some(hook) = &self.inner.waiter_queued {
+            match panic::catch_unwind(AssertUnwindSafe(|| hook(priority))) {
+                Ok(Ok(())) => {}
+                Ok(Err(message)) => {
+                    self.inner.abandon(id, priority);
+                    return Err(GateError::WaiterHook { message });
+                }
+                Err(payload) => {
+                    self.inner.abandon(id, priority);
+                    panic::resume_unwind(payload);
+                }
+            }
+        }
+
+        self.inner.wait_for_grant(id, priority, cancel)?;
+        Ok(self.lease())
+    }
+
+    fn lease(&self) -> FullDecodeLease {
+        FullDecodeLease {
+            gate: Some(Arc::clone(&self.inner)),
+            worked: AtomicBool::new(false),
+        }
     }
 }
 
 impl GateInner {
+    /// The gate lock; a poisoned lock is recovered (R0003): every critical section leaves the state consistent.
+    fn lock(&self) -> MutexGuard<'_, GateState> {
+        self.state.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
     /// C# `Release(worked)`: under the lock, `completions += 1` when `worked`, then `release_locked`; notifies the condvar
     /// when a waiter was granted.
     fn release(&self, worked: bool) {
-        todo!()
+        let granted = {
+            let mut state = self.lock();
+            if worked {
+                state.completions += 1;
+            }
+            state.release_locked()
+        };
+        if granted {
+            self.granted.notify_all();
+        }
     }
 
     /// Blocks the calling waiter until `pending_grant == Some(id)` (takes it: `pending_grant = None`, returns `Ok`) or
@@ -187,13 +282,52 @@ impl GateInner {
     /// checks `cancel` BEFORE the grant (C# `SemaphoreSlim.Wait(token)` throws on an already-canceled token even when the
     /// count is available); a grant made to a canceled waiter is passed on, never lost.
     fn wait_for_grant(&self, id: u64, priority: SourceReadPriority, cancel: &CancelToken) -> Result<(), Canceled> {
-        todo!()
+        let mut state = self.lock();
+        loop {
+            if cancel.is_canceled() {
+                let granted = Self::abandon_locked(&mut state, id, priority);
+                drop(state);
+                if granted {
+                    self.granted.notify_all();
+                }
+                return Err(Canceled);
+            }
+            if state.pending_grant == Some(id) {
+                state.pending_grant = None;
+                return Ok(());
+            }
+            state = self
+                .granted
+                .wait_timeout(state, CANCEL_POLL_INTERVAL)
+                .unwrap_or_else(PoisonError::into_inner)
+                .0;
+        }
+    }
+
+    /// [`abandon_locked`](Self::abandon_locked) under a fresh lock, then notifies when the slot was passed on.
+    fn abandon(&self, id: u64, priority: SourceReadPriority) {
+        let granted = {
+            let mut state = self.lock();
+            Self::abandon_locked(&mut state, id, priority)
+        };
+        if granted {
+            self.granted.notify_all();
+        }
     }
 
     /// Cleanup of a queued waiter that gives up (cancellation or hook failure), under the lock: pass on a racing grant,
     /// else remove `id` from the lane of `priority`. Returns whether a new grant was made (caller notifies).
     fn abandon_locked(state: &mut GateState, id: u64, priority: SourceReadPriority) -> bool {
-        todo!()
+        if state.pending_grant == Some(id) {
+            // The slot was handed to this waiter in the same instant as the failure: pass it on so it is not lost.
+            state.pending_grant = None;
+            return state.release_locked();
+        }
+        let lane = state.lane_mut(priority);
+        if let Some(index) = lane.iter().position(|waiter| waiter.id == id) {
+            lane.remove(index);
+        }
+        false
     }
 }
 
@@ -203,12 +337,36 @@ impl GateState {
     /// and the preload front is granted; otherwise the viewer front, else the preload front. Nobody waiting =>
     /// `busy = false`. A grant keeps `busy == true` and sets `pending_grant`. Returns whether a grant was made.
     fn release_locked(&mut self) -> bool {
-        todo!()
+        let overdue = self.preload_queue.front().is_some_and(|oldest| {
+            self.completions - oldest.enqueued_at_completion.max(self.last_promotion_completion)
+                >= MAX_PRELOAD_AGE_COMPLETIONS
+        });
+        let next = if overdue {
+            self.last_promotion_completion = self.completions;
+            self.preload_queue.pop_front()
+        } else {
+            self.viewer_queue.pop_front().or_else(|| self.preload_queue.pop_front())
+        };
+        match next {
+            None => {
+                self.busy = false;
+                false
+            }
+            Some(waiter) => {
+                // The slot stays busy: ownership moves straight to the waiter.
+                self.pending_grant = Some(waiter.id);
+                true
+            }
+        }
     }
 
     /// The lane a priority queues in (C#: `priority == Preload ? _preloadQueue : _viewerQueue`).
     fn lane_mut(&mut self, priority: SourceReadPriority) -> &mut VecDeque<Waiter> {
-        todo!()
+        if priority == SourceReadPriority::Preload {
+            &mut self.preload_queue
+        } else {
+            &mut self.viewer_queue
+        }
     }
 }
 
@@ -223,7 +381,10 @@ pub struct FullDecodeLease {
 impl fmt::Debug for FullDecodeLease {
     /// Shows `released` (`gate.is_none()`) and `worked`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("FullDecodeLease")
+            .field("released", &self.gate.is_none())
+            .field("worked", &self.is_worked())
+            .finish()
     }
 }
 
@@ -231,23 +392,25 @@ impl FullDecodeLease {
     /// C# `MarkWorked()`: this lease really ran a decode (past the memory guard, unpack started), so its release advances
     /// the aging clock. Idempotent; `SeqCst`.
     pub fn mark_worked(&self) {
-        todo!()
+        self.worked.store(true, Ordering::SeqCst);
     }
 
     /// C# `IsWorked` (test seam).
     pub fn is_worked(&self) -> bool {
-        todo!()
+        self.worked.load(Ordering::SeqCst)
     }
 
     /// Whether this lease still holds the slot (no C# twin; `false` after [`release`](Self::release)).
     pub fn is_held(&self) -> bool {
-        todo!()
+        self.gate.is_some()
     }
 
     /// C# `Dispose()`: releases the slot once (with the `worked` flag read now); later calls and the final `Drop` do
     /// nothing.
     pub fn release(&mut self) {
-        todo!()
+        if let Some(gate) = self.gate.take() {
+            gate.release(self.is_worked());
+        }
     }
 }
 
