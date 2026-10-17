@@ -27,7 +27,7 @@ use pr_imaging_raw::{
     RawHeaderError,
 };
 use pr_test_support::golden;
-use pr_test_support::raw::{TiffBytes, XorShift64, at, build_tiff, create_minimal_jpeg, golden_bytes, long, short};
+use pr_test_support::raw::{TiffBytes, XorShift64, at, build_tiff, create_minimal_jpeg, long, short};
 use serde_json::{Map, Value, json};
 
 // ---------------------------------------------------------------- helpers
@@ -938,6 +938,25 @@ fn golden_inputs() -> Vec<Value> {
         .clone()
 }
 
+/// Applies repeated-byte patches from the oracle input format, which `pr_test_support::raw::golden_bytes` does not yet support.
+fn orf_golden_bytes(node: &Value) -> Vec<u8> {
+    if let Some(hex) = node["hex"].as_str() {
+        return pr_test_support::raw::from_hex(hex);
+    }
+    let len = usize::try_from(node["len"].as_u64().expect("data len")).expect("length fits usize");
+    let mut bytes = vec![0; len];
+    for patch in node["patches"].as_array().into_iter().flatten() {
+        let at = usize::try_from(patch["at"].as_u64().expect("patch at")).expect("patch offset fits usize");
+        let value = pr_test_support::raw::from_hex(patch["hex"].as_str().expect("patch hex"));
+        let times = usize::try_from(patch["times"].as_u64().unwrap_or(1)).expect("repeat count fits usize");
+        let repeated = value.repeat(times);
+        let total = repeated.len();
+        let end = at.checked_add(total).expect("repeated patch end fits usize");
+        bytes[at..end].copy_from_slice(&repeated);
+    }
+    bytes
+}
+
 fn kind_name(kind: EmbeddedPreviewKind) -> &'static str {
     match kind {
         EmbeddedPreviewKind::Jpeg => "Jpeg",
@@ -1013,7 +1032,7 @@ fn run_read_case(bytes: Vec<u8>) -> Value {
 
 /// Runs one golden input and returns the fields to compare against the expected case.
 fn run_golden_case(input: &Value) -> Value {
-    let bytes = golden_bytes(&input["data"]);
+    let bytes = orf_golden_bytes(&input["data"]);
     match input["op"].as_str().expect("golden input op") {
         "can-read" => {
             let extension = input["ext"].as_str().expect("can-read ext");
