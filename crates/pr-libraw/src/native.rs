@@ -1116,3 +1116,26 @@ impl fmt::Debug for LibRawImage {
             .finish()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{DATA_PROBE_LIMIT, LibRawHandle};
+
+    // Kills the `probe_window` boundary mutants without the DLL: the window is exactly `0 <= offset` and
+    // `offset + 4 <= DATA_PROBE_LIMIT`, and an `offset + 4` overflow fails closed.
+    #[test]
+    fn probe_window_accepts_exactly_the_in_window_offsets() {
+        assert_eq!(LibRawHandle::probe_window(0), Some(0));
+        assert_eq!(LibRawHandle::probe_window(4), Some(4));
+        assert_eq!(LibRawHandle::probe_window(DATA_PROBE_LIMIT - 4), Some(65_532));
+        assert_eq!(LibRawHandle::probe_window(DATA_PROBE_LIMIT - 3), None);
+        assert_eq!(LibRawHandle::probe_window(DATA_PROBE_LIMIT - 1), None);
+        assert_eq!(LibRawHandle::probe_window(DATA_PROBE_LIMIT), None);
+        assert_eq!(LibRawHandle::probe_window(DATA_PROBE_LIMIT + 4), None);
+        assert_eq!(LibRawHandle::probe_window(i32::MAX - 3), None);
+        assert_eq!(LibRawHandle::probe_window(i32::MAX), None);
+        assert_eq!(LibRawHandle::probe_window(-1), None);
+        assert_eq!(LibRawHandle::probe_window(-4), None);
+        assert_eq!(LibRawHandle::probe_window(i32::MIN), None);
+    }
+}

@@ -221,6 +221,19 @@ fn try_read_raw_structure_null_pointer_is_none() {
     assert_eq!(try_read_raw_structure(&short), None);
 }
 
+// Rust-only edge: a block of exactly IPARAMS_READ_LEN (425) bytes, the length `raw_structure_with` passes, is read.
+#[test]
+fn try_read_raw_structure_block_of_exactly_the_read_length_is_read() {
+    for cdesc in [&b"RGB"[..], &b"RGBG"[..]] {
+        let block = iparams_block(IPARAMS_READ_LEN, 3, cdesc, BAYER_FILTERS);
+        assert_eq!(
+            try_read_raw_structure(&block),
+            Some(RawStructure::new(3, 0x9494_9494)),
+            "cdesc {cdesc:?}"
+        );
+    }
+}
+
 // C#: RgbBgraResamplerMutationGapTests.TryReadRawStructure_PlausibleColourDescription_ReturnsTheStructure (x4: G, AZ, RGB, RGBG).
 #[test]
 fn try_read_raw_structure_plausible_colour_description_returns_the_structure() {
@@ -608,6 +621,22 @@ fn wb_target_out_of_window_is_a_mismatch_native() {
     assert!(!handle.try_set_use_camera_wb_with(1, 8, 1, || true, wrong));
 
     assert_eq!(handle.read_data_i32(PINNED_WHITE_BALANCE_LAYOUT.use_camera_wb), Some(0));
+}
+
+// Rust-only: the raw `i32` access window on a real handle is exactly `0 <= offset && offset + 4 <= DATA_PROBE_LIMIT`.
+#[test]
+#[ignore = "native: needs libraw.dll 0.22.2 next to the test executable"]
+fn read_data_i32_window_edges_native() {
+    if !native_runtime_ready() {
+        return;
+    }
+    let handle = LibRawHandle::init(0).expect("libraw_init");
+
+    assert!(handle.read_data_i32(0).is_some());
+    assert!(handle.read_data_i32(DATA_PROBE_LIMIT - 4).is_some());
+    for offset in [-1, DATA_PROBE_LIMIT - 3, DATA_PROBE_LIMIT, i32::MAX - 3, i32::MAX] {
+        assert_eq!(handle.read_data_i32(offset), None, "offset {offset}");
+    }
 }
 
 // C#: LibRawRawStructureNativeTests.TryGetRawStructure_MosaicCorpusFile_IsBayerWithThreeOrFourColors (x4 corpus files). The final
