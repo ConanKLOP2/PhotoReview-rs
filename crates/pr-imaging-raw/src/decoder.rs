@@ -134,6 +134,11 @@ struct RawInfoKey {
     last_write_utc_ticks: i64,
 }
 
+/// C# `DecodePreview` rejects a cached container identity if either the file length or last-write time changed.
+fn file_identity_changed(file_stat: Option<(i64, i64)>, key: &RawInfoKey) -> bool {
+    file_stat.is_some_and(|(length, ticks)| length != key.length || ticks != key.last_write_utc_ticks)
+}
+
 /// C# `CachedRaw(RawContainerInfo Info, ExifSummary? Exif, bool ExifRead)`: what is remembered per file identity. `info`
 /// carries the previews with the JPEG headers already resolved; `exif_read` is true once a COMPLETE EXIF read happened
 /// (`exif` may then be `None` = "this file has no EXIF"). Shared behind an `Arc` (the LRU clones its values).
@@ -536,7 +541,7 @@ impl RawDecoder {
             }));
         }
         let file_stat = stat_file(request.path.to_string_lossy().as_ref());
-        if file_stat.is_some_and(|(len, ticks)| len != key.length || ticks != key.last_write_utc_ticks) {
+        if file_identity_changed(file_stat, key) {
             self.container_info_cache.remove(key);
             return Err(self.changed_while_reading(request.path.to_string_lossy().as_ref()));
         }
@@ -775,5 +780,25 @@ fn blank_path_error(param: &str) -> DecodeError {
         message: format!(
             "The value cannot be an empty string or composed entirely of whitespace. (Parameter '{param}')"
         ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{RawInfoKey, file_identity_changed};
+
+    #[test]
+    fn decode_preview_identity_change_detects_length_or_mtime_independently() {
+        // Rust-only mutation killer for C# RawDecoder.DecodePreview's file length OR last-write-time check.
+        let key = RawInfoKey {
+            path: r"C:\photos\sample.dng".to_owned(),
+            length: 128,
+            last_write_utc_ticks: 1_700_000_000,
+        };
+
+        assert!(!file_identity_changed(Some((128, 1_700_000_000)), &key));
+        assert!(file_identity_changed(Some((129, 1_700_000_000)), &key));
+        assert!(file_identity_changed(Some((128, 1_700_000_001)), &key));
+        assert!(!file_identity_changed(None, &key));
     }
 }
