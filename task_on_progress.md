@@ -184,5 +184,6 @@
 
 ## Wave 6 contract PR update (2026-10-18)
 - Wave 5 PR #26 merged into `origin/master` at `87c9bf4` while the Wave 6 contracts PR was being prepared.
-- Wave 6 contracts PR #27 (`integration/wave-6-contracts`) has squash auto-merge enabled. The base advance made the PR report `DIRTY`; this branch is being rebased onto the new master and conflicts are being resolved by preserving the merged Wave 5 progress/decision records and the Wave 6 contract updates.
-- Pre-rebase gates passed: fmt, workspace clippy, workspace tests (exit code 0), and C# asset sync. Gates will be rerun after conflict resolution.
+- Wave 6 contracts PR #27 (`integration/wave-6-contracts`) has squash auto-merge enabled and is rebased onto `87c9bf4` at head `e070f54`. The base advance made the PR report `DIRTY`; the two conflicts were resolved by preserving merged Wave 5 progress/decision records and Wave 6 contract updates.
+- Post-rebase gates passed: `cargo fmt --all --check`, workspace Clippy, workspace tests (4,847 passed, 0 failed, 420 ignored across 209 binaries), `tools/sync-from-csharp.ps1 -Check`, and `git diff --check`.
+- PR #27 last observed state: OPEN/BLOCKED with auto-merge enabled; CI is left to the app monitor. The dedicated `target-wave6-contracts` directory remains for cleanup after PR completion because recursive deletion was rejected by the command safety policy.
