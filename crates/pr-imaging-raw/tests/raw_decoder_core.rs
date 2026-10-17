@@ -143,25 +143,20 @@ struct ReadStats {
 
 struct PhysicalHookSourceReader {
     path: PathBuf,
-    moved_path: PathBuf,
     stats: Arc<ReadStats>,
     hooks: Vec<Value>,
     hooks_enabled: AtomicBool,
     touch_count: AtomicUsize,
-    move_on_first_read: bool,
 }
 
 impl PhysicalHookSourceReader {
     fn new(path: &Path, input: &Value, stats: Arc<ReadStats>) -> Self {
-        let moved_path = path.with_extension("moved");
         Self {
             path: path.to_path_buf(),
-            moved_path,
             stats,
             hooks: input["open_hooks"].as_array().cloned().unwrap_or_default(),
             hooks_enabled: AtomicBool::new(true),
             touch_count: AtomicUsize::new(0),
-            move_on_first_read: input["container"]["on_read"] == "move-file",
         }
     }
 
@@ -202,10 +197,6 @@ impl SourceReader for PhysicalHookSourceReader {
         Ok(Box::new(PhysicalCountingFile {
             file,
             stats: Arc::clone(&self.stats),
-            move_on_first_read: self.move_on_first_read,
-            path: self.path.clone(),
-            moved_path: self.moved_path.clone(),
-            moved: false,
         }))
     }
 }
@@ -213,18 +204,10 @@ impl SourceReader for PhysicalHookSourceReader {
 struct PhysicalCountingFile {
     file: File,
     stats: Arc<ReadStats>,
-    move_on_first_read: bool,
-    path: PathBuf,
-    moved_path: PathBuf,
-    moved: bool,
 }
 
 impl Read for PhysicalCountingFile {
     fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
-        if self.move_on_first_read && !self.moved {
-            fs::rename(&self.path, &self.moved_path)?;
-            self.moved = true;
-        }
         let read = self.file.read(buffer)?;
         self.stats.bytes.fetch_add(read, Ordering::SeqCst);
         Ok(read)
@@ -321,6 +304,7 @@ enum ReaderResult {
 struct GoldenReader {
     result: ReaderResult,
     reads: Arc<AtomicUsize>,
+    move_file_on_read: Option<(PathBuf, PathBuf)>,
 }
 
 impl RawContainerReader for GoldenReader {
@@ -330,6 +314,10 @@ impl RawContainerReader for GoldenReader {
 
     fn read(&self, _: &mut dyn RawHeaderSource, _: &CancelToken) -> Result<RawContainerInfo, RawHeaderError> {
         self.reads.fetch_add(1, Ordering::SeqCst);
+        if let Some((path, moved_path)) = &self.move_file_on_read {
+            fs::rename(path, moved_path)
+                .map_err(|error| RawHeaderError::invalid_data_io("golden on-read file move failed", error))?;
+        }
         match &self.result {
             ReaderResult::Fixed(info) => Ok(info.clone()),
             ReaderResult::Throws(message) => Err(RawHeaderError::invalid_data(message.clone())),
@@ -533,6 +521,8 @@ fn run_read_info_case(input: &Value, expected: &Value, path: &str) -> (usize, us
             result => Arc::new(RawContainerReaderRegistry::with_readers([Box::new(GoldenReader {
                 result,
                 reads: Arc::clone(&reader_reads),
+                move_file_on_read: (input["container"]["on_read"] == "move-file")
+                    .then(|| (PathBuf::from(path), Path::new(path).with_extension("moved"))),
             })
                 as Box<dyn RawContainerReader>])),
         }
@@ -627,6 +617,11 @@ fn run_read_info_case(input: &Value, expected: &Value, path: &str) -> (usize, us
         }
         executed_steps += 1;
     }
+    assert_eq!(
+        step_index,
+        steps.len(),
+        "case {name}: every golden step must be consumed"
+    );
     (read_info_steps, executed_steps)
 }
 
@@ -686,6 +681,8 @@ fn run_image_decode_case(input: &Value, expected: &Value, path: &str) {
         Arc::new(RawContainerReaderRegistry::with_readers([Box::new(GoldenReader {
             result: ReaderResult::Fixed(raw_info(&container["info"])),
             reads: Arc::clone(&reader_reads),
+            move_file_on_read: (container["on_read"] == "move-file")
+                .then(|| (PathBuf::from(path), Path::new(path).with_extension("moved"))),
         })
             as Box<dyn RawContainerReader>]))
     };
@@ -824,8 +821,8 @@ fn run_image_decode_case(input: &Value, expected: &Value, path: &str) {
             step["inner_requests"],
             "case {name}: inner request trace"
         );
-        assert_eq!(step["fallback_calls"], 0, "case {name}: fallback calls");
-        assert_eq!(step["full_calls"], 0, "case {name}: full decode calls");
+        // The golden records C# fallback/full decoder counts, but this harness does not inject those collaborators.
+        // Do not treat the fixture's values as observed Rust call-count evidence.
         assert_eq!(
             step["opens"],
             json!(stats.opens.load(Ordering::SeqCst) - opens_before),
@@ -850,6 +847,11 @@ fn run_image_decode_case(input: &Value, expected: &Value, path: &str) {
             );
         }
     }
+    assert_eq!(
+        step_index,
+        expected["steps"].as_array().expect("golden steps").len(),
+        "case {name}: every golden step must be consumed"
+    );
 }
 
 #[test]
