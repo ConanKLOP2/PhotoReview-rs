@@ -785,7 +785,26 @@ fn blank_path_error(param: &str) -> DecodeError {
 
 #[cfg(test)]
 mod tests {
-    use super::{RawInfoKey, file_identity_changed};
+    use std::sync::Arc;
+
+    use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
+    use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
+
+    use super::{CachedRaw, RawDecoder, RawInfoKey, file_identity_changed};
+    use crate::contracts::{EmbeddedPreview, EmbeddedPreviewKind, ExifBlock, PreviewColorSpace};
+    use crate::formats::{RawContainerInfo, RawFormat};
+
+    struct UnusedDecoder;
+
+    impl ImageDecoder for UnusedDecoder {
+        fn decode(&self, _: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+            unreachable!("the cache unit test does not decode images")
+        }
+
+        fn read_info(&self, _: &str) -> Result<ImageInfo, DecodeError> {
+            unreachable!("the cache unit test does not read image info")
+        }
+    }
 
     #[test]
     fn decode_preview_identity_change_detects_length_or_mtime_independently() {
@@ -800,5 +819,43 @@ mod tests {
         assert!(file_identity_changed(Some((129, 1_700_000_000)), &key));
         assert!(file_identity_changed(Some((128, 1_700_000_001)), &key));
         assert!(!file_identity_changed(None, &key));
+    }
+
+    #[test]
+    fn remember_resolved_previews_updates_the_cached_container_info() {
+        // C# behavior: RawDecoderResolvedInfoCacheTests.SelectPreview_ResolvedList_IsReusableWithoutAnyFurtherRead.
+        // The production helper's cache side effect is what lets the next selection avoid walking the JPEG again.
+        let decoder = RawDecoder::new(Arc::new(UnusedDecoder));
+        let key = RawInfoKey {
+            path: r"C:\photos\sample.dng".to_owned(),
+            length: 128,
+            last_write_utc_ticks: 1_700_000_000,
+        };
+        let unresolved = EmbeddedPreview::new(0, 32, 64, EmbeddedPreviewKind::Jpeg, 0, 0, PreviewColorSpace::Unknown);
+        let cached = Arc::new(CachedRaw {
+            info: RawContainerInfo {
+                format: RawFormat::Dng,
+                sensor_width: 0,
+                sensor_height: 0,
+                orientation: 1,
+                previews: vec![unresolved.clone()],
+                exif_blocks: Vec::<ExifBlock>::new(),
+            },
+            exif: None,
+            exif_read: false,
+        });
+        let mut resolved = unresolved;
+        resolved.width = 320;
+        resolved.height = 240;
+        resolved.color_space = PreviewColorSpace::Srgb;
+        resolved.header_resolved = true;
+
+        let returned = decoder.remember_resolved_previews(&key, cached, vec![resolved.clone()]);
+        assert_eq!(returned.info.previews, [resolved.clone()]);
+        let cached = decoder
+            .container_info_cache
+            .try_get(&key)
+            .expect("resolved container info is stored for the same file identity");
+        assert_eq!(cached.info.previews, [resolved]);
     }
 }
