@@ -221,6 +221,10 @@ pub(crate) fn read_batched(
     expected: usize,
     cancellation: &CancelToken,
 ) -> Result<Option<Vec<String>>, SelectionReadError> {
+    // Cancellation before starting avoids opening the enumerator or parsing the folder PIDL.
+    if cancellation.is_canceled() {
+        return Err(canceled_error());
+    }
     let enumerator = match call_items(folder_view) {
         Ok(pointer) => OwnedCom(pointer),
         Err(_) => return Ok(None),
