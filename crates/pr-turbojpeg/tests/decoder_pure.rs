@@ -25,10 +25,11 @@ use pr_test_support::{TempRoot, golden};
 use pr_turbojpeg::decoder::messages;
 use pr_turbojpeg::decoder::{
     DecompressorFactory, DimensionsProbe, EXTENDED_HEADER_CAP, FineScaleError, FineScaler, HEADER_READ_CAP,
-    HEADER_READ_CHUNK, HeaderScan, MAX_PROGRESSIVE_SCANS, MAX_SOURCE_BYTES, OutputBuffer, SUPPORTED_SCALING_FACTORS,
-    SegmentStep, SourceReadError, TurboJpegDecoder, calculate_output_buffer, extend_header_area, file_exists,
-    grow_header_area, header_needs_more_data, output_fits, read_all_bytes, read_exif_orientation, read_header_area,
-    scaled_size, scan_header, select_scaling_factor, source_fits, try_read_segment,
+    HEADER_READ_CHUNK, HeaderScan, MAX_PROGRESSIVE_SCANS, MAX_SOURCE_BYTES, OutputBuffer, OversizedOutput,
+    SUPPORTED_SCALING_FACTORS, SegmentStep, SourceReadError, TurboJpegDecoder, calculate_output_buffer,
+    extend_header_area, file_exists, grow_header_area, header_needs_more_data, output_fits, read_all_bytes,
+    read_exif_orientation, read_header_area, scaled_size, scan_header, select_scaling_factor, source_fits,
+    try_read_segment,
 };
 use pr_turbojpeg::native::TjScalingFactor;
 use serde_json::Value;
@@ -470,6 +471,20 @@ fn decode_output_buffer_has_bgr32_stride_and_eight_factor_sweep_does_not_panic()
 }
 
 #[test]
+fn calculate_output_buffer_saturates_stride_for_extreme_public_scaling_factor() {
+    // Rust-only: the public helper must preserve its saturated result for an extreme representable scaling factor.
+    let error = calculate_output_buffer(i32::MAX, 1, TjScalingFactor::new(i32::MAX, 1)).unwrap_err();
+    assert_eq!(
+        error,
+        OversizedOutput {
+            width: 4_611_686_014_132_420_609,
+            height: i64::from(i32::MAX),
+            buffer_length: i64::MAX,
+        }
+    );
+}
+
+#[test]
 fn select_scaling_factor_smallest_covering_rows_table() {
     // C#: DecoderOutputFormatTests.TurboJpegSelectsSmallestScalingFactorCoveringTarget (7 rows, pure)
     let rows = [
@@ -708,6 +723,18 @@ fn try_read_segment_and_friends_never_panic_on_every_prefix_of_every_fixture() {
             }
         }
     }
+}
+
+#[test]
+fn try_read_segment_at_zero_with_fill_bytes_does_not_underflow() {
+    // Rust-only: `try_read_segment` documents total behavior for any offset, including zero.
+    let jpeg = [0xFF, 0xFF, 0xD9];
+    let mut offset = 0;
+    assert_eq!(
+        try_read_segment(&jpeg, &mut offset),
+        SegmentStep::End { needs_more_data: false }
+    );
+    assert_eq!(offset, 1);
 }
 
 #[test]
