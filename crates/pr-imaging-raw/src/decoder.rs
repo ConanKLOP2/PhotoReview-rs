@@ -790,11 +790,33 @@ mod tests {
     use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
     use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
 
-    use super::{CachedRaw, RawDecoder, RawInfoKey, file_identity_changed};
+    use super::{CachedRaw, EnglishRawDecoderTexts, RawDecoder, RawDecoderOptions, RawInfoKey, file_identity_changed};
     use crate::contracts::{EmbeddedPreview, EmbeddedPreviewKind, ExifBlock, PreviewColorSpace};
     use crate::formats::{RawContainerInfo, RawFormat};
 
     struct UnusedDecoder;
+
+    #[test]
+    fn raw_decoder_options_debug_reports_presence_of_each_option() {
+        let defaults = format!("{:?}", RawDecoderOptions::default());
+        assert!(defaults.starts_with("RawDecoderOptions {"));
+        for field in [
+            "source_reader: false",
+            "registry: false",
+            "source_bytes_cache: false",
+            "preview_fallback: false",
+            "no_preview_decoder: false",
+            "texts: false",
+        ] {
+            assert!(defaults.contains(field), "missing default debug field: {field}");
+        }
+
+        let configured = RawDecoderOptions {
+            texts: Some(Arc::new(EnglishRawDecoderTexts)),
+            ..RawDecoderOptions::default()
+        };
+        assert!(format!("{configured:?}").contains("texts: true"));
+    }
 
     impl ImageDecoder for UnusedDecoder {
         fn decode(&self, _: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {

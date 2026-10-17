@@ -464,6 +464,14 @@ fn run_case(case: &Value, expected: &Value) {
                     "{name} step {index}"
                 );
             }
+            if want["localized_key"] == "image.error.rawNoPreview" {
+                // C#: RawDecoderNoPreviewFallbackTests.Decode_NoEmbeddedPreviewWithoutAnyFallback_KeepsTheTypedError.
+                assert_eq!(
+                    error.describe(),
+                    "This RAW file has no embedded preview, so it cannot be shown.",
+                    "{name} step {index}: localized no-preview description"
+                );
+            }
         } else {
             let image = result.expect("golden expects decoded image");
             assert_eq!(
