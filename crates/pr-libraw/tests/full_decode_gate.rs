@@ -1,9 +1,9 @@
-//! Red tests of W5-16a `FullDecodeGate` (contracts/W5-16a.md): port of the managed single-slot gate tests of the C# baseline
+//! Ported tests of W5-16a `FullDecodeGate` (contracts/W5-16a.md): port of the managed single-slot gate tests of the C# baseline
 //! d92d6aae (`tests/PhotoReview.Imaging.Tests/Raw/LibRawFullDecodeGateTests.cs`, `LibRawGateAndGuardMutationGapTests.cs`
 //! FullDecodeGate half, `RawErrorHandlingReviewTests.cs`), the new Rust-only tests of the contract (`// pins:`), and the golden
 //! driver over `tests/golden/full-decode-gate.json` (30 cases, inputs in `tests/golden-inputs/full-decode-gate.json`).
 //!
-//! Red tests (W5-16a): they compile against the stub and fail through `todo!()` until the implementation lands.
+//! These tests cover the deterministic managed gate without requiring libraw.dll or the corpus.
 //! Deterministic: no sleeps, no polling, no elapsed-time asserts. Every wait is a permit or a channel event with a 30 s bound.
 //! Needs neither libraw.dll nor the corpus.
 

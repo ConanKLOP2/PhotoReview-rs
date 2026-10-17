@@ -35,7 +35,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 
 - `cargo fmt`, `cargo clippy --workspace --all-targets -- -D warnings`: zero warnings, CI enforces it.
 - New `#[allow(...)]` needs a one-line justification comment.
-- Every `unsafe` block has a `// SAFETY:` comment (FFI only: WIC/COM, Shell, TurboJPEG, LibRaw).
+- Every `unsafe` block has a `// SAFETY:` comment (FFI only: WIC/COM, Shell, TurboJPEG, LibRaw, and the test-only Win32 ProcessStatus helper).
 - `pr-core` must not depend on UI or Windows-only crates; Windows code lives in `pr-platform-win` and decoder crates.
 - Paths: compare case-insensitively the way C# `OrdinalIgnoreCase` does; machine-read files (journal, log, CSV) use
   invariant formatting, never the user's locale. UI text comes from the language catalogs.

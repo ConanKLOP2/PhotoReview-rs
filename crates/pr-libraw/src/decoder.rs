@@ -332,6 +332,7 @@ impl LibRawDecoder {
             return Err(DecodeError::NotSupported {
                 message: ORIENTATION_REQUIRED_MESSAGE.to_owned(),
                 user_text: None,
+                inner_hresult: None,
             });
         }
         canceled_check(cancel)?;

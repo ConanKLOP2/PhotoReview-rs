@@ -3179,6 +3179,7 @@ impl ImageDecoder for GoldenDecoder {
                 return Err(DecodeError::NotSupported {
                     message: "test: not supported".to_owned(),
                     user_text: None,
+                    inner_hresult: None,
                 });
             }
             Some("Canceled") => return Err(DecodeError::Canceled),

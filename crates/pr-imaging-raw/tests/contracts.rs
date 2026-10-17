@@ -1,7 +1,7 @@
-//! Red tests for W5-01b (`contracts.rs`): `EmbeddedPreview`, `ExifBlock`, the header error, the header and reader traits and
+//! Contract tests for W5-01b (`contracts.rs`): `EmbeddedPreview`, `ExifBlock`, the header error, the header and reader traits and
 //! `InMemoryRawHeaderSource` (C# baseline d92d6aae). Goldens: `raw-contract-records` (inputs in
 //! `tests/golden-inputs/raw-contract-records.json`, the `a`/`b` argument lists the oracle used) and `raw-header-budget`.
-//! Stub bodies are `todo!()`, so tests that reach them fail until the porter fills them in.
+//! The contract types and in-memory source are implemented; these tests pin their behavior and C#-compatible record shapes.
 
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::io;
@@ -382,6 +382,7 @@ impl RawPreviewFallback for UnsupportedFallback {
         Err(DecodeError::NotSupported {
             message: format!("no thumbnail for {format:?} at {path}"),
             user_text: None,
+            inner_hresult: None,
         })
     }
 }

@@ -299,10 +299,22 @@ fn describe_without_text_is_the_message_and_not_localized() {
     let plain = DecodeError::NotSupported {
         message: "m".to_owned(),
         user_text: None,
+        inner_hresult: None,
     };
     assert!(!plain.is_localized());
     assert_eq!(plain.describe(), "m");
     assert_eq!(DecodeError::missing_codec().describe(), MISSING_IMAGE_CODEC_MESSAGE);
+}
+
+#[test]
+fn not_supported_inner_hresult_survives_localization_and_wrappers() {
+    let error = DecodeError::not_supported_with_inner_hresult("icc failed", -2_003_292_336);
+    assert_eq!(error.inner_hresult(), Some(-2_003_292_336));
+    let localized = error.with_user_text(text("localized"));
+    assert_eq!(localized.inner_hresult(), Some(-2_003_292_336));
+    let wrapped = localized.attach_source_bytes(Arc::from([1_u8, 2]));
+    assert_eq!(wrapped.inner_hresult(), Some(-2_003_292_336));
+    assert_eq!(wrapped.describe(), "localized");
 }
 
 #[test]
@@ -364,6 +376,7 @@ fn with_user_text_localizes_every_variant_and_keeps_type_predicates_and_message(
             DecodeError::NotSupported {
                 message: "m".into(),
                 user_text: None,
+                inner_hresult: None,
             },
             false,
             true,
