@@ -303,10 +303,10 @@ pub fn walk_jpeg_header(
     }
 
     let mut frame: Option<(i32, i32)> = None;
-    let mut pos = offset + 2;
+    let mut pos = offset.wrapping_add(2);
     let mut fill_bytes: i32 = 0;
     let mut segment: i32 = 0;
-    while segment < MAX_JPEG_MARKER_SEGMENTS && pos + 4 <= end {
+    while segment < MAX_JPEG_MARKER_SEGMENTS && pos.wrapping_add(4) <= end {
         let head: [u8; 4] = match source.read(pos, 4)?.try_into() {
             Ok(h) => h,
             Err(_) => break,
@@ -321,7 +321,7 @@ pub fn walk_jpeg_header(
             if fill_bytes > MAX_JPEG_FILL_BYTES {
                 break;
             }
-            pos += 1;
+            pos = pos.wrapping_add(1);
             continue;
         }
         fill_bytes = 0;
@@ -329,12 +329,12 @@ pub fn walk_jpeg_header(
             break;
         }
         if marker == 0x01 || (0xD0..=0xD8).contains(&marker) {
-            pos += 2;
+            pos = pos.wrapping_add(2);
             segment += 1;
             continue;
         }
         let seg_len = (i32::from(head[2]) << 8) | i32::from(head[3]);
-        if seg_len < 2 || pos + 2 + i64::from(seg_len) > end {
+        if seg_len < 2 || pos.wrapping_add(2).wrapping_add(i64::from(seg_len)) > end {
             break;
         }
         let payload_len = seg_len - 2;
@@ -342,7 +342,7 @@ pub fn walk_jpeg_header(
             if !need_frame || marker > 0xC2 || payload_len < 5 {
                 break;
             }
-            let bytes = source.read(pos + 4, 5)?;
+            let bytes = source.read(pos.wrapping_add(4), 5)?;
             if let Some(&[_, h1, h0, w1, w0]) = bytes.first_chunk::<5>() {
                 let height = (i32::from(h1) << 8) | i32::from(h0);
                 let width = (i32::from(w1) << 8) | i32::from(w0);
@@ -353,7 +353,7 @@ pub fn walk_jpeg_header(
             break;
         }
         if marker == 0xE1 && payload_len >= 14 && color_space == PreviewColorSpace::Unknown {
-            let payload = source.read(pos + 4, payload_len)?;
+            let payload = source.read(pos.wrapping_add(4), payload_len)?;
             if is_adobe_rgb_exif(payload) {
                 color_space = PreviewColorSpace::AdobeRgb;
                 if !need_frame {
@@ -361,7 +361,7 @@ pub fn walk_jpeg_header(
                 }
             }
         }
-        pos += 2 + i64::from(seg_len);
+        pos = pos.wrapping_add(2).wrapping_add(i64::from(seg_len));
         segment += 1;
     }
     Ok(JpegHeaderWalk { frame, color_space })
