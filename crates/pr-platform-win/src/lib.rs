@@ -18,6 +18,12 @@ pub(crate) mod instance_keys;
 pub(crate) mod forward_pipe;
 
 #[cfg(windows)]
+pub mod forward_server;
+
+#[cfg(windows)]
+pub mod recycle_bin;
+
+#[cfg(windows)]
 pub mod recycle_bin_settings;
 
 #[cfg(windows)]
