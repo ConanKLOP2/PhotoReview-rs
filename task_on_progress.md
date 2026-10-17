@@ -45,8 +45,12 @@
 2. The main checkout may still hold stray edits an agent left (`crates/pr-imaging/src/service/disk.rs`, `service/mod.rs`,
    `docs/PARITY.md`); compare with `integration/wave-4` / master before discarding.
 3. P-17 sync patch, then Phase 0 spikes, then Waves 5+6 (contracts workflow, wire + PR, port workflow, PR), 7, 8.
-4. Fix the stale last sentence of AGENTS.md "Disk hygiene" (it still mentions a per-loop-tick disk check; the loop no
-   longer does that).
+4. Continue Wave 5 completion, then proceed through Wave 6 and later waves.
+
+## Cập nhật theo yêu cầu tiếp tục (2026-10-17)
+- W5-16c private-bytes/portrait corpus tests were implemented and pushed on `integration/wave-5` at `f1e5053`. Focused and workspace gates passed; LibRaw corpus execution remains unverified here.
+- W6-05 implemented four `pr-platform-win` adapters for Windows memory probing, natural sorting, DWM dark title bar, and live-operation named events. Contract: `contracts/W6-05.md`; parity rows P-10/P-12 updated. Full format, clippy, workspace tests, and asset sync check passed on 2026-10-17; native-only tests remain ignored pending their native dependencies.
+- Project guidance and autopilot instructions now use consistent build artifact cleanup wording.
 
 ## Wave 5 contracts (branch `wave5/contracts`, based on master `bb6a865`)
 - Wired: 29 contracts (`contracts/W5-01a..W5-17.md`; W5-01, 02, 10, 11, 12, 13, 14, 15, 16 split into sub-units), stubs in
@@ -84,3 +88,8 @@
   merged"), W5-14b (red tests blocked). Git history shows W5-02a/03/07/08/09/11a/11c merges from earlier runs; their verdicts are not in the final reports.
 - NOT run: corpus tests (P-30), `#[ignore]` native tests (no pinned DLLs staged in this run), mutation for units without a report.
 - Next: land W5-04..06, registry, RawDecoder chain (12b1/12b2/12c), TurboJPEG decoder (14b); commit the W5-16c killing tests.
+
+## Wave 6 continuation (2026-10-17)
+- W6-05 is implemented on branch `wu/W6-05`, based on `origin/master` at `a5f789a`. Workspace gates passed: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked`, and `tools/sync-from-csharp.ps1 -Check` (assets match). Native-only cases remain ignored where DLLs/OS resources are required.
+- Documentation and autopilot scripts were reviewed for consistent build artifact cleanup wording.
+- Next: finish review and commit/push W6-05; continue remaining Wave 5 units, then Wave 6, following the dependency graph. Do not claim Wave 5 complete while its documented gaps remain.

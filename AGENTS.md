@@ -78,12 +78,11 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
   PATH in the Bash tool. Run `tools/*.ps1` with `powershell -NoProfile -ExecutionPolicy Bypass -File`, from the
   PowerShell tool (the Bash `tar` breaks `oracle.ps1`).
 
-## Disk hygiene (C: filled up once: 33 GB of per-worktree debug builds)
+## Build artifact hygiene
 
 - Build with `CARGO_PROFILE_DEV_DEBUG=line-tables-only` and `CARGO_INCREMENTAL=0` in agent worktrees; one
-  `CARGO_TARGET_DIR` per worktree, deleted as soon as that unit's verdict is in. No fixed cap on live target dirs (P-29); keep >= 20 GB free.
-- After a PR merges: remove its worktrees, branches and `target-wave-*` dirs. Check free space (`Get-PSDrive C`) at
-  every loop tick; below 20 GB, delete target dirs idle for 2 hours (never one a cargo process is writing).
+  `CARGO_TARGET_DIR` per worktree, deleted as soon as that unit's verdict is in. No fixed cap on live target dirs (P-29).
+- After a PR merges: remove its worktrees, branches and `target-wave-*` dirs.
 
 ## Model cap (P-34)
 Agents and subagents use Sonnet 5.5 at medium effort or lower (Haiku for mechanical work). Never use Opus or another heavier model without asking the user first. Mutation testing in verify steps is time-boxed (about 15 minutes, only the unit's owned files).

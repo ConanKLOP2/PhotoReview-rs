@@ -1,13 +1,13 @@
 # Autopilot kit (run the port end to end with Claude Code)
 
 What was used for Waves 2-4 of the PhotoReview-rs port, kept here so the next run starts from files instead of from
-memory. Rules that the agents follow are in `AGENTS.md` ("Pull requests", "Disk hygiene") and
+memory. Rules that the agents follow are in `AGENTS.md` ("Pull requests", "Build artifact hygiene") and
 `docs/MULTI-AGENT-PLAN.md`; unconfirmed decisions live in `docs/PROPOSED-DECISIONS.md`.
 
 ## Files
 | File | Purpose |
 |---|---|
-| `loop-prompt.md` | The prompt of the 15-minute overnight loop (one tick = PR hygiene, drive the next step of the plan; no disk cleanup step, see AGENTS.md "Disk hygiene" for the rules agents follow) |
+| `loop-prompt.md` | The prompt of the 15-minute overnight loop (one tick = PR hygiene, drive the next step of the plan; see AGENTS.md for build artifact cleanup after verdict/merge) |
 | `workflows/waveN-contracts.js` | Contract Writer workflow: writers (Sonnet/Opus) per unit, reviewer, wiring (stubs, oracle goldens, PR). Wave 3 and 4 versions; Wave 2 was `wave2-missing-contracts.js` |
 | `workflows/waveN-port.js` | Port workflow: red tests (Haiku), implement, adversarial verify (mutation), repair, integrate per tier, finish. Wave 2/3/4 versions |
 | `workflows/wave4-finish.js`, `wave2-repair.js` | Follow-ups: merge units that were "blocked" by tier stubs, repair FAIL verdicts, gate |
