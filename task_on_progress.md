@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-16 (branch `wave5/contracts`; Wave 4 port is merged, PR #20)
+**Updated:** 2026-10-17 (branch `integration/wave-5`; Wave 5 integration continues)
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-33: unconfirmed proposals, all acted on),
@@ -129,14 +129,14 @@
 - Added the W5-12b1 golden harness (`raw_decoder_core.rs`): the current run passes 12 independent `read_info` golden steps and explicitly gates 40 end-to-end cases until fallback/physical hooks are available. This is partial core evidence, not a 50-case full pass.
 - Re-ran the full `cargo test -p pr-imaging-raw --locked` on the integrated tree; all test binaries completed with passing results. The 8.3k-token test log was truncated by the terminal view, so no aggregate count is recorded here. W5-12b1's two blank-path tests and W5-12c's 116-case routing golden were visible and passed.
 
-## Wave 5 integration update (2026-10-17, W5-12b2 fallback)
+## Wave 5 integration update (2026-10-17, W5-12b2 fallback; historical checkpoint, status superseded by later entries)
 - Cherry-picked fallback implementation `42503cd` as `dd56406` on `integration/wave-5` and pushed the branch (`71422c0..dd56406`). The change implements preview retry, ORF thumbnail, no-preview and full-decode paths plus classification/candidate helpers.
 - Validation on the integration worktree: `cargo fmt --all --check`, `cargo test -p pr-imaging-raw --locked`, and `cargo clippy -p pr-imaging-raw --all-targets --locked -- -D warnings` all passed. This confirms the current crate test suite and lint, not the W5-12b parity contract: the 75-case fallback golden harness and complete fallback integration twins are still being added.
 - Two independent agents are preparing the fallback golden/integration harness and a read-only semantic review; a third is expanding W5-12b1 core golden coverage. Their changes remain isolated pending lead review and integration.
-- A8 remains unresolved: three wrapped-COM-HRESULT cases are gated until the user chooses whether to add inner-HRESULT metadata or record a parity difference. No decision or ADR has been recorded yet.
+- At this checkpoint A8 was unresolved; the later A8 update records the user's option A, implementation decision D59, and all three enabled golden rows.
 - Added and integrated `raw_decoder_fallback.rs` (`376ff08` as `792ae15`): 71/75 golden cases now execute against `RawDecoder`; 3 A8 cases and the physical identity-rewrite hook case remain gated. Integration reruns of the fallback target and RAW crate clippy passed.
 - Expanded `raw_decoder_core.rs` (`321dce6` as `b8bcc38`): 21/67 steps pass across 16/50 cases (13 `read_info`, 8 early-error decode); 34 cases/46 steps remain gated and are enumerated by the test. A negative preview offset case remains gated because the source-open count differs from the C# oracle.
-- Updated the I-13/I-14/INV-1/INV-8/INV-12 parity row with this partial coverage. Remaining work includes the core decode/identity cases, full C# test twins, A8 resolution, targeted mutation review, and final workspace gates.
+- At this checkpoint core decode/identity cases and A8 were still open; later entries below record all core/fallback golden steps enabled and the current mutation work still underway.
 
 ## Wave 5 integration update (2026-10-17, A8 inner HRESULT)
 - User confirmed A8 option A. Added `DecodeError::NotSupported.inner_hresult`, preservation through `with_user_text`, `WithSourceBytes`, and PreviewImageService error reconstruction; WIC ICC failures keep the HRESULT only when the cause is COM. Recorded D59 and marked P-32 confirmed.
