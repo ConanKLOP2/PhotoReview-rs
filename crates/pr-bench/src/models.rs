@@ -9,16 +9,18 @@
 //!   [`ImagesPerSampleLookup`] callback that every function needing the derived image count takes.
 //! * `BenchmarkStatistics.Percentile` is `pr_core::diagnostics::bench_stats::percentile` (W1-15, merged).
 //! * The `ReviewMetricsSnapshot` JSON is the `serde::Serialize` impl of W2-17 (merged).
-// D11: allowed only while bodies are `todo!()`; the porter removes this line with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
 
-use std::fmt;
+use std::cmp::Ordering;
+use std::fmt::{self, Write as _};
 use std::sync::OnceLock;
 
 use pr_core::diagnostics::metrics::ReviewMetricsSnapshot;
 use pr_core::model::enums::LoadingMode;
+use pr_core::model::serde_ext::LenientEnum;
 use pr_core::sync::{CancelToken, Canceled};
 use pr_core::time::DateTimeUtc;
+use pr_perf::report::json_string_literal;
+use pr_perf::rules::fmt_double;
 
 /// Default of `BenchmarkProfile.WarmupCount`.
 pub const DEFAULT_WARMUP_COUNT: i32 = 1;
@@ -136,7 +138,14 @@ impl BenchmarkProfile {
     /// `BenchmarkProfileExtensions.TargetWidth`: `preview-light` 960, `preview-balanced` 1600, `preview-quality` 2400,
     /// `preview-high-quality` 3200, `original-correctness` 0, anything else 1920. The id match is ORDINAL (case-sensitive).
     pub fn target_width(&self) -> i32 {
-        todo!("W7-01a: match self.id")
+        match self.id.as_str() {
+            "preview-light" => 960,
+            "preview-balanced" => 1600,
+            "preview-quality" => 2400,
+            "preview-high-quality" => 3200,
+            "original-correctness" => 0,
+            _ => 1920,
+        }
     }
 }
 
@@ -195,7 +204,22 @@ impl std::error::Error for BenchmarkProfileError {}
 ///    message `"Invalid benchmark settings for profile '{id}'"`.
 /// 3. else `Ok(())`. `warmup_count` and everything else are not checked.
 pub fn validate_profile(profile: &BenchmarkProfile) -> Result<(), BenchmarkProfileError> {
-    todo!("W7-01a")
+    // `char::is_whitespace` and .NET `char.IsWhiteSpace` agree on every code point (the golden pins this).
+    if profile.id.chars().all(char::is_whitespace) {
+        return Err(BenchmarkProfileError::new(
+            BenchmarkProfileProblem::MissingIdOrMode,
+            profile.id.clone(),
+            "Profile id and loading mode are required",
+        ));
+    }
+    if profile.workers < 1 || profile.next_window < 0 || profile.previous_window < 0 || profile.iterations < 1 {
+        return Err(BenchmarkProfileError::new(
+            BenchmarkProfileProblem::InvalidSettings,
+            profile.id.clone(),
+            format!("Invalid benchmark settings for profile '{}'", profile.id),
+        ));
+    }
+    Ok(())
 }
 
 /// C# `Func<Task<(bool Correct, ReviewMetricsSnapshot? Metrics)>>` result: what one measure step returns.
@@ -324,43 +348,60 @@ impl BenchmarkPhaseResult {
 
     /// `Samples.Count`.
     pub fn count(&self) -> i32 {
-        todo!("W7-01a: samples.len() as i32")
+        i32::try_from(self.samples.len()).unwrap_or(i32::MAX)
+    }
+
+    /// The samples ordered like .NET `Samples.OrderBy(x => x)`, built at most once per instance.
+    fn sorted(&self) -> &[f64] {
+        self.sorted.get_or_init(|| {
+            let mut copy = self.samples.clone();
+            copy.sort_by(|a, b| cmp_dotnet(*a, *b));
+            copy
+        })
+    }
+
+    fn percentile_of(&self, p: f64) -> f64 {
+        // The percentiles used are in range, so the `Err` is unreachable; map it to 0 without unwrapping.
+        pr_core::diagnostics::bench_stats::percentile(self.sorted(), p).unwrap_or(0.0)
     }
 
     /// `BenchmarkStatistics.Percentile(sorted, .50)` (0 when there are no samples).
     pub fn p50(&self) -> f64 {
-        todo!("W7-01a")
+        self.percentile_of(0.50)
     }
 
     /// Percentile .95.
     pub fn p95(&self) -> f64 {
-        todo!("W7-01a")
+        self.percentile_of(0.95)
     }
 
     /// Percentile .99.
     pub fn p99(&self) -> f64 {
-        todo!("W7-01a")
+        self.percentile_of(0.99)
     }
 
     /// `Samples.Count == 0 ? 0 : sorted[^1]` (the sign of a zero maximum follows the stable .NET sort).
     pub fn max(&self) -> f64 {
-        todo!("W7-01a")
+        self.sorted().last().copied().unwrap_or(0.0)
     }
 
     /// `Math.Max(1, ImagesPerSample ?? lookup(ProfileId, Workload) ?? 1)`. The stamp wins (the lookup is not called
     /// when it is `Some`, even `Some(0)` or `Some(-7)`, which both give 1).
     pub fn effective_images_per_sample(&self, lookup: ImagesPerSampleLookup<'_>) -> i32 {
-        todo!("W7-01a")
+        match self.images_per_sample {
+            Some(stamp) => stamp.max(1),
+            None => lookup(&self.profile_id, self.workload).unwrap_or(1).max(1),
+        }
     }
 
     /// `P95 / EffectiveImagesPerSample` (f64 division).
     pub fn p95_per_image(&self, lookup: ImagesPerSampleLookup<'_>) -> f64 {
-        todo!("W7-01a")
+        self.p95() / f64::from(self.effective_images_per_sample(lookup))
     }
 
     /// `P50 / EffectiveImagesPerSample`.
     pub fn p50_per_image(&self, lookup: ImagesPerSampleLookup<'_>) -> f64 {
-        todo!("W7-01a")
+        self.p50() / f64::from(self.effective_images_per_sample(lookup))
     }
 }
 
@@ -372,8 +413,40 @@ pub fn rank<'a>(
     workload: BenchmarkWorkload,
     lookup: ImagesPerSampleLookup<'_>,
 ) -> Vec<&'a BenchmarkPhaseResult> {
-    todo!("W7-01a")
+    // Each key is computed once per kept element, not inside the comparator.
+    let mut keyed: Vec<(f64, f64, &'a BenchmarkPhaseResult)> = phases
+        .iter()
+        .filter(|p| {
+            p.workload == workload
+                && p.status != BenchmarkResultStatus::Fail
+                && p.status != BenchmarkResultStatus::InsufficientData
+        })
+        .filter_map(|p| {
+            let p95 = p.p95_per_image(lookup);
+            let p50 = p.p50_per_image(lookup);
+            (p95.is_finite() && p50.is_finite()).then_some((p95, p50, p))
+        })
+        .collect();
+    // Finite keys make `partial_cmp` total; `sort_by` is stable so ties keep input order.
+    keyed.sort_by(|a, b| {
+        a.0.partial_cmp(&b.0)
+            .unwrap_or(Ordering::Equal)
+            .then_with(|| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal))
+    });
+    keyed.into_iter().map(|(_, _, p)| p).collect()
 }
+
+/// .NET `double.CompareTo`: NaN before every number, NaN equal to NaN, `-0.0` equal to `0.0`.
+fn cmp_dotnet(a: f64, b: f64) -> Ordering {
+    match (a.is_nan(), b.is_nan()) {
+        (true, true) => Ordering::Equal,
+        (true, false) => Ordering::Less,
+        (false, true) => Ordering::Greater,
+        (false, false) => a.partial_cmp(&b).unwrap_or(Ordering::Equal),
+    }
+}
+
+const TICKS_PER_MINUTE: i64 = 600_000_000;
 
 /// A `DateTimeOffset`: a UTC instant plus the offset it prints with. Only the text form matters here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -385,7 +458,12 @@ pub struct BenchmarkTimestamp {
 impl BenchmarkTimestamp {
     /// `None` when `offset_minutes` is outside +-840 (14 h) or the local time falls outside the `DateTime` range.
     pub fn new(utc: DateTimeUtc, offset_minutes: i32) -> Option<Self> {
-        todo!("W7-01a")
+        if !(-840..=840).contains(&offset_minutes) {
+            return None;
+        }
+        // The local time must stay inside the `DateTime` range.
+        utc.checked_add_ticks(i64::from(offset_minutes) * TICKS_PER_MINUTE)?;
+        Some(Self { utc, offset_minutes })
     }
 
     /// `DateTimeOffset.UtcNow` (offset 0).
@@ -415,7 +493,16 @@ impl BenchmarkTimestamp {
     /// System.Text.Json's `DateTimeOffset` text: local time `yyyy-MM-ddTHH:mm:ss[.fffffff]` (fraction trimmed of
     /// trailing zeros, absent when zero) followed by `+hh:mm` / `-hh:mm` (always, `+00:00` for UTC, never `Z`).
     pub fn to_json_text(self) -> String {
-        todo!("W7-01a")
+        let local = self
+            .utc
+            .checked_add_ticks(i64::from(self.offset_minutes) * TICKS_PER_MINUTE)
+            .unwrap_or(self.utc);
+        let text = local.to_json();
+        let mut out = text.strip_suffix('Z').unwrap_or(&text).to_owned();
+        let sign = if self.offset_minutes < 0 { '-' } else { '+' };
+        let abs = self.offset_minutes.unsigned_abs();
+        let _ = write!(out, "{sign}{:02}:{:02}", abs / 60, abs % 60);
+        out
     }
 }
 
@@ -447,7 +534,7 @@ impl BenchmarkReport {
     /// C# `ToJson()` (source-generated, `WriteIndented = true`). Byte layout: see contract "Semantics notes" 6-8.
     /// Newlines are CRLF (what System.Text.Json writes on Windows, README D9).
     pub fn to_json(&self, lookup: ImagesPerSampleLookup<'_>) -> Result<String, NonFiniteNumber> {
-        todo!("W7-01a")
+        Ok(render(&report_node(self, lookup)?))
     }
 }
 
@@ -464,13 +551,14 @@ pub struct BenchmarkDatasetManifest {
 impl BenchmarkDatasetManifest {
     /// `Files.Count`.
     pub fn supported_file_count(&self) -> i32 {
-        todo!("W7-01a")
+        i32::try_from(self.files.len()).unwrap_or(i32::MAX)
     }
 
     /// `UnsupportedExtensions.Values.Sum()`. DIVERGENCE: C# throws `OverflowException` past `int.MaxValue`; this
     /// saturates (unreachable for a folder listing).
     pub fn unsupported_file_count(&self) -> i32 {
-        todo!("W7-01a")
+        let sum: i64 = self.unsupported_extensions.iter().map(|(_, n)| i64::from(*n)).sum();
+        i32::try_from(sum).unwrap_or(if sum < 0 { i32::MIN } else { i32::MAX })
     }
 }
 
@@ -486,6 +574,222 @@ impl BenchmarkBatchSummary {
     /// C# `ToJson()` (reflection serializer, `WriteIndented = true`, default options). Same layout rules as
     /// [`BenchmarkReport::to_json`]; `Reports[i].StartedUtc` etc. use the report layout.
     pub fn to_json(&self, lookup: ImagesPerSampleLookup<'_>) -> Result<String, NonFiniteNumber> {
-        todo!("W7-01a")
+        let dataset = &self.dataset;
+        let dataset_node = Json::Object(vec![
+            field("Folder", Json::Str(dataset.folder.clone())),
+            field(
+                "Files",
+                Json::Array(dataset.files.iter().map(|f| Json::Str(f.clone())).collect()),
+            ),
+            field(
+                "UnsupportedExtensions",
+                Json::Object(
+                    dataset
+                        .unsupported_extensions
+                        .iter()
+                        .map(|(ext, n)| (ext.clone(), int(i64::from(*n))))
+                        .collect(),
+                ),
+            ),
+            field("FileLimit", int(i64::from(dataset.file_limit))),
+            field("SupportedFileCount", int(i64::from(dataset.supported_file_count()))),
+            field("UnsupportedFileCount", int(i64::from(dataset.unsupported_file_count()))),
+        ]);
+        let reports = self
+            .reports
+            .iter()
+            .map(|r| report_node(r, lookup))
+            .collect::<Result<Vec<_>, _>>()?;
+        let outcomes = self
+            .profile_outcomes
+            .iter()
+            .map(|p| phase_node(p, lookup))
+            .collect::<Result<Vec<_>, _>>()?;
+        let root = Json::Object(vec![
+            field("Dataset", dataset_node),
+            field("Reports", Json::Array(reports)),
+            field("ProfileOutcomes", Json::Array(outcomes)),
+        ]);
+        Ok(render(&root))
+    }
+}
+
+// ---- JSON writer (System.Text.Json layout: 2-space indent, CRLF, `R` numbers, default encoder escaping) ------------
+
+enum Json {
+    Null,
+    /// Token text written as is (integers, `fmt_double` output).
+    Raw(String),
+    Str(String),
+    Array(Vec<Json>),
+    Object(Vec<(String, Json)>),
+}
+
+fn int(value: i64) -> Json {
+    Json::Raw(value.to_string())
+}
+
+/// A double property: non-finite values make `Utf8JsonWriter` throw in C#.
+fn double(value: f64) -> Result<Json, NonFiniteNumber> {
+    if value.is_finite() {
+        Ok(Json::Raw(fmt_double(value)))
+    } else {
+        Err(NonFiniteNumber)
+    }
+}
+
+fn opt_str(value: &Option<String>) -> Json {
+    value.as_ref().map_or(Json::Null, |s| Json::Str(s.clone()))
+}
+
+fn field(name: &str, value: Json) -> (String, Json) {
+    (name.to_owned(), value)
+}
+
+fn phase_node(phase: &BenchmarkPhaseResult, lookup: ImagesPerSampleLookup<'_>) -> Result<Json, NonFiniteNumber> {
+    let samples = phase
+        .samples()
+        .iter()
+        .map(|s| double(*s))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Json::Object(vec![
+        field("ProfileId", Json::Str(phase.profile_id.clone())),
+        field("Workload", int(i64::from(phase.workload.value()))),
+        field("Samples", Json::Array(samples)),
+        field("Status", int(i64::from(phase.status.value()))),
+        field("Message", opt_str(&phase.message)),
+        field(
+            "ImagesPerSample",
+            phase.images_per_sample.map_or(Json::Null, |n| int(i64::from(n))),
+        ),
+        field("Count", int(i64::from(phase.count()))),
+        field("P50", double(phase.p50())?),
+        field("P95", double(phase.p95())?),
+        field("P99", double(phase.p99())?),
+        field("Max", double(phase.max())?),
+        field(
+            "EffectiveImagesPerSample",
+            int(i64::from(phase.effective_images_per_sample(lookup))),
+        ),
+        field("P95PerImage", double(phase.p95_per_image(lookup))?),
+        field("P50PerImage", double(phase.p50_per_image(lookup))?),
+    ]))
+}
+
+fn metrics_node(m: &ReviewMetricsSnapshot) -> Json {
+    let fallbacks = m
+        .decoder_fallbacks
+        .iter()
+        .map(|(backend, n)| (backend.name().to_owned(), int(*n)))
+        .collect();
+    let top = m
+        .top_source_opens
+        .iter()
+        .map(|e| {
+            Json::Object(vec![
+                field("Path", Json::Str(e.path.clone())),
+                field("Count", int(e.count)),
+            ])
+        })
+        .collect();
+    let histogram = m
+        .present_histogram
+        .iter()
+        .map(|b| {
+            Json::Object(vec![
+                field("Label", Json::Str(b.label.clone())),
+                field("Count", int(b.count)),
+            ])
+        })
+        .collect();
+    Json::Object(vec![
+        field("CacheHits", int(m.cache_hits)),
+        field("CacheMisses", int(m.cache_misses)),
+        field("SourceBytesRead", int(m.source_bytes_read)),
+        field("SourceReads", int(m.source_reads)),
+        field("DecodeMilliseconds", int(m.decode_milliseconds)),
+        field("PresentedImages", int(m.presented_images)),
+        field("PresentMilliseconds", int(m.present_milliseconds)),
+        field("PreloadHits", int(m.preload_hits)),
+        field("InflightJoins", int(m.inflight_joins)),
+        field("DiskCacheHits", int(m.disk_cache_hits)),
+        field("UiAssignMilliseconds", int(m.ui_assign_milliseconds)),
+        field("DecoderFallbacks", Json::Object(fallbacks)),
+        field("DecoderFallbackCount", int(m.decoder_fallback_count())),
+        field("SourceOpenCount", int(m.source_open_count)),
+        field("TopSourceOpens", Json::Array(top)),
+        field("StatCount", int(m.stat_count)),
+        field("SessionWriteCount", int(m.session_write_count)),
+        field("CrossThreadPresentCount", int(m.cross_thread_present_count)),
+        field("PresentHistogram", Json::Array(histogram)),
+    ])
+}
+
+fn report_node(report: &BenchmarkReport, lookup: ImagesPerSampleLookup<'_>) -> Result<Json, NonFiniteNumber> {
+    let phases = report
+        .phases
+        .iter()
+        .map(|p| phase_node(p, lookup))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Json::Object(vec![
+        field("RunId", Json::Str(report.run_id.clone())),
+        // DateTimeOffset text is written by its converter: quoted, but not run through the string encoder (`+` stays).
+        field(
+            "StartedUtc",
+            Json::Raw(format!("\"{}\"", report.started_utc.to_json_text())),
+        ),
+        field("Folder", Json::Str(report.folder.clone())),
+        field("Phases", Json::Array(phases)),
+        field("Metrics", report.metrics.as_ref().map_or(Json::Null, metrics_node)),
+        field("Machine", opt_str(&report.machine)),
+    ]))
+}
+
+fn render(node: &Json) -> String {
+    let mut out = String::new();
+    write_node(&mut out, node, 0);
+    out
+}
+
+fn newline(out: &mut String, depth: usize) {
+    out.push_str("\r\n");
+    for _ in 0..depth {
+        out.push_str("  ");
+    }
+}
+
+fn write_node(out: &mut String, node: &Json, depth: usize) {
+    match node {
+        Json::Null => out.push_str("null"),
+        Json::Raw(text) => out.push_str(text),
+        Json::Str(text) => out.push_str(&json_string_literal(text)),
+        Json::Array(items) if items.is_empty() => out.push_str("[]"),
+        Json::Array(items) => {
+            out.push('[');
+            for (i, item) in items.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                newline(out, depth + 1);
+                write_node(out, item, depth + 1);
+            }
+            newline(out, depth);
+            out.push(']');
+        }
+        Json::Object(props) if props.is_empty() => out.push_str("{}"),
+        Json::Object(props) => {
+            out.push('{');
+            for (i, (name, value)) in props.iter().enumerate() {
+                if i > 0 {
+                    out.push(',');
+                }
+                newline(out, depth + 1);
+                out.push_str(&json_string_literal(name));
+                out.push_str(": ");
+                write_node(out, value, depth + 1);
+            }
+            newline(out, depth);
+            out.push('}');
+        }
     }
 }
