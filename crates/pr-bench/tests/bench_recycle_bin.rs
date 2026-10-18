@@ -244,3 +244,290 @@ fn golden_bench_recycle_bin() {
         }
     }
 }
+
+/// Extra probes against the .NET `File.Delete` oracle and the env-var opt-in (subprocess).
+#[cfg(windows)]
+mod adv {
+    use pr_bench::bench_recycle_bin::create_with;
+    use pr_core::abstractions::RecycleBin;
+    use pr_test_support::TempRoot;
+    use std::fs;
+    use std::io::{self, Read};
+    use std::path::Path;
+
+    fn bin() -> std::sync::Arc<dyn RecycleBin> {
+        create_with(false, || panic!("real"))
+    }
+    fn del(p: &Path) -> io::Result<()> {
+        bin().send_to_recycle_bin(p)
+    }
+    fn kind(r: io::Result<()>) -> String {
+        match r {
+            Ok(()) => "ok".into(),
+            Err(e) => format!("{:?}", e.kind()),
+        }
+    }
+
+    #[test]
+    fn whitespace_path_is_invalid_input() {
+        assert_eq!(kind(del(Path::new("   "))), "InvalidInput");
+    }
+    #[test]
+    fn trailing_sep_on_file_errors_and_keeps_file() {
+        let r = TempRoot::new("adv1");
+        let f = r.join("a.bin");
+        fs::write(&f, [1]).unwrap();
+        let mut s = f.as_os_str().to_owned();
+        s.push("\\");
+        let res = del(Path::new(&s));
+        println!("trailing-sep: {}", kind(res)); // oracle: IOException
+        assert!(f.exists(), "file must survive");
+        assert!(del(Path::new(&s)).is_err(), "oracle: IOException");
+    }
+    #[test]
+    fn wildcard_star_is_error_and_deletes_nothing() {
+        let r = TempRoot::new("adv2");
+        let f = r.join("a.bin");
+        fs::write(&f, [1]).unwrap();
+        let res = del(&r.join("*.bin"));
+        assert!(res.is_err(), "oracle IOException, got {:?}", res);
+        assert!(f.exists());
+    }
+    #[test]
+    fn question_is_error() {
+        let r = TempRoot::new("adv3");
+        assert!(del(&r.join("a?.bin")).is_err());
+    }
+    #[test]
+    fn lt_is_error() {
+        let r = TempRoot::new("adv4");
+        assert!(del(&r.join("a<b")).is_err());
+    }
+    #[test]
+    fn pipe_is_error() {
+        let r = TempRoot::new("adv5");
+        assert!(del(&r.join("a|b")).is_err());
+    }
+    #[test]
+    fn quote_is_error() {
+        let r = TempRoot::new("adv6");
+        assert!(del(&r.join("a\"b")).is_err());
+    }
+    #[test]
+    fn colon_is_notfound() {
+        let r = TempRoot::new("adv7");
+        assert_eq!(kind(del(&r.join("a:b"))), "NotFound");
+    }
+    #[test]
+    fn nul_is_invalid_input() {
+        let r = TempRoot::new("adv8");
+        assert_eq!(kind(del(&r.join("a\0b"))), "InvalidInput");
+    }
+    #[test]
+    fn trailing_space_missing_ok() {
+        let r = TempRoot::new("adv9");
+        assert_eq!(kind(del(&r.join("x.bin "))), "ok");
+    }
+    #[test]
+    fn trailing_dot_deletes_real_file() {
+        let r = TempRoot::new("adv10");
+        let f = r.join("x.bin");
+        fs::write(&f, [1]).unwrap();
+        assert_eq!(kind(del(&r.join("x.bin."))), "ok"); // .NET normalizes trailing dot -> deletes x.bin
+        assert!(!f.exists(), "oracle: Win32 strips trailing dot, deleting x.bin");
+    }
+    #[test]
+    fn dotdot_missing_sub_ok() {
+        let r = TempRoot::new("adv11");
+        assert_eq!(kind(del(&r.join("nosub").join("..").join("gone.bin"))), "ok");
+    }
+    #[test]
+    fn dotdot_existing_deletes() {
+        let r = TempRoot::new("adv12");
+        fs::create_dir(r.join("sub")).unwrap();
+        let f = r.join("a.bin");
+        fs::write(&f, [1]).unwrap();
+        assert_eq!(kind(del(&r.join("sub").join("..").join("a.bin"))), "ok");
+        assert!(!f.exists());
+    }
+    #[test]
+    fn dot_dir_is_permission_denied() {
+        let r = TempRoot::new("adv13");
+        let mut s = r.join("").into_os_string();
+        s.push(".");
+        assert_eq!(kind(del(Path::new(&s))), "PermissionDenied");
+    }
+    #[test]
+    fn trailing_sep_dir_is_permission_denied() {
+        let r = TempRoot::new("adv14");
+        let mut s = r.join("").into_os_string();
+        s.push("\\");
+        assert_eq!(kind(del(Path::new(&s))), "PermissionDenied");
+    }
+    #[test]
+    fn reserved_nul_is_permission_denied() {
+        assert_eq!(kind(del(Path::new("NUL"))), "PermissionDenied");
+    }
+    #[test]
+    fn reserved_con_in_dir_ok() {
+        let r = TempRoot::new("adv16");
+        assert_eq!(kind(del(&r.join("CON"))), "ok");
+    }
+    #[test]
+    fn long_name_errors() {
+        let r = TempRoot::new("adv17");
+        assert!(del(&r.join("a".repeat(300))).is_err());
+    }
+    #[test]
+    fn verbatim_missing_ok() {
+        let r = TempRoot::new("adv18");
+        let p = format!("\\\\?\\{}", r.join("nofile").display());
+        println!("P={p}");
+        assert_eq!(kind(del(Path::new(&p))), "ok");
+    }
+    #[test]
+    fn missing_drive_notfound() {
+        assert_eq!(kind(del(Path::new(r"Q:\nope\x.bin"))), "NotFound");
+    }
+    #[test]
+    fn ads_missing_ok() {
+        let r = TempRoot::new("adv20");
+        let f = r.join("a.bin");
+        fs::write(&f, [1]).unwrap();
+        let mut s = f.clone().into_os_string();
+        s.push(":stream");
+        assert_eq!(kind(del(Path::new(&s))), "ok");
+        assert!(f.exists(), "oracle: a.bin survives");
+    }
+    #[test]
+    fn hidden_system_deleted() {
+        let r = TempRoot::new("adv21");
+        let f = r.join("h.bin");
+        fs::write(&f, [1]).unwrap();
+        std::process::Command::new("attrib")
+            .args(["+h", "+s"])
+            .arg(&f)
+            .status()
+            .unwrap();
+        assert_eq!(kind(del(&f)), "ok");
+        assert!(!f.exists());
+    }
+    #[test]
+    fn locked_read_share_read_is_error_and_file_stays() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let r = TempRoot::new("adv22");
+        let f = r.join("l.bin");
+        fs::write(&f, [1]).unwrap();
+        let mut h = fs::OpenOptions::new().read(true).share_mode(1).open(&f).unwrap(); // FILE_SHARE_READ
+        let res = del(&f);
+        let mut b = [0u8; 1];
+        let _ = h.read(&mut b);
+        assert!(res.is_err(), "oracle IOException got {:?}", res);
+        drop(h);
+        assert!(f.exists());
+    }
+    #[test]
+    fn open_with_share_delete_deleted() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let r = TempRoot::new("adv23");
+        let f = r.join("l.bin");
+        fs::write(&f, [1]).unwrap();
+        let _h = fs::OpenOptions::new().read(true).share_mode(7).open(&f).unwrap();
+        assert_eq!(kind(del(&f)), "ok");
+        assert!(!f.exists());
+    }
+    #[test]
+    fn readonly_hidden_denied() {
+        let r = TempRoot::new("adv24");
+        let f = r.join("rh.bin");
+        fs::write(&f, [1]).unwrap();
+        std::process::Command::new("attrib")
+            .args(["+r", "+h"])
+            .arg(&f)
+            .status()
+            .unwrap();
+        assert_eq!(kind(del(&f)), "PermissionDenied");
+        assert!(f.exists());
+        std::process::Command::new("attrib")
+            .args(["-r", "-h"])
+            .arg(&f)
+            .status()
+            .unwrap();
+    }
+    #[test]
+    fn missing_in_readonly_dir_ok() {
+        let r = TempRoot::new("adv25");
+        let d = r.join("rd");
+        fs::create_dir(&d).unwrap();
+        std::process::Command::new("attrib")
+            .args(["+r"])
+            .arg(&d)
+            .status()
+            .unwrap();
+        let res = del(&d.join("m.bin"));
+        std::process::Command::new("attrib")
+            .args(["-r"])
+            .arg(&d)
+            .status()
+            .unwrap();
+        assert_eq!(kind(res), "ok");
+    }
+    #[test]
+    fn junction_is_permission_denied_and_survives() {
+        let r = TempRoot::new("adv26");
+        let dd = r.join("dd");
+        fs::create_dir(&dd).unwrap();
+        fs::write(dd.join("in.bin"), [1]).unwrap();
+        let j = r.join("jn");
+        let ok = std::process::Command::new("cmd")
+            .args(["/c", "mklink", "/J"])
+            .arg(&j)
+            .arg(&dd)
+            .output()
+            .unwrap()
+            .status
+            .success();
+        assert!(ok);
+        let res = del(&j);
+        let survives = j.exists() && dd.join("in.bin").exists();
+        let _ = std::process::Command::new("cmd").args(["/c", "rmdir"]).arg(&j).status();
+        assert_eq!(kind(res), "PermissionDenied");
+        assert!(survives);
+    }
+    #[test]
+    fn relative_bare_missing_name_is_ok() {
+        assert_eq!(kind(del(Path::new("w702b-no-such-relative-file.bin"))), "ok");
+    }
+    #[test]
+    fn child_probe_env() {
+        if std::env::var_os("W702B_CHILD").is_some() {
+            assert!(
+                pr_bench::bench_recycle_bin::use_real_bin(),
+                "opt-in env var must enable the real bin"
+            );
+            let called = std::cell::Cell::new(false);
+            let _ = pr_bench::bench_recycle_bin::create(|| {
+                called.set(true);
+                std::sync::Arc::new(pr_test_support::FakeRecycleBin::new(std::sync::Arc::new(
+                    pr_test_support::FakeFileSystem::new(),
+                )))
+            });
+            assert!(called.get(), "create must call the factory when opted in");
+        }
+    }
+    #[test]
+    fn use_real_bin_honours_env_var() {
+        if std::env::var_os("W702B_CHILD").is_some() {
+            return;
+        }
+        let exe = std::env::current_exe().unwrap();
+        let st = std::process::Command::new(exe)
+            .args(["--exact", "adv::child_probe_env", "--test-threads=1"])
+            .env("W702B_CHILD", "1")
+            .env("PHOTOREVIEW_RS_BENCH_REAL_RECYCLE_BIN", "1")
+            .output()
+            .unwrap();
+        assert!(st.status.success(), "{}", String::from_utf8_lossy(&st.stdout));
+        assert!(String::from_utf8_lossy(&st.stdout).contains("1 passed"));
+    }
+}

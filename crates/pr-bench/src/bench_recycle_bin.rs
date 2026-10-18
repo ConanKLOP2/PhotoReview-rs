@@ -56,8 +56,14 @@ impl RecycleBin for TempCopyDeleter {
     /// folder = `Ok`, missing folder = `NotFound`, read-only file = `PermissionDenied`, directory path =
     /// `PermissionDenied`, empty path = `InvalidInput`).
     fn send_to_recycle_bin(&self, path: &Path) -> io::Result<()> {
-        if path.as_os_str().is_empty() {
+        // .NET `ArgumentException`: empty or whitespace-only path.
+        if path.as_os_str().is_empty() || path.to_str().is_some_and(|text| text.trim().is_empty()) {
             return Err(io::Error::from(io::ErrorKind::InvalidInput));
+        }
+        // .NET maps a bare DOS device name (`NUL`, `CON`, ...) to the device, which cannot be deleted:
+        // `UnauthorizedAccessException`.
+        if is_bare_reserved_device_name(path) {
+            return Err(io::Error::from(io::ErrorKind::PermissionDenied));
         }
         match fs::symlink_metadata(path) {
             Ok(metadata) => {
@@ -98,5 +104,23 @@ impl RecycleBin for TempCopyDeleter {
         _expected_last_write_utc: DateTimeUtc,
     ) -> io::Result<bool> {
         Ok(false)
+    }
+}
+
+/// True for a single-component relative path whose stem is a Windows DOS device name (case-insensitive).
+fn is_bare_reserved_device_name(path: &Path) -> bool {
+    if !cfg!(windows) || path.components().count() != 1 || path.is_absolute() {
+        return false;
+    }
+    let Some(name) = path.to_str() else { return false };
+    let stem = name.split('.').next().unwrap_or("").trim_end().to_ascii_uppercase();
+    match stem.as_str() {
+        "CON" | "PRN" | "AUX" | "NUL" => true,
+        other => {
+            (other.starts_with("COM") || other.starts_with("LPT"))
+                && other.len() == 4
+                && other.as_bytes()[3].is_ascii_digit()
+                && other.as_bytes()[3] != b'0'
+        }
     }
 }

@@ -297,3 +297,17 @@ fn two_readers_sharing_one_limiter_split_the_budget() {
 // Not ported: "without a limiter nothing is throttled" is a behaviour of the pass-through stream itself (no wrapper
 // is observable through `Box<dyn ReadSeek>`). The golden cases `no-limiter-*` and `explicit-buffer-size-without-limiter`
 // cover the byte, seek and length fidelity of that path.
+
+// Kills the `Debug::fmt -> Ok(Default::default())` mutant: the format names the type and the throttled flag.
+#[test]
+fn debug_format_reports_throttled_flag() {
+    let inner = RecordingReader::new(Vec::new(), false);
+    let plain = format!("{:?}", SlowLinkSourceReader::new(inner.clone(), None));
+    assert!(
+        plain.contains("SlowLinkSourceReader") && plain.contains("throttled: false"),
+        "{plain}"
+    );
+    let limiter = Arc::new(SharedBandwidthLimiter::new(1000).expect("limiter rate"));
+    let shaped = format!("{:?}", SlowLinkSourceReader::new(inner, Some(limiter)));
+    assert!(shaped.contains("throttled: true"), "{shaped}");
+}
