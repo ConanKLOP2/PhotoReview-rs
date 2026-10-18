@@ -11,7 +11,8 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use pr_bench::slow_link_fs::{
-    InvalidBandwidth, SharedBandwidthLimiter, SlowLinkFileSystem, TICKS_PER_SECOND, ThrottledReadStream, TimeSource,
+    InvalidBandwidth, SharedBandwidthLimiter, SlowLinkFileSystem, SystemTimeSource, TICKS_PER_SECOND,
+    ThrottledReadStream, TimeSource,
 };
 use pr_core::abstractions::{
     AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind,
@@ -1477,4 +1478,49 @@ fn golden_open_missing() {
         );
         assert!(time.slept().is_empty(), "case {name}: a failed open charges nothing");
     }
+}
+
+#[test]
+fn system_time_source_tracks_real_elapsed_time() {
+    let clock = SystemTimeSource::new();
+    let first = clock.now_ticks();
+    assert!(first >= 0);
+    let started = Instant::now();
+    clock.sleep(ms(30));
+    let wall = started.elapsed();
+    let second = clock.now_ticks();
+    assert!(
+        wall >= ms(30),
+        "sleep must take at least the requested time, took {wall:?}"
+    );
+    let grown = second - first;
+    assert!(grown >= ticks_of(ms(30)), "ticks grew by {grown}");
+    // Ticks are 100 ns units: they must not run faster or slower than wall time by orders of magnitude.
+    assert!(
+        grown <= ticks_of(wall) + ticks_of(ms(200)),
+        "ticks grew by {grown}, wall {wall:?}"
+    );
+}
+
+#[test]
+fn bytes_per_second_getter_and_debug_output() {
+    let time = FakeTime::new(new_log());
+    let bandwidth = limiter(12_345, &time);
+    assert_eq!(bandwidth.bytes_per_second(), 12_345);
+    assert_eq!(SharedBandwidthLimiter::new(7).expect("valid").bytes_per_second(), 7);
+    let text = format!("{bandwidth:?}");
+    assert!(
+        text.contains("SharedBandwidthLimiter") && text.contains("12345"),
+        "{text}"
+    );
+
+    let stream = ThrottledReadStream::new(Box::new(Cursor::new(pattern(1))), bandwidth.clone());
+    assert!(format!("{stream:?}").contains("ThrottledReadStream"));
+
+    let fs = SlowLinkFileSystem::new(Arc::new(PhysicalFileSystem), ms(5), Some(bandwidth));
+    let text = format!("{fs:?}");
+    assert!(
+        text.contains("SlowLinkFileSystem") && text.contains("metadata_latency"),
+        "{text}"
+    );
 }
