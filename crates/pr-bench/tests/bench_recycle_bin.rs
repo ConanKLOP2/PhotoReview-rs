@@ -368,6 +368,29 @@ mod adv {
     fn reserved_nul_is_permission_denied() {
         assert_eq!(kind(del(Path::new("NUL"))), "PermissionDenied");
     }
+    // .NET 10 probe (File.Delete): the DOS device prefixes `\\.\` and `\\?\` (either separator) in front of CON, NUL,
+    // CONIN$ or CONOUT$ (trailing dots and spaces ignored, also as the first segment of a longer path) are
+    // UnauthorizedAccessException; `\\.\NUL:`, `\\.\NUL.txt`, `\\.\C:\NUL`, `\\.\COM1` and `\\.\PRN` return OK
+    // (not asserted: their outcome depends on the installed devices).
+    #[test]
+    fn device_prefixed_names_denied_like_dotnet() {
+        for n in [
+            r"\\.\NUL",
+            r"\\?\NUL",
+            r"\\.\nul",
+            r"\\?\nul",
+            r"\\.\CON",
+            r"\\?\CON",
+            r"\\.\NUL.",
+            r"\\.\NUL ",
+            r"\\.\CONIN$",
+            r"\\.\CONOUT$",
+            r"\\.\NUL\x",
+            "//./NUL",
+        ] {
+            assert_eq!(kind(del(Path::new(n))), "PermissionDenied", "{n}");
+        }
+    }
     #[test]
     fn device_names_denied_like_dotnet() {
         for n in ["NUL", "nul", "CON", "con.", "NUL:", "CONIN$", "CONOUT$", "conin$"] {

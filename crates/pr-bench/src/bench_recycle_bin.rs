@@ -112,10 +112,34 @@ impl RecycleBin for TempCopyDeleter {
 /// oracle: names with an extension (`NUL.txt`) and `COM1`-`COM9`, `LPT1`-`LPT9`, `PRN`, `AUX` return OK (their
 /// outcome depends on installed devices, so no static rule is attempted for them).
 fn is_bare_reserved_device_name(path: &Path) -> bool {
-    if !cfg!(windows) || path.components().count() != 1 || path.is_absolute() {
+    if !cfg!(windows) {
+        return false;
+    }
+    if is_device_prefixed_reserved_name(path) {
+        return true;
+    }
+    if path.components().count() != 1 || path.is_absolute() {
         return false;
     }
     let Some(name) = path.to_str() else { return false };
     let upper = name.trim_end_matches(['.', ' ']).to_ascii_uppercase();
     matches!(upper.as_str(), "CON" | "NUL" | "NUL:" | "CONIN$" | "CONOUT$")
+}
+
+/// `\\.\NUL` / `\\?\NUL` (either separator; the first segment may be followed by more path): .NET 10 `File.Delete` answers
+/// `UnauthorizedAccessException` for `CON`, `NUL`, `CONIN$` and `CONOUT$` there (trailing dots and spaces ignored). `NUL:` and
+/// `NUL.txt` behind the prefix are NOT devices for .NET, and `COM1`/`PRN` depend on installed devices: none of those match.
+fn is_device_prefixed_reserved_name(path: &Path) -> bool {
+    const BACKSLASH: char = '\\';
+    let Some(text) = path.to_str() else { return false };
+    let normalized = text.replace('/', r"\");
+    let Some(rest) = normalized
+        .strip_prefix(r"\\.\")
+        .or_else(|| normalized.strip_prefix(r"\\?\"))
+    else {
+        return false;
+    };
+    let first = rest.split(BACKSLASH).next().unwrap_or("");
+    let upper = first.trim_end_matches(['.', ' ']).to_ascii_uppercase();
+    matches!(upper.as_str(), "CON" | "NUL" | "CONIN$" | "CONOUT$")
 }

@@ -42,7 +42,7 @@ use pr_test_support::golden::{self, i64_of, str_of};
 use pr_test_support::{FakeClock, TempRoot};
 use serde_json::Value;
 
-use preview_service::{FakeDecoder, FakePayloadCodec, PixelsCodec};
+use preview_service::{Failure, FakeDecoder, FakePayloadCodec, PixelsCodec, Script};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Helpers
@@ -160,7 +160,16 @@ impl Drop for TestExecutor {
 }
 
 fn test_executor(root: &TempRoot, profile: &BenchmarkProfile, files: &[String]) -> TestExecutor {
-    let decoder: Arc<dyn ImageDecoder> = FakeDecoder::new();
+    test_executor_with(root, profile, files, FakeDecoder::new())
+}
+
+fn test_executor_with(
+    root: &TempRoot,
+    profile: &BenchmarkProfile,
+    files: &[String],
+    fake: Arc<FakeDecoder>,
+) -> TestExecutor {
+    let decoder: Arc<dyn ImageDecoder> = fake;
     let has_headroom: HasHeadroomFn = Arc::new(|_: f64| true);
     let options = BenchmarkExecutorOptions {
         has_headroom: Some(has_headroom),
@@ -903,5 +912,286 @@ fn file_action_op_maps_ids_and_interleaving() {
     ];
     for (id, iteration, expected) in cases {
         assert_eq!(file_action_op(id, iteration), expected, "{id:?} iteration {iteration}");
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// W7 repair: verification of BenchmarkWorkloadRunner.PrepareIterationAsync branches that no C# test pins (written from
+// the C# source, no C# twin)
+// ---------------------------------------------------------------------------------------------------------------------
+
+struct Rig {
+    // Field order: the executor is disposed before the temp folder goes away.
+    test: TestExecutor,
+    fake: Arc<FakeDecoder>,
+    files: Arc<[String]>,
+    _root: TempRoot,
+}
+
+fn rig(name: &str, profile: &BenchmarkProfile, count: usize) -> Rig {
+    let root = TempRoot::new(name);
+    let files = source_files(&root, name, count);
+    let fake = FakeDecoder::new();
+    let test = test_executor_with(&root, profile, &files, Arc::clone(&fake));
+    Rig {
+        test,
+        fake,
+        files: Arc::from(files),
+        _root: root,
+    }
+}
+
+fn prepare_step(
+    rig: &Rig,
+    profile: &BenchmarkProfile,
+    workload: BenchmarkWorkload,
+    iteration: i32,
+    bin: &Arc<dyn RecycleBin>,
+) -> Result<PreparedMeasure, BenchmarkError> {
+    prepare_iteration(
+        &rig.test.executor,
+        &rig.files,
+        profile,
+        workload,
+        iteration,
+        &mut DotNetRandom::new(0),
+        bin,
+        &CancelToken::none(),
+    )
+}
+
+fn file_name(path: &str) -> String {
+    Path::new(path)
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default()
+}
+
+fn decoded_names(rig: &Rig) -> Vec<String> {
+    let mut names: Vec<String> = rig
+        .fake
+        .requests()
+        .iter()
+        .map(|request| file_name(&request.path.to_string_lossy()))
+        .collect();
+    names.sort();
+    names
+}
+
+fn plain_bin() -> Arc<dyn RecycleBin> {
+    Arc::new(RecordingBin::default())
+}
+
+// C# source: FirstFrame decodes files[0] in the measure step and reports executor metrics.
+#[test]
+fn first_frame_step_decodes_the_first_file_and_reports_metrics() {
+    let profile = registry("instant-review");
+    let rig = rig("wr-first-frame", &profile, 3);
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::FirstFrame,
+        5,
+        &plain_bin(),
+    ));
+    let result = outcome(step);
+    assert!(result.correct);
+    assert!(result.metrics.is_some());
+    assert_eq!(decoded_names(&rig), vec![file_name(&rig.files[0])]);
+}
+
+// C# source: WarmNext at an odd iteration centres on `n - 1 - iteration / 2 % n` (3 files, iteration 1 -> index 2).
+#[test]
+fn warm_next_step_decodes_the_selected_center() {
+    let profile = registry("fast-balanced");
+    let rig = rig("wr-warm-next", &profile, 3);
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::WarmNext,
+        1,
+        &plain_bin(),
+    ));
+    let result = outcome(step);
+    assert!(result.correct);
+    assert!(result.metrics.is_some());
+    assert!(decoded_names(&rig).contains(&file_name(&rig.files[2])));
+}
+
+// C# source: Preload centres on `iteration * 2 % n` (3 files, iteration 2 -> 4 % 3 = 1).
+#[test]
+fn preload_step_decodes_the_selected_center() {
+    let profile = registry("fast-balanced");
+    let rig = rig("wr-preload", &profile, 3);
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::Preload,
+        2,
+        &plain_bin(),
+    ));
+    assert!(outcome(step).correct);
+    assert!(decoded_names(&rig).contains(&file_name(&rig.files[1])));
+}
+
+// C# source: Sequential decodes min(workers, files) consecutive files starting at `iteration % n`.
+#[test]
+fn sequential_step_decodes_every_selected_file() {
+    let mut profile = registry("fast-sequential");
+    profile.workers = 2;
+    let rig = rig("wr-sequential", &profile, 3);
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::Sequential,
+        1,
+        &plain_bin(),
+    ));
+    let result = outcome(step);
+    assert!(result.correct);
+    assert!(result.metrics.is_some());
+    let mut expected = vec![file_name(&rig.files[1]), file_name(&rig.files[2])];
+    expected.sort();
+    assert_eq!(decoded_names(&rig), expected);
+}
+
+// C# source: a decode failure inside Parallel.ForEachAsync propagates out of the measure step (not swallowed).
+#[test]
+fn parallel_step_decode_failure_is_returned_as_decode_error() {
+    let mut profile = registry("fast-sequential");
+    profile.workers = 2;
+    let rig = rig("wr-parallel-fail", &profile, 2);
+    rig.fake.script_default(Script {
+        failure: Some(Failure::InvalidData),
+        ..Script::default()
+    });
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::Sequential,
+        0,
+        &plain_bin(),
+    ));
+    match step() {
+        Err(BenchmarkError::Operation(inner)) => assert!(matches!(
+            inner.downcast_ref::<WorkloadError>(),
+            Some(WorkloadError::Decode(_))
+        )),
+        other => panic!("expected a decode failure, got {other:?}"),
+    }
+}
+
+/// A bin whose send fails (C# `SendToRecycleBin` throwing `IOException`).
+#[derive(Debug)]
+struct FailingBin {
+    sent: Mutex<Vec<PathBuf>>,
+}
+
+impl RecycleBin for FailingBin {
+    fn send_to_recycle_bin(&self, path: &Path) -> io::Result<()> {
+        self.sent.lock().expect("bin lock").push(path.to_path_buf());
+        Err(io::Error::other("bin refused"))
+    }
+
+    fn try_restore(&self, _: &Path, _: u64, _: DateTimeUtc) -> io::Result<bool> {
+        Ok(false)
+    }
+}
+
+/// A bin that "sends" nothing, so a delete leaves the scratch file in place.
+#[derive(Debug)]
+struct NoOpBin;
+
+impl RecycleBin for NoOpBin {
+    fn send_to_recycle_bin(&self, _path: &Path) -> io::Result<()> {
+        Ok(())
+    }
+
+    fn try_restore(&self, _: &Path, _: u64, _: DateTimeUtc) -> io::Result<bool> {
+        Ok(false)
+    }
+}
+
+// C# source: a throwing mutation propagates (after the in-flight decode is observed) and `Cleanup()` still runs.
+#[test]
+fn file_action_mutation_failure_is_returned_and_scratch_is_removed() {
+    let profile = registry("action-delete");
+    let rig = rig("wr-mutation-fail", &profile, 1);
+    let failing = Arc::new(FailingBin {
+        sent: Mutex::new(Vec::new()),
+    });
+    let bin: Arc<dyn RecycleBin> = failing.clone();
+    let step = prepared(prepare_step(&rig, &profile, BenchmarkWorkload::FileAction, 0, &bin));
+    match step() {
+        Err(BenchmarkError::Operation(inner)) => assert!(matches!(
+            inner.downcast_ref::<WorkloadError>(),
+            Some(WorkloadError::Io(_))
+        )),
+        other => panic!("expected the mutation's IO error, got {other:?}"),
+    }
+    let sent = failing.sent.lock().expect("bin lock").clone();
+    assert_eq!(sent.len(), 1);
+    assert!(!sent[0].exists(), "the scratch copy is removed after a failed mutation");
+}
+
+// C# source: `sourceExistsAfter == expectedSourceExists`: a delete that leaves the source in place is reported incorrect.
+#[test]
+fn file_action_delete_that_leaves_the_source_is_incorrect() {
+    let profile = registry("action-delete");
+    let rig = rig("wr-delete-noop", &profile, 1);
+    let bin: Arc<dyn RecycleBin> = Arc::new(NoOpBin);
+    let step = prepared(prepare_step(&rig, &profile, BenchmarkWorkload::FileAction, 0, &bin));
+    assert!(!outcome(step).correct);
+}
+
+// C# source: a decode failure that is not an IO/format/unsupported race outcome is not swallowed by a file action.
+#[test]
+fn file_action_decode_failure_that_is_not_a_race_outcome_propagates() {
+    let profile = registry("action-copy");
+    let rig = rig("wr-action-decode-fail", &profile, 1);
+    rig.fake.script_default(Script {
+        failure: Some(Failure::InvalidData),
+        ..Script::default()
+    });
+    let step = prepared(prepare_step(
+        &rig,
+        &profile,
+        BenchmarkWorkload::FileAction,
+        0,
+        &plain_bin(),
+    ));
+    match step() {
+        Err(BenchmarkError::Operation(inner)) => assert!(matches!(
+            inner.downcast_ref::<WorkloadError>(),
+            Some(WorkloadError::Decode(_))
+        )),
+        other => panic!("expected the decode failure, got {other:?}"),
+    }
+}
+
+// C# source: `files[iteration % files.Length]` is evaluated before the token is looked at, so a negative index wins over
+// a canceled token (IndexOutOfRangeException vs OperationCanceledException).
+#[test]
+fn file_action_negative_index_wins_over_a_canceled_token() {
+    let profile = registry("action-move");
+    let rig = rig("wr-negative-canceled", &profile, 2);
+    let ct = CancelToken::new();
+    ct.cancel();
+    let error = prepare_error(prepare_iteration(
+        &rig.test.executor,
+        &rig.files,
+        &profile,
+        BenchmarkWorkload::FileAction,
+        -1,
+        &mut DotNetRandom::new(0),
+        &plain_bin(),
+        &ct,
+    ));
+    match error {
+        BenchmarkError::Operation(inner) => assert!(matches!(
+            inner.downcast_ref::<WorkloadError>(),
+            Some(WorkloadError::InvalidArgument(_))
+        )),
+        other => panic!("expected InvalidArgument, got {other:?}"),
     }
 }
