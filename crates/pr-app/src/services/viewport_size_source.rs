@@ -85,3 +85,23 @@ fn pack_box(value: DecodeBox) -> i64 {
 fn unpack_box(packed: i64) -> DecodeBox {
     todo!()
 }
+
+#[cfg(test)]
+mod tests {
+    // Contract unit tests (R-VS-3): private packing against fixed bit patterns; the module is the only place they can reach.
+    use super::*;
+
+    #[test]
+    fn pack_unpack_matches_csharp_bits() {
+        // (1, 2): width in the high 32 bits, height in the low 32 bits.
+        assert_eq!(pack_box(DecodeBox::new(1, 2)), 0x0000_0001_0000_0002);
+        assert_eq!(unpack_box(0x0000_0001_0000_0002), DecodeBox::new(1, 2));
+    }
+
+    #[test]
+    fn pack_negative_height_uses_the_low_word() {
+        // C# `(uint)height`: -5 is 0xFFFF_FFFB in the low 32 bits, width 0 leaves the high word clear.
+        assert_eq!(pack_box(DecodeBox::new(0, -5)), 0x0000_0000_FFFF_FFFB);
+        assert_eq!(unpack_box(0x0000_0000_FFFF_FFFB), DecodeBox::new(0, -5));
+    }
+}
