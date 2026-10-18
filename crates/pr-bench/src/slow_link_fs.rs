@@ -155,8 +155,9 @@ impl SharedBandwidthLimiter {
                 let missing = needed - bucket.available_bytes;
                 missing / self.bytes_per_second as f64
             };
-            let floor = Duration::from_millis(1);
-            self.time.sleep(Duration::from_secs_f64(wait_secs).max(floor));
+            // C# `Thread.Sleep(TimeSpan)` truncates to whole milliseconds; the 1 ms floor applies after truncation.
+            let whole_ms = (wait_secs * 1000.0) as u64;
+            self.time.sleep(Duration::from_millis(whole_ms.max(1)));
         }
     }
 
@@ -265,7 +266,13 @@ impl SlowLinkFileSystem {
     /// C# `DelayMetadata`: sleeps `metadata_latency` when it is greater than zero.
     fn delay_metadata(&self) {
         if self.metadata_latency > Duration::ZERO {
-            self.time.sleep(self.metadata_latency);
+            // C# `Thread.Sleep(TimeSpan)` truncates to whole ms; a 0 ms result is a yield, not a sleep.
+            let whole_ms = u64::try_from(self.metadata_latency.as_millis()).unwrap_or(u64::MAX);
+            if whole_ms == 0 {
+                std::thread::yield_now();
+            } else {
+                self.time.sleep(Duration::from_millis(whole_ms));
+            }
         }
     }
 

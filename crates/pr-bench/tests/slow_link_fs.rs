@@ -1524,3 +1524,66 @@ fn bytes_per_second_getter_and_debug_output() {
         "{text}"
     );
 }
+
+mod truncation_round2 {
+    use pr_bench::slow_link_fs::{SharedBandwidthLimiter, SlowLinkFileSystem, TimeSource};
+    use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+
+    struct Fake {
+        t: Mutex<i64>,
+        s: Mutex<Vec<Duration>>,
+    }
+    impl TimeSource for Fake {
+        fn now_ticks(&self) -> i64 {
+            *self.t.lock().unwrap()
+        }
+        fn sleep(&self, d: Duration) {
+            self.s.lock().unwrap().push(d);
+            *self.t.lock().unwrap() += (d.as_nanos() / 100) as i64;
+        }
+    }
+
+    #[test]
+    fn consume_wait_truncated_to_whole_ms_like_thread_sleep() {
+        let f = Arc::new(Fake {
+            t: Mutex::new(0),
+            s: Mutex::new(vec![]),
+        });
+        let l = SharedBandwidthLimiter::with_time_source(10000, f.clone()).unwrap();
+        l.consume(15);
+        assert_eq!(f.s.lock().unwrap()[0], Duration::from_millis(1));
+    }
+
+    #[test]
+    fn consume_wait_100_9ms_sleeps_100ms() {
+        let f = Arc::new(Fake {
+            t: Mutex::new(0),
+            s: Mutex::new(vec![]),
+        });
+        let l = SharedBandwidthLimiter::with_time_source(10000, f.clone()).unwrap();
+        l.consume(1009);
+        assert_eq!(f.s.lock().unwrap()[0], Duration::from_millis(100));
+    }
+
+    #[test]
+    fn metadata_latency_truncated_to_whole_ms_and_sub_ms_does_not_sleep() {
+        use pr_core::abstractions::FileSystem;
+        use pr_core::io::physical::PhysicalFileSystem;
+        let f = Arc::new(Fake {
+            t: Mutex::new(0),
+            s: Mutex::new(vec![]),
+        });
+        let inner = Arc::new(PhysicalFileSystem);
+        let fs = SlowLinkFileSystem::with_time_source(inner.clone(), Duration::from_micros(1900), None, f.clone());
+        let _ = fs.directory_exists(std::path::Path::new("."));
+        assert_eq!(*f.s.lock().unwrap(), vec![Duration::from_millis(1)]);
+        let g = Arc::new(Fake {
+            t: Mutex::new(0),
+            s: Mutex::new(vec![]),
+        });
+        let fs = SlowLinkFileSystem::with_time_source(inner, Duration::from_micros(500), None, g.clone());
+        let _ = fs.directory_exists(std::path::Path::new("."));
+        assert!(g.s.lock().unwrap().is_empty());
+    }
+}
