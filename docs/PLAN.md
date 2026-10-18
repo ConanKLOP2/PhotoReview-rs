@@ -42,7 +42,7 @@ Quy mô nguồn: khoảng 52K dòng C# trong 10 project, khoảng 123K dòng tes
 - [x] `pr_core::app_paths` + `identity` (tách dữ liệu khỏi bản C#) kèm test
 - [x] Toolchain Rust 1.99.0 (pin trong `rust-toolchain.toml`), MSVC Build Tools; `Cargo.lock` + `--locked` trong CI; fmt/clippy/11 test xanh
 - [x] Kiểm kê tính năng (khoảng 245 mục: K/C/S/W/F/I/P/INV/D) vào [PARITY.md](PARITY.md)
-- [ ] Spike UI egui và Slint theo giao thức trong R0001, có số đo; chốt R0001
+- [x] Spike UI Win32 + Direct2D (P-06) có số đo, xem [R0001](adr/R0001-ui-framework.md); egui/Slint không spike. R0001 vẫn Proposed: chờ đo lại p95 trên máy có người dùng, màn hình bật
 - [ ] Spike COM: đọc thứ tự Explorer cho folder khoảng 1800 file, mục tiêu khoảng 60 ms như C#
 - [x] ADR R0003 concurrency + quy tắc map C# sang Rust
 - [x] Wave 0 (multi-agent): trait `pr_core::abstractions`, `time` (DateTime .NET), `text` (OrdinalIgnoreCase lấy bảng từ .NET), `sync::CancelToken`, crate `pr-test-support` (fake FS/clock/recycle bin/UI/log/memory, golden loader), oracle C# (`tools/oracle.ps1`), `tools/wave.ps1`

@@ -10,6 +10,10 @@ publish.workspace = true
 [lints]
 workspace = true
 
+[features]
+# Phase 0 UI spike (docs/adr/R0001). Off by default so the normal build and tests are unaffected.
+ui-spike = ["pr-platform-win/ui-spike"]
+
 [dependencies]
 pr-core.workspace = true
 pr-l10n.workspace = true
@@ -23,3 +27,8 @@ pr-bench.workspace = true
 [[bin]]
 name = "PhotoReviewRs"
 path = "src/main.rs"
+
+[[bin]]
+name = "r0001-spike"
+path = "src/bin/r0001_spike.rs"
+required-features = ["ui-spike"]

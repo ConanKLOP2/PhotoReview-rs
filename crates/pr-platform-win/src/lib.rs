@@ -77,6 +77,10 @@ pub(crate) mod vblank_driver;
 #[cfg(windows)]
 pub mod display_clock;
 
+/// Phase 0 UI spike (R0001): Win32 window + Direct2D/DirectWrite host and a WIC JPEG writer for synthetic fixtures.
+#[cfg(all(windows, feature = "ui-spike"))]
+pub mod spike_ui;
+
 /// Test-only Win32 process memory metrics used by native decoder parity tests.
 #[cfg(all(windows, feature = "test-support"))]
 pub mod test_support;
