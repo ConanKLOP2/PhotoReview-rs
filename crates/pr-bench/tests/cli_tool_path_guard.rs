@@ -20,8 +20,8 @@ use pr_bench::cli::SystemToolEnvironment;
 use pr_bench::cli::arguments::resolve_report_directory;
 use pr_bench::cli::backend::ToolError;
 use pr_bench::cli::tool_path_guard::{
-    CACHE_MARKER, CACHE_MARKER_TEXT, app_data_folder, claim_cache_directory, csharp_app_data_folder,
-    ensure_cache_directory, ensure_output_directory, ensure_output_file, is_same_or_under, overlaps, write_report_file,
+    CACHE_MARKER, app_data_folder, claim_cache_directory, csharp_app_data_folder, ensure_cache_directory,
+    ensure_output_directory, ensure_output_file, is_same_or_under, overlaps, write_report_file,
 };
 use pr_core::io::physical::PhysicalFileSystem;
 use pr_test_support::TempRoot;
@@ -364,17 +364,26 @@ fn resolve(root: &Path, rel: &str, app_data: &str) -> String {
     if let Some(rest) = rel.strip_prefix("@/") {
         return format!("{app_data}/{rest}");
     }
-    rel.split('/')
+    let joined = rel
+        .split('/')
         .filter(|part| !part.is_empty())
         .fold(root.to_path_buf(), |path, part| path.join(part))
         .to_string_lossy()
-        .into_owned()
+        .into_owned();
+    // A trailing separator is part of the case (`out-dir-trailing-separator`): keep it.
+    if rel.ends_with('/') {
+        format!("{joined}\\")
+    } else {
+        joined
+    }
 }
 
+/// Cases that need a real junction or hard link run in the ignored native test.
 fn has_junction(input: &Value) -> bool {
     input["tree"]
         .as_array()
         .is_some_and(|tree| tree.iter().any(Value::is_object))
+        || input.get("link").and_then(Value::as_str) == Some("hardlink")
 }
 
 /// Creates the golden `tree`: `dir/` directories, plain files (the cache marker gets its real text), and junctions.
@@ -388,7 +397,8 @@ fn build_tree(root: &Path, tree: &Value) {
             let is_marker = path
                 .file_name()
                 .is_some_and(|n| n.to_string_lossy().eq_ignore_ascii_case(CACHE_MARKER));
-            let body: &[u8] = if is_marker { CACHE_MARKER_TEXT.as_bytes() } else { b"x" };
+            // `claim-existing-marker-kept` pins that a marker already there is left alone: the oracle seeds it with 1,2,3.
+            let body: &[u8] = if is_marker { &[1, 2, 3] } else { b"x" };
             std::fs::write(&path, body).expect("create golden file");
         } else {
             let link = entry["junction"].as_str().expect("junction name");
@@ -399,9 +409,28 @@ fn build_tree(root: &Path, tree: &Value) {
     }
 }
 
-/// Replaces the temp root and the app data folder by their golden placeholders.
+/// Replaces the temp root and the app data folder by their golden placeholders, and the random `.{8 hex}.tmp` suffix of the
+/// report temp file by `.{tmp}.tmp` (the oracle scrubs it the same way).
 fn scrub(message: &str, root: &Path, app_data: &str) -> String {
-    message.replace(&text(root), "{root}").replace(app_data, "{appdata}")
+    let replaced = message.replace(&text(root), "{root}").replace(app_data, "{appdata}");
+    let mut out = String::with_capacity(replaced.len());
+    let mut rest = replaced.as_str();
+    while let Some(dot) = rest.find('.') {
+        let tail = &rest[dot + 1..];
+        let is_tmp = tail.len() >= 12
+            && tail.is_char_boundary(8)
+            && tail[..8].bytes().all(|b| b.is_ascii_hexdigit())
+            && tail[8..].starts_with(".tmp");
+        out.push_str(&rest[..=dot]);
+        if is_tmp {
+            out.push_str("{tmp}");
+            rest = &tail[8..];
+        } else {
+            rest = tail;
+        }
+    }
+    out.push_str(rest);
+    out
 }
 
 fn execute(input: &Value, root: &Path, app_data: &str) -> Result<Value, ToolError> {
@@ -483,6 +512,15 @@ fn check_after(input: &Value, after: &Value, root: &Path, app_data: &str, failur
                     failures.push(format!("{name}: report bytes {got:?}, want {want:?}"));
                 }
             }
+            if let (Some(bytes), Some(photo)) = (after.get("photo_bytes").and_then(Value::as_array), input.get("photo"))
+            {
+                let want: Vec<u8> = bytes.iter().map(|b| b.as_u64().unwrap_or(0) as u8).collect();
+                let photo_path = resolve(root, photo.as_str().unwrap_or_default(), app_data);
+                let got = std::fs::read(&photo_path).unwrap_or_default();
+                if got != want {
+                    failures.push(format!("{name}: photo bytes {got:?}, want {want:?}"));
+                }
+            }
             if let Some(want) = after.get("is_link").and_then(Value::as_bool) {
                 let is_link = std::fs::symlink_metadata(&path).is_ok_and(|m| m.file_type().is_symlink());
                 if is_link != want {
@@ -526,10 +564,21 @@ fn run_guard_golden(native: bool) {
         if has_junction(input) != native {
             continue;
         }
+        // The symlink case depends on the account's privilege (the golden records "skipped"); the dedicated native test
+        // `symlinked_report_path_does_not_overwrite_the_photo` covers it.
+        if input.get("link").and_then(Value::as_str) == Some("symlink") {
+            continue;
+        }
         ran += 1;
         let root = TempRoot::new("cli-guard-golden");
         let app_data = csharp_app_data_folder();
         build_tree(root.path(), &input["tree"]);
+        if input.get("link").and_then(Value::as_str) == Some("hardlink") {
+            let photo = PathBuf::from(resolve(root.path(), golden::str_of(input, "photo"), &app_data));
+            std::fs::write(&photo, [1, 2, 3]).expect("write golden photo");
+            let report = PathBuf::from(resolve(root.path(), golden::str_of(input, "path"), &app_data));
+            std::fs::hard_link(&photo, &report).expect("create golden hard link");
+        }
         let got = execute(input, root.path(), &app_data);
         let scrubbed = match got {
             Ok(Value::String(s)) if s == "default-shape-ok" => Ok(Value::String(s)),
