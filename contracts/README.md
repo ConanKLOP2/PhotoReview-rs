@@ -481,3 +481,56 @@ To apply at porter kick-off (not wired here because they change a unit's behavio
 W6-02b owns the shared volume/mount-point query adapter; W6-02a consumes it, W6-02c consumes both policy/settings units, and W6-02e implements the restore backend injected by W6-02c. W6-02d remains independent. `lib.rs` wiring is lead-owned for all W6-02 units.
 
 W6-03a generates mutex names; W6-03b derives paired pipe names and ACLs; W6-03c/d consume the pipe contract; W6-03e composes keys, server, and client. W6-04b depends only on the existing `DisplayTiming` contract and is independently implementable. W6-04a depends on W6-04b's driver trait plus the existing `DisplayClock`, `DisplayTiming`, and `VBlankEstimator`; it owns no Core abstractions. The parent contract records the split and dependency.
+
+## Wave 7 roster (benchmarking, `pr-bench`)
+
+Dependency order (P-28): W7-01a/01b and W7-02a first; W7-02b after 02a; W7-03a after 01; W7-03b after 01 and the pr-imaging service;
+W7-03c after 03a and 03b; W7-03d after 03c (its `EngineBackend` is lead-owned, see D69).
+
+| WU | Unit | Rust (`crates/pr-bench/src/`) | Porter | Golden |
+|---|---|---|---|---|
+| W7-01a | BenchmarkModels (profile validation, phase statistics, ranking, report/batch JSON) | `models` | Sonnet | `bench-profile`, `bench-phase`, `bench-rank`, `bench-json` |
+| W7-01b | BenchmarkProfiles (All/Runnable/Find), BenchmarkMetrics.Since | `profiles`, `metrics` | Haiku | `benchmark-profiles`, `benchmark-metrics-since` |
+| W7-02a | SlowLinkFileSystem, SharedBandwidthLimiter, ThrottledReadStream | `slow_link_fs` | Sonnet | `slow-link-fs` |
+| W7-02b | SlowLinkSourceReader, BenchmarkRecycleBin (temp-copy deleter) | `slow_link_reader`, `bench_recycle_bin` | Sonnet | `slow-link-source-reader`, `bench-recycle-bin` |
+| W7-03a | BenchmarkEngine (prepared run, timing, progress) | `engine` | Sonnet | `bench-engine-run`, `bench-engine-format-ms` |
+| W7-03b | BenchmarkImageExecutor, WindowedPreloadTarget, ProfileScope | `image_executor` | Sonnet | `bench-profile-scope`, `bench-windowed-target` |
+| W7-03c | BenchmarkWorkloadRunner (seeded Random, file selection, ImagesPerSample) | `workload_runner` | Sonnet | `bench-random`, `bench-select-indices`, `bench-images-per-sample`, `bench-prepare-edge` |
+| W7-03d | Benchmark CLI (dispatch, `--benchmark*`, list-profiles, usage, arguments, ToolPathGuard) | `cli`, `main.rs` | Sonnet | `cli-arguments`, `cli-tool-path-guard`, `cli-dataset-plan` |
+
+## Lead decisions (Wave 7)
+
+The recommended option of every open question in the eight contracts was taken (standing user instruction: never stop to ask);
+they are logged as P-35..P-37 in `docs/PROPOSED-DECISIONS.md`.
+
+- **D60 Wiring done by the lead:** `crates/pr-bench/src/lib.rs` declares all modules (`cli` is a lib module, `main.rs` is the thin binary);
+  `Cargo.toml` adds `pr-platform-win` (production memory probe for the executor, W7-03b Q2) and dev-dependencies `pr-test-support`, `serde_json`.
+  The stubs compile together clippy-clean as delivered; the stub-only `#![allow(unused_variables, dead_code)]` lines stay until each porter
+  removes them with the last `todo!()`.
+- **D61 Name reconciliation:** the validation error type is `BenchmarkProfileError` (W7-01a); `engine.rs` was changed from the assumed
+  `BenchmarkProfileException`. The W7-03a compile shim and the W7-03c compile-check are not merged. `BenchmarkTimestamp` stays in `models.rs`.
+- **D62 Lookup seam (W7-01a Q1):** `effective_images_per_sample`, `p95_per_image`, `p50_per_image`, `rank` and `to_json` take an
+  `ImagesPerSampleLookup` callback, so `models.rs` does not depend on `profiles`/`workload_runner` and merge order does not matter.
+- **D63 Profile fields:** `BenchmarkProfile` fields are the snake_case mirror of the C# record; `since()` returns `Result` (duplicate baseline
+  keys, as C# `ToDictionary` throws); `runnable()` returns clones. `TargetWidth` belongs to W7-01a.
+- **D64 R0002 names:** env var `PHOTOREVIEW_RS_BENCH_REAL_RECYCLE_BIN` (Different row, D4 rule); benchmark scratch parent
+  `PhotoReviewRs-Benchmark-Cache`; the CLI `--cache-dir` guard protects both `%LOCALAPPDATA%\PhotoReviewRs` and `\PhotoReview`.
+- **D65 Visibility:** `TimeSource` and `ThrottledReadStream` stay `pub` (external test crate and W7-02b use them). The `FileSystem` trait method
+  `try_get_file_stat` (P-12) delays once like `get_file_stat`; a C# baseline sync that adds it must do the same.
+- **D66 Executor:** sync trait `BenchmarkPreparedWorkloadExecutor`; `BenchmarkExecutorOptions::default().physical_memory_bytes == 0` (the host
+  passes `ram_budget::get_physical_memory_bytes`; revisit in W7-03c); `decoder: None` is `NoDecoder`; `dispose` keeps the unbounded
+  `shutdown_persist_workers()` (parity). Teardown threading is not differentially testable (fake-decoder Rust tests only).
+- **D67 Accepted divergences** (tests carry `// DIVERGENCE:`): the parallel-step error is the lowest index, not the first in time; an empty file
+  list is `InvalidArgument` at prepare; workload errors are a `WorkloadError` boxed in `BenchmarkError::Operation` (tests `downcast_ref`); a setup
+  failure is per-profile in Rust but aborts the batch in C#; the CLI DONE line uses invariant culture (a C# `vi-VN` machine prints a comma);
+  progress lines print synchronously in order (C# `Progress<T>` is asynchronous); console output is UTF-8; eager `Vec` listing instead of the
+  lazy C# iterator.
+- **D68 CLI scope:** only the benchmark modes (`--benchmark`, `--benchmark-all`, `--benchmark-actions`, `list-profiles`, usage). The ~11 other tools
+  of `PhotoReview.Benchmark.Cli` (perf-analyze, compare/export, decoder-bench, io-decode-split, raw-survey, perf-session, startup/ui-next/explorer
+  probes, preload-bench) go to `BenchmarkBackend::run_other_mode` (exit 2, "not available"). Proposed W7-03e (perf-analyze + NavSamplesCsv) and
+  W7-03f (compare/export); the WPF-bound tools go to W8 or are dropped (P-36).
+- **D69 CLI seam:** `BenchmarkBackend` trait; the lead writes `EngineBackend` after W7-01..W7-03c merge and swaps it for `UnwiredBackend` in `main.rs`.
+- **D70 Oracle wiring:** `PhotoReview.Benchmarking.dll` is built from the baseline archive into the shared output folder (it pulls
+  `Platform.Windows` in); the two internal CLI classes (`BenchmarkCliArguments`, `ToolPathGuard`) are compiled from the baseline source through
+  `-p:CSharpSrcDir`. The `cli-process` golden (runs the baseline WPF-bound Cli exe) is NOT generated: its input was dropped and `CliProcess` is not
+  dispatched; process-level behaviour is covered by hand-written expectations (P-37).

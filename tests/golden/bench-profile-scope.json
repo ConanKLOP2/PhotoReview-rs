@@ -1,0 +1,142 @@
+{
+  "generator": "oracle-cs bench-profile-scope",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "plain-initial-false-detailed-false-counter-false",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-false-detailed-false-counter-true",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-false-detailed-true-counter-false",
+      "during": true,
+      "after_externals": true,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-false-detailed-true-counter-true",
+      "during": true,
+      "after_externals": true,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-true-detailed-false-counter-false",
+      "during": false,
+      "after_externals": false,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-true-detailed-false-counter-true",
+      "during": false,
+      "after_externals": false,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-true-detailed-true-counter-false",
+      "during": true,
+      "after_externals": true,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "plain-initial-true-detailed-true-counter-true",
+      "during": true,
+      "after_externals": true,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "external-write-with-counter-wins",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "external-write-with-counter-wins-opposite",
+      "during": true,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "external-write-without-counter-is-overwritten",
+      "during": false,
+      "after_externals": false,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 3
+    },
+    {
+      "name": "external-write-same-value-still-counts",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "two-external-writes-with-counter",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": null,
+      "writes": 3
+    },
+    {
+      "name": "external-write-back-to-previous-still-skips-restore",
+      "during": false,
+      "after_externals": true,
+      "after": true,
+      "after_second_dispose": null,
+      "writes": 2
+    },
+    {
+      "name": "dispose-twice-restores-once",
+      "during": true,
+      "after_externals": true,
+      "after": false,
+      "after_second_dispose": true,
+      "writes": 2
+    },
+    {
+      "name": "dispose-twice-restores-once-with-counter",
+      "during": false,
+      "after_externals": false,
+      "after": true,
+      "after_second_dispose": false,
+      "writes": 2
+    },
+    {
+      "name": "dispose-twice-after-skipped-restore",
+      "during": false,
+      "after_externals": false,
+      "after": false,
+      "after_second_dispose": true,
+      "writes": 2
+    }
+  ]
+}

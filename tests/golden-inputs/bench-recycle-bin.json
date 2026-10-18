@@ -1,0 +1,22 @@
+{
+  "cases": [
+    { "name": "env-unset-uses-the-temp-copy-deleter", "kind": "env", "value": null },
+    { "name": "env-exactly-1-opts-in", "kind": "env", "value": "1" },
+    { "name": "env-0-does-not-opt-in", "kind": "env", "value": "0" },
+    { "name": "env-true-does-not-opt-in", "kind": "env", "value": "true" },
+    { "name": "env-yes-does-not-opt-in", "kind": "env", "value": "yes" },
+    { "name": "env-leading-space-does-not-opt-in", "kind": "env", "value": " 1" },
+    { "name": "env-trailing-space-does-not-opt-in", "kind": "env", "value": "1 " },
+    { "name": "env-01-does-not-opt-in", "kind": "env", "value": "01" },
+    { "name": "env-11-does-not-opt-in", "kind": "env", "value": "11" },
+    { "name": "env-empty-does-not-opt-in", "kind": "env", "value": "" },
+    { "name": "delete-existing-file-removes-it", "kind": "delete", "setup": "file" },
+    { "name": "delete-missing-file-in-existing-folder-is-silent", "kind": "delete", "setup": "missing-file" },
+    { "name": "delete-missing-folder-throws", "kind": "delete", "setup": "missing-dir" },
+    { "name": "delete-directory-path-throws-and-keeps-it", "kind": "delete", "setup": "directory" },
+    { "name": "delete-read-only-file-throws-and-keeps-it", "kind": "delete", "setup": "readonly-file" },
+    { "name": "delete-empty-path-throws", "kind": "delete", "setup": "empty-path" },
+    { "name": "delete-path-below-a-file-throws", "kind": "delete", "setup": "file-as-parent" },
+    { "name": "default-deleter-members", "kind": "members" }
+  ]
+}

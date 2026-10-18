@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "name": "plain-initial-false-detailed-false-counter-false",
+      "initial": false,
+      "detailed_logging": false,
+      "use_write_count": false,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-false-detailed-false-counter-true",
+      "initial": false,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-false-detailed-true-counter-false",
+      "initial": false,
+      "detailed_logging": true,
+      "use_write_count": false,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-false-detailed-true-counter-true",
+      "initial": false,
+      "detailed_logging": true,
+      "use_write_count": true,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-true-detailed-false-counter-false",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": false,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-true-detailed-false-counter-true",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-true-detailed-true-counter-false",
+      "initial": true,
+      "detailed_logging": true,
+      "use_write_count": false,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "plain-initial-true-detailed-true-counter-true",
+      "initial": true,
+      "detailed_logging": true,
+      "use_write_count": true,
+      "external": [],
+      "dispose_twice": false
+    },
+    {
+      "name": "external-write-with-counter-wins",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [
+        false
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "external-write-with-counter-wins-opposite",
+      "initial": false,
+      "detailed_logging": true,
+      "use_write_count": true,
+      "external": [
+        false
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "external-write-without-counter-is-overwritten",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": false,
+      "external": [
+        false
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "external-write-same-value-still-counts",
+      "initial": false,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [
+        false
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "two-external-writes-with-counter",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [
+        true,
+        false
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "external-write-back-to-previous-still-skips-restore",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [
+        true
+      ],
+      "dispose_twice": false
+    },
+    {
+      "name": "dispose-twice-restores-once",
+      "initial": false,
+      "detailed_logging": true,
+      "use_write_count": false,
+      "external": [],
+      "dispose_twice": true
+    },
+    {
+      "name": "dispose-twice-restores-once-with-counter",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [],
+      "dispose_twice": true
+    },
+    {
+      "name": "dispose-twice-after-skipped-restore",
+      "initial": true,
+      "detailed_logging": false,
+      "use_write_count": true,
+      "external": [
+        false
+      ],
+      "dispose_twice": true
+    }
+  ]
+}

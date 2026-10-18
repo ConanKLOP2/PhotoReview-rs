@@ -1,0 +1,228 @@
+{
+  "generator": "oracle-cs bench-prepare-edge",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "explorer-reindex-refuses",
+      "profile_id": "explorer-reindex",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "BenchmarkProfileException",
+      "problem": "NotImplemented",
+      "message": "Benchmark profile 'explorer-reindex' does not implement a real Explorer Reindex check yet; a decode-only stand-in would misreport results, so it refuses to run.",
+      "stage": "prepare"
+    },
+    {
+      "name": "cache-recovery-refuses",
+      "profile_id": "cache-recovery",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "BenchmarkProfileException",
+      "problem": "NotImplemented",
+      "message": "Benchmark profile 'cache-recovery' does not implement a real Cache Recovery check yet; a decode-only stand-in would misreport results, so it refuses to run.",
+      "stage": "prepare"
+    },
+    {
+      "name": "refusal-wins-over-workload-argument-FileAction",
+      "profile_id": "cache-recovery",
+      "profile_workload": "FileAction",
+      "workload": "FileAction",
+      "iteration": 0,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "refusal-wins-over-workload-argument-FirstFrame",
+      "profile_id": "explorer-reindex",
+      "profile_workload": "FirstFrame",
+      "workload": "FirstFrame",
+      "iteration": 3,
+      "throws": "IndexOutOfRangeException",
+      "stage": "prepare"
+    },
+    {
+      "name": "refusal-checks-profile-workload-not-argument",
+      "profile_id": "cache-recovery",
+      "profile_workload": "Sequential",
+      "workload": "Sequential",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "same-id-other-profile-workload-is-not-refused",
+      "profile_id": "cache-recovery",
+      "profile_workload": "Sequential",
+      "workload": "Sequential",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "id-match-is-case-sensitive",
+      "profile_id": "Cache-Recovery",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "id-match-is-exact-no-trim",
+      "profile_id": "explorer-reindex ",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "other-correctness-profile-is-not-refused",
+      "profile_id": "original-correctness",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "renamed-refused-profile-keeps-name-in-message",
+      "profile_id": "cache-recovery",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 7,
+      "throws": "BenchmarkProfileException",
+      "problem": "NotImplemented",
+      "message": "Benchmark profile 'cache-recovery' does not implement a real Cache Recovery check yet; a decode-only stand-in would misreport results, so it refuses to run.",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-FirstFrame",
+      "profile_id": "fast-sequential",
+      "profile_workload": "FirstFrame",
+      "workload": "FirstFrame",
+      "iteration": 0,
+      "throws": "IndexOutOfRangeException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-FirstFrame-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "FirstFrame",
+      "workload": "FirstFrame",
+      "iteration": 5,
+      "throws": "IndexOutOfRangeException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-Sequential",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Sequential",
+      "workload": "Sequential",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "empty-files-Sequential-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Sequential",
+      "workload": "Sequential",
+      "iteration": 5,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "empty-files-Random",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Random",
+      "workload": "Random",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "empty-files-Random-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Random",
+      "workload": "Random",
+      "iteration": 5,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "empty-files-WarmNext",
+      "profile_id": "fast-sequential",
+      "profile_workload": "WarmNext",
+      "workload": "WarmNext",
+      "iteration": 0,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-WarmNext-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "WarmNext",
+      "workload": "WarmNext",
+      "iteration": 5,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-Preload",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Preload",
+      "workload": "Preload",
+      "iteration": 0,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-Preload-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Preload",
+      "workload": "Preload",
+      "iteration": 5,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-FileAction",
+      "profile_id": "fast-sequential",
+      "profile_workload": "FileAction",
+      "workload": "FileAction",
+      "iteration": 0,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-FileAction-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "FileAction",
+      "workload": "FileAction",
+      "iteration": 5,
+      "throws": "DivideByZeroException",
+      "stage": "prepare"
+    },
+    {
+      "name": "empty-files-Correctness",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 0,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    },
+    {
+      "name": "empty-files-Correctness-iteration-5",
+      "profile_id": "fast-sequential",
+      "profile_workload": "Correctness",
+      "workload": "Correctness",
+      "iteration": 5,
+      "throws": "ArgumentOutOfRangeException",
+      "stage": "measure"
+    }
+  ]
+}

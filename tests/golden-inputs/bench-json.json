@@ -1,0 +1,52 @@
+{
+ "cases": [
+  {"name": "report-empty-no-phases", "kind": "report", "report": {"run_id": "run1", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "folder", "phases": []}},
+  {"name": "report-empty-phase-is-finite", "kind": "report", "report": {"run_id": "run", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "C:\\x", "phases": [
+    {"id": "x", "workload": "Sequential", "samples": [], "status": "InsufficientData", "images": 1}]}},
+  {"name": "report-one-phase-integers", "kind": "report", "report": {"run_id": "run2", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "folder", "phases": [
+    {"id": "fast-sequential", "workload": "Sequential", "samples": [10, 20, 5], "status": "Pass", "images": 8}]}},
+  {"name": "report-phase-null-message-and-null-stamp-derives", "kind": "report", "report": {"run_id": "run3", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "folder", "phases": [
+    {"id": "fast-sequential", "workload": "Sequential", "samples": [80], "status": "Pass"},
+    {"id": "unknown-profile", "workload": "Random", "samples": [1.5], "status": "Warn"}]}},
+  {"name": "report-phase-every-workload-and-status", "kind": "report", "report": {"run_id": "all", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": [
+    {"id": "p0", "workload": "FirstFrame", "samples": [1], "status": "Pass", "images": 1},
+    {"id": "p1", "workload": "Sequential", "samples": [1], "status": "Warn", "images": 1},
+    {"id": "p2", "workload": "Random", "samples": [1], "status": "Fail", "images": 1},
+    {"id": "p3", "workload": "WarmNext", "samples": [1], "status": "InsufficientData", "images": 1},
+    {"id": "p4", "workload": "Preload", "samples": [1], "status": "Pass", "images": 1},
+    {"id": "p5", "workload": "FileAction", "samples": [1], "status": "Pass", "images": 1},
+    {"id": "p6", "workload": "Correctness", "samples": [1], "status": "Pass", "images": 1}]}},
+  {"name": "report-number-formatting", "kind": "report", "report": {"run_id": "num", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": [
+    {"id": "n", "workload": "Sequential", "samples": [0.1, 0.30000000000000004, 123456.789, 1e-7, 1e21, 1e300, -2.5, 0, 100, 1.0000000000000002], "status": "Pass", "images": 3}]}},
+  {"name": "report-negative-zero-maximum", "kind": "report", "report": {"run_id": "nz", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": [
+    {"id": "n", "workload": "Sequential", "samples": ["-0", 0], "status": "Pass", "images": 1}]}},
+  {"name": "report-message-escaping", "kind": "report", "report": {"run_id": "esc", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "C:\\Photos\\caf\u00e9 <&> 'x' +1 `y`", "machine": "PC \"A\"\t\u007f\u0001/\u4e2d\ud83d\ude00", "phases": [
+    {"id": "m", "workload": "Sequential", "samples": [1], "status": "Fail", "message": "Failed: <b>&amp;</b> \"q\" 'a' + `b` \\ / \r\n\t \u00e9 \u4e2d \ud83d\ude00 \u2028", "images": 1}]}},
+  {"name": "report-machine-and-metrics-zero", "kind": "report", "report": {"run_id": "mz", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "machine": "PC-1", "metrics": "zero", "phases": []}},
+  {"name": "report-metrics-populated", "kind": "report", "report": {"run_id": "mp", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "metrics": "populated", "phases": [
+    {"id": "x", "workload": "Sequential", "samples": [2, 4], "status": "Pass", "images": 2}]}},
+  {"name": "report-time-fraction-seven-digits", "kind": "report", "report": {"run_id": "t1", "utc_ticks": 621355968001234567, "offset_minutes": 0, "folder": "f", "phases": []}},
+  {"name": "report-time-fraction-trimmed-half-second", "kind": "report", "report": {"run_id": "t2", "utc_ticks": 621355968005000000, "offset_minutes": 0, "folder": "f", "phases": []}},
+  {"name": "report-time-fraction-one-tick", "kind": "report", "report": {"run_id": "t3", "utc_ticks": 621355968000000001, "offset_minutes": 0, "folder": "f", "phases": []}},
+  {"name": "report-time-positive-offset", "kind": "report", "report": {"run_id": "t4", "utc_ticks": 639000000000000000, "offset_minutes": 420, "folder": "f", "phases": []}},
+  {"name": "report-time-negative-offset-half-hour", "kind": "report", "report": {"run_id": "t5", "utc_ticks": 639000000000000000, "offset_minutes": -210, "folder": "f", "phases": []}},
+  {"name": "report-time-offset-crosses-midnight", "kind": "report", "report": {"run_id": "t6", "utc_ticks": 638999999999999999, "offset_minutes": 840, "folder": "f", "phases": []}},
+  {"name": "report-time-min-value", "kind": "report", "report": {"run_id": "t7", "utc_ticks": 0, "offset_minutes": 0, "folder": "f", "phases": []}},
+  {"name": "report-time-max-value", "kind": "report", "report": {"run_id": "t8", "utc_ticks": 3155378975999999999, "offset_minutes": 0, "folder": "f", "phases": []}},
+  {"name": "report-nan-samples-throw", "kind": "report", "report": {"run_id": "bad", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": [
+    {"id": "nan", "workload": "Sequential", "samples": ["NaN"], "status": "Pass", "images": 1}]}},
+  {"name": "report-infinity-sample-throws", "kind": "report", "report": {"run_id": "bad2", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": [
+    {"id": "inf", "workload": "Sequential", "samples": ["Infinity"], "status": "Pass", "images": 1}]}},
+  {"name": "batch-empty", "kind": "batch", "dataset": {"folder": "f", "files": [], "unsupported": [], "file_limit": 0}, "reports": [], "outcomes": []},
+  {"name": "batch-dataset-counts-and-dictionary-order", "kind": "batch", "dataset": {"folder": "C:\\Photos", "files": ["a.jpg", "b.cr3", "c d.png"], "unsupported": [[".txt", 3], [".mp4", 1], [".t\u00ebst", 2]], "file_limit": 100}, "reports": [], "outcomes": []},
+  {"name": "batch-reports-and-outcomes", "kind": "batch", "dataset": {"folder": "f", "files": ["a.jpg"], "unsupported": [], "file_limit": 5}, "reports": [
+    {"run_id": "r1", "utc_ticks": 621355968000000000, "offset_minutes": 60, "folder": "f", "machine": "PC", "metrics": "populated", "phases": [
+      {"id": "fast-sequential", "workload": "Sequential", "samples": [80, 90], "status": "Pass"}]},
+    {"run_id": "r2", "utc_ticks": 621355968000000000, "offset_minutes": 0, "folder": "f", "phases": []}], "outcomes": [
+    {"id": "cache-recovery", "workload": "Correctness", "samples": [], "status": "Fail", "message": "not implemented", "images": 1},
+    {"id": "preview-light", "workload": "Sequential", "samples": [3.25], "status": "Pass", "images": 4}]},
+  {"name": "batch-unsupported-count-zero-values", "kind": "batch", "dataset": {"folder": "f", "files": [], "unsupported": [[".a", 0], [".b", 0]], "file_limit": 1}, "reports": [], "outcomes": []},
+  {"name": "batch-nan-outcome-throws", "kind": "batch", "dataset": {"folder": "f", "files": [], "unsupported": [], "file_limit": 1}, "reports": [], "outcomes": [
+    {"id": "nan", "workload": "Sequential", "samples": ["NaN"], "status": "Pass", "images": 1}]}
+ ]
+}

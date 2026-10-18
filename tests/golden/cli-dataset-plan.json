@@ -1,0 +1,1103 @@
+{
+  "generator": "oracle-cs cli-dataset-plan",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "single-jpg",
+      "files": [
+        "C:\\photos\\a.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\photos\\a.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "sorted-ignore-case-then-ordinal",
+      "files": [
+        "C:\\photos\\b.jpg",
+        "C:\\photos\\A.jpg",
+        "C:\\photos\\a.jpg",
+        "C:\\photos\\B.JPG",
+        "C:\\photos\\_x.png"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\photos\\A.jpg",
+            "C:\\photos\\a.jpg",
+            "C:\\photos\\B.JPG",
+            "C:\\photos\\b.jpg",
+            "C:\\photos\\_x.png"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "name-order-not-path-order",
+      "files": [
+        "C:\\z\\a.jpg",
+        "C:\\a\\b.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\z\\a.jpg",
+            "C:\\a\\b.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "natural-order-is-not-used",
+      "files": [
+        "C:\\p\\img10.jpg",
+        "C:\\p\\img2.jpg",
+        "C:\\p\\img1.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\img1.jpg",
+            "C:\\p\\img10.jpg",
+            "C:\\p\\img2.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "supported-extensions-case-insensitive",
+      "files": [
+        "C:\\p\\a.JPG",
+        "C:\\p\\b.Jpeg",
+        "C:\\p\\c.PNG",
+        "C:\\p\\d.bmp",
+        "C:\\p\\e.GIF",
+        "C:\\p\\f.tif",
+        "C:\\p\\g.TIFF"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.JPG",
+            "C:\\p\\b.Jpeg",
+            "C:\\p\\c.PNG",
+            "C:\\p\\d.bmp",
+            "C:\\p\\e.GIF",
+            "C:\\p\\f.tif",
+            "C:\\p\\g.TIFF"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "raw-and-webp-heic-are-unsupported-here",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b.cr2",
+        "C:\\p\\c.NEF",
+        "C:\\p\\d.webp",
+        "C:\\p\\e.heic",
+        "C:\\p\\f.dng"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".cr2",
+              1
+            ],
+            [
+              ".dng",
+              1
+            ],
+            [
+              ".heic",
+              1
+            ],
+            [
+              ".nef",
+              1
+            ],
+            [
+              ".webp",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "unsupported-counts-grouped-lowercase",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b.TXT",
+        "C:\\p\\c.txt",
+        "C:\\p\\d.Txt",
+        "C:\\p\\e.log"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".log",
+              1
+            ],
+            [
+              ".txt",
+              3
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "unsupported-keys-ordinal-order",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\x.zip",
+        "C:\\p\\x.Z",
+        "C:\\p\\x.a",
+        "C:\\p\\x.B",
+        "C:\\p\\x.é",
+        "C:\\p\\x.É",
+        "C:\\p\\x.1"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".1",
+              1
+            ],
+            [
+              ".a",
+              1
+            ],
+            [
+              ".b",
+              1
+            ],
+            [
+              ".z",
+              1
+            ],
+            [
+              ".zip",
+              1
+            ],
+            [
+              ".é",
+              2
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "no-extension-is-none",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\README",
+        "C:\\p\\Makefile"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              "<none>",
+              2
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "trailing-dot-is-none",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b."
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              "<none>",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "blank-extension-keeps-its-own-key",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b. ",
+        "C:\\p\\c.\u00A0"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ". ",
+              1
+            ],
+            [
+              ".\u00A0",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "hidden-style-name-is-an-extension",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\.gitignore",
+        "C:\\p\\.JPG"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\.JPG",
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".gitignore",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "dot-jpg-file-is-supported",
+      "files": [
+        "C:\\p\\.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "double-extension-last-wins",
+      "files": [
+        "C:\\p\\a.tar.gz",
+        "C:\\p\\b.jpg.txt",
+        "C:\\p\\c.txt.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\c.txt.jpg"
+          ],
+          "unsupported": [
+            [
+              ".gz",
+              1
+            ],
+            [
+              ".txt",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "turkish-and-unicode-case",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b.İ",
+        "C:\\p\\c.I",
+        "C:\\p\\d.ı",
+        "C:\\p\\e.K",
+        "C:\\p\\f.K"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".i",
+              1
+            ],
+            [
+              ".k",
+              2
+            ],
+            [
+              ".İ",
+              1
+            ],
+            [
+              ".ı",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "greek-final-sigma-and-sharp-s",
+      "files": [
+        "C:\\p\\a.jpg",
+        "C:\\p\\b.ΑΣ",
+        "C:\\p\\c.ΣA",
+        "C:\\p\\d.ẞ",
+        "C:\\p\\e.ǅ"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg"
+          ],
+          "unsupported": [
+            [
+              ".ß",
+              1
+            ],
+            [
+              ".ǆ",
+              1
+            ],
+            [
+              ".ασ",
+              1
+            ],
+            [
+              ".σa",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "jpg-with-trailing-space-is-unsupported",
+      "files": [
+        "C:\\p\\a.jpg ",
+        "C:\\p\\b.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\b.jpg"
+          ],
+          "unsupported": [
+            [
+              ".jpg ",
+              1
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "limit-64-keeps-first-sorted",
+      "files": [
+        "C:\\p\\img070.jpg",
+        "C:\\p\\img069.jpg",
+        "C:\\p\\img068.jpg",
+        "C:\\p\\img067.jpg",
+        "C:\\p\\img066.jpg",
+        "C:\\p\\img065.jpg",
+        "C:\\p\\img064.jpg",
+        "C:\\p\\img063.jpg",
+        "C:\\p\\img062.jpg",
+        "C:\\p\\img061.jpg",
+        "C:\\p\\img060.jpg",
+        "C:\\p\\img059.jpg",
+        "C:\\p\\img058.jpg",
+        "C:\\p\\img057.jpg",
+        "C:\\p\\img056.jpg",
+        "C:\\p\\img055.jpg",
+        "C:\\p\\img054.jpg",
+        "C:\\p\\img053.jpg",
+        "C:\\p\\img052.jpg",
+        "C:\\p\\img051.jpg",
+        "C:\\p\\img050.jpg",
+        "C:\\p\\img049.jpg",
+        "C:\\p\\img048.jpg",
+        "C:\\p\\img047.jpg",
+        "C:\\p\\img046.jpg",
+        "C:\\p\\img045.jpg",
+        "C:\\p\\img044.jpg",
+        "C:\\p\\img043.jpg",
+        "C:\\p\\img042.jpg",
+        "C:\\p\\img041.jpg",
+        "C:\\p\\img040.jpg",
+        "C:\\p\\img039.jpg",
+        "C:\\p\\img038.jpg",
+        "C:\\p\\img037.jpg",
+        "C:\\p\\img036.jpg",
+        "C:\\p\\img035.jpg",
+        "C:\\p\\img034.jpg",
+        "C:\\p\\img033.jpg",
+        "C:\\p\\img032.jpg",
+        "C:\\p\\img031.jpg",
+        "C:\\p\\img030.jpg",
+        "C:\\p\\img029.jpg",
+        "C:\\p\\img028.jpg",
+        "C:\\p\\img027.jpg",
+        "C:\\p\\img026.jpg",
+        "C:\\p\\img025.jpg",
+        "C:\\p\\img024.jpg",
+        "C:\\p\\img023.jpg",
+        "C:\\p\\img022.jpg",
+        "C:\\p\\img021.jpg",
+        "C:\\p\\img020.jpg",
+        "C:\\p\\img019.jpg",
+        "C:\\p\\img018.jpg",
+        "C:\\p\\img017.jpg",
+        "C:\\p\\img016.jpg",
+        "C:\\p\\img015.jpg",
+        "C:\\p\\img014.jpg",
+        "C:\\p\\img013.jpg",
+        "C:\\p\\img012.jpg",
+        "C:\\p\\img011.jpg",
+        "C:\\p\\img010.jpg",
+        "C:\\p\\img009.jpg",
+        "C:\\p\\img008.jpg",
+        "C:\\p\\img007.jpg",
+        "C:\\p\\img006.jpg",
+        "C:\\p\\img005.jpg",
+        "C:\\p\\img004.jpg",
+        "C:\\p\\img003.jpg",
+        "C:\\p\\img002.jpg",
+        "C:\\p\\img001.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\img001.jpg",
+            "C:\\p\\img002.jpg",
+            "C:\\p\\img003.jpg",
+            "C:\\p\\img004.jpg",
+            "C:\\p\\img005.jpg",
+            "C:\\p\\img006.jpg",
+            "C:\\p\\img007.jpg",
+            "C:\\p\\img008.jpg",
+            "C:\\p\\img009.jpg",
+            "C:\\p\\img010.jpg",
+            "C:\\p\\img011.jpg",
+            "C:\\p\\img012.jpg",
+            "C:\\p\\img013.jpg",
+            "C:\\p\\img014.jpg",
+            "C:\\p\\img015.jpg",
+            "C:\\p\\img016.jpg",
+            "C:\\p\\img017.jpg",
+            "C:\\p\\img018.jpg",
+            "C:\\p\\img019.jpg",
+            "C:\\p\\img020.jpg",
+            "C:\\p\\img021.jpg",
+            "C:\\p\\img022.jpg",
+            "C:\\p\\img023.jpg",
+            "C:\\p\\img024.jpg",
+            "C:\\p\\img025.jpg",
+            "C:\\p\\img026.jpg",
+            "C:\\p\\img027.jpg",
+            "C:\\p\\img028.jpg",
+            "C:\\p\\img029.jpg",
+            "C:\\p\\img030.jpg",
+            "C:\\p\\img031.jpg",
+            "C:\\p\\img032.jpg",
+            "C:\\p\\img033.jpg",
+            "C:\\p\\img034.jpg",
+            "C:\\p\\img035.jpg",
+            "C:\\p\\img036.jpg",
+            "C:\\p\\img037.jpg",
+            "C:\\p\\img038.jpg",
+            "C:\\p\\img039.jpg",
+            "C:\\p\\img040.jpg",
+            "C:\\p\\img041.jpg",
+            "C:\\p\\img042.jpg",
+            "C:\\p\\img043.jpg",
+            "C:\\p\\img044.jpg",
+            "C:\\p\\img045.jpg",
+            "C:\\p\\img046.jpg",
+            "C:\\p\\img047.jpg",
+            "C:\\p\\img048.jpg",
+            "C:\\p\\img049.jpg",
+            "C:\\p\\img050.jpg",
+            "C:\\p\\img051.jpg",
+            "C:\\p\\img052.jpg",
+            "C:\\p\\img053.jpg",
+            "C:\\p\\img054.jpg",
+            "C:\\p\\img055.jpg",
+            "C:\\p\\img056.jpg",
+            "C:\\p\\img057.jpg",
+            "C:\\p\\img058.jpg",
+            "C:\\p\\img059.jpg",
+            "C:\\p\\img060.jpg",
+            "C:\\p\\img061.jpg",
+            "C:\\p\\img062.jpg",
+            "C:\\p\\img063.jpg",
+            "C:\\p\\img064.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "limit-exactly-64",
+      "files": [
+        "C:\\p\\img000.jpg",
+        "C:\\p\\img001.jpg",
+        "C:\\p\\img002.jpg",
+        "C:\\p\\img003.jpg",
+        "C:\\p\\img004.jpg",
+        "C:\\p\\img005.jpg",
+        "C:\\p\\img006.jpg",
+        "C:\\p\\img007.jpg",
+        "C:\\p\\img008.jpg",
+        "C:\\p\\img009.jpg",
+        "C:\\p\\img010.jpg",
+        "C:\\p\\img011.jpg",
+        "C:\\p\\img012.jpg",
+        "C:\\p\\img013.jpg",
+        "C:\\p\\img014.jpg",
+        "C:\\p\\img015.jpg",
+        "C:\\p\\img016.jpg",
+        "C:\\p\\img017.jpg",
+        "C:\\p\\img018.jpg",
+        "C:\\p\\img019.jpg",
+        "C:\\p\\img020.jpg",
+        "C:\\p\\img021.jpg",
+        "C:\\p\\img022.jpg",
+        "C:\\p\\img023.jpg",
+        "C:\\p\\img024.jpg",
+        "C:\\p\\img025.jpg",
+        "C:\\p\\img026.jpg",
+        "C:\\p\\img027.jpg",
+        "C:\\p\\img028.jpg",
+        "C:\\p\\img029.jpg",
+        "C:\\p\\img030.jpg",
+        "C:\\p\\img031.jpg",
+        "C:\\p\\img032.jpg",
+        "C:\\p\\img033.jpg",
+        "C:\\p\\img034.jpg",
+        "C:\\p\\img035.jpg",
+        "C:\\p\\img036.jpg",
+        "C:\\p\\img037.jpg",
+        "C:\\p\\img038.jpg",
+        "C:\\p\\img039.jpg",
+        "C:\\p\\img040.jpg",
+        "C:\\p\\img041.jpg",
+        "C:\\p\\img042.jpg",
+        "C:\\p\\img043.jpg",
+        "C:\\p\\img044.jpg",
+        "C:\\p\\img045.jpg",
+        "C:\\p\\img046.jpg",
+        "C:\\p\\img047.jpg",
+        "C:\\p\\img048.jpg",
+        "C:\\p\\img049.jpg",
+        "C:\\p\\img050.jpg",
+        "C:\\p\\img051.jpg",
+        "C:\\p\\img052.jpg",
+        "C:\\p\\img053.jpg",
+        "C:\\p\\img054.jpg",
+        "C:\\p\\img055.jpg",
+        "C:\\p\\img056.jpg",
+        "C:\\p\\img057.jpg",
+        "C:\\p\\img058.jpg",
+        "C:\\p\\img059.jpg",
+        "C:\\p\\img060.jpg",
+        "C:\\p\\img061.jpg",
+        "C:\\p\\img062.jpg",
+        "C:\\p\\img063.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\img000.jpg",
+            "C:\\p\\img001.jpg",
+            "C:\\p\\img002.jpg",
+            "C:\\p\\img003.jpg",
+            "C:\\p\\img004.jpg",
+            "C:\\p\\img005.jpg",
+            "C:\\p\\img006.jpg",
+            "C:\\p\\img007.jpg",
+            "C:\\p\\img008.jpg",
+            "C:\\p\\img009.jpg",
+            "C:\\p\\img010.jpg",
+            "C:\\p\\img011.jpg",
+            "C:\\p\\img012.jpg",
+            "C:\\p\\img013.jpg",
+            "C:\\p\\img014.jpg",
+            "C:\\p\\img015.jpg",
+            "C:\\p\\img016.jpg",
+            "C:\\p\\img017.jpg",
+            "C:\\p\\img018.jpg",
+            "C:\\p\\img019.jpg",
+            "C:\\p\\img020.jpg",
+            "C:\\p\\img021.jpg",
+            "C:\\p\\img022.jpg",
+            "C:\\p\\img023.jpg",
+            "C:\\p\\img024.jpg",
+            "C:\\p\\img025.jpg",
+            "C:\\p\\img026.jpg",
+            "C:\\p\\img027.jpg",
+            "C:\\p\\img028.jpg",
+            "C:\\p\\img029.jpg",
+            "C:\\p\\img030.jpg",
+            "C:\\p\\img031.jpg",
+            "C:\\p\\img032.jpg",
+            "C:\\p\\img033.jpg",
+            "C:\\p\\img034.jpg",
+            "C:\\p\\img035.jpg",
+            "C:\\p\\img036.jpg",
+            "C:\\p\\img037.jpg",
+            "C:\\p\\img038.jpg",
+            "C:\\p\\img039.jpg",
+            "C:\\p\\img040.jpg",
+            "C:\\p\\img041.jpg",
+            "C:\\p\\img042.jpg",
+            "C:\\p\\img043.jpg",
+            "C:\\p\\img044.jpg",
+            "C:\\p\\img045.jpg",
+            "C:\\p\\img046.jpg",
+            "C:\\p\\img047.jpg",
+            "C:\\p\\img048.jpg",
+            "C:\\p\\img049.jpg",
+            "C:\\p\\img050.jpg",
+            "C:\\p\\img051.jpg",
+            "C:\\p\\img052.jpg",
+            "C:\\p\\img053.jpg",
+            "C:\\p\\img054.jpg",
+            "C:\\p\\img055.jpg",
+            "C:\\p\\img056.jpg",
+            "C:\\p\\img057.jpg",
+            "C:\\p\\img058.jpg",
+            "C:\\p\\img059.jpg",
+            "C:\\p\\img060.jpg",
+            "C:\\p\\img061.jpg",
+            "C:\\p\\img062.jpg",
+            "C:\\p\\img063.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "limit-65",
+      "files": [
+        "C:\\p\\img000.jpg",
+        "C:\\p\\img001.jpg",
+        "C:\\p\\img002.jpg",
+        "C:\\p\\img003.jpg",
+        "C:\\p\\img004.jpg",
+        "C:\\p\\img005.jpg",
+        "C:\\p\\img006.jpg",
+        "C:\\p\\img007.jpg",
+        "C:\\p\\img008.jpg",
+        "C:\\p\\img009.jpg",
+        "C:\\p\\img010.jpg",
+        "C:\\p\\img011.jpg",
+        "C:\\p\\img012.jpg",
+        "C:\\p\\img013.jpg",
+        "C:\\p\\img014.jpg",
+        "C:\\p\\img015.jpg",
+        "C:\\p\\img016.jpg",
+        "C:\\p\\img017.jpg",
+        "C:\\p\\img018.jpg",
+        "C:\\p\\img019.jpg",
+        "C:\\p\\img020.jpg",
+        "C:\\p\\img021.jpg",
+        "C:\\p\\img022.jpg",
+        "C:\\p\\img023.jpg",
+        "C:\\p\\img024.jpg",
+        "C:\\p\\img025.jpg",
+        "C:\\p\\img026.jpg",
+        "C:\\p\\img027.jpg",
+        "C:\\p\\img028.jpg",
+        "C:\\p\\img029.jpg",
+        "C:\\p\\img030.jpg",
+        "C:\\p\\img031.jpg",
+        "C:\\p\\img032.jpg",
+        "C:\\p\\img033.jpg",
+        "C:\\p\\img034.jpg",
+        "C:\\p\\img035.jpg",
+        "C:\\p\\img036.jpg",
+        "C:\\p\\img037.jpg",
+        "C:\\p\\img038.jpg",
+        "C:\\p\\img039.jpg",
+        "C:\\p\\img040.jpg",
+        "C:\\p\\img041.jpg",
+        "C:\\p\\img042.jpg",
+        "C:\\p\\img043.jpg",
+        "C:\\p\\img044.jpg",
+        "C:\\p\\img045.jpg",
+        "C:\\p\\img046.jpg",
+        "C:\\p\\img047.jpg",
+        "C:\\p\\img048.jpg",
+        "C:\\p\\img049.jpg",
+        "C:\\p\\img050.jpg",
+        "C:\\p\\img051.jpg",
+        "C:\\p\\img052.jpg",
+        "C:\\p\\img053.jpg",
+        "C:\\p\\img054.jpg",
+        "C:\\p\\img055.jpg",
+        "C:\\p\\img056.jpg",
+        "C:\\p\\img057.jpg",
+        "C:\\p\\img058.jpg",
+        "C:\\p\\img059.jpg",
+        "C:\\p\\img060.jpg",
+        "C:\\p\\img061.jpg",
+        "C:\\p\\img062.jpg",
+        "C:\\p\\img063.jpg",
+        "C:\\p\\img064.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\img000.jpg",
+            "C:\\p\\img001.jpg",
+            "C:\\p\\img002.jpg",
+            "C:\\p\\img003.jpg",
+            "C:\\p\\img004.jpg",
+            "C:\\p\\img005.jpg",
+            "C:\\p\\img006.jpg",
+            "C:\\p\\img007.jpg",
+            "C:\\p\\img008.jpg",
+            "C:\\p\\img009.jpg",
+            "C:\\p\\img010.jpg",
+            "C:\\p\\img011.jpg",
+            "C:\\p\\img012.jpg",
+            "C:\\p\\img013.jpg",
+            "C:\\p\\img014.jpg",
+            "C:\\p\\img015.jpg",
+            "C:\\p\\img016.jpg",
+            "C:\\p\\img017.jpg",
+            "C:\\p\\img018.jpg",
+            "C:\\p\\img019.jpg",
+            "C:\\p\\img020.jpg",
+            "C:\\p\\img021.jpg",
+            "C:\\p\\img022.jpg",
+            "C:\\p\\img023.jpg",
+            "C:\\p\\img024.jpg",
+            "C:\\p\\img025.jpg",
+            "C:\\p\\img026.jpg",
+            "C:\\p\\img027.jpg",
+            "C:\\p\\img028.jpg",
+            "C:\\p\\img029.jpg",
+            "C:\\p\\img030.jpg",
+            "C:\\p\\img031.jpg",
+            "C:\\p\\img032.jpg",
+            "C:\\p\\img033.jpg",
+            "C:\\p\\img034.jpg",
+            "C:\\p\\img035.jpg",
+            "C:\\p\\img036.jpg",
+            "C:\\p\\img037.jpg",
+            "C:\\p\\img038.jpg",
+            "C:\\p\\img039.jpg",
+            "C:\\p\\img040.jpg",
+            "C:\\p\\img041.jpg",
+            "C:\\p\\img042.jpg",
+            "C:\\p\\img043.jpg",
+            "C:\\p\\img044.jpg",
+            "C:\\p\\img045.jpg",
+            "C:\\p\\img046.jpg",
+            "C:\\p\\img047.jpg",
+            "C:\\p\\img048.jpg",
+            "C:\\p\\img049.jpg",
+            "C:\\p\\img050.jpg",
+            "C:\\p\\img051.jpg",
+            "C:\\p\\img052.jpg",
+            "C:\\p\\img053.jpg",
+            "C:\\p\\img054.jpg",
+            "C:\\p\\img055.jpg",
+            "C:\\p\\img056.jpg",
+            "C:\\p\\img057.jpg",
+            "C:\\p\\img058.jpg",
+            "C:\\p\\img059.jpg",
+            "C:\\p\\img060.jpg",
+            "C:\\p\\img061.jpg",
+            "C:\\p\\img062.jpg",
+            "C:\\p\\img063.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "unsupported-do-not-count-toward-limit",
+      "files": [
+        "C:\\p\\img000.jpg",
+        "C:\\p\\img001.jpg",
+        "C:\\p\\img002.jpg",
+        "C:\\p\\img003.jpg",
+        "C:\\p\\img004.jpg",
+        "C:\\p\\img005.jpg",
+        "C:\\p\\img006.jpg",
+        "C:\\p\\img007.jpg",
+        "C:\\p\\img008.jpg",
+        "C:\\p\\img009.jpg",
+        "C:\\p\\img010.jpg",
+        "C:\\p\\img011.jpg",
+        "C:\\p\\img012.jpg",
+        "C:\\p\\img013.jpg",
+        "C:\\p\\img014.jpg",
+        "C:\\p\\img015.jpg",
+        "C:\\p\\img016.jpg",
+        "C:\\p\\img017.jpg",
+        "C:\\p\\img018.jpg",
+        "C:\\p\\img019.jpg",
+        "C:\\p\\img020.jpg",
+        "C:\\p\\img021.jpg",
+        "C:\\p\\img022.jpg",
+        "C:\\p\\img023.jpg",
+        "C:\\p\\img024.jpg",
+        "C:\\p\\img025.jpg",
+        "C:\\p\\img026.jpg",
+        "C:\\p\\img027.jpg",
+        "C:\\p\\img028.jpg",
+        "C:\\p\\img029.jpg",
+        "C:\\p\\img030.jpg",
+        "C:\\p\\img031.jpg",
+        "C:\\p\\img032.jpg",
+        "C:\\p\\img033.jpg",
+        "C:\\p\\img034.jpg",
+        "C:\\p\\img035.jpg",
+        "C:\\p\\img036.jpg",
+        "C:\\p\\img037.jpg",
+        "C:\\p\\img038.jpg",
+        "C:\\p\\img039.jpg",
+        "C:\\p\\img040.jpg",
+        "C:\\p\\img041.jpg",
+        "C:\\p\\img042.jpg",
+        "C:\\p\\img043.jpg",
+        "C:\\p\\img044.jpg",
+        "C:\\p\\img045.jpg",
+        "C:\\p\\img046.jpg",
+        "C:\\p\\img047.jpg",
+        "C:\\p\\img048.jpg",
+        "C:\\p\\img049.jpg",
+        "C:\\p\\img050.jpg",
+        "C:\\p\\img051.jpg",
+        "C:\\p\\img052.jpg",
+        "C:\\p\\img053.jpg",
+        "C:\\p\\img054.jpg",
+        "C:\\p\\img055.jpg",
+        "C:\\p\\img056.jpg",
+        "C:\\p\\img057.jpg",
+        "C:\\p\\img058.jpg",
+        "C:\\p\\img059.jpg",
+        "C:\\p\\img060.jpg",
+        "C:\\p\\img061.jpg",
+        "C:\\p\\img062.jpg",
+        "C:\\p\\img063.jpg",
+        "C:\\p\\img064.jpg",
+        "C:\\p\\img065.jpg",
+        "C:\\p\\img066.jpg",
+        "C:\\p\\img067.jpg",
+        "C:\\p\\img068.jpg",
+        "C:\\p\\img069.jpg",
+        "C:\\p\\a0.txt",
+        "C:\\p\\a1.txt",
+        "C:\\p\\a2.txt",
+        "C:\\p\\a3.txt",
+        "C:\\p\\a4.txt"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\img000.jpg",
+            "C:\\p\\img001.jpg",
+            "C:\\p\\img002.jpg",
+            "C:\\p\\img003.jpg",
+            "C:\\p\\img004.jpg",
+            "C:\\p\\img005.jpg",
+            "C:\\p\\img006.jpg",
+            "C:\\p\\img007.jpg",
+            "C:\\p\\img008.jpg",
+            "C:\\p\\img009.jpg",
+            "C:\\p\\img010.jpg",
+            "C:\\p\\img011.jpg",
+            "C:\\p\\img012.jpg",
+            "C:\\p\\img013.jpg",
+            "C:\\p\\img014.jpg",
+            "C:\\p\\img015.jpg",
+            "C:\\p\\img016.jpg",
+            "C:\\p\\img017.jpg",
+            "C:\\p\\img018.jpg",
+            "C:\\p\\img019.jpg",
+            "C:\\p\\img020.jpg",
+            "C:\\p\\img021.jpg",
+            "C:\\p\\img022.jpg",
+            "C:\\p\\img023.jpg",
+            "C:\\p\\img024.jpg",
+            "C:\\p\\img025.jpg",
+            "C:\\p\\img026.jpg",
+            "C:\\p\\img027.jpg",
+            "C:\\p\\img028.jpg",
+            "C:\\p\\img029.jpg",
+            "C:\\p\\img030.jpg",
+            "C:\\p\\img031.jpg",
+            "C:\\p\\img032.jpg",
+            "C:\\p\\img033.jpg",
+            "C:\\p\\img034.jpg",
+            "C:\\p\\img035.jpg",
+            "C:\\p\\img036.jpg",
+            "C:\\p\\img037.jpg",
+            "C:\\p\\img038.jpg",
+            "C:\\p\\img039.jpg",
+            "C:\\p\\img040.jpg",
+            "C:\\p\\img041.jpg",
+            "C:\\p\\img042.jpg",
+            "C:\\p\\img043.jpg",
+            "C:\\p\\img044.jpg",
+            "C:\\p\\img045.jpg",
+            "C:\\p\\img046.jpg",
+            "C:\\p\\img047.jpg",
+            "C:\\p\\img048.jpg",
+            "C:\\p\\img049.jpg",
+            "C:\\p\\img050.jpg",
+            "C:\\p\\img051.jpg",
+            "C:\\p\\img052.jpg",
+            "C:\\p\\img053.jpg",
+            "C:\\p\\img054.jpg",
+            "C:\\p\\img055.jpg",
+            "C:\\p\\img056.jpg",
+            "C:\\p\\img057.jpg",
+            "C:\\p\\img058.jpg",
+            "C:\\p\\img059.jpg",
+            "C:\\p\\img060.jpg",
+            "C:\\p\\img061.jpg",
+            "C:\\p\\img062.jpg",
+            "C:\\p\\img063.jpg"
+          ],
+          "unsupported": [
+            [
+              ".txt",
+              5
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "no-files-at-all",
+      "files": [],
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "Benchmark folder contains no supported images"
+      }
+    },
+    {
+      "name": "only-unsupported",
+      "files": [
+        "C:\\p\\a.txt",
+        "C:\\p\\b"
+      ],
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "Benchmark folder contains no supported images"
+      }
+    },
+    {
+      "name": "forward-slashes-are-normalized-by-getfullpath",
+      "files": [
+        "C:/p/b.jpg",
+        "C:/p/a.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\b.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "dot-segments-normalized",
+      "files": [
+        "C:\\p\\sub\\..\\b.jpg",
+        "C:\\p\\.\\a.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\p\\a.jpg",
+            "C:\\p\\b.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "same-name-different-folders-ordinal-path-tiebreak",
+      "files": [
+        "C:\\b\\x.jpg",
+        "C:\\a\\x.jpg",
+        "C:\\B\\x.jpg",
+        "C:\\A\\X.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "C:\\A\\X.jpg",
+            "C:\\B\\x.jpg",
+            "C:\\a\\x.jpg",
+            "C:\\b\\x.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    },
+    {
+      "name": "unc-and-extended-paths",
+      "files": [
+        "\\\\server\\share\\a.jpg",
+        "\\\\?\\C:\\p\\b.jpg"
+      ],
+      "result": {
+        "ok": {
+          "files": [
+            "\\\\server\\share\\a.jpg",
+            "\\\\?\\C:\\p\\b.jpg"
+          ],
+          "unsupported": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2400 @@
+{
+  "generator": "oracle-cs benchmark-metrics-since",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty-minus-empty",
+      "current": {},
+      "baseline": {},
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "identity-all-fields-equal",
+      "current": {
+        "cache_hits": 100,
+        "cache_misses": 101,
+        "source_bytes_read": 102,
+        "source_reads": 103,
+        "decode_milliseconds": 104,
+        "presented_images": 105,
+        "present_milliseconds": 106,
+        "preload_hits": 107,
+        "inflight_joins": 108,
+        "disk_cache_hits": 109,
+        "ui_assign_milliseconds": 110,
+        "source_open_count": 111,
+        "stat_count": 112,
+        "session_write_count": 113,
+        "cross_thread_present_count": 114,
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 4
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 9
+          }
+        ],
+        "top_source_opens": [
+          {
+            "path": "C:\\a.jpg",
+            "count": 5
+          }
+        ],
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 2
+          },
+          {
+            "label": "<=33",
+            "count": 3
+          },
+          {
+            "label": "<=50",
+            "count": 4
+          },
+          {
+            "label": "<=100",
+            "count": 5
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 7
+          },
+          {
+            "label": ">500",
+            "count": 8
+          }
+        ]
+      },
+      "baseline": {
+        "cache_hits": 100,
+        "cache_misses": 101,
+        "source_bytes_read": 102,
+        "source_reads": 103,
+        "decode_milliseconds": 104,
+        "presented_images": 105,
+        "present_milliseconds": 106,
+        "preload_hits": 107,
+        "inflight_joins": 108,
+        "disk_cache_hits": 109,
+        "ui_assign_milliseconds": 110,
+        "source_open_count": 111,
+        "stat_count": 112,
+        "session_write_count": 113,
+        "cross_thread_present_count": 114,
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 4
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 9
+          }
+        ],
+        "top_source_opens": [
+          {
+            "path": "C:\\a.jpg",
+            "count": 5
+          }
+        ],
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 2
+          },
+          {
+            "label": "<=33",
+            "count": 3
+          },
+          {
+            "label": "<=50",
+            "count": 4
+          },
+          {
+            "label": "<=100",
+            "count": 5
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 7
+          },
+          {
+            "label": ">500",
+            "count": 8
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 0
+          },
+          {
+            "label": "<=16",
+            "count": 0
+          },
+          {
+            "label": "<=33",
+            "count": 0
+          },
+          {
+            "label": "<=50",
+            "count": 0
+          },
+          {
+            "label": "<=100",
+            "count": 0
+          },
+          {
+            "label": "<=200",
+            "count": 0
+          },
+          {
+            "label": "<=500",
+            "count": 0
+          },
+          {
+            "label": ">500",
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "no-baseline-keeps-current",
+      "current": {
+        "cache_hits": 7,
+        "cache_misses": 8,
+        "source_bytes_read": 9,
+        "source_reads": 10,
+        "decode_milliseconds": 11,
+        "presented_images": 12,
+        "present_milliseconds": 13,
+        "preload_hits": 14,
+        "inflight_joins": 15,
+        "disk_cache_hits": 16,
+        "ui_assign_milliseconds": 17,
+        "source_open_count": 18,
+        "stat_count": 19,
+        "session_write_count": 20,
+        "cross_thread_present_count": 21,
+        "decoder_fallbacks": [
+          {
+            "backend": "WicDirect",
+            "count": 2
+          }
+        ],
+        "top_source_opens": [
+          {
+            "path": "b",
+            "count": 3
+          },
+          {
+            "path": "a",
+            "count": 3
+          }
+        ],
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 0
+          },
+          {
+            "label": "<=33",
+            "count": 0
+          },
+          {
+            "label": "<=50",
+            "count": 0
+          },
+          {
+            "label": "<=100",
+            "count": 0
+          },
+          {
+            "label": "<=200",
+            "count": 0
+          },
+          {
+            "label": "<=500",
+            "count": 0
+          },
+          {
+            "label": ">500",
+            "count": 2
+          }
+        ]
+      },
+      "baseline": {},
+      "threw": null,
+      "since": {
+        "cache_hits": 7,
+        "cache_misses": 8,
+        "source_bytes_read": 9,
+        "source_reads": 10,
+        "decode_milliseconds": 11,
+        "presented_images": 12,
+        "present_milliseconds": 13,
+        "preload_hits": 14,
+        "inflight_joins": 15,
+        "disk_cache_hits": 16,
+        "ui_assign_milliseconds": 17,
+        "decoder_fallbacks": [
+          {
+            "backend": "WicDirect",
+            "count": 2
+          }
+        ],
+        "source_open_count": 18,
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 3
+          },
+          {
+            "path": "b",
+            "count": 3
+          }
+        ],
+        "stat_count": 19,
+        "session_write_count": 20,
+        "cross_thread_present_count": 21,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 0
+          },
+          {
+            "label": "<=33",
+            "count": 0
+          },
+          {
+            "label": "<=50",
+            "count": 0
+          },
+          {
+            "label": "<=100",
+            "count": 0
+          },
+          {
+            "label": "<=200",
+            "count": 0
+          },
+          {
+            "label": "<=500",
+            "count": 0
+          },
+          {
+            "label": ">500",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "name": "each-scalar-has-its-own-delta",
+      "current": {
+        "cache_hits": 1000,
+        "cache_misses": 1037,
+        "source_bytes_read": 1074,
+        "source_reads": 1111,
+        "decode_milliseconds": 1148,
+        "presented_images": 1185,
+        "present_milliseconds": 1222,
+        "preload_hits": 1259,
+        "inflight_joins": 1296,
+        "disk_cache_hits": 1333,
+        "ui_assign_milliseconds": 1370,
+        "source_open_count": 1407,
+        "stat_count": 1444,
+        "session_write_count": 1481,
+        "cross_thread_present_count": 1518
+      },
+      "baseline": {
+        "cache_hits": 3,
+        "cache_misses": 4,
+        "source_bytes_read": 7,
+        "source_reads": 12,
+        "decode_milliseconds": 19,
+        "presented_images": 28,
+        "present_milliseconds": 39,
+        "preload_hits": 52,
+        "inflight_joins": 67,
+        "disk_cache_hits": 84,
+        "ui_assign_milliseconds": 103,
+        "source_open_count": 124,
+        "stat_count": 147,
+        "session_write_count": 172,
+        "cross_thread_present_count": 199
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 997,
+        "cache_misses": 1033,
+        "source_bytes_read": 1067,
+        "source_reads": 1099,
+        "decode_milliseconds": 1129,
+        "presented_images": 1157,
+        "present_milliseconds": 1183,
+        "preload_hits": 1207,
+        "inflight_joins": 1229,
+        "disk_cache_hits": 1249,
+        "ui_assign_milliseconds": 1267,
+        "decoder_fallbacks": [],
+        "source_open_count": 1283,
+        "top_source_opens": [],
+        "stat_count": 1297,
+        "session_write_count": 1309,
+        "cross_thread_present_count": 1319,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "negative-deltas-are-kept",
+      "current": {
+        "cache_hits": 5,
+        "cache_misses": 5,
+        "source_bytes_read": 5,
+        "source_reads": 5,
+        "decode_milliseconds": 5,
+        "presented_images": 5,
+        "present_milliseconds": 5,
+        "preload_hits": 5,
+        "inflight_joins": 5,
+        "disk_cache_hits": 5,
+        "ui_assign_milliseconds": 5,
+        "source_open_count": 5,
+        "stat_count": 5,
+        "session_write_count": 5,
+        "cross_thread_present_count": 5
+      },
+      "baseline": {
+        "cache_hits": 50,
+        "cache_misses": 51,
+        "source_bytes_read": 52,
+        "source_reads": 53,
+        "decode_milliseconds": 54,
+        "presented_images": 55,
+        "present_milliseconds": 56,
+        "preload_hits": 57,
+        "inflight_joins": 58,
+        "disk_cache_hits": 59,
+        "ui_assign_milliseconds": 60,
+        "source_open_count": 61,
+        "stat_count": 62,
+        "session_write_count": 63,
+        "cross_thread_present_count": 64
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": -45,
+        "cache_misses": -46,
+        "source_bytes_read": -47,
+        "source_reads": -48,
+        "decode_milliseconds": -49,
+        "presented_images": -50,
+        "present_milliseconds": -51,
+        "preload_hits": -52,
+        "inflight_joins": -53,
+        "disk_cache_hits": -54,
+        "ui_assign_milliseconds": -55,
+        "decoder_fallbacks": [],
+        "source_open_count": -56,
+        "top_source_opens": [],
+        "stat_count": -57,
+        "session_write_count": -58,
+        "cross_thread_present_count": -59,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "baseline-only-scalars",
+      "current": {},
+      "baseline": {
+        "cache_hits": 1,
+        "cache_misses": 2,
+        "source_bytes_read": 3,
+        "source_reads": 4,
+        "decode_milliseconds": 5,
+        "presented_images": 6,
+        "present_milliseconds": 7,
+        "preload_hits": 8,
+        "inflight_joins": 9,
+        "disk_cache_hits": 10,
+        "ui_assign_milliseconds": 11,
+        "source_open_count": 12,
+        "stat_count": 13,
+        "session_write_count": 14,
+        "cross_thread_present_count": 15
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": -1,
+        "cache_misses": -2,
+        "source_bytes_read": -3,
+        "source_reads": -4,
+        "decode_milliseconds": -5,
+        "presented_images": -6,
+        "present_milliseconds": -7,
+        "preload_hits": -8,
+        "inflight_joins": -9,
+        "disk_cache_hits": -10,
+        "ui_assign_milliseconds": -11,
+        "decoder_fallbacks": [],
+        "source_open_count": -12,
+        "top_source_opens": [],
+        "stat_count": -13,
+        "session_write_count": -14,
+        "cross_thread_present_count": -15,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "int64-wraps-like-unchecked-csharp",
+      "current": {
+        "cache_hits": -9223372036854775808,
+        "cache_misses": 9223372036854775807,
+        "source_bytes_read": 9223372036854775807
+      },
+      "baseline": {
+        "cache_hits": 1,
+        "cache_misses": -1,
+        "source_bytes_read": 0
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 9223372036854775807,
+        "cache_misses": -9223372036854775808,
+        "source_bytes_read": 9223372036854775807,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "large-byte-counts-no-double-rounding",
+      "current": {
+        "source_bytes_read": 9007199254741003,
+        "decode_milliseconds": 9007199254740993
+      },
+      "baseline": {
+        "source_bytes_read": 10,
+        "decode_milliseconds": 0
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 9007199254740993,
+        "source_reads": 0,
+        "decode_milliseconds": 9007199254740993,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "fallbacks-positive-zero-negative",
+      "current": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 10
+          },
+          {
+            "backend": "WicDirect",
+            "count": 5
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 2
+          },
+          {
+            "backend": "LibRaw",
+            "count": 8
+          }
+        ]
+      },
+      "baseline": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 4
+          },
+          {
+            "backend": "WicDirect",
+            "count": 5
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 6
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 6
+          },
+          {
+            "backend": "LibRaw",
+            "count": 8
+          }
+        ],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "fallbacks-baseline-only-backend-ignored",
+      "current": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 3
+          }
+        ]
+      },
+      "baseline": {
+        "decoder_fallbacks": [
+          {
+            "backend": "LibRaw",
+            "count": 99
+          },
+          {
+            "backend": "Wpf",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 2
+          }
+        ],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "fallbacks-keep-current-order-not-value-order",
+      "current": {
+        "decoder_fallbacks": [
+          {
+            "backend": "LibRaw",
+            "count": 5
+          },
+          {
+            "backend": "Wpf",
+            "count": 5
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 5
+          }
+        ]
+      },
+      "baseline": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [
+          {
+            "backend": "LibRaw",
+            "count": 5
+          },
+          {
+            "backend": "Wpf",
+            "count": 4
+          },
+          {
+            "backend": "TurboJpeg",
+            "count": 5
+          }
+        ],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "fallbacks-all-dropped",
+      "current": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 2
+          }
+        ]
+      },
+      "baseline": {
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 2
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-baseline-match-ignores-case",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "C:\\Photos\\A.JPG",
+            "count": 10
+          },
+          {
+            "path": "C:\\Photos\\b.jpg",
+            "count": 4
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "c:\\photos\\a.jpg",
+            "count": 3
+          },
+          {
+            "path": "C:\\PHOTOS\\B.JPG",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "C:\\Photos\\A.JPG",
+            "count": 7
+          },
+          {
+            "path": "C:\\Photos\\b.jpg",
+            "count": 3
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-nonpositive-dropped",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "keep",
+            "count": 5
+          },
+          {
+            "path": "zero",
+            "count": 4
+          },
+          {
+            "path": "neg",
+            "count": 2
+          },
+          {
+            "path": "zero-in-current",
+            "count": 0
+          },
+          {
+            "path": "neg-in-current",
+            "count": -3
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "keep",
+            "count": 1
+          },
+          {
+            "path": "zero",
+            "count": 4
+          },
+          {
+            "path": "neg",
+            "count": 9
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "keep",
+            "count": 4
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-reorder-after-subtraction",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "big",
+            "count": 50
+          },
+          {
+            "path": "mid",
+            "count": 30
+          },
+          {
+            "path": "small",
+            "count": 10
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "big",
+            "count": 45
+          },
+          {
+            "path": "small",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "mid",
+            "count": 30
+          },
+          {
+            "path": "small",
+            "count": 9
+          },
+          {
+            "path": "big",
+            "count": 5
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-ties-ordered-by-path-ignore-case-not-ordinal",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "b",
+            "count": 2
+          },
+          {
+            "path": "B2",
+            "count": 2
+          },
+          {
+            "path": "a_1",
+            "count": 2
+          },
+          {
+            "path": "aB",
+            "count": 2
+          },
+          {
+            "path": "A",
+            "count": 2
+          },
+          {
+            "path": "_x",
+            "count": 2
+          },
+          {
+            "path": "Z",
+            "count": 2
+          }
+        ]
+      },
+      "baseline": {},
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "A",
+            "count": 2
+          },
+          {
+            "path": "aB",
+            "count": 2
+          },
+          {
+            "path": "a_1",
+            "count": 2
+          },
+          {
+            "path": "b",
+            "count": 2
+          },
+          {
+            "path": "B2",
+            "count": 2
+          },
+          {
+            "path": "Z",
+            "count": 2
+          },
+          {
+            "path": "_x",
+            "count": 2
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-ties-same-path-other-case-keep-input-order",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "x.jpg",
+            "count": 3
+          },
+          {
+            "path": "X.JPG",
+            "count": 3
+          },
+          {
+            "path": "X.jpg",
+            "count": 3
+          }
+        ]
+      },
+      "baseline": {},
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "x.jpg",
+            "count": 3
+          },
+          {
+            "path": "X.JPG",
+            "count": 3
+          },
+          {
+            "path": "X.jpg",
+            "count": 3
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-current-case-variants-share-one-baseline-count",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "x.jpg",
+            "count": 10
+          },
+          {
+            "path": "X.JPG",
+            "count": 8
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "X.Jpg",
+            "count": 5
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "x.jpg",
+            "count": 5
+          },
+          {
+            "path": "X.JPG",
+            "count": 3
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-non-ascii-case-folding",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "été.jpg",
+            "count": 9
+          },
+          {
+            "path": "ı.jpg",
+            "count": 9
+          },
+          {
+            "path": "ſ.jpg",
+            "count": 9
+          },
+          {
+            "path": "K.jpg",
+            "count": 9
+          },
+          {
+            "path": "straße.jpg",
+            "count": 9
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "ÉTÉ.JPG",
+            "count": 1
+          },
+          {
+            "path": "I.JPG",
+            "count": 1
+          },
+          {
+            "path": "S.JPG",
+            "count": 1
+          },
+          {
+            "path": "K.JPG",
+            "count": 1
+          },
+          {
+            "path": "STRASSE.JPG",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "straße.jpg",
+            "count": 9
+          },
+          {
+            "path": "ı.jpg",
+            "count": 9
+          },
+          {
+            "path": "ſ.jpg",
+            "count": 9
+          },
+          {
+            "path": "K.jpg",
+            "count": 9
+          },
+          {
+            "path": "été.jpg",
+            "count": 8
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-more-than-ten-entries-not-truncated",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "f00.jpg",
+            "count": 1
+          },
+          {
+            "path": "f01.jpg",
+            "count": 2
+          },
+          {
+            "path": "f02.jpg",
+            "count": 3
+          },
+          {
+            "path": "f03.jpg",
+            "count": 4
+          },
+          {
+            "path": "f04.jpg",
+            "count": 5
+          },
+          {
+            "path": "f05.jpg",
+            "count": 6
+          },
+          {
+            "path": "f06.jpg",
+            "count": 7
+          },
+          {
+            "path": "f07.jpg",
+            "count": 8
+          },
+          {
+            "path": "f08.jpg",
+            "count": 9
+          },
+          {
+            "path": "f09.jpg",
+            "count": 10
+          },
+          {
+            "path": "f10.jpg",
+            "count": 11
+          },
+          {
+            "path": "f11.jpg",
+            "count": 12
+          },
+          {
+            "path": "f12.jpg",
+            "count": 13
+          },
+          {
+            "path": "f13.jpg",
+            "count": 14
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "f03.jpg",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "f13.jpg",
+            "count": 14
+          },
+          {
+            "path": "f12.jpg",
+            "count": 13
+          },
+          {
+            "path": "f11.jpg",
+            "count": 12
+          },
+          {
+            "path": "f10.jpg",
+            "count": 11
+          },
+          {
+            "path": "f09.jpg",
+            "count": 10
+          },
+          {
+            "path": "f08.jpg",
+            "count": 9
+          },
+          {
+            "path": "f07.jpg",
+            "count": 8
+          },
+          {
+            "path": "f06.jpg",
+            "count": 7
+          },
+          {
+            "path": "f05.jpg",
+            "count": 6
+          },
+          {
+            "path": "f04.jpg",
+            "count": 5
+          },
+          {
+            "path": "f02.jpg",
+            "count": 3
+          },
+          {
+            "path": "f03.jpg",
+            "count": 3
+          },
+          {
+            "path": "f01.jpg",
+            "count": 2
+          },
+          {
+            "path": "f00.jpg",
+            "count": 1
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-baseline-only-path-ignored",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 2
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "gone",
+            "count": 50
+          },
+          {
+            "path": "a",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 1
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-duplicate-in-current-is-fine",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 4
+          },
+          {
+            "path": "a",
+            "count": 3
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 3
+          },
+          {
+            "path": "a",
+            "count": 2
+          }
+        ],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-empty-current-nonempty-baseline",
+      "current": {},
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 2
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "opens-duplicate-baseline-paths-same-case-throws",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 4
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 1
+          },
+          {
+            "path": "a",
+            "count": 2
+          }
+        ]
+      },
+      "threw": "ArgumentException",
+      "since": null
+    },
+    {
+      "name": "opens-duplicate-baseline-paths-differing-case-throws",
+      "current": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 4
+          }
+        ]
+      },
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "a",
+            "count": 1
+          },
+          {
+            "path": "A",
+            "count": 2
+          }
+        ]
+      },
+      "threw": "ArgumentException",
+      "since": null
+    },
+    {
+      "name": "opens-duplicate-baseline-throws-even-when-current-is-empty",
+      "current": {},
+      "baseline": {
+        "top_source_opens": [
+          {
+            "path": "q",
+            "count": 1
+          },
+          {
+            "path": "Q",
+            "count": 1
+          }
+        ]
+      },
+      "threw": "ArgumentException",
+      "since": null
+    },
+    {
+      "name": "histogram-subtracted-by-label-nothing-dropped",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 10
+          },
+          {
+            "label": "<=16",
+            "count": 9
+          },
+          {
+            "label": "<=33",
+            "count": 8
+          },
+          {
+            "label": "<=50",
+            "count": 7
+          },
+          {
+            "label": "<=100",
+            "count": 6
+          },
+          {
+            "label": "<=200",
+            "count": 5
+          },
+          {
+            "label": "<=500",
+            "count": 4
+          },
+          {
+            "label": ">500",
+            "count": 3
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 10
+          },
+          {
+            "label": "<=16",
+            "count": 1
+          },
+          {
+            "label": "<=33",
+            "count": 8
+          },
+          {
+            "label": "<=50",
+            "count": 0
+          },
+          {
+            "label": "<=100",
+            "count": 6
+          },
+          {
+            "label": "<=200",
+            "count": 9
+          },
+          {
+            "label": "<=500",
+            "count": 4
+          },
+          {
+            "label": ">500",
+            "count": 3
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 0
+          },
+          {
+            "label": "<=16",
+            "count": 8
+          },
+          {
+            "label": "<=33",
+            "count": 0
+          },
+          {
+            "label": "<=50",
+            "count": 7
+          },
+          {
+            "label": "<=100",
+            "count": 0
+          },
+          {
+            "label": "<=200",
+            "count": -4
+          },
+          {
+            "label": "<=500",
+            "count": 0
+          },
+          {
+            "label": ">500",
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-label-missing-in-baseline-keeps-count",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 2
+          },
+          {
+            "label": "<=33",
+            "count": 3
+          },
+          {
+            "label": "<=50",
+            "count": 4
+          },
+          {
+            "label": "<=100",
+            "count": 5
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 7
+          },
+          {
+            "label": ">500",
+            "count": 8
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "<=16",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 1
+          },
+          {
+            "label": "<=33",
+            "count": 3
+          },
+          {
+            "label": "<=50",
+            "count": 4
+          },
+          {
+            "label": "<=100",
+            "count": 5
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 7
+          },
+          {
+            "label": ">500",
+            "count": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-baseline-only-label-ignored",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 4
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": ">500",
+            "count": 9
+          },
+          {
+            "label": "<=8",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-labels-compare-case-sensitively",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "Abc",
+            "count": 5
+          },
+          {
+            "label": "abc",
+            "count": 6
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "abc",
+            "count": 2
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "Abc",
+            "count": 5
+          },
+          {
+            "label": "abc",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-current-order-kept",
+      "current": {
+        "present_histogram": [
+          {
+            "label": ">500",
+            "count": 1
+          },
+          {
+            "label": "<=8",
+            "count": 2
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": ">500",
+            "count": 1
+          },
+          {
+            "label": "<=8",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-duplicate-labels-in-current-fine",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "x",
+            "count": 5
+          },
+          {
+            "label": "x",
+            "count": 6
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "x",
+            "count": 1
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "x",
+            "count": 4
+          },
+          {
+            "label": "x",
+            "count": 5
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-duplicate-baseline-label-throws",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=8",
+            "count": 2
+          }
+        ]
+      },
+      "threw": "ArgumentException",
+      "since": null
+    },
+    {
+      "name": "histogram-baseline-labels-differing-only-in-case-do-not-throw",
+      "current": {
+        "present_histogram": [
+          {
+            "label": "abc",
+            "count": 9
+          }
+        ]
+      },
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "abc",
+            "count": 1
+          },
+          {
+            "label": "ABC",
+            "count": 2
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "abc",
+            "count": 8
+          }
+        ]
+      }
+    },
+    {
+      "name": "histogram-empty-current",
+      "current": {},
+      "baseline": {
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 1
+          },
+          {
+            "label": "<=16",
+            "count": 2
+          },
+          {
+            "label": "<=33",
+            "count": 3
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "source_bytes_read": 0,
+        "source_reads": 0,
+        "decode_milliseconds": 0,
+        "presented_images": 0,
+        "present_milliseconds": 0,
+        "preload_hits": 0,
+        "inflight_joins": 0,
+        "disk_cache_hits": 0,
+        "ui_assign_milliseconds": 0,
+        "decoder_fallbacks": [],
+        "source_open_count": 0,
+        "top_source_opens": [],
+        "stat_count": 0,
+        "session_write_count": 0,
+        "cross_thread_present_count": 0,
+        "present_histogram": []
+      }
+    },
+    {
+      "name": "realistic-warmup-subtraction",
+      "current": {
+        "cache_hits": 420,
+        "cache_misses": 80,
+        "source_bytes_read": 812345678,
+        "source_reads": 96,
+        "decode_milliseconds": 15234,
+        "presented_images": 330,
+        "present_milliseconds": 2210,
+        "preload_hits": 300,
+        "inflight_joins": 12,
+        "disk_cache_hits": 40,
+        "ui_assign_milliseconds": 901,
+        "source_open_count": 120,
+        "stat_count": 2400,
+        "session_write_count": 8,
+        "cross_thread_present_count": 0,
+        "decoder_fallbacks": [
+          {
+            "backend": "TurboJpeg",
+            "count": 6
+          },
+          {
+            "backend": "Wpf",
+            "count": 2
+          }
+        ],
+        "top_source_opens": [
+          {
+            "path": "D:\\shots\\IMG_0001.JPG",
+            "count": 9
+          },
+          {
+            "path": "D:\\shots\\IMG_0002.JPG",
+            "count": 9
+          },
+          {
+            "path": "D:\\shots\\IMG_0003.JPG",
+            "count": 2
+          }
+        ],
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 100
+          },
+          {
+            "label": "<=16",
+            "count": 120
+          },
+          {
+            "label": "<=33",
+            "count": 60
+          },
+          {
+            "label": "<=50",
+            "count": 30
+          },
+          {
+            "label": "<=100",
+            "count": 10
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 3
+          },
+          {
+            "label": ">500",
+            "count": 1
+          }
+        ]
+      },
+      "baseline": {
+        "cache_hits": 60,
+        "cache_misses": 30,
+        "source_bytes_read": 112345678,
+        "source_reads": 30,
+        "decode_milliseconds": 3234,
+        "presented_images": 30,
+        "present_milliseconds": 410,
+        "preload_hits": 40,
+        "inflight_joins": 2,
+        "disk_cache_hits": 5,
+        "ui_assign_milliseconds": 101,
+        "source_open_count": 30,
+        "stat_count": 400,
+        "session_write_count": 1,
+        "cross_thread_present_count": 0,
+        "decoder_fallbacks": [
+          {
+            "backend": "TurboJpeg",
+            "count": 6
+          }
+        ],
+        "top_source_opens": [
+          {
+            "path": "d:\\SHOTS\\img_0001.jpg",
+            "count": 9
+          },
+          {
+            "path": "D:\\shots\\IMG_0003.JPG",
+            "count": 1
+          }
+        ],
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 20
+          },
+          {
+            "label": "<=16",
+            "count": 20
+          },
+          {
+            "label": "<=33",
+            "count": 10
+          },
+          {
+            "label": "<=50",
+            "count": 5
+          },
+          {
+            "label": "<=100",
+            "count": 0
+          },
+          {
+            "label": "<=200",
+            "count": 0
+          },
+          {
+            "label": "<=500",
+            "count": 0
+          },
+          {
+            "label": ">500",
+            "count": 0
+          }
+        ]
+      },
+      "threw": null,
+      "since": {
+        "cache_hits": 360,
+        "cache_misses": 50,
+        "source_bytes_read": 700000000,
+        "source_reads": 66,
+        "decode_milliseconds": 12000,
+        "presented_images": 300,
+        "present_milliseconds": 1800,
+        "preload_hits": 260,
+        "inflight_joins": 10,
+        "disk_cache_hits": 35,
+        "ui_assign_milliseconds": 800,
+        "decoder_fallbacks": [
+          {
+            "backend": "Wpf",
+            "count": 2
+          }
+        ],
+        "source_open_count": 90,
+        "top_source_opens": [
+          {
+            "path": "D:\\shots\\IMG_0002.JPG",
+            "count": 9
+          },
+          {
+            "path": "D:\\shots\\IMG_0003.JPG",
+            "count": 1
+          }
+        ],
+        "stat_count": 2000,
+        "session_write_count": 7,
+        "cross_thread_present_count": 0,
+        "present_histogram": [
+          {
+            "label": "<=8",
+            "count": 80
+          },
+          {
+            "label": "<=16",
+            "count": 100
+          },
+          {
+            "label": "<=33",
+            "count": 50
+          },
+          {
+            "label": "<=50",
+            "count": 25
+          },
+          {
+            "label": "<=100",
+            "count": 10
+          },
+          {
+            "label": "<=200",
+            "count": 6
+          },
+          {
+            "label": "<=500",
+            "count": 3
+          },
+          {
+            "label": ">500",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
+}

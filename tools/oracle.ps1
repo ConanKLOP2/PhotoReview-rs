@@ -39,7 +39,7 @@ $coreDir = Join-Path $work 'core'
 # PhotoReview.PerfAnalysis.dll (separate project, no references), PhotoReview.Imaging.dll (W4: references Core only) and the W5
 # Imaging.Raw / Imaging.TurboJpeg / Imaging.LibRaw DLLs (each references Core + Imaging) are built into the same folder; rebuild if
 # any of the DLLs is missing.
-$requiredDlls = 'PhotoReview.Core.dll', 'PhotoReview.PerfAnalysis.dll', 'PhotoReview.Imaging.dll', 'PhotoReview.Imaging.Raw.dll', 'PhotoReview.Imaging.TurboJpeg.dll', 'PhotoReview.Imaging.LibRaw.dll'
+$requiredDlls = 'PhotoReview.Core.dll', 'PhotoReview.PerfAnalysis.dll', 'PhotoReview.Imaging.dll', 'PhotoReview.Imaging.Raw.dll', 'PhotoReview.Imaging.TurboJpeg.dll', 'PhotoReview.Imaging.LibRaw.dll', 'PhotoReview.Benchmarking.dll'
 if ($requiredDlls | Where-Object { -not (Test-Path (Join-Path $coreDir $_)) }) {
     $src = Join-Path $work 'src'
     if (Test-Path $src) { Remove-Item -Recurse -Force -Confirm:$false $src }
@@ -67,10 +67,13 @@ if ($requiredDlls | Where-Object { -not (Test-Path (Join-Path $coreDir $_)) }) {
         & dotnet build (Join-Path $src "src\PhotoReview.Imaging.$project\PhotoReview.Imaging.$project.csproj") -c Release -o $coreDir -nologo -v quiet
         if ($LASTEXITCODE -ne 0) { throw "C# Imaging.$project build failed" }
     }
+    # W7: PhotoReview.Benchmarking (references Core, Imaging, Platform.Windows, PerfAnalysis; Platform.Windows lands in $coreDir too).
+    & dotnet build (Join-Path $src 'src\PhotoReview.Benchmarking\PhotoReview.Benchmarking.csproj') -c Release -o $coreDir -nologo -v quiet
+    if ($LASTEXITCODE -ne 0) { throw 'C# Benchmarking build failed' }
 }
 
 $oracleOut = Join-Path $work 'oracle'
-& dotnet build (Join-Path $root 'tools\oracle-cs\OracleCs.csproj') -c Release -o $oracleOut -nologo -v quiet "-p:CSharpCoreDir=$coreDir"
+& dotnet build (Join-Path $root 'tools\oracle-cs\OracleCs.csproj') -c Release -o $oracleOut -nologo -v quiet "-p:CSharpCoreDir=$coreDir" "-p:CSharpSrcDir=$(Join-Path $work 'src')"
 if ($LASTEXITCODE -ne 0) { throw 'oracle-cs build failed' }
 # W5: turbojpeg-native-decode and libraw-decoder-native load the native DLLs from the folder of oracle-cs.exe.
 foreach ($native in 'turbojpeg.dll', 'libraw.dll') {

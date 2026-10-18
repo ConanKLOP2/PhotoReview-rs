@@ -1,0 +1,2510 @@
+{
+ "cases": [
+  {
+   "name": "widths-00",
+   "op": "widths",
+   "text": "0,1920,2560"
+  },
+  {
+   "name": "widths-01",
+   "op": "widths",
+   "text": " 800 , 1600 "
+  },
+  {
+   "name": "widths-02",
+   "op": "widths",
+   "text": "1920,,3840,"
+  },
+  {
+   "name": "widths-03",
+   "op": "widths",
+   "text": "0,1920,0,1920"
+  },
+  {
+   "name": "widths-04",
+   "op": "widths",
+   "text": "2147483647"
+  },
+  {
+   "name": "widths-05",
+   "op": "widths",
+   "text": "007"
+  },
+  {
+   "name": "widths-06",
+   "op": "widths",
+   "text": "5,5 ,05"
+  },
+  {
+   "name": "widths-07",
+   "op": "widths",
+   "text": "\t5\n"
+  },
+  {
+   "name": "widths-08",
+   "op": "widths",
+   "text": "\u001c5"
+  },
+  {
+   "name": "widths-09",
+   "op": "widths",
+   "text": "1\u001f"
+  },
+  {
+   "name": "widths-10",
+   "op": "widths",
+   "text": "\u0085 5 \u00a0"
+  },
+  {
+   "name": "widths-11",
+   "op": "widths",
+   "text": "\u2003 7\u3000"
+  },
+  {
+   "name": "widths-12",
+   "op": "widths",
+   "text": "\u2028 9"
+  },
+  {
+   "name": "widths-13",
+   "op": "widths",
+   "text": "\u1680 4"
+  },
+  {
+   "name": "widths-14",
+   "op": "widths",
+   "text": "5\u200b"
+  },
+  {
+   "name": "widths-15",
+   "op": "widths",
+   "text": "\u180e 5"
+  },
+  {
+   "name": "widths-16",
+   "op": "widths",
+   "text": "\u00ad5"
+  },
+  {
+   "name": "widths-17",
+   "op": "widths",
+   "text": "1 2"
+  },
+  {
+   "name": "widths-18",
+   "op": "widths",
+   "text": "1,920x"
+  },
+  {
+   "name": "widths-19",
+   "op": "widths",
+   "text": ""
+  },
+  {
+   "name": "widths-20",
+   "op": "widths",
+   "text": ","
+  },
+  {
+   "name": "widths-21",
+   "op": "widths",
+   "text": " , ,"
+  },
+  {
+   "name": "widths-22",
+   "op": "widths",
+   "text": "-1"
+  },
+  {
+   "name": "widths-23",
+   "op": "widths",
+   "text": "+5"
+  },
+  {
+   "name": "widths-24",
+   "op": "widths",
+   "text": "19.20"
+  },
+  {
+   "name": "widths-25",
+   "op": "widths",
+   "text": "abc"
+  },
+  {
+   "name": "widths-26",
+   "op": "widths",
+   "text": "99999999999"
+  },
+  {
+   "name": "widths-27",
+   "op": "widths",
+   "text": "2147483648"
+  },
+  {
+   "name": "widths-28",
+   "op": "widths",
+   "text": "\u0661\u0662"
+  },
+  {
+   "name": "widths-29",
+   "op": "widths",
+   "text": "\uff10"
+  },
+  {
+   "name": "widths-30",
+   "op": "widths",
+   "text": "0x10"
+  },
+  {
+   "name": "widths-31",
+   "op": "widths",
+   "text": "1e3"
+  },
+  {
+   "name": "widths-32",
+   "op": "widths",
+   "text": "5\u0000"
+  },
+  {
+   "name": "widths-33",
+   "op": "widths",
+   "text": "\ufeff5"
+  },
+  {
+   "name": "positive-int-00",
+   "op": "positive_int",
+   "text": "1",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-01",
+   "op": "positive_int",
+   "text": "60",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-02",
+   "op": "positive_int",
+   "text": "2147483647",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-03",
+   "op": "positive_int",
+   "text": "0",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-04",
+   "op": "positive_int",
+   "text": "-3",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-05",
+   "op": "positive_int",
+   "text": "",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-06",
+   "op": "positive_int",
+   "text": "8.5",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-07",
+   "op": "positive_int",
+   "text": "2147483648",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-08",
+   "op": "positive_int",
+   "text": " 5",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-09",
+   "op": "positive_int",
+   "text": "5 ",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-10",
+   "op": "positive_int",
+   "text": "+5",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-11",
+   "op": "positive_int",
+   "text": "00012",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-12",
+   "op": "positive_int",
+   "text": "\u0663",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-13",
+   "op": "positive_int",
+   "text": "1_0",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-14",
+   "op": "positive_int",
+   "text": "\u001f5",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "positive-int-15",
+   "op": "positive_int",
+   "text": "1,0",
+   "name_arg": "worker count"
+  },
+  {
+   "name": "int-range-00",
+   "op": "int_range",
+   "text": "1",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-01",
+   "op": "int_range",
+   "text": "1000",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-02",
+   "op": "int_range",
+   "text": "0",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-03",
+   "op": "int_range",
+   "text": "1001",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-04",
+   "op": "int_range",
+   "text": " 5",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-05",
+   "op": "int_range",
+   "text": "+5",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-06",
+   "op": "int_range",
+   "text": "5.0",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-07",
+   "op": "int_range",
+   "text": "999",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-08",
+   "op": "int_range",
+   "text": "-1",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-09",
+   "op": "int_range",
+   "text": "0001",
+   "name_arg": "--repeat",
+   "min": 1,
+   "max": 1000
+  },
+  {
+   "name": "int-range-negative-bounds",
+   "op": "int_range",
+   "text": "-5",
+   "name_arg": "x",
+   "min": -10,
+   "max": 10
+  },
+  {
+   "name": "int-range-zero-zero",
+   "op": "int_range",
+   "text": "0",
+   "name_arg": "x",
+   "min": 0,
+   "max": 0
+  },
+  {
+   "name": "positive-double-00",
+   "op": "positive_double",
+   "text": "2.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-01",
+   "op": "positive_double",
+   "text": "1",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-02",
+   "op": "positive_double",
+   "text": "0.001",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-03",
+   "op": "positive_double",
+   "text": "1e3",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-04",
+   "op": "positive_double",
+   "text": "1E3",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-05",
+   "op": "positive_double",
+   "text": "+1.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-06",
+   "op": "positive_double",
+   "text": " 2.5 ",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-07",
+   "op": "positive_double",
+   "text": "\t2.5\n",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-08",
+   "op": "positive_double",
+   "text": "\u000b2.5\f",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-09",
+   "op": "positive_double",
+   "text": "2.5\u00a0",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-10",
+   "op": "positive_double",
+   "text": "\u00a02.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-11",
+   "op": "positive_double",
+   "text": "\u20032.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-12",
+   "op": "positive_double",
+   "text": "\u001f2.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-13",
+   "op": "positive_double",
+   "text": "Infinity",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-14",
+   "op": "positive_double",
+   "text": "-Infinity",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-15",
+   "op": "positive_double",
+   "text": "+Infinity",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-16",
+   "op": "positive_double",
+   "text": "infinity",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-17",
+   "op": "positive_double",
+   "text": "NaN",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-18",
+   "op": "positive_double",
+   "text": "nan",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-19",
+   "op": "positive_double",
+   "text": "0",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-20",
+   "op": "positive_double",
+   "text": "-0",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-21",
+   "op": "positive_double",
+   "text": "-3",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-22",
+   "op": "positive_double",
+   "text": "1e999",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-23",
+   "op": "positive_double",
+   "text": "-1e999",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-24",
+   "op": "positive_double",
+   "text": "",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-25",
+   "op": "positive_double",
+   "text": "1,5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-26",
+   "op": "positive_double",
+   "text": "1.5.2",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-27",
+   "op": "positive_double",
+   "text": ".5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-28",
+   "op": "positive_double",
+   "text": "5.",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-29",
+   "op": "positive_double",
+   "text": "1e",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-30",
+   "op": "positive_double",
+   "text": "1e+",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-31",
+   "op": "positive_double",
+   "text": "e5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-32",
+   "op": "positive_double",
+   "text": "0x10",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-33",
+   "op": "positive_double",
+   "text": "1_000",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-34",
+   "op": "positive_double",
+   "text": "  ",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-35",
+   "op": "positive_double",
+   "text": "\u0663",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-36",
+   "op": "positive_double",
+   "text": "1e-400",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-37",
+   "op": "positive_double",
+   "text": "4.9e-324",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-38",
+   "op": "positive_double",
+   "text": "1.7976931348623157e308",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-39",
+   "op": "positive_double",
+   "text": "1.7976931348623159e308",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-40",
+   "op": "positive_double",
+   "text": "0.0000001",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-41",
+   "op": "positive_double",
+   "text": "1e+3",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-42",
+   "op": "positive_double",
+   "text": "1E-3",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-43",
+   "op": "positive_double",
+   "text": "+.5e1",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-44",
+   "op": "positive_double",
+   "text": "- 5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-45",
+   "op": "positive_double",
+   "text": "5 5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-46",
+   "op": "positive_double",
+   "text": "\u221e",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-47",
+   "op": "positive_double",
+   "text": "1d",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-48",
+   "op": "positive_double",
+   "text": "1f",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "positive-double-49",
+   "op": "positive_double",
+   "text": "1e3.5",
+   "name_arg": "--slow-link-bandwidth-mbps"
+  },
+  {
+   "name": "enum-LoadingMode-00",
+   "op": "defined_enum",
+   "text": "Fast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-01",
+   "op": "defined_enum",
+   "text": "fast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-02",
+   "op": "defined_enum",
+   "text": " Preview ",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-03",
+   "op": "defined_enum",
+   "text": "PREVIEW",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-04",
+   "op": "defined_enum",
+   "text": "Original",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-05",
+   "op": "defined_enum",
+   "text": "0",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-06",
+   "op": "defined_enum",
+   "text": "1",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-07",
+   "op": "defined_enum",
+   "text": "2",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-08",
+   "op": "defined_enum",
+   "text": "3",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-09",
+   "op": "defined_enum",
+   "text": "4",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-10",
+   "op": "defined_enum",
+   "text": "5",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-11",
+   "op": "defined_enum",
+   "text": "99",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-12",
+   "op": "defined_enum",
+   "text": "-1",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-13",
+   "op": "defined_enum",
+   "text": "",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-14",
+   "op": "defined_enum",
+   "text": "  ",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-15",
+   "op": "defined_enum",
+   "text": "Fast,Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-16",
+   "op": "defined_enum",
+   "text": "fast, original",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-17",
+   "op": "defined_enum",
+   "text": "Fast|Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-18",
+   "op": "defined_enum",
+   "text": "+1",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-19",
+   "op": "defined_enum",
+   "text": "01",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-20",
+   "op": "defined_enum",
+   "text": "1 ",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-21",
+   "op": "defined_enum",
+   "text": "0x1",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-22",
+   "op": "defined_enum",
+   "text": "Fast,",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-23",
+   "op": "defined_enum",
+   "text": "Fast,,Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-24",
+   "op": "defined_enum",
+   "text": "2147483648",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-25",
+   "op": "defined_enum",
+   "text": "-2147483649",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-26",
+   "op": "defined_enum",
+   "text": "Original,Original",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-27",
+   "op": "defined_enum",
+   "text": "Name",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-28",
+   "op": "defined_enum",
+   "text": "name",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-29",
+   "op": "defined_enum",
+   "text": "NameAscending",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-30",
+   "op": "defined_enum",
+   "text": "NameDescending",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-31",
+   "op": "defined_enum",
+   "text": "Size",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-32",
+   "op": "defined_enum",
+   "text": "SizeAscending",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-33",
+   "op": "defined_enum",
+   "text": "SizeDescending",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-34",
+   "op": "defined_enum",
+   "text": "Default",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-35",
+   "op": "defined_enum",
+   "text": "Fast,Fast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-36",
+   "op": "defined_enum",
+   "text": "1,2",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-37",
+   "op": "defined_enum",
+   "text": "Preview,1",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-38",
+   "op": "defined_enum",
+   "text": "Fast Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-39",
+   "op": "defined_enum",
+   "text": "\u001fFast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-40",
+   "op": "defined_enum",
+   "text": "Fast\u00a0",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-LoadingMode-41",
+   "op": "defined_enum",
+   "text": "\u0131nvalid",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-ImageSortMode-00",
+   "op": "defined_enum",
+   "text": "Fast",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-01",
+   "op": "defined_enum",
+   "text": "fast",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-02",
+   "op": "defined_enum",
+   "text": " Preview ",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-03",
+   "op": "defined_enum",
+   "text": "PREVIEW",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-04",
+   "op": "defined_enum",
+   "text": "Original",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-05",
+   "op": "defined_enum",
+   "text": "0",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-06",
+   "op": "defined_enum",
+   "text": "1",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-07",
+   "op": "defined_enum",
+   "text": "2",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-08",
+   "op": "defined_enum",
+   "text": "3",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-09",
+   "op": "defined_enum",
+   "text": "4",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-10",
+   "op": "defined_enum",
+   "text": "5",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-11",
+   "op": "defined_enum",
+   "text": "99",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-12",
+   "op": "defined_enum",
+   "text": "-1",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-13",
+   "op": "defined_enum",
+   "text": "",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-14",
+   "op": "defined_enum",
+   "text": "  ",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-15",
+   "op": "defined_enum",
+   "text": "Fast,Preview",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-16",
+   "op": "defined_enum",
+   "text": "fast, original",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-17",
+   "op": "defined_enum",
+   "text": "Fast|Preview",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-18",
+   "op": "defined_enum",
+   "text": "+1",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-19",
+   "op": "defined_enum",
+   "text": "01",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-20",
+   "op": "defined_enum",
+   "text": "1 ",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-21",
+   "op": "defined_enum",
+   "text": "0x1",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-22",
+   "op": "defined_enum",
+   "text": "Fast,",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-23",
+   "op": "defined_enum",
+   "text": "Fast,,Preview",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-24",
+   "op": "defined_enum",
+   "text": "2147483648",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-25",
+   "op": "defined_enum",
+   "text": "-2147483649",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-26",
+   "op": "defined_enum",
+   "text": "Original,Original",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-27",
+   "op": "defined_enum",
+   "text": "Name",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-28",
+   "op": "defined_enum",
+   "text": "name",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-29",
+   "op": "defined_enum",
+   "text": "NameAscending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-30",
+   "op": "defined_enum",
+   "text": "NameDescending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-31",
+   "op": "defined_enum",
+   "text": "Size",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-32",
+   "op": "defined_enum",
+   "text": "SizeAscending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-33",
+   "op": "defined_enum",
+   "text": "SizeDescending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-34",
+   "op": "defined_enum",
+   "text": "Default",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-35",
+   "op": "defined_enum",
+   "text": "Fast,Fast",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-36",
+   "op": "defined_enum",
+   "text": "1,2",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-37",
+   "op": "defined_enum",
+   "text": "Preview,1",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-38",
+   "op": "defined_enum",
+   "text": "Fast Preview",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-39",
+   "op": "defined_enum",
+   "text": "\u001fFast",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-40",
+   "op": "defined_enum",
+   "text": "Fast\u00a0",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-ImageSortMode-41",
+   "op": "defined_enum",
+   "text": "\u0131nvalid",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "profiles-default",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos"
+   ]
+  },
+  {
+   "name": "profiles-list-00",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced"
+   ]
+  },
+  {
+   "name": "profiles-list-01",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    " fast-balanced , Instant-Review "
+   ]
+  },
+  {
+   "name": "profiles-list-02",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced,,logging-on,"
+   ]
+  },
+  {
+   "name": "profiles-list-03",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "logging-on,logging-on"
+   ]
+  },
+  {
+   "name": "profiles-list-04",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "LOGGING-ON"
+   ]
+  },
+  {
+   "name": "profiles-list-05",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "Fast-Balanced,fast-balanced"
+   ]
+  },
+  {
+   "name": "profiles-list-06",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced,\u001flogging-on"
+   ]
+  },
+  {
+   "name": "profiles-list-07",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u0085logging-on\u00a0"
+   ]
+  },
+  {
+   "name": "profiles-list-08",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u2003logging-on\u3000"
+   ]
+  },
+  {
+   "name": "profiles-list-09",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "recommended-auto"
+   ]
+  },
+  {
+   "name": "profiles-list-10",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "original-correctness"
+   ]
+  },
+  {
+   "name": "profiles-list-11",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "explorer-reindex,cache-recovery"
+   ]
+  },
+  {
+   "name": "profiles-list-12",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "action-move,action-delete,action-copy,action-interleaved"
+   ]
+  },
+  {
+   "name": "profiles-empty-00",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    ""
+   ]
+  },
+  {
+   "name": "profiles-empty-01",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    " "
+   ]
+  },
+  {
+   "name": "profiles-empty-02",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    ","
+   ]
+  },
+  {
+   "name": "profiles-empty-03",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    " , ,"
+   ]
+  },
+  {
+   "name": "profiles-empty-04",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u00a0"
+   ]
+  },
+  {
+   "name": "profiles-empty-05",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u001f,\u0085"
+   ]
+  },
+  {
+   "name": "profiles-empty-06",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u2003,\u3000"
+   ]
+  },
+  {
+   "name": "profiles-unknown-00",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced,nope"
+   ]
+  },
+  {
+   "name": "profiles-unknown-01",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "nope"
+   ]
+  },
+  {
+   "name": "profiles-unknown-02",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced,\u200blogging-on"
+   ]
+  },
+  {
+   "name": "profiles-unknown-03",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced, Nope ,logging-on"
+   ]
+  },
+  {
+   "name": "profiles-unknown-04",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast_balanced"
+   ]
+  },
+  {
+   "name": "profiles-unknown-05",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "fast-balanced;logging-on"
+   ]
+  },
+  {
+   "name": "profiles-unknown-06",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "\u0131nstant-review"
+   ]
+  },
+  {
+   "name": "profiles-unknown-07",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "instant-review\u0000"
+   ]
+  },
+  {
+   "name": "profiles-batch-all",
+   "op": "resolve_profiles",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos"
+   ]
+  },
+  {
+   "name": "profiles-batch-all-with-output",
+   "op": "resolve_profiles",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "C:/out"
+   ]
+  },
+  {
+   "name": "profiles-batch-actions",
+   "op": "resolve_profiles",
+   "mode": "--benchmark-actions",
+   "args": [
+    "--benchmark-actions",
+    "C:/photos"
+   ]
+  },
+  {
+   "name": "profiles-batch-actions-with-output",
+   "op": "resolve_profiles",
+   "mode": "--benchmark-actions",
+   "args": [
+    "--benchmark-actions",
+    "C:/photos",
+    "C:/out"
+   ]
+  },
+  {
+   "name": "profiles-not-a-mode",
+   "op": "resolve_profiles",
+   "mode": "--nope",
+   "args": [
+    "--nope",
+    "x"
+   ]
+  },
+  {
+   "name": "profiles-empty-mode",
+   "op": "resolve_profiles",
+   "mode": "",
+   "args": [
+    "",
+    "C:/photos"
+   ]
+  },
+  {
+   "name": "profiles-benchmark-extra-args-ignored-here",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "logging-on",
+    "extra"
+   ]
+  },
+  {
+   "name": "profiles-benchmark-only-mode",
+   "op": "resolve_profiles",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark"
+   ]
+  },
+  {
+   "name": "output-00",
+   "op": "resolve_output",
+   "mode": "--benchmark",
+   "args": [
+    "--benchmark",
+    "C:/photos",
+    "C:/out"
+   ]
+  },
+  {
+   "name": "output-01",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "C:/out"
+   ]
+  },
+  {
+   "name": "output-02",
+   "op": "resolve_output",
+   "mode": "--benchmark-actions",
+   "args": [
+    "--benchmark-actions",
+    "C:/photos",
+    "C:/out"
+   ]
+  },
+  {
+   "name": "output-03",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    " "
+   ]
+  },
+  {
+   "name": "output-04",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    ""
+   ]
+  },
+  {
+   "name": "output-05",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "\u00a0"
+   ]
+  },
+  {
+   "name": "output-06",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "\u001f"
+   ]
+  },
+  {
+   "name": "output-07",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "\u200b"
+   ]
+  },
+  {
+   "name": "output-08",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos"
+   ]
+  },
+  {
+   "name": "output-09",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all"
+   ]
+  },
+  {
+   "name": "output-10",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "out",
+    "extra"
+   ]
+  },
+  {
+   "name": "output-11",
+   "op": "resolve_output",
+   "mode": "--benchmark-all",
+   "args": [
+    "--benchmark-all",
+    "C:/photos",
+    "  out  "
+   ]
+  },
+  {
+   "name": "output-12",
+   "op": "resolve_output",
+   "mode": "--other",
+   "args": [
+    "--other",
+    "C:/photos",
+    "out"
+   ]
+  },
+  {
+   "name": "output-13",
+   "op": "resolve_output",
+   "mode": "--BENCHMARK",
+   "args": [
+    "--BENCHMARK",
+    "C:/photos",
+    "out"
+   ]
+  },
+  {
+   "name": "perf-rules-00",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d"
+   ]
+  },
+  {
+   "name": "perf-rules-01",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "f.json"
+   ]
+  },
+  {
+   "name": "perf-rules-02",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules"
+   ]
+  },
+  {
+   "name": "perf-rules-03",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    " "
+   ]
+  },
+  {
+   "name": "perf-rules-04",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    ""
+   ]
+  },
+  {
+   "name": "perf-rules-05",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "\u00a0"
+   ]
+  },
+  {
+   "name": "perf-rules-06",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--RULES",
+    "f"
+   ]
+  },
+  {
+   "name": "perf-rules-07",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "extra"
+   ]
+  },
+  {
+   "name": "perf-rules-08",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "a",
+    "--rules",
+    "b"
+   ]
+  },
+  {
+   "name": "perf-rules-09",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "a",
+    "extra"
+   ]
+  },
+  {
+   "name": "perf-rules-10",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "--rules"
+   ]
+  },
+  {
+   "name": "perf-rules-11",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze"
+   ]
+  },
+  {
+   "name": "perf-rules-12",
+   "op": "perf_rules",
+   "args": [
+    "--perf-analyze",
+    "d",
+    "--rules",
+    "a b.json"
+   ]
+  },
+  {
+   "name": "surplus-00",
+   "op": "surplus",
+   "args": []
+  },
+  {
+   "name": "surplus-01",
+   "op": "surplus",
+   "args": [
+    "--benchmark"
+   ]
+  },
+  {
+   "name": "surplus-02",
+   "op": "surplus",
+   "args": [
+    "--benchmark",
+    "f"
+   ]
+  },
+  {
+   "name": "surplus-03",
+   "op": "surplus",
+   "args": [
+    "--benchmark",
+    "f",
+    "p"
+   ]
+  },
+  {
+   "name": "surplus-04",
+   "op": "surplus",
+   "args": [
+    "--benchmark-all",
+    "f",
+    "out"
+   ]
+  },
+  {
+   "name": "surplus-05",
+   "op": "surplus",
+   "args": [
+    "--benchmark-all",
+    "f",
+    "out",
+    "extra"
+   ]
+  },
+  {
+   "name": "surplus-06",
+   "op": "surplus",
+   "args": [
+    "--benchmark-actions",
+    "folder",
+    "out",
+    "extra"
+   ]
+  },
+  {
+   "name": "surplus-07",
+   "op": "surplus",
+   "args": [
+    "--benchmark",
+    "folder",
+    "recommended-auto",
+    "extra"
+   ]
+  },
+  {
+   "name": "surplus-08",
+   "op": "surplus",
+   "args": [
+    "--benchmark-all",
+    "f",
+    "out",
+    "extra",
+    "more"
+   ]
+  },
+  {
+   "name": "surplus-09",
+   "op": "surplus",
+   "args": [
+    "--benchmark-all",
+    "f",
+    "out",
+    ""
+   ]
+  },
+  {
+   "name": "expected-failure-Exception",
+   "op": "expected_failure",
+   "type": "Exception"
+  },
+  {
+   "name": "expected-failure-ArgumentException",
+   "op": "expected_failure",
+   "type": "ArgumentException"
+  },
+  {
+   "name": "expected-failure-ArgumentNullException",
+   "op": "expected_failure",
+   "type": "ArgumentNullException"
+  },
+  {
+   "name": "expected-failure-ArgumentOutOfRangeException",
+   "op": "expected_failure",
+   "type": "ArgumentOutOfRangeException"
+  },
+  {
+   "name": "expected-failure-BenchmarkProfileException",
+   "op": "expected_failure",
+   "type": "BenchmarkProfileException"
+  },
+  {
+   "name": "expected-failure-IOException",
+   "op": "expected_failure",
+   "type": "IOException"
+  },
+  {
+   "name": "expected-failure-FileNotFoundException",
+   "op": "expected_failure",
+   "type": "FileNotFoundException"
+  },
+  {
+   "name": "expected-failure-DirectoryNotFoundException",
+   "op": "expected_failure",
+   "type": "DirectoryNotFoundException"
+  },
+  {
+   "name": "expected-failure-PathTooLongException",
+   "op": "expected_failure",
+   "type": "PathTooLongException"
+  },
+  {
+   "name": "expected-failure-EndOfStreamException",
+   "op": "expected_failure",
+   "type": "EndOfStreamException"
+  },
+  {
+   "name": "expected-failure-FileLoadException",
+   "op": "expected_failure",
+   "type": "FileLoadException"
+  },
+  {
+   "name": "expected-failure-DriveNotFoundException",
+   "op": "expected_failure",
+   "type": "DriveNotFoundException"
+  },
+  {
+   "name": "expected-failure-InvalidOperationException",
+   "op": "expected_failure",
+   "type": "InvalidOperationException"
+  },
+  {
+   "name": "expected-failure-ObjectDisposedException",
+   "op": "expected_failure",
+   "type": "ObjectDisposedException"
+  },
+  {
+   "name": "expected-failure-NotSupportedException",
+   "op": "expected_failure",
+   "type": "NotSupportedException"
+  },
+  {
+   "name": "expected-failure-PlatformNotSupportedException",
+   "op": "expected_failure",
+   "type": "PlatformNotSupportedException"
+  },
+  {
+   "name": "expected-failure-UnauthorizedAccessException",
+   "op": "expected_failure",
+   "type": "UnauthorizedAccessException"
+  },
+  {
+   "name": "expected-failure-FormatException",
+   "op": "expected_failure",
+   "type": "FormatException"
+  },
+  {
+   "name": "expected-failure-InvalidDataException",
+   "op": "expected_failure",
+   "type": "InvalidDataException"
+  },
+  {
+   "name": "expected-failure-OperationCanceledException",
+   "op": "expected_failure",
+   "type": "OperationCanceledException"
+  },
+  {
+   "name": "expected-failure-TaskCanceledException",
+   "op": "expected_failure",
+   "type": "TaskCanceledException"
+  },
+  {
+   "name": "expected-failure-OutOfMemoryException",
+   "op": "expected_failure",
+   "type": "OutOfMemoryException"
+  },
+  {
+   "name": "expected-failure-JsonException",
+   "op": "expected_failure",
+   "type": "JsonException"
+  },
+  {
+   "name": "expected-failure-NullReferenceException",
+   "op": "expected_failure",
+   "type": "NullReferenceException"
+  },
+  {
+   "name": "expected-failure-InvalidCastException",
+   "op": "expected_failure",
+   "type": "InvalidCastException"
+  },
+  {
+   "name": "expected-failure-TimeoutException",
+   "op": "expected_failure",
+   "type": "TimeoutException"
+  },
+  {
+   "name": "expected-failure-KeyNotFoundException",
+   "op": "expected_failure",
+   "type": "KeyNotFoundException"
+  },
+  {
+   "name": "expected-failure-AggregateException",
+   "op": "expected_failure",
+   "type": "AggregateException"
+  },
+  {
+   "name": "expected-failure-InvalidProgramException",
+   "op": "expected_failure",
+   "type": "InvalidProgramException"
+  },
+  {
+   "name": "nul-widths-00",
+   "op": "widths",
+   "text": "5\u0000"
+  },
+  {
+   "name": "nul-positive-int-00",
+   "op": "positive_int",
+   "text": "5\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-00",
+   "op": "int_range",
+   "text": "5\u0000",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-00",
+   "op": "positive_double",
+   "text": "5\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-01",
+   "op": "widths",
+   "text": "5\u0000\u0000"
+  },
+  {
+   "name": "nul-positive-int-01",
+   "op": "positive_int",
+   "text": "5\u0000\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-01",
+   "op": "int_range",
+   "text": "5\u0000\u0000",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-01",
+   "op": "positive_double",
+   "text": "5\u0000\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-02",
+   "op": "widths",
+   "text": "\u00005"
+  },
+  {
+   "name": "nul-positive-int-02",
+   "op": "positive_int",
+   "text": "\u00005",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-02",
+   "op": "int_range",
+   "text": "\u00005",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-02",
+   "op": "positive_double",
+   "text": "\u00005",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-03",
+   "op": "widths",
+   "text": "5\u00001"
+  },
+  {
+   "name": "nul-positive-int-03",
+   "op": "positive_int",
+   "text": "5\u00001",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-03",
+   "op": "int_range",
+   "text": "5\u00001",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-03",
+   "op": "positive_double",
+   "text": "5\u00001",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-04",
+   "op": "widths",
+   "text": "5 \u0000"
+  },
+  {
+   "name": "nul-positive-int-04",
+   "op": "positive_int",
+   "text": "5 \u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-04",
+   "op": "int_range",
+   "text": "5 \u0000",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-04",
+   "op": "positive_double",
+   "text": "5 \u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-05",
+   "op": "widths",
+   "text": "\u0000"
+  },
+  {
+   "name": "nul-positive-int-05",
+   "op": "positive_int",
+   "text": "\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-05",
+   "op": "int_range",
+   "text": "\u0000",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-05",
+   "op": "positive_double",
+   "text": "\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-06",
+   "op": "widths",
+   "text": "5,\u0000"
+  },
+  {
+   "name": "nul-positive-int-06",
+   "op": "positive_int",
+   "text": "5,\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-06",
+   "op": "int_range",
+   "text": "5,\u0000",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-06",
+   "op": "positive_double",
+   "text": "5,\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-07",
+   "op": "widths",
+   "text": "5\u0000,6"
+  },
+  {
+   "name": "nul-positive-int-07",
+   "op": "positive_int",
+   "text": "5\u0000,6",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-07",
+   "op": "int_range",
+   "text": "5\u0000,6",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-07",
+   "op": "positive_double",
+   "text": "5\u0000,6",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-widths-08",
+   "op": "widths",
+   "text": " 5\u0000 "
+  },
+  {
+   "name": "nul-positive-int-08",
+   "op": "positive_int",
+   "text": " 5\u0000 ",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-int-range-08",
+   "op": "int_range",
+   "text": " 5\u0000 ",
+   "name_arg": "n",
+   "min": 0,
+   "max": 10
+  },
+  {
+   "name": "nul-positive-double-08",
+   "op": "positive_double",
+   "text": " 5\u0000 ",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-00",
+   "op": "positive_double",
+   "text": "2.5\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-01",
+   "op": "positive_double",
+   "text": "2.5 \u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-02",
+   "op": "positive_double",
+   "text": "\u00002.5",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-03",
+   "op": "positive_double",
+   "text": "2.\u00005",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-04",
+   "op": "positive_double",
+   "text": "1e1\u0000",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-positive-double-b-05",
+   "op": "positive_double",
+   "text": "1e\u00001",
+   "name_arg": "n"
+  },
+  {
+   "name": "nul-enum-00",
+   "op": "defined_enum",
+   "text": "Fast\u0000",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "nul-enum-01",
+   "op": "defined_enum",
+   "text": "\u0000Fast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "nul-enum-02",
+   "op": "defined_enum",
+   "text": "Fast\u0000,Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "nul-enum-03",
+   "op": "defined_enum",
+   "text": "1\u0000",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-00",
+   "op": "defined_enum",
+   "text": "SizeDescending,SizeAscending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-01",
+   "op": "defined_enum",
+   "text": "Name,NameAscending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-02",
+   "op": "defined_enum",
+   "text": "Name,Default",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-03",
+   "op": "defined_enum",
+   "text": "NameAscending,NameDescending",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-04",
+   "op": "defined_enum",
+   "text": "Size,Name",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-05",
+   "op": "defined_enum",
+   "text": "SizeAscending, Name",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-06",
+   "op": "defined_enum",
+   "text": "-0",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-07",
+   "op": "defined_enum",
+   "text": "+0",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-08",
+   "op": "defined_enum",
+   "text": "Name,Name",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-ImageSortMode-09",
+   "op": "defined_enum",
+   "text": "default,DEFAULT",
+   "name_arg": "mode",
+   "enum": "ImageSortMode"
+  },
+  {
+   "name": "enum-list-LoadingMode-00",
+   "op": "defined_enum",
+   "text": "-0",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-list-LoadingMode-01",
+   "op": "defined_enum",
+   "text": "+0",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-list-LoadingMode-02",
+   "op": "defined_enum",
+   "text": "Preview,Original",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-list-LoadingMode-03",
+   "op": "defined_enum",
+   "text": "Fast,Original,Preview",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  },
+  {
+   "name": "enum-list-LoadingMode-04",
+   "op": "defined_enum",
+   "text": "preview,fast",
+   "name_arg": "mode",
+   "enum": "LoadingMode"
+  }
+ ]
+}

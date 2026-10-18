@@ -1,0 +1,1136 @@
+{
+ "cases": [
+  {
+   "name": "out-dir-equal",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-trailing-separator",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos/",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-photo-trailing-separator",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos",
+   "photo": "photos/"
+  },
+  {
+   "name": "out-dir-inside",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos/reports",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-deep-inside-missing",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos/a/b/c",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-ancestor-root",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-ancestor-of-nested-photo",
+   "op": "output_directory",
+   "tree": [
+    "a/b/photos/"
+   ],
+   "out": "a",
+   "photo": "a/b/photos"
+  },
+  {
+   "name": "out-dir-upper-case-equal",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "PHOTOS",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-mixed-case-inside",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "Photos/Reports",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-sibling-same-prefix",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "photos-reports/"
+   ],
+   "out": "photos-reports",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-sibling-same-prefix-missing",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos-reports",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-sibling",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "out": "out",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-dot-segments-equal",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos/../photos",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-dot-segments-inside",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "out/../photos/r",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-trailing-dot-segment",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "out": "photos/.",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-junction-to-photos",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "out": "link",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-inside-junction-to-photos",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "out": "link/reports",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-junction-photo-side",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "out": "photos/reports",
+   "photo": "link"
+  },
+  {
+   "name": "out-dir-junction-to-elsewhere",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "elsewhere/",
+    {
+     "junction": "link",
+     "target": "elsewhere"
+    }
+   ],
+   "out": "link",
+   "photo": "photos"
+  },
+  {
+   "name": "out-dir-junction-to-ancestor",
+   "op": "output_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "up",
+     "target": ""
+    }
+   ],
+   "out": "up",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-in-photos",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "file": "photos/summary.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-in-photos-subfolder",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "file": "photos/sub/summary.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-in-sibling",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "file": "out/summary.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-same-prefix-sibling",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "photos-out/"
+   ],
+   "file": "photos-out/summary.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-in-root-ancestor",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "file": "summary.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-through-junction",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "file": "link/report.md",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-is-the-photo-itself",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "file": "photos/a.jpg",
+   "photo": "photos"
+  },
+  {
+   "name": "out-file-upper-case-dir",
+   "op": "output_file",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "file": "PHOTOS/x.md",
+   "photo": "photos"
+  },
+  {
+   "name": "overlaps-equal",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-equal",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-inside",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos/x",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-inside",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos",
+   "b": "photos/x"
+  },
+  {
+   "name": "overlaps-contains",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-contains",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos",
+   "b": ""
+  },
+  {
+   "name": "overlaps-disjoint",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "a": "out",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-disjoint",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "a": "photos",
+   "b": "out"
+  },
+  {
+   "name": "overlaps-prefix-sibling",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "photos2/"
+   ],
+   "a": "photos2",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-prefix-sibling",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "photos2/"
+   ],
+   "a": "photos",
+   "b": "photos2"
+  },
+  {
+   "name": "overlaps-trailing-sep",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos/",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-trailing-sep",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "a": "photos",
+   "b": "photos/"
+  },
+  {
+   "name": "overlaps-missing-both",
+   "op": "overlaps",
+   "tree": [],
+   "a": "nope1",
+   "b": "nope2"
+  },
+  {
+   "name": "overlaps-reversed-missing-both",
+   "op": "overlaps",
+   "tree": [],
+   "a": "nope2",
+   "b": "nope1"
+  },
+  {
+   "name": "overlaps-junction",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "a": "link",
+   "b": "photos"
+  },
+  {
+   "name": "overlaps-reversed-junction",
+   "op": "overlaps",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "a": "photos",
+   "b": "link"
+  },
+  {
+   "name": "same-or-under-equal",
+   "op": "same_or_under",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "path": "photos",
+   "root": "photos"
+  },
+  {
+   "name": "same-or-under-child",
+   "op": "same_or_under",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "path": "photos/x/y",
+   "root": "photos"
+  },
+  {
+   "name": "same-or-under-parent",
+   "op": "same_or_under",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "path": "",
+   "root": "photos"
+  },
+  {
+   "name": "same-or-under-root-with-trailing-sep",
+   "op": "same_or_under",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "path": "photos/x",
+   "root": "photos/"
+  },
+  {
+   "name": "cache-equal-photos",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "photos",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-inside-photos",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "photos/sub",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-parent-of-photos",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-equal-out",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "out",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-inside-out",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "out/data/cache",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-equal-appdata",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "@",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-inside-appdata",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "@/cache",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-first-violation-wins",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "photos",
+   "must": [
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "photos",
+     "name": "photo folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-foreign-non-empty",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "foreign/keep.png"
+   ],
+   "cache": "foreign",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-foreign-only-subfolder",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "foreign/sub/"
+   ],
+   "cache": "foreign",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-missing",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/"
+   ],
+   "cache": "missing-cache",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-empty",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "empty-cache/"
+   ],
+   "cache": "empty-cache",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-owned-with-marker",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "owned/.photoreview-benchmark-cache",
+    "owned/x.png"
+   ],
+   "cache": "owned",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-marker-is-a-directory",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "owned/.photoreview-benchmark-cache/",
+    "owned/x.png"
+   ],
+   "cache": "owned",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-marker-wrong-case",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "owned/.PHOTOREVIEW-BENCHMARK-CACHE",
+    "owned/x.png"
+   ],
+   "cache": "owned",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "cache-no-must-list",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    "foreign/keep.png"
+   ],
+   "cache": "photos",
+   "must": []
+  },
+  {
+   "name": "cache-junction-into-photos",
+   "op": "cache_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    "out/",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "cache": "link",
+   "must": [
+    {
+     "path": "photos",
+     "name": "photo folder"
+    },
+    {
+     "path": "out",
+     "name": "output directory"
+    },
+    {
+     "path": "@",
+     "name": "app data folder"
+    }
+   ]
+  },
+  {
+   "name": "claim-new",
+   "op": "claim_cache",
+   "tree": [],
+   "cache": "fresh/cache"
+  },
+  {
+   "name": "claim-existing-empty",
+   "op": "claim_cache",
+   "tree": [
+    "cache/"
+   ],
+   "cache": "cache"
+  },
+  {
+   "name": "claim-existing-marker-kept",
+   "op": "claim_cache",
+   "tree": [
+    "cache/.photoreview-benchmark-cache"
+   ],
+   "cache": "cache"
+  },
+  {
+   "name": "report-dir-override-equal-photos",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": "photos"
+  },
+  {
+   "name": "report-dir-override-inside-photos",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": "photos/r"
+  },
+  {
+   "name": "report-dir-override-ancestor",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": ""
+  },
+  {
+   "name": "report-dir-override-sibling",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": "batch-reports"
+  },
+  {
+   "name": "report-dir-override-sibling-same-prefix",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": "photos-reports"
+  },
+  {
+   "name": "report-dir-override-not-created",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override": "new/out/dir"
+  },
+  {
+   "name": "report-dir-override-junction",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg",
+    {
+     "junction": "link",
+     "target": "photos"
+    }
+   ],
+   "photo": "photos",
+   "override": "link/reports"
+  },
+  {
+   "name": "report-dir-default",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos"
+  },
+  {
+   "name": "report-dir-empty-override-means-default",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override_raw": ""
+  },
+  {
+   "name": "report-dir-blank-override-is-an-error",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override_raw": " "
+  },
+  {
+   "name": "report-dir-nul-override-is-an-error",
+   "op": "report_directory",
+   "tree": [
+    "photos/",
+    "photos/a.jpg"
+   ],
+   "photo": "photos",
+   "override_raw": "a\u0000b"
+  },
+  {
+   "name": "write-report-new-file",
+   "op": "write_report",
+   "tree": [
+    "reports/"
+   ],
+   "path": "reports/summary.json",
+   "content": "{\r\n  \"a\": 1\r\n}"
+  },
+  {
+   "name": "write-report-replaces-existing",
+   "op": "write_report",
+   "tree": [
+    "reports/summary.json"
+   ],
+   "path": "reports/summary.json",
+   "content": "new"
+  },
+  {
+   "name": "write-report-non-ascii-no-bom",
+   "op": "write_report",
+   "tree": [
+    "reports/"
+   ],
+   "path": "reports/summary.json",
+   "content": "\u00e9\u1ea1 \u4e2d"
+  },
+  {
+   "name": "write-report-empty-content",
+   "op": "write_report",
+   "tree": [
+    "reports/old.md"
+   ],
+   "path": "reports/old.md",
+   "content": ""
+  },
+  {
+   "name": "write-report-lf-kept-as-is",
+   "op": "write_report",
+   "tree": [
+    "reports/"
+   ],
+   "path": "reports/x.md",
+   "content": "a\nb\r\nc"
+  },
+  {
+   "name": "write-report-missing-directory",
+   "op": "write_report",
+   "tree": [],
+   "path": "nodir/summary.json",
+   "content": "x"
+  },
+  {
+   "name": "write-report-hardlink-to-photo",
+   "op": "write_report",
+   "tree": [
+    "photos/",
+    "photos/IMG_0001.CR2",
+    "reports/"
+   ],
+   "path": "reports/summary.md",
+   "content": "report text",
+   "link": "hardlink",
+   "photo": "photos/IMG_0001.CR2"
+  },
+  {
+   "name": "write-report-symlink-to-photo",
+   "op": "write_report",
+   "tree": [
+    "photos/",
+    "photos/IMG_0002.CR2",
+    "reports/"
+   ],
+   "path": "reports/summary.md",
+   "content": "report text",
+   "link": "symlink",
+   "photo": "photos/IMG_0002.CR2"
+  }
+ ]
+}

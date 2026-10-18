@@ -1,0 +1,649 @@
+{
+  "generator": "oracle-cs bench-profile",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "valid-defaults",
+      "id": "p",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "valid-loading-mode-preview",
+      "id": "p",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "valid-loading-mode-original",
+      "id": "p",
+      "loading_mode": 2,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "id-empty",
+      "id": "",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-null",
+      "id": null,
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-space",
+      "id": " ",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": " ",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-tab-newline",
+      "id": "\t\r\n",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\t\r\n",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-ideographic-space",
+      "id": "\u3000",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\u3000",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-nbsp",
+      "id": "\u00A0",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\u00A0",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-nel",
+      "id": "\u0085",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\u0085",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-line-separator",
+      "id": "\u2028",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\u2028",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-narrow-nbsp",
+      "id": "\u202F",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "\u202F",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-zero-width-space-is-not-whitespace",
+      "id": "​",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "id-mongolian-vowel-separator-is-not-whitespace",
+      "id": "᠎",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "id-with-surrounding-spaces-is-valid",
+      "id": " a ",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "mode-undefined-3",
+      "id": "p",
+      "loading_mode": 3,
+      "representable": false,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "p",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "mode-undefined-negative",
+      "id": "p",
+      "loading_mode": -1,
+      "representable": false,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "p",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "mode-undefined-and-id-empty",
+      "id": "",
+      "loading_mode": 99,
+      "representable": false,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "mode-undefined-beats-bad-workers",
+      "id": "p",
+      "loading_mode": 3,
+      "representable": false,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "p",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "id-empty-beats-bad-workers",
+      "id": "",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "workers-zero",
+      "id": "w0",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "w0",
+        "message": "Invalid benchmark settings for profile 'w0'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "workers-negative",
+      "id": "w-1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "w-1",
+        "message": "Invalid benchmark settings for profile 'w-1'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "workers-one-is-valid",
+      "id": "w1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "workers-int-max-is-valid",
+      "id": "wmax",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "next-window-negative",
+      "id": "n-1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "n-1",
+        "message": "Invalid benchmark settings for profile 'n-1'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "next-window-zero-is-valid",
+      "id": "n0",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "previous-window-negative",
+      "id": "pv-1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "pv-1",
+        "message": "Invalid benchmark settings for profile 'pv-1'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "previous-window-int-min",
+      "id": "pvmin",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "pvmin",
+        "message": "Invalid benchmark settings for profile 'pvmin'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "iterations-zero",
+      "id": "i0",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "i0",
+        "message": "Invalid benchmark settings for profile 'i0'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "iterations-negative",
+      "id": "i-5",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "i-5",
+        "message": "Invalid benchmark settings for profile 'i-5'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "iterations-int-min",
+      "id": "imin",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "imin",
+        "message": "Invalid benchmark settings for profile 'imin'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "iterations-one-is-valid",
+      "id": "i1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "warmup-negative-is-not-checked",
+      "id": "wu-1",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "warmup-zero-is-valid",
+      "id": "wu0",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "all-settings-bad",
+      "id": "bad",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "bad",
+        "message": "Invalid benchmark settings for profile 'bad'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "invalid-message-keeps-quotes-in-id",
+      "id": "it's \"x\"",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "it's \"x\"",
+        "message": "Invalid benchmark settings for profile 'it's \"x\"'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "invalid-message-keeps-unicode-id",
+      "id": "é中\uD83D\uDE00",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "é中\uD83D\uDE00",
+        "message": "Invalid benchmark settings for profile 'é中\uD83D\uDE00'",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "invalid-message-keeps-padded-id",
+      "id": "  pad  ",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "InvalidSettings",
+        "profile_id": "  pad  ",
+        "message": "Invalid benchmark settings for profile '  pad  '",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "null-profile",
+      "id": "x",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "throws": "ArgumentNullException"
+      }
+    },
+    {
+      "name": "tw-preview-light",
+      "id": "preview-light",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 960,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-preview-balanced",
+      "id": "preview-balanced",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1600,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-preview-quality",
+      "id": "preview-quality",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 2400,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-preview-high-quality",
+      "id": "preview-high-quality",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 3200,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-original-correctness",
+      "id": "original-correctness",
+      "loading_mode": 2,
+      "representable": true,
+      "target_width": 0,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-fast-sequential-default",
+      "id": "fast-sequential",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-instant-review-default",
+      "id": "instant-review",
+      "loading_mode": 0,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-case-sensitive-mixed",
+      "id": "Preview-Light",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-case-sensitive-all-caps",
+      "id": "ORIGINAL-CORRECTNESS",
+      "loading_mode": 2,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-leading-space-is-default",
+      "id": " preview-light",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-trailing-space-is-default",
+      "id": "preview-quality ",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    },
+    {
+      "name": "tw-empty-id-is-default",
+      "id": "",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "tw-null-id-is-default",
+      "id": null,
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": false,
+        "problem": "MissingIdOrMode",
+        "profile_id": "",
+        "message": "Profile id and loading mode are required",
+        "is_argument_exception": true
+      }
+    },
+    {
+      "name": "tw-prefix-only-is-default",
+      "id": "preview",
+      "loading_mode": 1,
+      "representable": true,
+      "target_width": 1920,
+      "validate": {
+        "ok": true
+      }
+    }
+  ]
+}

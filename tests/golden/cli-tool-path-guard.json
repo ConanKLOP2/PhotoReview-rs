@@ -1,0 +1,808 @@
+{
+  "generator": "oracle-cs cli-tool-path-guard",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "out-dir-equal",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-trailing-separator",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-photo-trailing-separator",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos\\'"
+      }
+    },
+    {
+      "name": "out-dir-inside",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\reports' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-deep-inside-missing",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\a\\b\\c' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-ancestor-root",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-ancestor-of-nested-photo",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\a' must not equal, contain or sit inside the photo folder '{root}\\a\\b\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-upper-case-equal",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\PHOTOS' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-mixed-case-inside",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\Photos\\Reports' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-sibling-same-prefix",
+      "op": "output_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-dir-sibling-same-prefix-missing",
+      "op": "output_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-dir-sibling",
+      "op": "output_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-dir-dot-segments-equal",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\..\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-dot-segments-inside",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\out\\..\\photos\\r' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-trailing-dot-segment",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\.' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-junction-to-photos",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\link' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-inside-junction-to-photos",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\link\\reports' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-dir-junction-photo-side",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\reports' must not equal, contain or sit inside the photo folder '{root}\\link'"
+      }
+    },
+    {
+      "name": "out-dir-junction-to-elsewhere",
+      "op": "output_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-dir-junction-to-ancestor",
+      "op": "output_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\up' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-file-in-photos",
+      "op": "output_file",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output file '{root}\\photos\\summary.md' must not be inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-file-in-photos-subfolder",
+      "op": "output_file",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output file '{root}\\photos\\sub\\summary.md' must not be inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-file-in-sibling",
+      "op": "output_file",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-file-same-prefix-sibling",
+      "op": "output_file",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-file-in-root-ancestor",
+      "op": "output_file",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "out-file-through-junction",
+      "op": "output_file",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output file '{root}\\link\\report.md' must not be inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-file-is-the-photo-itself",
+      "op": "output_file",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output file '{root}\\photos\\a.jpg' must not be inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "out-file-upper-case-dir",
+      "op": "output_file",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output file '{root}\\PHOTOS\\x.md' must not be inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "overlaps-equal",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-reversed-equal",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-inside",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-reversed-inside",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-contains",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-reversed-contains",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-disjoint",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-reversed-disjoint",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-prefix-sibling",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-reversed-prefix-sibling",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-trailing-sep",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-reversed-trailing-sep",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-missing-both",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-reversed-missing-both",
+      "op": "overlaps",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "overlaps-junction",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "overlaps-reversed-junction",
+      "op": "overlaps",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "same-or-under-equal",
+      "op": "same_or_under",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "same-or-under-child",
+      "op": "same_or_under",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "same-or-under-parent",
+      "op": "same_or_under",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "same-or-under-root-with-trailing-sep",
+      "op": "same_or_under",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "cache-equal-photos",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "cache-inside-photos",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\photos\\sub' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "cache-parent-of-photos",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "cache-equal-out",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\out' must not equal, contain or sit inside the output directory '{root}\\out'"
+      }
+    },
+    {
+      "name": "cache-inside-out",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\out\\data\\cache' must not equal, contain or sit inside the output directory '{root}\\out'"
+      }
+    },
+    {
+      "name": "cache-equal-appdata",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{appdata}' must not equal, contain or sit inside the app data folder '{appdata}'"
+      }
+    },
+    {
+      "name": "cache-inside-appdata",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{appdata}/cache' must not equal, contain or sit inside the app data folder '{appdata}'"
+      }
+    },
+    {
+      "name": "cache-first-violation-wins",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "cache-foreign-non-empty",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\foreign' is not empty and was not created by this tool (no .photoreview-benchmark-cache marker); its cache folders would be pruned. Use an empty folder"
+      }
+    },
+    {
+      "name": "cache-foreign-only-subfolder",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\foreign' is not empty and was not created by this tool (no .photoreview-benchmark-cache marker); its cache folders would be pruned. Use an empty folder"
+      }
+    },
+    {
+      "name": "cache-missing",
+      "op": "cache_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "cache-empty",
+      "op": "cache_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "cache-owned-with-marker",
+      "op": "cache_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "cache-marker-is-a-directory",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\owned' is not empty and was not created by this tool (no .photoreview-benchmark-cache marker); its cache folders would be pruned. Use an empty folder"
+      }
+    },
+    {
+      "name": "cache-marker-wrong-case",
+      "op": "cache_directory",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "cache-no-must-list",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\photos' is not empty and was not created by this tool (no .photoreview-benchmark-cache marker); its cache folders would be pruned. Use an empty folder"
+      }
+    },
+    {
+      "name": "cache-junction-into-photos",
+      "op": "cache_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "--cache-dir '{root}\\link' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      }
+    },
+    {
+      "name": "claim-new",
+      "op": "claim_cache",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "marker_exists": true,
+        "marker_text": "created by the PhotoReview benchmark CLI; its cache and thumbnails folders are pruned\n",
+        "marker_bytes": 86
+      }
+    },
+    {
+      "name": "claim-existing-empty",
+      "op": "claim_cache",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "marker_exists": true,
+        "marker_text": "created by the PhotoReview benchmark CLI; its cache and thumbnails folders are pruned\n",
+        "marker_bytes": 86
+      }
+    },
+    {
+      "name": "claim-existing-marker-kept",
+      "op": "claim_cache",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "marker_exists": true,
+        "marker_text": "\u0001\u0002\u0003",
+        "marker_bytes": 3
+      }
+    },
+    {
+      "name": "report-dir-override-equal-photos",
+      "op": "report_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      },
+      "after": {
+        "exists": true
+      }
+    },
+    {
+      "name": "report-dir-override-inside-photos",
+      "op": "report_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\photos\\r' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-override-ancestor",
+      "op": "report_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      },
+      "after": {
+        "exists": true
+      }
+    },
+    {
+      "name": "report-dir-override-sibling",
+      "op": "report_directory",
+      "result": {
+        "ok": "{root}\\batch-reports"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-override-sibling-same-prefix",
+      "op": "report_directory",
+      "result": {
+        "ok": "{root}\\photos-reports"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-override-not-created",
+      "op": "report_directory",
+      "result": {
+        "ok": "{root}\\new\\out\\dir"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-override-junction",
+      "op": "report_directory",
+      "result": {
+        "throws": "InvalidOperationException",
+        "message": "output directory '{root}\\link\\reports' must not equal, contain or sit inside the photo folder '{root}\\photos'"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-default",
+      "op": "report_directory",
+      "result": {
+        "ok": "default-shape-ok"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-empty-override-means-default",
+      "op": "report_directory",
+      "result": {
+        "ok": "default-shape-ok"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-blank-override-is-an-error",
+      "op": "report_directory",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "The path is empty. (Parameter 'path')"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "report-dir-nul-override-is-an-error",
+      "op": "report_directory",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Null character in path. (Parameter 'path')"
+      },
+      "after": {
+        "exists": false
+      }
+    },
+    {
+      "name": "write-report-new-file",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [
+          123,
+          13,
+          10,
+          32,
+          32,
+          34,
+          97,
+          34,
+          58,
+          32,
+          49,
+          13,
+          10,
+          125
+        ],
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-replaces-existing",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [
+          110,
+          101,
+          119
+        ],
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-non-ascii-no-bom",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [
+          195,
+          169,
+          225,
+          186,
+          161,
+          32,
+          228,
+          184,
+          173
+        ],
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-empty-content",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [],
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-lf-kept-as-is",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [
+          97,
+          10,
+          98,
+          13,
+          10,
+          99
+        ],
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-missing-directory",
+      "op": "write_report",
+      "result": {
+        "throws": "DirectoryNotFoundException",
+        "message": "Could not find a part of the path '{root}\\nodir\\summary.json.{tmp}.tmp'."
+      },
+      "after": {
+        "report_bytes": null,
+        "photo_bytes": null,
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-hardlink-to-photo",
+      "op": "write_report",
+      "result": {
+        "ok": null
+      },
+      "after": {
+        "report_bytes": [
+          114,
+          101,
+          112,
+          111,
+          114,
+          116,
+          32,
+          116,
+          101,
+          120,
+          116
+        ],
+        "photo_bytes": [
+          1,
+          2,
+          3
+        ],
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    },
+    {
+      "name": "write-report-symlink-to-photo",
+      "op": "write_report",
+      "result": {
+        "ok": "skipped-no-symlink-privilege"
+      },
+      "after": {
+        "report_bytes": null,
+        "photo_bytes": [
+          1,
+          2,
+          3
+        ],
+        "is_link": false,
+        "leftover_tmp": []
+      }
+    }
+  ]
+}

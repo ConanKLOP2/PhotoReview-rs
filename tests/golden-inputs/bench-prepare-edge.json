@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {"name":"explorer-reindex-refuses","profile_id":"explorer-reindex","workload":"Correctness","iteration":0},
+    {"name":"cache-recovery-refuses","profile_id":"cache-recovery","workload":"Correctness","iteration":0},
+    {"name":"refusal-wins-over-workload-argument-FileAction","profile_id":"cache-recovery","workload":"FileAction","iteration":0},
+    {"name":"refusal-wins-over-workload-argument-FirstFrame","profile_id":"explorer-reindex","workload":"FirstFrame","iteration":3},
+    {"name":"refusal-checks-profile-workload-not-argument","profile_id":"cache-recovery","workload":"Sequential","iteration":0},
+    {"name":"same-id-other-profile-workload-is-not-refused","profile_id":"cache-recovery","profile_workload":"Sequential","workload":"Sequential","iteration":0},
+    {"name":"id-match-is-case-sensitive","profile_id":"cache-recovery","id":"Cache-Recovery","workload":"Correctness","iteration":0},
+    {"name":"id-match-is-exact-no-trim","profile_id":"explorer-reindex","id":"explorer-reindex ","workload":"Correctness","iteration":0},
+    {"name":"other-correctness-profile-is-not-refused","profile_id":"original-correctness","workload":"Correctness","iteration":0},
+    {"name":"renamed-refused-profile-keeps-name-in-message","profile_id":"cache-recovery","id":"cache-recovery","workload":"Correctness","iteration":7},
+    {"name":"empty-files-FirstFrame","profile_id":"fast-sequential","workload":"FirstFrame","iteration":0},
+    {"name":"empty-files-FirstFrame-iteration-5","profile_id":"fast-sequential","workload":"FirstFrame","iteration":5},
+    {"name":"empty-files-Sequential","profile_id":"fast-sequential","workload":"Sequential","iteration":0},
+    {"name":"empty-files-Sequential-iteration-5","profile_id":"fast-sequential","workload":"Sequential","iteration":5},
+    {"name":"empty-files-Random","profile_id":"fast-sequential","workload":"Random","iteration":0},
+    {"name":"empty-files-Random-iteration-5","profile_id":"fast-sequential","workload":"Random","iteration":5},
+    {"name":"empty-files-WarmNext","profile_id":"fast-sequential","workload":"WarmNext","iteration":0},
+    {"name":"empty-files-WarmNext-iteration-5","profile_id":"fast-sequential","workload":"WarmNext","iteration":5},
+    {"name":"empty-files-Preload","profile_id":"fast-sequential","workload":"Preload","iteration":0},
+    {"name":"empty-files-Preload-iteration-5","profile_id":"fast-sequential","workload":"Preload","iteration":5},
+    {"name":"empty-files-FileAction","profile_id":"fast-sequential","workload":"FileAction","iteration":0},
+    {"name":"empty-files-FileAction-iteration-5","profile_id":"fast-sequential","workload":"FileAction","iteration":5},
+    {"name":"empty-files-Correctness","profile_id":"fast-sequential","workload":"Correctness","iteration":0},
+    {"name":"empty-files-Correctness-iteration-5","profile_id":"fast-sequential","workload":"Correctness","iteration":5}
+  ]
+}

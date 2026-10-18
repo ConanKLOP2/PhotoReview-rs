@@ -1,0 +1,273 @@
+{
+  "generator": "oracle-cs bench-json",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "report-empty-no-phases",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"run1\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"folder\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-empty-phase-is-finite",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "x",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"run\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"C:\\\\x\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"x\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [],\r\n      \"Status\": 3,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 0,\r\n      \"P50\": 0,\r\n      \"P95\": 0,\r\n      \"P99\": 0,\r\n      \"Max\": 0,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 0,\r\n      \"P50PerImage\": 0\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-one-phase-integers",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"run2\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"folder\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"fast-sequential\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        10,\r\n        20,\r\n        5\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 8,\r\n      \"Count\": 3,\r\n      \"P50\": 10,\r\n      \"P95\": 19,\r\n      \"P99\": 19.8,\r\n      \"Max\": 20,\r\n      \"EffectiveImagesPerSample\": 8,\r\n      \"P95PerImage\": 2.375,\r\n      \"P50PerImage\": 1.25\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-phase-null-message-and-null-stamp-derives",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        },
+        {
+          "id": "unknown-profile",
+          "workload": "Random",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"run3\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"folder\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"fast-sequential\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        80\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": null,\r\n      \"Count\": 1,\r\n      \"P50\": 80,\r\n      \"P95\": 80,\r\n      \"P99\": 80,\r\n      \"Max\": 80,\r\n      \"EffectiveImagesPerSample\": 8,\r\n      \"P95PerImage\": 10,\r\n      \"P50PerImage\": 10\r\n    },\r\n    {\r\n      \"ProfileId\": \"unknown-profile\",\r\n      \"Workload\": 2,\r\n      \"Samples\": [\r\n        1.5\r\n      ],\r\n      \"Status\": 1,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": null,\r\n      \"Count\": 1,\r\n      \"P50\": 1.5,\r\n      \"P95\": 1.5,\r\n      \"P99\": 1.5,\r\n      \"Max\": 1.5,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1.5,\r\n      \"P50PerImage\": 1.5\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-phase-every-workload-and-status",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "p0",
+          "workload": "FirstFrame",
+          "images": null
+        },
+        {
+          "id": "p1",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "p2",
+          "workload": "Random",
+          "images": null
+        },
+        {
+          "id": "p3",
+          "workload": "WarmNext",
+          "images": null
+        },
+        {
+          "id": "p4",
+          "workload": "Preload",
+          "images": null
+        },
+        {
+          "id": "p5",
+          "workload": "FileAction",
+          "images": null
+        },
+        {
+          "id": "p6",
+          "workload": "Correctness",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"all\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"p0\",\r\n      \"Workload\": 0,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p1\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 1,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p2\",\r\n      \"Workload\": 2,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 2,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p3\",\r\n      \"Workload\": 3,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 3,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p4\",\r\n      \"Workload\": 4,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p5\",\r\n      \"Workload\": 5,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    },\r\n    {\r\n      \"ProfileId\": \"p6\",\r\n      \"Workload\": 6,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-number-formatting",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "n",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"num\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"n\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        0.1,\r\n        0.30000000000000004,\r\n        123456.789,\r\n        1E-07,\r\n        1E+21,\r\n        1E+300,\r\n        -2.5,\r\n        0,\r\n        100,\r\n        1.0000000000000002\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 3,\r\n      \"Count\": 10,\r\n      \"P50\": 0.6500000000000001,\r\n      \"P95\": 5.49999999999999E+299,\r\n      \"P99\": 9.100000000000003E+299,\r\n      \"Max\": 1E+300,\r\n      \"EffectiveImagesPerSample\": 3,\r\n      \"P95PerImage\": 1.83333333333333E+299,\r\n      \"P50PerImage\": 0.2166666666666667\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-negative-zero-maximum",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "n",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"nz\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"n\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        -0,\r\n        0\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 2,\r\n      \"P50\": 0,\r\n      \"P95\": 0,\r\n      \"P99\": 0,\r\n      \"Max\": 0,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 0,\r\n      \"P50PerImage\": 0\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-message-escaping",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "m",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"esc\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"C:\\\\Photos\\\\caf\\u00E9 \\u003C\\u0026\\u003E \\u0027x\\u0027 \\u002B1 \\u0060y\\u0060\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"m\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        1\r\n      ],\r\n      \"Status\": 2,\r\n      \"Message\": \"Failed: \\u003Cb\\u003E\\u0026amp;\\u003C/b\\u003E \\u0022q\\u0022 \\u0027a\\u0027 \\u002B \\u0060b\\u0060 \\\\ / \\r\\n\\t \\u00E9 \\u4E2D \\uD83D\\uDE00 \\u2028\",\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 1,\r\n      \"P50\": 1,\r\n      \"P95\": 1,\r\n      \"P99\": 1,\r\n      \"Max\": 1,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 1,\r\n      \"P50PerImage\": 1\r\n    }\r\n  ],\r\n  \"Metrics\": null,\r\n  \"Machine\": \"PC \\u0022A\\u0022\\t\\u007F\\u0001/\\u4E2D\\uD83D\\uDE00\"\r\n}"
+    },
+    {
+      "name": "report-machine-and-metrics-zero",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"mz\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": {\r\n    \"CacheHits\": 0,\r\n    \"CacheMisses\": 0,\r\n    \"SourceBytesRead\": 0,\r\n    \"SourceReads\": 0,\r\n    \"DecodeMilliseconds\": 0,\r\n    \"PresentedImages\": 0,\r\n    \"PresentMilliseconds\": 0,\r\n    \"PreloadHits\": 0,\r\n    \"InflightJoins\": 0,\r\n    \"DiskCacheHits\": 0,\r\n    \"UiAssignMilliseconds\": 0,\r\n    \"DecoderFallbacks\": {},\r\n    \"DecoderFallbackCount\": 0,\r\n    \"SourceOpenCount\": 0,\r\n    \"TopSourceOpens\": [],\r\n    \"StatCount\": 0,\r\n    \"SessionWriteCount\": 0,\r\n    \"CrossThreadPresentCount\": 0,\r\n    \"PresentHistogram\": []\r\n  },\r\n  \"Machine\": \"PC-1\"\r\n}"
+    },
+    {
+      "name": "report-metrics-populated",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "x",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "json": "{\r\n  \"RunId\": \"mp\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [\r\n    {\r\n      \"ProfileId\": \"x\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        2,\r\n        4\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 2,\r\n      \"Count\": 2,\r\n      \"P50\": 3,\r\n      \"P95\": 3.9,\r\n      \"P99\": 3.98,\r\n      \"Max\": 4,\r\n      \"EffectiveImagesPerSample\": 2,\r\n      \"P95PerImage\": 1.95,\r\n      \"P50PerImage\": 1.5\r\n    }\r\n  ],\r\n  \"Metrics\": {\r\n    \"CacheHits\": 10,\r\n    \"CacheMisses\": 2,\r\n    \"SourceBytesRead\": 123456789,\r\n    \"SourceReads\": 12,\r\n    \"DecodeMilliseconds\": 340,\r\n    \"PresentedImages\": 8,\r\n    \"PresentMilliseconds\": 95,\r\n    \"PreloadHits\": 5,\r\n    \"InflightJoins\": 1,\r\n    \"DiskCacheHits\": 3,\r\n    \"UiAssignMilliseconds\": 17,\r\n    \"DecoderFallbacks\": {\r\n      \"Wpf\": 1,\r\n      \"TurboJpeg\": 3\r\n    },\r\n    \"DecoderFallbackCount\": 4,\r\n    \"SourceOpenCount\": 14,\r\n    \"TopSourceOpens\": [\r\n      {\r\n        \"Path\": \"C:\\\\a\\\\b.jpg\",\r\n        \"Count\": 3\r\n      },\r\n      {\r\n        \"Path\": \"D:\\\\\\u00E9.jpg\",\r\n        \"Count\": 1\r\n      }\r\n    ],\r\n    \"StatCount\": 40,\r\n    \"SessionWriteCount\": 2,\r\n    \"CrossThreadPresentCount\": 0,\r\n    \"PresentHistogram\": [\r\n      {\r\n        \"Label\": \"\\u003C=8\",\r\n        \"Count\": 5\r\n      },\r\n      {\r\n        \"Label\": \"\\u003C=16\",\r\n        \"Count\": 2\r\n      },\r\n      {\r\n        \"Label\": \"\\u003E500\",\r\n        \"Count\": 1\r\n      }\r\n    ]\r\n  },\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-fraction-seven-digits",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t1\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00.1234567+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-fraction-trimmed-half-second",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t2\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00.5+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-fraction-one-tick",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t3\",\r\n  \"StartedUtc\": \"1970-01-01T00:00:00.0000001+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-positive-offset",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t4\",\r\n  \"StartedUtc\": \"2025-11-29T15:00:00+07:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-negative-offset-half-hour",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t5\",\r\n  \"StartedUtc\": \"2025-11-29T04:30:00-03:30\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-offset-crosses-midnight",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t6\",\r\n  \"StartedUtc\": \"2025-11-29T21:59:59.9999999+14:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-min-value",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t7\",\r\n  \"StartedUtc\": \"0001-01-01T00:00:00+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-time-max-value",
+      "kind": "report",
+      "derived": [],
+      "json": "{\r\n  \"RunId\": \"t8\",\r\n  \"StartedUtc\": \"9999-12-31T23:59:59.9999999+00:00\",\r\n  \"Folder\": \"f\",\r\n  \"Phases\": [],\r\n  \"Metrics\": null,\r\n  \"Machine\": null\r\n}"
+    },
+    {
+      "name": "report-nan-samples-throw",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "nan",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "throws": "ArgumentException"
+    },
+    {
+      "name": "report-infinity-sample-throws",
+      "kind": "report",
+      "derived": [
+        {
+          "id": "inf",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "throws": "ArgumentException"
+    },
+    {
+      "name": "batch-empty",
+      "kind": "batch",
+      "derived": [],
+      "json": "{\r\n  \"Dataset\": {\r\n    \"Folder\": \"f\",\r\n    \"Files\": [],\r\n    \"UnsupportedExtensions\": {},\r\n    \"FileLimit\": 0,\r\n    \"SupportedFileCount\": 0,\r\n    \"UnsupportedFileCount\": 0\r\n  },\r\n  \"Reports\": [],\r\n  \"ProfileOutcomes\": []\r\n}"
+    },
+    {
+      "name": "batch-dataset-counts-and-dictionary-order",
+      "kind": "batch",
+      "derived": [],
+      "json": "{\r\n  \"Dataset\": {\r\n    \"Folder\": \"C:\\\\Photos\",\r\n    \"Files\": [\r\n      \"a.jpg\",\r\n      \"b.cr3\",\r\n      \"c d.png\"\r\n    ],\r\n    \"UnsupportedExtensions\": {\r\n      \".txt\": 3,\r\n      \".mp4\": 1,\r\n      \".t\\u00EBst\": 2\r\n    },\r\n    \"FileLimit\": 100,\r\n    \"SupportedFileCount\": 3,\r\n    \"UnsupportedFileCount\": 6\r\n  },\r\n  \"Reports\": [],\r\n  \"ProfileOutcomes\": []\r\n}"
+    },
+    {
+      "name": "batch-reports-and-outcomes",
+      "kind": "batch",
+      "derived": [
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        },
+        {
+          "id": "cache-recovery",
+          "workload": "Correctness",
+          "images": 4
+        },
+        {
+          "id": "preview-light",
+          "workload": "Sequential",
+          "images": 4
+        }
+      ],
+      "json": "{\r\n  \"Dataset\": {\r\n    \"Folder\": \"f\",\r\n    \"Files\": [\r\n      \"a.jpg\"\r\n    ],\r\n    \"UnsupportedExtensions\": {},\r\n    \"FileLimit\": 5,\r\n    \"SupportedFileCount\": 1,\r\n    \"UnsupportedFileCount\": 0\r\n  },\r\n  \"Reports\": [\r\n    {\r\n      \"RunId\": \"r1\",\r\n      \"StartedUtc\": \"1970-01-01T01:00:00+01:00\",\r\n      \"Folder\": \"f\",\r\n      \"Phases\": [\r\n        {\r\n          \"ProfileId\": \"fast-sequential\",\r\n          \"Workload\": 1,\r\n          \"Samples\": [\r\n            80,\r\n            90\r\n          ],\r\n          \"Status\": 0,\r\n          \"Message\": null,\r\n          \"ImagesPerSample\": null,\r\n          \"Count\": 2,\r\n          \"P50\": 85,\r\n          \"P95\": 89.5,\r\n          \"P99\": 89.9,\r\n          \"Max\": 90,\r\n          \"EffectiveImagesPerSample\": 8,\r\n          \"P95PerImage\": 11.1875,\r\n          \"P50PerImage\": 10.625\r\n        }\r\n      ],\r\n      \"Metrics\": {\r\n        \"CacheHits\": 10,\r\n        \"CacheMisses\": 2,\r\n        \"SourceBytesRead\": 123456789,\r\n        \"SourceReads\": 12,\r\n        \"DecodeMilliseconds\": 340,\r\n        \"PresentedImages\": 8,\r\n        \"PresentMilliseconds\": 95,\r\n        \"PreloadHits\": 5,\r\n        \"InflightJoins\": 1,\r\n        \"DiskCacheHits\": 3,\r\n        \"UiAssignMilliseconds\": 17,\r\n        \"DecoderFallbacks\": {\r\n          \"Wpf\": 1,\r\n          \"TurboJpeg\": 3\r\n        },\r\n        \"DecoderFallbackCount\": 4,\r\n        \"SourceOpenCount\": 14,\r\n        \"TopSourceOpens\": [\r\n          {\r\n            \"Path\": \"C:\\\\a\\\\b.jpg\",\r\n            \"Count\": 3\r\n          },\r\n          {\r\n            \"Path\": \"D:\\\\\\u00E9.jpg\",\r\n            \"Count\": 1\r\n          }\r\n        ],\r\n        \"StatCount\": 40,\r\n        \"SessionWriteCount\": 2,\r\n        \"CrossThreadPresentCount\": 0,\r\n        \"PresentHistogram\": [\r\n          {\r\n            \"Label\": \"\\u003C=8\",\r\n            \"Count\": 5\r\n          },\r\n          {\r\n            \"Label\": \"\\u003C=16\",\r\n            \"Count\": 2\r\n          },\r\n          {\r\n            \"Label\": \"\\u003E500\",\r\n            \"Count\": 1\r\n          }\r\n        ]\r\n      },\r\n      \"Machine\": \"PC\"\r\n    },\r\n    {\r\n      \"RunId\": \"r2\",\r\n      \"StartedUtc\": \"1970-01-01T00:00:00+00:00\",\r\n      \"Folder\": \"f\",\r\n      \"Phases\": [],\r\n      \"Metrics\": null,\r\n      \"Machine\": null\r\n    }\r\n  ],\r\n  \"ProfileOutcomes\": [\r\n    {\r\n      \"ProfileId\": \"cache-recovery\",\r\n      \"Workload\": 6,\r\n      \"Samples\": [],\r\n      \"Status\": 2,\r\n      \"Message\": \"not implemented\",\r\n      \"ImagesPerSample\": 1,\r\n      \"Count\": 0,\r\n      \"P50\": 0,\r\n      \"P95\": 0,\r\n      \"P99\": 0,\r\n      \"Max\": 0,\r\n      \"EffectiveImagesPerSample\": 1,\r\n      \"P95PerImage\": 0,\r\n      \"P50PerImage\": 0\r\n    },\r\n    {\r\n      \"ProfileId\": \"preview-light\",\r\n      \"Workload\": 1,\r\n      \"Samples\": [\r\n        3.25\r\n      ],\r\n      \"Status\": 0,\r\n      \"Message\": null,\r\n      \"ImagesPerSample\": 4,\r\n      \"Count\": 1,\r\n      \"P50\": 3.25,\r\n      \"P95\": 3.25,\r\n      \"P99\": 3.25,\r\n      \"Max\": 3.25,\r\n      \"EffectiveImagesPerSample\": 4,\r\n      \"P95PerImage\": 0.8125,\r\n      \"P50PerImage\": 0.8125\r\n    }\r\n  ]\r\n}"
+    },
+    {
+      "name": "batch-unsupported-count-zero-values",
+      "kind": "batch",
+      "derived": [],
+      "json": "{\r\n  \"Dataset\": {\r\n    \"Folder\": \"f\",\r\n    \"Files\": [],\r\n    \"UnsupportedExtensions\": {\r\n      \".a\": 0,\r\n      \".b\": 0\r\n    },\r\n    \"FileLimit\": 1,\r\n    \"SupportedFileCount\": 0,\r\n    \"UnsupportedFileCount\": 0\r\n  },\r\n  \"Reports\": [],\r\n  \"ProfileOutcomes\": []\r\n}"
+    },
+    {
+      "name": "batch-nan-outcome-throws",
+      "kind": "batch",
+      "derived": [
+        {
+          "id": "nan",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "throws": "ArgumentException"
+    }
+  ]
+}

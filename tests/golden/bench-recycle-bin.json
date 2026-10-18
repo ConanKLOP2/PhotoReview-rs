@@ -1,0 +1,153 @@
+{
+  "generator": "oracle-cs bench-recycle-bin",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "env-unset-uses-the-temp-copy-deleter",
+      "kind": "env",
+      "value": null,
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-exactly-1-opts-in",
+      "kind": "env",
+      "value": "1",
+      "use_real_bin": true,
+      "factory_calls": 1,
+      "returned_factory_instance": true
+    },
+    {
+      "name": "env-0-does-not-opt-in",
+      "kind": "env",
+      "value": "0",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-true-does-not-opt-in",
+      "kind": "env",
+      "value": "true",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-yes-does-not-opt-in",
+      "kind": "env",
+      "value": "yes",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-leading-space-does-not-opt-in",
+      "kind": "env",
+      "value": " 1",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-trailing-space-does-not-opt-in",
+      "kind": "env",
+      "value": "1 ",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-01-does-not-opt-in",
+      "kind": "env",
+      "value": "01",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-11-does-not-opt-in",
+      "kind": "env",
+      "value": "11",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "env-empty-does-not-opt-in",
+      "kind": "env",
+      "value": "",
+      "use_real_bin": false,
+      "factory_calls": 0,
+      "returned_factory_instance": false
+    },
+    {
+      "name": "delete-existing-file-removes-it",
+      "kind": "delete",
+      "setup": "file",
+      "outcome": "ok",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "delete-missing-file-in-existing-folder-is-silent",
+      "kind": "delete",
+      "setup": "missing-file",
+      "outcome": "ok",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "delete-missing-folder-throws",
+      "kind": "delete",
+      "setup": "missing-dir",
+      "outcome": "DirectoryNotFoundException",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "delete-directory-path-throws-and-keeps-it",
+      "kind": "delete",
+      "setup": "directory",
+      "outcome": "UnauthorizedAccessException",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": true
+    },
+    {
+      "name": "delete-read-only-file-throws-and-keeps-it",
+      "kind": "delete",
+      "setup": "readonly-file",
+      "outcome": "UnauthorizedAccessException",
+      "target_file_exists_after": true,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "delete-empty-path-throws",
+      "kind": "delete",
+      "setup": "empty-path",
+      "outcome": "ArgumentException",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "delete-path-below-a-file-throws",
+      "kind": "delete",
+      "setup": "file-as-parent",
+      "outcome": "DirectoryNotFoundException",
+      "target_file_exists_after": false,
+      "target_directory_exists_after": false
+    },
+    {
+      "name": "default-deleter-members",
+      "kind": "members",
+      "can_recycle": true,
+      "fits_zero": true,
+      "fits_huge": true,
+      "delete_permanently": {
+        "throws": "NotSupportedException"
+      },
+      "try_restore": false
+    }
+  ]
+}
