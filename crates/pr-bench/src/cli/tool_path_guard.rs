@@ -38,6 +38,15 @@ pub(crate) fn get_full_path(path: &str) -> Result<String, ToolError> {
 /// The absolute path with every existing reparse point resolved and no trailing separator
 /// (`Path.TrimEndingDirectorySeparator(fs.ResolveRealPath(path))`). A failing resolve is an `IOException`.
 pub fn real(fs: &dyn FileSystem, path: &str) -> Result<String, ToolError> {
+    // `ArgumentException.ThrowIfNullOrWhiteSpace(path)` of `ResolveRealPath`, then the NUL check of `Path.GetFullPath`.
+    if path.trim().is_empty() {
+        return Err(ToolError::argument(
+            "The value cannot be an empty string or composed entirely of whitespace. (Parameter 'path')",
+        ));
+    }
+    if path.contains('\0') {
+        return Err(ToolError::argument("Null character in path. (Parameter 'path')"));
+    }
     match fs.resolve_real_path(Path::new(path)) {
         Ok(resolved) => {
             let text = resolved.to_string_lossy();
@@ -139,10 +148,33 @@ fn has_entries(fs: &dyn FileSystem, dir: &Path, display: &str) -> Result<bool, T
 }
 
 /// Creates the cache folder and its marker file (idempotent: an existing marker is left alone), UTF-8 without BOM.
+///
+/// Errors follow `Directory.CreateDirectory` / `File.WriteAllText`: an empty path is
+/// `ArgumentException("The value cannot be an empty string. (Parameter 'path')")` BEFORE anything is created (it must never
+/// resolve to the current directory), a blank or NUL-bearing one the `Path.GetFullPath` `ArgumentException`s, and a file in
+/// the way is `IOException("Cannot create '<that file>' because a file or directory with the same name already exists.")`.
+/// IO messages name the full path.
 pub fn claim_cache_directory(cache_dir: &str) -> Result<(), ToolError> {
+    if cache_dir.is_empty() {
+        return Err(ToolError::argument(
+            "The value cannot be an empty string. (Parameter 'path')",
+        ));
+    }
+    let full = get_full_path(cache_dir)?;
     let io_error = |error: std::io::Error, path: &str| ToolError::from_io(&error, path, "DirectoryNotFoundException");
-    std::fs::create_dir_all(cache_dir).map_err(|error| io_error(error, cache_dir))?;
-    let marker = Path::new(cache_dir).join(CACHE_MARKER);
+    if let Err(error) = std::fs::create_dir_all(&full) {
+        // `CreateDirectory` names the existing FILE that blocks the path (the leaf itself or an ancestor).
+        let blocker = Path::new(&full).ancestors().find(|ancestor| ancestor.is_file());
+        return Err(match blocker {
+            Some(file) => ToolError::from_io(
+                &std::io::Error::from(ErrorKind::AlreadyExists),
+                &file.to_string_lossy(),
+                "DirectoryNotFoundException",
+            ),
+            None => io_error(error, &full),
+        });
+    }
+    let marker = Path::new(&full).join(CACHE_MARKER);
     if !marker.is_file() {
         let marker_text = marker.to_string_lossy().into_owned();
         std::fs::write(&marker, CACHE_MARKER_TEXT).map_err(|error| io_error(error, &marker_text))?;
@@ -339,6 +371,33 @@ mod tests {
         assert_eq!(denied.type_name, "UnauthorizedAccessException");
         let other = map_resolve_error(&Error::from_raw_os_error(1921), "p");
         assert_eq!(other.type_name, "IOException");
+    }
+
+    // Kind-only mapping of `File.WriteAllTextAsync` failures (the `_` arm of `map_write_error`): access denied, an existing
+    // name and a code-less NotFound keep their dedicated .NET texts; an unknown kind is the generic IOException with suffix.
+    #[test]
+    fn write_errors_map_by_kind_like_dotnet() {
+        let denied = map_write_error(&Error::from_raw_os_error(5), "p");
+        assert_eq!(
+            (denied.type_name.as_str(), denied.message.as_str()),
+            ("UnauthorizedAccessException", "Access to the path 'p' is denied.")
+        );
+        let exists = map_write_error(&Error::from_raw_os_error(183), "p");
+        assert_eq!(
+            (exists.type_name.as_str(), exists.message.as_str()),
+            (
+                "IOException",
+                "Cannot create 'p' because a file or directory with the same name already exists."
+            )
+        );
+        let not_found = map_write_error(&Error::from(ErrorKind::NotFound), "p");
+        assert_eq!(
+            (not_found.type_name.as_str(), not_found.message.as_str()),
+            ("DirectoryNotFoundException", "Could not find a part of the path 'p'.")
+        );
+        let other = map_write_error(&Error::from(ErrorKind::TimedOut), "p");
+        assert_eq!(other.type_name, "IOException");
+        assert!(other.message.ends_with(" : 'p'."), "{}", other.message);
     }
 
     #[test]

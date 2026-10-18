@@ -559,13 +559,6 @@ fn prepare_file_action(
     if files.is_empty() {
         return Err(invalid_argument("The benchmark folder has no files to decode."));
     }
-    if ct.is_canceled() {
-        return Err(BenchmarkError::Canceled);
-    }
-
-    // Dropping the guard (any error below, or the step finishing, or the step being dropped) removes the files.
-    let guard = ScratchGuard(ActionScratch::new());
-
     // `%` truncates: a negative iteration gives a negative index (C# `IndexOutOfRangeException`).
     let remainder = i64::from(iteration) % i64::try_from(files.len()).unwrap_or(i64::MAX);
     let Ok(index) = usize::try_from(remainder) else {
@@ -573,6 +566,13 @@ fn prepare_file_action(
             "The file-action iteration selects a negative file index.",
         ));
     };
+    // C# evaluates `files[iteration % files.Length]` before `ReadAllBytesAsync(.., ct)` sees the token, so the index error wins.
+    if ct.is_canceled() {
+        return Err(BenchmarkError::Canceled);
+    }
+
+    // Dropping the guard (any error below, or the step finishing, or the step being dropped) removes the files.
+    let guard = ScratchGuard(ActionScratch::new());
     // Untimed setup: a full read + write of the source photo (R2-F-14).
     let bytes = std::fs::read(&files[index]).map_err(io_error)?;
     std::fs::write(&guard.0.temp, bytes).map_err(io_error)?;

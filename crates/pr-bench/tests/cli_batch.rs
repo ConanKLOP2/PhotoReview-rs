@@ -726,3 +726,27 @@ fn batch_engine_receives_the_listing_paths_not_full_paths() {
         assert_eq!(list, &vec![format!("{rel}\\a.jpg")]);
     }
 }
+
+// C#: Directory.CreateDirectory on a name with an invalid character is IOException("... syntax is incorrect. : '<path>'.");
+// the CLI prints it with the path suffix and exits 2 (probe on .NET 10).
+#[test]
+fn batch_report_directory_creation_failure_names_the_path() {
+    let root = TempRoot::new("batch-badname");
+    let photo_dir = photos(&root, "photos", &["a.jpg"]);
+    let bad = format!("{}\\bad?name", root.path().display());
+    let mut backend = FakeBackend::new(catalog());
+    let (code, captured) = run_mode(
+        &mut backend,
+        &root,
+        CliMode::BenchmarkAll,
+        &["--benchmark-all", &photo_dir, &bad],
+    );
+    assert_eq!(code, 2);
+    assert_eq!(
+        captured.err,
+        format!(
+            "PhotoReview.Benchmark.Cli: The filename, directory name, or volume label syntax is incorrect. : '{bad}'.\r\n"
+        )
+    );
+    assert!(backend.ran.is_empty());
+}

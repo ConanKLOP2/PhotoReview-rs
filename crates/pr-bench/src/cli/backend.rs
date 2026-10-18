@@ -71,7 +71,8 @@ impl ToolError {
                 "IOException",
                 format!("Cannot create '{path}' because a file or directory with the same name already exists."),
             ),
-            _ => Self::new("IOException", os_error_description(err)),
+            // `Win32Marshal.GetExceptionForWin32Error` appends the path: `{system message} : '{path}'.`
+            _ => Self::new("IOException", format!("{} : '{path}'.", os_error_description(err))),
         }
     }
 }
