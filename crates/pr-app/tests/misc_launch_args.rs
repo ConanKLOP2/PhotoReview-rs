@@ -152,8 +152,23 @@ fn whitespace_only_argument_is_returned_unchanged() {
 }
 
 #[test]
-fn unc_root_keeps_its_trailing_separator() {
-    // Trap 17 (new): a UNC root keeps its trailing separator; its length comes from get_path_root.
+fn all_trailing_separators_are_removed_after_an_nt_prefix() {
+    // Rule 16 (new, kills the "TrimEnd of one separator only" mutant): get_full_path collapses trailing separators on
+    // ordinary paths, but returns a `\\?\` path unchanged, so only the trim step removes the second separator.
+    let fake = FakeFileSystem::new();
+    fake.add_dir("\\\\?\\C:\\x\\\\");
+
+    let result = normalize_one(&fake, "\\\\?\\C:\\x\\\\").expect("the NT-prefixed folder is valid");
+
+    assert_eq!(result, "\\\\?\\C:\\x");
+}
+
+#[test]
+fn unc_root_is_trimmed_to_the_root_that_get_path_root_gives() {
+    // Trap 17 (new), corrected against the .NET oracle: GetFullPath(@"\\server\share\") is `\\server\share\`, but
+    // GetPathRoot of that is `\\server\share` (no trailing separator; verified with the .NET 8+ SDK, probe in the PR
+    // body). C# then sees full.Length (15) > root.Length (14) and TrimEnd's the separator. The root length comes from
+    // get_path_root, not from counting separators, so the result is `\\server\share`.
     let fake = FakeFileSystem::new();
     fake.add_dir("\\\\server\\share\\");
     let unc_root = "\\\\server\\share\\";
@@ -162,7 +177,7 @@ fn unc_root_keeps_its_trailing_separator() {
     let result = normalize_one(&fake, unc_root).expect("the UNC root is valid");
 
     assert_eq!(result, expected);
-    assert!(result.ends_with('\\'));
+    assert_eq!(result, "\\\\server\\share");
 }
 
 #[test]
