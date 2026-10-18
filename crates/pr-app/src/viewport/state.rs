@@ -11,7 +11,7 @@
 //! (W8-01b). This unit's tests use a scripted or hand-written engine, so it does not depend on W8-01b.
 //! Baseline `d92d6aae`.
 
-use crate::input::primitives::{PointD, f64_same};
+use crate::input::primitives::PointD;
 use crate::viewport::types::{ViewportInput, ViewportLayout};
 
 /// The two engine functions of C# `ViewportLayoutEngine` that `ViewportState` calls.
@@ -113,7 +113,8 @@ impl<E: LayoutEngine> ViewportState<E> {
     /// C# `UpdateLayout()`. Returns false without any engine call when nothing is pending. Otherwise: if the input is dirty,
     /// `layout = engine.compute(&input)` and the dirty flag clears; then `scroll_pending = false` and the offsets become
     /// `engine.clamp_offset(&layout, requested_horizontal, requested_vertical)`. Returns true iff the (layout, horizontal,
-    /// vertical) triple changed, compared NaN-aware with `0.0 == -0.0` (C# `previous != (...)` tuple inequality).
+    /// vertical) triple changed. The layout compares with record-struct equality (`double.Equals`); the two offsets compare with
+    /// IEEE `!=` (C# tuple inequality), so a NaN offset always counts as changed and `0.0 == -0.0`.
     pub fn update_layout(&mut self) -> bool {
         if !self.is_layout_pending() {
             return false;
@@ -135,9 +136,7 @@ impl<E: LayoutEngine> ViewportState<E> {
         self.horizontal_offset = horizontal;
         self.vertical_offset = vertical;
 
-        self.layout != previous_layout
-            || !f64_same(previous_horizontal, horizontal)
-            || !f64_same(previous_vertical, vertical)
+        self.layout != previous_layout || previous_horizontal != horizontal || previous_vertical != vertical
     }
 
     /// C# `ImageOrigin`: `(layout.image_rect.x - horizontal_offset, layout.image_rect.y - vertical_offset)`.
