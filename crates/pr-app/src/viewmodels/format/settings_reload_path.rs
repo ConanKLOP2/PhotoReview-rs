@@ -2,10 +2,10 @@
 //! settings-triggered folder reload opens at: the presented capture member is kept only when it is still listed after the
 //! reload; otherwise a removed RAW member would make the load fall back to the first image. Lives in the `format` module
 //! because the plan (W8-02b) groups it with the other view-model text helpers.
-#![allow(unused_variables, dead_code)] // D11: todo!() bodies only; the porter removes this with the last todo!()
 
 use pr_core::catalog::types::CaptureGroup;
 use pr_core::model::RawPairMode;
+use pr_core::text::eq_ignore_case;
 
 /// C# `SettingsReloadPath.Choose(presentedPath, group, entryPath, rawEnabled, pairMode)`.
 ///
@@ -25,5 +25,17 @@ pub fn choose_reload_path<'a>(
     raw_enabled: bool,
     pair_mode: RawPairMode,
 ) -> Option<&'a str> {
-    todo!("W8-02b: choose_reload_path, see contract Semantics 12 and trap T19")
+    // C# `_ = pairMode`: the pair mode never changes the result.
+    let _ = pair_mode;
+    let candidate = match presented_path {
+        Some(path) => path,
+        None => entry_path?,
+    };
+    if !raw_enabled
+        && let Some(group) = group
+        && eq_ignore_case(candidate, group.raw_path())
+    {
+        return Some(group.jpeg_path());
+    }
+    Some(candidate)
 }
