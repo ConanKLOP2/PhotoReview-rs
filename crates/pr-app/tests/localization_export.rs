@@ -730,7 +730,30 @@ fn check_export_case(case: &Value) {
         .iter()
         .map(|(k, v)| (k.clone(), v.as_str().expect("file text").to_owned()))
         .collect();
-    assert_eq!(files, expected, "{id}");
+    assert_eq!(
+        files.keys().collect::<Vec<_>>(),
+        expected.keys().collect::<Vec<_>>(),
+        "{id}: file names"
+    );
+    // The export file is compared byte for byte. The other files are the inputs the harness wrote from
+    // `serde_json::Value`, which sorts object keys (this crate does not enable `preserve_order`), so they are
+    // compared as JSON values: the export never touches them, only their content matters here.
+    for (name, text) in &expected {
+        let actual = &files[name];
+        if *name == relative {
+            assert_eq!(actual, text, "{id}: {name}");
+        } else {
+            match (
+                serde_json::from_str::<Value>(actual),
+                serde_json::from_str::<Value>(text),
+            ) {
+                (Ok(actual_json), Ok(expected_json)) => {
+                    assert_eq!(actual_json, expected_json, "{id}: {name}");
+                }
+                _ => assert_eq!(actual, text, "{id}: {name}"),
+            }
+        }
+    }
 }
 
 fn check_read_notes_case(case: &Value) {
