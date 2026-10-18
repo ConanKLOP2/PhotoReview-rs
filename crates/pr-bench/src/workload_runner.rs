@@ -292,3 +292,147 @@ fn prepare_file_action(
 pub(crate) fn is_tolerated_race_failure(error: &PreviewError) -> bool {
     todo!("W7-03c")
 }
+
+#[cfg(test)]
+mod unit_tests {
+    //! Crate-private items of this module (`stable_hash`, `ActionScratch`, `is_tolerated_race_failure`), tested in place.
+    //! Scratch files are only the names `ActionScratch::new` creates in `std::env::temp_dir()`.
+
+    use std::fs;
+    use std::sync::Arc;
+
+    use pr_core::text::dotnet_path::PathError;
+    use pr_imaging::cache::preview_file::PreviewCacheError;
+    use pr_imaging::cache_key::CacheKeyError;
+    use pr_imaging::decoder_traits::DecodeError;
+    use pr_imaging::service::{PreviewError, SourceChangePhase};
+
+    use super::*;
+
+    // New: the C# StableHash of "" is the seed 17; "a" is 17 * 31 + 97.
+    #[test]
+    fn stable_hash_of_empty_and_single_unit() {
+        assert_eq!(stable_hash(""), 17);
+        assert_eq!(stable_hash("a"), 624);
+    }
+
+    // New: the hash wraps in unchecked int arithmetic (golden seed of preview-balanced).
+    #[test]
+    fn stable_hash_wraps_like_csharp_int() {
+        assert_eq!(stable_hash("preview-balanced"), 758_877_054);
+    }
+
+    // New: a non-BMP character contributes two UTF-16 code units (surrogates 0xD83D, 0xDE00), not one.
+    #[test]
+    fn stable_hash_counts_utf16_code_units() {
+        assert_eq!(stable_hash("\u{1F600}"), 17 * 31 * 31 + 0xD83D * 31 + 0xDE00);
+    }
+
+    // New: ActionScratch names follow the contract: `PhotoReview-Benchmark-Action-<32 lowercase hex>.bin` in the OS temp dir.
+    #[test]
+    fn action_scratch_names_are_unique_hex_names_in_temp_dir() {
+        let first = ActionScratch::new();
+        let second = ActionScratch::new();
+        assert_ne!(first.temp, second.temp, "two scratch sets never share a name");
+
+        let temp_dir = std::env::temp_dir();
+        assert_eq!(first.temp.parent(), Some(temp_dir.as_path()));
+        let name = first
+            .temp
+            .file_name()
+            .and_then(|n| n.to_str())
+            .expect("UTF-8 file name");
+        let guid = name
+            .strip_prefix("PhotoReview-Benchmark-Action-")
+            .and_then(|rest| rest.strip_suffix(".bin"))
+            .expect("the scratch name prefix and suffix");
+        assert_eq!(guid.len(), 32);
+        assert!(
+            guid.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+            "lowercase hex: {guid}"
+        );
+
+        let temp_text = first.temp.to_str().expect("UTF-8 path");
+        assert_eq!(first.moved.to_str(), Some(format!("{temp_text}.moved").as_str()));
+        assert_eq!(first.copied.to_str(), Some(format!("{temp_text}.copy").as_str()));
+    }
+
+    // New: cleanup removes all three scratch files, and is a no-op (no panic) when none of them exists.
+    #[test]
+    fn action_scratch_cleanup_removes_the_three_files_and_tolerates_missing_ones() {
+        let scratch = ActionScratch::new();
+        fs::write(&scratch.temp, b"source").expect("create the temp copy");
+        fs::write(&scratch.copied, b"copy").expect("create the copy");
+        // `moved` deliberately absent: cleanup must go on past a missing file.
+
+        scratch.cleanup();
+
+        assert!(!scratch.temp.exists());
+        assert!(!scratch.moved.exists());
+        assert!(!scratch.copied.exists());
+        ActionScratch::new().cleanup();
+    }
+
+    // New: the decode outcomes that are the expected loss of the race (contract: is_tolerated_race_failure table).
+    #[test]
+    fn race_failures_that_are_io_or_unsupported_are_tolerated() {
+        let tolerated = [
+            PreviewError::SourceChanged {
+                path: "a.png".to_owned(),
+                phase: SourceChangePhase::Decode,
+            },
+            PreviewError::Io(Arc::new(std::io::Error::other("gone"))),
+            PreviewError::Key(CacheKeyError::SourceNoLongerExists {
+                full_name: "C:\\photos\\a.png".to_owned(),
+            }),
+            PreviewError::Decode(Arc::new(DecodeError::FileNotFound {
+                message: "gone".to_owned(),
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::DirectoryNotFound {
+                message: "gone".to_owned(),
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::MemoryAdmission {
+                message: "full".to_owned(),
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::Io(std::io::Error::other("read")))),
+            PreviewError::Decode(Arc::new(DecodeError::Format {
+                message: "bad header".to_owned(),
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::NotSupported {
+                message: "no codec".to_owned(),
+                user_text: None,
+                inner_hresult: None,
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::MissingCodec {
+                message: "no codec".to_owned(),
+                user_text: None,
+            })),
+        ];
+        for error in &tolerated {
+            assert!(is_tolerated_race_failure(error), "{error:?} must be tolerated");
+        }
+    }
+
+    // New: everything else is a real failure, never swallowed by the race handling.
+    #[test]
+    fn real_failures_are_not_tolerated() {
+        let not_tolerated = [
+            PreviewError::Canceled,
+            PreviewError::Decode(Arc::new(DecodeError::InvalidData {
+                message: "corrupt".to_owned(),
+            })),
+            PreviewError::Decode(Arc::new(DecodeError::busy())),
+            PreviewError::Decode(Arc::new(DecodeError::OutOfMemory {
+                message: "oom".to_owned(),
+            })),
+            PreviewError::Key(CacheKeyError::InvalidPath(PathError::Argument)),
+            PreviewError::InvalidPath(PathError::Argument),
+            PreviewError::DiskEntry(Arc::new(PreviewCacheError::Canceled)),
+            PreviewError::Panicked("boom".to_owned()),
+            PreviewError::Spawn(Arc::new(std::io::Error::other("no thread"))),
+        ];
+        for error in &not_tolerated {
+            assert!(!is_tolerated_race_failure(error), "{error:?} must not be tolerated");
+        }
+    }
+}
