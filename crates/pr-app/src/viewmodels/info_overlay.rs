@@ -365,21 +365,93 @@ fn is_separator(character: char) -> bool {
 /// Examples: `"C:\photos\trip"` gives `"trip"`; `"C:\photos\trip\"` gives `"trip"`;
 /// `"C:\photos\\"` (two trailing separators) gives `"C:\photos\\"`; `"C:\"` gives `"C:\"`; `"/home/user/pics/"` gives `"pics"`.
 pub fn display_name(folder: &str) -> String {
-    let trimmed = trim_one_trailing_separator(folder);
-    let name = trimmed.rsplit(is_separator).next().unwrap_or_default();
-    if name.is_empty() {
+    let chars: Vec<char> = folder.chars().collect();
+    let trimmed = &chars[..trimmed_length(&chars)];
+    let root = root_length(trimmed);
+    // C# `Path.GetFileName`: scan back to the last separator, but never past the root ("C:foo" gives "foo",
+    // a UNC share root gives "").
+    let mut start = 0;
+    for index in (0..trimmed.len()).rev() {
+        if index < root || is_separator(trimmed[index]) {
+            start = index + 1;
+            break;
+        }
+    }
+    if start >= trimmed.len() {
         folder.to_owned()
     } else {
-        name.to_owned()
+        trimmed[start..].iter().collect()
     }
 }
 
-/// Removes ONE trailing separator unless the path is a root (empty after the removal, or a bare drive `C:`).
-fn trim_one_trailing_separator(folder: &str) -> &str {
-    let Some(stripped) = folder.strip_suffix(is_separator) else {
-        return folder;
-    };
-    let bytes = stripped.as_bytes();
-    let is_root = stripped.is_empty() || (bytes.len() == 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':');
-    if is_root { folder } else { stripped }
+/// `Path.TrimEndingDirectorySeparator`: drops ONE trailing separator unless the whole path is a root.
+fn trimmed_length(chars: &[char]) -> usize {
+    match chars.last() {
+        Some(&last) if is_separator(last) && root_length(chars) != chars.len() => chars.len() - 1,
+        _ => chars.len(),
+    }
+}
+
+/// .NET `PathInternal.IsDevice`: a `\\?\` prefix, or two separators + `.`/`?` + a separator.
+fn is_device(chars: &[char]) -> bool {
+    let extended = chars.len() >= 4
+        && chars[0] == '\\'
+        && (chars[1] == '\\' || chars[1] == '?')
+        && chars[2] == '?'
+        && chars[3] == '\\';
+    extended
+        || (chars.len() >= 4
+            && is_separator(chars[0])
+            && is_separator(chars[1])
+            && (chars[2] == '.' || chars[2] == '?')
+            && is_separator(chars[3]))
+}
+
+/// .NET `PathInternal.IsDeviceUNC`: a device prefix followed by `UNC` and a separator.
+fn is_device_unc(chars: &[char]) -> bool {
+    chars.len() >= 8
+        && is_device(chars)
+        && is_separator(chars[7])
+        && chars[4].eq_ignore_ascii_case(&'U')
+        && chars[5].eq_ignore_ascii_case(&'N')
+        && chars[6].eq_ignore_ascii_case(&'C')
+}
+
+/// .NET `PathInternal.GetRootLength` (Windows): UNC server and share, device roots, `C:` / `C:\`, and a rooted `\`.
+fn root_length(chars: &[char]) -> usize {
+    let len = chars.len();
+    let device = is_device(chars);
+    let device_unc = device && is_device_unc(chars);
+    let mut index = 0;
+    if (!device || device_unc) && len > 0 && is_separator(chars[0]) {
+        if device_unc || (len > 1 && is_separator(chars[1])) {
+            index = if device_unc { 8 } else { 2 };
+            let mut separators_left = 2;
+            while index < len {
+                if is_separator(chars[index]) {
+                    separators_left -= 1;
+                    if separators_left == 0 {
+                        break;
+                    }
+                }
+                index += 1;
+            }
+        } else {
+            index = 1;
+        }
+    } else if device {
+        index = 4;
+        while index < len && !is_separator(chars[index]) {
+            index += 1;
+        }
+        if index < len && index > 4 && is_separator(chars[index]) {
+            index += 1;
+        }
+    } else if len >= 2 && chars[1] == ':' && chars[0].is_ascii_alphabetic() {
+        index = 2;
+        if len > 2 && is_separator(chars[2]) {
+            index += 1;
+        }
+    }
+    index
 }
