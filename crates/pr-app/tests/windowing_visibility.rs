@@ -206,3 +206,12 @@ fn is_visible_ignores_the_show_command() {
         );
     }
 }
+
+#[test]
+fn is_visible_x_gap_wrapping_to_positive_width_is_not_visible() {
+    // C# Rectangle.Intersect returns Empty when x2 < x1 even if the wrapped difference would be >= 80.
+    let work = [ScreenRect::new(-2_100_000_000, 0, -2_000_000_000, 1040)];
+    assert!(!direct_is_visible(2_000_000_000, 0, 2_100_000_000, 200, &work));
+    let work = [ScreenRect::new(0, -2_100_000_000, 1920, -2_000_000_000)];
+    assert!(!direct_is_visible(0, 2_000_000_000, 400, 2_100_000_000, &work));
+}

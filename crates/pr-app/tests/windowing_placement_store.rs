@@ -638,3 +638,46 @@ fn save_when_the_target_is_a_directory_returns_err_and_leaves_no_temp_file() {
         .collect();
     assert!(stray.is_empty(), "no temp file is left: {stray:?}");
 }
+
+#[test]
+fn error_source_is_the_io_error_for_io_and_none_for_json() {
+    use std::error::Error;
+    let io_error = PlacementReadError::Io(io::Error::other("x"));
+    assert!(io_error.source().is_some());
+    assert!(PlacementReadError::Json("x".into()).source().is_none());
+}
+
+#[test]
+fn deserialize_slash_or_comma_brace_inside_a_string_is_not_a_comment_or_trailing_comma() {
+    // C#: strings are opaque to the comment / trailing-comma check.
+    assert!(
+        JsonWindowPlacementStore::deserialize(r#"{"E":"a//b","Length":1}"#)
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        JsonWindowPlacementStore::deserialize(r#"{"E":"x,}","Length":1}"#)
+            .unwrap()
+            .is_some()
+    );
+}
+
+#[test]
+fn deserialize_escaped_quote_inside_a_string_does_not_end_it() {
+    assert!(
+        JsonWindowPlacementStore::deserialize(r#"{"E":"a\",}","Length":1}"#)
+            .unwrap()
+            .is_some()
+    );
+    assert!(
+        JsonWindowPlacementStore::deserialize(r#"{"E":"a\"//","Length":1}"#)
+            .unwrap()
+            .is_some()
+    );
+}
+
+#[test]
+fn debug_names_the_type() {
+    let store = store_with(Arc::new(FakeFileSystem::new()));
+    assert!(format!("{store:?}").contains("JsonWindowPlacementStore"));
+}
