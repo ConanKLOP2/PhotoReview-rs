@@ -1,4 +1,4 @@
-﻿//! Port of `PhotoReview.Integration.Tests/BenchmarkImageExecutorTeardownTests.cs`, the five executor / profile-scope tests of
+//! Port of `PhotoReview.Integration.Tests/BenchmarkImageExecutorTeardownTests.cs`, the five executor / profile-scope tests of
 //! `BenchmarkTrustTests.cs`, and `BenchmarkWorkloadRunnerTests.WarmNextWorkloadRecordsPreloadHitAfterWarming` (C# baseline
 //! d92d6aae), plus the golden twins of `BenchmarkProfileScope.ApplyLogging` and `WindowedPreloadTarget` and the Rust-only gap
 //! tests named in `contracts/W7-03b.md`. Unit W7-03b, red stage: the stub bodies are `todo!()`, so every test here fails
@@ -1303,4 +1303,48 @@ fn bench_windowed_target_matches_golden() {
             }
         }
     }
+}
+
+#[test]
+fn teardown_handle_is_pending_then_completes() {
+    // Kills: TeardownHandle::is_complete -> true, wait -> (), `delete !` in wait.
+    let root = TempRoot::new("zz-teardown-pending");
+    let decoder = FakeDecoder::new();
+    let executor = build(&fast_sequential(), &[], default_options(&root, &decoder));
+    let cache_dir = executor.disk_cache_directory().to_path_buf();
+    fs::create_dir_all(&cache_dir).expect("create scratch directory");
+    fs::write(cache_dir.join("seed.pv4"), b"seed").expect("seed");
+
+    let entered = Latch::new();
+    let release = Latch::new();
+    let (enter_hook, release_hook) = (entered.clone(), release.clone());
+    let disk_store = executor.preview_service_for_tests().disk_store();
+    disk_store.set_before_clear_prune_scheduled_for_tests(Some(Arc::new(move || {
+        enter_hook.open();
+        release_hook.wait_open(Duration::from_secs(60));
+    })));
+    disk_store.schedule_prune();
+    assert!(entered.wait_open(WAIT));
+
+    executor.dispose();
+    let handle = executor.teardown_background_task();
+    assert!(!handle.is_complete(), "pending teardown must not report complete");
+    let (tx, rx) = mpsc::channel();
+    let waiter = handle.clone();
+    thread::spawn(move || {
+        waiter.wait();
+        let _ = tx.send(());
+    });
+    assert!(
+        rx.recv_timeout(Duration::from_millis(800)).is_err(),
+        "wait() returned while the teardown was pending"
+    );
+    release.open();
+    assert!(
+        rx.recv_timeout(WAIT).is_ok(),
+        "wait() must return once the teardown finished"
+    );
+    assert!(handle.is_complete());
+    // wait on an already finished handle returns at once
+    handle.wait();
 }
