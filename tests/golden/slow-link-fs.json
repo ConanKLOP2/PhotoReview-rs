@@ -1,0 +1,538 @@
+{
+  "generator": "oracle-cs slow-link-fs",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "limiter-ctor-one",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 1,
+      "throws": null
+    },
+    {
+      "name": "limiter-ctor-hundred-thousand",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 100000,
+      "throws": null
+    },
+    {
+      "name": "limiter-ctor-long-max",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 9223372036854775807,
+      "throws": null
+    },
+    {
+      "name": "limiter-ctor-zero",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 0,
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "limiter-ctor-minus-one",
+      "kind": "limiter-ctor",
+      "bytes_per_second": -1,
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "limiter-ctor-long-min",
+      "kind": "limiter-ctor",
+      "bytes_per_second": -9223372036854775808,
+      "throws": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "limiter-consume-nonpositive-returns-at-once",
+      "kind": "limiter-consume-immediate",
+      "completed": true,
+      "fast": true
+    },
+    {
+      "name": "limiter-consume-more-than-one-second-budget-chunks",
+      "kind": "limiter-consume-lower-bound",
+      "completed": true,
+      "lower_bound_met": true
+    },
+    {
+      "name": "limiter-consume-100kbps-250kb-completes",
+      "kind": "limiter-consume-lower-bound",
+      "completed": true,
+      "lower_bound_met": true
+    },
+    {
+      "name": "fs-forwarding-no-limiter",
+      "kind": "fs-forwarding",
+      "file_exists": {
+        "a.jpg": true,
+        "B.JPG": true,
+        "c.txt": true,
+        "missing.jpg": false,
+        "sub1": false,
+        "d.jpg": true
+      },
+      "directory_exists": {
+        "sub1": true,
+        "sub2": true,
+        "a.jpg": false,
+        "missing": false
+      },
+      "stat_length": {
+        "a.jpg": 10,
+        "B.JPG": 0,
+        "c.txt": 5,
+        "missing.jpg": null,
+        "sub1": null,
+        "d.jpg": 300
+      },
+      "probe_readable": {
+        "a.jpg": true,
+        "B.JPG": true,
+        "c.txt": true,
+        "missing.jpg": false,
+        "sub1": false,
+        "d.jpg": true
+      },
+      "enumerate_with_stat": [
+        {
+          "name": "B.JPG",
+          "length": 0
+        },
+        {
+          "name": "a.jpg",
+          "length": 10
+        },
+        {
+          "name": "c.txt",
+          "length": 5
+        },
+        {
+          "name": "d.jpg",
+          "length": 300
+        }
+      ],
+      "enumerate_with_stat_filtered_to_jpg": [
+        "a.jpg",
+        "d.jpg"
+      ],
+      "enumerate_readable_with_stat": [
+        "B.JPG",
+        "a.jpg",
+        "c.txt",
+        "d.jpg"
+      ],
+      "enumerate_files": [
+        "B.JPG",
+        "a.jpg",
+        "c.txt",
+        "d.jpg"
+      ],
+      "enumerate_directories": [
+        "sub1",
+        "sub2"
+      ],
+      "resolve_real_path_keeps_name": true,
+      "skipped": 0
+    },
+    {
+      "name": "fs-forwarding-with-limiter",
+      "kind": "fs-forwarding",
+      "file_exists": {
+        "a.jpg": true,
+        "B.JPG": true,
+        "c.txt": true,
+        "missing.jpg": false,
+        "sub1": false,
+        "d.jpg": true
+      },
+      "directory_exists": {
+        "sub1": true,
+        "sub2": true,
+        "a.jpg": false,
+        "missing": false
+      },
+      "stat_length": {
+        "a.jpg": 10,
+        "B.JPG": 0,
+        "c.txt": 5,
+        "missing.jpg": null,
+        "sub1": null,
+        "d.jpg": 300
+      },
+      "probe_readable": {
+        "a.jpg": true,
+        "B.JPG": true,
+        "c.txt": true,
+        "missing.jpg": false,
+        "sub1": false,
+        "d.jpg": true
+      },
+      "enumerate_with_stat": [
+        {
+          "name": "B.JPG",
+          "length": 0
+        },
+        {
+          "name": "a.jpg",
+          "length": 10
+        },
+        {
+          "name": "c.txt",
+          "length": 5
+        },
+        {
+          "name": "d.jpg",
+          "length": 300
+        }
+      ],
+      "enumerate_with_stat_filtered_to_jpg": [
+        "a.jpg",
+        "d.jpg"
+      ],
+      "enumerate_readable_with_stat": [
+        "B.JPG",
+        "a.jpg",
+        "c.txt",
+        "d.jpg"
+      ],
+      "enumerate_files": [
+        "B.JPG",
+        "a.jpg",
+        "c.txt",
+        "d.jpg"
+      ],
+      "enumerate_directories": [
+        "sub1",
+        "sub2"
+      ],
+      "resolve_real_path_keeps_name": true,
+      "skipped": 0
+    },
+    {
+      "name": "fs-forwarding-empty-folder",
+      "kind": "fs-forwarding",
+      "file_exists": {
+        "x.jpg": false
+      },
+      "directory_exists": {
+        "x": false
+      },
+      "stat_length": {
+        "x.jpg": null
+      },
+      "probe_readable": {
+        "x.jpg": false
+      },
+      "enumerate_with_stat": [],
+      "enumerate_with_stat_filtered_to_jpg": [],
+      "enumerate_readable_with_stat": [],
+      "enumerate_files": [],
+      "enumerate_directories": [],
+      "resolve_real_path_keeps_name": true,
+      "skipped": 0
+    },
+    {
+      "name": "latency-file_exists-files1-x3",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-directory_exists-files1-x3",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-get_file_stat-files1-x3",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-try_probe_readable-files1-x3",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-resolve_real_path-files1-x3",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-enumerate_files_with_stat-files3-x1",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-enumerate_readable_files_with_stat-files3-x1",
+      "kind": "latency-lower-bound",
+      "calls": 3,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-enumerate_files_with_stat-files0-x2",
+      "kind": "latency-lower-bound",
+      "calls": 0,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-enumerate_readable_files_with_stat-files2-x2",
+      "kind": "latency-lower-bound",
+      "calls": 4,
+      "lower_bound_met": true
+    },
+    {
+      "name": "latency-zero-file-exists",
+      "kind": "latency-lower-bound",
+      "calls": 5,
+      "lower_bound_met": true
+    },
+    {
+      "name": "throttled-read-100-bytes-limiter",
+      "kind": "throttled-read",
+      "is_throttled": true,
+      "can_seek": true,
+      "can_write": false,
+      "results": [
+        {
+          "op": "read",
+          "n": 10,
+          "hex": "030a11181f262d34"
+        },
+        {
+          "op": "position",
+          "position": 10
+        },
+        {
+          "op": "read",
+          "n": 50,
+          "hex": "4950575e656c737a"
+        },
+        {
+          "op": "position",
+          "position": 60
+        },
+        {
+          "op": "seek",
+          "position": 5
+        },
+        {
+          "op": "read",
+          "n": 4,
+          "hex": "262d343b"
+        },
+        {
+          "op": "seek",
+          "position": 7
+        },
+        {
+          "op": "read",
+          "n": 3,
+          "hex": "343b42"
+        },
+        {
+          "op": "seek",
+          "position": 90
+        },
+        {
+          "op": "length",
+          "length": 100
+        },
+        {
+          "op": "read",
+          "n": 10,
+          "hex": "838a91989fa6adb4"
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        },
+        {
+          "op": "seek",
+          "position": 0
+        },
+        {
+          "op": "read_to_end",
+          "n": 100,
+          "sum": 11858
+        },
+        {
+          "op": "seek",
+          "position": 150
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-100-bytes-no-limiter",
+      "kind": "throttled-read",
+      "is_throttled": false,
+      "can_seek": true,
+      "can_write": false,
+      "results": [
+        {
+          "op": "read",
+          "n": 10,
+          "hex": "030a11181f262d34"
+        },
+        {
+          "op": "position",
+          "position": 10
+        },
+        {
+          "op": "read",
+          "n": 50,
+          "hex": "4950575e656c737a"
+        },
+        {
+          "op": "position",
+          "position": 60
+        },
+        {
+          "op": "seek",
+          "position": 5
+        },
+        {
+          "op": "read",
+          "n": 4,
+          "hex": "262d343b"
+        },
+        {
+          "op": "seek",
+          "position": 7
+        },
+        {
+          "op": "read",
+          "n": 3,
+          "hex": "343b42"
+        },
+        {
+          "op": "seek",
+          "position": 90
+        },
+        {
+          "op": "length",
+          "length": 100
+        },
+        {
+          "op": "read",
+          "n": 10,
+          "hex": "838a91989fa6adb4"
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        },
+        {
+          "op": "seek",
+          "position": 0
+        },
+        {
+          "op": "read_to_end",
+          "n": 100,
+          "sum": 11858
+        },
+        {
+          "op": "seek",
+          "position": 150
+        },
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-small-buffer-size",
+      "kind": "throttled-read",
+      "is_throttled": true,
+      "can_seek": true,
+      "can_write": false,
+      "results": [
+        {
+          "op": "read",
+          "n": 7,
+          "hex": "030a11181f262d"
+        },
+        {
+          "op": "read_to_end",
+          "n": 93,
+          "sum": 11690
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-empty-file",
+      "kind": "throttled-read",
+      "is_throttled": true,
+      "can_seek": true,
+      "can_write": false,
+      "results": [
+        {
+          "op": "read",
+          "n": 0,
+          "hex": ""
+        },
+        {
+          "op": "length",
+          "length": 0
+        },
+        {
+          "op": "read_to_end",
+          "n": 0,
+          "sum": 0
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-300000-bytes-to-end",
+      "kind": "throttled-read",
+      "is_throttled": true,
+      "can_seek": true,
+      "can_write": false,
+      "results": [
+        {
+          "op": "read",
+          "n": 8,
+          "hex": "030a11181f262d34"
+        },
+        {
+          "op": "read_to_end",
+          "n": 299992,
+          "sum": 37498696
+        },
+        {
+          "op": "position",
+          "position": 300000
+        }
+      ]
+    },
+    {
+      "name": "open-missing-no-limiter",
+      "kind": "open-missing",
+      "throws": "DirectoryNotFoundException"
+    },
+    {
+      "name": "open-missing-with-limiter",
+      "kind": "open-missing",
+      "throws": "DirectoryNotFoundException"
+    }
+  ]
+}

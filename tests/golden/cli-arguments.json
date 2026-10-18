@@ -1,0 +1,3601 @@
+{
+  "generator": "oracle-cs cli-arguments",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "widths-00",
+      "op": "widths",
+      "result": {
+        "ok": [
+          0,
+          1920,
+          2560
+        ]
+      }
+    },
+    {
+      "name": "widths-01",
+      "op": "widths",
+      "result": {
+        "ok": [
+          800,
+          1600
+        ]
+      }
+    },
+    {
+      "name": "widths-02",
+      "op": "widths",
+      "result": {
+        "ok": [
+          1920,
+          3840
+        ]
+      }
+    },
+    {
+      "name": "widths-03",
+      "op": "widths",
+      "result": {
+        "ok": [
+          0,
+          1920
+        ]
+      }
+    },
+    {
+      "name": "widths-04",
+      "op": "widths",
+      "result": {
+        "ok": [
+          2147483647
+        ]
+      }
+    },
+    {
+      "name": "widths-05",
+      "op": "widths",
+      "result": {
+        "ok": [
+          7
+        ]
+      }
+    },
+    {
+      "name": "widths-06",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "widths-07",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "widths-08",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '\u001C5' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-09",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '1\u001F' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-10",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "widths-11",
+      "op": "widths",
+      "result": {
+        "ok": [
+          7
+        ]
+      }
+    },
+    {
+      "name": "widths-12",
+      "op": "widths",
+      "result": {
+        "ok": [
+          9
+        ]
+      }
+    },
+    {
+      "name": "widths-13",
+      "op": "widths",
+      "result": {
+        "ok": [
+          4
+        ]
+      }
+    },
+    {
+      "name": "widths-14",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '5​' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-15",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '᠎ 5' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-16",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '­5' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-17",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '1 2' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-18",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '920x' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-19",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "At least one width is required"
+      }
+    },
+    {
+      "name": "widths-20",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "At least one width is required"
+      }
+    },
+    {
+      "name": "widths-21",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "At least one width is required"
+      }
+    },
+    {
+      "name": "widths-22",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '-1' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-23",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '+5' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-24",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '19.20' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-25",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width 'abc' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-26",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '99999999999' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-27",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '2147483648' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-28",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '١٢' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-29",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '０' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-30",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '0x10' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-31",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '1e3' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "widths-32",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "widths-33",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '\uFEFF5' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "positive-int-00",
+      "op": "positive_int",
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "name": "positive-int-01",
+      "op": "positive_int",
+      "result": {
+        "ok": 60
+      }
+    },
+    {
+      "name": "positive-int-02",
+      "op": "positive_int",
+      "result": {
+        "ok": 2147483647
+      }
+    },
+    {
+      "name": "positive-int-03",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '0' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-04",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '-3' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-05",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-06",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '8.5' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-07",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '2147483648' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-08",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count ' 5' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-09",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '5 ' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-10",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '+5' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-11",
+      "op": "positive_int",
+      "result": {
+        "ok": 12
+      }
+    },
+    {
+      "name": "positive-int-12",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '٣' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-13",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '1_0' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-14",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '\u001F5' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "positive-int-15",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid worker count '1,0' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "int-range-00",
+      "op": "int_range",
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "name": "int-range-01",
+      "op": "int_range",
+      "result": {
+        "ok": 1000
+      }
+    },
+    {
+      "name": "int-range-02",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got '0')"
+      }
+    },
+    {
+      "name": "int-range-03",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got '1001')"
+      }
+    },
+    {
+      "name": "int-range-04",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got ' 5')"
+      }
+    },
+    {
+      "name": "int-range-05",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got '+5')"
+      }
+    },
+    {
+      "name": "int-range-06",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got '5.0')"
+      }
+    },
+    {
+      "name": "int-range-07",
+      "op": "int_range",
+      "result": {
+        "ok": 999
+      }
+    },
+    {
+      "name": "int-range-08",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--repeat must be a whole number 1..1000 (got '-1')"
+      }
+    },
+    {
+      "name": "int-range-09",
+      "op": "int_range",
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "name": "int-range-negative-bounds",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "x must be a whole number -10..10 (got '-5')"
+      }
+    },
+    {
+      "name": "int-range-zero-zero",
+      "op": "int_range",
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "name": "positive-double-00",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "positive-double-01",
+      "op": "positive_double",
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "name": "positive-double-02",
+      "op": "positive_double",
+      "result": {
+        "ok": 0.001
+      }
+    },
+    {
+      "name": "positive-double-03",
+      "op": "positive_double",
+      "result": {
+        "ok": 1000
+      }
+    },
+    {
+      "name": "positive-double-04",
+      "op": "positive_double",
+      "result": {
+        "ok": 1000
+      }
+    },
+    {
+      "name": "positive-double-05",
+      "op": "positive_double",
+      "result": {
+        "ok": 1.5
+      }
+    },
+    {
+      "name": "positive-double-06",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "positive-double-07",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "positive-double-08",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "positive-double-09",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '2.5\u00A0')"
+      }
+    },
+    {
+      "name": "positive-double-10",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '\u00A02.5')"
+      }
+    },
+    {
+      "name": "positive-double-11",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '\u20032.5')"
+      }
+    },
+    {
+      "name": "positive-double-12",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '\u001F2.5')"
+      }
+    },
+    {
+      "name": "positive-double-13",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got 'Infinity')"
+      }
+    },
+    {
+      "name": "positive-double-14",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '-Infinity')"
+      }
+    },
+    {
+      "name": "positive-double-15",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '+Infinity')"
+      }
+    },
+    {
+      "name": "positive-double-16",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got 'infinity')"
+      }
+    },
+    {
+      "name": "positive-double-17",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got 'NaN')"
+      }
+    },
+    {
+      "name": "positive-double-18",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got 'nan')"
+      }
+    },
+    {
+      "name": "positive-double-19",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '0')"
+      }
+    },
+    {
+      "name": "positive-double-20",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '-0')"
+      }
+    },
+    {
+      "name": "positive-double-21",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '-3')"
+      }
+    },
+    {
+      "name": "positive-double-22",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1e999')"
+      }
+    },
+    {
+      "name": "positive-double-23",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '-1e999')"
+      }
+    },
+    {
+      "name": "positive-double-24",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '')"
+      }
+    },
+    {
+      "name": "positive-double-25",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1,5')"
+      }
+    },
+    {
+      "name": "positive-double-26",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1.5.2')"
+      }
+    },
+    {
+      "name": "positive-double-27",
+      "op": "positive_double",
+      "result": {
+        "ok": 0.5
+      }
+    },
+    {
+      "name": "positive-double-28",
+      "op": "positive_double",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "positive-double-29",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1e')"
+      }
+    },
+    {
+      "name": "positive-double-30",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1e+')"
+      }
+    },
+    {
+      "name": "positive-double-31",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got 'e5')"
+      }
+    },
+    {
+      "name": "positive-double-32",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '0x10')"
+      }
+    },
+    {
+      "name": "positive-double-33",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1_000')"
+      }
+    },
+    {
+      "name": "positive-double-34",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '  ')"
+      }
+    },
+    {
+      "name": "positive-double-35",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '٣')"
+      }
+    },
+    {
+      "name": "positive-double-36",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1e-400')"
+      }
+    },
+    {
+      "name": "positive-double-37",
+      "op": "positive_double",
+      "result": {
+        "ok": 5E-324
+      }
+    },
+    {
+      "name": "positive-double-38",
+      "op": "positive_double",
+      "result": {
+        "ok": 1.7976931348623157E+308
+      }
+    },
+    {
+      "name": "positive-double-39",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1.7976931348623159e308')"
+      }
+    },
+    {
+      "name": "positive-double-40",
+      "op": "positive_double",
+      "result": {
+        "ok": 1E-07
+      }
+    },
+    {
+      "name": "positive-double-41",
+      "op": "positive_double",
+      "result": {
+        "ok": 1000
+      }
+    },
+    {
+      "name": "positive-double-42",
+      "op": "positive_double",
+      "result": {
+        "ok": 0.001
+      }
+    },
+    {
+      "name": "positive-double-43",
+      "op": "positive_double",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "positive-double-44",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '- 5')"
+      }
+    },
+    {
+      "name": "positive-double-45",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '5 5')"
+      }
+    },
+    {
+      "name": "positive-double-46",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '∞')"
+      }
+    },
+    {
+      "name": "positive-double-47",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1d')"
+      }
+    },
+    {
+      "name": "positive-double-48",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1f')"
+      }
+    },
+    {
+      "name": "positive-double-49",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--slow-link-bandwidth-mbps must be a finite number > 0 (got '1e3.5')"
+      }
+    },
+    {
+      "name": "enum-LoadingMode-00",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-01",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-02",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-03",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-04",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-05",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-06",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-07",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-08",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '3' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-09",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '4' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-10",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '5' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-11",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '99' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-12",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '-1' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-13",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-14",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '  ' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-15",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-16",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-17",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast|Preview' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-18",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-19",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-20",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-21",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '0x1' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-22",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-23",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,,Preview' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-24",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '2147483648' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-25",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '-2147483649' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-26",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-27",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Name' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-28",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'name' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-29",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'NameAscending' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-30",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'NameDescending' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-31",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Size' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-32",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'SizeAscending' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-33",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'SizeDescending' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-34",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Default' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-35",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-36",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '1,2' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-37",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Preview,1' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-38",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast Preview' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-39",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '\u001FFast' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-40",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-LoadingMode-41",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'ınvalid' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-00",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-01",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'fast' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-02",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode ' Preview ' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-03",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'PREVIEW' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-04",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Original' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-05",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-06",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-07",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-08",
+      "op": "defined_enum",
+      "result": {
+        "ok": 3
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-09",
+      "op": "defined_enum",
+      "result": {
+        "ok": 4
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-10",
+      "op": "defined_enum",
+      "result": {
+        "ok": 5
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-11",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '99' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-12",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '-1' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-13",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-14",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '  ' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-15",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,Preview' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-16",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'fast, original' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-17",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast|Preview' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-18",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-19",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-20",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-21",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '0x1' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-22",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-23",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,,Preview' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-24",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '2147483648' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-25",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '-2147483649' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-26",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Original,Original' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-27",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-28",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-29",
+      "op": "defined_enum",
+      "result": {
+        "ok": 4
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-30",
+      "op": "defined_enum",
+      "result": {
+        "ok": 5
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-31",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Size' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-32",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-33",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-34",
+      "op": "defined_enum",
+      "result": {
+        "ok": 3
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-35",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,Fast' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-36",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '1,2' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-37",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Preview,1' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-38",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast Preview' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-39",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '\u001FFast' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-40",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast\u00A0' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-ImageSortMode-41",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'ınvalid' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "profiles-default",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "recommended-auto"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-00",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "fast-balanced"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-01",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "fast-balanced",
+          "instant-review"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-02",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "fast-balanced",
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-03",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "logging-on",
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-04",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-05",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "fast-balanced",
+          "fast-balanced"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-06",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: \u001Flogging-on"
+      }
+    },
+    {
+      "name": "profiles-list-07",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-08",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-09",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "recommended-auto"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-10",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "original-correctness"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-11",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "explorer-reindex",
+          "cache-recovery"
+        ]
+      }
+    },
+    {
+      "name": "profiles-list-12",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "action-move",
+          "action-delete",
+          "action-copy",
+          "action-interleaved"
+        ]
+      }
+    },
+    {
+      "name": "profiles-empty-00",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-empty-01",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-empty-02",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-empty-03",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-empty-04",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-empty-05",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: \u001F"
+      }
+    },
+    {
+      "name": "profiles-empty-06",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "No benchmark profile id given (expected a comma-separated list)"
+      }
+    },
+    {
+      "name": "profiles-unknown-00",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: nope"
+      }
+    },
+    {
+      "name": "profiles-unknown-01",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: nope"
+      }
+    },
+    {
+      "name": "profiles-unknown-02",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: ​logging-on"
+      }
+    },
+    {
+      "name": "profiles-unknown-03",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: Nope"
+      }
+    },
+    {
+      "name": "profiles-unknown-04",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: fast_balanced"
+      }
+    },
+    {
+      "name": "profiles-unknown-05",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: fast-balanced;logging-on"
+      }
+    },
+    {
+      "name": "profiles-unknown-06",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: ınstant-review"
+      }
+    },
+    {
+      "name": "profiles-unknown-07",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unknown benchmark profile: instant-review\u0000"
+      }
+    },
+    {
+      "name": "profiles-batch-all",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "instant-review",
+          "fast-sequential",
+          "fast-balanced",
+          "fast-aggressive",
+          "preview-light",
+          "preview-balanced",
+          "preview-quality",
+          "preview-high-quality",
+          "no-preload-baseline",
+          "nearby-only",
+          "full-folder-warm",
+          "large-folder-safe",
+          "huge-image-safe",
+          "ssd-throughput",
+          "hdd-conservative",
+          "network-safe",
+          "low-memory",
+          "ram-maximizer",
+          "rapid-key-press",
+          "random-navigation",
+          "logging-on",
+          "logging-off",
+          "recommended-auto",
+          "action-move",
+          "action-delete",
+          "action-copy",
+          "action-interleaved"
+        ]
+      }
+    },
+    {
+      "name": "profiles-batch-all-with-output",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "instant-review",
+          "fast-sequential",
+          "fast-balanced",
+          "fast-aggressive",
+          "preview-light",
+          "preview-balanced",
+          "preview-quality",
+          "preview-high-quality",
+          "no-preload-baseline",
+          "nearby-only",
+          "full-folder-warm",
+          "large-folder-safe",
+          "huge-image-safe",
+          "ssd-throughput",
+          "hdd-conservative",
+          "network-safe",
+          "low-memory",
+          "ram-maximizer",
+          "rapid-key-press",
+          "random-navigation",
+          "logging-on",
+          "logging-off",
+          "recommended-auto",
+          "action-move",
+          "action-delete",
+          "action-copy",
+          "action-interleaved"
+        ]
+      }
+    },
+    {
+      "name": "profiles-batch-actions",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "action-move",
+          "action-delete",
+          "action-copy",
+          "action-interleaved"
+        ]
+      }
+    },
+    {
+      "name": "profiles-batch-actions-with-output",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "action-move",
+          "action-delete",
+          "action-copy",
+          "action-interleaved"
+        ]
+      }
+    },
+    {
+      "name": "profiles-not-a-mode",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Not a benchmark mode: --nope"
+      }
+    },
+    {
+      "name": "profiles-empty-mode",
+      "op": "resolve_profiles",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Not a benchmark mode: "
+      }
+    },
+    {
+      "name": "profiles-benchmark-extra-args-ignored-here",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "logging-on"
+        ]
+      }
+    },
+    {
+      "name": "profiles-benchmark-only-mode",
+      "op": "resolve_profiles",
+      "result": {
+        "ok": [
+          "recommended-auto"
+        ]
+      }
+    },
+    {
+      "name": "output-00",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-01",
+      "op": "resolve_output",
+      "result": {
+        "ok": "C:/out"
+      }
+    },
+    {
+      "name": "output-02",
+      "op": "resolve_output",
+      "result": {
+        "ok": "C:/out"
+      }
+    },
+    {
+      "name": "output-03",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-04",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-05",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-06",
+      "op": "resolve_output",
+      "result": {
+        "ok": "\u001F"
+      }
+    },
+    {
+      "name": "output-07",
+      "op": "resolve_output",
+      "result": {
+        "ok": "​"
+      }
+    },
+    {
+      "name": "output-08",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-09",
+      "op": "resolve_output",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "output-10",
+      "op": "resolve_output",
+      "result": {
+        "ok": "out"
+      }
+    },
+    {
+      "name": "output-11",
+      "op": "resolve_output",
+      "result": {
+        "ok": "  out  "
+      }
+    },
+    {
+      "name": "output-12",
+      "op": "resolve_output",
+      "result": {
+        "ok": "out"
+      }
+    },
+    {
+      "name": "output-13",
+      "op": "resolve_output",
+      "result": {
+        "ok": "out"
+      }
+    },
+    {
+      "name": "perf-rules-00",
+      "op": "perf_rules",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "perf-rules-01",
+      "op": "perf_rules",
+      "result": {
+        "ok": "f.json"
+      }
+    },
+    {
+      "name": "perf-rules-02",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--rules needs a file path"
+      }
+    },
+    {
+      "name": "perf-rules-03",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--rules needs a file path"
+      }
+    },
+    {
+      "name": "perf-rules-04",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--rules needs a file path"
+      }
+    },
+    {
+      "name": "perf-rules-05",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "--rules needs a file path"
+      }
+    },
+    {
+      "name": "perf-rules-06",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --perf-analyze: --RULES"
+      }
+    },
+    {
+      "name": "perf-rules-07",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --perf-analyze: extra"
+      }
+    },
+    {
+      "name": "perf-rules-08",
+      "op": "perf_rules",
+      "result": {
+        "ok": "b"
+      }
+    },
+    {
+      "name": "perf-rules-09",
+      "op": "perf_rules",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --perf-analyze: extra"
+      }
+    },
+    {
+      "name": "perf-rules-10",
+      "op": "perf_rules",
+      "result": {
+        "ok": "--rules"
+      }
+    },
+    {
+      "name": "perf-rules-11",
+      "op": "perf_rules",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "perf-rules-12",
+      "op": "perf_rules",
+      "result": {
+        "ok": "a b.json"
+      }
+    },
+    {
+      "name": "surplus-00",
+      "op": "surplus",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "surplus-01",
+      "op": "surplus",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "surplus-02",
+      "op": "surplus",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "surplus-03",
+      "op": "surplus",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "surplus-04",
+      "op": "surplus",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "name": "surplus-05",
+      "op": "surplus",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --benchmark-all: extra"
+      }
+    },
+    {
+      "name": "surplus-06",
+      "op": "surplus",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --benchmark-actions: extra"
+      }
+    },
+    {
+      "name": "surplus-07",
+      "op": "surplus",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --benchmark: extra"
+      }
+    },
+    {
+      "name": "surplus-08",
+      "op": "surplus",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --benchmark-all: extra"
+      }
+    },
+    {
+      "name": "surplus-09",
+      "op": "surplus",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Unexpected argument for --benchmark-all: "
+      }
+    },
+    {
+      "name": "expected-failure-Exception",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-ArgumentException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-ArgumentNullException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-ArgumentOutOfRangeException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-BenchmarkProfileException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-IOException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-FileNotFoundException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-DirectoryNotFoundException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-PathTooLongException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-EndOfStreamException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-FileLoadException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-DriveNotFoundException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-InvalidOperationException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-ObjectDisposedException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-NotSupportedException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-PlatformNotSupportedException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-UnauthorizedAccessException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-FormatException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-InvalidDataException",
+      "op": "expected_failure",
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "name": "expected-failure-OperationCanceledException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-TaskCanceledException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-OutOfMemoryException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-JsonException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-NullReferenceException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-InvalidCastException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-TimeoutException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-KeyNotFoundException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-AggregateException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "expected-failure-InvalidProgramException",
+      "op": "expected_failure",
+      "result": {
+        "ok": false
+      }
+    },
+    {
+      "name": "nul-widths-00",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "nul-positive-int-00",
+      "op": "positive_int",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-int-range-00",
+      "op": "int_range",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-positive-double-00",
+      "op": "positive_double",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-widths-01",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "nul-positive-int-01",
+      "op": "positive_int",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-int-range-01",
+      "op": "int_range",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-positive-double-01",
+      "op": "positive_double",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-widths-02",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '\u00005' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "nul-positive-int-02",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '\u00005' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-02",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '\u00005')"
+      }
+    },
+    {
+      "name": "nul-positive-double-02",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '\u00005')"
+      }
+    },
+    {
+      "name": "nul-widths-03",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '5\u00001' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "nul-positive-int-03",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '5\u00001' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-03",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '5\u00001')"
+      }
+    },
+    {
+      "name": "nul-positive-double-03",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '5\u00001')"
+      }
+    },
+    {
+      "name": "nul-widths-04",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '5 \u0000' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "nul-positive-int-04",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '5 \u0000' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-04",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '5 \u0000')"
+      }
+    },
+    {
+      "name": "nul-positive-double-04",
+      "op": "positive_double",
+      "result": {
+        "ok": 5
+      }
+    },
+    {
+      "name": "nul-widths-05",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '\u0000' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "nul-positive-int-05",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '\u0000' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-05",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '\u0000')"
+      }
+    },
+    {
+      "name": "nul-positive-double-05",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '\u0000')"
+      }
+    },
+    {
+      "name": "nul-widths-06",
+      "op": "widths",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid width '\u0000' (expected a non-negative whole number)"
+      }
+    },
+    {
+      "name": "nul-positive-int-06",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '5,\u0000' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-06",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '5,\u0000')"
+      }
+    },
+    {
+      "name": "nul-positive-double-06",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '5,\u0000')"
+      }
+    },
+    {
+      "name": "nul-widths-07",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "name": "nul-positive-int-07",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n '5\u0000,6' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-07",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got '5\u0000,6')"
+      }
+    },
+    {
+      "name": "nul-positive-double-07",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '5\u0000,6')"
+      }
+    },
+    {
+      "name": "nul-widths-08",
+      "op": "widths",
+      "result": {
+        "ok": [
+          5
+        ]
+      }
+    },
+    {
+      "name": "nul-positive-int-08",
+      "op": "positive_int",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "Invalid n ' 5\u0000 ' (expected a positive whole number)"
+      }
+    },
+    {
+      "name": "nul-int-range-08",
+      "op": "int_range",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a whole number 0..10 (got ' 5\u0000 ')"
+      }
+    },
+    {
+      "name": "nul-positive-double-08",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got ' 5\u0000 ')"
+      }
+    },
+    {
+      "name": "nul-positive-double-b-00",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "nul-positive-double-b-01",
+      "op": "positive_double",
+      "result": {
+        "ok": 2.5
+      }
+    },
+    {
+      "name": "nul-positive-double-b-02",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '\u00002.5')"
+      }
+    },
+    {
+      "name": "nul-positive-double-b-03",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '2.\u00005')"
+      }
+    },
+    {
+      "name": "nul-positive-double-b-04",
+      "op": "positive_double",
+      "result": {
+        "ok": 10
+      }
+    },
+    {
+      "name": "nul-positive-double-b-05",
+      "op": "positive_double",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "n must be a finite number > 0 (got '1e\u00001')"
+      }
+    },
+    {
+      "name": "nul-enum-00",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast\u0000' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "nul-enum-01",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode '\u0000Fast' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "nul-enum-02",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast\u0000,Preview' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "nul-enum-03",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-00",
+      "op": "defined_enum",
+      "result": {
+        "ok": 3
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-01",
+      "op": "defined_enum",
+      "result": {
+        "ok": 4
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-02",
+      "op": "defined_enum",
+      "result": {
+        "ok": 3
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-03",
+      "op": "defined_enum",
+      "result": {
+        "ok": 5
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-04",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Size,Name' (Name|SizeDescending|SizeAscending|Default|NameAscending|NameDescending)"
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-05",
+      "op": "defined_enum",
+      "result": {
+        "ok": 2
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-06",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-07",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-08",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-ImageSortMode-09",
+      "op": "defined_enum",
+      "result": {
+        "ok": 3
+      },
+      "members": [
+        "Name=0",
+        "SizeDescending=1",
+        "SizeAscending=2",
+        "Default=3",
+        "NameAscending=4",
+        "NameDescending=5"
+      ]
+    },
+    {
+      "name": "enum-list-LoadingMode-00",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-list-LoadingMode-01",
+      "op": "defined_enum",
+      "result": {
+        "ok": 0
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-list-LoadingMode-02",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Preview,Original' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-list-LoadingMode-03",
+      "op": "defined_enum",
+      "result": {
+        "throws": "ArgumentException",
+        "message": "invalid mode 'Fast,Original,Preview' (Fast|Preview|Original)"
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "enum-list-LoadingMode-04",
+      "op": "defined_enum",
+      "result": {
+        "ok": 1
+      },
+      "members": [
+        "Fast=0",
+        "Preview=1",
+        "Original=2"
+      ]
+    },
+    {
+      "name": "catalog",
+      "op": "catalog",
+      "all": [
+        "instant-review",
+        "fast-sequential",
+        "fast-balanced",
+        "fast-aggressive",
+        "preview-light",
+        "preview-balanced",
+        "preview-quality",
+        "preview-high-quality",
+        "no-preload-baseline",
+        "nearby-only",
+        "full-folder-warm",
+        "large-folder-safe",
+        "huge-image-safe",
+        "ssd-throughput",
+        "hdd-conservative",
+        "network-safe",
+        "low-memory",
+        "ram-maximizer",
+        "rapid-key-press",
+        "random-navigation",
+        "cache-recovery",
+        "explorer-reindex",
+        "logging-on",
+        "logging-off",
+        "recommended-auto",
+        "action-move",
+        "action-delete",
+        "action-copy",
+        "action-interleaved",
+        "original-correctness"
+      ],
+      "runnable": [
+        "instant-review",
+        "fast-sequential",
+        "fast-balanced",
+        "fast-aggressive",
+        "preview-light",
+        "preview-balanced",
+        "preview-quality",
+        "preview-high-quality",
+        "no-preload-baseline",
+        "nearby-only",
+        "full-folder-warm",
+        "large-folder-safe",
+        "huge-image-safe",
+        "ssd-throughput",
+        "hdd-conservative",
+        "network-safe",
+        "low-memory",
+        "ram-maximizer",
+        "rapid-key-press",
+        "random-navigation",
+        "logging-on",
+        "logging-off",
+        "recommended-auto",
+        "action-move",
+        "action-delete",
+        "action-copy",
+        "action-interleaved"
+      ],
+      "file_action": [
+        "action-move",
+        "action-delete",
+        "action-copy",
+        "action-interleaved"
+      ]
+    }
+  ]
+}

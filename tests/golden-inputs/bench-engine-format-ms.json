@@ -1,0 +1,160 @@
+{
+  "cases": [
+    {
+      "name": "ticks-0",
+      "ticks": 0
+    },
+    {
+      "name": "ticks-1",
+      "ticks": 1
+    },
+    {
+      "name": "ticks-5",
+      "ticks": 5
+    },
+    {
+      "name": "ticks-4999",
+      "ticks": 4999
+    },
+    {
+      "name": "ticks-5000",
+      "ticks": 5000
+    },
+    {
+      "name": "ticks-5001",
+      "ticks": 5001
+    },
+    {
+      "name": "ticks-500",
+      "ticks": 500
+    },
+    {
+      "name": "ticks-2500",
+      "ticks": 2500
+    },
+    {
+      "name": "ticks-7500",
+      "ticks": 7500
+    },
+    {
+      "name": "ticks-12500",
+      "ticks": 12500
+    },
+    {
+      "name": "ticks-17500",
+      "ticks": 17500
+    },
+    {
+      "name": "ticks-22500",
+      "ticks": 22500
+    },
+    {
+      "name": "ticks-125000",
+      "ticks": 125000
+    },
+    {
+      "name": "ticks-124999",
+      "ticks": 124999
+    },
+    {
+      "name": "ticks-125001",
+      "ticks": 125001
+    },
+    {
+      "name": "ticks-123456",
+      "ticks": 123456
+    },
+    {
+      "name": "ticks-15000",
+      "ticks": 15000
+    },
+    {
+      "name": "ticks-16384",
+      "ticks": 16384
+    },
+    {
+      "name": "ticks-10000000",
+      "ticks": 10000000
+    },
+    {
+      "name": "ticks-360000000000",
+      "ticks": 360000000000
+    },
+    {
+      "name": "ticks-12345678901",
+      "ticks": 12345678901
+    },
+    {
+      "name": "elapsed-ns-1ms",
+      "frequency": 1000000000,
+      "start": 0,
+      "end": 1000000
+    },
+    {
+      "name": "elapsed-ns-offset",
+      "frequency": 1000000000,
+      "start": 5000000000,
+      "end": 5002500000
+    },
+    {
+      "name": "elapsed-qpc-10mhz",
+      "frequency": 10000000,
+      "start": 100,
+      "end": 12445
+    },
+    {
+      "name": "elapsed-freq-3-truncates",
+      "frequency": 3,
+      "start": 0,
+      "end": 1
+    },
+    {
+      "name": "elapsed-freq-3-two",
+      "frequency": 3,
+      "start": 0,
+      "end": 2
+    },
+    {
+      "name": "elapsed-freq-1000",
+      "frequency": 1000,
+      "start": 0,
+      "end": 1
+    },
+    {
+      "name": "elapsed-zero-delta",
+      "frequency": 1000000000,
+      "start": 7,
+      "end": 7
+    },
+    {
+      "name": "elapsed-negative-delta",
+      "frequency": 10000000,
+      "start": 10,
+      "end": 4
+    },
+    {
+      "name": "elapsed-qpc-large",
+      "frequency": 10000000,
+      "start": 1099511627776,
+      "end": 1099635084565
+    },
+    {
+      "name": "elapsed-freq-7",
+      "frequency": 7,
+      "start": 0,
+      "end": 5
+    },
+    {
+      "name": "ticks-minus-1",
+      "ticks": -1
+    },
+    {
+      "name": "ticks-minus-2500",
+      "ticks": -2500
+    },
+    {
+      "name": "ticks-long-max-clamped",
+      "ticks": 9223372036854775807
+    }
+  ]
+}

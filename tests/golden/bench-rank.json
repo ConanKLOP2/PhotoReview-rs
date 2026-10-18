@@ -1,0 +1,1066 @@
+{
+  "generator": "oracle-cs bench-rank",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "empty-input",
+      "workload": "Sequential",
+      "phases": [],
+      "derived": [],
+      "ranked": []
+    },
+    {
+      "name": "ties-keep-input-order-abcd",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "a",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "b",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "c",
+          "workload": "Sequential",
+          "samples": [
+            5,
+            5,
+            5
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "d",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "a",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "b",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "c",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "d",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        2,
+        0,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "ties-keep-input-order-dbca",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "d",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "b",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "c",
+          "workload": "Sequential",
+          "samples": [
+            5,
+            5,
+            5
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "a",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            10,
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "d",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "b",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "c",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "a",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        2,
+        0,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "p95-tie-broken-by-p50",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "slow-median",
+          "workload": "Sequential",
+          "samples": [
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "fast-median",
+          "workload": "Sequential",
+          "samples": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            9,
+            9
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "slow-median",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "fast-median",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "p95-decides-before-p50",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "low-p50-high-p95",
+          "workload": "Sequential",
+          "samples": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            100
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "high-p50-low-p95",
+          "workload": "Sequential",
+          "samples": [
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "low-p50-high-p95",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "high-p50-low-p95",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "per-image-parallel-beats-single",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "single",
+          "workload": "Sequential",
+          "samples": [
+            20,
+            20,
+            20
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "parallel",
+          "workload": "Sequential",
+          "samples": [
+            80,
+            80,
+            80
+          ],
+          "status": "Pass",
+          "images": 8
+        }
+      ],
+      "derived": [
+        {
+          "id": "single",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "parallel",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "per-image-trust-8-images-80ms-beats-1-image-50ms",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "one",
+          "workload": "Sequential",
+          "samples": [
+            50,
+            50
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "many",
+          "workload": "Sequential",
+          "samples": [
+            80,
+            80
+          ],
+          "status": "Pass",
+          "images": 8
+        }
+      ],
+      "derived": [
+        {
+          "id": "one",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "many",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "per-image-equal-after-division-keeps-input-order",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "x3",
+          "workload": "Sequential",
+          "samples": [
+            30
+          ],
+          "status": "Pass",
+          "images": 3
+        },
+        {
+          "id": "x1",
+          "workload": "Sequential",
+          "samples": [
+            10
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "x3",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "x1",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "derived-from-registry-fast-sequential-vs-baseline",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "no-preload-baseline",
+          "workload": "Sequential",
+          "samples": [
+            50
+          ],
+          "status": "Pass"
+        },
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            80
+          ],
+          "status": "Pass"
+        }
+      ],
+      "derived": [
+        {
+          "id": "no-preload-baseline",
+          "workload": "Sequential",
+          "images": 1
+        },
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "derived-unknown-profile-counts-as-one",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "mystery",
+          "workload": "Sequential",
+          "samples": [
+            50
+          ],
+          "status": "Pass"
+        },
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            500
+          ],
+          "status": "Pass"
+        }
+      ],
+      "derived": [
+        {
+          "id": "mystery",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        }
+      ],
+      "ranked": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "stamp-zero-is-one-even-for-a-known-profile",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            80
+          ],
+          "status": "Pass",
+          "images": 0
+        },
+        {
+          "id": "no-preload-baseline",
+          "workload": "Sequential",
+          "samples": [
+            70
+          ],
+          "status": "Pass"
+        }
+      ],
+      "derived": [
+        {
+          "id": "fast-sequential",
+          "workload": "Sequential",
+          "images": 8
+        },
+        {
+          "id": "no-preload-baseline",
+          "workload": "Sequential",
+          "images": 1
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "filters-workload-and-status-keeps-warn",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "fail",
+          "workload": "Sequential",
+          "samples": [
+            1
+          ],
+          "status": "Fail",
+          "images": 1
+        },
+        {
+          "id": "other",
+          "workload": "Random",
+          "samples": [
+            1
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "warn",
+          "workload": "Sequential",
+          "samples": [
+            4
+          ],
+          "status": "Warn",
+          "images": 1
+        },
+        {
+          "id": "none",
+          "workload": "Sequential",
+          "samples": [],
+          "status": "InsufficientData",
+          "images": 1
+        },
+        {
+          "id": "pass",
+          "workload": "Sequential",
+          "samples": [
+            3
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "fail",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "other",
+          "workload": "Random",
+          "images": null
+        },
+        {
+          "id": "warn",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "none",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "pass",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        4,
+        2
+      ]
+    },
+    {
+      "name": "insufficient-data-with-samples-is-still-dropped",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "insufficient",
+          "workload": "Sequential",
+          "samples": [
+            1,
+            2,
+            3
+          ],
+          "status": "InsufficientData",
+          "images": 1
+        },
+        {
+          "id": "pass",
+          "workload": "Sequential",
+          "samples": [
+            9
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "insufficient",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "pass",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1
+      ]
+    },
+    {
+      "name": "pass-with-no-samples-ranks-first-at-zero",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "samples": [
+            5
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "empty-pass",
+          "workload": "Sequential",
+          "samples": [],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "empty-pass",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "other-workload-ranked-when-asked",
+      "workload": "Random",
+      "phases": [
+        {
+          "id": "seq",
+          "workload": "Sequential",
+          "samples": [
+            1
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "rnd-slow",
+          "workload": "Random",
+          "samples": [
+            9
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "rnd-fast",
+          "workload": "Random",
+          "samples": [
+            2
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "seq",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "rnd-slow",
+          "workload": "Random",
+          "images": null
+        },
+        {
+          "id": "rnd-fast",
+          "workload": "Random",
+          "images": null
+        }
+      ],
+      "ranked": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "nan-samples-never-win",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "nan",
+          "workload": "Sequential",
+          "samples": [
+            "NaN",
+            "NaN"
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "samples": [
+            50,
+            50
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "nan",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1
+      ]
+    },
+    {
+      "name": "infinite-p95-is-dropped",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "inf",
+          "workload": "Sequential",
+          "samples": [
+            1,
+            "Infinity"
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "both-inf",
+          "workload": "Sequential",
+          "samples": [
+            "Infinity",
+            "Infinity"
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "samples": [
+            50,
+            50
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "inf",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "both-inf",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        2
+      ]
+    },
+    {
+      "name": "finite-p95-but-nan-p50-is-dropped",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "nan-first",
+          "workload": "Sequential",
+          "samples": [
+            "NaN",
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "samples": [
+            50,
+            50
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "nan-first",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "real",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "negative-zero-ties-with-zero-keeps-input-order",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "neg-zero",
+          "workload": "Sequential",
+          "samples": [
+            "-0"
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "zero",
+          "workload": "Sequential",
+          "samples": [
+            0
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "neg-zero",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "zero",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "negative-samples-sort-first",
+      "workload": "Sequential",
+      "phases": [
+        {
+          "id": "positive",
+          "workload": "Sequential",
+          "samples": [
+            1
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "negative",
+          "workload": "Sequential",
+          "samples": [
+            -5
+          ],
+          "status": "Pass",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "positive",
+          "workload": "Sequential",
+          "images": null
+        },
+        {
+          "id": "negative",
+          "workload": "Sequential",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "many-phases-stable-three-way-tie",
+      "workload": "WarmNext",
+      "phases": [
+        {
+          "id": "t1",
+          "workload": "WarmNext",
+          "samples": [
+            7,
+            7
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "s",
+          "workload": "WarmNext",
+          "samples": [
+            3,
+            3
+          ],
+          "status": "Warn",
+          "images": 1
+        },
+        {
+          "id": "t2",
+          "workload": "WarmNext",
+          "samples": [
+            7,
+            7
+          ],
+          "status": "Warn",
+          "images": 1
+        },
+        {
+          "id": "t3",
+          "workload": "WarmNext",
+          "samples": [
+            7,
+            7
+          ],
+          "status": "Pass",
+          "images": 1
+        },
+        {
+          "id": "f",
+          "workload": "WarmNext",
+          "samples": [
+            1,
+            1
+          ],
+          "status": "Fail",
+          "images": 1
+        }
+      ],
+      "derived": [
+        {
+          "id": "t1",
+          "workload": "WarmNext",
+          "images": null
+        },
+        {
+          "id": "s",
+          "workload": "WarmNext",
+          "images": null
+        },
+        {
+          "id": "t2",
+          "workload": "WarmNext",
+          "images": null
+        },
+        {
+          "id": "t3",
+          "workload": "WarmNext",
+          "images": null
+        },
+        {
+          "id": "f",
+          "workload": "WarmNext",
+          "images": null
+        }
+      ],
+      "ranked": [
+        1,
+        0,
+        2,
+        3
+      ]
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "generator": "oracle-cs bench-engine-format-ms",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "ticks-0",
+      "ticks": 0,
+      "text": "0.0"
+    },
+    {
+      "name": "ticks-1",
+      "ticks": 1,
+      "text": "0.0"
+    },
+    {
+      "name": "ticks-5",
+      "ticks": 5,
+      "text": "0.0"
+    },
+    {
+      "name": "ticks-4999",
+      "ticks": 4999,
+      "text": "0.5"
+    },
+    {
+      "name": "ticks-5000",
+      "ticks": 5000,
+      "text": "0.5"
+    },
+    {
+      "name": "ticks-5001",
+      "ticks": 5001,
+      "text": "0.5"
+    },
+    {
+      "name": "ticks-500",
+      "ticks": 500,
+      "text": "0.1"
+    },
+    {
+      "name": "ticks-2500",
+      "ticks": 2500,
+      "text": "0.2"
+    },
+    {
+      "name": "ticks-7500",
+      "ticks": 7500,
+      "text": "0.8"
+    },
+    {
+      "name": "ticks-12500",
+      "ticks": 12500,
+      "text": "1.2"
+    },
+    {
+      "name": "ticks-17500",
+      "ticks": 17500,
+      "text": "1.8"
+    },
+    {
+      "name": "ticks-22500",
+      "ticks": 22500,
+      "text": "2.2"
+    },
+    {
+      "name": "ticks-125000",
+      "ticks": 125000,
+      "text": "12.5"
+    },
+    {
+      "name": "ticks-124999",
+      "ticks": 124999,
+      "text": "12.5"
+    },
+    {
+      "name": "ticks-125001",
+      "ticks": 125001,
+      "text": "12.5"
+    },
+    {
+      "name": "ticks-123456",
+      "ticks": 123456,
+      "text": "12.3"
+    },
+    {
+      "name": "ticks-15000",
+      "ticks": 15000,
+      "text": "1.5"
+    },
+    {
+      "name": "ticks-16384",
+      "ticks": 16384,
+      "text": "1.6"
+    },
+    {
+      "name": "ticks-10000000",
+      "ticks": 10000000,
+      "text": "1000.0"
+    },
+    {
+      "name": "ticks-360000000000",
+      "ticks": 360000000000,
+      "text": "36000000.0"
+    },
+    {
+      "name": "ticks-12345678901",
+      "ticks": 12345678901,
+      "text": "1234567.9"
+    },
+    {
+      "name": "elapsed-ns-1ms",
+      "frequency": 1000000000,
+      "start": 0,
+      "end": 1000000,
+      "elapsed_ticks": 10000
+    },
+    {
+      "name": "elapsed-ns-offset",
+      "frequency": 1000000000,
+      "start": 5000000000,
+      "end": 5002500000,
+      "elapsed_ticks": 25000
+    },
+    {
+      "name": "elapsed-qpc-10mhz",
+      "frequency": 10000000,
+      "start": 100,
+      "end": 12445,
+      "elapsed_ticks": 12345
+    },
+    {
+      "name": "elapsed-freq-3-truncates",
+      "frequency": 3,
+      "start": 0,
+      "end": 1,
+      "elapsed_ticks": 3333333
+    },
+    {
+      "name": "elapsed-freq-3-two",
+      "frequency": 3,
+      "start": 0,
+      "end": 2,
+      "elapsed_ticks": 6666666
+    },
+    {
+      "name": "elapsed-freq-1000",
+      "frequency": 1000,
+      "start": 0,
+      "end": 1,
+      "elapsed_ticks": 10000
+    },
+    {
+      "name": "elapsed-zero-delta",
+      "frequency": 1000000000,
+      "start": 7,
+      "end": 7,
+      "elapsed_ticks": 0
+    },
+    {
+      "name": "elapsed-negative-delta",
+      "frequency": 10000000,
+      "start": 10,
+      "end": 4,
+      "elapsed_ticks": -6
+    },
+    {
+      "name": "elapsed-qpc-large",
+      "frequency": 10000000,
+      "start": 1099511627776,
+      "end": 1099635084565,
+      "elapsed_ticks": 123456789
+    },
+    {
+      "name": "elapsed-freq-7",
+      "frequency": 7,
+      "start": 0,
+      "end": 5,
+      "elapsed_ticks": 7142857
+    },
+    {
+      "name": "ticks-minus-1",
+      "ticks": -1,
+      "text": "-0.0"
+    },
+    {
+      "name": "ticks-minus-2500",
+      "ticks": -2500,
+      "text": "-0.2"
+    },
+    {
+      "name": "ticks-long-max-clamped",
+      "ticks": 9223372036854775807,
+      "text": "922337203685477.0"
+    }
+  ]
+}

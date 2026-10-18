@@ -57,6 +57,9 @@ dependencies = [
  "pr-core",
  "pr-imaging",
  "pr-perf",
+ "pr-platform-win",
+ "pr-test-support",
+ "serde_json",
 ]
 
 [[package]]

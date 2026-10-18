@@ -1,0 +1,395 @@
+{
+ "cases": [
+  {
+   "name": "registry",
+   "kind": "registry"
+  },
+  {
+   "name": "find-fast-sequential",
+   "kind": "find",
+   "id": "fast-sequential"
+  },
+  {
+   "name": "find-FAST-SEQUENTIAL",
+   "kind": "find",
+   "id": "FAST-SEQUENTIAL"
+  },
+  {
+   "name": "find-Fast-Sequential",
+   "kind": "find",
+   "id": "Fast-Sequential"
+  },
+  {
+   "name": "find-instant-review",
+   "kind": "find",
+   "id": "instant-review"
+  },
+  {
+   "name": "find-original-correctness",
+   "kind": "find",
+   "id": "original-correctness"
+  },
+  {
+   "name": "find-ORIGINAL-CORRECTNESS",
+   "kind": "find",
+   "id": "ORIGINAL-CORRECTNESS"
+  },
+  {
+   "name": "find-cache-recovery",
+   "kind": "find",
+   "id": "cache-recovery"
+  },
+  {
+   "name": "find-explorer-reindex",
+   "kind": "find",
+   "id": "explorer-reindex"
+  },
+  {
+   "name": "find-recommended-auto",
+   "kind": "find",
+   "id": "recommended-auto"
+  },
+  {
+   "name": "find-action-interleaved",
+   "kind": "find",
+   "id": "action-interleaved"
+  },
+  {
+   "name": "find-ssd-throughput",
+   "kind": "find",
+   "id": "ssd-throughput"
+  },
+  {
+   "name": "find-SSD-THROUGHPUT",
+   "kind": "find",
+   "id": "SSD-THROUGHPUT"
+  },
+  {
+   "name": "find- fast-sequential",
+   "kind": "find",
+   "id": " fast-sequential"
+  },
+  {
+   "name": "find-fast-sequential ",
+   "kind": "find",
+   "id": "fast-sequential "
+  },
+  {
+   "name": "find-empty",
+   "kind": "find",
+   "id": ""
+  },
+  {
+   "name": "find-no-such-profile",
+   "kind": "find",
+   "id": "no-such-profile"
+  },
+  {
+   "name": "find-fast-sequentia",
+   "kind": "find",
+   "id": "fast-sequentia"
+  },
+  {
+   "name": "find-fast-sequential\\x00",
+   "kind": "find",
+   "id": "fast-sequential\u0000"
+  },
+  {
+   "name": "find-fast-sequent\\u0130al",
+   "kind": "find",
+   "id": "fast-sequent\u0130al"
+  },
+  {
+   "name": "find-fast-sequent\\u0131al",
+   "kind": "find",
+   "id": "fast-sequent\u0131al"
+  },
+  {
+   "name": "find-\\u017fsd-throughput",
+   "kind": "find",
+   "id": "\u017fsd-throughput"
+  },
+  {
+   "name": "find-rapid-\\u212aey-press",
+   "kind": "find",
+   "id": "rapid-\u212aey-press"
+  },
+  {
+   "name": "find-rapid-key-press",
+   "kind": "find",
+   "id": "rapid-key-press"
+  },
+  {
+   "name": "find-low-memory",
+   "kind": "find",
+   "id": "low-memory"
+  },
+  {
+   "name": "find-LOW-MEMORY",
+   "kind": "find",
+   "id": "LOW-MEMORY"
+  },
+  {
+   "name": "find-Logging-On",
+   "kind": "find",
+   "id": "Logging-On"
+  },
+  {
+   "name": "find-logging-off",
+   "kind": "find",
+   "id": "logging-off"
+  },
+  {
+   "name": "not-implemented-cache-recovery-FirstFrame",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-cache-recovery-Sequential",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-cache-recovery-Random",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-cache-recovery-WarmNext",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-cache-recovery-Preload",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-cache-recovery-FileAction",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-cache-recovery-Correctness",
+   "kind": "not_implemented",
+   "id": "cache-recovery",
+   "workload": "Correctness"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-FirstFrame",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-Sequential",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-Random",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-WarmNext",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-Preload",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-FileAction",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-explorer-reindex-Correctness",
+   "kind": "not_implemented",
+   "id": "explorer-reindex",
+   "workload": "Correctness"
+  },
+  {
+   "name": "not-implemented-original-correctness-FirstFrame",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-original-correctness-Sequential",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-original-correctness-Random",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-original-correctness-WarmNext",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-original-correctness-Preload",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-original-correctness-FileAction",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-original-correctness-Correctness",
+   "kind": "not_implemented",
+   "id": "original-correctness",
+   "workload": "Correctness"
+  },
+  {
+   "name": "not-implemented-fast-sequential-FirstFrame",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-fast-sequential-Sequential",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-fast-sequential-Random",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-fast-sequential-WarmNext",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-fast-sequential-Preload",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-fast-sequential-FileAction",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-fast-sequential-Correctness",
+   "kind": "not_implemented",
+   "id": "fast-sequential",
+   "workload": "Correctness"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-FirstFrame",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-Sequential",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-Random",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-WarmNext",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-Preload",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-FileAction",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-CACHE-RECOVERY-Correctness",
+   "kind": "not_implemented",
+   "id": "CACHE-RECOVERY",
+   "workload": "Correctness"
+  },
+  {
+   "name": "not-implemented-unknown-id-FirstFrame",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "FirstFrame"
+  },
+  {
+   "name": "not-implemented-unknown-id-Sequential",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "Sequential"
+  },
+  {
+   "name": "not-implemented-unknown-id-Random",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "Random"
+  },
+  {
+   "name": "not-implemented-unknown-id-WarmNext",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "WarmNext"
+  },
+  {
+   "name": "not-implemented-unknown-id-Preload",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "Preload"
+  },
+  {
+   "name": "not-implemented-unknown-id-FileAction",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "FileAction"
+  },
+  {
+   "name": "not-implemented-unknown-id-Correctness",
+   "kind": "not_implemented",
+   "id": "unknown-id",
+   "workload": "Correctness"
+  }
+ ]
+}

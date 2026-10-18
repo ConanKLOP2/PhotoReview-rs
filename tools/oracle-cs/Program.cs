@@ -303,6 +303,34 @@ JsonArray cases = command switch
     // Commands\W5-17
     "rgb-bgra-resample" => Commands.RgbBgraResample(inputs),
     "rgb-bgra-validate" => Commands.RgbBgraValidate(inputs),
+    // Commands\W7-01a
+    "bench-profile" => Commands.BenchProfile(inputs),
+    "bench-phase" => Commands.BenchPhase(inputs),
+    "bench-rank" => Commands.BenchRank(inputs),
+    "bench-json" => Commands.BenchJson(inputs),
+    // Commands\W7-01b
+    "benchmark-profiles" => Commands.BenchmarkProfilesCases(inputs),
+    "benchmark-metrics-since" => Commands.BenchmarkMetricsSinceCases(inputs),
+    // Commands\W7-02a
+    "slow-link-fs" => Commands.SlowLinkFs(inputs),
+    // Commands\W7-02b
+    "slow-link-source-reader" => Commands.SlowLinkSourceReaderCases(inputs),
+    "bench-recycle-bin" => Commands.BenchRecycleBinCases(inputs),
+    // Commands\W7-03a
+    "bench-engine-run" => Commands.BenchEngineRun(inputs),
+    "bench-engine-format-ms" => Commands.BenchEngineFormatMs(inputs),
+    // Commands\W7-03b
+    "bench-profile-scope" => Commands.BenchProfileScope(inputs),
+    "bench-windowed-target" => Commands.BenchWindowedTarget(inputs),
+    // Commands\W7-03c
+    "bench-random" => Commands.BenchRandom(inputs),
+    "bench-select-indices" => Commands.BenchSelectIndices(inputs),
+    "bench-images-per-sample" => Commands.BenchImagesPerSample(inputs),
+    "bench-prepare-edge" => Commands.BenchPrepareEdge(inputs),
+    // Commands\W7-03d (cli-process is not dispatched: it needs the WPF-bound baseline Cli exe, see contracts/README.md Wave 7)
+    "cli-arguments" => Commands.CliArguments(inputs),
+    "cli-tool-path-guard" => Commands.CliToolPathGuard(inputs),
+    "cli-dataset-plan" => Commands.CliDatasetPlan(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

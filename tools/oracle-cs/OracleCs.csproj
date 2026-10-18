@@ -35,12 +35,22 @@
     <Reference Include="PhotoReview.Imaging.LibRaw">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Imaging.LibRaw.dll</HintPath>
     </Reference>
+    <!-- W7: PhotoReview.Benchmarking (references Core, Imaging, Platform.Windows, PerfAnalysis; all land in the same folder). -->
+    <Reference Include="PhotoReview.Benchmarking">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Benchmarking.dll</HintPath>
+    </Reference>
     <Reference Include="PhotoReview.PerfAnalysis">
       <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="PhotoReview.Localization.Generator">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Localization.Generator.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CSharpSrcDir)' != ''">
+    <!-- W7-03d: two internal classes of the baseline CLI project, compiled into the oracle as they are (nothing copied by hand). -->
+    <Compile Include="$(CSharpSrcDir)\tools\PhotoReview.Benchmark.Cli\BenchmarkCliArguments.cs" Link="cs-baseline\BenchmarkCliArguments.cs" />
+    <Compile Include="$(CSharpSrcDir)\tools\PhotoReview.Benchmark.Cli\ToolPathGuard.cs" Link="cs-baseline\ToolPathGuard.cs" />
   </ItemGroup>
 
   <ItemGroup>

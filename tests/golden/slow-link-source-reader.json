@@ -1,0 +1,565 @@
+{
+  "generator": "oracle-cs slow-link-source-reader",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "no-limiter-is-a-pure-pass-through",
+      "length": 1000,
+      "bandwidth_bytes_per_second": null,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 400
+        },
+        {
+          "op": "read",
+          "count": 1000
+        },
+        {
+          "op": "read",
+          "count": 10
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 1000,
+      "final_length": 1000,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 400,
+          "checksum": 635746797
+        },
+        {
+          "read": 600,
+          "checksum": 655626851
+        },
+        {
+          "read": 0,
+          "checksum": 0
+        }
+      ]
+    },
+    {
+      "name": "fast-limiter-viewer-reads-the-same-bytes",
+      "length": 1000,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 400
+        },
+        {
+          "op": "read",
+          "count": 1000
+        },
+        {
+          "op": "read",
+          "count": 10
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 1000,
+      "final_length": 1000,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 400,
+          "checksum": 635746797
+        },
+        {
+          "read": 600,
+          "checksum": 655626851
+        },
+        {
+          "read": 0,
+          "checksum": 0
+        }
+      ]
+    },
+    {
+      "name": "fast-limiter-preload-priority-reaches-the-inner-reader",
+      "length": 64,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Preload",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 64
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Preload",
+      "inner_buffer_size": 1048576,
+      "final_position": 64,
+      "final_length": 64,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 64,
+          "checksum": 411573981
+        }
+      ]
+    },
+    {
+      "name": "no-limiter-preload-priority-reaches-the-inner-reader",
+      "length": 64,
+      "bandwidth_bytes_per_second": null,
+      "priority": "Preload",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 64
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Preload",
+      "inner_buffer_size": 1048576,
+      "final_position": 64,
+      "final_length": 64,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 64,
+          "checksum": 411573981
+        }
+      ]
+    },
+    {
+      "name": "explicit-buffer-size-reaches-the-inner-reader",
+      "length": 100,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": 4096,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 100
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 4096,
+      "final_position": 100,
+      "final_length": 100,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 100,
+          "checksum": 789477144
+        }
+      ]
+    },
+    {
+      "name": "explicit-buffer-size-without-limiter",
+      "length": 100,
+      "bandwidth_bytes_per_second": null,
+      "priority": "Preload",
+      "buffer_size": 1,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 100
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Preload",
+      "inner_buffer_size": 1,
+      "final_position": 100,
+      "final_length": 100,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 100,
+          "checksum": 789477144
+        }
+      ]
+    },
+    {
+      "name": "empty-source-reads-zero",
+      "length": 0,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 10
+        },
+        {
+          "op": "seek",
+          "offset": 0,
+          "origin": "End"
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 0,
+      "final_length": 0,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 0,
+          "checksum": 0
+        },
+        {
+          "position": 0
+        }
+      ]
+    },
+    {
+      "name": "read-count-zero-returns-zero",
+      "length": 10,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 0
+        },
+        {
+          "op": "read",
+          "count": 3
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 3,
+      "final_length": 10,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 0,
+          "checksum": 0
+        },
+        {
+          "read": 3,
+          "checksum": 125174
+        }
+      ]
+    },
+    {
+      "name": "seek-from-end-then-read-the-tail",
+      "length": 500,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "seek",
+          "offset": -20,
+          "origin": "End"
+        },
+        {
+          "op": "read",
+          "count": 100
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 500,
+      "final_length": 500,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "position": 480
+        },
+        {
+          "read": 20,
+          "checksum": 356660067
+        }
+      ]
+    },
+    {
+      "name": "seek-relative-forward-and-back",
+      "length": 500,
+      "bandwidth_bytes_per_second": null,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 100
+        },
+        {
+          "op": "seek",
+          "offset": 50,
+          "origin": "Current"
+        },
+        {
+          "op": "read",
+          "count": 10
+        },
+        {
+          "op": "seek",
+          "offset": -60,
+          "origin": "Current"
+        },
+        {
+          "op": "read",
+          "count": 10
+        },
+        {
+          "op": "seek",
+          "offset": 0,
+          "origin": "Begin"
+        },
+        {
+          "op": "read",
+          "count": 10
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 10,
+      "final_length": 500,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 100,
+          "checksum": 789477144
+        },
+        {
+          "position": 150
+        },
+        {
+          "read": 10,
+          "checksum": 462268803
+        },
+        {
+          "position": 100
+        },
+        {
+          "read": 10,
+          "checksum": 56744649
+        },
+        {
+          "position": 0
+        },
+        {
+          "read": 10,
+          "checksum": 71646054
+        }
+      ]
+    },
+    {
+      "name": "seek-past-the-end-then-read-returns-zero",
+      "length": 100,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "seek",
+          "offset": 150,
+          "origin": "Begin"
+        },
+        {
+          "op": "read",
+          "count": 10
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 150,
+      "final_length": 100,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "position": 150
+        },
+        {
+          "read": 0,
+          "checksum": 0
+        }
+      ]
+    },
+    {
+      "name": "seek-before-the-beginning-throws",
+      "length": 100,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "seek",
+          "offset": -1,
+          "origin": "Begin"
+        },
+        {
+          "op": "read",
+          "count": 5
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 5,
+      "final_length": 100,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "throws": "IOException"
+        },
+        {
+          "read": 5,
+          "checksum": 148124231
+        }
+      ]
+    },
+    {
+      "name": "large-source-read-in-chunks-with-a-fast-limiter",
+      "length": 200000,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": false,
+      "ops": [
+        {
+          "op": "read",
+          "count": 65536
+        },
+        {
+          "op": "read",
+          "count": 65536
+        },
+        {
+          "op": "read",
+          "count": 65536
+        },
+        {
+          "op": "read",
+          "count": 65536
+        },
+        {
+          "op": "read",
+          "count": 65536
+        }
+      ],
+      "open_throws": null,
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "final_position": 200000,
+      "final_length": 200000,
+      "can_read": true,
+      "can_seek": true,
+      "op_results": [
+        {
+          "read": 65536,
+          "checksum": 23638159
+        },
+        {
+          "read": 65536,
+          "checksum": 305562906
+        },
+        {
+          "read": 65536,
+          "checksum": 553344039
+        },
+        {
+          "read": 3392,
+          "checksum": 117597059
+        },
+        {
+          "read": 0,
+          "checksum": 0
+        }
+      ]
+    },
+    {
+      "name": "inner-open-failure-propagates-with-a-limiter",
+      "length": 10,
+      "bandwidth_bytes_per_second": 1000000000,
+      "priority": "Viewer",
+      "buffer_size": null,
+      "inner_fails": true,
+      "ops": [],
+      "open_throws": "FileNotFoundException",
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Viewer",
+      "inner_buffer_size": 1048576,
+      "op_results": []
+    },
+    {
+      "name": "inner-open-failure-propagates-without-a-limiter",
+      "length": 10,
+      "bandwidth_bytes_per_second": null,
+      "priority": "Preload",
+      "buffer_size": 4096,
+      "inner_fails": true,
+      "ops": [],
+      "open_throws": "FileNotFoundException",
+      "inner_calls": 1,
+      "inner_path": "C:\\bench\\photo-001.jpg",
+      "inner_priority": "Preload",
+      "inner_buffer_size": 4096,
+      "op_results": []
+    }
+  ]
+}

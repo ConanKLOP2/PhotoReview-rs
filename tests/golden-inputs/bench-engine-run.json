@@ -1,0 +1,730 @@
+{
+  "cases": [
+    {
+      "name": "samples-exclude-prepare-time",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 5000000,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 5000000,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 5000000,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 5000000,
+          "measure_ticks": 100000
+        }
+      ]
+    },
+    {
+      "name": "default-profile-iterations-30-warmup-1",
+      "folder": "temp",
+      "profile": {
+        "id": "fast-sequential"
+      },
+      "steps": []
+    },
+    {
+      "name": "warmup-zero-keeps-cumulative-metrics",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 1
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 2
+        }
+      ]
+    },
+    {
+      "name": "metrics-exclude-warmup",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 1
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 2
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 3
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 4
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 5
+        }
+      ]
+    },
+    {
+      "name": "null-metrics-in-last-warmup-keeps-earlier-baseline",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 1
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": null
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 3
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 4
+        }
+      ]
+    },
+    {
+      "name": "all-timed-metrics-null-with-baseline-gives-null",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 1
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": null
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": null
+        }
+      ]
+    },
+    {
+      "name": "null-timed-metrics-keep-last-non-null",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 1
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 2
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": null
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": null
+        }
+      ]
+    },
+    {
+      "name": "timed-metrics-without-warmup-metrics-stay-cumulative",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 2
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "metrics_calls": 3
+        }
+      ]
+    },
+    {
+      "name": "incorrect-sample-fails-the-phase",
+      "folder": "temp",
+      "profile": {
+        "id": "fast-sequential",
+        "iterations": 3,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "correct": false
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        }
+      ]
+    },
+    {
+      "name": "all-samples-correct-passes-with-null-message",
+      "folder": "temp",
+      "profile": {
+        "id": "fast-balanced",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 50000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 60000
+        }
+      ]
+    },
+    {
+      "name": "warmup-correctness-is-ignored",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "correct": false
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        }
+      ]
+    },
+    {
+      "name": "fractional-milliseconds-are-formatted-invariant-f1",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 4,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 125000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 2500
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 7500
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 123456
+        }
+      ]
+    },
+    {
+      "name": "single-sample-percentiles-in-log",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 125000
+        }
+      ]
+    },
+    {
+      "name": "zero-elapsed-sample",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 0
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 0
+        }
+      ]
+    },
+    {
+      "name": "unsorted-samples-keep-arrival-order",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 5,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 300000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 500000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 200000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 400000
+        }
+      ]
+    },
+    {
+      "name": "large-elapsed-one-hour",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 36000000000
+        }
+      ]
+    },
+    {
+      "name": "workers-and-iterations-in-start-line",
+      "folder": "temp",
+      "profile": {
+        "id": "ssd-throughput",
+        "iterations": 2,
+        "warmup": 0,
+        "workers": 7
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 10000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 20000
+        }
+      ]
+    },
+    {
+      "name": "three-warmups-call-order",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 3
+      },
+      "steps": [
+        {
+          "prepare_ticks": 10000,
+          "measure_ticks": 10000
+        },
+        {
+          "prepare_ticks": 10000,
+          "measure_ticks": 10000
+        },
+        {
+          "prepare_ticks": 10000,
+          "measure_ticks": 10000
+        },
+        {
+          "prepare_ticks": 10000,
+          "measure_ticks": 10000
+        },
+        {
+          "prepare_ticks": 10000,
+          "measure_ticks": 10000
+        }
+      ]
+    },
+    {
+      "name": "original-correctness-profile-workload-correctness",
+      "folder": "temp",
+      "profile": {
+        "id": "original-correctness",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 30000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 40000
+        }
+      ]
+    },
+    {
+      "name": "warmup-prepare-throws",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "throw": "prepare"
+        }
+      ]
+    },
+    {
+      "name": "warmup-measure-throws",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "throw": "measure"
+        }
+      ]
+    },
+    {
+      "name": "timed-prepare-throws-third-sample",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 4,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "throw": "prepare"
+        }
+      ]
+    },
+    {
+      "name": "timed-measure-throws-first-sample",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "throw": "measure"
+        }
+      ]
+    },
+    {
+      "name": "cancel-thrown-by-warmup-prepare-is-logged",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "throw": "cancel-prepare"
+        }
+      ]
+    },
+    {
+      "name": "cancel-thrown-by-timed-measure-is-logged",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "throw": "cancel-measure"
+        }
+      ]
+    },
+    {
+      "name": "token-canceled-after-first-sample-stops-at-loop-top-without-log",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "cancel_token_after": true
+        }
+      ]
+    },
+    {
+      "name": "token-canceled-in-warmup-stops-at-warmup-loop-top-without-log",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "cancel_token_after": true
+        }
+      ]
+    },
+    {
+      "name": "token-canceled-in-last-warmup-stops-at-first-iteration",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "cancel_token_after": true
+        }
+      ]
+    },
+    {
+      "name": "token-canceled-in-last-sample-still-returns-report",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        },
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000,
+          "cancel_token_after": true
+        }
+      ]
+    },
+    {
+      "name": "empty-folder-argument-exception",
+      "folder": "empty",
+      "profile": {
+        "id": "action-move"
+      }
+    },
+    {
+      "name": "whitespace-folder-argument-exception",
+      "folder": "whitespace",
+      "profile": {
+        "id": "action-move"
+      }
+    },
+    {
+      "name": "missing-folder-directory-not-found",
+      "folder": "missing",
+      "profile": {
+        "id": "action-move"
+      }
+    },
+    {
+      "name": "file-instead-of-folder-directory-not-found",
+      "folder": "file",
+      "profile": {
+        "id": "action-move"
+      }
+    },
+    {
+      "name": "workers-zero-is-invalid-settings",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      }
+    },
+    {
+      "name": "iterations-zero-is-invalid-settings",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 0
+      }
+    },
+    {
+      "name": "negative-warmup-is-allowed-and-runs-none",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": -2
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        }
+      ]
+    },
+    {
+      "name": "blank-profile-id-is-missing-id",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "blank_id": true
+      }
+    },
+    {
+      "name": "empty-folder-is-checked-before-the-profile",
+      "folder": "empty",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      }
+    },
+    {
+      "name": "missing-folder-is-checked-before-the-profile",
+      "folder": "missing",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      }
+    },
+    {
+      "name": "executor-not-called-when-validation-fails",
+      "folder": "temp",
+      "profile": {
+        "id": "action-move",
+        "iterations": 0
+      },
+      "steps": [
+        {
+          "prepare_ticks": 0,
+          "measure_ticks": 100000
+        }
+      ]
+    }
+  ]
+}

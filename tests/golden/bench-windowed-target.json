@@ -1,0 +1,1302 @@
+{
+  "generator": "oracle-cs bench-windowed-target",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "window-basic-next2-prev1",
+      "full_folder": false,
+      "next": 2,
+      "previous": 1,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 4,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-moves-with-center",
+      "full_folder": false,
+      "next": 2,
+      "previous": 1,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        },
+        {
+          "center": 9,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        },
+        {
+          "center": 5,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-zero-window-only-center-inside",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 3,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-asymmetric-next0-prev3",
+      "full_folder": false,
+      "next": 0,
+      "previous": 3,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 5,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-full-folder-never-restricts",
+      "full_folder": true,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        },
+        {
+          "center": 9,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-center-out-of-range",
+      "full_folder": false,
+      "next": 3,
+      "previous": 3,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": -5,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        },
+        {
+          "center": 50,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-center-int-min-wraps",
+      "full_folder": false,
+      "next": 100,
+      "previous": 100,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg"
+      ],
+      "ops": [
+        {
+          "center": -2147483648,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-center-int-max",
+      "full_folder": false,
+      "next": 100,
+      "previous": 100,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg"
+      ],
+      "ops": [
+        {
+          "center": 2147483647,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-huge-next-previous",
+      "full_folder": false,
+      "next": 2147483647,
+      "previous": 2147483647,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg",
+        "C:\\bench\\f\\img-05.jpg",
+        "C:\\bench\\f\\img-06.jpg",
+        "C:\\bench\\f\\img-07.jpg",
+        "C:\\bench\\f\\img-08.jpg",
+        "C:\\bench\\f\\img-09.jpg"
+      ],
+      "ops": [
+        {
+          "center": 4,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-05.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-06.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-07.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-08.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-09.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-negative-sizes-unvalidated",
+      "full_folder": false,
+      "next": -1,
+      "previous": -1,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg"
+      ],
+      "ops": [
+        {
+          "center": 2,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-unknown-path-never-outside",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\other\\x.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-99.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-case-insensitive-lookup",
+      "full_folder": false,
+      "next": 1,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\BENCH\\F\\IMG-04.JPG",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "c:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-duplicate-files-last-index-wins",
+      "full_folder": false,
+      "next": 1,
+      "previous": 1,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\BENCH\\F\\IMG-02.JPG",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-02.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "c:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        },
+        {
+          "center": 2,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        },
+        {
+          "center": 4,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-duplicate-files-differing-only-by-case",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\BENCH\\F\\IMG-00.JPG"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        },
+        {
+          "center": 2,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-unnormalized-by-path",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\a.jpg",
+        "C:\\bench\\f\\b.jpg",
+        "C:\\bench\\f\\c.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\c.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\.\\c.jpg",
+              "by_path": false,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\sub\\..\\c.jpg",
+              "by_path": false,
+              "by_key": true
+            },
+            {
+              "path": "C:/bench/f/c.jpg",
+              "by_path": false,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\c.jpg.",
+              "by_path": false,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-files-given-unnormalized",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\.\\a.jpg",
+        "C:/bench/f/b.jpg",
+        "C:\\bench\\f\\sub\\..\\c.jpg",
+        "C:\\bench\\f\\d.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\a.jpg",
+              "by_path": false,
+              "by_key": false
+            },
+            {
+              "path": "C:\\bench\\f\\b.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\c.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\d.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\.\\a.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-inner-cached-true-always-true",
+      "full_folder": false,
+      "next": 1,
+      "previous": 1,
+      "inner_cached": true,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg",
+        "C:\\bench\\f\\img-03.jpg",
+        "C:\\bench\\f\\img-04.jpg"
+      ],
+      "ops": [
+        {
+          "center": 2,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-03.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-04.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-inner-cached-true-full-folder",
+      "full_folder": true,
+      "next": 2,
+      "previous": 1,
+      "inner_cached": true,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        "C:\\bench\\f\\img-01.jpg",
+        "C:\\bench\\f\\img-02.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-01.jpg",
+              "by_path": true,
+              "by_key": true
+            },
+            {
+              "path": "C:\\bench\\f\\img-02.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-empty-file-list",
+      "full_folder": false,
+      "next": 1,
+      "previous": 1,
+      "inner_cached": false,
+      "files": [],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-single-file",
+      "full_folder": false,
+      "next": 0,
+      "previous": 0,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg"
+      ],
+      "ops": [
+        {
+          "center": 0,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": false,
+              "by_key": false
+            }
+          ]
+        },
+        {
+          "center": 1,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        },
+        {
+          "center": -1,
+          "probes": [
+            {
+              "path": "C:\\bench\\f\\img-00.jpg",
+              "by_path": true,
+              "by_key": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "window-empty-path-throws",
+      "full_folder": false,
+      "next": 1,
+      "previous": 1,
+      "inner_cached": false,
+      "files": [
+        "C:\\bench\\f\\img-00.jpg",
+        ""
+      ],
+      "throws": "ArgumentException"
+    }
+  ]
+}

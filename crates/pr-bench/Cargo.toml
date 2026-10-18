@@ -14,3 +14,8 @@ workspace = true
 pr-core.workspace = true
 pr-imaging.workspace = true
 pr-perf.workspace = true
+pr-platform-win.workspace = true
+
+[dev-dependencies]
+pr-test-support.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,445 @@
+{
+  "cases": [
+    {
+      "name": "limiter-ctor-one",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 1
+    },
+    {
+      "name": "limiter-ctor-hundred-thousand",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 100000
+    },
+    {
+      "name": "limiter-ctor-long-max",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 9223372036854775807
+    },
+    {
+      "name": "limiter-ctor-zero",
+      "kind": "limiter-ctor",
+      "bytes_per_second": 0
+    },
+    {
+      "name": "limiter-ctor-minus-one",
+      "kind": "limiter-ctor",
+      "bytes_per_second": -1
+    },
+    {
+      "name": "limiter-ctor-long-min",
+      "kind": "limiter-ctor",
+      "bytes_per_second": -9223372036854775808
+    },
+    {
+      "name": "limiter-consume-nonpositive-returns-at-once",
+      "kind": "limiter-consume-immediate",
+      "bytes_per_second": 1000,
+      "bytes": [
+        0,
+        -1,
+        -2147483648
+      ]
+    },
+    {
+      "name": "limiter-consume-more-than-one-second-budget-chunks",
+      "kind": "limiter-consume-lower-bound",
+      "bytes_per_second": 20000000,
+      "bytes": 30000000,
+      "lower_bound_ms": 1200
+    },
+    {
+      "name": "limiter-consume-100kbps-250kb-completes",
+      "kind": "limiter-consume-lower-bound",
+      "bytes_per_second": 100000,
+      "bytes": 250000,
+      "lower_bound_ms": 2000
+    },
+    {
+      "name": "fs-forwarding-no-limiter",
+      "kind": "fs-forwarding",
+      "files": [
+        {
+          "name": "a.jpg",
+          "size": 10
+        },
+        {
+          "name": "B.JPG",
+          "size": 0
+        },
+        {
+          "name": "c.txt",
+          "size": 5
+        },
+        {
+          "name": "d.jpg",
+          "size": 300
+        }
+      ],
+      "dirs": [
+        "sub1",
+        "sub2"
+      ],
+      "probe_files": [
+        "a.jpg",
+        "B.JPG",
+        "c.txt",
+        "missing.jpg",
+        "sub1",
+        "d.jpg"
+      ],
+      "probe_dirs": [
+        "sub1",
+        "sub2",
+        "a.jpg",
+        "missing"
+      ]
+    },
+    {
+      "name": "fs-forwarding-with-limiter",
+      "kind": "fs-forwarding",
+      "files": [
+        {
+          "name": "a.jpg",
+          "size": 10
+        },
+        {
+          "name": "B.JPG",
+          "size": 0
+        },
+        {
+          "name": "c.txt",
+          "size": 5
+        },
+        {
+          "name": "d.jpg",
+          "size": 300
+        }
+      ],
+      "dirs": [
+        "sub1",
+        "sub2"
+      ],
+      "bandwidth_bps": 1000000000,
+      "probe_files": [
+        "a.jpg",
+        "B.JPG",
+        "c.txt",
+        "missing.jpg",
+        "sub1",
+        "d.jpg"
+      ],
+      "probe_dirs": [
+        "sub1",
+        "sub2",
+        "a.jpg",
+        "missing"
+      ]
+    },
+    {
+      "name": "fs-forwarding-empty-folder",
+      "kind": "fs-forwarding",
+      "files": [],
+      "dirs": [],
+      "probe_files": [
+        "x.jpg"
+      ],
+      "probe_dirs": [
+        "x"
+      ]
+    },
+    {
+      "name": "latency-file_exists-files1-x3",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 1,
+      "op": "file_exists",
+      "repeat": 3
+    },
+    {
+      "name": "latency-directory_exists-files1-x3",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 1,
+      "op": "directory_exists",
+      "repeat": 3
+    },
+    {
+      "name": "latency-get_file_stat-files1-x3",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 1,
+      "op": "get_file_stat",
+      "repeat": 3
+    },
+    {
+      "name": "latency-try_probe_readable-files1-x3",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 1,
+      "op": "try_probe_readable",
+      "repeat": 3
+    },
+    {
+      "name": "latency-resolve_real_path-files1-x3",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 1,
+      "op": "resolve_real_path",
+      "repeat": 3
+    },
+    {
+      "name": "latency-enumerate_files_with_stat-files3-x1",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 3,
+      "op": "enumerate_files_with_stat",
+      "repeat": 1
+    },
+    {
+      "name": "latency-enumerate_readable_files_with_stat-files3-x1",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 3,
+      "op": "enumerate_readable_files_with_stat",
+      "repeat": 1
+    },
+    {
+      "name": "latency-enumerate_files_with_stat-files0-x2",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 0,
+      "op": "enumerate_files_with_stat",
+      "repeat": 2
+    },
+    {
+      "name": "latency-enumerate_readable_files_with_stat-files2-x2",
+      "kind": "latency-lower-bound",
+      "latency_ms": 30,
+      "file_count": 2,
+      "op": "enumerate_readable_files_with_stat",
+      "repeat": 2
+    },
+    {
+      "name": "latency-zero-file-exists",
+      "kind": "latency-lower-bound",
+      "latency_ms": 0,
+      "file_count": 1,
+      "op": "file_exists",
+      "repeat": 5
+    },
+    {
+      "name": "throttled-read-100-bytes-limiter",
+      "kind": "throttled-read",
+      "size": 100,
+      "ops": [
+        {
+          "op": "read",
+          "count": 10
+        },
+        {
+          "op": "position"
+        },
+        {
+          "op": "read",
+          "count": 50
+        },
+        {
+          "op": "position"
+        },
+        {
+          "op": "seek",
+          "origin": "begin",
+          "offset": 5
+        },
+        {
+          "op": "read",
+          "count": 4
+        },
+        {
+          "op": "seek",
+          "origin": "current",
+          "offset": -2
+        },
+        {
+          "op": "read",
+          "count": 3
+        },
+        {
+          "op": "seek",
+          "origin": "end",
+          "offset": -10
+        },
+        {
+          "op": "length"
+        },
+        {
+          "op": "read",
+          "count": 100
+        },
+        {
+          "op": "read",
+          "count": 1
+        },
+        {
+          "op": "read",
+          "count": 0
+        },
+        {
+          "op": "seek",
+          "origin": "begin",
+          "offset": 0
+        },
+        {
+          "op": "read_to_end"
+        },
+        {
+          "op": "seek",
+          "origin": "end",
+          "offset": 50
+        },
+        {
+          "op": "read",
+          "count": 8
+        }
+      ],
+      "bandwidth_bps": 1000000000
+    },
+    {
+      "name": "throttled-read-100-bytes-no-limiter",
+      "kind": "throttled-read",
+      "size": 100,
+      "ops": [
+        {
+          "op": "read",
+          "count": 10
+        },
+        {
+          "op": "position"
+        },
+        {
+          "op": "read",
+          "count": 50
+        },
+        {
+          "op": "position"
+        },
+        {
+          "op": "seek",
+          "origin": "begin",
+          "offset": 5
+        },
+        {
+          "op": "read",
+          "count": 4
+        },
+        {
+          "op": "seek",
+          "origin": "current",
+          "offset": -2
+        },
+        {
+          "op": "read",
+          "count": 3
+        },
+        {
+          "op": "seek",
+          "origin": "end",
+          "offset": -10
+        },
+        {
+          "op": "length"
+        },
+        {
+          "op": "read",
+          "count": 100
+        },
+        {
+          "op": "read",
+          "count": 1
+        },
+        {
+          "op": "read",
+          "count": 0
+        },
+        {
+          "op": "seek",
+          "origin": "begin",
+          "offset": 0
+        },
+        {
+          "op": "read_to_end"
+        },
+        {
+          "op": "seek",
+          "origin": "end",
+          "offset": 50
+        },
+        {
+          "op": "read",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-small-buffer-size",
+      "kind": "throttled-read",
+      "size": 100,
+      "buffer_size": 16,
+      "bandwidth_bps": 1000000000,
+      "ops": [
+        {
+          "op": "read",
+          "count": 7
+        },
+        {
+          "op": "read_to_end"
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-empty-file",
+      "kind": "throttled-read",
+      "size": 0,
+      "bandwidth_bps": 1000000000,
+      "ops": [
+        {
+          "op": "read",
+          "count": 4
+        },
+        {
+          "op": "length"
+        },
+        {
+          "op": "read_to_end"
+        }
+      ]
+    },
+    {
+      "name": "throttled-read-300000-bytes-to-end",
+      "kind": "throttled-read",
+      "size": 300000,
+      "bandwidth_bps": 1000000000,
+      "ops": [
+        {
+          "op": "read",
+          "count": 8
+        },
+        {
+          "op": "read_to_end"
+        },
+        {
+          "op": "position"
+        }
+      ]
+    },
+    {
+      "name": "open-missing-no-limiter",
+      "kind": "open-missing"
+    },
+    {
+      "name": "open-missing-with-limiter",
+      "kind": "open-missing",
+      "bandwidth_bps": 1000000
+    }
+  ]
+}

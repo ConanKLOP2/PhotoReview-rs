@@ -1,0 +1,1981 @@
+{
+  "generator": "oracle-cs bench-engine-run",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "samples-exclude-prepare-time",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=3 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=3/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 3,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "default-profile-iterations-30-warmup-1",
+      "profile": {
+        "id": "fast-sequential"
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "fast-sequential",
+      "workload": "Sequential",
+      "samples": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=fast-sequential workload=Sequential folder=<folder> iterations=30 workers=8",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=1/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=2/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=3/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=4/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=5/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=6/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=7/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=8/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=9/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=10/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=11/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=12/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=13/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=14/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=15/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=16/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=17/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=18/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=19/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=20/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=21/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=22/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=23/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=24/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=25/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=26/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=27/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=28/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=29/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=30/30 elapsedMs=1.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=fast-sequential phase=Sequential status=Pass p50Ms=1.0 p95Ms=1.0 maxMs=1.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 1,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 2,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 3,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 4,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 5,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 6,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 7,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 8,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 9,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 10,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 11,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 12,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 13,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 14,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 15,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 16,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 17,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 18,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 19,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 20,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 21,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 22,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 23,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 24,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 25,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 26,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 27,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 28,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 29,
+          "total": 30,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 30,
+          "total": 30,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "warmup-zero-keeps-cumulative-metrics",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": {
+        "cache_hits": 4,
+        "cache_misses": 2,
+        "source_bytes_read": 2000,
+        "source_reads": 10,
+        "decode_milliseconds": 14,
+        "preload_hits": 6,
+        "disk_cache_hits": 2,
+        "source_open_count": 10,
+        "top_source_opens": [
+          {
+            "path": "a.jpg",
+            "count": 10
+          },
+          {
+            "path": "b.jpg",
+            "count": 2
+          }
+        ]
+      },
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "metrics-exclude-warmup",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 2
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": {
+        "cache_hits": 6,
+        "cache_misses": 3,
+        "source_bytes_read": 3000,
+        "source_reads": 15,
+        "decode_milliseconds": 21,
+        "preload_hits": 9,
+        "disk_cache_hits": 3,
+        "source_open_count": 15,
+        "top_source_opens": [
+          {
+            "path": "a.jpg",
+            "count": 15
+          },
+          {
+            "path": "b.jpg",
+            "count": 3
+          }
+        ]
+      },
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=3 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=3/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 3,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "null-metrics-in-last-warmup-keeps-earlier-baseline",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": {
+        "cache_hits": 6,
+        "cache_misses": 3,
+        "source_bytes_read": 3000,
+        "source_reads": 15,
+        "decode_milliseconds": 21,
+        "preload_hits": 9,
+        "disk_cache_hits": 3,
+        "source_open_count": 15,
+        "top_source_opens": [
+          {
+            "path": "a.jpg",
+            "count": 15
+          },
+          {
+            "path": "b.jpg",
+            "count": 3
+          }
+        ]
+      },
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "all-timed-metrics-null-with-baseline-gives-null",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "null-timed-metrics-keep-last-non-null",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": {
+        "cache_hits": 2,
+        "cache_misses": 1,
+        "source_bytes_read": 1000,
+        "source_reads": 5,
+        "decode_milliseconds": 7,
+        "preload_hits": 3,
+        "disk_cache_hits": 1,
+        "source_open_count": 5,
+        "top_source_opens": [
+          {
+            "path": "a.jpg",
+            "count": 5
+          },
+          {
+            "path": "b.jpg",
+            "count": 1
+          }
+        ]
+      },
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=3 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=3/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 3,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "timed-metrics-without-warmup-metrics-stay-cumulative",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": {
+        "cache_hits": 6,
+        "cache_misses": 3,
+        "source_bytes_read": 3000,
+        "source_reads": 15,
+        "decode_milliseconds": 21,
+        "preload_hits": 9,
+        "disk_cache_hits": 3,
+        "source_open_count": 15,
+        "top_source_opens": [
+          {
+            "path": "a.jpg",
+            "count": 15
+          },
+          {
+            "path": "b.jpg",
+            "count": 3
+          }
+        ]
+      },
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "incorrect-sample-fails-the-phase",
+      "profile": {
+        "id": "fast-sequential",
+        "iterations": 3,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "fast-sequential",
+      "workload": "Sequential",
+      "samples": [
+        10,
+        10,
+        10
+      ],
+      "status": "Fail",
+      "message": "One or more samples failed correctness",
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=fast-sequential workload=Sequential folder=<folder> iterations=3 workers=8",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=1/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=2/3 elapsedMs=10.0 correct=False",
+        "INFO Benchmark sample runId=<run> profile=fast-sequential phase=Sequential iteration=3/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=fast-sequential phase=Sequential status=Fail p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 2,
+          "total": 3,
+          "message": "Correctness failed"
+        },
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "completed": 3,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "all-samples-correct-passes-with-null-message",
+      "profile": {
+        "id": "fast-balanced",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "fast-balanced",
+      "workload": "WarmNext",
+      "samples": [
+        5,
+        6
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=fast-balanced workload=WarmNext folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=fast-balanced phase=WarmNext iteration=1/2 elapsedMs=5.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=fast-balanced phase=WarmNext iteration=2/2 elapsedMs=6.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=fast-balanced phase=WarmNext status=Pass p50Ms=5.5 p95Ms=6.0 maxMs=6.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "fast-balanced",
+          "workload": "WarmNext",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "fast-balanced",
+          "workload": "WarmNext",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "warmup-correctness-is-ignored",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "fractional-milliseconds-are-formatted-invariant-f1",
+      "profile": {
+        "id": "action-move",
+        "iterations": 4,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        12.5,
+        0.25,
+        0.75,
+        12.3456
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=4 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/4 elapsedMs=12.5 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/4 elapsedMs=0.2 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=3/4 elapsedMs=0.8 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=4/4 elapsedMs=12.3 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=6.5 p95Ms=12.5 maxMs=12.5"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 4,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 4,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 3,
+          "total": 4,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 4,
+          "total": 4,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "single-sample-percentiles-in-log",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        12.5
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=1 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/1 elapsedMs=12.5 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=12.5 p95Ms=12.5 maxMs=12.5"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 1,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "zero-elapsed-sample",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        0,
+        0
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=0.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=0.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=0.0 p95Ms=0.0 maxMs=0.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "unsorted-samples-keep-arrival-order",
+      "profile": {
+        "id": "action-move",
+        "iterations": 5,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        30,
+        10,
+        50,
+        20,
+        40
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=5 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/5 elapsedMs=30.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/5 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=3/5 elapsedMs=50.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=4/5 elapsedMs=20.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=5/5 elapsedMs=40.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=30.0 p95Ms=48.0 maxMs=50.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 5,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 5,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 3,
+          "total": 5,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 4,
+          "total": 5,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 5,
+          "total": 5,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "large-elapsed-one-hour",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        3600000
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=1 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/1 elapsedMs=3600000.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=3600000.0 p95Ms=3600000.0 maxMs=3600000.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 1,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "workers-and-iterations-in-start-line",
+      "profile": {
+        "id": "ssd-throughput",
+        "iterations": 2,
+        "warmup": 0,
+        "workers": 7
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "ssd-throughput",
+      "workload": "Sequential",
+      "samples": [
+        1,
+        2
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=ssd-throughput workload=Sequential folder=<folder> iterations=2 workers=7",
+        "INFO Benchmark sample runId=<run> profile=ssd-throughput phase=Sequential iteration=1/2 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=ssd-throughput phase=Sequential iteration=2/2 elapsedMs=2.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=ssd-throughput phase=Sequential status=Pass p50Ms=1.5 p95Ms=1.9 maxMs=2.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "ssd-throughput",
+          "workload": "Sequential",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "ssd-throughput",
+          "workload": "Sequential",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "three-warmups-call-order",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 3
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        1,
+        1
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=1.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=1.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=1.0 p95Ms=1.0 maxMs=1.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "original-correctness-profile-workload-correctness",
+      "profile": {
+        "id": "original-correctness",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "original-correctness",
+      "workload": "Correctness",
+      "samples": [
+        3,
+        4
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=original-correctness workload=Correctness folder=<folder> iterations=2 workers=1",
+        "INFO Benchmark sample runId=<run> profile=original-correctness phase=Correctness iteration=1/2 elapsedMs=3.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=original-correctness phase=Correctness iteration=2/2 elapsedMs=4.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=original-correctness phase=Correctness status=Pass p50Ms=3.5 p95Ms=4.0 maxMs=4.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "warmup-prepare-throws",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": "InvalidOperationException",
+      "exception_message": "boom",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "ERROR Benchmark warmup failed runId=<run> profile=action-move warmup=0 | InvalidOperationException"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare"
+      ]
+    },
+    {
+      "name": "warmup-measure-throws",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "folder_kind": "temp",
+      "exception": "InvalidOperationException",
+      "exception_message": "boom",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "ERROR Benchmark warmup failed runId=<run> profile=action-move warmup=1 | InvalidOperationException"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "timed-prepare-throws-third-sample",
+      "profile": {
+        "id": "action-move",
+        "iterations": 4,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": "InvalidOperationException",
+      "exception_message": "boom",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=4 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/4 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/4 elapsedMs=10.0 correct=True",
+        "ERROR Benchmark phase failed runId=<run> profile=action-move iteration=2 | InvalidOperationException"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 4,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 4,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare"
+      ]
+    },
+    {
+      "name": "timed-measure-throws-first-sample",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": "InvalidOperationException",
+      "exception_message": "boom",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "ERROR Benchmark phase failed runId=<run> profile=action-move iteration=0 | InvalidOperationException"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "cancel-thrown-by-warmup-prepare-is-logged",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "folder_kind": "temp",
+      "exception": "OperationCanceledException",
+      "exception_message": "The operation was canceled.",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark canceled runId=<run> profile=action-move warmup=1"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare"
+      ]
+    },
+    {
+      "name": "cancel-thrown-by-timed-measure-is-logged",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": "OperationCanceledException",
+      "exception_message": "The operation was canceled.",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=3 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/3 elapsedMs=10.0 correct=True",
+        "INFO Benchmark canceled runId=<run> profile=action-move iteration=1"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "token-canceled-after-first-sample-stops-at-loop-top-without-log",
+      "profile": {
+        "id": "action-move",
+        "iterations": 3,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": "OperationCanceledException",
+      "exception_message": "The operation was canceled.",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=3 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/3 elapsedMs=10.0 correct=True"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 3,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "token-canceled-in-warmup-stops-at-warmup-loop-top-without-log",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 2
+      },
+      "folder_kind": "temp",
+      "exception": "OperationCanceledException",
+      "exception_message": "The operation was canceled.",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "token-canceled-in-last-warmup-stops-at-first-iteration",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 1
+      },
+      "folder_kind": "temp",
+      "exception": "OperationCanceledException",
+      "exception_message": "The operation was canceled.",
+      "profile_problem": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4"
+      ],
+      "progress": [],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "token-canceled-in-last-sample-still-returns-report",
+      "profile": {
+        "id": "action-move",
+        "iterations": 2,
+        "warmup": 0
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10,
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=2 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=2/2 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 2,
+          "message": "OK"
+        },
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 2,
+          "total": 2,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure",
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "empty-folder-argument-exception",
+      "profile": {
+        "id": "action-move"
+      },
+      "folder_kind": "empty",
+      "exception": "ArgumentException",
+      "exception_message": "Folder is required (Parameter 'folder')",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "whitespace-folder-argument-exception",
+      "profile": {
+        "id": "action-move"
+      },
+      "folder_kind": "whitespace",
+      "exception": "ArgumentException",
+      "exception_message": "Folder is required (Parameter 'folder')",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "missing-folder-directory-not-found",
+      "profile": {
+        "id": "action-move"
+      },
+      "folder_kind": "missing",
+      "exception": "DirectoryNotFoundException",
+      "exception_message": "<root>\\missing",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "file-instead-of-folder-directory-not-found",
+      "profile": {
+        "id": "action-move"
+      },
+      "folder_kind": "file",
+      "exception": "DirectoryNotFoundException",
+      "exception_message": "<root>\\afile.txt",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "workers-zero-is-invalid-settings",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      },
+      "folder_kind": "temp",
+      "exception": "BenchmarkProfileException",
+      "exception_message": "Invalid benchmark settings for profile 'action-move'",
+      "profile_problem": "InvalidSettings",
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "iterations-zero-is-invalid-settings",
+      "profile": {
+        "id": "action-move",
+        "iterations": 0
+      },
+      "folder_kind": "temp",
+      "exception": "BenchmarkProfileException",
+      "exception_message": "Invalid benchmark settings for profile 'action-move'",
+      "profile_problem": "InvalidSettings",
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "negative-warmup-is-allowed-and-runs-none",
+      "profile": {
+        "id": "action-move",
+        "iterations": 1,
+        "warmup": -2
+      },
+      "folder_kind": "temp",
+      "exception": null,
+      "run_id_is_32_lower_hex": true,
+      "started_utc_between_call_start_and_end": true,
+      "report_folder_is_full_path": true,
+      "machine_is_environment_machine_name": true,
+      "phase_count": 1,
+      "profile_id": "action-move",
+      "workload": "FileAction",
+      "samples": [
+        10
+      ],
+      "status": "Pass",
+      "message": null,
+      "images_per_sample": null,
+      "metrics": null,
+      "log": [
+        "INFO Benchmark start runId=<run> profile=action-move workload=FileAction folder=<folder> iterations=1 workers=4",
+        "INFO Benchmark sample runId=<run> profile=action-move phase=FileAction iteration=1/1 elapsedMs=10.0 correct=True",
+        "INFO Benchmark complete runId=<run> profile=action-move phase=FileAction status=Pass p50Ms=10.0 p95Ms=10.0 maxMs=10.0"
+      ],
+      "progress": [
+        {
+          "profile_id": "action-move",
+          "workload": "FileAction",
+          "completed": 1,
+          "total": 1,
+          "message": "OK"
+        }
+      ],
+      "call_order": [
+        "prepare",
+        "measure"
+      ]
+    },
+    {
+      "name": "blank-profile-id-is-missing-id",
+      "profile": {
+        "id": "action-move",
+        "blank_id": true
+      },
+      "folder_kind": "temp",
+      "exception": "BenchmarkProfileException",
+      "exception_message": "Profile id and loading mode are required",
+      "profile_problem": "MissingIdOrMode",
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "empty-folder-is-checked-before-the-profile",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      },
+      "folder_kind": "empty",
+      "exception": "ArgumentException",
+      "exception_message": "Folder is required (Parameter 'folder')",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "missing-folder-is-checked-before-the-profile",
+      "profile": {
+        "id": "action-move",
+        "workers": 0
+      },
+      "folder_kind": "missing",
+      "exception": "DirectoryNotFoundException",
+      "exception_message": "<root>\\missing",
+      "profile_problem": null,
+      "log": [],
+      "progress": [],
+      "call_order": []
+    },
+    {
+      "name": "executor-not-called-when-validation-fails",
+      "profile": {
+        "id": "action-move",
+        "iterations": 0
+      },
+      "folder_kind": "temp",
+      "exception": "BenchmarkProfileException",
+      "exception_message": "Invalid benchmark settings for profile 'action-move'",
+      "profile_problem": "InvalidSettings",
+      "log": [],
+      "progress": [],
+      "call_order": []
+    }
+  ]
+}
