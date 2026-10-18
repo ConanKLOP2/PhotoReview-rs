@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.Integration.Tests/BenchmarkImageExecutorTeardownTests.cs`, the five executor / profile-scope tests of
+﻿//! Port of `PhotoReview.Integration.Tests/BenchmarkImageExecutorTeardownTests.cs`, the five executor / profile-scope tests of
 //! `BenchmarkTrustTests.cs`, and `BenchmarkWorkloadRunnerTests.WarmNextWorkloadRecordsPreloadHitAfterWarming` (C# baseline
 //! d92d6aae), plus the golden twins of `BenchmarkProfileScope.ApplyLogging` and `WindowedPreloadTarget` and the Rust-only gap
 //! tests named in `contracts/W7-03b.md`. Unit W7-03b, red stage: the stub bodies are `todo!()`, so every test here fails
@@ -232,6 +232,7 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
 /// with trait defaults (`active_viewer_decodes`, `cached_preview_bytes`, `has_disk_cached_preview`) answer NON-default values.
 struct Inner {
     cached: bool,
+    disk: bool,
     path_calls: AtomicUsize,
     key_calls: AtomicUsize,
     key_for_path_calls: AtomicUsize,
@@ -242,6 +243,7 @@ impl Inner {
     fn new(cached: bool) -> Self {
         Self {
             cached,
+            disk: true,
             path_calls: AtomicUsize::new(0),
             key_calls: AtomicUsize::new(0),
             key_for_path_calls: AtomicUsize::new(0),
@@ -299,7 +301,7 @@ impl PreloadTarget for Inner {
     }
 
     fn has_disk_cached_preview(&self, _key: &ImageCacheKey) -> bool {
-        true
+        self.disk
     }
 }
 
@@ -1062,6 +1064,34 @@ fn windowed_target_forwards_every_member() {
         !target.try_get_cached_preview_for_path(&files[0]),
         "the verdict is the inner's answer when not restricted"
     );
+}
+
+#[test]
+fn windowed_target_forwards_a_false_disk_cache_answer() {
+    // Kills has_disk_cached_preview -> true: the wrapper must relay the inner's alse, not invent 	rue.
+    let root = TempRoot::new("gap-window-disk-false");
+    let files = write_files(&root, 2);
+    let mut raw = Inner::new(false);
+    raw.disk = false;
+    let inner = Arc::new(raw);
+    let profile = BenchmarkProfile {
+        full_folder: true,
+        ..fast_balanced()
+    };
+    let target = windowed(&inner, &files, &profile);
+    let key = key_for_probe(&files[0]).expect("key");
+    assert!(!target.has_disk_cached_preview(&key));
+}
+
+#[test]
+fn executor_debug_names_the_type_and_directory() {
+    // Kills Debug for BenchmarkImageExecutor -> Ok(Default::default()).
+    let root = TempRoot::new("gap-debug");
+    let decoder = FakeDecoder::new();
+    let executor = build(&fast_balanced(), &[], default_options(&root, &decoder));
+    let text = format!("{:?}", *executor);
+    assert!(text.contains("BenchmarkImageExecutor"), "{text}");
+    assert!(text.contains("disk_cache_directory"), "{text}");
 }
 
 #[test]

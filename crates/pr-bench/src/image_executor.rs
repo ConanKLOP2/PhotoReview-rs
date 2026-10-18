@@ -785,3 +785,25 @@ impl Log for DefaultFileLog {
         FileLog::default_instance().error(message, error);
     }
 }
+
+#[cfg(test)]
+mod default_file_log_tests {
+    use super::*;
+
+    /// `enabled` mirrors the process-wide log in both states (kills `-> true` / `-> false`). Only the flag is toggled and then
+    /// restored; no message is written, so the real app log is untouched. `info`/`warn`/`error` forward to the process-wide
+    /// log, which is not injectable without writing the real app log, so they are not asserted here.
+    #[test]
+    fn enabled_mirrors_the_process_wide_log() {
+        let global = FileLog::default_instance();
+        let original = global.enabled();
+        let log = DefaultFileLog;
+        global.set_enabled(true);
+        let when_on = log.enabled();
+        global.set_enabled(false);
+        let when_off = log.enabled();
+        global.set_enabled(original);
+        assert!(when_on, "enabled must follow the global log when on");
+        assert!(!when_off, "enabled must follow the global log when off");
+    }
+}
