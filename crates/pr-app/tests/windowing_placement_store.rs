@@ -681,3 +681,116 @@ fn debug_names_the_type() {
     let store = store_with(Arc::new(FakeFileSystem::new()));
     assert!(format!("{store:?}").contains("JsonWindowPlacementStore"));
 }
+
+/// Wraps a fake and records the `durable` flag of every atomic write (the hook file system does not trace those).
+struct DurableProbe {
+    inner: FakeFileSystem,
+    durable: Mutex<Vec<bool>>,
+}
+
+impl FileSystem for DurableProbe {
+    fn file_exists(&self, path: &Path) -> bool {
+        self.inner.file_exists(path)
+    }
+    fn directory_exists(&self, path: &Path) -> bool {
+        self.inner.directory_exists(path)
+    }
+    fn get_file_stat(&self, path: &Path) -> Option<pr_core::abstractions::FileStat> {
+        self.inner.get_file_stat(path)
+    }
+    fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.move_file(source, destination)
+    }
+    fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        self.inner.copy_file(source, destination)
+    }
+    fn delete(&self, path: &Path) -> io::Result<()> {
+        self.inner.delete(path)
+    }
+    fn open_read_shared(
+        &self,
+        path: &Path,
+        buffer_size: usize,
+    ) -> io::Result<Box<dyn pr_core::abstractions::ReadSeek>> {
+        self.inner.open_read_shared(path, buffer_size)
+    }
+    fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn pr_core::abstractions::AppendStream>> {
+        self.inner.open_append(path, durable)
+    }
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
+        self.durable.lock().expect("durable flags").push(durable);
+        self.inner.write_all_text_atomic(path, text, durable)
+    }
+    fn read_all_text(&self, path: &Path) -> io::Result<String> {
+        self.inner.read_all_text(path)
+    }
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
+        self.inner.enumerate_files(directory, pattern)
+    }
+    fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
+        self.inner.enumerate_directories(directory)
+    }
+    fn create_directory(&self, path: &Path) -> io::Result<()> {
+        self.inner.create_directory(path)
+    }
+}
+
+// new (no C# twin): the cache write is atomic but not durable (contract note 19)
+#[test]
+fn write_atomically_asks_for_a_non_durable_write() {
+    let probe = DurableProbe {
+        inner: FakeFileSystem::new(),
+        durable: Mutex::new(Vec::new()),
+    };
+    probe
+        .create_directory(Path::new(r"C:\pr-test\placement"))
+        .expect("folder");
+    JsonWindowPlacementStore::write_atomically(&probe, r"C:\pr-test\placement\placement.json", "{}").expect("write");
+    assert_eq!(*probe.durable.lock().expect("durable flags"), vec![false]);
+}
+
+fn is_json_error<T: std::fmt::Debug>(got: Result<T, PlacementReadError>) -> bool {
+    matches!(got, Err(PlacementReadError::Json(_)))
+}
+
+#[test]
+fn deserialize_bad_show_command_or_flags_is_a_json_error() {
+    for text in [
+        r#"{"ShowCommand":"3"}"#,
+        r#"{"ShowCommand":null}"#,
+        r#"{"ShowCommand":true}"#,
+        r#"{"ShowCommand":1.5}"#,
+        r#"{"Flags":"2"}"#,
+        r#"{"Flags":null}"#,
+        r#"{"Flags":{}}"#,
+        r#"{"Flags":3000000000}"#,
+    ] {
+        assert!(
+            is_json_error(JsonWindowPlacementStore::deserialize(text)),
+            "{text} is rejected"
+        );
+    }
+}
+
+#[test]
+fn deserialize_repeated_min_or_max_position_replaces_the_earlier_one() {
+    let got = JsonWindowPlacementStore::deserialize(
+        r#"{"MinPosition":{"X":5,"Y":6},"MinPosition":{"X":7},"MaxPosition":{"X":8,"Y":9},"MaxPosition":{"Y":4}}"#,
+    )
+    .expect("valid")
+    .expect("an object");
+    assert_eq!((got.min_x, got.min_y), (7, 0));
+    assert_eq!((got.max_x, got.max_y), (0, 4));
+}
+
+#[test]
+fn read_raw_of_an_unreadable_file_is_the_io_variant() {
+    let fs = FakeFileSystem::new();
+    let path = r"C:\pr-test\placement\locked.json";
+    fs.add_file(path, b"{}");
+    fs.fail(FsOp::ReadText, path, io::ErrorKind::PermissionDenied);
+    match JsonWindowPlacementStore::read_raw(&fs, path) {
+        Err(PlacementReadError::Io(e)) => assert_eq!(e.kind(), io::ErrorKind::PermissionDenied),
+        other => panic!("expected the Io variant, got {other:?}"),
+    }
+}
