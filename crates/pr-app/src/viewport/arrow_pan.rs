@@ -48,7 +48,7 @@ pub fn step_length(viewport_width: f64, viewport_height: f64, step_fraction: f64
 /// C# `Step(dx, dy, horizontal, vertical, in layout, stepFraction)`.
 ///
 /// One press along `(dx, dy)`; the normal use is exactly one of them is `-1` or `1`. The horizontal axis is used when
-/// `dx != 0`, otherwise the vertical axis. The step is `step_length(...) * (dx + dy)` (so `(1, 1)` moves twice as far and
+/// `dx != 0`, otherwise the vertical axis. The step is `step_length(...) * (dx + dy)` (C# unchecked int sum, wrapping) (so `(1, 1)` moves twice as far and
 /// `(1, -1)` does not move). The axis max is `layout.max_horizontal_offset` or `layout.max_vertical_offset`.
 ///
 /// Returns `(outcome, horizontal, vertical)`:
@@ -76,7 +76,7 @@ pub fn step(
     }
 
     let length = step_length(layout.viewport_width, layout.viewport_height, step_fraction);
-    let moved = current + length * (f64::from(dx) + f64::from(dy));
+    let moved = current + length * f64::from(dx.wrapping_add(dy));
     // C# Math.Clamp(value, 0, max): lower bound first, then upper bound; a NaN max is never selected.
     let target = if moved < 0.0 {
         0.0
