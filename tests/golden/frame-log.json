@@ -1,0 +1,67 @@
+{
+  "generator": "oracle-cs frame-log",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "documented line (format)",
+      "kind": "format",
+      "line": "F gap=250.3 frame=3.46 endDraw=1.20 present=0.99"
+    },
+    {
+      "name": "exact binary ties at one and two decimals",
+      "kind": "format",
+      "line": "F gap=0.2 frame=0.12 endDraw=2.50 present=0.38"
+    },
+    {
+      "name": "negative values that round to zero keep the sign",
+      "kind": "format",
+      "line": "F gap=0.0 frame=-0.00 endDraw=-0.00 present=-0.00"
+    },
+    {
+      "name": "NaN is written as NaN",
+      "kind": "format",
+      "line": "F gap=NaN frame=1.00 endDraw=1.00 present=1.00"
+    },
+    {
+      "name": "infinity is written as Infinity",
+      "kind": "format",
+      "line": "F gap=0.0 frame=Infinity endDraw=-Infinity present=1.00"
+    },
+    {
+      "name": "env: unset variable gives no log",
+      "kind": "env",
+      "asked": "PHOTOREVIEW_FRAME_LOG",
+      "is_null": true
+    },
+    {
+      "name": "env: blank value gives no log",
+      "kind": "env",
+      "asked": "PHOTOREVIEW_FRAME_LOG",
+      "is_null": true
+    },
+    {
+      "name": "env: unopenable path gives no log",
+      "kind": "env",
+      "asked": "PHOTOREVIEW_FRAME_LOG",
+      "is_null": true
+    },
+    {
+      "name": "record: one line per frame, gap since previous frame start",
+      "kind": "record",
+      "lines": [
+        "F gap=0.0 frame=10.00 endDraw=1.50 present=0.50",
+        "F gap=250.0 frame=20.00 endDraw=12.00 present=1.00"
+      ],
+      "ticks_per_second": 10000000
+    },
+    {
+      "name": "record: a first frame starting at tick 0 keeps the next gap at zero",
+      "kind": "record",
+      "lines": [
+        "F gap=0.0 frame=1.00 endDraw=1.00 present=1.00",
+        "F gap=0.0 frame=1.00 endDraw=1.00 present=1.00"
+      ],
+      "ticks_per_second": 10000000
+    }
+  ]
+}

@@ -1,0 +1,3424 @@
+{
+  "generator": "oracle-cs format-exif",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "format-all-en-invariant",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Taken: 05/01/2024 14:03 · 6000×4000 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2.8 · 1/250 s"
+    },
+    {
+      "name": "format-all-vi-invariant",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Chụp: 05/01/2024 14:03 · 6000×4000 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2.8 · 1/250 giây"
+    },
+    {
+      "name": "format-all-en-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Taken: 01/05/2024 14:03 · 6000×4000 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2,8 · 1/250 s"
+    },
+    {
+      "name": "format-all-en-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "1/5/2567 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Taken: 1/5/2567 14:03 · 6000×4000 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2.8 · 1/250 s"
+    },
+    {
+      "name": "format-taken-modified-en",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 514,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Taken: 05/01/2024 14:03 · Modified: 06/15/2024 09:30"
+    },
+    {
+      "name": "format-modified-alone",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": "2024-01-02T03:04:05",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638397614450000000",
+          "general": "01/02/2024 03:04",
+          "invariant": "01/02/2024 03:04"
+        }
+      ],
+      "text": "Modified: 01/02/2024 03:04"
+    },
+    {
+      "name": "format-modified-null-skipped",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 513,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "a.jpg"
+    },
+    {
+      "name": "format-modified-off-removes-part",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 521,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-03-04T05:06:07",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638451255670000000",
+          "general": "03/04/2024 05:06",
+          "invariant": "03/04/2024 05:06"
+        }
+      ],
+      "text": "a.jpg · Modified: 03/04/2024 05:06 · Canon EOS R5"
+    },
+    {
+      "name": "format-modified-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 514,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Chụp: 05/01/2024 14:03 · Sửa: 06/15/2024 09:30"
+    },
+    {
+      "name": "format-raw-preview-all",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Taken: 05/01/2024 14:03 · 6000×4000 · RAW preview 1620×1080 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2.8 · 1/250 s"
+    },
+    {
+      "name": "format-raw-preview-zero-height",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg · Taken: 05/01/2024 14:03 · 6000×4000 · Canon EOS R5 · RF24-70mm F2.8 · ISO 400 · 50 mm · f/2.8 · 1/250 s"
+    },
+    {
+      "name": "format-raw-preview-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 4,
+      "file_name": null,
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080,
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "6000×4000 · Bản xem trước RAW 1620×1080"
+    },
+    {
+      "name": "format-raw-preview-file-only",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": "IMG_1234.jpg"
+    },
+    {
+      "name": "field-alone-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "IMG_1234.jpg"
+    },
+    {
+      "name": "field-alone-file-name-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "IMG_1234.jpg"
+    },
+    {
+      "name": "field-alone-date-taken",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Taken: 05/01/2024 14:03"
+    },
+    {
+      "name": "field-alone-date-taken-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Taken: 01/05/2024 14:03"
+    },
+    {
+      "name": "field-alone-dimensions",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 4,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "6000×4000"
+    },
+    {
+      "name": "field-alone-dimensions-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 4,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "6000×4000"
+    },
+    {
+      "name": "field-alone-camera",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Canon EOS R5"
+    },
+    {
+      "name": "field-alone-camera-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Canon EOS R5"
+    },
+    {
+      "name": "field-alone-lens",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 16,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "RF24-70mm F2.8"
+    },
+    {
+      "name": "field-alone-lens-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 16,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "RF24-70mm F2.8"
+    },
+    {
+      "name": "field-alone-iso",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "ISO 400"
+    },
+    {
+      "name": "field-alone-iso-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "ISO 400"
+    },
+    {
+      "name": "field-alone-focal-length",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 64,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "50 mm"
+    },
+    {
+      "name": "field-alone-focal-length-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 64,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "50 mm"
+    },
+    {
+      "name": "field-alone-aperture",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 128,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "f/2.8"
+    },
+    {
+      "name": "field-alone-aperture-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 128,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "f/2,8"
+    },
+    {
+      "name": "field-alone-shutter-speed",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 256,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "1/250 s"
+    },
+    {
+      "name": "field-alone-shutter-speed-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 256,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "1/250 s"
+    },
+    {
+      "name": "field-alone-modified-date",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "06/15/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Modified: 06/15/2024 09:30"
+    },
+    {
+      "name": "field-alone-modified-date-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "01/05/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        },
+        {
+          "ticks": "638540406000000000",
+          "general": "15/06/2024 09:30",
+          "invariant": "06/15/2024 09:30"
+        }
+      ],
+      "text": "Modified: 15/06/2024 09:30"
+    },
+    {
+      "name": "format-none-fields",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 0,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "638501690020000000",
+          "general": "05/01/2024 14:03",
+          "invariant": "05/01/2024 14:03"
+        }
+      ],
+      "text": ""
+    },
+    {
+      "name": "format-missing-exif",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg · 6000×4000"
+    },
+    {
+      "name": "format-missing-dims",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 0,
+      "height": 0,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg"
+    },
+    {
+      "name": "format-partial-exif-iso-fnumber",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 0,
+      "height": 0,
+      "exif": {
+        "iso": 100,
+        "f_number": {
+          "n": 8,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg · ISO 100 · f/8"
+    },
+    {
+      "name": "format-blank-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "   ",
+      "width": -1,
+      "height": 5,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": ""
+    },
+    {
+      "name": "format-huge-values-en",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 2147483647,
+      "height": 2147483647,
+      "exif": {
+        "iso": 2147483647,
+        "focal_length": {
+          "n": 4294967295,
+          "d": 1
+        },
+        "f_number": {
+          "n": 1,
+          "d": 4294967295
+        },
+        "exposure_time": {
+          "n": 4294967295,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg · 2147483647×2147483647 · ISO 2147483647 · 4294967295 mm · f/0 · 4294967295 s"
+    },
+    {
+      "name": "format-huge-values-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 2147483647,
+      "height": 2147483647,
+      "exif": {
+        "iso": 2147483647,
+        "focal_length": {
+          "n": 4294967295,
+          "d": 1
+        },
+        "f_number": {
+          "n": 1,
+          "d": 4294967295
+        },
+        "exposure_time": {
+          "n": 4294967295,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg · 2147483647×2147483647 · ISO 2147483647 · 4294967295 mm · f/0 · 4294967295 giây"
+    },
+    {
+      "name": "format-zero-values",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 480,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "iso": 0,
+        "focal_length": {
+          "n": 50,
+          "d": 0
+        },
+        "f_number": {
+          "n": 0,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 0,
+          "d": 0
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": ""
+    },
+    {
+      "name": "format-negative-iso",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "iso": -100
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": ""
+    },
+    {
+      "name": "format-empty-lens-part",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 17,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "lens_model": ""
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "IMG_1234.jpg · "
+    },
+    {
+      "name": "format-blank-camera-pair",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "camera_make": "",
+        "camera_model": ""
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": ""
+    },
+    {
+      "name": "format-rtl-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 5,
+      "file_name": "صورة‏.jpg",
+      "width": 640,
+      "height": 480,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "صورة‏.jpg · 640×480"
+    },
+    {
+      "name": "format-date-year-1",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "0001-01-01T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "0",
+          "general": "01/01/0001 00:00",
+          "invariant": "01/01/0001 00:00"
+        }
+      ],
+      "text": "Taken: 01/01/0001 00:00"
+    },
+    {
+      "name": "format-date-year-9999",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "9999-12-31T23:59:59"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "3155378975990000000",
+          "general": "12/31/9999 23:59",
+          "invariant": "12/31/9999 23:59"
+        }
+      ],
+      "text": "Taken: 12/31/9999 23:59"
+    },
+    {
+      "name": "format-date-1600",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "1600-01-01T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "504595008000000000",
+          "general": "01/01/1600 00:00",
+          "invariant": "01/01/1600 00:00"
+        }
+      ],
+      "text": "Taken: 01/01/1600 00:00"
+    },
+    {
+      "name": "format-date-2099-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2099-12-31T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "662379552000000000",
+          "general": "31/12/2642 00:00",
+          "invariant": "12/31/2099 00:00"
+        }
+      ],
+      "text": "Taken: 31/12/2642 00:00"
+    },
+    {
+      "name": "format-date-1850-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "1850-06-01T12:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [
+        {
+          "ticks": "583618608000000000",
+          "general": "1/6/2393 12:00",
+          "invariant": "06/01/1850 12:00"
+        }
+      ],
+      "text": "Taken: 1/6/2393 12:00"
+    },
+    {
+      "name": "format-date-1850-modified",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": "1850-06-01T12:00:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [
+        {
+          "ticks": "583618608000000000",
+          "general": "06/01/1850 12:00",
+          "invariant": "06/01/1850 12:00"
+        }
+      ],
+      "text": "Modified: 06/01/1850 12:00"
+    },
+    {
+      "name": "camera-51",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "Canon EOS R5",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon EOS R5"
+    },
+    {
+      "name": "camera-52",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "NIKON CORPORATION",
+      "model": "NIKON Z 6_2",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "NIKON Z 6_2"
+    },
+    {
+      "name": "camera-53",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "SONY",
+      "model": "ILCE-7M3",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "SONY ILCE-7M3"
+    },
+    {
+      "name": "camera-54",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": "X100V",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "X100V"
+    },
+    {
+      "name": "camera-55",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "FUJIFILM",
+      "model": null,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "FUJIFILM"
+    },
+    {
+      "name": "camera-56",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": null,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "camera-57",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "",
+      "model": "",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "camera-58",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "  ",
+      "model": " ",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "camera-59",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": null,
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon"
+    },
+    {
+      "name": "camera-60",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": "EOS R5",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "EOS R5"
+    },
+    {
+      "name": "camera-61",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "東京カメラ",
+      "model": "東京 α7",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "東京カメラ 東京 α7"
+    },
+    {
+      "name": "camera-62",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "ARABIC",
+      "model": "كاميرا رقمية",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "ARABIC كاميرا رقمية"
+    },
+    {
+      "name": "camera-63",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "שלום",
+      "model": "מצלמה",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "שלום מצלמה"
+    },
+    {
+      "name": "camera-64",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Ünïcödé Ltd",
+      "model": "Ünïcödé Ltd Ω-1 \uD83D\uDE00",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Ünïcödé Ltd Ω-1 \uD83D\uDE00"
+    },
+    {
+      "name": "camera-65",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "canon",
+      "model": "CANON EOS",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "CANON EOS"
+    },
+    {
+      "name": "camera-66",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon ",
+      "model": "Canon EOS",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon EOS"
+    },
+    {
+      "name": "camera-67",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": " Canon",
+      "model": "Canon X",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": " Canon Canon X"
+    },
+    {
+      "name": "camera-68",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "  ",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon"
+    },
+    {
+      "name": "camera-69",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon EOS",
+      "model": "Canon EOS R5",
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon EOS R5"
+    },
+    {
+      "name": "camera-vi-canon-model",
+      "kind": "camera",
+      "language": "vi",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "Canon EOS R5",
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "Canon EOS R5"
+    },
+    {
+      "name": "shutter-1-250",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 250
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/250 s"
+    },
+    {
+      "name": "shutter-10-2500",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 10,
+        "d": 2500
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/250 s"
+    },
+    {
+      "name": "shutter-1-3",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 3
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/3 s"
+    },
+    {
+      "name": "shutter-3-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 3,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.3 s"
+    },
+    {
+      "name": "shutter-4-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.4 s"
+    },
+    {
+      "name": "shutter-1-2",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 2
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/2 s"
+    },
+    {
+      "name": "shutter-5-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 5,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.5 s"
+    },
+    {
+      "name": "shutter-13-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 13,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1.3 s"
+    },
+    {
+      "name": "shutter-30-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 30,
+        "d": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "30 s"
+    },
+    {
+      "name": "shutter-1-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1 s"
+    },
+    {
+      "name": "shutter-2-500",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 2,
+        "d": 500
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/250 s"
+    },
+    {
+      "name": "shutter-15-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 15,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1.5 s"
+    },
+    {
+      "name": "shutter-1-8000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 8000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/8000 s"
+    },
+    {
+      "name": "shutter-1-4294967295",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 4294967295
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/4294967295 s"
+    },
+    {
+      "name": "shutter-4-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4,
+        "d": 100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/25 s"
+    },
+    {
+      "name": "shutter-125-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 125,
+        "d": 1000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/8 s"
+    },
+    {
+      "name": "shutter-5-4",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 5,
+        "d": 4
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1.3 s"
+    },
+    {
+      "name": "shutter-96-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 96,
+        "d": 100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1 s"
+    },
+    {
+      "name": "shutter-45-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 45,
+        "d": 100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.45 s"
+    },
+    {
+      "name": "shutter-21-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 21,
+        "d": 100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.21 s"
+    },
+    {
+      "name": "shutter-101-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 101,
+        "d": 1000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/10 s"
+    },
+    {
+      "name": "shutter-7-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 7,
+        "d": 1000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/143 s"
+    },
+    {
+      "name": "shutter-3-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 3,
+        "d": 100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/33 s"
+    },
+    {
+      "name": "shutter-4294967295-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4294967295,
+        "d": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "4294967295 s"
+    },
+    {
+      "name": "shutter-0-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 0,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "shutter-10-0",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 10,
+        "d": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "shutter-0-0",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 0,
+        "d": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": null
+    },
+    {
+      "name": "shutter-1-20",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 20
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/20 s"
+    },
+    {
+      "name": "shutter-2-3",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 2,
+        "d": 3
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "0.7 s"
+    },
+    {
+      "name": "shutter-1-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 1000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "date_texts": [],
+      "text": "1/1000 s"
+    },
+    {
+      "name": "shutter-15-10-vi-VN",
+      "kind": "shutter",
+      "language": "vi",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 15,
+        "d": 10
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [],
+      "text": "1,5 giây"
+    },
+    {
+      "name": "shutter-3-10-vi-VN",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 3,
+        "d": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [],
+      "text": "0,3 s"
+    },
+    {
+      "name": "shutter-13-10-vi-VN",
+      "kind": "shutter",
+      "language": "vi",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 13,
+        "d": 10
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "date_texts": [],
+      "text": "1,3 giây"
+    }
+  ]
+}

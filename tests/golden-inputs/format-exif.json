@@ -1,0 +1,1831 @@
+{
+  "cases": [
+    {
+      "name": "format-all-en-invariant",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-all-vi-invariant",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-all-en-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-all-en-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-taken-modified-en",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 514,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-modified-alone",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": "2024-01-02T03:04:05",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-modified-null-skipped",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 513,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-modified-off-removes-part",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 521,
+      "file_name": "a.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-03-04T05:06:07",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-modified-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 514,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-raw-preview-all",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080
+    },
+    {
+      "name": "format-raw-preview-zero-height",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-raw-preview-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 4,
+      "file_name": null,
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080
+    },
+    {
+      "name": "format-raw-preview-file-only",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 1620,
+      "raw_preview_height": 1080
+    },
+    {
+      "name": "field-alone-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-file-name-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 1,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-date-taken",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-date-taken-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-dimensions",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 4,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-dimensions-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 4,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-camera",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-camera-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-lens",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 16,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-lens-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 16,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-iso",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-iso-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-focal-length",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 64,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-focal-length-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 64,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-aperture",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 128,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-aperture-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 128,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-shutter-speed",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 256,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-shutter-speed-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 256,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-modified-date",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "field-alone-modified-date-vi-VN",
+      "kind": "format",
+      "language": "en",
+      "culture": "vi-VN",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": "2024-06-15T09:30:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-none-fields",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 0,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-missing-exif",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-missing-dims",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 0,
+      "height": 0,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-partial-exif-iso-fnumber",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 0,
+      "height": 0,
+      "exif": {
+        "iso": 100,
+        "f_number": {
+          "n": 8,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-blank-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "   ",
+      "width": -1,
+      "height": 5,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-huge-values-en",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 2147483647,
+      "height": 2147483647,
+      "exif": {
+        "iso": 2147483647,
+        "focal_length": {
+          "n": 4294967295,
+          "d": 1
+        },
+        "f_number": {
+          "n": 1,
+          "d": 4294967295
+        },
+        "exposure_time": {
+          "n": 4294967295,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-huge-values-vi",
+      "kind": "format",
+      "language": "vi",
+      "culture": "invariant",
+      "fields": 1023,
+      "file_name": "IMG_1234.jpg",
+      "width": 2147483647,
+      "height": 2147483647,
+      "exif": {
+        "iso": 2147483647,
+        "focal_length": {
+          "n": 4294967295,
+          "d": 1
+        },
+        "f_number": {
+          "n": 1,
+          "d": 4294967295
+        },
+        "exposure_time": {
+          "n": 4294967295,
+          "d": 1
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-zero-values",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 480,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "iso": 0,
+        "focal_length": {
+          "n": 50,
+          "d": 0
+        },
+        "f_number": {
+          "n": 0,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 0,
+          "d": 0
+        }
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-negative-iso",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 32,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "iso": -100
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-empty-lens-part",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 17,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "lens_model": ""
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-blank-camera-pair",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 8,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "camera_make": "",
+        "camera_model": ""
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-rtl-file-name",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 5,
+      "file_name": "صورة‏.jpg",
+      "width": 640,
+      "height": 480,
+      "exif": null,
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-year-1",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "0001-01-01T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-year-9999",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "9999-12-31T23:59:59"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-1600",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "1600-01-01T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-2099-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "2099-12-31T00:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-1850-th-TH",
+      "kind": "format",
+      "language": "en",
+      "culture": "th-TH",
+      "fields": 2,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": {
+        "date_taken": "1850-06-01T12:00:00"
+      },
+      "modified_local": null,
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "format-date-1850-modified",
+      "kind": "format",
+      "language": "en",
+      "culture": "invariant",
+      "fields": 512,
+      "file_name": "IMG_1234.jpg",
+      "width": 6000,
+      "height": 4000,
+      "exif": null,
+      "modified_local": "1850-06-01T12:00:00",
+      "raw_preview_width": 0,
+      "raw_preview_height": 0
+    },
+    {
+      "name": "camera-51",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "Canon EOS R5"
+    },
+    {
+      "name": "camera-52",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "NIKON CORPORATION",
+      "model": "NIKON Z 6_2"
+    },
+    {
+      "name": "camera-53",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "SONY",
+      "model": "ILCE-7M3"
+    },
+    {
+      "name": "camera-54",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": "X100V"
+    },
+    {
+      "name": "camera-55",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "FUJIFILM",
+      "model": null
+    },
+    {
+      "name": "camera-56",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": null
+    },
+    {
+      "name": "camera-57",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "",
+      "model": ""
+    },
+    {
+      "name": "camera-58",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "  ",
+      "model": " "
+    },
+    {
+      "name": "camera-59",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": null
+    },
+    {
+      "name": "camera-60",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": null,
+      "model": "EOS R5"
+    },
+    {
+      "name": "camera-61",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "東京カメラ",
+      "model": "東京 α7"
+    },
+    {
+      "name": "camera-62",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "ARABIC",
+      "model": "كاميرا رقمية"
+    },
+    {
+      "name": "camera-63",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "שלום",
+      "model": "מצלמה"
+    },
+    {
+      "name": "camera-64",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Ünïcödé Ltd",
+      "model": "Ünïcödé Ltd Ω-1 😀"
+    },
+    {
+      "name": "camera-65",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "canon",
+      "model": "CANON EOS"
+    },
+    {
+      "name": "camera-66",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon ",
+      "model": "Canon EOS"
+    },
+    {
+      "name": "camera-67",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": " Canon",
+      "model": "Canon X"
+    },
+    {
+      "name": "camera-68",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "  "
+    },
+    {
+      "name": "camera-69",
+      "kind": "camera",
+      "language": "en",
+      "culture": "invariant",
+      "make": "Canon EOS",
+      "model": "Canon EOS R5"
+    },
+    {
+      "name": "camera-vi-canon-model",
+      "kind": "camera",
+      "language": "vi",
+      "culture": "invariant",
+      "make": "Canon",
+      "model": "Canon EOS R5"
+    },
+    {
+      "name": "shutter-1-250",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 250
+      }
+    },
+    {
+      "name": "shutter-10-2500",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 10,
+        "d": 2500
+      }
+    },
+    {
+      "name": "shutter-1-3",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 3
+      }
+    },
+    {
+      "name": "shutter-3-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 3,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-4-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-1-2",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 2
+      }
+    },
+    {
+      "name": "shutter-5-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 5,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-13-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 13,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-30-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 30,
+        "d": 1
+      }
+    },
+    {
+      "name": "shutter-1-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 1
+      }
+    },
+    {
+      "name": "shutter-2-500",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 2,
+        "d": 500
+      }
+    },
+    {
+      "name": "shutter-15-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 15,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-1-8000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 8000
+      }
+    },
+    {
+      "name": "shutter-1-4294967295",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 4294967295
+      }
+    },
+    {
+      "name": "shutter-4-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4,
+        "d": 100
+      }
+    },
+    {
+      "name": "shutter-125-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 125,
+        "d": 1000
+      }
+    },
+    {
+      "name": "shutter-5-4",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 5,
+        "d": 4
+      }
+    },
+    {
+      "name": "shutter-96-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 96,
+        "d": 100
+      }
+    },
+    {
+      "name": "shutter-45-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 45,
+        "d": 100
+      }
+    },
+    {
+      "name": "shutter-21-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 21,
+        "d": 100
+      }
+    },
+    {
+      "name": "shutter-101-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 101,
+        "d": 1000
+      }
+    },
+    {
+      "name": "shutter-7-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 7,
+        "d": 1000
+      }
+    },
+    {
+      "name": "shutter-3-100",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 3,
+        "d": 100
+      }
+    },
+    {
+      "name": "shutter-4294967295-1",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 4294967295,
+        "d": 1
+      }
+    },
+    {
+      "name": "shutter-0-10",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 0,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-10-0",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 10,
+        "d": 0
+      }
+    },
+    {
+      "name": "shutter-0-0",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 0,
+        "d": 0
+      }
+    },
+    {
+      "name": "shutter-1-20",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 20
+      }
+    },
+    {
+      "name": "shutter-2-3",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 2,
+        "d": 3
+      }
+    },
+    {
+      "name": "shutter-1-1000",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "invariant",
+      "exposure": {
+        "n": 1,
+        "d": 1000
+      }
+    },
+    {
+      "name": "shutter-15-10-vi-VN",
+      "kind": "shutter",
+      "language": "vi",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 15,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-3-10-vi-VN",
+      "kind": "shutter",
+      "language": "en",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 3,
+        "d": 10
+      }
+    },
+    {
+      "name": "shutter-13-10-vi-VN",
+      "kind": "shutter",
+      "language": "vi",
+      "culture": "vi-VN",
+      "exposure": {
+        "n": 13,
+        "d": 10
+      }
+    }
+  ]
+}

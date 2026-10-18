@@ -1,0 +1,136 @@
+{
+  "cases": [
+    { "name": "has-invalid-empty-list", "kind": "has_invalid", "lang": "en", "actions": [] },
+    { "name": "has-invalid-valid-pair", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "F7", "Operation": "Copy", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-blank-name", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": " ", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-reserved-escape", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Escape", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-reserved-tab", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Tab", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-number-text", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "999", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-return-enter-alias", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Return", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "Enter", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-prior-pageup-alias", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Prior", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "PageUp", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-lowercase-duplicate", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "f6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "has-invalid-recycle-destination-not-checked", "kind": "has_invalid", "lang": "en", "actions": [
+        { "Name": "Bin", "Shortcut": "F7", "Operation": "Recycle", "Destination": "", "Confirm": false } ] },
+
+    { "name": "next-free-empty", "kind": "next_free", "lang": "en", "actions": [] },
+    { "name": "next-free-f6-used", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "next-free-alias-spelling-counts", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "f6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "next-free-return-does-not-block-f-keys", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Return", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "next-free-unparseable-ignored", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "Nope", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "next-free-f6-to-f11-used", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "1", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "2", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "3", "Shortcut": "F8", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "4", "Shortcut": "F9", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "5", "Shortcut": "F10", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "6", "Shortcut": "F11", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "next-free-all-seven-used-falls-back-to-f6", "kind": "next_free", "lang": "en", "actions": [
+        { "Name": "1", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "2", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "3", "Shortcut": "F8", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "4", "Shortcut": "F9", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "5", "Shortcut": "F10", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "6", "Shortcut": "F11", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "7", "Shortcut": "F12", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+
+    { "name": "dest-none-when-all-fine", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Group-2", "Confirm": false } ] },
+    { "name": "dest-escape-en", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "..\\up", "Confirm": false } ] },
+    { "name": "dest-escape-vi", "kind": "destination_problem", "lang": "vi", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "..\\up", "Confirm": false } ] },
+    { "name": "dest-invalid-chars-copy", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "x", "Shortcut": "F6", "Operation": "Copy", "Destination": "a|b", "Confirm": false } ] },
+    { "name": "dest-empty-copy-vi", "kind": "destination_problem", "lang": "vi", "actions": [
+        { "Name": "x", "Shortcut": "F6", "Operation": "Copy", "Destination": "", "Confirm": false } ] },
+    { "name": "dest-recycle-skipped", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "Bin", "Shortcut": "F6", "Operation": "Recycle", "Destination": "..\\up", "Confirm": false } ] },
+    { "name": "dest-first-problem-wins", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "ok", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "F7", "Operation": "Copy", "Destination": "..\\a", "Confirm": false },
+        { "Name": "C", "Shortcut": "F8", "Operation": "Move", "Destination": "|x", "Confirm": false } ] },
+    { "name": "dest-absolute-is-ok", "kind": "destination_problem", "lang": "en", "actions": [
+        { "Name": "D", "Shortcut": "F6", "Operation": "Move", "Destination": "D:\\Backup", "Confirm": false } ] },
+
+    { "name": "apply-accepts-valid", "kind": "apply", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+    { "name": "apply-refuses-empty-en", "kind": "apply", "lang": "en", "actions": [] },
+    { "name": "apply-refuses-empty-vi", "kind": "apply", "lang": "vi", "actions": [] },
+    { "name": "apply-refuses-escape", "kind": "apply", "lang": "en", "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "..\\up", "Confirm": false } ] },
+
+    { "name": "script-open-save-none-open", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "open", "index": 0 },
+        { "op": "save", "fields": { "name": "  New name ", "shortcut": " f8 ", "operation_index": 2, "destination": "  Dest ", "confirm": true } },
+        { "op": "open_none" },
+        { "op": "save", "fields": { "name": "ghost", "shortcut": "F9", "operation_index": 0, "destination": "x", "confirm": false } }
+      ] },
+    { "name": "script-remove-open-row-is-not-written-back", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+                   { "Name": "B", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "open", "index": 0 },
+        { "op": "remove", "index": 0, "selected": 0 },
+        { "op": "save", "fields": { "name": "ghost", "shortcut": "F9", "operation_index": 0, "destination": "x", "confirm": false } }
+      ] },
+    { "name": "script-remove-selection-rules", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+                   { "Name": "B", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false },
+                   { "Name": "C", "Shortcut": "F8", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "remove", "index": 1, "selected": 1 },
+        { "op": "remove", "index": 1, "selected": 1 },
+        { "op": "remove", "index": 0, "selected": 0 }
+      ] },
+    { "name": "script-add-uses-next-free-key-en", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+                   { "Name": "B", "Shortcut": "Return", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [ { "op": "add" }, { "op": "open", "index": 2 } ] },
+    { "name": "script-add-uses-next-free-key-vi", "kind": "script", "lang": "vi",
+      "actions": [], "ops": [ { "op": "add" } ] },
+    { "name": "script-open-maps-operation-index", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "C", "Shortcut": "F6", "Operation": "Copy", "Destination": "Backup", "Confirm": false },
+                   { "Name": "R", "Shortcut": "F7", "Operation": "Recycle", "Destination": "", "Confirm": true },
+                   { "Name": "M", "Shortcut": "F8", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [ { "op": "open", "index": 0 }, { "op": "open", "index": 1 }, { "op": "open", "index": 2 } ] },
+    { "name": "script-save-trims-but-not-bom", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "open", "index": 0 },
+        { "op": "save", "fields": { "name": "\u00a0x\u00a0", "shortcut": "\ufeffF6", "operation_index": 0, "destination": "\u0085d\u0085", "confirm": false } }
+      ] },
+    { "name": "script-replace-all-then-open", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "replace_all", "actions": [ { "Name": "X", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false },
+                                            { "Name": "Y", "Shortcut": "F8", "Operation": "Copy", "Destination": "Out", "Confirm": false } ] },
+        { "op": "open", "index": 1 }
+      ] },
+    { "name": "script-replace-all-makes-open-row-stale", "kind": "script", "lang": "en",
+      "actions": [ { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false } ],
+      "ops": [
+        { "op": "open", "index": 0 },
+        { "op": "replace_all", "actions": [ { "Name": "X", "Shortcut": "F7", "Operation": "Move", "Destination": "Out", "Confirm": false } ] },
+        { "op": "save", "fields": { "name": "ghost", "shortcut": "F9", "operation_index": 0, "destination": "x", "confirm": false } }
+      ] }
+  ]
+}

@@ -1,0 +1,981 @@
+{
+  "cases": [
+    {
+      "name": "file_size-0",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 0
+      }
+    },
+    {
+      "name": "file_size-1",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -100
+      }
+    },
+    {
+      "name": "file_size-2",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1
+      }
+    },
+    {
+      "name": "file_size-3",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 512
+      }
+    },
+    {
+      "name": "file_size-4",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1023
+      }
+    },
+    {
+      "name": "file_size-5",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1024
+      }
+    },
+    {
+      "name": "file_size-6",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1536
+      }
+    },
+    {
+      "name": "file_size-7",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048575
+      }
+    },
+    {
+      "name": "file_size-8",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048576
+      }
+    },
+    {
+      "name": "file_size-9",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 2500000
+      }
+    },
+    {
+      "name": "file_size-10",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1572864
+      }
+    },
+    {
+      "name": "file_size-11",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1073741824
+      }
+    },
+    {
+      "name": "file_size-12",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 5368709120
+      }
+    },
+    {
+      "name": "file_size-13",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1099511627776
+      }
+    },
+    {
+      "name": "file_size-14",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1234567890123
+      }
+    },
+    {
+      "name": "file_size-15",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 9223372036854775807
+      }
+    },
+    {
+      "name": "file_size-16",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -9223372036854775808
+      }
+    },
+    {
+      "name": "file_size-17",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1572864
+      }
+    },
+    {
+      "name": "file_size-18",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1572864
+      }
+    },
+    {
+      "name": "file_size-19",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 2500000
+      }
+    },
+    {
+      "name": "file_size-20",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 2500000
+      }
+    },
+    {
+      "name": "file_size-21",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1536
+      }
+    },
+    {
+      "name": "file_size-22",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1536
+      }
+    },
+    {
+      "name": "no_supported_images-23",
+      "op": "no_supported_images",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "no_supported_images-24",
+      "op": "no_supported_images",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "no_supported_images_but_subfolders-25",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 0
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-26",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 0
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-27",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 1
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-28",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 1
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-29",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 2
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-30",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 2
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-31",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 12
+      }
+    },
+    {
+      "name": "no_supported_images_but_subfolders-32",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 12
+      }
+    },
+    {
+      "name": "folder_open_failed-33",
+      "op": "folder_open_failed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "message": "Quyền truy cập bị từ chối"
+      }
+    },
+    {
+      "name": "folder_open_failed-34",
+      "op": "folder_open_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "message": "Access denied"
+      }
+    },
+    {
+      "name": "index_only-35",
+      "op": "index_only",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10
+      }
+    },
+    {
+      "name": "index_only-36",
+      "op": "index_only",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "index": 1000,
+        "count": 12345
+      }
+    },
+    {
+      "name": "index_only-37",
+      "op": "index_only",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 2147483647,
+        "count": 10
+      }
+    },
+    {
+      "name": "loading-38",
+      "op": "loading",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      }
+    },
+    {
+      "name": "loading-39",
+      "op": "loading",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      }
+    },
+    {
+      "name": "loading_full_res-40",
+      "op": "loading_full_res",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      }
+    },
+    {
+      "name": "decoding_raw-41",
+      "op": "decoding_raw",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "decoding_raw-42",
+      "op": "decoding_raw",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "ready-43",
+      "op": "ready",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "file_name": "photo.jpg"
+      }
+    },
+    {
+      "name": "ready-44",
+      "op": "ready",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "file_name": "photo.jpg"
+      }
+    },
+    {
+      "name": "with_dimensions-45",
+      "op": "with_dimensions",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "width": 1920,
+        "height": 1080,
+        "file_name": "photo.jpg"
+      }
+    },
+    {
+      "name": "with_dimensions-46",
+      "op": "with_dimensions",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "width": 1920,
+        "height": 1080,
+        "file_name": "photo.jpg"
+      }
+    },
+    {
+      "name": "compare-47",
+      "op": "compare",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "left_name": "left.jpg",
+        "left_size": " (1 MB)",
+        "right_name": "right.jpg",
+        "right_size": " (1 MB)",
+        "hash_text": " [same hash]"
+      }
+    },
+    {
+      "name": "compare-48",
+      "op": "compare",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "left_name": "left.jpg",
+        "left_size": "",
+        "right_name": "right.jpg",
+        "right_size": "",
+        "hash_text": ""
+      }
+    },
+    {
+      "name": "compare_size_suffix-49",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048576
+      }
+    },
+    {
+      "name": "compare_size_suffix-50",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1048576
+      }
+    },
+    {
+      "name": "compare_size_suffix-51",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 0
+      }
+    },
+    {
+      "name": "compare_size_suffix-52",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 0
+      }
+    },
+    {
+      "name": "compare_size_suffix-53",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 999
+      }
+    },
+    {
+      "name": "compare_size_suffix-54",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 999
+      }
+    },
+    {
+      "name": "compare_size_suffix-55",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1234567
+      }
+    },
+    {
+      "name": "compare_size_suffix-56",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1234567
+      }
+    },
+    {
+      "name": "compare_size_suffix-57",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -5
+      }
+    },
+    {
+      "name": "compare_size_suffix-58",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": -5
+      }
+    },
+    {
+      "name": "compare_size_suffix-59",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 9223372036854775807
+      }
+    },
+    {
+      "name": "compare_size_suffix-60",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 9223372036854775807
+      }
+    },
+    {
+      "name": "compare_hash_text-61",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": true
+      }
+    },
+    {
+      "name": "compare_hash_text-62",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": true
+      }
+    },
+    {
+      "name": "compare_hash_text-63",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": false
+      }
+    },
+    {
+      "name": "compare_hash_text-64",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": false
+      }
+    },
+    {
+      "name": "compare_hash_text-65",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": null
+      }
+    },
+    {
+      "name": "compare_hash_text-66",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": null
+      }
+    },
+    {
+      "name": "compare_hash_unknown-67",
+      "op": "compare_hash_unknown",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "compare_hash_unknown-68",
+      "op": "compare_hash_unknown",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "image_error-69",
+      "op": "image_error",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "file_name": "photo.jpg",
+        "message": "File hỏng"
+      }
+    },
+    {
+      "name": "image_error-70",
+      "op": "image_error",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "file_name": "photo.jpg",
+        "message": "Corrupt"
+      }
+    },
+    {
+      "name": "no_images_remaining-71",
+      "op": "no_images_remaining",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "no_images_remaining-72",
+      "op": "no_images_remaining",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "all_images_processed-73",
+      "op": "all_images_processed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "all_images_processed-74",
+      "op": "all_images_processed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "cache_cleared-75",
+      "op": "cache_cleared",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "cache_cleared-76",
+      "op": "cache_cleared",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_canceled_folder_changed-77",
+      "op": "duplicate_check_canceled_folder_changed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_canceled_folder_changed-78",
+      "op": "duplicate_check_canceled_folder_changed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_running-79",
+      "op": "duplicate_check_running",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_running-80",
+      "op": "duplicate_check_running",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_canceled-81",
+      "op": "duplicate_check_canceled",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_canceled-82",
+      "op": "duplicate_check_canceled",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "no_duplicates_found-83",
+      "op": "no_duplicates_found",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "no_duplicates_found-84",
+      "op": "no_duplicates_found",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "batch_canceled-85",
+      "op": "batch_canceled",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "batch_canceled-86",
+      "op": "batch_canceled",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "nothing_to_undo-87",
+      "op": "nothing_to_undo",
+      "language": "en",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "nothing_to_undo-88",
+      "op": "nothing_to_undo",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {}
+    },
+    {
+      "name": "duplicate_check_failed-89",
+      "op": "duplicate_check_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "message": "Disk full"
+      }
+    },
+    {
+      "name": "batch_done-90",
+      "op": "batch_done",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "succeeded": 5,
+        "failures": 0
+      }
+    },
+    {
+      "name": "batch_done-91",
+      "op": "batch_done",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "succeeded": 5,
+        "failures": 0
+      }
+    },
+    {
+      "name": "batch_done-92",
+      "op": "batch_done",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "succeeded": 2147483647,
+        "failures": 1000
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-93",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": 1
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-94",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": 1
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-95",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": -1
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-96",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": -1
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-97",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": 0
+      }
+    },
+    {
+      "name": "sibling_folder_boundary-98",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": 0
+      }
+    },
+    {
+      "name": "action_completed-99",
+      "op": "action_completed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_completed-100",
+      "op": "action_completed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_invalid_operation-101",
+      "op": "action_invalid_operation",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_invalid_operation-102",
+      "op": "action_invalid_operation",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_no_destination-103",
+      "op": "action_no_destination",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_no_destination-104",
+      "op": "action_no_destination",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      }
+    },
+    {
+      "name": "action_failed-105",
+      "op": "action_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep",
+        "message": "Disk full"
+      }
+    },
+    {
+      "name": "action_failed-106",
+      "op": "action_failed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep",
+        "message": null
+      }
+    },
+    {
+      "name": "copied_to-107",
+      "op": "copied_to",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "file_name": "a.jpg"
+      }
+    },
+    {
+      "name": "copied_to-108",
+      "op": "copied_to",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "file_name": null
+      }
+    }
+  ]
+}

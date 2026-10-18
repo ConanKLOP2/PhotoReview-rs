@@ -1,0 +1,17 @@
+{
+  "_comment": "W8-04a golden inputs for oracle command translation-problems (TranslationProblems.HasProblems / Message). 'repeat' generates prefix + two-digit index. Outputs go to tests/golden/translation-problems.json.",
+  "cases": [
+    { "id": "no-warnings-en", "localizer": "en", "warnings": [] },
+    { "id": "no-warnings-vi", "localizer": "vi", "warnings": [] },
+    { "id": "one-warning-en", "localizer": "en", "warnings": ["a.json: invalid JSON"] },
+    { "id": "one-warning-vi", "localizer": "vi", "warnings": ["a.json: invalid JSON"] },
+    { "id": "two-warnings-vi", "localizer": "vi", "warnings": ["x.json: a", "y.json: b"] },
+    { "id": "exactly-max-listed-en", "localizer": "en", "repeat": { "prefix": "problem-", "count": 15 } },
+    { "id": "one-over-max-listed-en", "localizer": "en", "repeat": { "prefix": "problem-", "count": 16 } },
+    { "id": "one-over-max-listed-vi", "localizer": "vi", "repeat": { "prefix": "problem-", "count": 16 } },
+    { "id": "eighteen-warnings-en", "localizer": "en", "repeat": { "prefix": "problem-", "count": 18 } },
+    { "id": "eighteen-warnings-vi", "localizer": "vi", "repeat": { "prefix": "problem-", "count": 18 } },
+    { "id": "placeholder-text-in-warning-is-not-reparsed-en", "localizer": "en", "warnings": ["file {count}.json: key 'x{0}' {details}"] },
+    { "id": "newline-inside-warning-en", "localizer": "en", "warnings": ["a.json:\nline 2"] }
+  ]
+}

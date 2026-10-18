@@ -1,0 +1,434 @@
+{
+  "generator": "oracle-cs window-placement-rules",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "normalize--2147483648",
+      "kind": "normalize",
+      "show_command": -2147483648,
+      "value": 1
+    },
+    {
+      "name": "normalize--5",
+      "kind": "normalize",
+      "show_command": -5,
+      "value": 1
+    },
+    {
+      "name": "normalize--1",
+      "kind": "normalize",
+      "show_command": -1,
+      "value": 1
+    },
+    {
+      "name": "normalize-0",
+      "kind": "normalize",
+      "show_command": 0,
+      "value": 1
+    },
+    {
+      "name": "normalize-1",
+      "kind": "normalize",
+      "show_command": 1,
+      "value": 1
+    },
+    {
+      "name": "normalize-2",
+      "kind": "normalize",
+      "show_command": 2,
+      "value": 1
+    },
+    {
+      "name": "normalize-3",
+      "kind": "normalize",
+      "show_command": 3,
+      "value": 3
+    },
+    {
+      "name": "normalize-4",
+      "kind": "normalize",
+      "show_command": 4,
+      "value": 1
+    },
+    {
+      "name": "normalize-5",
+      "kind": "normalize",
+      "show_command": 5,
+      "value": 1
+    },
+    {
+      "name": "normalize-6",
+      "kind": "normalize",
+      "show_command": 6,
+      "value": 1
+    },
+    {
+      "name": "normalize-7",
+      "kind": "normalize",
+      "show_command": 7,
+      "value": 1
+    },
+    {
+      "name": "normalize-8",
+      "kind": "normalize",
+      "show_command": 8,
+      "value": 1
+    },
+    {
+      "name": "normalize-9",
+      "kind": "normalize",
+      "show_command": 9,
+      "value": 1
+    },
+    {
+      "name": "normalize-10",
+      "kind": "normalize",
+      "show_command": 10,
+      "value": 1
+    },
+    {
+      "name": "normalize-11",
+      "kind": "normalize",
+      "show_command": 11,
+      "value": 1
+    },
+    {
+      "name": "normalize-100",
+      "kind": "normalize",
+      "show_command": 100,
+      "value": 1
+    },
+    {
+      "name": "normalize-2147483647",
+      "kind": "normalize",
+      "show_command": 2147483647,
+      "value": 1
+    },
+    {
+      "name": "plan--2147483648",
+      "kind": "plan",
+      "show_command": -2147483648,
+      "value": "Normal"
+    },
+    {
+      "name": "plan--5",
+      "kind": "plan",
+      "show_command": -5,
+      "value": "Normal"
+    },
+    {
+      "name": "plan--1",
+      "kind": "plan",
+      "show_command": -1,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-0",
+      "kind": "plan",
+      "show_command": 0,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-1",
+      "kind": "plan",
+      "show_command": 1,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-2",
+      "kind": "plan",
+      "show_command": 2,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-3",
+      "kind": "plan",
+      "show_command": 3,
+      "value": "Maximized"
+    },
+    {
+      "name": "plan-4",
+      "kind": "plan",
+      "show_command": 4,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-5",
+      "kind": "plan",
+      "show_command": 5,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-6",
+      "kind": "plan",
+      "show_command": 6,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-7",
+      "kind": "plan",
+      "show_command": 7,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-8",
+      "kind": "plan",
+      "show_command": 8,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-9",
+      "kind": "plan",
+      "show_command": 9,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-10",
+      "kind": "plan",
+      "show_command": 10,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-11",
+      "kind": "plan",
+      "show_command": 11,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-100",
+      "kind": "plan",
+      "show_command": 100,
+      "value": "Normal"
+    },
+    {
+      "name": "plan-2147483647",
+      "kind": "plan",
+      "show_command": 2147483647,
+      "value": "Normal"
+    },
+    {
+      "name": "resolve--2147483648-none",
+      "kind": "resolve",
+      "show_command": -2147483648,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve--2147483648-Normal",
+      "kind": "resolve",
+      "show_command": -2147483648,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve--2147483648-Minimized",
+      "kind": "resolve",
+      "show_command": -2147483648,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve--2147483648-Maximized",
+      "kind": "resolve",
+      "show_command": -2147483648,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve--5-none",
+      "kind": "resolve",
+      "show_command": -5,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve--5-Normal",
+      "kind": "resolve",
+      "show_command": -5,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve--5-Minimized",
+      "kind": "resolve",
+      "show_command": -5,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve--5-Maximized",
+      "kind": "resolve",
+      "show_command": -5,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-0-none",
+      "kind": "resolve",
+      "show_command": 0,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve-0-Normal",
+      "kind": "resolve",
+      "show_command": 0,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-0-Minimized",
+      "kind": "resolve",
+      "show_command": 0,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-0-Maximized",
+      "kind": "resolve",
+      "show_command": 0,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-1-none",
+      "kind": "resolve",
+      "show_command": 1,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve-1-Normal",
+      "kind": "resolve",
+      "show_command": 1,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-1-Minimized",
+      "kind": "resolve",
+      "show_command": 1,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-1-Maximized",
+      "kind": "resolve",
+      "show_command": 1,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-2-none",
+      "kind": "resolve",
+      "show_command": 2,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve-2-Normal",
+      "kind": "resolve",
+      "show_command": 2,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-2-Minimized",
+      "kind": "resolve",
+      "show_command": 2,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-2-Maximized",
+      "kind": "resolve",
+      "show_command": 2,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-3-none",
+      "kind": "resolve",
+      "show_command": 3,
+      "restore_state": null,
+      "value": 3
+    },
+    {
+      "name": "resolve-3-Normal",
+      "kind": "resolve",
+      "show_command": 3,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-3-Minimized",
+      "kind": "resolve",
+      "show_command": 3,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-3-Maximized",
+      "kind": "resolve",
+      "show_command": 3,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-7-none",
+      "kind": "resolve",
+      "show_command": 7,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve-7-Normal",
+      "kind": "resolve",
+      "show_command": 7,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-7-Minimized",
+      "kind": "resolve",
+      "show_command": 7,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-7-Maximized",
+      "kind": "resolve",
+      "show_command": 7,
+      "restore_state": "Maximized",
+      "value": 3
+    },
+    {
+      "name": "resolve-2147483647-none",
+      "kind": "resolve",
+      "show_command": 2147483647,
+      "restore_state": null,
+      "value": 1
+    },
+    {
+      "name": "resolve-2147483647-Normal",
+      "kind": "resolve",
+      "show_command": 2147483647,
+      "restore_state": "Normal",
+      "value": 1
+    },
+    {
+      "name": "resolve-2147483647-Minimized",
+      "kind": "resolve",
+      "show_command": 2147483647,
+      "restore_state": "Minimized",
+      "value": 1
+    },
+    {
+      "name": "resolve-2147483647-Maximized",
+      "kind": "resolve",
+      "show_command": 2147483647,
+      "restore_state": "Maximized",
+      "value": 3
+    }
+  ]
+}

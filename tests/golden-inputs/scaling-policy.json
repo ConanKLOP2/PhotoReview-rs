@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {"name": "resting keeps HQ for a heavy downscale", "kind": "choose", "requested": "HighQualityCubic", "sw": 6000, "sh": 4000, "dw": 1000, "dh": 667, "in_motion": false},
+    {"name": "in motion + heavy downscale falls back to Linear", "kind": "choose", "requested": "HighQualityCubic", "sw": 6000, "sh": 4000, "dw": 1000, "dh": 667, "in_motion": true},
+    {"name": "in motion, exactly 4x area is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 2000, "sh": 1500, "dw": 1000, "dh": 750, "in_motion": true},
+    {"name": "in motion upscale keeps HQ", "kind": "choose", "requested": "HighQualityCubic", "sw": 1000, "sh": 750, "dw": 3000, "dh": 2250, "in_motion": true},
+    {"name": "Linear is never changed", "kind": "choose", "requested": "Linear", "sw": 6000, "sh": 4000, "dw": 100, "dh": 66, "in_motion": true},
+    {"name": "NearestNeighbor is never changed", "kind": "choose", "requested": "NearestNeighbor", "sw": 6000, "sh": 4000, "dw": 100, "dh": 66, "in_motion": true},
+    {"name": "zero source width is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 0, "sh": 100, "dw": 10, "dh": 10, "in_motion": true},
+    {"name": "negative source height is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 100, "sh": -1, "dw": 10, "dh": 10, "in_motion": true},
+    {"name": "zero destination width is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 100, "sh": 100, "dw": 0, "dh": 10, "in_motion": true},
+    {"name": "zero destination height is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 100, "sh": 100, "dw": 10, "dh": 0, "in_motion": true},
+    {"name": "NaN destination width is not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 100, "sh": 100, "dw": "NaN", "dh": 10, "in_motion": true},
+    {"name": "infinite destination width gives area 0, not heavy", "kind": "choose", "requested": "HighQualityCubic", "sw": 100, "sh": 100, "dw": "Infinity", "dh": 10, "in_motion": true},
+    {"name": "is_heavy: exactly 4x is not heavy", "kind": "is_heavy", "sw": 2000, "sh": 1000, "dw": 1000, "dh": 500},
+    {"name": "is_heavy: 4x plus one source pixel is heavy", "kind": "is_heavy", "sw": 2001, "sh": 1000, "dw": 1000, "dh": 500},
+    {"name": "is_heavy: NaN destination height is not heavy", "kind": "is_heavy", "sw": 100, "sh": 100, "dw": 10, "dh": "NaN"},
+    {"name": "is_heavy: large source area does not overflow int (46340^2 over 1x1)", "kind": "is_heavy", "sw": 46340, "sh": 46340, "dw": 1, "dh": 1},
+    {"name": "is_heavy: 24 MP over a 1000x667 viewport", "kind": "is_heavy", "sw": 6000, "sh": 4000, "dw": 1000, "dh": 667}
+  ]
+}

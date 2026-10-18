@@ -1,0 +1,2182 @@
+{
+  "generator": "oracle-cs format-status",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "file_size-0",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "0 B"
+    },
+    {
+      "name": "file_size-1",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -100
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "0 B"
+    },
+    {
+      "name": "file_size-2",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1 B"
+    },
+    {
+      "name": "file_size-3",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 512
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "512 B"
+    },
+    {
+      "name": "file_size-4",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1023
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1023 B"
+    },
+    {
+      "name": "file_size-5",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1024
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1 KB"
+    },
+    {
+      "name": "file_size-6",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1536
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1.5 KB"
+    },
+    {
+      "name": "file_size-7",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048575
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1024 KB"
+    },
+    {
+      "name": "file_size-8",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048576
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1 MB"
+    },
+    {
+      "name": "file_size-9",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 2500000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "2.38 MB"
+    },
+    {
+      "name": "file_size-10",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1572864
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1.5 MB"
+    },
+    {
+      "name": "file_size-11",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1073741824
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1 GB"
+    },
+    {
+      "name": "file_size-12",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 5368709120
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "5 GB"
+    },
+    {
+      "name": "file_size-13",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1099511627776
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1024 GB"
+    },
+    {
+      "name": "file_size-14",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1234567890123
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1149.78 GB"
+    },
+    {
+      "name": "file_size-15",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 9223372036854775807
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "8589934592 GB"
+    },
+    {
+      "name": "file_size-16",
+      "op": "file_size",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -9223372036854775808
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "0 B"
+    },
+    {
+      "name": "file_size-17",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1572864
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1,5 MB"
+    },
+    {
+      "name": "file_size-18",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1572864
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1,5 MB"
+    },
+    {
+      "name": "file_size-19",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 2500000
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "2,38 MB"
+    },
+    {
+      "name": "file_size-20",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 2500000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "2,38 MB"
+    },
+    {
+      "name": "file_size-21",
+      "op": "file_size",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1536
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1,5 KB"
+    },
+    {
+      "name": "file_size-22",
+      "op": "file_size",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1536
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1,5 KB"
+    },
+    {
+      "name": "no_supported_images-23",
+      "op": "no_supported_images",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No supported images were found in this folder."
+    },
+    {
+      "name": "no_supported_images-24",
+      "op": "no_supported_images",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không tìm thấy ảnh được hỗ trợ trong thư mục này."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-25",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No supported images directly in this folder, but there are 0 subfolders."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-26",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 0
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có ảnh hỗ trợ trực tiếp trong thư mục này, nhưng có 0 thư mục con."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-27",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No supported images directly in this folder, but there is 1 subfolder."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-28",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 1
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có ảnh hỗ trợ trực tiếp trong thư mục này, nhưng có 1 thư mục con."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-29",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 2
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No supported images directly in this folder, but there are 2 subfolders."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-30",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 2
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có ảnh hỗ trợ trực tiếp trong thư mục này, nhưng có 2 thư mục con."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-31",
+      "op": "no_supported_images_but_subfolders",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "count": 12
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No supported images directly in this folder, but there are 12 subfolders."
+    },
+    {
+      "name": "no_supported_images_but_subfolders-32",
+      "op": "no_supported_images_but_subfolders",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "count": 12
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có ảnh hỗ trợ trực tiếp trong thư mục này, nhưng có 12 thư mục con."
+    },
+    {
+      "name": "folder_open_failed-33",
+      "op": "folder_open_failed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "message": "Quyền truy cập bị từ chối"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không mở được thư mục: Quyền truy cập bị từ chối"
+    },
+    {
+      "name": "folder_open_failed-34",
+      "op": "folder_open_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "message": "Access denied"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Could not open the folder: Access denied"
+    },
+    {
+      "name": "index_only-35",
+      "op": "index_only",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10"
+    },
+    {
+      "name": "index_only-36",
+      "op": "index_only",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "index": 1000,
+        "count": 12345
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1001/12345"
+    },
+    {
+      "name": "index_only-37",
+      "op": "index_only",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 2147483647,
+        "count": 10
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "-2147483648/10"
+    },
+    {
+      "name": "loading-38",
+      "op": "loading",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 · 1.5 MB · Đang tải"
+    },
+    {
+      "name": "loading-39",
+      "op": "loading",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1/10 · 1,5 MB · Loading"
+    },
+    {
+      "name": "loading_full_res-40",
+      "op": "loading_full_res",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 · 1.5 MB · Đang tải độ phân giải đầy đủ"
+    },
+    {
+      "name": "decoding_raw-41",
+      "op": "decoding_raw",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Decoding RAW…"
+    },
+    {
+      "name": "decoding_raw-42",
+      "op": "decoding_raw",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đang giải mã RAW…"
+    },
+    {
+      "name": "ready-43",
+      "op": "ready",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "file_name": "photo.jpg"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 · 1.5 MB · photo.jpg"
+    },
+    {
+      "name": "ready-44",
+      "op": "ready",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "file_name": "photo.jpg"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 · 1.5 MB · photo.jpg"
+    },
+    {
+      "name": "with_dimensions-45",
+      "op": "with_dimensions",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "width": 1920,
+        "height": 1080,
+        "file_name": "photo.jpg"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 · 1.5 MB · 1920×1080 · photo.jpg"
+    },
+    {
+      "name": "with_dimensions-46",
+      "op": "with_dimensions",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "size": 1572864,
+        "width": 1920,
+        "height": 1080,
+        "file_name": "photo.jpg"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "1/10 · 1,5 MB · 1920×1080 · photo.jpg"
+    },
+    {
+      "name": "compare-47",
+      "op": "compare",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "left_name": "left.jpg",
+        "left_size": " (1 MB)",
+        "right_name": "right.jpg",
+        "right_size": " (1 MB)",
+        "hash_text": " [same hash]"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 | So sánh | left.jpg (1 MB) ↔ right.jpg (1 MB) [same hash] | nhấn để chọn"
+    },
+    {
+      "name": "compare-48",
+      "op": "compare",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "index": 0,
+        "count": 10,
+        "left_name": "left.jpg",
+        "left_size": "",
+        "right_name": "right.jpg",
+        "right_size": "",
+        "hash_text": ""
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "1/10 | Compare | left.jpg ↔ right.jpg | click to select"
+    },
+    {
+      "name": "compare_size_suffix-49",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1048576
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (1,048,576 B)"
+    },
+    {
+      "name": "compare_size_suffix-50",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1048576
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (1.048.576 byte)"
+    },
+    {
+      "name": "compare_size_suffix-51",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (0 B)"
+    },
+    {
+      "name": "compare_size_suffix-52",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 0
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (0 byte)"
+    },
+    {
+      "name": "compare_size_suffix-53",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 999
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (999 B)"
+    },
+    {
+      "name": "compare_size_suffix-54",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 999
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (999 byte)"
+    },
+    {
+      "name": "compare_size_suffix-55",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 1234567
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (1,234,567 B)"
+    },
+    {
+      "name": "compare_size_suffix-56",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 1234567
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (1.234.567 byte)"
+    },
+    {
+      "name": "compare_size_suffix-57",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": -5
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (-5 B)"
+    },
+    {
+      "name": "compare_size_suffix-58",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": -5
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (-5 byte)"
+    },
+    {
+      "name": "compare_size_suffix-59",
+      "op": "compare_size_suffix",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "bytes": 9223372036854775807
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " (9,223,372,036,854,775,807 B)"
+    },
+    {
+      "name": "compare_size_suffix-60",
+      "op": "compare_size_suffix",
+      "language": "vi",
+      "culture": "vi-VN",
+      "args": {
+        "bytes": 9223372036854775807
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": " (9.223.372.036.854.775.807 byte)"
+    },
+    {
+      "name": "compare_hash_text-61",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": true
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash SAME"
+    },
+    {
+      "name": "compare_hash_text-62",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": true
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash TRÙNG"
+    },
+    {
+      "name": "compare_hash_text-63",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": false
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash DIFFERENT"
+    },
+    {
+      "name": "compare_hash_text-64",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": false
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash KHÁC"
+    },
+    {
+      "name": "compare_hash_text-65",
+      "op": "compare_hash_text",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "same": null
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash off"
+    },
+    {
+      "name": "compare_hash_text-66",
+      "op": "compare_hash_text",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "same": null
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash tắt"
+    },
+    {
+      "name": "compare_hash_unknown-67",
+      "op": "compare_hash_unknown",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash unknown"
+    },
+    {
+      "name": "compare_hash_unknown-68",
+      "op": "compare_hash_unknown",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": " | hash không xác định"
+    },
+    {
+      "name": "image_error-69",
+      "op": "image_error",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "file_name": "photo.jpg",
+        "message": "File hỏng"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Lỗi ảnh: photo.jpg — File hỏng"
+    },
+    {
+      "name": "image_error-70",
+      "op": "image_error",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "file_name": "photo.jpg",
+        "message": "Corrupt"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Image error: photo.jpg — Corrupt"
+    },
+    {
+      "name": "no_images_remaining-71",
+      "op": "no_images_remaining",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No images left in the folder"
+    },
+    {
+      "name": "no_images_remaining-72",
+      "op": "no_images_remaining",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không còn ảnh trong thư mục"
+    },
+    {
+      "name": "all_images_processed-73",
+      "op": "all_images_processed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "All images in this folder have been processed."
+    },
+    {
+      "name": "all_images_processed-74",
+      "op": "all_images_processed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã xử lý hết ảnh trong thư mục."
+    },
+    {
+      "name": "cache_cleared-75",
+      "op": "cache_cleared",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Preview cache cleared."
+    },
+    {
+      "name": "cache_cleared-76",
+      "op": "cache_cleared",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã xóa cache ảnh xem trước."
+    },
+    {
+      "name": "duplicate_check_canceled_folder_changed-77",
+      "op": "duplicate_check_canceled_folder_changed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Canceled: the folder changed during the duplicate check."
+    },
+    {
+      "name": "duplicate_check_canceled_folder_changed-78",
+      "op": "duplicate_check_canceled_folder_changed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã hủy: thư mục đã thay đổi trong lúc kiểm tra trùng lặp."
+    },
+    {
+      "name": "duplicate_check_running-79",
+      "op": "duplicate_check_running",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Checking for duplicates... press Esc to cancel."
+    },
+    {
+      "name": "duplicate_check_running-80",
+      "op": "duplicate_check_running",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đang kiểm tra bản trùng lặp... nhấn Esc để hủy."
+    },
+    {
+      "name": "duplicate_check_canceled-81",
+      "op": "duplicate_check_canceled",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Duplicate check canceled. Nothing was removed."
+    },
+    {
+      "name": "duplicate_check_canceled-82",
+      "op": "duplicate_check_canceled",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã hủy kiểm tra bản trùng lặp. Không có tệp nào bị xóa."
+    },
+    {
+      "name": "no_duplicates_found-83",
+      "op": "no_duplicates_found",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "No matching duplicates with the same hash."
+    },
+    {
+      "name": "no_duplicates_found-84",
+      "op": "no_duplicates_found",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có bản trùng lặp nào cùng hash phù hợp."
+    },
+    {
+      "name": "batch_canceled-85",
+      "op": "batch_canceled",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Batch processing canceled."
+    },
+    {
+      "name": "batch_canceled-86",
+      "op": "batch_canceled",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã hủy xử lý hàng loạt."
+    },
+    {
+      "name": "nothing_to_undo-87",
+      "op": "nothing_to_undo",
+      "language": "en",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "There is nothing to undo."
+    },
+    {
+      "name": "nothing_to_undo-88",
+      "op": "nothing_to_undo",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {},
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không có thao tác nào để hoàn tác."
+    },
+    {
+      "name": "duplicate_check_failed-89",
+      "op": "duplicate_check_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "message": "Disk full"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Duplicate check failed: Disk full"
+    },
+    {
+      "name": "batch_done-90",
+      "op": "batch_done",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "succeeded": 5,
+        "failures": 0
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Xử lý hàng loạt hoàn tất: 5 thành công, 0 lỗi."
+    },
+    {
+      "name": "batch_done-91",
+      "op": "batch_done",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "succeeded": 5,
+        "failures": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Batch finished: 5 succeeded, 0 failed."
+    },
+    {
+      "name": "batch_done-92",
+      "op": "batch_done",
+      "language": "en",
+      "culture": "vi-VN",
+      "args": {
+        "succeeded": 2147483647,
+        "failures": 1000
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ",",
+        "group_separator": ".",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "∞",
+        "negative_infinity_symbol": "-∞"
+      },
+      "text": "Batch finished: 2147483647 succeeded, 1000 failed."
+    },
+    {
+      "name": "sibling_folder_boundary-93",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": 1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Already at the last folder on this level."
+    },
+    {
+      "name": "sibling_folder_boundary-94",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": 1
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã ở thư mục cuối cùng cùng cấp."
+    },
+    {
+      "name": "sibling_folder_boundary-95",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": -1
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Already at the first folder on this level."
+    },
+    {
+      "name": "sibling_folder_boundary-96",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": -1
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã ở thư mục đầu tiên cùng cấp."
+    },
+    {
+      "name": "sibling_folder_boundary-97",
+      "op": "sibling_folder_boundary",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "direction": 0
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Already at the first folder on this level."
+    },
+    {
+      "name": "sibling_folder_boundary-98",
+      "op": "sibling_folder_boundary",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "direction": 0
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã ở thư mục đầu tiên cùng cấp."
+    },
+    {
+      "name": "action_completed-99",
+      "op": "action_completed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Done: Move to Keep"
+    },
+    {
+      "name": "action_completed-100",
+      "op": "action_completed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã thực hiện: Move to Keep"
+    },
+    {
+      "name": "action_invalid_operation-101",
+      "op": "action_invalid_operation",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Could not run Move to Keep: invalid operation."
+    },
+    {
+      "name": "action_invalid_operation-102",
+      "op": "action_invalid_operation",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không thực hiện được Move to Keep: thao tác không hợp lệ."
+    },
+    {
+      "name": "action_no_destination-103",
+      "op": "action_no_destination",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Could not run Move to Keep: the action has no destination folder."
+    },
+    {
+      "name": "action_no_destination-104",
+      "op": "action_no_destination",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep"
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không thực hiện được Move to Keep: hành động chưa có thư mục đích."
+    },
+    {
+      "name": "action_failed-105",
+      "op": "action_failed",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep",
+        "message": "Disk full"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Could not run Move to Keep: Disk full"
+    },
+    {
+      "name": "action_failed-106",
+      "op": "action_failed",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "action_name": "Move to Keep",
+        "message": null
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Không thực hiện được Move to Keep: "
+    },
+    {
+      "name": "copied_to-107",
+      "op": "copied_to",
+      "language": "en",
+      "culture": "invariant",
+      "args": {
+        "file_name": "a.jpg"
+      },
+      "localizer_code": "en",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Copied to a.jpg"
+    },
+    {
+      "name": "copied_to-108",
+      "op": "copied_to",
+      "language": "vi",
+      "culture": "invariant",
+      "args": {
+        "file_name": null
+      },
+      "localizer_code": "vi",
+      "number_culture": {
+        "negative_sign": "-",
+        "positive_sign": "+",
+        "decimal_separator": ".",
+        "group_separator": ",",
+        "nan_symbol": "NaN",
+        "positive_infinity_symbol": "Infinity",
+        "negative_infinity_symbol": "-Infinity"
+      },
+      "text": "Đã sao chép sang "
+    }
+  ]
+}

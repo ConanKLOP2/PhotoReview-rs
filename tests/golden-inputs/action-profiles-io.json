@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "name": "import-valid-list",
+      "kind": "try_import",
+      "lang": "vi",
+      "file": "actions.json",
+      "file_text": "[{\"Name\":\"Vi\\u1ec7t\",\"Shortcut\":\"F6\",\"Operation\":\"Copy\",\"Destination\":\"Backup\",\"Confirm\":false}]"
+    },
+    {
+      "name": "import-legacy-delete-alias",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "actions.json",
+      "file_text": "[{\"Name\":\"Old\",\"Shortcut\":\"F6\",\"Operation\":\"Delete\",\"Destination\":\"\",\"Confirm\":false}]"
+    },
+    {
+      "name": "import-object-is-invalid",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "actions.json",
+      "file_text": "{\"not\":\"a list\"}"
+    },
+    {
+      "name": "import-empty-list-is-invalid",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "actions.json",
+      "file_text": "[]"
+    },
+    {
+      "name": "import-literal-null-is-invalid",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "actions.json",
+      "file_text": "null"
+    },
+    {
+      "name": "import-null-element-is-invalid",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "actions.json",
+      "file_text": "[null]"
+    },
+    {
+      "name": "import-malformed-is-invalid-vi",
+      "kind": "try_import",
+      "lang": "vi",
+      "file": "actions.json",
+      "file_text": "not json"
+    },
+    {
+      "name": "import-missing-file-is-failed",
+      "kind": "try_import",
+      "lang": "en",
+      "file": "missing.json",
+      "file_text": null
+    },
+    {
+      "name": "export-vi-default-escaping",
+      "kind": "try_export",
+      "lang": "vi",
+      "target": "file",
+      "actions": [
+        { "Name": "Việt", "Shortcut": "F6", "Operation": "Copy", "Destination": "Backup", "Confirm": false }
+      ]
+    },
+    {
+      "name": "export-html-sensitive-characters",
+      "kind": "try_export",
+      "lang": "en",
+      "target": "file",
+      "actions": [
+        { "Name": "<a>&'\"+`\\", "Shortcut": "F9", "Operation": "Move", "Destination": "x", "Confirm": true }
+      ]
+    },
+    {
+      "name": "export-empty-list",
+      "kind": "try_export",
+      "lang": "en",
+      "target": "file",
+      "actions": []
+    },
+    {
+      "name": "export-to-directory-is-failed",
+      "kind": "try_export",
+      "lang": "en",
+      "target": "directory",
+      "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    },
+    {
+      "name": "export-missing-folder-is-failed",
+      "kind": "try_export",
+      "lang": "en",
+      "target": "missing_folder",
+      "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    }
+  ]
+}

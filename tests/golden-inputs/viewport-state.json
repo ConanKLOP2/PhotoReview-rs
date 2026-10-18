@@ -1,0 +1,109 @@
+{
+ "cases": [
+  {"name": "fresh state is pending; first update lays out and clamps the zero request",
+   "steps": [
+    {"op": "query"},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "update_layout"}
+   ]},
+  {"name": "scroll request is applied only on update and clamped to the extent",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "query"},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": 1900, "vertical": 0},
+    {"op": "query"},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "scroll_to", "horizontal": -5, "vertical": 40},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "scroll_home"},
+    {"op": "update_layout"},
+    {"op": "query"}
+   ]},
+  {"name": "requested offset survives a shrink and regrow of the viewport",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 1000, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": 1900, "vertical": 0},
+    {"op": "update_layout"},
+    {"op": "set_input", "input": {"client_width": 600, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "set_input", "input": {"client_width": 900, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "set_input", "input": {"client_width": 1000, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "query"}
+   ]},
+  {"name": "identical input does not dirty the state",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "Uniform", "image_width": 1200, "image_height": 900, "max_image_width": 800, "max_image_height": 600, "bitmap_width": 1200, "bitmap_height": 900}},
+    {"op": "update_layout"},
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "Uniform", "image_width": 1200, "image_height": 900, "max_image_width": 800, "max_image_height": 600, "bitmap_width": 1200, "bitmap_height": 900}},
+    {"op": "query"},
+    {"op": "update_layout"}
+   ]},
+  {"name": "NaN fields compare equal to NaN (C# record struct Equals)",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "Uniform", "image_width": "NaN", "image_height": "NaN", "max_image_width": 800, "max_image_height": 600, "bitmap_width": 1200, "bitmap_height": 900}},
+    {"op": "update_layout"},
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "Uniform", "image_width": "NaN", "image_height": "NaN", "max_image_width": 800, "max_image_height": 600, "bitmap_width": 1200, "bitmap_height": 900}},
+    {"op": "query"},
+    {"op": "update_layout"}
+   ]},
+  {"name": "negative zero equals zero in the input",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 0, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 10, "image_height": 10, "max_image_width": 10, "max_image_height": 10, "bitmap_width": 10, "bitmap_height": 10}},
+    {"op": "update_layout"},
+    {"op": "set_input", "input": {"client_width": "-0", "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 10, "image_height": 10, "max_image_width": 10, "max_image_height": 10, "bitmap_width": 10, "bitmap_height": 10}},
+    {"op": "query"}
+   ]},
+  {"name": "NaN scroll axis keeps the old request; negative and minus-zero requests become +0",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": 30, "vertical": 40},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": "NaN", "vertical": 50},
+    {"op": "update_layout"},
+    {"op": "query"},
+    {"op": "scroll_to", "horizontal": -3, "vertical": "-0"},
+    {"op": "update_layout"},
+    {"op": "query"}
+   ]},
+  {"name": "a scroll request alone does not compute the layout",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": 100, "vertical": 0},
+    {"op": "update_layout"},
+    {"op": "update_layout"}
+   ]},
+  {"name": "a request made before any input is kept and applied with the first input",
+   "steps": [
+    {"op": "scroll_to", "horizontal": 40, "vertical": 0},
+    {"op": "query"},
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "query"}
+   ]},
+  {"name": "probe maps a viewport point into image coordinates",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": 800, "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Auto", "stretch": "None", "image_width": 3000, "image_height": 2000, "max_image_width": "Infinity", "max_image_height": "Infinity", "bitmap_width": 3000, "bitmap_height": 2000}},
+    {"op": "update_layout"},
+    {"op": "scroll_to", "horizontal": 200, "vertical": 100},
+    {"op": "update_layout"},
+    {"op": "query", "probe": {"x": 50, "y": 40}}
+   ]},
+  {"name": "NaN client width is forwarded to the engine, not sanitised by the state",
+   "steps": [
+    {"op": "set_input", "input": {"client_width": "NaN", "client_height": 600, "scroll_bar_thickness": 17, "scroll_bars": "Overlay", "stretch": "Uniform", "image_width": "NaN", "image_height": "NaN", "max_image_width": 800, "max_image_height": 600, "bitmap_width": 1200, "bitmap_height": 900}},
+    {"op": "update_layout"},
+    {"op": "query"}
+   ]}
+ ]
+}

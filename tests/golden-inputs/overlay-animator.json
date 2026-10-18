@@ -1,0 +1,344 @@
+{
+ "command": "overlay-animator",
+ "notes": [
+  "Time units: duration_ticks and timestamp are .NET TimeSpan ticks (100 ns) and Stopwatch-style tick counts respectively; ticks_per_second is the injected frequency (C# ticksPerSecond ctor argument).",
+  "1 ms = 10000 duration ticks. Values in ops: target and value are JSON numbers, or the strings NaN, Infinity, -Infinity, -0.",
+  "Element opacity is a float (C# float): the oracle writes the float widened to double, the Rust test compares after `as f32`.",
+  "Output per script op: opacity (object id -> number, or null when the element is absent), is_animating, active_count, listening (C# SubscriberCount > 0), request_frame and changed (this op), threw (exception type name, only when thrown)."
+ ],
+ "cases": [
+  {
+   "name": "FadeOut Linear 200 ms hits 0/50/100/200 ms",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar", "Status"],
+   "elements": {"Toolbar": 1.0, "Status": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 10000},
+    {"op": "tick", "timestamp": 10050},
+    {"op": "tick", "timestamp": 10100},
+    {"op": "tick", "timestamp": 10200}
+   ]
+  },
+  {
+   "name": "FadeIn 150 ms QuadraticOut follows the easing",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Status"],
+   "elements": {"Status": 0.0},
+   "ops": [
+    {"op": "fade", "id": "Status", "target": 1.0, "duration_ticks": 1500000, "easing": "QuadraticOut"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 75},
+    {"op": "tick", "timestamp": 150}
+   ]
+  },
+  {
+   "name": "QuadraticOut at one quarter of the duration",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "QuadraticOut"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 25}
+   ]
+  },
+  {
+   "name": "New fade cancels the old tween and starts from the current opacity",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100},
+    {"op": "fade", "id": "Toolbar", "target": 1.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 120},
+    {"op": "tick", "timestamp": 170},
+    {"op": "tick", "timestamp": 220},
+    {"op": "tick", "timestamp": 400}
+   ]
+  },
+  {
+   "name": "Same target while running does not restart the tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100},
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 150}
+   ]
+  },
+  {
+   "name": "Already at target does nothing and does not listen",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 1.0, "duration_ticks": 2000000, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Zero duration applies immediately and fires no request",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.25, "duration_ticks": 0, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Zero duration to the same opacity fires no change",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 0.5},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.5, "duration_ticks": 0, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Non-zero duration to the current opacity is immediate, no tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 0.5},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.5, "duration_ticks": 2000000, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Zero duration cancels a running tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 50},
+    {"op": "fade", "id": "Toolbar", "target": 1.0, "duration_ticks": 0, "easing": "Linear"},
+    {"op": "tick", "timestamp": 100}
+   ]
+  },
+  {
+   "name": "Stops listening when no tween is left",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100}
+   ]
+  },
+  {
+   "name": "Two elements animate independently",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar", "Status"],
+   "elements": {"Toolbar": 1.0, "Status": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "fade", "id": "Status", "target": 0.5, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100}
+   ]
+  },
+  {
+   "name": "Unknown element is ignored",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar", "Nope"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Nope", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Element removed mid tween ends the tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "remove", "id": "Toolbar"},
+    {"op": "tick", "timestamp": 50}
+   ]
+  },
+  {
+   "name": "Element restored before the next frame continues the tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "remove", "id": "Toolbar"},
+    {"op": "restore", "id": "Toolbar", "opacity": 0.8},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 50}
+   ]
+  },
+  {
+   "name": "Changed fires once per frame that changes a value",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 50},
+    {"op": "tick", "timestamp": 100}
+   ]
+  },
+  {
+   "name": "Target is clamped to 0..1 and NaN means zero",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 0.5},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 5.0, "duration_ticks": 0, "easing": "Linear"},
+    {"op": "fade", "id": "Toolbar", "target": "NaN", "duration_ticks": 0, "easing": "Linear"},
+    {"op": "fade", "id": "Toolbar", "target": -1.0, "duration_ticks": 100000, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Tick before start clamps to the start value, then runs",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 1000000},
+    {"op": "tick", "timestamp": 999995},
+    {"op": "tick", "timestamp": 1000100},
+    {"op": "tick", "timestamp": 1000200}
+   ]
+  },
+  {
+   "name": "Fade end lands exactly on the target, not on a rounded interpolation",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 0.02},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.1, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100}
+   ]
+  },
+  {
+   "name": "External write during a tween is overwritten by the next frame",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "set", "id": "Toolbar", "opacity": 0.9},
+    {"op": "tick", "timestamp": 50}
+   ]
+  },
+  {
+   "name": "Cancel keeps the current opacity and stops the tween",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 2000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 100},
+    {"op": "cancel", "id": "Toolbar"},
+    {"op": "tick", "timestamp": 150}
+   ]
+  },
+  {
+   "name": "Tween starts at the first frame, not at the request time",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 500},
+    {"op": "tick", "timestamp": 550}
+   ]
+  },
+  {
+   "name": "33 ms fade sampled at 16 and 33 ms",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 330000, "easing": "Linear"},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 16},
+    {"op": "tick", "timestamp": 33}
+   ]
+  },
+  {
+   "name": "Dispose stops listening and rejects new fades",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "watch": ["Toolbar"],
+   "elements": {"Toolbar": 1.0},
+   "ops": [
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 1000000, "easing": "Linear"},
+    {"op": "dispose"},
+    {"op": "fade", "id": "Toolbar", "target": 0.0, "duration_ticks": 10000, "easing": "Linear"}
+   ]
+  },
+  {
+   "name": "Realistic 60 Hz frame sequence for a 150 ms fade-in of the status panel",
+   "kind": "script",
+   "ticks_per_second": 1000000,
+   "watch": ["Status"],
+   "elements": {"Status": 0.0},
+   "ops": [
+    {"op": "fade", "id": "Status", "target": 1.0, "duration_ticks": 1500000, "easing": "QuadraticOut"},
+    {"op": "tick", "timestamp": 1000000},
+    {"op": "tick", "timestamp": 1016667},
+    {"op": "tick", "timestamp": 1033333},
+    {"op": "tick", "timestamp": 1050000},
+    {"op": "tick", "timestamp": 1066667},
+    {"op": "tick", "timestamp": 1083333},
+    {"op": "tick", "timestamp": 1100000},
+    {"op": "tick", "timestamp": 1116667},
+    {"op": "tick", "timestamp": 1133333},
+    {"op": "tick", "timestamp": 1150000}
+   ]
+  },
+  {
+   "name": "Ease Linear returns t",
+   "kind": "ease",
+   "easing": "Linear",
+   "t": [0.0, 0.25, 0.5, 1.0]
+  },
+  {
+   "name": "Ease QuadraticOut values",
+   "kind": "ease",
+   "easing": "QuadraticOut",
+   "t": [0.0, 0.25, 0.3, 0.5, 0.9, 1.0]
+  }
+ ]
+}

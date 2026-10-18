@@ -1,0 +1,159 @@
+{
+  "generator": "oracle-cs viewer-display-size",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "100 percent DPI, zoom 1 keeps the source size",
+      "width": 1000,
+      "height": 800,
+      "zoom": 1,
+      "dpi_scale": 1,
+      "expected_width": 1000,
+      "expected_height": 800
+    },
+    {
+      "name": "minimum plausible DPI 0.25 quadruples",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": 0.25,
+      "expected_width": 4000,
+      "expected_height": 4000
+    },
+    {
+      "name": "maximum plausible DPI 16",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": 16,
+      "expected_width": 62.5,
+      "expected_height": 62.5
+    },
+    {
+      "name": "DPI 16.01 is implausible and reads as 1.0",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": 16.01,
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "DPI 0.24 is implausible and reads as 1.0",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": 0.24,
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "DPI NaN reads as 1.0",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": "NaN",
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "DPI infinity reads as 1.0",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": "Infinity",
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "DPI negative reads as 1.0",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": -1,
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "200 percent DPI halves the size at zoom 1",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 1,
+      "dpi_scale": 2,
+      "expected_width": 500,
+      "expected_height": 500
+    },
+    {
+      "name": "200 percent DPI at zoom 2 keeps the source size",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 2,
+      "dpi_scale": 2,
+      "expected_width": 1000,
+      "expected_height": 1000
+    },
+    {
+      "name": "non-square at fractional zoom and DPI",
+      "width": 3,
+      "height": 7,
+      "zoom": 0.5,
+      "dpi_scale": 1.5,
+      "expected_width": 1,
+      "expected_height": 2.333333333333333
+    },
+    {
+      "name": "zero source size stays zero",
+      "width": 0,
+      "height": 0,
+      "zoom": 1,
+      "dpi_scale": 1,
+      "expected_width": 0,
+      "expected_height": 0
+    },
+    {
+      "name": "1 by 1 at zoom 8",
+      "width": 1,
+      "height": 1,
+      "zoom": 8,
+      "dpi_scale": 1,
+      "expected_width": 8,
+      "expected_height": 8
+    },
+    {
+      "name": "zoom 0.1 of a 4000 by 3000 image",
+      "width": 4000,
+      "height": 3000,
+      "zoom": 0.1,
+      "dpi_scale": 1,
+      "expected_width": 400,
+      "expected_height": 300
+    },
+    {
+      "name": "portrait at 50 percent DPI scale 0.5 doubles",
+      "width": 2000,
+      "height": 4000,
+      "zoom": 1,
+      "dpi_scale": 0.5,
+      "expected_width": 4000,
+      "expected_height": 8000
+    },
+    {
+      "name": "zero zoom gives zero size",
+      "width": 1000,
+      "height": 1000,
+      "zoom": 0,
+      "dpi_scale": 1,
+      "expected_width": 0,
+      "expected_height": 0
+    },
+    {
+      "name": "NaN zoom gives NaN size",
+      "width": 1000,
+      "height": 1000,
+      "zoom": "NaN",
+      "dpi_scale": 1,
+      "expected_width": "NaN",
+      "expected_height": "NaN"
+    }
+  ]
+}

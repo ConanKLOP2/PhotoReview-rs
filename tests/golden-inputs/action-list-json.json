@@ -1,0 +1,186 @@
+{
+  "cases": [
+    {
+      "name": "serialize-en-basic",
+      "kind": "serialize",
+      "lang": "en",
+      "actions": [
+        { "Name": "Move it", "Shortcut": "F6", "Operation": "Move", "Destination": "Group-2", "Confirm": false }
+      ]
+    },
+    {
+      "name": "serialize-empty",
+      "kind": "serialize",
+      "lang": "en",
+      "actions": []
+    },
+    {
+      "name": "serialize-relaxed-vi-and-specials",
+      "kind": "serialize",
+      "lang": "vi",
+      "actions": [
+        { "Name": "Việt <Ctrl>&'+ \"q\" back\\slash", "Shortcut": "F6", "Operation": "Copy", "Destination": "Sao lưu/a+b", "Confirm": true },
+        { "Name": "Bin", "Shortcut": "F7", "Operation": "Recycle", "Destination": "", "Confirm": false }
+      ]
+    },
+    {
+      "name": "serialize-control-characters",
+      "kind": "serialize",
+      "lang": "en",
+      "actions": [
+        { "Name": "tab\tnl\nctl\u0001", "Shortcut": "F8", "Operation": "Move", "Destination": "D", "Confirm": false }
+      ]
+    },
+    {
+      "name": "export-vi-default-escaping",
+      "kind": "serialize_export",
+      "lang": "vi",
+      "actions": [
+        { "Name": "Việt", "Shortcut": "F6", "Operation": "Copy", "Destination": "Backup", "Confirm": false }
+      ]
+    },
+    {
+      "name": "export-html-sensitive-and-plus",
+      "kind": "serialize_export",
+      "lang": "en",
+      "actions": [
+        { "Name": "<a>&'\"+`\\", "Shortcut": "F9", "Operation": "Move", "Destination": "x", "Confirm": true }
+      ]
+    },
+    {
+      "name": "export-empty",
+      "kind": "serialize_export",
+      "lang": "en",
+      "actions": []
+    },
+    {
+      "name": "deserialize-basic",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Operation\":\"Copy\",\"Destination\":\"Backup\",\"Confirm\":true}]"
+    },
+    {
+      "name": "deserialize-literal-null-is-empty",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "null"
+    },
+    {
+      "name": "deserialize-empty-object-takes-defaults",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{}]"
+    },
+    {
+      "name": "deserialize-property-names-are-case-sensitive",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"name\":\"x\",\"shortcut\":\"F6\",\"operation\":\"Copy\"}]"
+    },
+    {
+      "name": "deserialize-unknown-property-ignored",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Extra\":123,\"Operation\":\"Copy\"}]"
+    },
+    {
+      "name": "deserialize-legacy-delete-alias-is-recycle",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Operation\":\"Delete\"}]"
+    },
+    {
+      "name": "deserialize-numeric-operation-is-lenient",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Operation\":1}]"
+    },
+    {
+      "name": "deserialize-malformed-text",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "[{\"Name\":"
+    },
+    {
+      "name": "deserialize-object-instead-of-list",
+      "kind": "deserialize",
+      "lang": "en",
+      "text": "{\"Name\":\"A\"}"
+    },
+    {
+      "name": "deserialize-or-null-literal-null",
+      "kind": "deserialize_or_null",
+      "lang": "en",
+      "text": "null"
+    },
+    {
+      "name": "deserialize-or-null-empty-list",
+      "kind": "deserialize_or_null",
+      "lang": "en",
+      "text": "[]"
+    },
+    {
+      "name": "deserialize-or-null-malformed",
+      "kind": "deserialize_or_null",
+      "lang": "en",
+      "text": "not json"
+    },
+    {
+      "name": "throw-valid-list",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "F7", "Operation": "Copy", "Destination": "Backup", "Confirm": false }
+      ]
+    },
+    {
+      "name": "throw-empty-list-passes",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": []
+    },
+    {
+      "name": "throw-blank-name",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": " ", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    },
+    {
+      "name": "throw-unparseable-shortcut",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": "A", "Shortcut": "Nope", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    },
+    {
+      "name": "throw-blank-shortcut",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": "A", "Shortcut": "  ", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    },
+    {
+      "name": "throw-same-shortcut-text",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": "A", "Shortcut": "F6", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "f6", "Operation": "Copy", "Destination": "Out", "Confirm": false }
+      ]
+    },
+    {
+      "name": "throw-aliases-return-enter",
+      "kind": "throw_if_invalid",
+      "lang": "en",
+      "actions": [
+        { "Name": "A", "Shortcut": "Return", "Operation": "Move", "Destination": "Out", "Confirm": false },
+        { "Name": "B", "Shortcut": "Enter", "Operation": "Move", "Destination": "Out", "Confirm": false }
+      ]
+    }
+  ]
+}

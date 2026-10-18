@@ -16,6 +16,7 @@ if (args.Length != 4)
 
 var (command, inputPath, outputPath, commit) = (args[0], args[1], args[2], args[3]);
 var inputs = JsonNode.Parse(File.ReadAllText(inputPath))!.AsObject();
+Commands.FormatInputsDir = Path.GetDirectoryName(Path.GetFullPath(inputPath))!;
 PerfCommands.FixturesDir = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(inputPath))!, "..", "fixtures");
 
 if (command == "ordinal-casing-table")
@@ -331,6 +332,78 @@ JsonArray cases = command switch
     "cli-arguments" => Commands.CliArguments(inputs),
     "cli-tool-path-guard" => Commands.CliToolPathGuard(inputs),
     "cli-dataset-plan" => Commands.CliDatasetPlan(inputs),
+    // Wave 8 batch B1 (App.Shared / Shell.Rendering / Shell.Win32 pure logic)
+    // Commands\W8-01a
+    "viewport-state" => Commands.W801aViewportStateCases(inputs),
+    "arrow-pan" => Commands.W801aArrowPanCases(inputs),
+    "viewport-snapshot-text" => Commands.W801aSnapshotTextCases(inputs),
+    "viewport-values" => Commands.W801aViewportValuesCases(inputs),
+    "render-geometry" => Commands.RenderGeometry(inputs),
+    // Commands\W8-01b
+    "viewport-layout-engine" => Commands.ViewportLayoutEngineCases(inputs),
+    // Commands\W8-02a
+    "menu-model" => Commands.MenuModelCases(inputs),
+    // Commands\W8-02b
+    "format-exif" => Commands.FormatExif(inputs),
+    "format-status" => Commands.FormatStatus(inputs),
+    "format-title-bar" => Commands.FormatTitleBar(inputs),
+    "settings-reload-path" => Commands.SettingsReloadPathCases(inputs),
+    // Commands\W8-03a
+    "window-placement-rules" => Commands.WindowPlacementRulesCases(inputs),
+    "window-placement-visibility" => Commands.WindowPlacementVisibilityCases(inputs),
+    "window-placement-json" => Commands.WindowPlacementJsonCases(inputs),
+    // Commands\W8-04a
+    "language-options" => Commands.W804aLanguageOptionsCases(inputs),
+    "translation-problems" => Commands.W804aTranslationProblemsCases(inputs),
+    "localization-service" => Commands.W804aLocalizationServiceCases(inputs),
+    // Commands\W8-04b
+    "translation-export" => Commands.TranslationExportCases(inputs),
+    // Commands\W8-05b
+    "key-id" => Commands.KeyIdCases(inputs),
+    // Commands\W8-05c
+    "key-id-mapping" => Commands.KeyIdMappingCases(inputs),
+    // Commands\W8-05d
+    "shortcut-router" => Commands.W805dShortcutRouterCases(inputs),
+    // Commands\W8-05e
+    "mouse-gestures" => Commands.W805eMouseGestures(inputs),
+    "touchpad-gestures" => Commands.W805eTouchpadGestures(inputs),
+    // Commands\W8-05f
+    "kinetic-velocity" => Commands.W805fVelocityCases(inputs),
+    "kinetic-scroller" => Commands.W805fScrollerCases(inputs),
+    "keyboard-pan" => Commands.W805fKeyboardCases(inputs),
+    "glide-clock" => Commands.W805fGlideCases(inputs),
+    // Commands\W8-06a
+    "viewer-state-trace" => Commands.W806aViewerStateTraceCases(inputs),
+    "viewer-step-zoom" => Commands.W806aStepZoomCases(inputs),
+    "viewer-display-size" => Commands.W806aDisplaySizeCases(inputs),
+    // Commands\W8-06b
+    "info-overlay-autohide" => Commands.W806bInfoOverlayAutoHideCases(inputs),
+    "toolbar-autohide" => Commands.W806bToolbarAutoHideCases(inputs),
+    "fade-target-gate" => Commands.W806bFadeTargetGateCases(inputs),
+    "image-transition" => Commands.W806bImageTransitionCases(inputs),
+    "info-overlay-view-model" => Commands.W806bInfoOverlayViewModelCases(inputs),
+    // Commands\W8-10a
+    "action-list-json" => Commands.ActionListJsonCases(inputs),
+    "action-profiles" => Commands.ActionProfilesCases(inputs),
+    "action-profiles-io" => Commands.ActionProfilesIoCases(inputs),
+    // Commands\W8-10b
+    "settings-field-map" => Commands.SettingsFieldMapCases(inputs),
+    // Commands\W8-10f
+    "recovery-presentation" => Commands.RecoveryPresentationCases(inputs),
+    // Commands\W8-10h
+    "benchmark-presentation" => Commands.W810hBenchmarkPresentationCases(inputs),
+    // Commands\W8-15b
+    "overlay-animator" => Commands.W815bAnimatorCases(inputs),
+    "overlay-frame-delay" => Commands.W815bFrameDelayCases(inputs),
+    "overlay-palette" => Commands.W815bPaletteCases(inputs),
+    // Commands\W8-16a
+    "scaling-policy" => Commands.W816aScalingPolicyCases(inputs),
+    "frame-stats" => Commands.W816aFrameStatsCases(inputs),
+    "frame-pacer" => Commands.W816aFramePacerCases(inputs),
+    "frame-log" => Commands.W816aFrameLogCases(inputs),
+    // Commands\W8-16e
+    "scrollbar-geometry" => Commands.W816eScrollBarGeometryCases(inputs),
+    "scrollbar-repeat-timing" => Commands.W816eRepeatTimingCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

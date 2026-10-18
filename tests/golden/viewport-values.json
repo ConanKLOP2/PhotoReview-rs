@@ -1,0 +1,420 @@
+{
+  "generator": "oracle-cs viewport-values",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "input_equals: identical inputs",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": 1200,
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "b": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": 1200,
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "equal": true
+    },
+    {
+      "name": "input_equals: NaN in the same field is equal",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": "NaN",
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "b": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": "NaN",
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "equal": true
+    },
+    {
+      "name": "input_equals: NaN against a number is not equal",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": "NaN",
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "b": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "Uniform",
+        "image_width": 0,
+        "image_height": 900,
+        "max_image_width": 800,
+        "max_image_height": 600,
+        "bitmap_width": 1200,
+        "bitmap_height": 900
+      },
+      "equal": false
+    },
+    {
+      "name": "input_equals: negative zero equals zero",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 0,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "b": {
+        "client_width": "-0",
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "equal": true
+    },
+    {
+      "name": "input_equals: a tiny difference in one field is not equal",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "b": {
+        "client_width": 800,
+        "client_height": 600.0000000000001,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "equal": false
+    },
+    {
+      "name": "input_equals: a different stretch or scroll bar policy is not equal",
+      "kind": "input_equals",
+      "a": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Auto",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "b": {
+        "client_width": 800,
+        "client_height": 600,
+        "scroll_bar_thickness": 17,
+        "scroll_bars": "Hidden",
+        "stretch": "None",
+        "image_width": 10,
+        "image_height": 10,
+        "max_image_width": 10,
+        "max_image_height": 10,
+        "bitmap_width": 10,
+        "bitmap_height": 10
+      },
+      "equal": false
+    },
+    {
+      "name": "layout_equals: identical layouts",
+      "kind": "layout_equals",
+      "a": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": true,
+        "vertical_bar_visible": true,
+        "image_rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1600,
+          "height": 1200
+        },
+        "max_horizontal_offset": 800,
+        "max_vertical_offset": 600
+      },
+      "b": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": true,
+        "vertical_bar_visible": true,
+        "image_rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1600,
+          "height": 1200
+        },
+        "max_horizontal_offset": 800,
+        "max_vertical_offset": 600
+      },
+      "equal": true
+    },
+    {
+      "name": "layout_equals: NaN image rect fields are equal, minus zero equals zero",
+      "kind": "layout_equals",
+      "a": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": false,
+        "vertical_bar_visible": false,
+        "image_rect": {
+          "x": "NaN",
+          "y": 0,
+          "width": "NaN",
+          "height": 1200
+        },
+        "max_horizontal_offset": 0,
+        "max_vertical_offset": "-0"
+      },
+      "b": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": false,
+        "vertical_bar_visible": false,
+        "image_rect": {
+          "x": "NaN",
+          "y": 0,
+          "width": "NaN",
+          "height": 1200
+        },
+        "max_horizontal_offset": "-0",
+        "max_vertical_offset": 0
+      },
+      "equal": true
+    },
+    {
+      "name": "layout_equals: a changed image width is not equal",
+      "kind": "layout_equals",
+      "a": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": true,
+        "vertical_bar_visible": true,
+        "image_rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1600,
+          "height": 1200
+        },
+        "max_horizontal_offset": 800,
+        "max_vertical_offset": 600
+      },
+      "b": {
+        "viewport_width": 800,
+        "viewport_height": 600,
+        "extent_width": 1600,
+        "extent_height": 1200,
+        "horizontal_bar_visible": true,
+        "vertical_bar_visible": true,
+        "image_rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1600.0000000000002,
+          "height": 1200
+        },
+        "max_horizontal_offset": 800,
+        "max_vertical_offset": 600
+      },
+      "equal": false
+    },
+    {
+      "name": "rect_contains: right edge reached through the subtraction formula (0.1 + 0.2)",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0.1,
+        "y": 0,
+        "width": 0.2,
+        "height": 1
+      },
+      "point": {
+        "x": 0.30000000000000004,
+        "y": 0.5
+      },
+      "contains": false
+    },
+    {
+      "name": "rect_contains: an interior point and the left edge",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0.1,
+        "y": 0,
+        "width": 0.2,
+        "height": 1
+      },
+      "point": {
+        "x": 0.2,
+        "y": 0.5
+      },
+      "contains": true
+    },
+    {
+      "name": "rect_contains: left edge is closed",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0.1,
+        "y": 0,
+        "width": 0.2,
+        "height": 1
+      },
+      "point": {
+        "x": 0.1,
+        "y": 0
+      },
+      "contains": true
+    },
+    {
+      "name": "rect_contains: just outside the left edge",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0.1,
+        "y": 0,
+        "width": 0.2,
+        "height": 1
+      },
+      "point": {
+        "x": 0.09999999999999999,
+        "y": 0.5
+      },
+      "contains": false
+    },
+    {
+      "name": "rect_contains: a zero-width rect contains its own left edge",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 5,
+        "y": 5,
+        "width": 0,
+        "height": 0
+      },
+      "point": {
+        "x": 5,
+        "y": 5
+      },
+      "contains": true
+    },
+    {
+      "name": "rect_contains: a negative-width rect contains no point",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0.1,
+        "y": 0,
+        "width": -0.2,
+        "height": 1
+      },
+      "point": {
+        "x": 0.1,
+        "y": 0.5
+      },
+      "contains": false
+    },
+    {
+      "name": "rect_contains: a NaN point is never contained",
+      "kind": "rect_contains",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 10
+      },
+      "point": {
+        "x": "NaN",
+        "y": 5
+      },
+      "contains": false
+    },
+    {
+      "name": "rect_edges: right and bottom are x + width and y + height",
+      "kind": "rect_edges",
+      "rect": {
+        "x": 0.1,
+        "y": 1.5,
+        "width": 0.2,
+        "height": 2.25
+      },
+      "right": 0.30000000000000004,
+      "bottom": 3.75
+    }
+  ]
+}

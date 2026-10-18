@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {"name": "series of 100 frames: nearest-rank percentiles, blocked count", "kind": "series", "n": 100},
+    {"name": "series of 3 frames", "kind": "series", "n": 3},
+    {"name": "empty stats report zeros", "kind": "empty"},
+    {"name": "explicit samples at and around the blocked threshold", "kind": "samples", "samples": [[3, 7.9], [30, 8.0], [300, 250], [5, 0.5]]},
+    {"name": "ring keeps the last 2048 frames, total counts all", "kind": "ring", "first_ms": 1000, "first_count": 10, "rest_ms": 1, "total": 2058, "present_ms": 0.1},
+    {"name": "reset clears ring and counters but keeps the slow list", "kind": "reset_keeps_slow"},
+    {"name": "is_slow: 7.9 and 7.9 is not slow", "kind": "is_slow", "end_draw_ms": 7.9, "present_ms": 7.9},
+    {"name": "is_slow: end draw at threshold", "kind": "is_slow", "end_draw_ms": 8.0, "present_ms": 0.0},
+    {"name": "is_slow: present at threshold", "kind": "is_slow", "end_draw_ms": 0.0, "present_ms": 8.0},
+    {"name": "is_slow: NaN end draw and fast present is not slow", "kind": "is_slow", "end_draw_ms": "NaN", "present_ms": 0.0},
+    {"name": "is_slow: NaN end draw and blocked present is slow", "kind": "is_slow", "end_draw_ms": "NaN", "present_ms": 8.0},
+    {
+      "name": "slow list keeps the first blocked breakdowns, bounded at 64",
+      "kind": "slow_bounded",
+      "entries": [
+        {"frame_ms": 5, "draw_ms": 1, "end_draw_ms": 1, "present_ms": 1, "note": "fast"},
+        {"frame_ms": 500, "draw_ms": 1, "end_draw_ms": 480, "present_ms": 1, "note": "endDraw blocked"},
+        {"frame_ms": 500, "draw_ms": 1, "end_draw_ms": 1, "present_ms": 480, "note": "present blocked"}
+      ],
+      "repeat": {"count": 100, "entry": {"frame_ms": 500, "draw_ms": 1, "end_draw_ms": 480, "present_ms": 1, "note": "many"}}
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+ "command": "kinetic-scroller",
+ "cases": [
+  {"name": "start: release below the start speed does not glide", "kind": "start", "vx": 0.01, "vy": 0},
+  {"name": "start: zero release is a no-glide (negative zero intermediate must not leak)", "kind": "start", "vx": 0, "vy": 0},
+  {"name": "start: NaN release counts as zero", "kind": "start", "vx": "NaN", "vy": "NaN"},
+  {"name": "start: infinite release counts as zero", "kind": "start", "vx": "Infinity", "vy": 0},
+  {"name": "start: pointer right scrolls left (negated) and damped", "kind": "start", "vx": 1, "vy": 0},
+  {"name": "start: pointer velocity -0.2 (damped to 0.13, scroll 0.13 positive)", "kind": "start", "vx": -0.2, "vy": 0},
+  {"name": "start: release speed exactly at the threshold after damping", "kind": "start", "vx": 0.15384615384615385, "vy": 0},
+  {"name": "start: diagonal release, each component below the threshold but speed above it", "kind": "start", "vx": 0.1, "vy": 0.1},
+  {"name": "start: large release is capped per axis to 8", "kind": "start", "vx": 100, "vy": -100},
+  {"name": "start: realistic flick (-0.9, 0.4)", "kind": "start", "vx": -0.9, "vy": 0.4},
+  {"name": "start after a glide replaces the velocity", "kind": "script", "ops": [
+     {"op": "start", "vx": -1, "vy": 0}, {"op": "start", "vx": 0.01, "vy": 0}]},
+  {"name": "add impulse while idle starts a glide", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 0.5, "vy": -0.25}]},
+  {"name": "add impulse of exactly zero still activates (IsActive true)", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 0, "vy": 0}]},
+  {"name": "impulses accumulate onto the current velocity", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0}, {"op": "impulse", "vx": 2, "vy": 1}]},
+  {"name": "opposite impulse reduces then reverses", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0}, {"op": "impulse", "vx": -3, "vy": 0}]},
+  {"name": "impulses clamp each axis to 8, independently", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 6, "vy": 1}, {"op": "impulse", "vx": 6, "vy": -20}]},
+  {"name": "NaN impulse component is ignored, the other axis applies", "kind": "script", "ops": [
+     {"op": "impulse", "vx": "NaN", "vy": 2}]},
+  {"name": "infinite impulse component is ignored", "kind": "script", "ops": [
+     {"op": "impulse", "vx": "-Infinity", "vy": 1}]},
+  {"name": "stop ends the glide and zeroes both axes", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 2, "vy": 3}, {"op": "stop"}]},
+  {"name": "step while idle returns the offsets unchanged", "kind": "script", "ops": [
+     {"op": "step", "elapsed": 16, "h": 100, "v": 200, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "step moves by velocity and decays exponentially (60 Hz, 6 frames)", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 2, "vy": -1},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16.6667, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "144 Hz frame steps: 9 frames of 6.9444 ms (62.5 ms in total)", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 2, "vy": -1},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 6.9444, "h": 1000, "v": 1000, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "glide runs out of friction and becomes inactive", "kind": "script", "ops": [
+     {"op": "start", "vx": -0.5, "vy": 0.2},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 100, "h": 5000, "v": 5000, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "reaching the right edge stops that axis only", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 4, "vy": 1},
+     {"op": "step", "elapsed": 16, "h": 9990, "v": 100, "bounds": [10000, 10000, 800, 600]},
+     {"op": "step", "elapsed": 16, "h": 9995, "v": 100, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "already at the top edge and pushing into it stops the glide", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 0, "vy": -2},
+     {"op": "step", "elapsed": 16, "h": 100, "v": 0, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "frame gap longer than 100 ms is capped at 100", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0},
+     {"op": "step", "elapsed": 500, "h": 0, "v": 0, "bounds": [10000000, 10000, 800, 600]}]},
+  {"name": "negative elapsed is treated as zero", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0},
+     {"op": "step", "elapsed": -50, "h": 10, "v": 10, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "NaN elapsed is treated as zero", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0},
+     {"op": "step", "elapsed": "NaN", "h": 10, "v": 10, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "NaN start offset is treated as zero", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0},
+     {"op": "step", "elapsed": 10, "h": "NaN", "v": 10, "bounds": [10000, 10000, 800, 600]}]},
+  {"name": "bounds smaller than the viewport: max is zero, glide stops at once", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 1},
+     {"op": "step", "elapsed": 16, "h": 0, "v": 0, "bounds": [100, 100, 800, 600]}]},
+  {"name": "NaN extent: max is NaN, offset kept (Math.Max propagates NaN)", "kind": "script", "ops": [
+     {"op": "impulse", "vx": 1, "vy": 0},
+     {"op": "step", "elapsed": 16, "h": 5, "v": 5, "bounds": ["NaN", 10000, 800, 600]}]}
+ ]
+}

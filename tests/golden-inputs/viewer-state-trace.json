@@ -1,0 +1,273 @@
+{
+ "cases": [
+  {"name": "defaults: fit, uniform, high quality, no size, infinite limits",
+   "steps": [
+    {"op": "query"}
+   ]},
+  {"name": "set_zoom leaves fit, clamps to 10..800 percent, ignores NaN",
+   "steps": [
+    {"op": "set_zoom", "value": 3},
+    {"op": "query"},
+    {"op": "set_zoom", "value": 0.05},
+    {"op": "set_zoom", "value": 10},
+    {"op": "set_zoom", "value": "NaN"},
+    {"op": "set_zoom", "value": "-Infinity"},
+    {"op": "set_zoom", "value": "Infinity"},
+    {"op": "query"}
+   ]},
+  {"name": "steps from fit start at the on-screen fit zoom once the bound is known",
+   "steps": [
+    {"op": "set_source_size", "width": 4000, "height": 3000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 750},
+    {"op": "zoom_in"},
+    {"op": "zoom_in"},
+    {"op": "zoom_out"},
+    {"op": "wheel_zoom", "delta": 0},
+    {"op": "wheel_zoom", "delta": 120},
+    {"op": "query"}
+   ]},
+  {"name": "step from fit with unknown size uses 100 percent",
+   "steps": [
+    {"op": "set_source_size", "width": 0, "height": 0, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 0, "viewport_height": 0},
+    {"op": "zoom_in"},
+    {"op": "query"}
+   ]},
+  {"name": "zoom in above the stepping maximum keeps the click zoom, zoom out lands on 400 percent",
+   "steps": [
+    {"op": "set_zoom", "value": 8},
+    {"op": "zoom_in"},
+    {"op": "zoom_out"},
+    {"op": "query"}
+   ]},
+  {"name": "zoom out from a click zoom below the stepping minimum does nothing",
+   "steps": [
+    {"op": "set_zoom", "value": 0.1},
+    {"op": "zoom_out"},
+    {"op": "zoom_in"},
+    {"op": "query"}
+   ]},
+  {"name": "negative zoom step reverses the direction of zoom in and zoom out",
+   "steps": [
+    {"op": "set_zoom", "value": 2},
+    {"op": "set_zoom_step", "value": 0.5},
+    {"op": "zoom_in"},
+    {"op": "set_zoom_step", "value": -0.25},
+    {"op": "zoom_in"},
+    {"op": "query"}
+   ]},
+  {"name": "fit width then step continues from the fitted zoom",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "set_dpi_scale", "value": 1.0},
+    {"op": "update_viewport", "viewport_width": 1000, "viewport_height": 2000, "force": true},
+    {"op": "zoom_to_fit_width"},
+    {"op": "query"},
+    {"op": "zoom_in"},
+    {"op": "query"}
+   ]},
+  {"name": "fit height then viewport grows: fit width and height are reported at the current bound",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 2000},
+    {"op": "zoom_to_fit_height"},
+    {"op": "update_viewport", "viewport_width": 900, "viewport_height": 1700, "force": false},
+    {"op": "query"}
+   ]},
+  {"name": "zoom to fit with unknown source or viewport does nothing",
+   "steps": [
+    {"op": "set_zoom", "value": 2},
+    {"op": "zoom_to_fit_width"},
+    {"op": "zoom_to_fit_height"},
+    {"op": "query"}
+   ]},
+  {"name": "zoom to actual size leaves fit even when fit zoom is one",
+   "steps": [
+    {"op": "set_source_size", "width": 1000, "height": 1000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 1000},
+    {"op": "zoom_to_actual_size"},
+    {"op": "query"}
+   ]},
+  {"name": "swap while zoomed keeps the fit-width axis and announces the swap before the size changes",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "set_dpi_scale", "value": 1.0},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 2000},
+    {"op": "zoom_to_fit_width"},
+    {"op": "set_source_size", "width": 3000, "height": 2000, "new_image": true},
+    {"op": "swap_source_size", "width": 3010, "height": 2007},
+    {"op": "swap_source_size", "width": 3010, "height": 2007},
+    {"op": "query"}
+   ]},
+  {"name": "swap in fit only sets the size, no announcement",
+   "steps": [
+    {"op": "set_source_size", "width": 50, "height": 50, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 800, "viewport_height": 600},
+    {"op": "swap_source_size", "width": 60, "height": 60},
+    {"op": "query"}
+   ]},
+  {"name": "swap with an unknown old size only sets the size",
+   "steps": [
+    {"op": "set_source_size", "width": 0, "height": 50, "new_image": true},
+    {"op": "set_zoom", "value": 2},
+    {"op": "swap_source_size", "width": 100, "height": 100},
+    {"op": "query"}
+   ]},
+  {"name": "swap to a zero-sized replacement only sets the size",
+   "steps": [
+    {"op": "set_source_size", "width": 50, "height": 50, "new_image": true},
+    {"op": "set_zoom", "value": 2},
+    {"op": "swap_source_size", "width": 0, "height": 100},
+    {"op": "query"}
+   ]},
+  {"name": "negative size clamps to zero and forgets the fit axis when the size changes",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 2000},
+    {"op": "zoom_to_fit_width"},
+    {"op": "set_source_size", "width": -5, "height": 4000, "new_image": false},
+    {"op": "swap_source_size", "width": 2010, "height": 4020},
+    {"op": "query"}
+   ]},
+  {"name": "same size without a new image keeps the fit axis, a new image of the same size forgets it",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 2000},
+    {"op": "zoom_to_fit_width"},
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": false},
+    {"op": "swap_source_size", "width": 2010, "height": 4020},
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "swap_source_size", "width": 2010, "height": 4020},
+    {"op": "query"}
+   ]},
+  {"name": "usable viewport readings update the remembered fit dimension, unusable ones do not",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 1000, "new_image": true},
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 500},
+    {"op": "zoom_to_fit_width"},
+    {"op": "update_viewport", "viewport_width": 1, "viewport_height": 700, "force": false},
+    {"op": "update_viewport", "viewport_width": "NaN", "viewport_height": 700, "force": false},
+    {"op": "update_viewport", "viewport_width": 1200, "viewport_height": "Infinity", "force": false},
+    {"op": "swap_source_size", "width": 2400, "height": 1200},
+    {"op": "update_viewport", "viewport_width": 1200, "viewport_height": 700, "force": false},
+    {"op": "swap_source_size", "width": 2000, "height": 1000},
+    {"op": "query"}
+   ]},
+  {"name": "update viewport outside uniform is ignored unless forced",
+   "steps": [
+    {"op": "reset_fit", "viewport_width": 1000, "viewport_height": 800},
+    {"op": "update_viewport", "viewport_width": 1200, "viewport_height": 900, "force": false},
+    {"op": "set_zoom", "value": 2},
+    {"op": "update_viewport", "viewport_width": 1600, "viewport_height": 1200, "force": false},
+    {"op": "query"},
+    {"op": "update_viewport", "viewport_width": 1600, "viewport_height": 1200, "force": true},
+    {"op": "query"}
+   ]},
+  {"name": "forced update keeps the old limits when the reading is not usable",
+   "steps": [
+    {"op": "update_viewport", "viewport_width": 1000, "viewport_height": 500, "force": true},
+    {"op": "update_viewport", "viewport_width": 800, "viewport_height": 1, "force": true},
+    {"op": "update_viewport", "viewport_width": "NaN", "viewport_height": 600, "force": true},
+    {"op": "query"}
+   ]},
+  {"name": "reset fit always raises the zoom mode change, a zero viewport keeps the limits",
+   "steps": [
+    {"op": "reset_fit", "viewport_width": 1920, "viewport_height": 1080},
+    {"op": "reset_fit", "viewport_width": 1920, "viewport_height": 1080},
+    {"op": "reset_fit", "viewport_width": 0, "viewport_height": 0},
+    {"op": "query"}
+   ]},
+  {"name": "initial view mode fit and percent modes",
+   "steps": [
+    {"op": "set_zoom", "value": 3},
+    {"op": "apply_initial_view_mode", "mode": "Fit", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "apply_initial_view_mode", "mode": "Percent100", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "apply_initial_view_mode", "mode": "Percent200", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "apply_initial_view_mode", "mode": "Percent400", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "query"}
+   ]},
+  {"name": "initial view mode fit width and fit height on a portrait image",
+   "steps": [
+    {"op": "set_source_size", "width": 2000, "height": 4000, "new_image": true},
+    {"op": "set_dpi_scale", "value": 1.0},
+    {"op": "apply_initial_view_mode", "mode": "FitWidth", "viewport_width": 1000, "viewport_height": 2000, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "query"},
+    {"op": "apply_initial_view_mode", "mode": "FitHeight", "viewport_width": 1000, "viewport_height": 2000, "click_zoom_percent": 100, "keep_zoom_across_images": false},
+    {"op": "query"}
+   ]},
+  {"name": "initial view mode click zoom level converts percent and clamps",
+   "steps": [
+    {"op": "apply_initial_view_mode", "mode": "ClickZoomLevel", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 150, "keep_zoom_across_images": false},
+    {"op": "query"},
+    {"op": "apply_initial_view_mode", "mode": "ClickZoomLevel", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 5, "keep_zoom_across_images": false},
+    {"op": "query"}
+   ]},
+  {"name": "keep zoom across images makes the initial view mode a no-op",
+   "steps": [
+    {"op": "set_zoom", "value": 3},
+    {"op": "apply_initial_view_mode", "mode": "Fit", "viewport_width": 1920, "viewport_height": 1080, "click_zoom_percent": 100, "keep_zoom_across_images": true},
+    {"op": "query"}
+   ]},
+  {"name": "dpi scale changes the fit zoom; implausible values read as 100 percent",
+   "steps": [
+    {"op": "set_source_size", "width": 1000, "height": 500, "new_image": true},
+    {"op": "set_dpi_scale", "value": 2.0},
+    {"op": "update_viewport", "viewport_width": 1000, "viewport_height": 10000, "force": true},
+    {"op": "query"},
+    {"op": "set_dpi_scale", "value": 0.24},
+    {"op": "query"},
+    {"op": "set_dpi_scale", "value": "NaN"},
+    {"op": "query"},
+    {"op": "set_dpi_scale", "value": 16.0},
+    {"op": "query"}
+   ]},
+  {"name": "display zoom percent rounds half to even (C# Math.Round)",
+   "steps": [
+    {"op": "set_zoom", "value": 0.125},
+    {"op": "query"},
+    {"op": "set_zoom", "value": 0.375},
+    {"op": "query"},
+    {"op": "set_zoom", "value": 0.625},
+    {"op": "query"},
+    {"op": "set_zoom", "value": 1.505},
+    {"op": "query"}
+   ]},
+  {"name": "raw viewport limits drive the fit zoom and the fit HUD percent",
+   "steps": [
+    {"op": "set_source_size", "width": 1000, "height": 1000, "new_image": true},
+    {"op": "set_max_image_width", "value": 1},
+    {"op": "query"},
+    {"op": "set_max_image_width", "value": "Infinity"},
+    {"op": "set_max_image_height", "value": 250},
+    {"op": "query"},
+    {"op": "zoom_to_fit_height"},
+    {"op": "query"}
+   ]},
+  {"name": "fullscreen toggles and exit is idempotent",
+   "steps": [
+    {"op": "toggle_fullscreen"},
+    {"op": "toggle_fullscreen"},
+    {"op": "toggle_fullscreen"},
+    {"op": "exit_fullscreen"},
+    {"op": "exit_fullscreen"},
+    {"op": "query"}
+   ]},
+  {"name": "scaling quality and force high quality report the effective quality",
+   "steps": [
+    {"op": "set_scaling_quality", "value": "Linear"},
+    {"op": "set_force_high_quality", "value": true},
+    {"op": "set_force_high_quality", "value": true},
+    {"op": "set_scaling_quality", "value": "HighQuality"},
+    {"op": "set_force_high_quality", "value": false},
+    {"op": "query"}
+   ]},
+  {"name": "raw zoom and stretch setters do not run the mode change",
+   "steps": [
+    {"op": "set_zoom_raw", "value": 2.5},
+    {"op": "set_zoom_raw", "value": 2.5},
+    {"op": "set_stretch", "value": "None"},
+    {"op": "set_zoom_raw", "value": 0.5},
+    {"op": "query"}
+   ]}
+ ]
+}

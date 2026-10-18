@@ -1,0 +1,1316 @@
+{
+  "generator": "oracle-cs recovery-presentation",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "rgb-all-tones",
+      "fn": "rgb_all",
+      "input": {},
+      "output": [
+        {
+          "in": "Neutral",
+          "out": [
+            176,
+            176,
+            176
+          ]
+        },
+        {
+          "in": "Good",
+          "out": [
+            108,
+            203,
+            122
+          ]
+        },
+        {
+          "in": "Info",
+          "out": [
+            111,
+            177,
+            255
+          ]
+        },
+        {
+          "in": "Warn",
+          "out": [
+            240,
+            176,
+            64
+          ]
+        },
+        {
+          "in": "Bad",
+          "out": [
+            255,
+            107,
+            107
+          ]
+        }
+      ]
+    },
+    {
+      "name": "verdict-tone-all",
+      "fn": "verdict_tone_all",
+      "input": {},
+      "output": [
+        {
+          "in": "CanRetry",
+          "out": "Good"
+        },
+        {
+          "in": "AlreadyDone",
+          "out": "Info"
+        },
+        {
+          "in": "Conflict",
+          "out": "Warn"
+        },
+        {
+          "in": "SourceChanged",
+          "out": "Warn"
+        },
+        {
+          "in": "DestinationChanged",
+          "out": "Warn"
+        },
+        {
+          "in": "Lost",
+          "out": "Bad"
+        },
+        {
+          "in": "Unknown",
+          "out": "Neutral"
+        },
+        {
+          "in": "RecycleUnverifiable",
+          "out": "Neutral"
+        },
+        {
+          "in": "NotRecycled",
+          "out": "Warn"
+        },
+        {
+          "in": "PermanentlyDeleted",
+          "out": "Bad"
+        },
+        {
+          "in": "PartiallyPermanentlyDeleted",
+          "out": "Warn"
+        }
+      ]
+    },
+    {
+      "name": "verdict-text-all",
+      "fn": "verdict_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "CanRetry",
+          "out": "Can retry"
+        },
+        {
+          "in": "AlreadyDone",
+          "out": "Already done"
+        },
+        {
+          "in": "Conflict",
+          "out": "Conflict"
+        },
+        {
+          "in": "SourceChanged",
+          "out": "Source changed"
+        },
+        {
+          "in": "DestinationChanged",
+          "out": "Destination changed"
+        },
+        {
+          "in": "Lost",
+          "out": "File lost"
+        },
+        {
+          "in": "Unknown",
+          "out": "Unknown"
+        },
+        {
+          "in": "RecycleUnverifiable",
+          "out": "Cannot verify"
+        },
+        {
+          "in": "NotRecycled",
+          "out": "Not recycled"
+        },
+        {
+          "in": "PermanentlyDeleted",
+          "out": "Deleted permanently"
+        },
+        {
+          "in": "PartiallyPermanentlyDeleted",
+          "out": "Partly deleted permanently"
+        }
+      ]
+    },
+    {
+      "name": "explain-text-all",
+      "fn": "explain_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "CanRetry",
+          "out": "The source is unchanged and nothing exists at the destination, so the operation can be retried safely."
+        },
+        {
+          "in": "AlreadyDone",
+          "out": "The file is already at the destination and the source is gone (for Copy: both match). The operation actually finished."
+        },
+        {
+          "in": "Conflict",
+          "out": "Both the source and the destination exist. Compare the two files before deciding."
+        },
+        {
+          "in": "SourceChanged",
+          "out": "The source was modified since the operation was recorded; retry is refused to protect your data."
+        },
+        {
+          "in": "DestinationChanged",
+          "out": "The source is gone and the destination has a different size than recorded; it may be an incomplete copy."
+        },
+        {
+          "in": "Lost",
+          "out": "Neither the source nor the destination exists. The file may have been deleted or moved elsewhere."
+        },
+        {
+          "in": "Unknown",
+          "out": "The files could not be inspected (access denied or unreadable), or the entry has no destination."
+        },
+        {
+          "in": "RecycleUnverifiable",
+          "out": "The source is gone; it was presumably sent to the Recycle Bin, but this cannot be verified here."
+        },
+        {
+          "in": "NotRecycled",
+          "out": "The source still exists, so the file was not sent to the Recycle Bin."
+        },
+        {
+          "in": "PermanentlyDeleted",
+          "out": "The file was deleted permanently because its drive has no Recycle Bin. It cannot be restored from Photo Review."
+        },
+        {
+          "in": "PartiallyPermanentlyDeleted",
+          "out": "Some files of this capture were deleted permanently because their drive has no Recycle Bin and cannot be restored from Photo Review. The other files were moved to the Recycle Bin."
+        }
+      ]
+    },
+    {
+      "name": "action-text-all",
+      "fn": "action_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "CanRetry",
+          "out": "Retry"
+        },
+        {
+          "in": "AlreadyDone",
+          "out": "Dismiss - already completed"
+        },
+        {
+          "in": "Conflict",
+          "out": "Investigate - both files exist"
+        },
+        {
+          "in": "SourceChanged",
+          "out": "Investigate - the source was modified"
+        },
+        {
+          "in": "DestinationChanged",
+          "out": "Investigate - the destination file may be incomplete"
+        },
+        {
+          "in": "Lost",
+          "out": "Look for the file (Recycle Bin, other folders), then dismiss"
+        },
+        {
+          "in": "Unknown",
+          "out": "Fix access to the files, then Re-check"
+        },
+        {
+          "in": "RecycleUnverifiable",
+          "out": "Check the Recycle Bin, then dismiss"
+        },
+        {
+          "in": "NotRecycled",
+          "out": "Dismiss, or recycle the file again from the main window"
+        },
+        {
+          "in": "PermanentlyDeleted",
+          "out": "Nothing to restore. Dismiss this entry, or recover the file with a backup or data-recovery tool."
+        },
+        {
+          "in": "PartiallyPermanentlyDeleted",
+          "out": "Restore the other files from the Recycle Bin if you need them, then dismiss this entry. The permanently deleted files can only come back from a backup or a data-recovery tool."
+        }
+      ]
+    },
+    {
+      "name": "path-status-all",
+      "fn": "path_status_all",
+      "input": {},
+      "output": [
+        {
+          "in": "Exists",
+          "out": "Exists | Good"
+        },
+        {
+          "in": "Missing",
+          "out": "Missing | Neutral"
+        },
+        {
+          "in": "Changed",
+          "out": "Changed since the journal entry | Warn"
+        },
+        {
+          "in": "Unreadable",
+          "out": "Cannot be read | Bad"
+        }
+      ]
+    },
+    {
+      "name": "matches-matrix",
+      "fn": "matches_matrix",
+      "input": {},
+      "output": [
+        {
+          "in": "All/null",
+          "out": true
+        },
+        {
+          "in": "All/CanRetry",
+          "out": true
+        },
+        {
+          "in": "All/AlreadyDone",
+          "out": true
+        },
+        {
+          "in": "All/Conflict",
+          "out": true
+        },
+        {
+          "in": "All/SourceChanged",
+          "out": true
+        },
+        {
+          "in": "All/DestinationChanged",
+          "out": true
+        },
+        {
+          "in": "All/Lost",
+          "out": true
+        },
+        {
+          "in": "All/Unknown",
+          "out": true
+        },
+        {
+          "in": "All/RecycleUnverifiable",
+          "out": true
+        },
+        {
+          "in": "All/NotRecycled",
+          "out": true
+        },
+        {
+          "in": "All/PermanentlyDeleted",
+          "out": true
+        },
+        {
+          "in": "All/PartiallyPermanentlyDeleted",
+          "out": true
+        },
+        {
+          "in": "CanRetry/null",
+          "out": false
+        },
+        {
+          "in": "CanRetry/CanRetry",
+          "out": true
+        },
+        {
+          "in": "CanRetry/AlreadyDone",
+          "out": false
+        },
+        {
+          "in": "CanRetry/Conflict",
+          "out": false
+        },
+        {
+          "in": "CanRetry/SourceChanged",
+          "out": false
+        },
+        {
+          "in": "CanRetry/DestinationChanged",
+          "out": false
+        },
+        {
+          "in": "CanRetry/Lost",
+          "out": false
+        },
+        {
+          "in": "CanRetry/Unknown",
+          "out": false
+        },
+        {
+          "in": "CanRetry/RecycleUnverifiable",
+          "out": false
+        },
+        {
+          "in": "CanRetry/NotRecycled",
+          "out": false
+        },
+        {
+          "in": "CanRetry/PermanentlyDeleted",
+          "out": false
+        },
+        {
+          "in": "CanRetry/PartiallyPermanentlyDeleted",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/null",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/CanRetry",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/AlreadyDone",
+          "out": true
+        },
+        {
+          "in": "AlreadyDone/Conflict",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/SourceChanged",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/DestinationChanged",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/Lost",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/Unknown",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/RecycleUnverifiable",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/NotRecycled",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/PermanentlyDeleted",
+          "out": false
+        },
+        {
+          "in": "AlreadyDone/PartiallyPermanentlyDeleted",
+          "out": false
+        },
+        {
+          "in": "Problems/null",
+          "out": false
+        },
+        {
+          "in": "Problems/CanRetry",
+          "out": false
+        },
+        {
+          "in": "Problems/AlreadyDone",
+          "out": false
+        },
+        {
+          "in": "Problems/Conflict",
+          "out": true
+        },
+        {
+          "in": "Problems/SourceChanged",
+          "out": true
+        },
+        {
+          "in": "Problems/DestinationChanged",
+          "out": true
+        },
+        {
+          "in": "Problems/Lost",
+          "out": true
+        },
+        {
+          "in": "Problems/Unknown",
+          "out": true
+        },
+        {
+          "in": "Problems/RecycleUnverifiable",
+          "out": true
+        },
+        {
+          "in": "Problems/NotRecycled",
+          "out": true
+        },
+        {
+          "in": "Problems/PermanentlyDeleted",
+          "out": true
+        },
+        {
+          "in": "Problems/PartiallyPermanentlyDeleted",
+          "out": true
+        }
+      ]
+    },
+    {
+      "name": "operation-text-all",
+      "fn": "operation_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "Move",
+          "out": "Move"
+        },
+        {
+          "in": "Copy",
+          "out": "Copy"
+        },
+        {
+          "in": "Recycle",
+          "out": "Move to Recycle Bin"
+        }
+      ]
+    },
+    {
+      "name": "state-text-all-includes-dismissed",
+      "fn": "state_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "Prepared",
+          "out": "Prepared"
+        },
+        {
+          "in": "Committed",
+          "out": "Committed"
+        },
+        {
+          "in": "Failed",
+          "out": "Failed"
+        },
+        {
+          "in": "Dismissed",
+          "out": "Dismissed"
+        }
+      ]
+    },
+    {
+      "name": "format-size-zero",
+      "fn": "format_size",
+      "input": {
+        "bytes": 0
+      },
+      "output": "0 bytes"
+    },
+    {
+      "name": "format-size-999",
+      "fn": "format_size",
+      "input": {
+        "bytes": 999
+      },
+      "output": "999 bytes"
+    },
+    {
+      "name": "format-size-1000",
+      "fn": "format_size",
+      "input": {
+        "bytes": 1000
+      },
+      "output": "1,000 bytes"
+    },
+    {
+      "name": "format-size-1234567",
+      "fn": "format_size",
+      "input": {
+        "bytes": 1234567
+      },
+      "output": "1,234,567 bytes"
+    },
+    {
+      "name": "format-size-negative",
+      "fn": "format_size",
+      "input": {
+        "bytes": -1234567
+      },
+      "output": "-1,234,567 bytes"
+    },
+    {
+      "name": "format-size-i64-max",
+      "fn": "format_size",
+      "input": {
+        "bytes": 9223372036854775807
+      },
+      "output": "9,223,372,036,854,775,807 bytes"
+    },
+    {
+      "name": "format-size-i64-min",
+      "fn": "format_size",
+      "input": {
+        "bytes": -9223372036854775808
+      },
+      "output": "-9,223,372,036,854,775,808 bytes"
+    },
+    {
+      "name": "allows-retry-move-canretry",
+      "fn": "allows_retry",
+      "input": {
+        "check": {
+          "entry": {
+            "type": "Move",
+            "source": "C:\\photos\\a.jpg",
+            "destination": "C:\\trash\\a.jpg",
+            "size": 100
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Missing",
+            "folder_exists": true
+          },
+          "destination": {
+            "path": "C:\\trash\\a.jpg",
+            "status": "Exists",
+            "size": 100,
+            "folder_exists": true
+          },
+          "verdict": "CanRetry"
+        }
+      },
+      "output": true
+    },
+    {
+      "name": "allows-retry-copy-canretry",
+      "fn": "allows_retry",
+      "input": {
+        "check": {
+          "entry": {
+            "type": "Copy",
+            "source": "C:\\photos\\a.jpg",
+            "destination": "C:\\out\\a.jpg",
+            "size": 100
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Exists",
+            "size": 100,
+            "folder_exists": true
+          },
+          "destination": {
+            "path": "C:\\out\\a.jpg",
+            "status": "Missing",
+            "folder_exists": true
+          },
+          "verdict": "CanRetry"
+        }
+      },
+      "output": true
+    },
+    {
+      "name": "allows-retry-recycle-single-canretry-false",
+      "fn": "allows_retry",
+      "input": {
+        "check": {
+          "entry": {
+            "type": "Recycle",
+            "source": "C:\\photos\\a.jpg",
+            "size": 100
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Exists",
+            "size": 100,
+            "folder_exists": true
+          },
+          "verdict": "CanRetry"
+        }
+      },
+      "output": false
+    },
+    {
+      "name": "allows-retry-recycle-group-canretry-true",
+      "fn": "allows_retry",
+      "input": {
+        "check": {
+          "entry": {
+            "type": "Recycle",
+            "source": "C:\\photos\\a.jpg",
+            "size": 100,
+            "group_members": [
+              {
+                "source": "C:\\photos\\a.jpg",
+                "destination": null,
+                "size": 100
+              }
+            ]
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Exists",
+            "size": 100,
+            "folder_exists": true
+          },
+          "verdict": "CanRetry",
+          "group_members": [
+            {
+              "member": {
+                "source": "C:\\photos\\a.jpg",
+                "destination": null,
+                "size": 100
+              },
+              "check": {
+                "entry": {
+                  "type": "Recycle",
+                  "source": "C:\\photos\\a.jpg",
+                  "size": 100
+                },
+                "source": {
+                  "path": "C:\\photos\\a.jpg",
+                  "status": "Exists",
+                  "size": 100,
+                  "folder_exists": true
+                },
+                "verdict": "CanRetry"
+              }
+            }
+          ]
+        }
+      },
+      "output": true
+    },
+    {
+      "name": "allows-retry-move-alreadydone-false",
+      "fn": "allows_retry",
+      "input": {
+        "check": {
+          "entry": {
+            "type": "Move",
+            "source": "C:\\photos\\a.jpg",
+            "destination": "C:\\trash\\a.jpg",
+            "size": 100
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Missing",
+            "folder_exists": true
+          },
+          "destination": {
+            "path": "C:\\trash\\a.jpg",
+            "status": "Exists",
+            "size": 100,
+            "folder_exists": true
+          },
+          "verdict": "AlreadyDone"
+        }
+      },
+      "output": false
+    },
+    {
+      "name": "allows-retry-null-false",
+      "fn": "allows_retry",
+      "input": {
+        "check": null
+      },
+      "output": false
+    },
+    {
+      "name": "group-status-alreadydone-with-destination",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "AlreadyDone",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": "D:\\x\\a.jpg",
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Missing",
+          "folder_exists": true
+        },
+        "destination": {
+          "path": "D:\\x\\a.jpg",
+          "status": "Exists",
+          "size": 5,
+          "folder_exists": true
+        }
+      },
+      "output": "Exists · Source: Missing · Destination: Exists"
+    },
+    {
+      "name": "group-status-canretry-no-destination",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "CanRetry",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": null,
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Exists",
+          "size": 5,
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "At source; ready to retry"
+    },
+    {
+      "name": "group-status-notrecycled-destination-null-check",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "NotRecycled",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": "D:\\x\\a.jpg",
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Exists",
+          "size": 5,
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "Still on disk · Source: Exists · Destination: Missing"
+    },
+    {
+      "name": "group-status-recycleunverifiable",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "RecycleUnverifiable",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": null,
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Missing",
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "Missing"
+    },
+    {
+      "name": "group-status-sourcechanged-destination-changed",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "SourceChanged",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": "D:\\x\\a.jpg",
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Changed",
+          "size": 9,
+          "folder_exists": true
+        },
+        "destination": {
+          "path": "D:\\x\\a.jpg",
+          "status": "Unreadable",
+          "folder_exists": true
+        }
+      },
+      "output": "Changed · Source: Changed since the journal entry · Destination: Cannot be read"
+    },
+    {
+      "name": "group-status-conflict",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "Conflict",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": null,
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Exists",
+          "size": 5,
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "Files at both paths, or changed"
+    },
+    {
+      "name": "group-status-lost",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "Lost",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": "D:\\x\\a.jpg",
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Missing",
+          "folder_exists": true
+        },
+        "destination": {
+          "path": "D:\\x\\a.jpg",
+          "status": "Missing",
+          "folder_exists": false
+        }
+      },
+      "output": "Both paths missing · Source: Missing · Destination: Missing"
+    },
+    {
+      "name": "group-status-unknown",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "Unknown",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": null,
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Unreadable",
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "Unreadable"
+    },
+    {
+      "name": "group-status-permanentlydeleted-falls-back-to-verdict-text",
+      "fn": "group_status_text",
+      "input": {
+        "verdict": "PermanentlyDeleted",
+        "member": {
+          "source": "C:\\p\\a.jpg",
+          "destination": null,
+          "size": 5
+        },
+        "source": {
+          "path": "C:\\p\\a.jpg",
+          "status": "Missing",
+          "folder_exists": true
+        },
+        "destination": null
+      },
+      "output": "Deleted permanently"
+    },
+    {
+      "name": "retry-single-file-move",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Move",
+          "source": "C:\\photos\\IMG_1.jpg",
+          "destination": "C:\\out\\IMG_1.jpg",
+          "size": 100
+        },
+        "check": null,
+        "allow_permanent_delete": false
+      },
+      "output": "Retry Move for IMG_1.jpg?"
+    },
+    {
+      "name": "retry-cancelled-single-file",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Move",
+          "source": "C:\\photos\\IMG_1.jpg",
+          "destination": "C:\\out\\IMG_1.jpg",
+          "size": 100,
+          "error_code": "CancelledByUser"
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "You cancelled this Move earlier. Retrying will FINISH it for 1 file(s). Continue?"
+    },
+    {
+      "name": "retry-cancelled-group-recycle-permanent-no-check",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "error_code": "CancelledByUser",
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            },
+            {
+              "source": "C:\\photos\\b.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": false
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "You cancelled this Move to Recycle Bin earlier. Retrying will FINISH it for 2 file(s); 1 of them are on drives without a Recycle Bin and will be deleted PERMANENTLY. This cannot be undone. Continue?"
+    },
+    {
+      "name": "retry-cancelled-group-recycle-setting-off",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "error_code": "CancelledByUser",
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            },
+            {
+              "source": "C:\\photos\\b.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": false
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": false
+      },
+      "output": "You cancelled this Move to Recycle Bin earlier. Retrying will FINISH it for 2 file(s). Continue?"
+    },
+    {
+      "name": "retry-cancelled-group-recycle-permanent-counts-only-notrecycled",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "error_code": "CancelledByUser",
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            },
+            {
+              "source": "C:\\photos\\b.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            }
+          ]
+        },
+        "check": {
+          "entry": {
+            "type": "Recycle",
+            "source": "C:\\photos\\a.jpg",
+            "size": 1
+          },
+          "source": {
+            "path": "C:\\photos\\a.jpg",
+            "status": "Exists",
+            "size": 1,
+            "folder_exists": true
+          },
+          "verdict": "NotRecycled",
+          "group_members": [
+            {
+              "member": {
+                "source": "C:\\photos\\a.jpg",
+                "destination": null,
+                "size": 1,
+                "permanent": true
+              },
+              "check": {
+                "entry": {
+                  "type": "Recycle",
+                  "source": "C:\\photos\\a.jpg",
+                  "size": 1
+                },
+                "source": {
+                  "path": "C:\\photos\\a.jpg",
+                  "status": "Exists",
+                  "size": 1,
+                  "folder_exists": true
+                },
+                "verdict": "NotRecycled"
+              }
+            },
+            {
+              "member": {
+                "source": "C:\\photos\\b.jpg",
+                "destination": null,
+                "size": 1,
+                "permanent": true
+              },
+              "check": {
+                "entry": {
+                  "type": "Recycle",
+                  "source": "C:\\photos\\b.jpg",
+                  "size": 1
+                },
+                "source": {
+                  "path": "C:\\photos\\b.jpg",
+                  "status": "Missing",
+                  "folder_exists": true
+                },
+                "verdict": "RecycleUnverifiable"
+              }
+            }
+          ]
+        },
+        "allow_permanent_delete": true
+      },
+      "output": "You cancelled this Move to Recycle Bin earlier. Retrying will FINISH it for 2 file(s); 1 of them are on drives without a Recycle Bin and will be deleted PERMANENTLY. This cannot be undone. Continue?"
+    },
+    {
+      "name": "retry-group-undo-restore",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "undo": true,
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            },
+            {
+              "source": "C:\\photos\\b.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": false
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "Restore capture-group members from the Recycle Bin (up to 2)? Members that are already back will be skipped."
+    },
+    {
+      "name": "retry-group-recycle-permanent-no-check",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            },
+            {
+              "source": "C:\\photos\\b.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": false
+            },
+            {
+              "source": "C:\\photos\\c.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "Retry Move to Recycle Bin for 3 capture-group members? 2 of them are on drives without a Recycle Bin and will be deleted PERMANENTLY. This cannot be undone. Completed members will be skipped."
+    },
+    {
+      "name": "retry-group-recycle-setting-off-plain",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": true
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": false
+      },
+      "output": "Retry Move to Recycle Bin for 1 capture-group members? Completed members will be skipped."
+    },
+    {
+      "name": "retry-group-recycle-no-permanent-member-plain",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Recycle",
+          "source": "C:\\photos\\a.jpg",
+          "size": 1,
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": null,
+              "size": 1,
+              "permanent": false
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "Retry Move to Recycle Bin for 1 capture-group members? Completed members will be skipped."
+    },
+    {
+      "name": "retry-group-move-generic",
+      "fn": "retry_confirm_text",
+      "input": {
+        "entry": {
+          "type": "Move",
+          "source": "C:\\photos\\a.jpg",
+          "destination": "C:\\out",
+          "size": 1,
+          "group_members": [
+            {
+              "source": "C:\\photos\\a.jpg",
+              "destination": "C:\\out\\a.jpg",
+              "size": 1
+            }
+          ]
+        },
+        "check": null,
+        "allow_permanent_delete": true
+      },
+      "output": "Retry Move for 1 capture-group members? Completed members will be skipped."
+    },
+    {
+      "name": "operation-text-move-nothing-else",
+      "fn": "operation_text_all",
+      "input": {},
+      "output": [
+        {
+          "in": "Move",
+          "out": "Move"
+        },
+        {
+          "in": "Copy",
+          "out": "Copy"
+        },
+        {
+          "in": "Recycle",
+          "out": "Move to Recycle Bin"
+        }
+      ]
+    },
+    {
+      "name": "nearest-folder-first-ancestor",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "C:\\photos\\2026\\a.jpg",
+        "existing": [
+          "C:\\photos"
+        ]
+      },
+      "output": "C:\\photos"
+    },
+    {
+      "name": "nearest-folder-closest-wins",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "C:\\photos\\2026\\a.jpg",
+        "existing": [
+          "C:\\photos",
+          "C:\\photos\\2026"
+        ]
+      },
+      "output": "C:\\photos\\2026"
+    },
+    {
+      "name": "nearest-folder-none-exists",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "D:\\gone\\x\\y.jpg",
+        "existing": []
+      },
+      "output": null
+    },
+    {
+      "name": "nearest-folder-does-not-test-path-itself",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "C:\\photos\\a.jpg",
+        "existing": [
+          "C:\\photos\\a.jpg"
+        ]
+      },
+      "output": null
+    },
+    {
+      "name": "nearest-folder-case-sensitive-predicate",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "C:\\Photos\\a.jpg",
+        "existing": [
+          "C:\\photos"
+        ]
+      },
+      "output": null
+    },
+    {
+      "name": "nearest-folder-invalid-chars",
+      "fn": "nearest_existing_folder",
+      "input": {
+        "path": "C:\\pho<tos\\a.jpg",
+        "existing": [
+          "C:\\pho<tos",
+          "C:\\"
+        ]
+      },
+      "output": "C:\\pho<tos"
+    }
+  ]
+}

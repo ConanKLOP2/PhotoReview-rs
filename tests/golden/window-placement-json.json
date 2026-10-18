@@ -1,0 +1,1277 @@
+{
+  "generator": "oracle-cs window-placement-json",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "serialize-golden-sample",
+      "kind": "serialize",
+      "data": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      },
+      "json": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 2,\r\n  \"ShowCommand\": 3,\r\n  \"MinPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -2\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": -8,\r\n    \"Y\": -31\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 100,\r\n    \"Top\": 120,\r\n    \"Right\": 1300,\r\n    \"Bottom\": 920\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-all-zero",
+      "kind": "serialize",
+      "data": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 0,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      },
+      "json": "{\r\n  \"Length\": 0,\r\n  \"Flags\": 0,\r\n  \"ShowCommand\": 0,\r\n  \"MinPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 0,\r\n    \"Top\": 0,\r\n    \"Right\": 0,\r\n    \"Bottom\": 0\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-distinct-primes",
+      "kind": "serialize",
+      "data": {
+        "length": 2,
+        "flags": 3,
+        "show_command": 5,
+        "min_x": 7,
+        "min_y": 11,
+        "max_x": 13,
+        "max_y": 17,
+        "normal_left": 19,
+        "normal_top": 23,
+        "normal_right": 29,
+        "normal_bottom": 31
+      },
+      "json": "{\r\n  \"Length\": 2,\r\n  \"Flags\": 3,\r\n  \"ShowCommand\": 5,\r\n  \"MinPosition\": {\r\n    \"X\": 7,\r\n    \"Y\": 11\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": 13,\r\n    \"Y\": 17\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 19,\r\n    \"Top\": 23,\r\n    \"Right\": 29,\r\n    \"Bottom\": 31\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-int-extremes",
+      "kind": "serialize",
+      "data": {
+        "length": -2147483648,
+        "flags": 2147483647,
+        "show_command": -2147483648,
+        "min_x": 2147483647,
+        "min_y": -2147483648,
+        "max_x": 2147483647,
+        "max_y": -2147483648,
+        "normal_left": 2147483647,
+        "normal_top": -2147483648,
+        "normal_right": 2147483647,
+        "normal_bottom": -2147483648
+      },
+      "json": "{\r\n  \"Length\": -2147483648,\r\n  \"Flags\": 2147483647,\r\n  \"ShowCommand\": -2147483648,\r\n  \"MinPosition\": {\r\n    \"X\": 2147483647,\r\n    \"Y\": -2147483648\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": 2147483647,\r\n    \"Y\": -2147483648\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 2147483647,\r\n    \"Top\": -2147483648,\r\n    \"Right\": 2147483647,\r\n    \"Bottom\": -2147483648\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-typical-normal",
+      "kind": "serialize",
+      "data": {
+        "length": 44,
+        "flags": 0,
+        "show_command": 1,
+        "min_x": -1,
+        "min_y": -1,
+        "max_x": -1,
+        "max_y": -1,
+        "normal_left": 120,
+        "normal_top": 90,
+        "normal_right": 920,
+        "normal_bottom": 590
+      },
+      "json": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 0,\r\n  \"ShowCommand\": 1,\r\n  \"MinPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -1\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -1\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 120,\r\n    \"Top\": 90,\r\n    \"Right\": 920,\r\n    \"Bottom\": 590\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-typical-maximized-negative-monitor",
+      "kind": "serialize",
+      "data": {
+        "length": 44,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -1,
+        "max_x": -1,
+        "max_y": -1,
+        "normal_left": -1920,
+        "normal_top": 100,
+        "normal_right": -520,
+        "normal_bottom": 800
+      },
+      "json": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 0,\r\n  \"ShowCommand\": 3,\r\n  \"MinPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -1\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -1\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": -1920,\r\n    \"Top\": 100,\r\n    \"Right\": -520,\r\n    \"Bottom\": 800\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-show-command-minimized-kept-verbatim",
+      "kind": "serialize",
+      "data": {
+        "length": 44,
+        "flags": 0,
+        "show_command": 2,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 1,
+        "normal_top": 2,
+        "normal_right": 3,
+        "normal_bottom": 4
+      },
+      "json": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 0,\r\n  \"ShowCommand\": 2,\r\n  \"MinPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 1,\r\n    \"Top\": 2,\r\n    \"Right\": 3,\r\n    \"Bottom\": 4\r\n  }\r\n}"
+    },
+    {
+      "name": "serialize-show-command-garbage-kept-verbatim",
+      "kind": "serialize",
+      "data": {
+        "length": 44,
+        "flags": 0,
+        "show_command": 7,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 1,
+        "normal_top": 2,
+        "normal_right": 3,
+        "normal_bottom": 4
+      },
+      "json": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 0,\r\n  \"ShowCommand\": 7,\r\n  \"MinPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": 0,\r\n    \"Y\": 0\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 1,\r\n    \"Top\": 2,\r\n    \"Right\": 3,\r\n    \"Bottom\": 4\r\n  }\r\n}"
+    },
+    {
+      "name": "deserialize-golden-file-lf",
+      "kind": "deserialize",
+      "text": "{\n  \"Length\": 44,\n  \"Flags\": 2,\n  \"ShowCommand\": 3,\n  \"MinPosition\": {\n    \"X\": -1,\n    \"Y\": -2\n  },\n  \"MaxPosition\": {\n    \"X\": -8,\n    \"Y\": -31\n  },\n  \"NormalPosition\": {\n    \"Left\": 100,\n    \"Top\": 120,\n    \"Right\": 1300,\n    \"Bottom\": 920\n  }\n}",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "deserialize-golden-file-crlf",
+      "kind": "deserialize",
+      "text": "{\r\n  \"Length\": 44,\r\n  \"Flags\": 2,\r\n  \"ShowCommand\": 3,\r\n  \"MinPosition\": {\r\n    \"X\": -1,\r\n    \"Y\": -2\r\n  },\r\n  \"MaxPosition\": {\r\n    \"X\": -8,\r\n    \"Y\": -31\r\n  },\r\n  \"NormalPosition\": {\r\n    \"Left\": 100,\r\n    \"Top\": 120,\r\n    \"Right\": 1300,\r\n    \"Bottom\": 920\r\n  }\r\n}",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "deserialize-golden-file-with-trailing-newline",
+      "kind": "deserialize",
+      "text": "{\n  \"Length\": 44,\n  \"Flags\": 2,\n  \"ShowCommand\": 3,\n  \"MinPosition\": {\n    \"X\": -1,\n    \"Y\": -2\n  },\n  \"MaxPosition\": {\n    \"X\": -8,\n    \"Y\": -31\n  },\n  \"NormalPosition\": {\n    \"Left\": 100,\n    \"Top\": 120,\n    \"Right\": 1300,\n    \"Bottom\": 920\n  }\n}\r\n",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "deserialize-compact-all-fields-distinct",
+      "kind": "deserialize",
+      "text": "{\"Length\":2,\"Flags\":3,\"ShowCommand\":5,\"MinPosition\":{\"X\":7,\"Y\":11},\"MaxPosition\":{\"X\":13,\"Y\":17},\"NormalPosition\":{\"Left\":19,\"Top\":23,\"Right\":29,\"Bottom\":31}}",
+      "threw": null,
+      "value": {
+        "length": 2,
+        "flags": 3,
+        "show_command": 5,
+        "min_x": 7,
+        "min_y": 11,
+        "max_x": 13,
+        "max_y": 17,
+        "normal_left": 19,
+        "normal_top": 23,
+        "normal_right": 29,
+        "normal_bottom": 31
+      }
+    },
+    {
+      "name": "deserialize-reordered-properties-keep-their-names",
+      "kind": "deserialize",
+      "text": "{\"NormalPosition\":{\"Bottom\":31,\"Right\":29,\"Top\":23,\"Left\":19},\"MaxPosition\":{\"Y\":17,\"X\":13},\"MinPosition\":{\"Y\":11,\"X\":7},\"ShowCommand\":5,\"Flags\":3,\"Length\":2}",
+      "threw": null,
+      "value": {
+        "length": 2,
+        "flags": 3,
+        "show_command": 5,
+        "min_x": 7,
+        "min_y": 11,
+        "max_x": 13,
+        "max_y": 17,
+        "normal_left": 19,
+        "normal_top": 23,
+        "normal_right": 29,
+        "normal_bottom": 31
+      }
+    },
+    {
+      "name": "deserialize-empty-object-defaults-show-command-3",
+      "kind": "deserialize",
+      "text": "{}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-only-normal-position-show-command-defaults-3",
+      "kind": "deserialize",
+      "text": "{\"NormalPosition\":{\"Left\":1,\"Top\":2,\"Right\":3,\"Bottom\":4}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 1,
+        "normal_top": 2,
+        "normal_right": 3,
+        "normal_bottom": 4
+      }
+    },
+    {
+      "name": "deserialize-explicit-show-command-0-kept",
+      "kind": "deserialize",
+      "text": "{\"ShowCommand\":0}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 0,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-null-document",
+      "kind": "deserialize",
+      "text": "null",
+      "threw": null,
+      "value": null
+    },
+    {
+      "name": "deserialize-null-document-with-whitespace",
+      "kind": "deserialize",
+      "text": " \r\n\tnull \r\n",
+      "threw": null,
+      "value": null
+    },
+    {
+      "name": "deserialize-unknown-properties-skipped",
+      "kind": "deserialize",
+      "text": "{\"Version\":2,\"Extra\":{\"a\":[1,2.5,{\"b\":null}],\"c\":\"x\"},\"Length\":9,\"Tags\":[\"a\",\"b\"],\"Flag\":true}",
+      "threw": null,
+      "value": {
+        "length": 9,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-unknown-nested-property-in-position-skipped",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"X\":1,\"Z\":9,\"Y\":2}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 1,
+        "min_y": 2,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-names-are-case-sensitive",
+      "kind": "deserialize",
+      "text": "{\"length\":5,\"FLAGS\":6,\"showcommand\":7}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-case-variant-after-exact-name-ignored",
+      "kind": "deserialize",
+      "text": "{\"Length\":1,\"LENGTH\":2,\"length\":3}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-escaped-property-name-matches",
+      "kind": "deserialize",
+      "text": "{\"L\\u0065ngth\":7,\"\\u0053howCommand\":1}",
+      "threw": null,
+      "value": {
+        "length": 7,
+        "flags": 0,
+        "show_command": 1,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-duplicate-property-last-wins",
+      "kind": "deserialize",
+      "text": "{\"Length\":1,\"Length\":2,\"Flags\":5,\"Flags\":6}",
+      "threw": null,
+      "value": {
+        "length": 2,
+        "flags": 6,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-duplicate-property-first-invalid-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":\"x\",\"Length\":2}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-duplicate-property-second-invalid-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":2,\"Length\":\"x\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-duplicate-struct-property-replaces-not-merges",
+      "kind": "deserialize",
+      "text": "{\"NormalPosition\":{\"Left\":1,\"Top\":2},\"NormalPosition\":{\"Right\":3}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 3,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-duplicate-struct-property-second-null-throws",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"X\":1},\"MinPosition\":null}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-nested-partial-position",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"X\":5}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 5,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-negative-zero-is-zero",
+      "kind": "deserialize",
+      "text": "{\"Length\":-0,\"Flags\":-0,\"MinPosition\":{\"X\":-0}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-int-min-and-max",
+      "kind": "deserialize",
+      "text": "{\"Length\":-2147483648,\"Flags\":2147483647}",
+      "threw": null,
+      "value": {
+        "length": -2147483648,
+        "flags": 2147483647,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-int-max-plus-one-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":2147483648}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-int-min-minus-one-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":-2147483649}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-huge-integer-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":99999999999999999999999999}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-fraction-zero-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1.0}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-fraction-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1.5}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-exponent-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1e2}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-exponent-zero-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":5E0}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-huge-exponent-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1e400}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-number-as-string-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":\"5\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-number-as-string-in-position-throws",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"X\":\"5\"}}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-bool-for-int-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":true}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-null-for-int-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":null}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-array-for-int-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":[1]}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-object-for-int-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":{\"a\":1}}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-null-for-position-struct-throws",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":null}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-null-for-normal-position-throws",
+      "kind": "deserialize",
+      "text": "{\"NormalPosition\":null}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-array-for-position-struct-throws",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":[]}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-number-for-position-struct-throws",
+      "kind": "deserialize",
+      "text": "{\"MaxPosition\":5}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-string-for-position-struct-throws",
+      "kind": "deserialize",
+      "text": "{\"NormalPosition\":\"x\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-null-for-unknown-property-ok",
+      "kind": "deserialize",
+      "text": "{\"Unknown\":null,\"Length\":3}",
+      "threw": null,
+      "value": {
+        "length": 3,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-trailing-comma-in-object-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1,}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-trailing-comma-in-nested-object-throws",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"X\":1,}}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-trailing-comma-in-unknown-array-throws",
+      "kind": "deserialize",
+      "text": "{\"Extra\":[1,2,],\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-block-comment-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1 /* c */}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-line-comment-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1 // c\n}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-comment-before-root-throws",
+      "kind": "deserialize",
+      "text": "/* c */ {\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-text-after-root-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1} x",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-second-root-object-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1}{\"Length\":2}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-trailing-whitespace-ok",
+      "kind": "deserialize",
+      "text": "{\"Length\":1} \r\n\t ",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-leading-whitespace-ok",
+      "kind": "deserialize",
+      "text": " \r\n\t {\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-empty-text-throws",
+      "kind": "deserialize",
+      "text": "",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-whitespace-only-throws",
+      "kind": "deserialize",
+      "text": "  \r\n ",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-root-array-throws",
+      "kind": "deserialize",
+      "text": "[]",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-root-number-throws",
+      "kind": "deserialize",
+      "text": "5",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-root-string-throws",
+      "kind": "deserialize",
+      "text": "\"x\"",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-root-true-throws",
+      "kind": "deserialize",
+      "text": "true",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-root-empty-array-with-object-throws",
+      "kind": "deserialize",
+      "text": "[{\"Length\":1}]",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-leading-bom-char-throws",
+      "kind": "deserialize",
+      "text": "\uFEFF{\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-no-break-space-outside-token-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1}\u00A0",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-form-feed-outside-token-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1}\f",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-single-quotes-throw",
+      "kind": "deserialize",
+      "text": "{'Length':1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-unquoted-name-throws",
+      "kind": "deserialize",
+      "text": "{Length:1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-leading-zero-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":01}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-plus-sign-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":+1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-leading-dot-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":.5}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-trailing-dot-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1.}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-nan-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":NaN}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-hex-number-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":0x10}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-truncated-object-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-truncated-string-throws",
+      "kind": "deserialize",
+      "text": "{\"Length",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-missing-colon-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\" 1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-missing-comma-throws",
+      "kind": "deserialize",
+      "text": "{\"Length\":1 \"Flags\":2}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-invalid-escape-in-unknown-string-throws",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"\\q\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-raw-newline-in-string-throws",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"a\nb\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-lone-high-surrogate-escape-in-unknown-string",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"\\ud800\",\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-lone-low-surrogate-escape-in-unknown-string",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"\\udc00\",\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-lone-surrogate-escape-in-unknown-property-name",
+      "kind": "deserialize",
+      "text": "{\"\\ud800\":1,\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-lone-surrogate-escape-in-name-inside-unknown-object",
+      "kind": "deserialize",
+      "text": "{\"Extra\":{\"\\ud800\":1},\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-lone-surrogate-escape-in-name-inside-typed-position",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"\\ud800\":1}}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-lone-surrogate-escape-in-unknown-string-inside-typed-position",
+      "kind": "deserialize",
+      "text": "{\"MinPosition\":{\"Q\":\"\\ud800\",\"X\":4}}",
+      "threw": null,
+      "value": {
+        "length": 0,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 4,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-non-bmp-text-in-unknown-string",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"\uD83D\uDE00\",\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-control-char-nul-in-string-throws",
+      "kind": "deserialize",
+      "text": "{\"Extra\":\"a\u0000b\"}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-depth-64-total-ok",
+      "kind": "deserialize",
+      "text": "{\"E\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-depth-65-total-throws",
+      "kind": "deserialize",
+      "text": "{\"E\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-depth-100-total-throws",
+      "kind": "deserialize",
+      "text": "{\"E\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "deserialize-depth-64-objects-ok",
+      "kind": "deserialize",
+      "text": "{\"E\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"Length\":1}",
+      "threw": null,
+      "value": {
+        "length": 1,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "deserialize-depth-65-objects-throws",
+      "kind": "deserialize",
+      "text": "{\"E\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"Length\":1}",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "read-raw-file-utf8-no-bom",
+      "kind": "read_raw_file",
+      "bytes_hex": "7b224c656e677468223a34342c22466c616773223a322c2253686f77436f6d6d616e64223a312c224d696e506f736974696f6e223a7b2258223a2d312c2259223a2d327d2c224d6178506f736974696f6e223a7b2258223a2d382c2259223a2d33317d2c224e6f726d616c506f736974696f6e223a7b224c656674223a3130302c22546f70223a3132302c225269676874223a313330302c22426f74746f6d223a3932307d7d",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 1,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "read-raw-file-utf8-bom",
+      "kind": "read_raw_file",
+      "bytes_hex": "efbbbf7b224c656e677468223a34342c22466c616773223a322c2253686f77436f6d6d616e64223a312c224d696e506f736974696f6e223a7b2258223a2d312c2259223a2d327d2c224d6178506f736974696f6e223a7b2258223a2d382c2259223a2d33317d2c224e6f726d616c506f736974696f6e223a7b224c656674223a3130302c22546f70223a3132302c225269676874223a313330302c22426f74746f6d223a3932307d7d",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 1,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "read-raw-file-utf16le-bom",
+      "kind": "read_raw_file",
+      "bytes_hex": "fffe7b0022004c0065006e0067007400680022003a00340034002c00220046006c0061006700730022003a0032002c002200530068006f00770043006f006d006d0061006e00640022003a0031002c0022004d0069006e0050006f0073006900740069006f006e0022003a007b002200580022003a002d0031002c002200590022003a002d0032007d002c0022004d006100780050006f0073006900740069006f006e0022003a007b002200580022003a002d0038002c002200590022003a002d00330031007d002c0022004e006f0072006d0061006c0050006f0073006900740069006f006e0022003a007b0022004c0065006600740022003a003100300030002c00220054006f00700022003a003100320030002c0022005200690067006800740022003a0031003300300030002c00220042006f00740074006f006d0022003a003900320030007d007d00",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 1,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "read-raw-file-utf16be-bom",
+      "kind": "read_raw_file",
+      "bytes_hex": "feff007b0022004c0065006e0067007400680022003a00340034002c00220046006c0061006700730022003a0032002c002200530068006f00770043006f006d006d0061006e00640022003a0031002c0022004d0069006e0050006f0073006900740069006f006e0022003a007b002200580022003a002d0031002c002200590022003a002d0032007d002c0022004d006100780050006f0073006900740069006f006e0022003a007b002200580022003a002d0038002c002200590022003a002d00330031007d002c0022004e006f0072006d0061006c0050006f0073006900740069006f006e0022003a007b0022004c0065006600740022003a003100300030002c00220054006f00700022003a003100320030002c0022005200690067006800740022003a0031003300300030002c00220042006f00740074006f006d0022003a003900320030007d007d",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 1,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "read-raw-file-utf8-bom-only-throws",
+      "kind": "read_raw_file",
+      "bytes_hex": "efbbbf",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "read-raw-file-empty-file-throws",
+      "kind": "read_raw_file",
+      "bytes_hex": "",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "read-raw-file-whitespace-file-throws",
+      "kind": "read_raw_file",
+      "bytes_hex": "200d0a",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "read-raw-file-null-file",
+      "kind": "read_raw_file",
+      "bytes_hex": "6e756c6c",
+      "threw": null,
+      "value": null
+    },
+    {
+      "name": "read-raw-file-damaged-file-throws",
+      "kind": "read_raw_file",
+      "bytes_hex": "7b206e6f74206a736f6e",
+      "threw": "JsonException",
+      "value": null
+    },
+    {
+      "name": "read-raw-file-utf8-bom-and-crlf-indented",
+      "kind": "read_raw_file",
+      "bytes_hex": "efbbbf7b0d0a2020224c656e677468223a2034342c0d0a202022466c616773223a20322c0d0a20202253686f77436f6d6d616e64223a20332c0d0a2020224d696e506f736974696f6e223a207b0d0a202020202258223a202d312c0d0a202020202259223a202d320d0a20207d2c0d0a2020224d6178506f736974696f6e223a207b0d0a202020202258223a202d382c0d0a202020202259223a202d33310d0a20207d2c0d0a2020224e6f726d616c506f736974696f6e223a207b0d0a20202020224c656674223a203130302c0d0a2020202022546f70223a203132302c0d0a20202020225269676874223a20313330302c0d0a2020202022426f74746f6d223a203932300d0a20207d0d0a7d",
+      "threw": null,
+      "value": {
+        "length": 44,
+        "flags": 2,
+        "show_command": 3,
+        "min_x": -1,
+        "min_y": -2,
+        "max_x": -8,
+        "max_y": -31,
+        "normal_left": 100,
+        "normal_top": 120,
+        "normal_right": 1300,
+        "normal_bottom": 920
+      }
+    },
+    {
+      "name": "read-raw-file-non-ascii-unknown-string-utf8",
+      "kind": "read_raw_file",
+      "bytes_hex": "7b224578747261223a22c3a9e4b8ad222c224c656e677468223a337d",
+      "threw": null,
+      "value": {
+        "length": 3,
+        "flags": 0,
+        "show_command": 3,
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 0,
+        "normal_left": 0,
+        "normal_top": 0,
+        "normal_right": 0,
+        "normal_bottom": 0
+      }
+    },
+    {
+      "name": "read-raw-missing-file-is-null",
+      "kind": "read_raw_missing",
+      "threw": null,
+      "value": null
+    },
+    {
+      "name": "read-raw-directory-is-null",
+      "kind": "read_raw_directory",
+      "threw": null,
+      "value": null
+    }
+  ]
+}

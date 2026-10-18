@@ -1,0 +1,533 @@
+{
+ "command": "glide-clock",
+ "cases": [
+  {
+   "name": "Off: steps by rendering-time deltas and ignores timing",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Off",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16,
+     "now": 0,
+     "timing": null
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 33,
+     "now": 0,
+     "timing": null
+    }
+   ]
+  },
+  {
+   "name": "Off: NeedsDisplayTiming is false",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Off",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 0,
+     "timing": null
+    }
+   ]
+  },
+  {
+   "name": "Predict: needs display timing",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    }
+   ]
+  },
+  {
+   "name": "Predict: first callback anchors and returns 0",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict 60 Hz: whole refreshes per step (grid from the first anchor)",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16.6667,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 33.3333,
+     "now": 350001,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 50,
+     "now": 516668,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 66.6667,
+     "now": 683335,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 83.3333,
+     "now": 850002,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: a late frame jumps to the refresh it is seen on",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16.6667,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 120,
+     "now": 300000,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: several callbacks inside one refresh move once",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16.6667,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16.7,
+     "now": 183400,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 17,
+     "now": 183500,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: timing lost then recovered at the same period does not count the gap twice",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 33,
+     "now": 350001,
+     "timing": null
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 50,
+     "now": 516668,
+     "timing": null
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 66,
+     "now": 683335,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 67,
+     "now": 850002,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: monitor change 60 to 75 Hz re-anchors on the new grid",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 30,
+     "now": 350001,
+     "timing": {
+      "last_vblank": 320001,
+      "refresh_period": 133333
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 31,
+     "now": 483334,
+     "timing": {
+      "last_vblank": 320001,
+      "refresh_period": 133333
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 32,
+     "now": 750000,
+     "timing": {
+      "last_vblank": 320001,
+      "refresh_period": 133333
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: refresh period changed by 1 percent keeps the anchored grid",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 16667,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 16,
+     "now": 183334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 33,
+     "now": 350001,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 168334
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: 240 Hz grid (period 41667)",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 0,
+     "now": 4167,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 41667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 4,
+     "now": 45834,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 41667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 8,
+     "now": 83334,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 41667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: zero ticks per ms falls back to Off",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": 0
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 10,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 14,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "Predict: NaN ticks per ms falls back to Off",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Predict",
+     "ticks_per_ms": "NaN"
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 10,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 14,
+     "now": 0,
+     "timing": {
+      "last_vblank": 0,
+      "refresh_period": 166667
+     }
+    }
+   ]
+  },
+  {
+   "name": "restart keeps the rendering-time anchor and the grid index (C# Start does not reset them)",
+   "kind": "script",
+   "ops": [
+    {
+     "op": "start",
+     "mode": "Off",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 100,
+     "now": 0,
+     "timing": null
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 116,
+     "now": 0,
+     "timing": null
+    },
+    {
+     "op": "start",
+     "mode": "Off",
+     "ticks_per_ms": 10000
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 116,
+     "now": 0,
+     "timing": null
+    },
+    {
+     "op": "advance",
+     "rendering_ms": 120,
+     "now": 0,
+     "timing": null
+    }
+   ]
+  }
+ ]
+}

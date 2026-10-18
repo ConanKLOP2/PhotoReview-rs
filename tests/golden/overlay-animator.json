@@ -1,0 +1,1972 @@
+{
+  "generator": "oracle-cs overlay-animator",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "FadeOut Linear 200 ms hits 0/50/100/200 ms",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar",
+        "Status"
+      ],
+      "elements": {
+        "Toolbar": 1.0,
+        "Status": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 10000
+        },
+        {
+          "op": "tick",
+          "timestamp": 10050
+        },
+        {
+          "op": "tick",
+          "timestamp": 10100
+        },
+        {
+          "op": "tick",
+          "timestamp": 10200
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.75,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0,
+            "Status": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "FadeIn 150 ms QuadraticOut follows the easing",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Status"
+      ],
+      "elements": {
+        "Status": 0.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Status",
+          "target": 1.0,
+          "duration_ticks": 1500000,
+          "easing": "QuadraticOut"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 75
+        },
+        {
+          "op": "tick",
+          "timestamp": 150
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Status": 0
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.75
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "QuadraticOut at one quarter of the duration",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "QuadraticOut"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 25
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5625
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "New fade cancels the old tween and starts from the current opacity",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 1.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 120
+        },
+        {
+          "op": "tick",
+          "timestamp": 170
+        },
+        {
+          "op": "tick",
+          "timestamp": 220
+        },
+        {
+          "op": "tick",
+          "timestamp": 400
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.75
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Same target while running does not restart the tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 150
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.25
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Already at target does nothing and does not listen",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 1.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Zero duration applies immediately and fires no request",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.25,
+          "duration_ticks": 0,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.25
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Zero duration to the same opacity fires no change",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 0.5
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.5,
+          "duration_ticks": 0,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Non-zero duration to the current opacity is immediate, no tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 0.5
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.5,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Zero duration cancels a running tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 50
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 1.0,
+          "duration_ticks": 0,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.75
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Stops listening when no tween is left",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Two elements animate independently",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar",
+        "Status"
+      ],
+      "elements": {
+        "Toolbar": 1.0,
+        "Status": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "fade",
+          "id": "Status",
+          "target": 0.5,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 2,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1,
+            "Status": 1
+          },
+          "is_animating": true,
+          "active_count": 2,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0,
+            "Status": 0.75
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Unknown element is ignored",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar",
+        "Nope"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Nope",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1,
+            "Nope": null
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Element removed mid tween ends the tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "remove",
+          "id": "Toolbar"
+        },
+        {
+          "op": "tick",
+          "timestamp": 50
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "remove",
+          "opacity": {
+            "Toolbar": null
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": null
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Element restored before the next frame continues the tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "remove",
+          "id": "Toolbar"
+        },
+        {
+          "op": "restore",
+          "id": "Toolbar",
+          "opacity": 0.8
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 50
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "remove",
+          "opacity": {
+            "Toolbar": null
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "restore",
+          "opacity": {
+            "Toolbar": 0.800000011920929
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Changed fires once per frame that changes a value",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 50
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Target is clamped to 0..1 and NaN means zero",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 0.5
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 5.0,
+          "duration_ticks": 0,
+          "easing": "Linear"
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": "NaN",
+          "duration_ticks": 0,
+          "easing": "Linear"
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": -1.0,
+          "duration_ticks": 100000,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Tick before start clamps to the start value, then runs",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 999995
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000100
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000200
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Fade end lands exactly on the target, not on a rounded interpolation",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 0.02
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.1,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 0.019999999552965164
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.019999999552965164
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.10000000149011612
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "External write during a tween is overwritten by the next frame",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "set",
+          "id": "Toolbar",
+          "opacity": 0.9
+        },
+        {
+          "op": "tick",
+          "timestamp": 50
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "set",
+          "opacity": {
+            "Toolbar": 0.8999999761581421
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Cancel keeps the current opacity and stops the tween",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 2000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 100
+        },
+        {
+          "op": "cancel",
+          "id": "Toolbar"
+        },
+        {
+          "op": "tick",
+          "timestamp": 150
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "cancel",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        }
+      ]
+    },
+    {
+      "name": "Tween starts at the first frame, not at the request time",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 500
+        },
+        {
+          "op": "tick",
+          "timestamp": 550
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "33 ms fade sampled at 16 and 33 ms",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 330000,
+          "easing": "Linear"
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 16
+        },
+        {
+          "op": "tick",
+          "timestamp": 33
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0.5151515007019043
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Toolbar": 0
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Dispose stops listening and rejects new fades",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "watch": [
+        "Toolbar"
+      ],
+      "elements": {
+        "Toolbar": 1.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 1000000,
+          "easing": "Linear"
+        },
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "fade",
+          "id": "Toolbar",
+          "target": 0.0,
+          "duration_ticks": 10000,
+          "easing": "Linear"
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "dispose",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "fade",
+          "opacity": {
+            "Toolbar": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": false,
+          "threw": "ObjectDisposedException"
+        }
+      ]
+    },
+    {
+      "name": "Realistic 60 Hz frame sequence for a 150 ms fade-in of the status panel",
+      "kind": "script",
+      "ticks_per_second": 1000000,
+      "watch": [
+        "Status"
+      ],
+      "elements": {
+        "Status": 0.0
+      },
+      "ops": [
+        {
+          "op": "fade",
+          "id": "Status",
+          "target": 1.0,
+          "duration_ticks": 1500000,
+          "easing": "QuadraticOut"
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1016667
+        },
+        {
+          "op": "tick",
+          "timestamp": 1033333
+        },
+        {
+          "op": "tick",
+          "timestamp": 1050000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1066667
+        },
+        {
+          "op": "tick",
+          "timestamp": 1083333
+        },
+        {
+          "op": "tick",
+          "timestamp": 1100000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1116667
+        },
+        {
+          "op": "tick",
+          "timestamp": 1133333
+        },
+        {
+          "op": "tick",
+          "timestamp": 1150000
+        }
+      ],
+      "results": [
+        {
+          "op": "fade",
+          "opacity": {
+            "Status": 0
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": true,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": false
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.2098805010318756
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.395058274269104
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.5555555820465088
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.6913604736328125
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.8024671673774719
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.8888888955116272
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.9506182670593262
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 0.9876538515090942
+          },
+          "is_animating": true,
+          "active_count": 1,
+          "listening": true,
+          "request_frame": false,
+          "changed": true
+        },
+        {
+          "op": "tick",
+          "opacity": {
+            "Status": 1
+          },
+          "is_animating": false,
+          "active_count": 0,
+          "listening": false,
+          "request_frame": false,
+          "changed": true
+        }
+      ]
+    },
+    {
+      "name": "Ease Linear returns t",
+      "kind": "ease",
+      "easing": "Linear",
+      "t": [
+        0.0,
+        0.25,
+        0.5,
+        1.0
+      ],
+      "values": [
+        0,
+        0.25,
+        0.5,
+        1
+      ]
+    },
+    {
+      "name": "Ease QuadraticOut values",
+      "kind": "ease",
+      "easing": "QuadraticOut",
+      "t": [
+        0.0,
+        0.25,
+        0.3,
+        0.5,
+        0.9,
+        1.0
+      ],
+      "values": [
+        0,
+        0.4375,
+        0.51,
+        0.75,
+        0.99,
+        1
+      ]
+    }
+  ]
+}

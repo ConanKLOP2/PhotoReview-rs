@@ -1,0 +1,5649 @@
+{
+  "generator": "oracle-cs key-id",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "declared",
+      "index": 0,
+      "name": "None",
+      "value": 0
+    },
+    {
+      "kind": "declared",
+      "index": 1,
+      "name": "Cancel",
+      "value": 1
+    },
+    {
+      "kind": "declared",
+      "index": 2,
+      "name": "Back",
+      "value": 2
+    },
+    {
+      "kind": "declared",
+      "index": 3,
+      "name": "Tab",
+      "value": 3
+    },
+    {
+      "kind": "declared",
+      "index": 4,
+      "name": "LineFeed",
+      "value": 4
+    },
+    {
+      "kind": "declared",
+      "index": 5,
+      "name": "Clear",
+      "value": 5
+    },
+    {
+      "kind": "declared",
+      "index": 6,
+      "name": "Return",
+      "value": 6
+    },
+    {
+      "kind": "declared",
+      "index": 7,
+      "name": "Enter",
+      "value": 6
+    },
+    {
+      "kind": "declared",
+      "index": 8,
+      "name": "Pause",
+      "value": 7
+    },
+    {
+      "kind": "declared",
+      "index": 9,
+      "name": "Capital",
+      "value": 8
+    },
+    {
+      "kind": "declared",
+      "index": 10,
+      "name": "CapsLock",
+      "value": 8
+    },
+    {
+      "kind": "declared",
+      "index": 11,
+      "name": "KanaMode",
+      "value": 9
+    },
+    {
+      "kind": "declared",
+      "index": 12,
+      "name": "HangulMode",
+      "value": 9
+    },
+    {
+      "kind": "declared",
+      "index": 13,
+      "name": "JunjaMode",
+      "value": 10
+    },
+    {
+      "kind": "declared",
+      "index": 14,
+      "name": "FinalMode",
+      "value": 11
+    },
+    {
+      "kind": "declared",
+      "index": 15,
+      "name": "HanjaMode",
+      "value": 12
+    },
+    {
+      "kind": "declared",
+      "index": 16,
+      "name": "KanjiMode",
+      "value": 12
+    },
+    {
+      "kind": "declared",
+      "index": 17,
+      "name": "Escape",
+      "value": 13
+    },
+    {
+      "kind": "declared",
+      "index": 18,
+      "name": "ImeConvert",
+      "value": 14
+    },
+    {
+      "kind": "declared",
+      "index": 19,
+      "name": "ImeNonConvert",
+      "value": 15
+    },
+    {
+      "kind": "declared",
+      "index": 20,
+      "name": "ImeAccept",
+      "value": 16
+    },
+    {
+      "kind": "declared",
+      "index": 21,
+      "name": "ImeModeChange",
+      "value": 17
+    },
+    {
+      "kind": "declared",
+      "index": 22,
+      "name": "Space",
+      "value": 18
+    },
+    {
+      "kind": "declared",
+      "index": 23,
+      "name": "Prior",
+      "value": 19
+    },
+    {
+      "kind": "declared",
+      "index": 24,
+      "name": "PageUp",
+      "value": 19
+    },
+    {
+      "kind": "declared",
+      "index": 25,
+      "name": "Next",
+      "value": 20
+    },
+    {
+      "kind": "declared",
+      "index": 26,
+      "name": "PageDown",
+      "value": 20
+    },
+    {
+      "kind": "declared",
+      "index": 27,
+      "name": "End",
+      "value": 21
+    },
+    {
+      "kind": "declared",
+      "index": 28,
+      "name": "Home",
+      "value": 22
+    },
+    {
+      "kind": "declared",
+      "index": 29,
+      "name": "Left",
+      "value": 23
+    },
+    {
+      "kind": "declared",
+      "index": 30,
+      "name": "Up",
+      "value": 24
+    },
+    {
+      "kind": "declared",
+      "index": 31,
+      "name": "Right",
+      "value": 25
+    },
+    {
+      "kind": "declared",
+      "index": 32,
+      "name": "Down",
+      "value": 26
+    },
+    {
+      "kind": "declared",
+      "index": 33,
+      "name": "Select",
+      "value": 27
+    },
+    {
+      "kind": "declared",
+      "index": 34,
+      "name": "Print",
+      "value": 28
+    },
+    {
+      "kind": "declared",
+      "index": 35,
+      "name": "Execute",
+      "value": 29
+    },
+    {
+      "kind": "declared",
+      "index": 36,
+      "name": "Snapshot",
+      "value": 30
+    },
+    {
+      "kind": "declared",
+      "index": 37,
+      "name": "PrintScreen",
+      "value": 30
+    },
+    {
+      "kind": "declared",
+      "index": 38,
+      "name": "Insert",
+      "value": 31
+    },
+    {
+      "kind": "declared",
+      "index": 39,
+      "name": "Delete",
+      "value": 32
+    },
+    {
+      "kind": "declared",
+      "index": 40,
+      "name": "Help",
+      "value": 33
+    },
+    {
+      "kind": "declared",
+      "index": 41,
+      "name": "D0",
+      "value": 34
+    },
+    {
+      "kind": "declared",
+      "index": 42,
+      "name": "D1",
+      "value": 35
+    },
+    {
+      "kind": "declared",
+      "index": 43,
+      "name": "D2",
+      "value": 36
+    },
+    {
+      "kind": "declared",
+      "index": 44,
+      "name": "D3",
+      "value": 37
+    },
+    {
+      "kind": "declared",
+      "index": 45,
+      "name": "D4",
+      "value": 38
+    },
+    {
+      "kind": "declared",
+      "index": 46,
+      "name": "D5",
+      "value": 39
+    },
+    {
+      "kind": "declared",
+      "index": 47,
+      "name": "D6",
+      "value": 40
+    },
+    {
+      "kind": "declared",
+      "index": 48,
+      "name": "D7",
+      "value": 41
+    },
+    {
+      "kind": "declared",
+      "index": 49,
+      "name": "D8",
+      "value": 42
+    },
+    {
+      "kind": "declared",
+      "index": 50,
+      "name": "D9",
+      "value": 43
+    },
+    {
+      "kind": "declared",
+      "index": 51,
+      "name": "A",
+      "value": 44
+    },
+    {
+      "kind": "declared",
+      "index": 52,
+      "name": "B",
+      "value": 45
+    },
+    {
+      "kind": "declared",
+      "index": 53,
+      "name": "C",
+      "value": 46
+    },
+    {
+      "kind": "declared",
+      "index": 54,
+      "name": "D",
+      "value": 47
+    },
+    {
+      "kind": "declared",
+      "index": 55,
+      "name": "E",
+      "value": 48
+    },
+    {
+      "kind": "declared",
+      "index": 56,
+      "name": "F",
+      "value": 49
+    },
+    {
+      "kind": "declared",
+      "index": 57,
+      "name": "G",
+      "value": 50
+    },
+    {
+      "kind": "declared",
+      "index": 58,
+      "name": "H",
+      "value": 51
+    },
+    {
+      "kind": "declared",
+      "index": 59,
+      "name": "I",
+      "value": 52
+    },
+    {
+      "kind": "declared",
+      "index": 60,
+      "name": "J",
+      "value": 53
+    },
+    {
+      "kind": "declared",
+      "index": 61,
+      "name": "K",
+      "value": 54
+    },
+    {
+      "kind": "declared",
+      "index": 62,
+      "name": "L",
+      "value": 55
+    },
+    {
+      "kind": "declared",
+      "index": 63,
+      "name": "M",
+      "value": 56
+    },
+    {
+      "kind": "declared",
+      "index": 64,
+      "name": "N",
+      "value": 57
+    },
+    {
+      "kind": "declared",
+      "index": 65,
+      "name": "O",
+      "value": 58
+    },
+    {
+      "kind": "declared",
+      "index": 66,
+      "name": "P",
+      "value": 59
+    },
+    {
+      "kind": "declared",
+      "index": 67,
+      "name": "Q",
+      "value": 60
+    },
+    {
+      "kind": "declared",
+      "index": 68,
+      "name": "R",
+      "value": 61
+    },
+    {
+      "kind": "declared",
+      "index": 69,
+      "name": "S",
+      "value": 62
+    },
+    {
+      "kind": "declared",
+      "index": 70,
+      "name": "T",
+      "value": 63
+    },
+    {
+      "kind": "declared",
+      "index": 71,
+      "name": "U",
+      "value": 64
+    },
+    {
+      "kind": "declared",
+      "index": 72,
+      "name": "V",
+      "value": 65
+    },
+    {
+      "kind": "declared",
+      "index": 73,
+      "name": "W",
+      "value": 66
+    },
+    {
+      "kind": "declared",
+      "index": 74,
+      "name": "X",
+      "value": 67
+    },
+    {
+      "kind": "declared",
+      "index": 75,
+      "name": "Y",
+      "value": 68
+    },
+    {
+      "kind": "declared",
+      "index": 76,
+      "name": "Z",
+      "value": 69
+    },
+    {
+      "kind": "declared",
+      "index": 77,
+      "name": "LWin",
+      "value": 70
+    },
+    {
+      "kind": "declared",
+      "index": 78,
+      "name": "RWin",
+      "value": 71
+    },
+    {
+      "kind": "declared",
+      "index": 79,
+      "name": "Apps",
+      "value": 72
+    },
+    {
+      "kind": "declared",
+      "index": 80,
+      "name": "Sleep",
+      "value": 73
+    },
+    {
+      "kind": "declared",
+      "index": 81,
+      "name": "NumPad0",
+      "value": 74
+    },
+    {
+      "kind": "declared",
+      "index": 82,
+      "name": "NumPad1",
+      "value": 75
+    },
+    {
+      "kind": "declared",
+      "index": 83,
+      "name": "NumPad2",
+      "value": 76
+    },
+    {
+      "kind": "declared",
+      "index": 84,
+      "name": "NumPad3",
+      "value": 77
+    },
+    {
+      "kind": "declared",
+      "index": 85,
+      "name": "NumPad4",
+      "value": 78
+    },
+    {
+      "kind": "declared",
+      "index": 86,
+      "name": "NumPad5",
+      "value": 79
+    },
+    {
+      "kind": "declared",
+      "index": 87,
+      "name": "NumPad6",
+      "value": 80
+    },
+    {
+      "kind": "declared",
+      "index": 88,
+      "name": "NumPad7",
+      "value": 81
+    },
+    {
+      "kind": "declared",
+      "index": 89,
+      "name": "NumPad8",
+      "value": 82
+    },
+    {
+      "kind": "declared",
+      "index": 90,
+      "name": "NumPad9",
+      "value": 83
+    },
+    {
+      "kind": "declared",
+      "index": 91,
+      "name": "Multiply",
+      "value": 84
+    },
+    {
+      "kind": "declared",
+      "index": 92,
+      "name": "Add",
+      "value": 85
+    },
+    {
+      "kind": "declared",
+      "index": 93,
+      "name": "Separator",
+      "value": 86
+    },
+    {
+      "kind": "declared",
+      "index": 94,
+      "name": "Subtract",
+      "value": 87
+    },
+    {
+      "kind": "declared",
+      "index": 95,
+      "name": "Decimal",
+      "value": 88
+    },
+    {
+      "kind": "declared",
+      "index": 96,
+      "name": "Divide",
+      "value": 89
+    },
+    {
+      "kind": "declared",
+      "index": 97,
+      "name": "F1",
+      "value": 90
+    },
+    {
+      "kind": "declared",
+      "index": 98,
+      "name": "F2",
+      "value": 91
+    },
+    {
+      "kind": "declared",
+      "index": 99,
+      "name": "F3",
+      "value": 92
+    },
+    {
+      "kind": "declared",
+      "index": 100,
+      "name": "F4",
+      "value": 93
+    },
+    {
+      "kind": "declared",
+      "index": 101,
+      "name": "F5",
+      "value": 94
+    },
+    {
+      "kind": "declared",
+      "index": 102,
+      "name": "F6",
+      "value": 95
+    },
+    {
+      "kind": "declared",
+      "index": 103,
+      "name": "F7",
+      "value": 96
+    },
+    {
+      "kind": "declared",
+      "index": 104,
+      "name": "F8",
+      "value": 97
+    },
+    {
+      "kind": "declared",
+      "index": 105,
+      "name": "F9",
+      "value": 98
+    },
+    {
+      "kind": "declared",
+      "index": 106,
+      "name": "F10",
+      "value": 99
+    },
+    {
+      "kind": "declared",
+      "index": 107,
+      "name": "F11",
+      "value": 100
+    },
+    {
+      "kind": "declared",
+      "index": 108,
+      "name": "F12",
+      "value": 101
+    },
+    {
+      "kind": "declared",
+      "index": 109,
+      "name": "F13",
+      "value": 102
+    },
+    {
+      "kind": "declared",
+      "index": 110,
+      "name": "F14",
+      "value": 103
+    },
+    {
+      "kind": "declared",
+      "index": 111,
+      "name": "F15",
+      "value": 104
+    },
+    {
+      "kind": "declared",
+      "index": 112,
+      "name": "F16",
+      "value": 105
+    },
+    {
+      "kind": "declared",
+      "index": 113,
+      "name": "F17",
+      "value": 106
+    },
+    {
+      "kind": "declared",
+      "index": 114,
+      "name": "F18",
+      "value": 107
+    },
+    {
+      "kind": "declared",
+      "index": 115,
+      "name": "F19",
+      "value": 108
+    },
+    {
+      "kind": "declared",
+      "index": 116,
+      "name": "F20",
+      "value": 109
+    },
+    {
+      "kind": "declared",
+      "index": 117,
+      "name": "F21",
+      "value": 110
+    },
+    {
+      "kind": "declared",
+      "index": 118,
+      "name": "F22",
+      "value": 111
+    },
+    {
+      "kind": "declared",
+      "index": 119,
+      "name": "F23",
+      "value": 112
+    },
+    {
+      "kind": "declared",
+      "index": 120,
+      "name": "F24",
+      "value": 113
+    },
+    {
+      "kind": "declared",
+      "index": 121,
+      "name": "NumLock",
+      "value": 114
+    },
+    {
+      "kind": "declared",
+      "index": 122,
+      "name": "Scroll",
+      "value": 115
+    },
+    {
+      "kind": "declared",
+      "index": 123,
+      "name": "LeftShift",
+      "value": 116
+    },
+    {
+      "kind": "declared",
+      "index": 124,
+      "name": "RightShift",
+      "value": 117
+    },
+    {
+      "kind": "declared",
+      "index": 125,
+      "name": "LeftCtrl",
+      "value": 118
+    },
+    {
+      "kind": "declared",
+      "index": 126,
+      "name": "RightCtrl",
+      "value": 119
+    },
+    {
+      "kind": "declared",
+      "index": 127,
+      "name": "LeftAlt",
+      "value": 120
+    },
+    {
+      "kind": "declared",
+      "index": 128,
+      "name": "RightAlt",
+      "value": 121
+    },
+    {
+      "kind": "declared",
+      "index": 129,
+      "name": "BrowserBack",
+      "value": 122
+    },
+    {
+      "kind": "declared",
+      "index": 130,
+      "name": "BrowserForward",
+      "value": 123
+    },
+    {
+      "kind": "declared",
+      "index": 131,
+      "name": "BrowserRefresh",
+      "value": 124
+    },
+    {
+      "kind": "declared",
+      "index": 132,
+      "name": "BrowserStop",
+      "value": 125
+    },
+    {
+      "kind": "declared",
+      "index": 133,
+      "name": "BrowserSearch",
+      "value": 126
+    },
+    {
+      "kind": "declared",
+      "index": 134,
+      "name": "BrowserFavorites",
+      "value": 127
+    },
+    {
+      "kind": "declared",
+      "index": 135,
+      "name": "BrowserHome",
+      "value": 128
+    },
+    {
+      "kind": "declared",
+      "index": 136,
+      "name": "VolumeMute",
+      "value": 129
+    },
+    {
+      "kind": "declared",
+      "index": 137,
+      "name": "VolumeDown",
+      "value": 130
+    },
+    {
+      "kind": "declared",
+      "index": 138,
+      "name": "VolumeUp",
+      "value": 131
+    },
+    {
+      "kind": "declared",
+      "index": 139,
+      "name": "MediaNextTrack",
+      "value": 132
+    },
+    {
+      "kind": "declared",
+      "index": 140,
+      "name": "MediaPreviousTrack",
+      "value": 133
+    },
+    {
+      "kind": "declared",
+      "index": 141,
+      "name": "MediaStop",
+      "value": 134
+    },
+    {
+      "kind": "declared",
+      "index": 142,
+      "name": "MediaPlayPause",
+      "value": 135
+    },
+    {
+      "kind": "declared",
+      "index": 143,
+      "name": "LaunchMail",
+      "value": 136
+    },
+    {
+      "kind": "declared",
+      "index": 144,
+      "name": "SelectMedia",
+      "value": 137
+    },
+    {
+      "kind": "declared",
+      "index": 145,
+      "name": "LaunchApplication1",
+      "value": 138
+    },
+    {
+      "kind": "declared",
+      "index": 146,
+      "name": "LaunchApplication2",
+      "value": 139
+    },
+    {
+      "kind": "declared",
+      "index": 147,
+      "name": "Oem1",
+      "value": 140
+    },
+    {
+      "kind": "declared",
+      "index": 148,
+      "name": "OemSemicolon",
+      "value": 140
+    },
+    {
+      "kind": "declared",
+      "index": 149,
+      "name": "OemPlus",
+      "value": 141
+    },
+    {
+      "kind": "declared",
+      "index": 150,
+      "name": "OemComma",
+      "value": 142
+    },
+    {
+      "kind": "declared",
+      "index": 151,
+      "name": "OemMinus",
+      "value": 143
+    },
+    {
+      "kind": "declared",
+      "index": 152,
+      "name": "OemPeriod",
+      "value": 144
+    },
+    {
+      "kind": "declared",
+      "index": 153,
+      "name": "Oem2",
+      "value": 145
+    },
+    {
+      "kind": "declared",
+      "index": 154,
+      "name": "OemQuestion",
+      "value": 145
+    },
+    {
+      "kind": "declared",
+      "index": 155,
+      "name": "Oem3",
+      "value": 146
+    },
+    {
+      "kind": "declared",
+      "index": 156,
+      "name": "OemTilde",
+      "value": 146
+    },
+    {
+      "kind": "declared",
+      "index": 157,
+      "name": "AbntC1",
+      "value": 147
+    },
+    {
+      "kind": "declared",
+      "index": 158,
+      "name": "AbntC2",
+      "value": 148
+    },
+    {
+      "kind": "declared",
+      "index": 159,
+      "name": "Oem4",
+      "value": 149
+    },
+    {
+      "kind": "declared",
+      "index": 160,
+      "name": "OemOpenBrackets",
+      "value": 149
+    },
+    {
+      "kind": "declared",
+      "index": 161,
+      "name": "Oem5",
+      "value": 150
+    },
+    {
+      "kind": "declared",
+      "index": 162,
+      "name": "OemPipe",
+      "value": 150
+    },
+    {
+      "kind": "declared",
+      "index": 163,
+      "name": "Oem6",
+      "value": 151
+    },
+    {
+      "kind": "declared",
+      "index": 164,
+      "name": "OemCloseBrackets",
+      "value": 151
+    },
+    {
+      "kind": "declared",
+      "index": 165,
+      "name": "Oem7",
+      "value": 152
+    },
+    {
+      "kind": "declared",
+      "index": 166,
+      "name": "OemQuotes",
+      "value": 152
+    },
+    {
+      "kind": "declared",
+      "index": 167,
+      "name": "Oem8",
+      "value": 153
+    },
+    {
+      "kind": "declared",
+      "index": 168,
+      "name": "Oem102",
+      "value": 154
+    },
+    {
+      "kind": "declared",
+      "index": 169,
+      "name": "OemBackslash",
+      "value": 154
+    },
+    {
+      "kind": "declared",
+      "index": 170,
+      "name": "ImeProcessed",
+      "value": 155
+    },
+    {
+      "kind": "declared",
+      "index": 171,
+      "name": "System",
+      "value": 156
+    },
+    {
+      "kind": "declared",
+      "index": 172,
+      "name": "OemAttn",
+      "value": 157
+    },
+    {
+      "kind": "declared",
+      "index": 173,
+      "name": "DbeAlphanumeric",
+      "value": 157
+    },
+    {
+      "kind": "declared",
+      "index": 174,
+      "name": "OemFinish",
+      "value": 158
+    },
+    {
+      "kind": "declared",
+      "index": 175,
+      "name": "DbeKatakana",
+      "value": 158
+    },
+    {
+      "kind": "declared",
+      "index": 176,
+      "name": "OemCopy",
+      "value": 159
+    },
+    {
+      "kind": "declared",
+      "index": 177,
+      "name": "DbeHiragana",
+      "value": 159
+    },
+    {
+      "kind": "declared",
+      "index": 178,
+      "name": "OemAuto",
+      "value": 160
+    },
+    {
+      "kind": "declared",
+      "index": 179,
+      "name": "DbeSbcsChar",
+      "value": 160
+    },
+    {
+      "kind": "declared",
+      "index": 180,
+      "name": "OemEnlw",
+      "value": 161
+    },
+    {
+      "kind": "declared",
+      "index": 181,
+      "name": "DbeDbcsChar",
+      "value": 161
+    },
+    {
+      "kind": "declared",
+      "index": 182,
+      "name": "OemBackTab",
+      "value": 162
+    },
+    {
+      "kind": "declared",
+      "index": 183,
+      "name": "DbeRoman",
+      "value": 162
+    },
+    {
+      "kind": "declared",
+      "index": 184,
+      "name": "Attn",
+      "value": 163
+    },
+    {
+      "kind": "declared",
+      "index": 185,
+      "name": "DbeNoRoman",
+      "value": 163
+    },
+    {
+      "kind": "declared",
+      "index": 186,
+      "name": "CrSel",
+      "value": 164
+    },
+    {
+      "kind": "declared",
+      "index": 187,
+      "name": "DbeEnterWordRegisterMode",
+      "value": 164
+    },
+    {
+      "kind": "declared",
+      "index": 188,
+      "name": "ExSel",
+      "value": 165
+    },
+    {
+      "kind": "declared",
+      "index": 189,
+      "name": "DbeEnterImeConfigureMode",
+      "value": 165
+    },
+    {
+      "kind": "declared",
+      "index": 190,
+      "name": "EraseEof",
+      "value": 166
+    },
+    {
+      "kind": "declared",
+      "index": 191,
+      "name": "DbeFlushString",
+      "value": 166
+    },
+    {
+      "kind": "declared",
+      "index": 192,
+      "name": "Play",
+      "value": 167
+    },
+    {
+      "kind": "declared",
+      "index": 193,
+      "name": "DbeCodeInput",
+      "value": 167
+    },
+    {
+      "kind": "declared",
+      "index": 194,
+      "name": "Zoom",
+      "value": 168
+    },
+    {
+      "kind": "declared",
+      "index": 195,
+      "name": "DbeNoCodeInput",
+      "value": 168
+    },
+    {
+      "kind": "declared",
+      "index": 196,
+      "name": "NoName",
+      "value": 169
+    },
+    {
+      "kind": "declared",
+      "index": 197,
+      "name": "DbeDetermineString",
+      "value": 169
+    },
+    {
+      "kind": "declared",
+      "index": 198,
+      "name": "Pa1",
+      "value": 170
+    },
+    {
+      "kind": "declared",
+      "index": 199,
+      "name": "DbeEnterDialogConversionMode",
+      "value": 170
+    },
+    {
+      "kind": "declared",
+      "index": 200,
+      "name": "OemClear",
+      "value": 171
+    },
+    {
+      "kind": "declared",
+      "index": 201,
+      "name": "DeadCharProcessed",
+      "value": 172
+    },
+    {
+      "kind": "canonical",
+      "value": 0,
+      "name": "None"
+    },
+    {
+      "kind": "canonical",
+      "value": 1,
+      "name": "Cancel"
+    },
+    {
+      "kind": "canonical",
+      "value": 2,
+      "name": "Back"
+    },
+    {
+      "kind": "canonical",
+      "value": 3,
+      "name": "Tab"
+    },
+    {
+      "kind": "canonical",
+      "value": 4,
+      "name": "LineFeed"
+    },
+    {
+      "kind": "canonical",
+      "value": 5,
+      "name": "Clear"
+    },
+    {
+      "kind": "canonical",
+      "value": 6,
+      "name": "Return"
+    },
+    {
+      "kind": "canonical",
+      "value": 7,
+      "name": "Pause"
+    },
+    {
+      "kind": "canonical",
+      "value": 8,
+      "name": "Capital"
+    },
+    {
+      "kind": "canonical",
+      "value": 9,
+      "name": "KanaMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 10,
+      "name": "JunjaMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 11,
+      "name": "FinalMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 12,
+      "name": "HanjaMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 13,
+      "name": "Escape"
+    },
+    {
+      "kind": "canonical",
+      "value": 14,
+      "name": "ImeConvert"
+    },
+    {
+      "kind": "canonical",
+      "value": 15,
+      "name": "ImeNonConvert"
+    },
+    {
+      "kind": "canonical",
+      "value": 16,
+      "name": "ImeAccept"
+    },
+    {
+      "kind": "canonical",
+      "value": 17,
+      "name": "ImeModeChange"
+    },
+    {
+      "kind": "canonical",
+      "value": 18,
+      "name": "Space"
+    },
+    {
+      "kind": "canonical",
+      "value": 19,
+      "name": "PageUp"
+    },
+    {
+      "kind": "canonical",
+      "value": 20,
+      "name": "Next"
+    },
+    {
+      "kind": "canonical",
+      "value": 21,
+      "name": "End"
+    },
+    {
+      "kind": "canonical",
+      "value": 22,
+      "name": "Home"
+    },
+    {
+      "kind": "canonical",
+      "value": 23,
+      "name": "Left"
+    },
+    {
+      "kind": "canonical",
+      "value": 24,
+      "name": "Up"
+    },
+    {
+      "kind": "canonical",
+      "value": 25,
+      "name": "Right"
+    },
+    {
+      "kind": "canonical",
+      "value": 26,
+      "name": "Down"
+    },
+    {
+      "kind": "canonical",
+      "value": 27,
+      "name": "Select"
+    },
+    {
+      "kind": "canonical",
+      "value": 28,
+      "name": "Print"
+    },
+    {
+      "kind": "canonical",
+      "value": 29,
+      "name": "Execute"
+    },
+    {
+      "kind": "canonical",
+      "value": 30,
+      "name": "Snapshot"
+    },
+    {
+      "kind": "canonical",
+      "value": 31,
+      "name": "Insert"
+    },
+    {
+      "kind": "canonical",
+      "value": 32,
+      "name": "Delete"
+    },
+    {
+      "kind": "canonical",
+      "value": 33,
+      "name": "Help"
+    },
+    {
+      "kind": "canonical",
+      "value": 34,
+      "name": "D0"
+    },
+    {
+      "kind": "canonical",
+      "value": 35,
+      "name": "D1"
+    },
+    {
+      "kind": "canonical",
+      "value": 36,
+      "name": "D2"
+    },
+    {
+      "kind": "canonical",
+      "value": 37,
+      "name": "D3"
+    },
+    {
+      "kind": "canonical",
+      "value": 38,
+      "name": "D4"
+    },
+    {
+      "kind": "canonical",
+      "value": 39,
+      "name": "D5"
+    },
+    {
+      "kind": "canonical",
+      "value": 40,
+      "name": "D6"
+    },
+    {
+      "kind": "canonical",
+      "value": 41,
+      "name": "D7"
+    },
+    {
+      "kind": "canonical",
+      "value": 42,
+      "name": "D8"
+    },
+    {
+      "kind": "canonical",
+      "value": 43,
+      "name": "D9"
+    },
+    {
+      "kind": "canonical",
+      "value": 44,
+      "name": "A"
+    },
+    {
+      "kind": "canonical",
+      "value": 45,
+      "name": "B"
+    },
+    {
+      "kind": "canonical",
+      "value": 46,
+      "name": "C"
+    },
+    {
+      "kind": "canonical",
+      "value": 47,
+      "name": "D"
+    },
+    {
+      "kind": "canonical",
+      "value": 48,
+      "name": "E"
+    },
+    {
+      "kind": "canonical",
+      "value": 49,
+      "name": "F"
+    },
+    {
+      "kind": "canonical",
+      "value": 50,
+      "name": "G"
+    },
+    {
+      "kind": "canonical",
+      "value": 51,
+      "name": "H"
+    },
+    {
+      "kind": "canonical",
+      "value": 52,
+      "name": "I"
+    },
+    {
+      "kind": "canonical",
+      "value": 53,
+      "name": "J"
+    },
+    {
+      "kind": "canonical",
+      "value": 54,
+      "name": "K"
+    },
+    {
+      "kind": "canonical",
+      "value": 55,
+      "name": "L"
+    },
+    {
+      "kind": "canonical",
+      "value": 56,
+      "name": "M"
+    },
+    {
+      "kind": "canonical",
+      "value": 57,
+      "name": "N"
+    },
+    {
+      "kind": "canonical",
+      "value": 58,
+      "name": "O"
+    },
+    {
+      "kind": "canonical",
+      "value": 59,
+      "name": "P"
+    },
+    {
+      "kind": "canonical",
+      "value": 60,
+      "name": "Q"
+    },
+    {
+      "kind": "canonical",
+      "value": 61,
+      "name": "R"
+    },
+    {
+      "kind": "canonical",
+      "value": 62,
+      "name": "S"
+    },
+    {
+      "kind": "canonical",
+      "value": 63,
+      "name": "T"
+    },
+    {
+      "kind": "canonical",
+      "value": 64,
+      "name": "U"
+    },
+    {
+      "kind": "canonical",
+      "value": 65,
+      "name": "V"
+    },
+    {
+      "kind": "canonical",
+      "value": 66,
+      "name": "W"
+    },
+    {
+      "kind": "canonical",
+      "value": 67,
+      "name": "X"
+    },
+    {
+      "kind": "canonical",
+      "value": 68,
+      "name": "Y"
+    },
+    {
+      "kind": "canonical",
+      "value": 69,
+      "name": "Z"
+    },
+    {
+      "kind": "canonical",
+      "value": 70,
+      "name": "LWin"
+    },
+    {
+      "kind": "canonical",
+      "value": 71,
+      "name": "RWin"
+    },
+    {
+      "kind": "canonical",
+      "value": 72,
+      "name": "Apps"
+    },
+    {
+      "kind": "canonical",
+      "value": 73,
+      "name": "Sleep"
+    },
+    {
+      "kind": "canonical",
+      "value": 74,
+      "name": "NumPad0"
+    },
+    {
+      "kind": "canonical",
+      "value": 75,
+      "name": "NumPad1"
+    },
+    {
+      "kind": "canonical",
+      "value": 76,
+      "name": "NumPad2"
+    },
+    {
+      "kind": "canonical",
+      "value": 77,
+      "name": "NumPad3"
+    },
+    {
+      "kind": "canonical",
+      "value": 78,
+      "name": "NumPad4"
+    },
+    {
+      "kind": "canonical",
+      "value": 79,
+      "name": "NumPad5"
+    },
+    {
+      "kind": "canonical",
+      "value": 80,
+      "name": "NumPad6"
+    },
+    {
+      "kind": "canonical",
+      "value": 81,
+      "name": "NumPad7"
+    },
+    {
+      "kind": "canonical",
+      "value": 82,
+      "name": "NumPad8"
+    },
+    {
+      "kind": "canonical",
+      "value": 83,
+      "name": "NumPad9"
+    },
+    {
+      "kind": "canonical",
+      "value": 84,
+      "name": "Multiply"
+    },
+    {
+      "kind": "canonical",
+      "value": 85,
+      "name": "Add"
+    },
+    {
+      "kind": "canonical",
+      "value": 86,
+      "name": "Separator"
+    },
+    {
+      "kind": "canonical",
+      "value": 87,
+      "name": "Subtract"
+    },
+    {
+      "kind": "canonical",
+      "value": 88,
+      "name": "Decimal"
+    },
+    {
+      "kind": "canonical",
+      "value": 89,
+      "name": "Divide"
+    },
+    {
+      "kind": "canonical",
+      "value": 90,
+      "name": "F1"
+    },
+    {
+      "kind": "canonical",
+      "value": 91,
+      "name": "F2"
+    },
+    {
+      "kind": "canonical",
+      "value": 92,
+      "name": "F3"
+    },
+    {
+      "kind": "canonical",
+      "value": 93,
+      "name": "F4"
+    },
+    {
+      "kind": "canonical",
+      "value": 94,
+      "name": "F5"
+    },
+    {
+      "kind": "canonical",
+      "value": 95,
+      "name": "F6"
+    },
+    {
+      "kind": "canonical",
+      "value": 96,
+      "name": "F7"
+    },
+    {
+      "kind": "canonical",
+      "value": 97,
+      "name": "F8"
+    },
+    {
+      "kind": "canonical",
+      "value": 98,
+      "name": "F9"
+    },
+    {
+      "kind": "canonical",
+      "value": 99,
+      "name": "F10"
+    },
+    {
+      "kind": "canonical",
+      "value": 100,
+      "name": "F11"
+    },
+    {
+      "kind": "canonical",
+      "value": 101,
+      "name": "F12"
+    },
+    {
+      "kind": "canonical",
+      "value": 102,
+      "name": "F13"
+    },
+    {
+      "kind": "canonical",
+      "value": 103,
+      "name": "F14"
+    },
+    {
+      "kind": "canonical",
+      "value": 104,
+      "name": "F15"
+    },
+    {
+      "kind": "canonical",
+      "value": 105,
+      "name": "F16"
+    },
+    {
+      "kind": "canonical",
+      "value": 106,
+      "name": "F17"
+    },
+    {
+      "kind": "canonical",
+      "value": 107,
+      "name": "F18"
+    },
+    {
+      "kind": "canonical",
+      "value": 108,
+      "name": "F19"
+    },
+    {
+      "kind": "canonical",
+      "value": 109,
+      "name": "F20"
+    },
+    {
+      "kind": "canonical",
+      "value": 110,
+      "name": "F21"
+    },
+    {
+      "kind": "canonical",
+      "value": 111,
+      "name": "F22"
+    },
+    {
+      "kind": "canonical",
+      "value": 112,
+      "name": "F23"
+    },
+    {
+      "kind": "canonical",
+      "value": 113,
+      "name": "F24"
+    },
+    {
+      "kind": "canonical",
+      "value": 114,
+      "name": "NumLock"
+    },
+    {
+      "kind": "canonical",
+      "value": 115,
+      "name": "Scroll"
+    },
+    {
+      "kind": "canonical",
+      "value": 116,
+      "name": "LeftShift"
+    },
+    {
+      "kind": "canonical",
+      "value": 117,
+      "name": "RightShift"
+    },
+    {
+      "kind": "canonical",
+      "value": 118,
+      "name": "LeftCtrl"
+    },
+    {
+      "kind": "canonical",
+      "value": 119,
+      "name": "RightCtrl"
+    },
+    {
+      "kind": "canonical",
+      "value": 120,
+      "name": "LeftAlt"
+    },
+    {
+      "kind": "canonical",
+      "value": 121,
+      "name": "RightAlt"
+    },
+    {
+      "kind": "canonical",
+      "value": 122,
+      "name": "BrowserBack"
+    },
+    {
+      "kind": "canonical",
+      "value": 123,
+      "name": "BrowserForward"
+    },
+    {
+      "kind": "canonical",
+      "value": 124,
+      "name": "BrowserRefresh"
+    },
+    {
+      "kind": "canonical",
+      "value": 125,
+      "name": "BrowserStop"
+    },
+    {
+      "kind": "canonical",
+      "value": 126,
+      "name": "BrowserSearch"
+    },
+    {
+      "kind": "canonical",
+      "value": 127,
+      "name": "BrowserFavorites"
+    },
+    {
+      "kind": "canonical",
+      "value": 128,
+      "name": "BrowserHome"
+    },
+    {
+      "kind": "canonical",
+      "value": 129,
+      "name": "VolumeMute"
+    },
+    {
+      "kind": "canonical",
+      "value": 130,
+      "name": "VolumeDown"
+    },
+    {
+      "kind": "canonical",
+      "value": 131,
+      "name": "VolumeUp"
+    },
+    {
+      "kind": "canonical",
+      "value": 132,
+      "name": "MediaNextTrack"
+    },
+    {
+      "kind": "canonical",
+      "value": 133,
+      "name": "MediaPreviousTrack"
+    },
+    {
+      "kind": "canonical",
+      "value": 134,
+      "name": "MediaStop"
+    },
+    {
+      "kind": "canonical",
+      "value": 135,
+      "name": "MediaPlayPause"
+    },
+    {
+      "kind": "canonical",
+      "value": 136,
+      "name": "LaunchMail"
+    },
+    {
+      "kind": "canonical",
+      "value": 137,
+      "name": "SelectMedia"
+    },
+    {
+      "kind": "canonical",
+      "value": 138,
+      "name": "LaunchApplication1"
+    },
+    {
+      "kind": "canonical",
+      "value": 139,
+      "name": "LaunchApplication2"
+    },
+    {
+      "kind": "canonical",
+      "value": 140,
+      "name": "Oem1"
+    },
+    {
+      "kind": "canonical",
+      "value": 141,
+      "name": "OemPlus"
+    },
+    {
+      "kind": "canonical",
+      "value": 142,
+      "name": "OemComma"
+    },
+    {
+      "kind": "canonical",
+      "value": 143,
+      "name": "OemMinus"
+    },
+    {
+      "kind": "canonical",
+      "value": 144,
+      "name": "OemPeriod"
+    },
+    {
+      "kind": "canonical",
+      "value": 145,
+      "name": "OemQuestion"
+    },
+    {
+      "kind": "canonical",
+      "value": 146,
+      "name": "Oem3"
+    },
+    {
+      "kind": "canonical",
+      "value": 147,
+      "name": "AbntC1"
+    },
+    {
+      "kind": "canonical",
+      "value": 148,
+      "name": "AbntC2"
+    },
+    {
+      "kind": "canonical",
+      "value": 149,
+      "name": "OemOpenBrackets"
+    },
+    {
+      "kind": "canonical",
+      "value": 150,
+      "name": "Oem5"
+    },
+    {
+      "kind": "canonical",
+      "value": 151,
+      "name": "Oem6"
+    },
+    {
+      "kind": "canonical",
+      "value": 152,
+      "name": "OemQuotes"
+    },
+    {
+      "kind": "canonical",
+      "value": 153,
+      "name": "Oem8"
+    },
+    {
+      "kind": "canonical",
+      "value": 154,
+      "name": "OemBackslash"
+    },
+    {
+      "kind": "canonical",
+      "value": 155,
+      "name": "ImeProcessed"
+    },
+    {
+      "kind": "canonical",
+      "value": 156,
+      "name": "System"
+    },
+    {
+      "kind": "canonical",
+      "value": 157,
+      "name": "OemAttn"
+    },
+    {
+      "kind": "canonical",
+      "value": 158,
+      "name": "OemFinish"
+    },
+    {
+      "kind": "canonical",
+      "value": 159,
+      "name": "OemCopy"
+    },
+    {
+      "kind": "canonical",
+      "value": 160,
+      "name": "DbeSbcsChar"
+    },
+    {
+      "kind": "canonical",
+      "value": 161,
+      "name": "OemEnlw"
+    },
+    {
+      "kind": "canonical",
+      "value": 162,
+      "name": "OemBackTab"
+    },
+    {
+      "kind": "canonical",
+      "value": 163,
+      "name": "DbeNoRoman"
+    },
+    {
+      "kind": "canonical",
+      "value": 164,
+      "name": "DbeEnterWordRegisterMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 165,
+      "name": "DbeEnterImeConfigureMode"
+    },
+    {
+      "kind": "canonical",
+      "value": 166,
+      "name": "EraseEof"
+    },
+    {
+      "kind": "canonical",
+      "value": 167,
+      "name": "Play"
+    },
+    {
+      "kind": "canonical",
+      "value": 168,
+      "name": "DbeNoCodeInput"
+    },
+    {
+      "kind": "canonical",
+      "value": 169,
+      "name": "NoName"
+    },
+    {
+      "kind": "canonical",
+      "value": 170,
+      "name": "Pa1"
+    },
+    {
+      "kind": "canonical",
+      "value": 171,
+      "name": "OemClear"
+    },
+    {
+      "kind": "canonical",
+      "value": 172,
+      "name": "DeadCharProcessed"
+    },
+    {
+      "kind": "from_value",
+      "input": -2147483648,
+      "defined": false,
+      "name": null
+    },
+    {
+      "kind": "from_value",
+      "input": -1,
+      "defined": false,
+      "name": null
+    },
+    {
+      "kind": "from_value",
+      "input": 0,
+      "defined": true,
+      "name": "None"
+    },
+    {
+      "kind": "from_value",
+      "input": 1,
+      "defined": true,
+      "name": "Cancel"
+    },
+    {
+      "kind": "from_value",
+      "input": 6,
+      "defined": true,
+      "name": "Return"
+    },
+    {
+      "kind": "from_value",
+      "input": 8,
+      "defined": true,
+      "name": "Capital"
+    },
+    {
+      "kind": "from_value",
+      "input": 171,
+      "defined": true,
+      "name": "OemClear"
+    },
+    {
+      "kind": "from_value",
+      "input": 172,
+      "defined": true,
+      "name": "DeadCharProcessed"
+    },
+    {
+      "kind": "from_value",
+      "input": 173,
+      "defined": false,
+      "name": null
+    },
+    {
+      "kind": "from_value",
+      "input": 255,
+      "defined": false,
+      "name": null
+    },
+    {
+      "kind": "from_value",
+      "input": 2147483647,
+      "defined": false,
+      "name": null
+    },
+    {
+      "kind": "from_name",
+      "input": "None",
+      "ignore_case": false,
+      "found": true,
+      "value": 0
+    },
+    {
+      "kind": "from_name",
+      "input": "None",
+      "ignore_case": true,
+      "found": true,
+      "value": 0
+    },
+    {
+      "kind": "from_name",
+      "input": "Cancel",
+      "ignore_case": false,
+      "found": true,
+      "value": 1
+    },
+    {
+      "kind": "from_name",
+      "input": "Cancel",
+      "ignore_case": true,
+      "found": true,
+      "value": 1
+    },
+    {
+      "kind": "from_name",
+      "input": "Back",
+      "ignore_case": false,
+      "found": true,
+      "value": 2
+    },
+    {
+      "kind": "from_name",
+      "input": "Back",
+      "ignore_case": true,
+      "found": true,
+      "value": 2
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "LineFeed",
+      "ignore_case": false,
+      "found": true,
+      "value": 4
+    },
+    {
+      "kind": "from_name",
+      "input": "LineFeed",
+      "ignore_case": true,
+      "found": true,
+      "value": 4
+    },
+    {
+      "kind": "from_name",
+      "input": "Clear",
+      "ignore_case": false,
+      "found": true,
+      "value": 5
+    },
+    {
+      "kind": "from_name",
+      "input": "Clear",
+      "ignore_case": true,
+      "found": true,
+      "value": 5
+    },
+    {
+      "kind": "from_name",
+      "input": "Return",
+      "ignore_case": false,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Return",
+      "ignore_case": true,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter",
+      "ignore_case": false,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter",
+      "ignore_case": true,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Pause",
+      "ignore_case": false,
+      "found": true,
+      "value": 7
+    },
+    {
+      "kind": "from_name",
+      "input": "Pause",
+      "ignore_case": true,
+      "found": true,
+      "value": 7
+    },
+    {
+      "kind": "from_name",
+      "input": "Capital",
+      "ignore_case": false,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "Capital",
+      "ignore_case": true,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "CapsLock",
+      "ignore_case": false,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "CapsLock",
+      "ignore_case": true,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "KanaMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 9
+    },
+    {
+      "kind": "from_name",
+      "input": "KanaMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 9
+    },
+    {
+      "kind": "from_name",
+      "input": "HangulMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 9
+    },
+    {
+      "kind": "from_name",
+      "input": "HangulMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 9
+    },
+    {
+      "kind": "from_name",
+      "input": "JunjaMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 10
+    },
+    {
+      "kind": "from_name",
+      "input": "JunjaMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 10
+    },
+    {
+      "kind": "from_name",
+      "input": "FinalMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 11
+    },
+    {
+      "kind": "from_name",
+      "input": "FinalMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 11
+    },
+    {
+      "kind": "from_name",
+      "input": "HanjaMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 12
+    },
+    {
+      "kind": "from_name",
+      "input": "HanjaMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 12
+    },
+    {
+      "kind": "from_name",
+      "input": "KanjiMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 12
+    },
+    {
+      "kind": "from_name",
+      "input": "KanjiMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 12
+    },
+    {
+      "kind": "from_name",
+      "input": "Escape",
+      "ignore_case": false,
+      "found": true,
+      "value": 13
+    },
+    {
+      "kind": "from_name",
+      "input": "Escape",
+      "ignore_case": true,
+      "found": true,
+      "value": 13
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeConvert",
+      "ignore_case": false,
+      "found": true,
+      "value": 14
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeConvert",
+      "ignore_case": true,
+      "found": true,
+      "value": 14
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeNonConvert",
+      "ignore_case": false,
+      "found": true,
+      "value": 15
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeNonConvert",
+      "ignore_case": true,
+      "found": true,
+      "value": 15
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeAccept",
+      "ignore_case": false,
+      "found": true,
+      "value": 16
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeAccept",
+      "ignore_case": true,
+      "found": true,
+      "value": 16
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeModeChange",
+      "ignore_case": false,
+      "found": true,
+      "value": 17
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeModeChange",
+      "ignore_case": true,
+      "found": true,
+      "value": 17
+    },
+    {
+      "kind": "from_name",
+      "input": "Space",
+      "ignore_case": false,
+      "found": true,
+      "value": 18
+    },
+    {
+      "kind": "from_name",
+      "input": "Space",
+      "ignore_case": true,
+      "found": true,
+      "value": 18
+    },
+    {
+      "kind": "from_name",
+      "input": "Prior",
+      "ignore_case": false,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "Prior",
+      "ignore_case": true,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "PageUp",
+      "ignore_case": false,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "PageUp",
+      "ignore_case": true,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "Next",
+      "ignore_case": false,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "Next",
+      "ignore_case": true,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "PageDown",
+      "ignore_case": false,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "PageDown",
+      "ignore_case": true,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "End",
+      "ignore_case": false,
+      "found": true,
+      "value": 21
+    },
+    {
+      "kind": "from_name",
+      "input": "End",
+      "ignore_case": true,
+      "found": true,
+      "value": 21
+    },
+    {
+      "kind": "from_name",
+      "input": "Home",
+      "ignore_case": false,
+      "found": true,
+      "value": 22
+    },
+    {
+      "kind": "from_name",
+      "input": "Home",
+      "ignore_case": true,
+      "found": true,
+      "value": 22
+    },
+    {
+      "kind": "from_name",
+      "input": "Left",
+      "ignore_case": false,
+      "found": true,
+      "value": 23
+    },
+    {
+      "kind": "from_name",
+      "input": "Left",
+      "ignore_case": true,
+      "found": true,
+      "value": 23
+    },
+    {
+      "kind": "from_name",
+      "input": "Up",
+      "ignore_case": false,
+      "found": true,
+      "value": 24
+    },
+    {
+      "kind": "from_name",
+      "input": "Up",
+      "ignore_case": true,
+      "found": true,
+      "value": 24
+    },
+    {
+      "kind": "from_name",
+      "input": "Right",
+      "ignore_case": false,
+      "found": true,
+      "value": 25
+    },
+    {
+      "kind": "from_name",
+      "input": "Right",
+      "ignore_case": true,
+      "found": true,
+      "value": 25
+    },
+    {
+      "kind": "from_name",
+      "input": "Down",
+      "ignore_case": false,
+      "found": true,
+      "value": 26
+    },
+    {
+      "kind": "from_name",
+      "input": "Down",
+      "ignore_case": true,
+      "found": true,
+      "value": 26
+    },
+    {
+      "kind": "from_name",
+      "input": "Select",
+      "ignore_case": false,
+      "found": true,
+      "value": 27
+    },
+    {
+      "kind": "from_name",
+      "input": "Select",
+      "ignore_case": true,
+      "found": true,
+      "value": 27
+    },
+    {
+      "kind": "from_name",
+      "input": "Print",
+      "ignore_case": false,
+      "found": true,
+      "value": 28
+    },
+    {
+      "kind": "from_name",
+      "input": "Print",
+      "ignore_case": true,
+      "found": true,
+      "value": 28
+    },
+    {
+      "kind": "from_name",
+      "input": "Execute",
+      "ignore_case": false,
+      "found": true,
+      "value": 29
+    },
+    {
+      "kind": "from_name",
+      "input": "Execute",
+      "ignore_case": true,
+      "found": true,
+      "value": 29
+    },
+    {
+      "kind": "from_name",
+      "input": "Snapshot",
+      "ignore_case": false,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "Snapshot",
+      "ignore_case": true,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "PrintScreen",
+      "ignore_case": false,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "PrintScreen",
+      "ignore_case": true,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "Insert",
+      "ignore_case": false,
+      "found": true,
+      "value": 31
+    },
+    {
+      "kind": "from_name",
+      "input": "Insert",
+      "ignore_case": true,
+      "found": true,
+      "value": 31
+    },
+    {
+      "kind": "from_name",
+      "input": "Delete",
+      "ignore_case": false,
+      "found": true,
+      "value": 32
+    },
+    {
+      "kind": "from_name",
+      "input": "Delete",
+      "ignore_case": true,
+      "found": true,
+      "value": 32
+    },
+    {
+      "kind": "from_name",
+      "input": "Help",
+      "ignore_case": false,
+      "found": true,
+      "value": 33
+    },
+    {
+      "kind": "from_name",
+      "input": "Help",
+      "ignore_case": true,
+      "found": true,
+      "value": 33
+    },
+    {
+      "kind": "from_name",
+      "input": "D0",
+      "ignore_case": false,
+      "found": true,
+      "value": 34
+    },
+    {
+      "kind": "from_name",
+      "input": "D0",
+      "ignore_case": true,
+      "found": true,
+      "value": 34
+    },
+    {
+      "kind": "from_name",
+      "input": "D1",
+      "ignore_case": false,
+      "found": true,
+      "value": 35
+    },
+    {
+      "kind": "from_name",
+      "input": "D1",
+      "ignore_case": true,
+      "found": true,
+      "value": 35
+    },
+    {
+      "kind": "from_name",
+      "input": "D2",
+      "ignore_case": false,
+      "found": true,
+      "value": 36
+    },
+    {
+      "kind": "from_name",
+      "input": "D2",
+      "ignore_case": true,
+      "found": true,
+      "value": 36
+    },
+    {
+      "kind": "from_name",
+      "input": "D3",
+      "ignore_case": false,
+      "found": true,
+      "value": 37
+    },
+    {
+      "kind": "from_name",
+      "input": "D3",
+      "ignore_case": true,
+      "found": true,
+      "value": 37
+    },
+    {
+      "kind": "from_name",
+      "input": "D4",
+      "ignore_case": false,
+      "found": true,
+      "value": 38
+    },
+    {
+      "kind": "from_name",
+      "input": "D4",
+      "ignore_case": true,
+      "found": true,
+      "value": 38
+    },
+    {
+      "kind": "from_name",
+      "input": "D5",
+      "ignore_case": false,
+      "found": true,
+      "value": 39
+    },
+    {
+      "kind": "from_name",
+      "input": "D5",
+      "ignore_case": true,
+      "found": true,
+      "value": 39
+    },
+    {
+      "kind": "from_name",
+      "input": "D6",
+      "ignore_case": false,
+      "found": true,
+      "value": 40
+    },
+    {
+      "kind": "from_name",
+      "input": "D6",
+      "ignore_case": true,
+      "found": true,
+      "value": 40
+    },
+    {
+      "kind": "from_name",
+      "input": "D7",
+      "ignore_case": false,
+      "found": true,
+      "value": 41
+    },
+    {
+      "kind": "from_name",
+      "input": "D7",
+      "ignore_case": true,
+      "found": true,
+      "value": 41
+    },
+    {
+      "kind": "from_name",
+      "input": "D8",
+      "ignore_case": false,
+      "found": true,
+      "value": 42
+    },
+    {
+      "kind": "from_name",
+      "input": "D8",
+      "ignore_case": true,
+      "found": true,
+      "value": 42
+    },
+    {
+      "kind": "from_name",
+      "input": "D9",
+      "ignore_case": false,
+      "found": true,
+      "value": 43
+    },
+    {
+      "kind": "from_name",
+      "input": "D9",
+      "ignore_case": true,
+      "found": true,
+      "value": 43
+    },
+    {
+      "kind": "from_name",
+      "input": "A",
+      "ignore_case": false,
+      "found": true,
+      "value": 44
+    },
+    {
+      "kind": "from_name",
+      "input": "A",
+      "ignore_case": true,
+      "found": true,
+      "value": 44
+    },
+    {
+      "kind": "from_name",
+      "input": "B",
+      "ignore_case": false,
+      "found": true,
+      "value": 45
+    },
+    {
+      "kind": "from_name",
+      "input": "B",
+      "ignore_case": true,
+      "found": true,
+      "value": 45
+    },
+    {
+      "kind": "from_name",
+      "input": "C",
+      "ignore_case": false,
+      "found": true,
+      "value": 46
+    },
+    {
+      "kind": "from_name",
+      "input": "C",
+      "ignore_case": true,
+      "found": true,
+      "value": 46
+    },
+    {
+      "kind": "from_name",
+      "input": "D",
+      "ignore_case": false,
+      "found": true,
+      "value": 47
+    },
+    {
+      "kind": "from_name",
+      "input": "D",
+      "ignore_case": true,
+      "found": true,
+      "value": 47
+    },
+    {
+      "kind": "from_name",
+      "input": "E",
+      "ignore_case": false,
+      "found": true,
+      "value": 48
+    },
+    {
+      "kind": "from_name",
+      "input": "E",
+      "ignore_case": true,
+      "found": true,
+      "value": 48
+    },
+    {
+      "kind": "from_name",
+      "input": "F",
+      "ignore_case": false,
+      "found": true,
+      "value": 49
+    },
+    {
+      "kind": "from_name",
+      "input": "F",
+      "ignore_case": true,
+      "found": true,
+      "value": 49
+    },
+    {
+      "kind": "from_name",
+      "input": "G",
+      "ignore_case": false,
+      "found": true,
+      "value": 50
+    },
+    {
+      "kind": "from_name",
+      "input": "G",
+      "ignore_case": true,
+      "found": true,
+      "value": 50
+    },
+    {
+      "kind": "from_name",
+      "input": "H",
+      "ignore_case": false,
+      "found": true,
+      "value": 51
+    },
+    {
+      "kind": "from_name",
+      "input": "H",
+      "ignore_case": true,
+      "found": true,
+      "value": 51
+    },
+    {
+      "kind": "from_name",
+      "input": "I",
+      "ignore_case": false,
+      "found": true,
+      "value": 52
+    },
+    {
+      "kind": "from_name",
+      "input": "I",
+      "ignore_case": true,
+      "found": true,
+      "value": 52
+    },
+    {
+      "kind": "from_name",
+      "input": "J",
+      "ignore_case": false,
+      "found": true,
+      "value": 53
+    },
+    {
+      "kind": "from_name",
+      "input": "J",
+      "ignore_case": true,
+      "found": true,
+      "value": 53
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": false,
+      "found": true,
+      "value": 54
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": true,
+      "found": true,
+      "value": 54
+    },
+    {
+      "kind": "from_name",
+      "input": "L",
+      "ignore_case": false,
+      "found": true,
+      "value": 55
+    },
+    {
+      "kind": "from_name",
+      "input": "L",
+      "ignore_case": true,
+      "found": true,
+      "value": 55
+    },
+    {
+      "kind": "from_name",
+      "input": "M",
+      "ignore_case": false,
+      "found": true,
+      "value": 56
+    },
+    {
+      "kind": "from_name",
+      "input": "M",
+      "ignore_case": true,
+      "found": true,
+      "value": 56
+    },
+    {
+      "kind": "from_name",
+      "input": "N",
+      "ignore_case": false,
+      "found": true,
+      "value": 57
+    },
+    {
+      "kind": "from_name",
+      "input": "N",
+      "ignore_case": true,
+      "found": true,
+      "value": 57
+    },
+    {
+      "kind": "from_name",
+      "input": "O",
+      "ignore_case": false,
+      "found": true,
+      "value": 58
+    },
+    {
+      "kind": "from_name",
+      "input": "O",
+      "ignore_case": true,
+      "found": true,
+      "value": 58
+    },
+    {
+      "kind": "from_name",
+      "input": "P",
+      "ignore_case": false,
+      "found": true,
+      "value": 59
+    },
+    {
+      "kind": "from_name",
+      "input": "P",
+      "ignore_case": true,
+      "found": true,
+      "value": 59
+    },
+    {
+      "kind": "from_name",
+      "input": "Q",
+      "ignore_case": false,
+      "found": true,
+      "value": 60
+    },
+    {
+      "kind": "from_name",
+      "input": "Q",
+      "ignore_case": true,
+      "found": true,
+      "value": 60
+    },
+    {
+      "kind": "from_name",
+      "input": "R",
+      "ignore_case": false,
+      "found": true,
+      "value": 61
+    },
+    {
+      "kind": "from_name",
+      "input": "R",
+      "ignore_case": true,
+      "found": true,
+      "value": 61
+    },
+    {
+      "kind": "from_name",
+      "input": "S",
+      "ignore_case": false,
+      "found": true,
+      "value": 62
+    },
+    {
+      "kind": "from_name",
+      "input": "S",
+      "ignore_case": true,
+      "found": true,
+      "value": 62
+    },
+    {
+      "kind": "from_name",
+      "input": "T",
+      "ignore_case": false,
+      "found": true,
+      "value": 63
+    },
+    {
+      "kind": "from_name",
+      "input": "T",
+      "ignore_case": true,
+      "found": true,
+      "value": 63
+    },
+    {
+      "kind": "from_name",
+      "input": "U",
+      "ignore_case": false,
+      "found": true,
+      "value": 64
+    },
+    {
+      "kind": "from_name",
+      "input": "U",
+      "ignore_case": true,
+      "found": true,
+      "value": 64
+    },
+    {
+      "kind": "from_name",
+      "input": "V",
+      "ignore_case": false,
+      "found": true,
+      "value": 65
+    },
+    {
+      "kind": "from_name",
+      "input": "V",
+      "ignore_case": true,
+      "found": true,
+      "value": 65
+    },
+    {
+      "kind": "from_name",
+      "input": "W",
+      "ignore_case": false,
+      "found": true,
+      "value": 66
+    },
+    {
+      "kind": "from_name",
+      "input": "W",
+      "ignore_case": true,
+      "found": true,
+      "value": 66
+    },
+    {
+      "kind": "from_name",
+      "input": "X",
+      "ignore_case": false,
+      "found": true,
+      "value": 67
+    },
+    {
+      "kind": "from_name",
+      "input": "X",
+      "ignore_case": true,
+      "found": true,
+      "value": 67
+    },
+    {
+      "kind": "from_name",
+      "input": "Y",
+      "ignore_case": false,
+      "found": true,
+      "value": 68
+    },
+    {
+      "kind": "from_name",
+      "input": "Y",
+      "ignore_case": true,
+      "found": true,
+      "value": 68
+    },
+    {
+      "kind": "from_name",
+      "input": "Z",
+      "ignore_case": false,
+      "found": true,
+      "value": 69
+    },
+    {
+      "kind": "from_name",
+      "input": "Z",
+      "ignore_case": true,
+      "found": true,
+      "value": 69
+    },
+    {
+      "kind": "from_name",
+      "input": "LWin",
+      "ignore_case": false,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "LWin",
+      "ignore_case": true,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "RWin",
+      "ignore_case": false,
+      "found": true,
+      "value": 71
+    },
+    {
+      "kind": "from_name",
+      "input": "RWin",
+      "ignore_case": true,
+      "found": true,
+      "value": 71
+    },
+    {
+      "kind": "from_name",
+      "input": "Apps",
+      "ignore_case": false,
+      "found": true,
+      "value": 72
+    },
+    {
+      "kind": "from_name",
+      "input": "Apps",
+      "ignore_case": true,
+      "found": true,
+      "value": 72
+    },
+    {
+      "kind": "from_name",
+      "input": "Sleep",
+      "ignore_case": false,
+      "found": true,
+      "value": 73
+    },
+    {
+      "kind": "from_name",
+      "input": "Sleep",
+      "ignore_case": true,
+      "found": true,
+      "value": 73
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad0",
+      "ignore_case": false,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad0",
+      "ignore_case": true,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad1",
+      "ignore_case": false,
+      "found": true,
+      "value": 75
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad1",
+      "ignore_case": true,
+      "found": true,
+      "value": 75
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad2",
+      "ignore_case": false,
+      "found": true,
+      "value": 76
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad2",
+      "ignore_case": true,
+      "found": true,
+      "value": 76
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad3",
+      "ignore_case": false,
+      "found": true,
+      "value": 77
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad3",
+      "ignore_case": true,
+      "found": true,
+      "value": 77
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad4",
+      "ignore_case": false,
+      "found": true,
+      "value": 78
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad4",
+      "ignore_case": true,
+      "found": true,
+      "value": 78
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad5",
+      "ignore_case": false,
+      "found": true,
+      "value": 79
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad5",
+      "ignore_case": true,
+      "found": true,
+      "value": 79
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad6",
+      "ignore_case": false,
+      "found": true,
+      "value": 80
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad6",
+      "ignore_case": true,
+      "found": true,
+      "value": 80
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad7",
+      "ignore_case": false,
+      "found": true,
+      "value": 81
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad7",
+      "ignore_case": true,
+      "found": true,
+      "value": 81
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad8",
+      "ignore_case": false,
+      "found": true,
+      "value": 82
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad8",
+      "ignore_case": true,
+      "found": true,
+      "value": 82
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad9",
+      "ignore_case": false,
+      "found": true,
+      "value": 83
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad9",
+      "ignore_case": true,
+      "found": true,
+      "value": 83
+    },
+    {
+      "kind": "from_name",
+      "input": "Multiply",
+      "ignore_case": false,
+      "found": true,
+      "value": 84
+    },
+    {
+      "kind": "from_name",
+      "input": "Multiply",
+      "ignore_case": true,
+      "found": true,
+      "value": 84
+    },
+    {
+      "kind": "from_name",
+      "input": "Add",
+      "ignore_case": false,
+      "found": true,
+      "value": 85
+    },
+    {
+      "kind": "from_name",
+      "input": "Add",
+      "ignore_case": true,
+      "found": true,
+      "value": 85
+    },
+    {
+      "kind": "from_name",
+      "input": "Separator",
+      "ignore_case": false,
+      "found": true,
+      "value": 86
+    },
+    {
+      "kind": "from_name",
+      "input": "Separator",
+      "ignore_case": true,
+      "found": true,
+      "value": 86
+    },
+    {
+      "kind": "from_name",
+      "input": "Subtract",
+      "ignore_case": false,
+      "found": true,
+      "value": 87
+    },
+    {
+      "kind": "from_name",
+      "input": "Subtract",
+      "ignore_case": true,
+      "found": true,
+      "value": 87
+    },
+    {
+      "kind": "from_name",
+      "input": "Decimal",
+      "ignore_case": false,
+      "found": true,
+      "value": 88
+    },
+    {
+      "kind": "from_name",
+      "input": "Decimal",
+      "ignore_case": true,
+      "found": true,
+      "value": 88
+    },
+    {
+      "kind": "from_name",
+      "input": "Divide",
+      "ignore_case": false,
+      "found": true,
+      "value": 89
+    },
+    {
+      "kind": "from_name",
+      "input": "Divide",
+      "ignore_case": true,
+      "found": true,
+      "value": 89
+    },
+    {
+      "kind": "from_name",
+      "input": "F1",
+      "ignore_case": false,
+      "found": true,
+      "value": 90
+    },
+    {
+      "kind": "from_name",
+      "input": "F1",
+      "ignore_case": true,
+      "found": true,
+      "value": 90
+    },
+    {
+      "kind": "from_name",
+      "input": "F2",
+      "ignore_case": false,
+      "found": true,
+      "value": 91
+    },
+    {
+      "kind": "from_name",
+      "input": "F2",
+      "ignore_case": true,
+      "found": true,
+      "value": 91
+    },
+    {
+      "kind": "from_name",
+      "input": "F3",
+      "ignore_case": false,
+      "found": true,
+      "value": 92
+    },
+    {
+      "kind": "from_name",
+      "input": "F3",
+      "ignore_case": true,
+      "found": true,
+      "value": 92
+    },
+    {
+      "kind": "from_name",
+      "input": "F4",
+      "ignore_case": false,
+      "found": true,
+      "value": 93
+    },
+    {
+      "kind": "from_name",
+      "input": "F4",
+      "ignore_case": true,
+      "found": true,
+      "value": 93
+    },
+    {
+      "kind": "from_name",
+      "input": "F5",
+      "ignore_case": false,
+      "found": true,
+      "value": 94
+    },
+    {
+      "kind": "from_name",
+      "input": "F5",
+      "ignore_case": true,
+      "found": true,
+      "value": 94
+    },
+    {
+      "kind": "from_name",
+      "input": "F6",
+      "ignore_case": false,
+      "found": true,
+      "value": 95
+    },
+    {
+      "kind": "from_name",
+      "input": "F6",
+      "ignore_case": true,
+      "found": true,
+      "value": 95
+    },
+    {
+      "kind": "from_name",
+      "input": "F7",
+      "ignore_case": false,
+      "found": true,
+      "value": 96
+    },
+    {
+      "kind": "from_name",
+      "input": "F7",
+      "ignore_case": true,
+      "found": true,
+      "value": 96
+    },
+    {
+      "kind": "from_name",
+      "input": "F8",
+      "ignore_case": false,
+      "found": true,
+      "value": 97
+    },
+    {
+      "kind": "from_name",
+      "input": "F8",
+      "ignore_case": true,
+      "found": true,
+      "value": 97
+    },
+    {
+      "kind": "from_name",
+      "input": "F9",
+      "ignore_case": false,
+      "found": true,
+      "value": 98
+    },
+    {
+      "kind": "from_name",
+      "input": "F9",
+      "ignore_case": true,
+      "found": true,
+      "value": 98
+    },
+    {
+      "kind": "from_name",
+      "input": "F10",
+      "ignore_case": false,
+      "found": true,
+      "value": 99
+    },
+    {
+      "kind": "from_name",
+      "input": "F10",
+      "ignore_case": true,
+      "found": true,
+      "value": 99
+    },
+    {
+      "kind": "from_name",
+      "input": "F11",
+      "ignore_case": false,
+      "found": true,
+      "value": 100
+    },
+    {
+      "kind": "from_name",
+      "input": "F11",
+      "ignore_case": true,
+      "found": true,
+      "value": 100
+    },
+    {
+      "kind": "from_name",
+      "input": "F12",
+      "ignore_case": false,
+      "found": true,
+      "value": 101
+    },
+    {
+      "kind": "from_name",
+      "input": "F12",
+      "ignore_case": true,
+      "found": true,
+      "value": 101
+    },
+    {
+      "kind": "from_name",
+      "input": "F13",
+      "ignore_case": false,
+      "found": true,
+      "value": 102
+    },
+    {
+      "kind": "from_name",
+      "input": "F13",
+      "ignore_case": true,
+      "found": true,
+      "value": 102
+    },
+    {
+      "kind": "from_name",
+      "input": "F14",
+      "ignore_case": false,
+      "found": true,
+      "value": 103
+    },
+    {
+      "kind": "from_name",
+      "input": "F14",
+      "ignore_case": true,
+      "found": true,
+      "value": 103
+    },
+    {
+      "kind": "from_name",
+      "input": "F15",
+      "ignore_case": false,
+      "found": true,
+      "value": 104
+    },
+    {
+      "kind": "from_name",
+      "input": "F15",
+      "ignore_case": true,
+      "found": true,
+      "value": 104
+    },
+    {
+      "kind": "from_name",
+      "input": "F16",
+      "ignore_case": false,
+      "found": true,
+      "value": 105
+    },
+    {
+      "kind": "from_name",
+      "input": "F16",
+      "ignore_case": true,
+      "found": true,
+      "value": 105
+    },
+    {
+      "kind": "from_name",
+      "input": "F17",
+      "ignore_case": false,
+      "found": true,
+      "value": 106
+    },
+    {
+      "kind": "from_name",
+      "input": "F17",
+      "ignore_case": true,
+      "found": true,
+      "value": 106
+    },
+    {
+      "kind": "from_name",
+      "input": "F18",
+      "ignore_case": false,
+      "found": true,
+      "value": 107
+    },
+    {
+      "kind": "from_name",
+      "input": "F18",
+      "ignore_case": true,
+      "found": true,
+      "value": 107
+    },
+    {
+      "kind": "from_name",
+      "input": "F19",
+      "ignore_case": false,
+      "found": true,
+      "value": 108
+    },
+    {
+      "kind": "from_name",
+      "input": "F19",
+      "ignore_case": true,
+      "found": true,
+      "value": 108
+    },
+    {
+      "kind": "from_name",
+      "input": "F20",
+      "ignore_case": false,
+      "found": true,
+      "value": 109
+    },
+    {
+      "kind": "from_name",
+      "input": "F20",
+      "ignore_case": true,
+      "found": true,
+      "value": 109
+    },
+    {
+      "kind": "from_name",
+      "input": "F21",
+      "ignore_case": false,
+      "found": true,
+      "value": 110
+    },
+    {
+      "kind": "from_name",
+      "input": "F21",
+      "ignore_case": true,
+      "found": true,
+      "value": 110
+    },
+    {
+      "kind": "from_name",
+      "input": "F22",
+      "ignore_case": false,
+      "found": true,
+      "value": 111
+    },
+    {
+      "kind": "from_name",
+      "input": "F22",
+      "ignore_case": true,
+      "found": true,
+      "value": 111
+    },
+    {
+      "kind": "from_name",
+      "input": "F23",
+      "ignore_case": false,
+      "found": true,
+      "value": 112
+    },
+    {
+      "kind": "from_name",
+      "input": "F23",
+      "ignore_case": true,
+      "found": true,
+      "value": 112
+    },
+    {
+      "kind": "from_name",
+      "input": "F24",
+      "ignore_case": false,
+      "found": true,
+      "value": 113
+    },
+    {
+      "kind": "from_name",
+      "input": "F24",
+      "ignore_case": true,
+      "found": true,
+      "value": 113
+    },
+    {
+      "kind": "from_name",
+      "input": "NumLock",
+      "ignore_case": false,
+      "found": true,
+      "value": 114
+    },
+    {
+      "kind": "from_name",
+      "input": "NumLock",
+      "ignore_case": true,
+      "found": true,
+      "value": 114
+    },
+    {
+      "kind": "from_name",
+      "input": "Scroll",
+      "ignore_case": false,
+      "found": true,
+      "value": 115
+    },
+    {
+      "kind": "from_name",
+      "input": "Scroll",
+      "ignore_case": true,
+      "found": true,
+      "value": 115
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftShift",
+      "ignore_case": false,
+      "found": true,
+      "value": 116
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftShift",
+      "ignore_case": true,
+      "found": true,
+      "value": 116
+    },
+    {
+      "kind": "from_name",
+      "input": "RightShift",
+      "ignore_case": false,
+      "found": true,
+      "value": 117
+    },
+    {
+      "kind": "from_name",
+      "input": "RightShift",
+      "ignore_case": true,
+      "found": true,
+      "value": 117
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftCtrl",
+      "ignore_case": false,
+      "found": true,
+      "value": 118
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftCtrl",
+      "ignore_case": true,
+      "found": true,
+      "value": 118
+    },
+    {
+      "kind": "from_name",
+      "input": "RightCtrl",
+      "ignore_case": false,
+      "found": true,
+      "value": 119
+    },
+    {
+      "kind": "from_name",
+      "input": "RightCtrl",
+      "ignore_case": true,
+      "found": true,
+      "value": 119
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftAlt",
+      "ignore_case": false,
+      "found": true,
+      "value": 120
+    },
+    {
+      "kind": "from_name",
+      "input": "LeftAlt",
+      "ignore_case": true,
+      "found": true,
+      "value": 120
+    },
+    {
+      "kind": "from_name",
+      "input": "RightAlt",
+      "ignore_case": false,
+      "found": true,
+      "value": 121
+    },
+    {
+      "kind": "from_name",
+      "input": "RightAlt",
+      "ignore_case": true,
+      "found": true,
+      "value": 121
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserBack",
+      "ignore_case": false,
+      "found": true,
+      "value": 122
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserBack",
+      "ignore_case": true,
+      "found": true,
+      "value": 122
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserForward",
+      "ignore_case": false,
+      "found": true,
+      "value": 123
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserForward",
+      "ignore_case": true,
+      "found": true,
+      "value": 123
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserRefresh",
+      "ignore_case": false,
+      "found": true,
+      "value": 124
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserRefresh",
+      "ignore_case": true,
+      "found": true,
+      "value": 124
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserStop",
+      "ignore_case": false,
+      "found": true,
+      "value": 125
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserStop",
+      "ignore_case": true,
+      "found": true,
+      "value": 125
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserSearch",
+      "ignore_case": false,
+      "found": true,
+      "value": 126
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserSearch",
+      "ignore_case": true,
+      "found": true,
+      "value": 126
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserFavorites",
+      "ignore_case": false,
+      "found": true,
+      "value": 127
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserFavorites",
+      "ignore_case": true,
+      "found": true,
+      "value": 127
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserHome",
+      "ignore_case": false,
+      "found": true,
+      "value": 128
+    },
+    {
+      "kind": "from_name",
+      "input": "BrowserHome",
+      "ignore_case": true,
+      "found": true,
+      "value": 128
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeMute",
+      "ignore_case": false,
+      "found": true,
+      "value": 129
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeMute",
+      "ignore_case": true,
+      "found": true,
+      "value": 129
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeDown",
+      "ignore_case": false,
+      "found": true,
+      "value": 130
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeDown",
+      "ignore_case": true,
+      "found": true,
+      "value": 130
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeUp",
+      "ignore_case": false,
+      "found": true,
+      "value": 131
+    },
+    {
+      "kind": "from_name",
+      "input": "VolumeUp",
+      "ignore_case": true,
+      "found": true,
+      "value": 131
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaNextTrack",
+      "ignore_case": false,
+      "found": true,
+      "value": 132
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaNextTrack",
+      "ignore_case": true,
+      "found": true,
+      "value": 132
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaPreviousTrack",
+      "ignore_case": false,
+      "found": true,
+      "value": 133
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaPreviousTrack",
+      "ignore_case": true,
+      "found": true,
+      "value": 133
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaStop",
+      "ignore_case": false,
+      "found": true,
+      "value": 134
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaStop",
+      "ignore_case": true,
+      "found": true,
+      "value": 134
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaPlayPause",
+      "ignore_case": false,
+      "found": true,
+      "value": 135
+    },
+    {
+      "kind": "from_name",
+      "input": "MediaPlayPause",
+      "ignore_case": true,
+      "found": true,
+      "value": 135
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchMail",
+      "ignore_case": false,
+      "found": true,
+      "value": 136
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchMail",
+      "ignore_case": true,
+      "found": true,
+      "value": 136
+    },
+    {
+      "kind": "from_name",
+      "input": "SelectMedia",
+      "ignore_case": false,
+      "found": true,
+      "value": 137
+    },
+    {
+      "kind": "from_name",
+      "input": "SelectMedia",
+      "ignore_case": true,
+      "found": true,
+      "value": 137
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchApplication1",
+      "ignore_case": false,
+      "found": true,
+      "value": 138
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchApplication1",
+      "ignore_case": true,
+      "found": true,
+      "value": 138
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchApplication2",
+      "ignore_case": false,
+      "found": true,
+      "value": 139
+    },
+    {
+      "kind": "from_name",
+      "input": "LaunchApplication2",
+      "ignore_case": true,
+      "found": true,
+      "value": 139
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem1",
+      "ignore_case": false,
+      "found": true,
+      "value": 140
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem1",
+      "ignore_case": true,
+      "found": true,
+      "value": 140
+    },
+    {
+      "kind": "from_name",
+      "input": "OemSemicolon",
+      "ignore_case": false,
+      "found": true,
+      "value": 140
+    },
+    {
+      "kind": "from_name",
+      "input": "OemSemicolon",
+      "ignore_case": true,
+      "found": true,
+      "value": 140
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPlus",
+      "ignore_case": false,
+      "found": true,
+      "value": 141
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPlus",
+      "ignore_case": true,
+      "found": true,
+      "value": 141
+    },
+    {
+      "kind": "from_name",
+      "input": "OemComma",
+      "ignore_case": false,
+      "found": true,
+      "value": 142
+    },
+    {
+      "kind": "from_name",
+      "input": "OemComma",
+      "ignore_case": true,
+      "found": true,
+      "value": 142
+    },
+    {
+      "kind": "from_name",
+      "input": "OemMinus",
+      "ignore_case": false,
+      "found": true,
+      "value": 143
+    },
+    {
+      "kind": "from_name",
+      "input": "OemMinus",
+      "ignore_case": true,
+      "found": true,
+      "value": 143
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPeriod",
+      "ignore_case": false,
+      "found": true,
+      "value": 144
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPeriod",
+      "ignore_case": true,
+      "found": true,
+      "value": 144
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem2",
+      "ignore_case": false,
+      "found": true,
+      "value": 145
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem2",
+      "ignore_case": true,
+      "found": true,
+      "value": 145
+    },
+    {
+      "kind": "from_name",
+      "input": "OemQuestion",
+      "ignore_case": false,
+      "found": true,
+      "value": 145
+    },
+    {
+      "kind": "from_name",
+      "input": "OemQuestion",
+      "ignore_case": true,
+      "found": true,
+      "value": 145
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem3",
+      "ignore_case": false,
+      "found": true,
+      "value": 146
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem3",
+      "ignore_case": true,
+      "found": true,
+      "value": 146
+    },
+    {
+      "kind": "from_name",
+      "input": "OemTilde",
+      "ignore_case": false,
+      "found": true,
+      "value": 146
+    },
+    {
+      "kind": "from_name",
+      "input": "OemTilde",
+      "ignore_case": true,
+      "found": true,
+      "value": 146
+    },
+    {
+      "kind": "from_name",
+      "input": "AbntC1",
+      "ignore_case": false,
+      "found": true,
+      "value": 147
+    },
+    {
+      "kind": "from_name",
+      "input": "AbntC1",
+      "ignore_case": true,
+      "found": true,
+      "value": 147
+    },
+    {
+      "kind": "from_name",
+      "input": "AbntC2",
+      "ignore_case": false,
+      "found": true,
+      "value": 148
+    },
+    {
+      "kind": "from_name",
+      "input": "AbntC2",
+      "ignore_case": true,
+      "found": true,
+      "value": 148
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem4",
+      "ignore_case": false,
+      "found": true,
+      "value": 149
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem4",
+      "ignore_case": true,
+      "found": true,
+      "value": 149
+    },
+    {
+      "kind": "from_name",
+      "input": "OemOpenBrackets",
+      "ignore_case": false,
+      "found": true,
+      "value": 149
+    },
+    {
+      "kind": "from_name",
+      "input": "OemOpenBrackets",
+      "ignore_case": true,
+      "found": true,
+      "value": 149
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem5",
+      "ignore_case": false,
+      "found": true,
+      "value": 150
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem5",
+      "ignore_case": true,
+      "found": true,
+      "value": 150
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPipe",
+      "ignore_case": false,
+      "found": true,
+      "value": 150
+    },
+    {
+      "kind": "from_name",
+      "input": "OemPipe",
+      "ignore_case": true,
+      "found": true,
+      "value": 150
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem6",
+      "ignore_case": false,
+      "found": true,
+      "value": 151
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem6",
+      "ignore_case": true,
+      "found": true,
+      "value": 151
+    },
+    {
+      "kind": "from_name",
+      "input": "OemCloseBrackets",
+      "ignore_case": false,
+      "found": true,
+      "value": 151
+    },
+    {
+      "kind": "from_name",
+      "input": "OemCloseBrackets",
+      "ignore_case": true,
+      "found": true,
+      "value": 151
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem7",
+      "ignore_case": false,
+      "found": true,
+      "value": 152
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem7",
+      "ignore_case": true,
+      "found": true,
+      "value": 152
+    },
+    {
+      "kind": "from_name",
+      "input": "OemQuotes",
+      "ignore_case": false,
+      "found": true,
+      "value": 152
+    },
+    {
+      "kind": "from_name",
+      "input": "OemQuotes",
+      "ignore_case": true,
+      "found": true,
+      "value": 152
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem8",
+      "ignore_case": false,
+      "found": true,
+      "value": 153
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem8",
+      "ignore_case": true,
+      "found": true,
+      "value": 153
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem102",
+      "ignore_case": false,
+      "found": true,
+      "value": 154
+    },
+    {
+      "kind": "from_name",
+      "input": "Oem102",
+      "ignore_case": true,
+      "found": true,
+      "value": 154
+    },
+    {
+      "kind": "from_name",
+      "input": "OemBackslash",
+      "ignore_case": false,
+      "found": true,
+      "value": 154
+    },
+    {
+      "kind": "from_name",
+      "input": "OemBackslash",
+      "ignore_case": true,
+      "found": true,
+      "value": 154
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeProcessed",
+      "ignore_case": false,
+      "found": true,
+      "value": 155
+    },
+    {
+      "kind": "from_name",
+      "input": "ImeProcessed",
+      "ignore_case": true,
+      "found": true,
+      "value": 155
+    },
+    {
+      "kind": "from_name",
+      "input": "System",
+      "ignore_case": false,
+      "found": true,
+      "value": 156
+    },
+    {
+      "kind": "from_name",
+      "input": "System",
+      "ignore_case": true,
+      "found": true,
+      "value": 156
+    },
+    {
+      "kind": "from_name",
+      "input": "OemAttn",
+      "ignore_case": false,
+      "found": true,
+      "value": 157
+    },
+    {
+      "kind": "from_name",
+      "input": "OemAttn",
+      "ignore_case": true,
+      "found": true,
+      "value": 157
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeAlphanumeric",
+      "ignore_case": false,
+      "found": true,
+      "value": 157
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeAlphanumeric",
+      "ignore_case": true,
+      "found": true,
+      "value": 157
+    },
+    {
+      "kind": "from_name",
+      "input": "OemFinish",
+      "ignore_case": false,
+      "found": true,
+      "value": 158
+    },
+    {
+      "kind": "from_name",
+      "input": "OemFinish",
+      "ignore_case": true,
+      "found": true,
+      "value": 158
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeKatakana",
+      "ignore_case": false,
+      "found": true,
+      "value": 158
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeKatakana",
+      "ignore_case": true,
+      "found": true,
+      "value": 158
+    },
+    {
+      "kind": "from_name",
+      "input": "OemCopy",
+      "ignore_case": false,
+      "found": true,
+      "value": 159
+    },
+    {
+      "kind": "from_name",
+      "input": "OemCopy",
+      "ignore_case": true,
+      "found": true,
+      "value": 159
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeHiragana",
+      "ignore_case": false,
+      "found": true,
+      "value": 159
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeHiragana",
+      "ignore_case": true,
+      "found": true,
+      "value": 159
+    },
+    {
+      "kind": "from_name",
+      "input": "OemAuto",
+      "ignore_case": false,
+      "found": true,
+      "value": 160
+    },
+    {
+      "kind": "from_name",
+      "input": "OemAuto",
+      "ignore_case": true,
+      "found": true,
+      "value": 160
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeSbcsChar",
+      "ignore_case": false,
+      "found": true,
+      "value": 160
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeSbcsChar",
+      "ignore_case": true,
+      "found": true,
+      "value": 160
+    },
+    {
+      "kind": "from_name",
+      "input": "OemEnlw",
+      "ignore_case": false,
+      "found": true,
+      "value": 161
+    },
+    {
+      "kind": "from_name",
+      "input": "OemEnlw",
+      "ignore_case": true,
+      "found": true,
+      "value": 161
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDbcsChar",
+      "ignore_case": false,
+      "found": true,
+      "value": 161
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDbcsChar",
+      "ignore_case": true,
+      "found": true,
+      "value": 161
+    },
+    {
+      "kind": "from_name",
+      "input": "OemBackTab",
+      "ignore_case": false,
+      "found": true,
+      "value": 162
+    },
+    {
+      "kind": "from_name",
+      "input": "OemBackTab",
+      "ignore_case": true,
+      "found": true,
+      "value": 162
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeRoman",
+      "ignore_case": false,
+      "found": true,
+      "value": 162
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeRoman",
+      "ignore_case": true,
+      "found": true,
+      "value": 162
+    },
+    {
+      "kind": "from_name",
+      "input": "Attn",
+      "ignore_case": false,
+      "found": true,
+      "value": 163
+    },
+    {
+      "kind": "from_name",
+      "input": "Attn",
+      "ignore_case": true,
+      "found": true,
+      "value": 163
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeNoRoman",
+      "ignore_case": false,
+      "found": true,
+      "value": 163
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeNoRoman",
+      "ignore_case": true,
+      "found": true,
+      "value": 163
+    },
+    {
+      "kind": "from_name",
+      "input": "CrSel",
+      "ignore_case": false,
+      "found": true,
+      "value": 164
+    },
+    {
+      "kind": "from_name",
+      "input": "CrSel",
+      "ignore_case": true,
+      "found": true,
+      "value": 164
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterWordRegisterMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 164
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterWordRegisterMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 164
+    },
+    {
+      "kind": "from_name",
+      "input": "ExSel",
+      "ignore_case": false,
+      "found": true,
+      "value": 165
+    },
+    {
+      "kind": "from_name",
+      "input": "ExSel",
+      "ignore_case": true,
+      "found": true,
+      "value": 165
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterImeConfigureMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 165
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterImeConfigureMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 165
+    },
+    {
+      "kind": "from_name",
+      "input": "EraseEof",
+      "ignore_case": false,
+      "found": true,
+      "value": 166
+    },
+    {
+      "kind": "from_name",
+      "input": "EraseEof",
+      "ignore_case": true,
+      "found": true,
+      "value": 166
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeFlushString",
+      "ignore_case": false,
+      "found": true,
+      "value": 166
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeFlushString",
+      "ignore_case": true,
+      "found": true,
+      "value": 166
+    },
+    {
+      "kind": "from_name",
+      "input": "Play",
+      "ignore_case": false,
+      "found": true,
+      "value": 167
+    },
+    {
+      "kind": "from_name",
+      "input": "Play",
+      "ignore_case": true,
+      "found": true,
+      "value": 167
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeCodeInput",
+      "ignore_case": false,
+      "found": true,
+      "value": 167
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeCodeInput",
+      "ignore_case": true,
+      "found": true,
+      "value": 167
+    },
+    {
+      "kind": "from_name",
+      "input": "Zoom",
+      "ignore_case": false,
+      "found": true,
+      "value": 168
+    },
+    {
+      "kind": "from_name",
+      "input": "Zoom",
+      "ignore_case": true,
+      "found": true,
+      "value": 168
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeNoCodeInput",
+      "ignore_case": false,
+      "found": true,
+      "value": 168
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeNoCodeInput",
+      "ignore_case": true,
+      "found": true,
+      "value": 168
+    },
+    {
+      "kind": "from_name",
+      "input": "NoName",
+      "ignore_case": false,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "NoName",
+      "ignore_case": true,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDetermineString",
+      "ignore_case": false,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDetermineString",
+      "ignore_case": true,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "Pa1",
+      "ignore_case": false,
+      "found": true,
+      "value": 170
+    },
+    {
+      "kind": "from_name",
+      "input": "Pa1",
+      "ignore_case": true,
+      "found": true,
+      "value": 170
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterDialogConversionMode",
+      "ignore_case": false,
+      "found": true,
+      "value": 170
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeEnterDialogConversionMode",
+      "ignore_case": true,
+      "found": true,
+      "value": 170
+    },
+    {
+      "kind": "from_name",
+      "input": "OemClear",
+      "ignore_case": false,
+      "found": true,
+      "value": 171
+    },
+    {
+      "kind": "from_name",
+      "input": "OemClear",
+      "ignore_case": true,
+      "found": true,
+      "value": 171
+    },
+    {
+      "kind": "from_name",
+      "input": "DeadCharProcessed",
+      "ignore_case": false,
+      "found": true,
+      "value": 172
+    },
+    {
+      "kind": "from_name",
+      "input": "DeadCharProcessed",
+      "ignore_case": true,
+      "found": true,
+      "value": 172
+    },
+    {
+      "kind": "from_name",
+      "input": "",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": " ",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": " ",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab ",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab ",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": " Tab",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": " Tab",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": " Tab\t",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": " Tab\t",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "\tTab\r\n",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "\tTab\r\n",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab\u00A0",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab\u00A0",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "\u3000Tab",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "\u3000Tab",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab\u0000",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab\u0000",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Ta b",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Ta b",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "TabX",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "TabX",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "XTab",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "XTab",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab,Back",
+      "ignore_case": false,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab,Back",
+      "ignore_case": true,
+      "found": true,
+      "value": 3
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab,",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Tab,",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "+Tab",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "+Tab",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter1",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter1",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad0",
+      "ignore_case": false,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "NumPad0",
+      "ignore_case": true,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "NUMPAD0",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "NUMPAD0",
+      "ignore_case": true,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "numpad0",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "numpad0",
+      "ignore_case": true,
+      "found": true,
+      "value": 74
+    },
+    {
+      "kind": "from_name",
+      "input": "escape",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "escape",
+      "ignore_case": true,
+      "found": true,
+      "value": 13
+    },
+    {
+      "kind": "from_name",
+      "input": "ESCAPE",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "ESCAPE",
+      "ignore_case": true,
+      "found": true,
+      "value": 13
+    },
+    {
+      "kind": "from_name",
+      "input": "Esc",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Esc",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "capital",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "capital",
+      "ignore_case": true,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "CAPITAL",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "CAPITAL",
+      "ignore_case": true,
+      "found": true,
+      "value": 8
+    },
+    {
+      "kind": "from_name",
+      "input": "capıtal",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "capıtal",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "CAPİTAL",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "CAPİTAL",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "ſpace",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "ſpace",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "k",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "k",
+      "ignore_case": true,
+      "found": true,
+      "value": 54
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": false,
+      "found": true,
+      "value": 54
+    },
+    {
+      "kind": "from_name",
+      "input": "K",
+      "ignore_case": true,
+      "found": true,
+      "value": 54
+    },
+    {
+      "kind": "from_name",
+      "input": "lwin",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "lwin",
+      "ignore_case": true,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "LWIN",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "LWIN",
+      "ignore_case": true,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "LWin",
+      "ignore_case": false,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "LWin",
+      "ignore_case": true,
+      "found": true,
+      "value": 70
+    },
+    {
+      "kind": "from_name",
+      "input": "PageUp",
+      "ignore_case": false,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "PageUp",
+      "ignore_case": true,
+      "found": true,
+      "value": 19
+    },
+    {
+      "kind": "from_name",
+      "input": "PageDown",
+      "ignore_case": false,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "PageDown",
+      "ignore_case": true,
+      "found": true,
+      "value": 20
+    },
+    {
+      "kind": "from_name",
+      "input": "Return",
+      "ignore_case": false,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Return",
+      "ignore_case": true,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter",
+      "ignore_case": false,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "Enter",
+      "ignore_case": true,
+      "found": true,
+      "value": 6
+    },
+    {
+      "kind": "from_name",
+      "input": "NoName",
+      "ignore_case": false,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "NoName",
+      "ignore_case": true,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDetermineString",
+      "ignore_case": false,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "DbeDetermineString",
+      "ignore_case": true,
+      "found": true,
+      "value": 169
+    },
+    {
+      "kind": "from_name",
+      "input": "Snapshot",
+      "ignore_case": false,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "Snapshot",
+      "ignore_case": true,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "PrintScreen",
+      "ignore_case": false,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "PrintScreen",
+      "ignore_case": true,
+      "found": true,
+      "value": 30
+    },
+    {
+      "kind": "from_name",
+      "input": "OemClear",
+      "ignore_case": false,
+      "found": true,
+      "value": 171
+    },
+    {
+      "kind": "from_name",
+      "input": "OemClear",
+      "ignore_case": true,
+      "found": true,
+      "value": 171
+    },
+    {
+      "kind": "from_name",
+      "input": "DeadCharProcessed",
+      "ignore_case": false,
+      "found": true,
+      "value": 172
+    },
+    {
+      "kind": "from_name",
+      "input": "DeadCharProcessed",
+      "ignore_case": true,
+      "found": true,
+      "value": 172
+    },
+    {
+      "kind": "from_name",
+      "input": "dEaDcHaRpRoCeSsEd",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "dEaDcHaRpRoCeSsEd",
+      "ignore_case": true,
+      "found": true,
+      "value": 172
+    },
+    {
+      "kind": "from_name",
+      "input": "Oemı",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Oemı",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Fı",
+      "ignore_case": false,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "Fı",
+      "ignore_case": true,
+      "found": false,
+      "value": null
+    },
+    {
+      "kind": "from_name",
+      "input": "F1 ",
+      "ignore_case": false,
+      "found": true,
+      "value": 90
+    },
+    {
+      "kind": "from_name",
+      "input": "F1 ",
+      "ignore_case": true,
+      "found": true,
+      "value": 90
+    },
+    {
+      "kind": "from_name",
+      "input": "\u00A0F1",
+      "ignore_case": false,
+      "found": true,
+      "value": 90
+    },
+    {
+      "kind": "from_name",
+      "input": "\u00A0F1",
+      "ignore_case": true,
+      "found": true,
+      "value": 90
+    }
+  ]
+}

@@ -1,0 +1,439 @@
+{
+  "generator": "oracle-cs language-options",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "three-languages-en-labels",
+      "localizer": "en",
+      "languages": [
+        {
+          "code": "en",
+          "name": "English",
+          "nativeName": "English",
+          "isUserProvided": false
+        },
+        {
+          "code": "vi",
+          "name": "Vietnamese",
+          "nativeName": "Tiếng Việt",
+          "isUserProvided": false
+        },
+        {
+          "code": "fr",
+          "name": "French",
+          "nativeName": "Français",
+          "isUserProvided": true
+        }
+      ],
+      "index_of": [
+        {
+          "setting": null,
+          "index": 0
+        },
+        {
+          "setting": "",
+          "index": 0
+        },
+        {
+          "setting": "   ",
+          "index": 0
+        },
+        {
+          "setting": "auto",
+          "index": 0
+        },
+        {
+          "setting": "AUTO",
+          "index": 0
+        },
+        {
+          "setting": "Auto",
+          "index": 0
+        },
+        {
+          "setting": "en",
+          "index": 1
+        },
+        {
+          "setting": "VI",
+          "index": 2
+        },
+        {
+          "setting": " fr ",
+          "index": 3
+        },
+        {
+          "setting": "de",
+          "index": -1
+        },
+        {
+          "setting": " ",
+          "index": 0
+        },
+        {
+          "setting": "vi ",
+          "index": 2
+        },
+        {
+          "setting": "\tvi",
+          "index": 2
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 0,
+          "current": "vi",
+          "out": "auto"
+        },
+        {
+          "selected": 2,
+          "current": "auto",
+          "out": "vi"
+        },
+        {
+          "selected": 1,
+          "current": "de",
+          "out": "en"
+        },
+        {
+          "selected": null,
+          "current": "de",
+          "out": "de"
+        },
+        {
+          "selected": null,
+          "current": "  ",
+          "out": "auto"
+        },
+        {
+          "selected": null,
+          "current": null,
+          "out": "auto"
+        },
+        {
+          "selected": null,
+          "current": "",
+          "out": "auto"
+        },
+        {
+          "selected": null,
+          "current": " VI ",
+          "out": " VI "
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "en",
+          "displayName": "English",
+          "isAuto": false
+        },
+        {
+          "code": "vi",
+          "displayName": "Tiếng Việt",
+          "isAuto": false
+        },
+        {
+          "code": "fr",
+          "displayName": "Français (user file)",
+          "isAuto": false
+        }
+      ]
+    },
+    {
+      "id": "three-languages-vi-labels",
+      "localizer": "vi",
+      "languages": [
+        {
+          "code": "en",
+          "name": "English",
+          "nativeName": "English",
+          "isUserProvided": false
+        },
+        {
+          "code": "vi",
+          "name": "Vietnamese",
+          "nativeName": "Tiếng Việt",
+          "isUserProvided": false
+        },
+        {
+          "code": "fr",
+          "name": "French",
+          "nativeName": "Français",
+          "isUserProvided": true
+        }
+      ],
+      "index_of": [
+        {
+          "setting": "auto",
+          "index": 0
+        },
+        {
+          "setting": "fr",
+          "index": 3
+        },
+        {
+          "setting": "xx",
+          "index": -1
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 3,
+          "current": "de",
+          "out": "fr"
+        },
+        {
+          "selected": 0,
+          "current": "de",
+          "out": "auto"
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "en",
+          "displayName": "English",
+          "isAuto": false
+        },
+        {
+          "code": "vi",
+          "displayName": "Tiếng Việt",
+          "isAuto": false
+        },
+        {
+          "code": "fr",
+          "displayName": "Français (user file)",
+          "isAuto": false
+        }
+      ]
+    },
+    {
+      "id": "blank-native-name-falls-back-to-code",
+      "localizer": "en",
+      "languages": [
+        {
+          "code": "xx",
+          "name": "Xx",
+          "nativeName": "",
+          "isUserProvided": false
+        },
+        {
+          "code": "yy",
+          "name": "Yy",
+          "nativeName": "   ",
+          "isUserProvided": true
+        },
+        {
+          "code": "zz",
+          "name": "Zz",
+          "nativeName": "Zed",
+          "isUserProvided": false
+        }
+      ],
+      "index_of": [
+        {
+          "setting": "yy",
+          "index": 2
+        },
+        {
+          "setting": "zz",
+          "index": 3
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 3,
+          "current": "auto",
+          "out": "zz"
+        },
+        {
+          "selected": 2,
+          "current": "auto",
+          "out": "yy"
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "xx",
+          "displayName": "xx",
+          "isAuto": false
+        },
+        {
+          "code": "yy",
+          "displayName": "yy (user file)",
+          "isAuto": false
+        },
+        {
+          "code": "zz",
+          "displayName": "Zed",
+          "isAuto": false
+        }
+      ]
+    },
+    {
+      "id": "user-native-name-with-braces-is-a-value",
+      "localizer": "en",
+      "languages": [
+        {
+          "code": "bq",
+          "name": "Bq",
+          "nativeName": "Ω {name} {count}",
+          "isUserProvided": true
+        }
+      ],
+      "index_of": [
+        {
+          "setting": "bq",
+          "index": 1
+        }
+      ],
+      "to_setting": [],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "bq",
+          "displayName": "Ω {name} {count} (user file)",
+          "isAuto": false
+        }
+      ]
+    },
+    {
+      "id": "no-languages-only-auto-entry",
+      "localizer": "en",
+      "languages": [],
+      "index_of": [
+        {
+          "setting": "auto",
+          "index": 0
+        },
+        {
+          "setting": "en",
+          "index": -1
+        },
+        {
+          "setting": null,
+          "index": 0
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 0,
+          "current": "vi",
+          "out": "auto"
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        }
+      ]
+    },
+    {
+      "id": "auto-looking-code-is-the-auto-entry",
+      "localizer": "en",
+      "languages": [
+        {
+          "code": "Auto",
+          "name": "Odd",
+          "nativeName": "Odd",
+          "isUserProvided": true
+        }
+      ],
+      "index_of": [
+        {
+          "setting": "auto",
+          "index": 0
+        },
+        {
+          "setting": "Auto",
+          "index": 0
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 1,
+          "current": "de",
+          "out": "auto"
+        },
+        {
+          "selected": 0,
+          "current": "de",
+          "out": "auto"
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "Auto",
+          "displayName": "Odd (user file)",
+          "isAuto": true
+        }
+      ]
+    },
+    {
+      "id": "selected-entry-returns-stored-code-unchanged-case",
+      "localizer": "en",
+      "languages": [
+        {
+          "code": "vi",
+          "name": "Vietnamese",
+          "nativeName": "Tiếng Việt",
+          "isUserProvided": false
+        }
+      ],
+      "index_of": [
+        {
+          "setting": "VI",
+          "index": 1
+        },
+        {
+          "setting": " vi",
+          "index": 1
+        }
+      ],
+      "to_setting": [
+        {
+          "selected": 1,
+          "current": null,
+          "out": "vi"
+        }
+      ],
+      "build": [
+        {
+          "code": "auto",
+          "displayName": "Auto (Windows)",
+          "isAuto": true
+        },
+        {
+          "code": "vi",
+          "displayName": "Tiếng Việt",
+          "isAuto": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2996 @@
+{
+  "generator": "oracle-cs viewport-state",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "fresh state is pending; first update lays out and clamps the zero request",
+      "steps": [
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": false,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 0,
+              "viewport_height": 0,
+              "extent_width": 0,
+              "extent_height": 0,
+              "horizontal_bar_visible": false,
+              "vertical_bar_visible": false,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              },
+              "max_horizontal_offset": 0,
+              "max_vertical_offset": 0
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": false,
+            "compute_called": false,
+            "clamp_called": false,
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "scroll request is applied only on update and clamped to the extent",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 783,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2217,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": 1900,
+          "vertical": 0,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              1900,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": -5,
+          "vertical": 40,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              0,
+              40
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 40,
+              "image_origin": {
+                "x": 0,
+                "y": -40
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 40,
+              "image_origin": {
+                "x": 0,
+                "y": -40
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_home",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 40,
+              "image_origin": {
+                "x": 0,
+                "y": -40
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "requested offset survives a shrink and regrow of the viewport",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 1000,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 983,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2017,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": 1900,
+          "vertical": 0,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              1900,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 600,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 583,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2417,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              1900,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 583,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2417,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 583,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2417,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 900,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 583,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2417,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 883,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2117,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              1900,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 883,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2117,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 883,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2117,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 1000,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 883,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2117,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 983,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2017,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              1900,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 983,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2017,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 1900,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -1900,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "identical input does not dirty the state",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "Uniform",
+            "image_width": 1200,
+            "image_height": 900,
+            "max_image_width": 800,
+            "max_image_height": 600,
+            "bitmap_width": 1200,
+            "bitmap_height": 900
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 800,
+              "viewport_height": 600,
+              "extent_width": 800,
+              "extent_height": 600,
+              "horizontal_bar_visible": false,
+              "vertical_bar_visible": false,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 800,
+                "height": 600
+              },
+              "max_horizontal_offset": 0,
+              "max_vertical_offset": 0
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "Uniform",
+            "image_width": 1200,
+            "image_height": 900,
+            "max_image_width": 800,
+            "max_image_height": 600,
+            "bitmap_width": 1200,
+            "bitmap_height": 900
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": false,
+            "compute_called": false,
+            "clamp_called": false,
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "NaN fields compare equal to NaN (C# record struct Equals)",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "Uniform",
+            "image_width": "NaN",
+            "image_height": "NaN",
+            "max_image_width": 800,
+            "max_image_height": 600,
+            "bitmap_width": 1200,
+            "bitmap_height": 900
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 800,
+              "viewport_height": 600,
+              "extent_width": 800,
+              "extent_height": 600,
+              "horizontal_bar_visible": false,
+              "vertical_bar_visible": false,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 800,
+                "height": 600
+              },
+              "max_horizontal_offset": 0,
+              "max_vertical_offset": 0
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "Uniform",
+            "image_width": "NaN",
+            "image_height": "NaN",
+            "max_image_width": 800,
+            "max_image_height": 600,
+            "bitmap_width": 1200,
+            "bitmap_height": 900
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": false,
+            "compute_called": false,
+            "clamp_called": false,
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 800,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "negative zero equals zero in the input",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 0,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 10,
+            "image_height": 10,
+            "max_image_width": 10,
+            "max_image_height": 10,
+            "bitmap_width": 10,
+            "bitmap_height": 10
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 0,
+              "viewport_height": 583,
+              "extent_width": 10,
+              "extent_height": 10,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": false,
+              "image_rect": {
+                "x": 0,
+                "y": 286.5,
+                "width": 10,
+                "height": 10
+              },
+              "max_horizontal_offset": 10,
+              "max_vertical_offset": 0
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 583,
+                "extent_width": 10,
+                "extent_height": 10,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 286.5,
+                  "width": 10,
+                  "height": 10
+                },
+                "max_horizontal_offset": 10,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 286.5
+              },
+              "image_actual_width": 10,
+              "image_actual_height": 10
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": "-0",
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 10,
+            "image_height": 10,
+            "max_image_width": 10,
+            "max_image_height": 10,
+            "bitmap_width": 10,
+            "bitmap_height": 10
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 583,
+                "extent_width": 10,
+                "extent_height": 10,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 286.5,
+                  "width": 10,
+                  "height": 10
+                },
+                "max_horizontal_offset": 10,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 286.5
+              },
+              "image_actual_width": 10,
+              "image_actual_height": 10
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 583,
+                "extent_width": 10,
+                "extent_height": 10,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 286.5,
+                  "width": 10,
+                  "height": 10
+                },
+                "max_horizontal_offset": 10,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 286.5
+              },
+              "image_actual_width": 10,
+              "image_actual_height": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "NaN scroll axis keeps the old request; negative and minus-zero requests become +0",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 783,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2217,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": 30,
+          "vertical": 40,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              30,
+              40
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 30,
+              "vertical_offset": 40,
+              "image_origin": {
+                "x": -30,
+                "y": -40
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": "NaN",
+          "vertical": 50,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 30,
+              "vertical_offset": 40,
+              "image_origin": {
+                "x": -30,
+                "y": -40
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              30,
+              50
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 30,
+              "vertical_offset": 50,
+              "image_origin": {
+                "x": -30,
+                "y": -50
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 30,
+              "vertical_offset": 50,
+              "image_origin": {
+                "x": -30,
+                "y": -50
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": -3,
+          "vertical": "-0",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 30,
+              "vertical_offset": 50,
+              "image_origin": {
+                "x": -30,
+                "y": -50
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a scroll request alone does not compute the layout",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 783,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2217,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": 100,
+          "vertical": 0,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              100,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 100,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -100,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": false,
+            "compute_called": false,
+            "clamp_called": false,
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 100,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -100,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a request made before any input is kept and applied with the first input",
+      "steps": [
+        {
+          "op": "scroll_to",
+          "horizontal": 40,
+          "vertical": 0,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 783,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2217,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              40,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 40,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -40,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 40,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": -40,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "probe maps a viewport point into image coordinates",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": 800,
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Auto",
+            "stretch": "None",
+            "image_width": 3000,
+            "image_height": 2000,
+            "max_image_width": "Infinity",
+            "max_image_height": "Infinity",
+            "bitmap_width": 3000,
+            "bitmap_height": 2000
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 783,
+              "viewport_height": 583,
+              "extent_width": 3000,
+              "extent_height": 2000,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": true,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 3000,
+                "height": 2000
+              },
+              "max_horizontal_offset": 2217,
+              "max_vertical_offset": 1417
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "scroll_to",
+          "horizontal": 200,
+          "vertical": 100,
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": false,
+            "clamp_called": true,
+            "clamp": [
+              200,
+              100
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 200,
+              "vertical_offset": 100,
+              "image_origin": {
+                "x": -200,
+                "y": -100
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000
+            }
+          }
+        },
+        {
+          "op": "query",
+          "probe": {
+            "x": 50,
+            "y": 40
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 783,
+                "viewport_height": 583,
+                "extent_width": 3000,
+                "extent_height": 2000,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": true,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 3000,
+                  "height": 2000
+                },
+                "max_horizontal_offset": 2217,
+                "max_vertical_offset": 1417
+              },
+              "horizontal_offset": 200,
+              "vertical_offset": 100,
+              "image_origin": {
+                "x": -200,
+                "y": -100
+              },
+              "image_actual_width": 3000,
+              "image_actual_height": 2000,
+              "to_image": {
+                "x": 250,
+                "y": 140
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "NaN client width is forwarded to the engine, not sanitised by the state",
+      "steps": [
+        {
+          "op": "set_input",
+          "input": {
+            "client_width": "NaN",
+            "client_height": 600,
+            "scroll_bar_thickness": 17,
+            "scroll_bars": "Overlay",
+            "stretch": "Uniform",
+            "image_width": "NaN",
+            "image_height": "NaN",
+            "max_image_width": 800,
+            "max_image_height": 600,
+            "bitmap_width": 1200,
+            "bitmap_height": 900
+          },
+          "expect": {
+            "state": {
+              "is_layout_pending": true,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 0,
+                "extent_width": 0,
+                "extent_height": 0,
+                "horizontal_bar_visible": false,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "max_horizontal_offset": 0,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 0,
+              "image_actual_height": 0
+            }
+          }
+        },
+        {
+          "op": "update_layout",
+          "expect": {
+            "returned": true,
+            "compute_called": true,
+            "clamp_called": true,
+            "compute": {
+              "viewport_width": 0,
+              "viewport_height": 600,
+              "extent_width": 800,
+              "extent_height": 600,
+              "horizontal_bar_visible": true,
+              "vertical_bar_visible": false,
+              "image_rect": {
+                "x": 0,
+                "y": 0,
+                "width": 800,
+                "height": 600
+              },
+              "max_horizontal_offset": 800,
+              "max_vertical_offset": 0
+            },
+            "clamp": [
+              0,
+              0
+            ],
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 800,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        },
+        {
+          "op": "query",
+          "expect": {
+            "state": {
+              "is_layout_pending": false,
+              "layout": {
+                "viewport_width": 0,
+                "viewport_height": 600,
+                "extent_width": 800,
+                "extent_height": 600,
+                "horizontal_bar_visible": true,
+                "vertical_bar_visible": false,
+                "image_rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 800,
+                  "height": 600
+                },
+                "max_horizontal_offset": 800,
+                "max_vertical_offset": 0
+              },
+              "horizontal_offset": 0,
+              "vertical_offset": 0,
+              "image_origin": {
+                "x": 0,
+                "y": 0
+              },
+              "image_actual_width": 800,
+              "image_actual_height": 600
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -42,6 +42,22 @@
     <Reference Include="PhotoReview.PerfAnalysis">
       <HintPath>$(CSharpCoreDir)\PhotoReview.PerfAnalysis.dll</HintPath>
     </Reference>
+    <!-- W8 (batch B1): App.Shared, Shell.Interop, Shell.Rendering, Shell.Win32 (all net10.0-windows) built from the baseline archive by tools/oracle.ps1. -->
+    <Reference Include="PhotoReview.Platform.Windows">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Platform.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview.App.Shared">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.App.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview.Shell.Interop">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Shell.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview.Shell.Rendering">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.Shell.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotoReview">
+      <HintPath>$(CSharpCoreDir)\PhotoReview.dll</HintPath>
+    </Reference>
     <Reference Include="PhotoReview.Localization.Generator">
       <HintPath>$(CSharpCoreDir)\PhotoReview.Localization.Generator.dll</HintPath>
     </Reference>
@@ -51,6 +67,25 @@
     <!-- W7-03d: two internal classes of the baseline CLI project, compiled into the oracle as they are (nothing copied by hand). -->
     <Compile Include="$(CSharpSrcDir)\tools\PhotoReview.Benchmark.Cli\BenchmarkCliArguments.cs" Link="cs-baseline\BenchmarkCliArguments.cs" />
     <Compile Include="$(CSharpSrcDir)\tools\PhotoReview.Benchmark.Cli\ToolPathGuard.cs" Link="cs-baseline\ToolPathGuard.cs" />
+    <!-- W8 batch B1: internal baseline classes compiled into the oracle as they are (nothing copied by hand). -->
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\ViewModels\ExifFormatter.cs" Link="cs-baseline\ExifFormatter.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\ViewModels\StatusFormatter.cs" Link="cs-baseline\StatusFormatter.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\ViewModels\TitleBarFormatter.cs" Link="cs-baseline\TitleBarFormatter.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\ViewModels\SettingsReloadPath.cs" Link="cs-baseline\SettingsReloadPath.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Windowing\WindowingContracts.cs" Link="cs-baseline\WindowingContracts.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Windowing\MonitorLayout.cs" Link="cs-baseline\MonitorLayout.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Windowing\WindowPlacementVisibility.cs" Link="cs-baseline\WindowPlacementVisibility.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Windowing\WindowPlacementJsonContext.cs" Link="cs-baseline\WindowPlacementJsonContext.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Windowing\JsonWindowPlacementStore.cs" Link="cs-baseline\JsonWindowPlacementStore.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Presenters\SettingsFieldMap.cs" Link="cs-baseline\SettingsFieldMap.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Presenters\SettingsFormState.cs" Link="cs-baseline\SettingsFormState.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\Presenters\ActionListJson.cs" Link="cs-baseline\ActionListJson.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\ScalingPolicy.cs" Link="cs-baseline\ScalingPolicy.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\FrameStats.cs" Link="cs-baseline\FrameStats.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\FramePacer.cs" Link="cs-baseline\FramePacer.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\FrameLog.cs" Link="cs-baseline\FrameLog.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\ScrollBarGeometry.cs" Link="cs-baseline\ScrollBarGeometry.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\ScrollBarNative.cs" Link="cs-baseline\ScrollBarNative.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,11 +93,25 @@
     <Using Include="System.IO" />
     <Using Include="System.Net.Http" />
     <Using Include="System.Threading" />
+    <!-- W8: global usings of PhotoReview.App.Shared, needed by the baseline files compiled into the oracle (Presenters, ViewModels). -->
+    <Using Include="PhotoReview.Core.Settings" />
+    <Using Include="PhotoReview.App.Services" />
+    <Using Include="PhotoReview.Core.FileActions" />
+    <Using Include="PhotoReview.Core.Session" />
+    <Using Include="PhotoReview.Imaging" />
+    <Using Include="PhotoReview.Imaging.Caching" />
+    <Using Include="PhotoReview.Imaging.Decoding" />
+    <Using Include="PhotoReview.Imaging.Preload" />
+    <Using Include="PhotoReview.Platform.Windows" />
+    <Using Include="PhotoReview.Platform.Windows.Explorer" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- W2-04: the real Roslyn TrGenerator is run over in-memory catalogs. -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <!-- W8: runtime dependencies of PhotoReview.App.Shared (versions of the baseline Directory.Packages.props). -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
 
 </Project>

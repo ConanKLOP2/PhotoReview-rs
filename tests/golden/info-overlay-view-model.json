@@ -1,0 +1,1599 @@
+{
+  "generator": "oracle-cs info-overlay-view-model",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "hidden folder block never searches",
+      "kind": "script",
+      "settings": {},
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "placeholder, then the siblings found by the finder",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "no sibling found: the folder line alone",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 trip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IOException from the finder falls back to the folder alone",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "fault": "IOException"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 trip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "UnauthorizedAccessException from the finder falls back to the folder alone",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "fault": "UnauthorizedAccessException"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 trip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a blank NextFolder shortcut hides only the next part",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true,
+        "next_folder": "   "
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "shortcut names are trimmed before they are shown",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true,
+        "previous_folder": " PageUp "
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a whitespace-only folder is no folder",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "   ",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "one trailing separator is removed before the name is taken",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip\\": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip\\",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 trip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a second trailing separator leaves no name, so the full folder is shown",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\\\": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\\\",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 C:\\photos\\\\"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a drive root keeps its name",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 C:\\"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "forward slashes are separators too, one trailing separator is removed",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "/home/user/pics/": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "/home/user/pics/",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 pics"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "hiding and showing again reuses the siblings already found",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "show_folder_info": false,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "show_folder_info": true,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a different folder drops the old siblings and searches again",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        },
+        "D:\\other": {
+          "previous": null,
+          "next": null
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "set_folder",
+          "folder": "D:\\other",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "\uD83D\uDCC1 other"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "refreshing the same folder does not search again",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "info_overlay_font_size": 16,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 16,
+              "exif_font_size": 15,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 16,
+              "exif_font_size": 15,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "the master switch hides both blocks and turning it on searches again",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true,
+        "show_info_overlay": false
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": false,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "show_info_overlay": true,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "zoom HUD follows the setting and the image, read live",
+      "kind": "script",
+      "settings": {
+        "show_zoom_indicator": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 150
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "150%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_view",
+          "has_image": false,
+          "zoom_percent": 150,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "150%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_view",
+          "has_image": true,
+          "zoom_percent": 37,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "37%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "37%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "zoom text is a plain integer, negative and large values included",
+      "kind": "script",
+      "settings": {
+        "show_zoom_indicator": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": -5
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "-5%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_view",
+          "has_image": true,
+          "zoom_percent": 400,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "400%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": true,
+              "zoom_text": "400%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "zoom HUD off stays off even with an image",
+      "kind": "script",
+      "settings": {
+        "show_zoom_indicator": false
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "font size follows the setting and the EXIF line is one point smaller",
+      "kind": "script",
+      "settings": {},
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "info_overlay_font_size": 8,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 8,
+              "exif_font_size": 7,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "info_overlay_font_size": 24,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 24,
+              "exif_font_size": 23,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 24,
+              "exif_font_size": 23,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "file info block follows its own switch and the master switch",
+      "kind": "script",
+      "settings": {
+        "show_file_info": false
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": false,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "show_file_info": true,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "set_settings",
+          "show_info_overlay": false,
+          "expect": {
+            "raised": [],
+            "searches": 0,
+            "state": {
+              "file_info_visible": false,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": false,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "raise order: six notifications, then FolderInfoText (placeholder, then the answer)",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": true
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {
+        "C:\\photos\\trip": {
+          "previous": "C:\\photos\\a",
+          "next": "C:\\photos\\c"
+        }
+      },
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText",
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText",
+              "FolderInfoText"
+            ],
+            "searches": 1,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": true,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": "◀ PageUp: a     \uD83D\uDCC1 trip     PageDown: c ▶"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "raise order while hidden: six notifications, FolderInfoText only when it changes",
+      "kind": "script",
+      "settings": {
+        "show_folder_info": false
+      },
+      "view": {
+        "has_image": true,
+        "zoom_percent": 100
+      },
+      "finder": {},
+      "steps": [
+        {
+          "op": "set_folder",
+          "folder": "C:\\photos\\trip",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        },
+        {
+          "op": "refresh",
+          "expect": {
+            "raised": [
+              "IsFileInfoVisible",
+              "IsFolderInfoVisible",
+              "FontSize",
+              "ExifFontSize",
+              "IsZoomIndicatorVisible",
+              "ZoomIndicatorText"
+            ],
+            "searches": 0,
+            "state": {
+              "file_info_visible": true,
+              "folder_info_visible": false,
+              "font_size": 12,
+              "exif_font_size": 11,
+              "zoom_visible": false,
+              "zoom_text": "100%",
+              "folder_text": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
