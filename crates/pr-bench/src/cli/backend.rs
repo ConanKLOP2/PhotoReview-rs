@@ -46,7 +46,42 @@ impl ToolError {
     /// `Could not find file '{path}'.`), `PermissionDenied` becomes `UnauthorizedAccessException`
     /// (`Access to the path '{path}' is denied.`), anything else `IOException` with the error's description.
     pub fn from_io(err: &std::io::Error, path: &str, not_found_type: &str) -> Self {
-        todo!("W7-03d")
+        use std::io::ErrorKind;
+        // ERROR_SHARING_VIOLATION (32) and ERROR_LOCK_VIOLATION (33): .NET `IOException` with its own text.
+        if matches!(err.raw_os_error(), Some(32 | 33)) {
+            return Self::new(
+                "IOException",
+                format!("The process cannot access the file '{path}' because it is being used by another process."),
+            );
+        }
+        match err.kind() {
+            ErrorKind::NotFound => {
+                let message = if not_found_type == "FileNotFoundException" {
+                    format!("Could not find file '{path}'.")
+                } else {
+                    format!("Could not find a part of the path '{path}'.")
+                };
+                Self::new(not_found_type, message)
+            }
+            ErrorKind::PermissionDenied => Self::new(
+                "UnauthorizedAccessException",
+                format!("Access to the path '{path}' is denied."),
+            ),
+            ErrorKind::AlreadyExists => Self::new(
+                "IOException",
+                format!("Cannot create '{path}' because a file or directory with the same name already exists."),
+            ),
+            _ => Self::new("IOException", os_error_description(err)),
+        }
+    }
+}
+
+/// The error's text without Rust's ` (os error N)` suffix (.NET prints only the system message).
+pub(crate) fn os_error_description(err: &std::io::Error) -> String {
+    let text = err.to_string();
+    match text.rfind(" (os error ") {
+        Some(i) if text.ends_with(')') => text[..i].to_owned(),
+        _ => text,
     }
 }
 
@@ -96,7 +131,12 @@ pub enum PhaseStatus {
 
 impl PhaseStatus {
     pub fn as_str(self) -> &'static str {
-        todo!("W7-03d: Pass | Warn | Fail | InsufficientData")
+        match self {
+            Self::Pass => "Pass",
+            Self::Warn => "Warn",
+            Self::Fail => "Fail",
+            Self::InsufficientData => "InsufficientData",
+        }
     }
 }
 
@@ -161,7 +201,7 @@ pub trait BenchmarkBackend: ProfileCatalog {
     fn batch_summary_json(&self, dataset: &DatasetManifest) -> Result<String, ToolError>;
 
     /// The other modes of the C# project (not W7-03d). Default: they are not part of this build.
-    fn run_other_mode(&mut self, mode: CliMode, args: &[String], out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+    fn run_other_mode(&mut self, _mode: CliMode, _args: &[String], _out: &mut dyn Write, err: &mut dyn Write) -> i32 {
         write_line(err, &format!("{}: mode not available in this build", super::TOOL_NAME));
         2
     }
@@ -171,35 +211,46 @@ pub trait BenchmarkBackend: ProfileCatalog {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct UnwiredBackend;
 
+/// Message of every error the unwired backend returns.
+const UNWIRED_MESSAGE: &str = "the benchmark engine is not wired into this build";
+
 impl ProfileCatalog for UnwiredBackend {
     fn all(&self) -> Vec<ProfileInfo> {
-        todo!("W7-03d wiring: BenchmarkProfiles.All")
+        Vec::new()
     }
     fn runnable(&self) -> Vec<ProfileInfo> {
-        todo!("W7-03d wiring: BenchmarkProfiles.Runnable")
+        Vec::new()
     }
-    fn find(&self, id: &str) -> Option<ProfileInfo> {
-        todo!("W7-03d wiring: BenchmarkProfiles.Find")
+    fn find(&self, _id: &str) -> Option<ProfileInfo> {
+        None
     }
 }
 
 impl BenchmarkBackend for UnwiredBackend {
     fn run_profile(
         &mut self,
-        folder: &str,
-        profile: &ProfileInfo,
-        files: &[String],
-        progress: &mut dyn FnMut(&ProgressLine),
+        _folder: &str,
+        _profile: &ProfileInfo,
+        _files: &[String],
+        _progress: &mut dyn FnMut(&ProgressLine),
     ) -> Result<ProfileRun, ToolError> {
-        todo!("W7-03d wiring")
+        Err(ToolError::invalid_operation(UNWIRED_MESSAGE))
     }
-    fn record_failed_profile(&mut self, folder_full_path: &str, profile: &ProfileInfo, message: &str) -> ProfileRun {
-        todo!("W7-03d wiring")
+    fn record_failed_profile(&mut self, _folder_full_path: &str, _profile: &ProfileInfo, _message: &str) -> ProfileRun {
+        ProfileRun {
+            run_id: String::new(),
+            phase: PhaseSummary {
+                status: PhaseStatus::Fail,
+                p50: 0.0,
+                p95: 0.0,
+                max: 0.0,
+            },
+        }
     }
-    fn report_json(&self, run_id: &str) -> Result<String, ToolError> {
-        todo!("W7-03d wiring")
+    fn report_json(&self, _run_id: &str) -> Result<String, ToolError> {
+        Err(ToolError::invalid_operation(UNWIRED_MESSAGE))
     }
-    fn batch_summary_json(&self, dataset: &DatasetManifest) -> Result<String, ToolError> {
-        todo!("W7-03d wiring")
+    fn batch_summary_json(&self, _dataset: &DatasetManifest) -> Result<String, ToolError> {
+        Err(ToolError::invalid_operation(UNWIRED_MESSAGE))
     }
 }
