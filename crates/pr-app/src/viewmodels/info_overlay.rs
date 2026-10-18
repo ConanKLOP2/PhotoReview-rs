@@ -412,9 +412,9 @@ fn is_device_unc(chars: &[char]) -> bool {
     chars.len() >= 8
         && is_device(chars)
         && is_separator(chars[7])
-        && chars[4].eq_ignore_ascii_case(&'U')
-        && chars[5].eq_ignore_ascii_case(&'N')
-        && chars[6].eq_ignore_ascii_case(&'C')
+        && chars[4] == 'U'
+        && chars[5] == 'N'
+        && chars[6] == 'C'
 }
 
 /// .NET `PathInternal.GetRootLength` (Windows): UNC server and share, device roots, `C:` / `C:\`, and a rooted `\`.
